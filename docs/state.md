@@ -4,6 +4,7 @@ This file documents important global state so new scenes do not create accidenta
 
 ## Global Setup
 
+- `$RuntimeProfile` - startup profile, usually `dev` or `release`.
 - `debug` - enables developer output and debug-only actions.
 - `debug_images` - enables image debug details.
 - `USEHTML` - enables HTML output.

@@ -21,6 +21,7 @@ More details:
 - `docs/structure.md` - project folder map.
 - `docs/naming.md` - naming rules for files, locations, and variables.
 - `docs/state.md` - main global state notes.
+- `docs/runtime.md` - runtime/debug profile notes.
 - `docs/checklist.md` - short pre-commit checklist.
 
 ## Build And Run
