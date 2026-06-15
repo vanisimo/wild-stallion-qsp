@@ -13,15 +13,15 @@ $RuntimeProfile = 'dev'
 - `dev` - debug panels, debug output, and image debug helpers are enabled.
 - `release` - debug output and image debug helpers are disabled.
 
-## Switching To Release
+## Building Release
 
-Change the start file to:
+Build the release profile with:
 
-```qsp
-$RuntimeProfile = 'release'
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build.ps1 -Profile release
 ```
 
-Then rebuild `game.qsp` and do a short smoke test.
+The build script changes the runtime profile only in the temporary combined source under `.build`; `TraKtir.qsps` stays in the development profile.
 
 ## Notes
 

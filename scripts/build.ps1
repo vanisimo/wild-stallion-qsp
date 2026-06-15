@@ -1,4 +1,6 @@
 param(
+    [ValidateSet('dev', 'release')]
+    [string]$Profile = 'dev',
     [switch]$SkipCheck,
     [switch]$NoCopy
 )
@@ -6,7 +8,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$buildDir = Join-Path $repoRoot '.build\qsp-cli'
+$buildDir = Join-Path $repoRoot (Join-Path '.build\qsp-cli' $Profile)
 $outDir = Join-Path $buildDir 'out'
 $combined = Join-Path $buildDir 'game.qsps'
 $targetGame = Join-Path $repoRoot 'game.qsp'
@@ -28,6 +30,9 @@ if (-not $qspCli) {
 $projectPath = Join-Path $repoRoot 'qsp-project.json'
 $project = Get-Content -Raw $projectPath | ConvertFrom-Json
 $module = $project.project[0]
+$startFile = (Resolve-Path (Join-Path $repoRoot $module.start_qsploc_file)).Path
+$runtimePattern = '(\$RuntimeProfile\s*=\s*)''[^'']*'''
+$runtimeReplacement = '${1}''' + $Profile + ''''
 
 New-Item -ItemType Directory -Force $buildDir, $outDir | Out-Null
 
@@ -44,7 +49,17 @@ foreach ($folder in $module.folders) {
 
 $sb = New-Object System.Text.StringBuilder
 foreach ($file in $files) {
-    [void]$sb.AppendLine([System.IO.File]::ReadAllText($file, [System.Text.Encoding]::UTF8))
+    $content = [System.IO.File]::ReadAllText($file, [System.Text.Encoding]::UTF8)
+
+    if ($file -eq $startFile) {
+        if (-not [regex]::IsMatch($content, $runtimePattern)) {
+            throw "Runtime profile assignment was not found in $startFile"
+        }
+
+        $content = [regex]::Replace($content, $runtimePattern, $runtimeReplacement, 1)
+    }
+
+    [void]$sb.AppendLine($content)
     [void]$sb.AppendLine()
 }
 
@@ -68,6 +83,7 @@ if (-not $NoCopy) {
 }
 
 Write-Host "Built $($files.Count) source files."
+Write-Host "Profile: $Profile"
 Write-Host "Output: $builtGame"
 if (-not $NoCopy) {
     Write-Host "Copied: $targetGame"

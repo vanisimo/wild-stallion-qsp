@@ -38,6 +38,12 @@ Build `game.qsp` with:
 powershell -ExecutionPolicy Bypass -File scripts\build.ps1
 ```
 
+Build a release profile with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build.ps1 -Profile release
+```
+
 The build script runs the strict project check before converting sources. For a quick converter-only run, pass `-SkipCheck`.
 
 Run the compiled game with:
