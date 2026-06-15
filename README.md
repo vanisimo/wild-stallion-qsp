@@ -11,6 +11,9 @@ QSP interactive fiction project. Entry point: `TraKtir.qsps`.
 - `modules/menu` - panels, menus, and interface helpers.
 - `modules/npc` - NPC initialization and NPC-specific logic.
 - `modules/debug` - debug panels and tools.
+- `modules/story` - reserved for larger story arcs.
+- `modules/system` - reserved for low-level technical helpers.
+- `archive` - old code kept outside the active build.
 - `images` - location images and portraits.
 
 More details:
