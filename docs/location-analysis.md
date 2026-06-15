@@ -4,10 +4,10 @@ Generated from active project files in `qsp-project.json`.
 
 - Source files: 228
 - Locations: 942
-- Locations with direct incoming calls: 759
-- Locations without direct incoming calls: 183
-- Review candidates without direct incoming calls: 5
-- Classified entry/helper locations without direct incoming calls: 178
+- Locations with direct incoming calls: 761
+- Locations without direct incoming calls: 181
+- Review candidates without direct incoming calls: 0
+- Classified entry/helper locations without direct incoming calls: 181
 - Dynamic call sites: 3
 
 ## Review Candidates
@@ -16,11 +16,6 @@ These locations have no direct literal incoming calls and are not classified as 
 
 | Location | File | Line | Group |
 | --- | --- | --- | --- |
-| `Amanda_ShowInfo` | `modules/menu/girls/amanda_show_info.qsps` | 4 | `modules/menu` |
-| `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 250 | `modules/events` |
-| `HallHarassmentTryFromBar` | `modules/events/hall/hall_harassment.qsps` | 202 | `modules/events` |
-| `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 6 | `modules/events` |
-| `IngaGuardSaturday` | `modules/events/quests/inga_guard_quest.qsps` | 7 | `modules/events` |
 
 ## Classified Entry Or Helper Locations
 
@@ -28,6 +23,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | File | Line | Kind |
 | --- | --- | --- | --- |
+| `Amanda_ShowInfo` | `modules/menu/girls/amanda_show_info.qsps` | 4 | `entry/helper` |
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 | `entry/helper` |
 | `AmandaLegareAfterDanceDebugReset` | `modules/events/dance/amanda_legare_after_dance.qsps` | 292 | `entry/helper` |
 | `AmandaLegareAutoNoticeDebugReset` | `modules/events/dance/amanda_legare_auto_notice.qsps` | 117 | `entry/helper` |
@@ -76,6 +72,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GetStefanAmandaTalk` | `modules/core/system/functions.qsps` | 75 | `entry/helper` |
 | `GetTavernReputationName` | `modules/core/tavern/tavern_reputation.qsps` | 52 | `entry/helper` |
 | `GetWineShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 263 | `entry/helper` |
+| `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 250 | `entry/helper` |
 | `GirlMemoryOfStefanDebugPanel` | `modules/events/hall/girl_memory_of_stefan.qsps` | 195 | `entry/helper` |
 | `GirlsQuickOverview` | `modules/menu/girls/girls_quick_overview.qsps` | 6 | `entry/helper` |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 320 | `entry/helper` |
@@ -84,6 +81,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallFamilyStateDebugPanel` | `modules/events/hall/hall_family_state.qsps` | 228 | `entry/helper` |
 | `HallHarassmentTalkPrintText` | `modules/events/hall/hall_harassment_text.qsps` | 170 | `entry/helper` |
 | `HallHarassmentTry` | `modules/events/hall/hall_harassment.qsps` | 227 | `entry/helper` |
+| `HallHarassmentTryFromBar` | `modules/events/hall/hall_harassment.qsps` | 202 | `entry/helper` |
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 | `entry/helper` |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 | `entry/helper` |
@@ -196,7 +194,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TalkWithSandra` | `modules/actions/dialogs/dialogs.qsps` | 14 | `entry/helper` |
 | `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 270 | `entry/helper` |
 | `TavernEventDispatcherDebugMenu` | `modules/debug/debug_tavern_event_dispatcher.qsps` | 11 | `entry/helper` |
-| `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 51 | `entry/helper` |
+| `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 54 | `entry/helper` |
 | `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 198 | `entry/helper` |
 | `TavernHallEventStart` | `modules/events/hall/tavern_hall_events.qsps` | 8 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 194 | `entry/helper` |

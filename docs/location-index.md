@@ -748,7 +748,7 @@ Generated from active project files in `qsp-project.json`.
 | `SundayVisitBeckySandraText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 9 |
 | `SundayVisitClarissaMelissa` | `modules/events/visits/sunday_shop_visits.qsps` | 74 |
 | `SundayVisitClarissaMelissaText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 27 |
-| `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 51 |
+| `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 54 |
 | `TavernEventDispatcherTry` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 11 |
 | `TavernHallEventCalm` | `modules/events/hall/tavern_hall_events.qsps` | 122 |
 | `TavernHallEventDirtyTable` | `modules/events/hall/tavern_hall_events.qsps` | 197 |
