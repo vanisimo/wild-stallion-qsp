@@ -19,7 +19,8 @@
 ## Event Subfolders
 
 - `modules/events/engine` - shared event engine and dispatch helpers.
-- `modules/events/npc` - NPC-specific event entry points.
+- `modules/events/amanda` - Amanda-specific event entry points.
+- `modules/events/shops` - shopkeeper and shop-family event entry points.
 - `modules/events/quests` - quest-oriented event modules.
 - `modules/events/tavern` - tavern-wide event flow and tavern pressure scenes.
 
