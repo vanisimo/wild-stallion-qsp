@@ -1,0 +1,371 @@
+! ================================================
+! FILE: modules/npc/amanda/amanda_legare_private_aftermath.qsps
+! Последствия личного разговора Аманды и Легаре
+! Версия: aftermath v1 / compact menu
+! Назначение:
+! - обработать ситуацию, если Аманда отошла поговорить с Легаре после танцев
+! - различать факт и знание Стефана
+! - дать разговоры с Амандой, Мелиссой и Клариссой
+! - подготовить следующий шаг: Легаре ищет встречу с Амандой уже вне танцев
+!
+! Тексты берутся из:
+! modules/events/dance/amanda_legare_private_aftermath_text.qsps
+!
+! Хуки добавляются в:
+! modules/actions/dialogs/girl_talk.qsps
+! ================================================
+
+#AmandaLegarePrivateAftermathCanTalk
+    AmandaLegarePrivateAftermathCanTalk = 0
+
+    if Fact_AmandaLegarePrivateTalk = 0 and PlayerKnows_AmandaLegarePrivateTalk = 0:
+        exit
+    end
+
+    if AmandaLegarePrivateTalkDiscussed = 1:
+        exit
+    end
+
+    AmandaLegarePrivateAftermathCanTalk = 1
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_private_aftermath.qsps
+! Разговор с Амандой о том, что она отошла с Легаре
+! ================================================
+
+#AmandaLegarePrivateAftermath
+    *clr
+    clr
+    cla
+
+    $PrivateAftermathReturnLoc = $ARGS[0]
+
+    if $PrivateAftermathReturnLoc = '':
+        $PrivateAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($PrivateAftermathReturnLoc) = 0:
+        $PrivateAftermathReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛЕГАРЕ: РАЗГОВОР ПОСЛЕ ТАНЦЕВ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegarePrivateAftermathIntroText') = 1:
+        gs 'AmandaLegarePrivateAftermathIntroText'
+    else:
+        *p 'Вы возвращаетесь к теме Легаре и того разговора после танцев.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG PRIVATE AFTERMATH] Fact: ' + STR(Fact_AmandaLegarePrivateTalk)
+        *pl '[DEBUG PRIVATE AFTERMATH] PlayerKnows: ' + STR(PlayerKnows_AmandaLegarePrivateTalk)
+        *pl '[DEBUG PRIVATE AFTERMATH] Instruction: ' + STR(AmandaLegareInstruction)
+        *pl '[DEBUG PRIVATE AFTERMATH] Interest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG PRIVATE AFTERMATH] Secretiveness: ' + STR(AmandaSecretiveness)
+        *pl ' '
+    end
+
+    gs 'AmandaLegarePrivateAftermathBuildMenu'
+
+    *p 'Как говорить с <a href="exec:gs ''Menu.Show'', ''AmandaLegarePrivateAftermathMenu''">Амандой</a>?'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_private_aftermath.qsps
+! Меню разговора с Амандой
+! ================================================
+
+#AmandaLegarePrivateAftermathBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegarePrivateAftermathMenu'
+    gs 'Menu.Create', 'AmandaLegarePrivateAftermathMenu'
+
+    if PlayerKnows_AmandaLegarePrivateTalk = 1:
+        gs 'Menu.Add', 'AmandaLegarePrivateAftermathMenu', 'Спросить спокойно, о чём они говорили', ''
+        gs 'Menu.AddModule', 'AmandaLegarePrivateAftermathMenu', {
+            gt 'AmandaLegarePrivateAftermathAction', 'calm_ask', $PrivateAftermathReturnLoc
+        }
+
+        gs 'Menu.Add', 'AmandaLegarePrivateAftermathMenu', 'Потребовать правду', ''
+        gs 'Menu.AddModule', 'AmandaLegarePrivateAftermathMenu', {
+            gt 'AmandaLegarePrivateAftermathAction', 'demand_truth', $PrivateAftermathReturnLoc
+        }
+    else:
+        gs 'Menu.Add', 'AmandaLegarePrivateAftermathMenu', 'Осторожно спросить о танцах', ''
+        gs 'Menu.AddModule', 'AmandaLegarePrivateAftermathMenu', {
+            gt 'AmandaLegarePrivateAftermathAction', 'indirect_ask', $PrivateAftermathReturnLoc
+        }
+
+        gs 'Menu.Add', 'AmandaLegarePrivateAftermathMenu', 'Сделать вид, что ничего не знаете', ''
+        gs 'Menu.AddModule', 'AmandaLegarePrivateAftermathMenu', {
+            gt 'AmandaLegarePrivateAftermathAction', 'pretend_not_know', $PrivateAftermathReturnLoc
+        }
+    end
+
+    gs 'Menu.Add', 'AmandaLegarePrivateAftermathMenu', 'Напомнить прежнюю инструкцию', ''
+    gs 'Menu.AddModule', 'AmandaLegarePrivateAftermathMenu', {
+        gt 'AmandaLegarePrivateAftermathAction', 'remind_instruction', $PrivateAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegarePrivateAftermathMenu', 'Сказать, что теперь будете следить внимательнее', ''
+    gs 'Menu.AddModule', 'AmandaLegarePrivateAftermathMenu', {
+        gt 'AmandaLegarePrivateAftermathAction', 'watch_closer', $PrivateAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegarePrivateAftermathMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'AmandaLegarePrivateAftermathMenu', {
+        gt $PrivateAftermathReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_private_aftermath.qsps
+! Результат разговора с Амандой
+! ================================================
+
+#AmandaLegarePrivateAftermathAction
+    *clr
+    clr
+    cla
+
+    $PrivateAftermathChoice = LCASE($ARGS[0])
+    $PrivateAftermathReturnLoc = $ARGS[1]
+
+    if $PrivateAftermathReturnLoc = '':
+        $PrivateAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($PrivateAftermathReturnLoc) = 0:
+        $PrivateAftermathReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    AmandaLegarePrivateTalkDiscussed = 1
+    AmandaLegareNextRiskReady = 1
+
+    if $PrivateAftermathChoice = 'calm_ask':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaSecretiveness -= 1
+        PlayerKnows_AmandaLegarePrivateTalk = 1
+
+        if AmandaSecretiveness < 0:
+            AmandaSecretiveness = 0
+        end
+
+    elseif $PrivateAftermathChoice = 'demand_truth':
+        AmandaRebellion += 1
+        AmandaSecretiveness += 1
+        AmandaLegareInterest += 1
+        PlayerKnows_AmandaLegarePrivateTalk = 1
+
+    elseif $PrivateAftermathChoice = 'indirect_ask':
+        AmandaTrustStefan += 1
+        AmandaSecretiveness += 1
+        AmandaLegareInterest += 1
+
+    elseif $PrivateAftermathChoice = 'pretend_not_know':
+        AmandaSecretiveness += 1
+        AmandaLegareInterest += 1
+        AmandaNpcPath += 1
+
+    elseif $PrivateAftermathChoice = 'remind_instruction':
+        AmandaTrustStefan += 1
+        MelissaRespectStefan += 1
+
+        if AmandaLegareInstruction = 4:
+            AmandaRebellion += 1
+            AmandaSecretiveness += 1
+        elseif AmandaLegareInstruction = 1:
+            AmandaLegareInterest -= 1
+
+            if AmandaLegareInterest < 0:
+                AmandaLegareInterest = 0
+            end
+        end
+
+    elseif $PrivateAftermathChoice = 'watch_closer':
+        AmandaRebellion += 1
+        AmandaSecretiveness += 1
+        MelissaWatchAmandaLegare = 1
+        MelissaFamilyConcern += 1
+    end
+
+    if AmandaRebellion < 0:
+        AmandaRebellion = 0
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С АМАНДОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegarePrivateAftermathActionText') = 1:
+        gs 'AmandaLegarePrivateAftermathActionText', $PrivateAftermathChoice
+    else:
+        *p 'Аманда отвечает не сразу. Этот разговор явно оставляет след.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG PRIVATE AFTERMATH] Choice: ' + $PrivateAftermathChoice
+        *pl '[DEBUG PRIVATE AFTERMATH] Discussed: ' + STR(AmandaLegarePrivateTalkDiscussed)
+        *pl '[DEBUG PRIVATE AFTERMATH] NextRiskReady: ' + STR(AmandaLegareNextRiskReady)
+        *pl '[DEBUG PRIVATE AFTERMATH] Interest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG PRIVATE AFTERMATH] Secretiveness: ' + STR(AmandaSecretiveness)
+        *pl '[DEBUG PRIVATE AFTERMATH] NpcPath: ' + STR(AmandaNpcPath)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $PrivateAftermathReturnLoc
+    end
+
+    killvar '$PrivateAftermathChoice'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_private_aftermath.qsps
+! Разговор с Мелиссой после личного разговора Аманды и Легаре
+! ================================================
+
+#MelissaTalkAboutAmandaLegarePrivate
+    *clr
+    clr
+    cla
+
+    $PrivateAftermathReturnLoc = $ARGS[0]
+
+    if $PrivateAftermathReturnLoc = '':
+        $PrivateAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($PrivateAftermathReturnLoc) = 0:
+        $PrivateAftermathReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    MelissaAmandaLegarePrivateTalkDiscussed = 1
+    MelissaFamilyConcern += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА О ЛЕГАРЕ И АМАНДЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutAmandaLegarePrivateText') = 1:
+        gs 'MelissaTalkAboutAmandaLegarePrivateText'
+    else:
+        *p 'Мелисса считает, что Аманда начинает воспринимать внимание Легаре как игру.'
+    end
+
+    *pl ' '
+
+    act 'Попросить Мелиссу присматривать за Амандой':
+        MelissaWatchAmandaLegare = 1
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        gt $PrivateAftermathReturnLoc
+    end
+
+    act 'Сказать, что сам разберёшься':
+        MelissaRespectStefan += 1
+        gt $PrivateAftermathReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $PrivateAftermathReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_private_aftermath.qsps
+! Разговор с Клариссой после личного разговора Аманды и Легаре
+! ================================================
+
+#ClarissaTalkAboutAmandaLegarePrivate
+    *clr
+    clr
+    cla
+
+    $PrivateAftermathReturnLoc = $ARGS[0]
+
+    if $PrivateAftermathReturnLoc = '':
+        $PrivateAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($PrivateAftermathReturnLoc) = 0:
+        $PrivateAftermathReturnLoc = 'TavernMain'
+    end
+
+    if $RealName['clarissa'] = '':
+        $RealName['clarissa'] = 'Кларисса'
+    end
+
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    ClarissaAmandaLegarePrivateTalkDiscussed = 1
+    ClarissaPrivateTalkReady = 1
+    ClarissaRouteHint = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА О ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutAmandaLegarePrivateText') = 1:
+        gs 'ClarissaTalkAboutAmandaLegarePrivateText'
+    else:
+        *p 'Кларисса говорит спокойно, но по её тону понятно: она заметила больше, чем хотела показать.'
+    end
+
+    *pl ' '
+
+    act 'Сказать, что Легаре сам начал':
+        ClarissaTrustStefan += 1
+        ClarissaJealousy += 1
+        gt $PrivateAftermathReturnLoc
+    end
+
+    act 'Предложить поговорить утром в лавке':
+        ClarissaTrustStefan += 1
+        ClarissaPrivateTalkReady = 1
+        ClarissaRouteHint = 1
+        gt $PrivateAftermathReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $PrivateAftermathReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_private_aftermath.qsps
+! Debug-сброс
+! ================================================
+
+#AmandaLegarePrivateAftermathDebugReset
+    AmandaLegarePrivateTalkDiscussed = 0
+    AmandaLegareNextRiskReady = 0
+    MelissaAmandaLegarePrivateTalkDiscussed = 0
+    ClarissaAmandaLegarePrivateTalkDiscussed = 0
+---

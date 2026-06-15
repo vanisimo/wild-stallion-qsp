@@ -1,0 +1,247 @@
+! ================================================
+! FILE: modules/core/knowledge/event_knowledge_system.qsps
+! Система фактов, знаний, подозрений, свидетелей и слухов
+! Версия: v1
+! Назначение:
+! - отделить сам факт события от знания Стефана
+! - хранить подозрения NPC
+! - хранить слухи и свидетелей
+! - подготовить основу для церкви, исповедей, Легаре, Клариссы и семейных реакций
+! ================================================
+
+#EventKnowledgeRegisterFact
+    $KnowledgeEventId = LCASE($ARGS[0])
+
+    if $KnowledgeEventId = '':
+        exit
+    end
+
+    FactHappened[$KnowledgeEventId] = 1
+    FactDay[$KnowledgeEventId] = day
+    FactTime[$KnowledgeEventId] = time
+
+    killvar '$KnowledgeEventId'
+---
+
+! ================================================
+! Игрок узнал о событии
+! ARGS[0] — event id
+! ARGS[1] — источник знания: rumor / witness / confession / talk / peek
+! ================================================
+
+#EventKnowledgePlayerKnows
+    $KnowledgeEventId = LCASE($ARGS[0])
+    $KnowledgeSource = LCASE($ARGS[1])
+
+    if $KnowledgeEventId = '':
+        exit
+    end
+
+    PlayerKnows[$KnowledgeEventId] = 1
+    PlayerKnowledgeDay[$KnowledgeEventId] = day
+    $PlayerKnowledgeSource[$KnowledgeEventId] = $KnowledgeSource
+
+    if $KnowledgeSource = 'rumor':
+        EventRumor[$KnowledgeEventId] = 1
+    elseif $KnowledgeSource = 'confession':
+        EventConfessed[$KnowledgeEventId] = 1
+    elseif $KnowledgeSource = 'witness' or $KnowledgeSource = 'peek':
+        EventWitnessed[$KnowledgeEventId] = 1
+    end
+
+    killvar '$KnowledgeEventId'
+    killvar '$KnowledgeSource'
+---
+
+! ================================================
+! NPC подозревает событие
+! ARGS[0] — event id
+! ARGS[1] — npc key
+! ================================================
+
+#EventKnowledgeNpcSuspects
+    $KnowledgeEventId = LCASE($ARGS[0])
+    $KnowledgeNpc = LCASE($ARGS[1])
+
+    if $KnowledgeEventId = '' or $KnowledgeNpc = '':
+        exit
+    end
+
+    NpcSuspects[$KnowledgeNpc + '_' + $KnowledgeEventId] = 1
+    NpcSuspicionDay[$KnowledgeNpc + '_' + $KnowledgeEventId] = day
+
+    killvar '$KnowledgeEventId'
+    killvar '$KnowledgeNpc'
+---
+
+! ================================================
+! NPC точно знает событие
+! ARGS[0] — event id
+! ARGS[1] — npc key
+! ARGS[2] — источник знания
+! ================================================
+
+#EventKnowledgeNpcKnows
+    $KnowledgeEventId = LCASE($ARGS[0])
+    $KnowledgeNpc = LCASE($ARGS[1])
+    $KnowledgeSource = LCASE($ARGS[2])
+
+    if $KnowledgeEventId = '' or $KnowledgeNpc = '':
+        exit
+    end
+
+    NpcKnows[$KnowledgeNpc + '_' + $KnowledgeEventId] = 1
+    NpcKnowledgeDay[$KnowledgeNpc + '_' + $KnowledgeEventId] = day
+    $NpcKnowledgeSource[$KnowledgeNpc + '_' + $KnowledgeEventId] = $KnowledgeSource
+
+    killvar '$KnowledgeEventId'
+    killvar '$KnowledgeNpc'
+    killvar '$KnowledgeSource'
+---
+
+! ================================================
+! Зарегистрировать слух
+! ARGS[0] — event id
+! ARGS[1] — сила слуха
+! ================================================
+
+#EventKnowledgeAddRumor
+    $KnowledgeEventId = LCASE($ARGS[0])
+    KnowledgeRumorPower = ARGS[1]
+
+    if $KnowledgeEventId = '':
+        exit
+    end
+
+    if KnowledgeRumorPower <= 0:
+        KnowledgeRumorPower = 1
+    end
+
+    EventRumor[$KnowledgeEventId] = 1
+    EventRumorPower[$KnowledgeEventId] += KnowledgeRumorPower
+    EventRumorLastDay[$KnowledgeEventId] = day
+
+    CityRumorTotal += KnowledgeRumorPower
+
+    if EventRumorPower[$KnowledgeEventId] >= 3:
+        EventRumorStrong[$KnowledgeEventId] = 1
+    end
+
+    killvar '$KnowledgeEventId'
+    killvar 'KnowledgeRumorPower'
+---
+
+! ================================================
+! Зарегистрировать свидетеля
+! ARGS[0] — event id
+! ARGS[1] — witness key
+! ================================================
+
+#EventKnowledgeAddWitness
+    $KnowledgeEventId = LCASE($ARGS[0])
+    $KnowledgeWitness = LCASE($ARGS[1])
+
+    if $KnowledgeEventId = '' or $KnowledgeWitness = '':
+        exit
+    end
+
+    EventWitnessed[$KnowledgeEventId] = 1
+    EventWitness[$KnowledgeWitness + '_' + $KnowledgeEventId] = 1
+    EventWitnessDay[$KnowledgeWitness + '_' + $KnowledgeEventId] = day
+
+    killvar '$KnowledgeEventId'
+    killvar '$KnowledgeWitness'
+---
+
+! ================================================
+! Зарегистрировать исповедь
+! ARGS[0] — event id
+! ARGS[1] — npc key
+! ================================================
+
+#EventKnowledgeRegisterConfession
+    $KnowledgeEventId = LCASE($ARGS[0])
+    $KnowledgeNpc = LCASE($ARGS[1])
+
+    if $KnowledgeEventId = '':
+        exit
+    end
+
+    EventConfessed[$KnowledgeEventId] = 1
+    EventConfessionDay[$KnowledgeEventId] = day
+
+    if $KnowledgeNpc <> '':
+        NpcConfessed[$KnowledgeNpc + '_' + $KnowledgeEventId] = 1
+    end
+
+    killvar '$KnowledgeEventId'
+    killvar '$KnowledgeNpc'
+---
+
+! ================================================
+! Проверка: знает ли игрок событие
+! Возвращает Result = 1 / 0
+! ================================================
+
+#EventKnowledgeDoesPlayerKnow
+    $KnowledgeEventId = LCASE($ARGS[0])
+    Result = 0
+
+    if $KnowledgeEventId = '':
+        exit
+    end
+
+    if PlayerKnows[$KnowledgeEventId] = 1:
+        Result = 1
+    end
+
+    killvar '$KnowledgeEventId'
+---
+
+! ================================================
+! Проверка: NPC знает событие
+! Возвращает Result = 1 / 0
+! ================================================
+
+#EventKnowledgeDoesNpcKnow
+    $KnowledgeEventId = LCASE($ARGS[0])
+    $KnowledgeNpc = LCASE($ARGS[1])
+    Result = 0
+
+    if $KnowledgeEventId = '' or $KnowledgeNpc = '':
+        exit
+    end
+
+    if NpcKnows[$KnowledgeNpc + '_' + $KnowledgeEventId] = 1:
+        Result = 1
+    end
+
+    killvar '$KnowledgeEventId'
+    killvar '$KnowledgeNpc'
+---
+
+! ================================================
+! Debug-панель одного события
+! ================================================
+
+#EventKnowledgeDebugPrint
+    $KnowledgeEventId = LCASE($ARGS[0])
+
+    if debug = 0:
+        exit
+    end
+
+    if $KnowledgeEventId = '':
+        exit
+    end
+
+    *pl '[DEBUG KNOWLEDGE] Event: ' + $KnowledgeEventId
+    *pl '[DEBUG KNOWLEDGE] FactHappened: ' + STR(FactHappened[$KnowledgeEventId])
+    *pl '[DEBUG KNOWLEDGE] PlayerKnows: ' + STR(PlayerKnows[$KnowledgeEventId])
+    *pl '[DEBUG KNOWLEDGE] Rumor: ' + STR(EventRumor[$KnowledgeEventId])
+    *pl '[DEBUG KNOWLEDGE] RumorPower: ' + STR(EventRumorPower[$KnowledgeEventId])
+    *pl '[DEBUG KNOWLEDGE] Witnessed: ' + STR(EventWitnessed[$KnowledgeEventId])
+    *pl '[DEBUG KNOWLEDGE] Confessed: ' + STR(EventConfessed[$KnowledgeEventId])
+
+    killvar '$KnowledgeEventId'
+---

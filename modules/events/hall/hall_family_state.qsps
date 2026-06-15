@@ -1,0 +1,246 @@
+! ================================================
+! FILE: modules/events/hall/hall_family_state.qsps
+! Семейное состояние после решений Стефана в зале
+! Версия: v1
+! Назначение:
+! - накапливать FamilyTrust / FamilyTension / FamilyCorruptionStage
+! - учитывать тип события, девушку и выбор Стефана
+! - использоваться после HallChoiceMemorySave / HallChoiceConsequence
+! - не содержит больших художественных текстов
+! Тексты берутся из:
+! modules/events/hall/hall_family_state_text.qsps
+! ================================================
+
+#HallFamilyStateApply
+    $HallFamilyStateEvent = LCASE($ARGS[0])
+    gs 'NormalizeGirlKey', $ARGS[1]
+    $HallFamilyStateGirl = $GirlKey
+    $HallFamilyStateChoice = LCASE($ARGS[2])
+
+    if $HallFamilyStateEvent = '':
+        $HallFamilyStateEvent = $HallChoiceLastEvent
+    end
+
+    if $HallFamilyStateGirl = '':
+        $HallFamilyStateGirl = $HallChoiceLastGirl
+    end
+
+    if $HallFamilyStateChoice = '':
+        $HallFamilyStateChoice = $HallChoiceLastChoice
+    end
+
+    if $HallFamilyStateGirl = '':
+        exit
+    end
+
+    if FamilyTrust <= 0 and FamilyTension <= 0 and FamilyCorruptionStage <= 0:
+        gs 'HallFamilyStateInitSoft'
+    end
+
+    HallFamilyStateTrustDelta = 0
+    HallFamilyStateTensionDelta = 0
+    HallFamilyStateCorruptionDelta = 0
+
+    ! ====================== ОБЩАЯ ЛОГИКА ВЫБОРА ======================
+
+    if $HallFamilyStateChoice = 'stop' or $HallFamilyStateChoice = 'protect' or $HallFamilyStateChoice = 'interrupt':
+        HallFamilyStateTrustDelta += 1
+        HallFamilyStateTensionDelta -= 1
+    elseif $HallFamilyStateChoice = 'warn' or $HallFamilyStateChoice = 'calm':
+        HallFamilyStateTrustDelta += 1
+    elseif $HallFamilyStateChoice = 'self' or $HallFamilyStateChoice = 'let_her':
+        HallFamilyStateTensionDelta += 1
+    elseif $HallFamilyStateChoice = 'watch' or $HallFamilyStateChoice = 'peek':
+        HallFamilyStateTensionDelta += 1
+        HallFamilyStateCorruptionDelta += 1
+    elseif $HallFamilyStateChoice = 'ignore' or $HallFamilyStateChoice = 'ignore_after':
+        HallFamilyStateTrustDelta -= 1
+        HallFamilyStateTensionDelta += 2
+    elseif $HallFamilyStateChoice = 'encourage' or $HallFamilyStateChoice = 'client':
+        HallFamilyStateTrustDelta -= 1
+        HallFamilyStateTensionDelta += 2
+        HallFamilyStateCorruptionDelta += 1
+    end
+
+    ! ====================== УСИЛЕНИЕ ПО ТИПУ СОБЫТИЯ ======================
+
+    if $HallFamilyStateEvent = 'hall_missing':
+        if $HallFamilyStateChoice = 'peek':
+            HallFamilyStateTensionDelta += 1
+        elseif $HallFamilyStateChoice = 'interrupt':
+            HallFamilyStateTrustDelta += 1
+        end
+    elseif $HallFamilyStateEvent = 'kitchen':
+        if $HallFamilyStateChoice = 'client':
+            HallFamilyStateTensionDelta += 1
+            HallFamilyStateCorruptionDelta += 1
+        end
+    elseif $HallFamilyStateEvent = 'hall_lewd':
+        if $HallFamilyStateChoice = 'encourage':
+            HallFamilyStateCorruptionDelta += 1
+        end
+    end
+
+    ! ====================== ИНДИВИДУАЛЬНЫЙ ВЕС ======================
+
+    if $HallFamilyStateGirl = 'amanda':
+        if $HallFamilyStateChoice = 'protect' or $HallFamilyStateChoice = 'stop':
+            GirlTrustStefan['amanda'] += 1
+        elseif $HallFamilyStateChoice = 'ignore' or $HallFamilyStateChoice = 'watch' or $HallFamilyStateChoice = 'encourage':
+            GirlSecretiveness['amanda'] += 1
+            GirlRebellion['amanda'] += 1
+        end
+    elseif $HallFamilyStateGirl = 'melissa':
+        if $HallFamilyStateChoice = 'protect' or $HallFamilyStateChoice = 'warn':
+            GirlTrustStefan['melissa'] += 1
+        elseif $HallFamilyStateChoice = 'ignore' or $HallFamilyStateChoice = 'client':
+            MelissaFamilyConcern += 1
+        end
+    elseif $HallFamilyStateGirl = 'sandra':
+        if $HallFamilyStateChoice = 'client' or $HallFamilyStateChoice = 'encourage':
+            SandraMoralResistance -= 1
+            SandraFamilyConcern += 2
+        elseif $HallFamilyStateChoice = 'protect' or $HallFamilyStateChoice = 'interrupt':
+            SandraTrustStefan += 1
+        end
+    end
+
+    ! ====================== ПРИМЕНЕНИЕ ======================
+
+    FamilyTrust += HallFamilyStateTrustDelta
+    FamilyTension += HallFamilyStateTensionDelta
+
+    if HallFamilyStateCorruptionDelta > 0:
+        FamilyCorruptionPoints += HallFamilyStateCorruptionDelta
+    end
+
+    gs 'HallFamilyStateClamp'
+    gs 'HallFamilyStateUpdateStage'
+
+    HallFamilyStateLastApplied = 1
+    $HallFamilyStateLastEvent = $HallFamilyStateEvent
+    $HallFamilyStateLastGirl = $HallFamilyStateGirl
+    $HallFamilyStateLastChoice = $HallFamilyStateChoice
+    HallFamilyStateLastTrustDelta = HallFamilyStateTrustDelta
+    HallFamilyStateLastTensionDelta = HallFamilyStateTensionDelta
+    HallFamilyStateLastCorruptionDelta = HallFamilyStateCorruptionDelta
+
+    if LOC('HallFamilyStatePrintText') = 1:
+        gs 'HallFamilyStatePrintText', 'after_choice'
+    end
+
+    killvar '$HallFamilyStateEvent'
+    killvar '$HallFamilyStateGirl'
+    killvar '$HallFamilyStateChoice'
+    killvar 'HallFamilyStateTrustDelta'
+    killvar 'HallFamilyStateTensionDelta'
+    killvar 'HallFamilyStateCorruptionDelta'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_family_state.qsps
+! Мягкая инициализация, чтобы не ломать старые сейвы/тесты
+! ================================================
+
+#HallFamilyStateInitSoft
+    if FamilyTrust <= 0:
+        FamilyTrust = 10
+    end
+
+    if FamilyTension < 0:
+        FamilyTension = 0
+    end
+
+    if FamilyCorruptionStage < 0:
+        FamilyCorruptionStage = 0
+    end
+
+    if FamilyCorruptionPoints < 0:
+        FamilyCorruptionPoints = 0
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_family_state.qsps
+! Обновление стадии семейного уклада
+! ================================================
+
+#HallFamilyStateUpdateStage
+    if FamilyCorruptionPoints >= 80:
+        FamilyCorruptionStage = 5
+    elseif FamilyCorruptionPoints >= 55:
+        FamilyCorruptionStage = 4
+    elseif FamilyCorruptionPoints >= 35:
+        FamilyCorruptionStage = 3
+    elseif FamilyCorruptionPoints >= 20:
+        FamilyCorruptionStage = 2
+    elseif FamilyCorruptionPoints >= 8:
+        FamilyCorruptionStage = 1
+    else:
+        FamilyCorruptionStage = 0
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_family_state.qsps
+! Ограничение значений
+! ================================================
+
+#HallFamilyStateClamp
+    if FamilyTrust < 0:
+        FamilyTrust = 0
+    end
+
+    if FamilyTrust > 100:
+        FamilyTrust = 100
+    end
+
+    if FamilyTension < 0:
+        FamilyTension = 0
+    end
+
+    if FamilyTension > 100:
+        FamilyTension = 100
+    end
+
+    if FamilyCorruptionPoints < 0:
+        FamilyCorruptionPoints = 0
+    end
+
+    if FamilyCorruptionPoints > 100:
+        FamilyCorruptionPoints = 100
+    end
+
+    if FamilyCorruptionStage < 0:
+        FamilyCorruptionStage = 0
+    end
+
+    if FamilyCorruptionStage > 5:
+        FamilyCorruptionStage = 5
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_family_state.qsps
+! Debug-панель семейного состояния
+! ================================================
+
+#HallFamilyStateDebugPanel
+    *pl ' '
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: СЕМЬЯ / РЕШЕНИЯ В ЗАЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'FamilyTrust: ' + STR(FamilyTrust)
+    *pl 'FamilyTension: ' + STR(FamilyTension)
+    *pl 'FamilyCorruptionPoints: ' + STR(FamilyCorruptionPoints)
+    *pl 'FamilyCorruptionStage: ' + STR(FamilyCorruptionStage)
+    *pl ' '
+    *pl 'Последнее применение:'
+    *pl 'event: ' + $HallFamilyStateLastEvent
+    *pl 'girl: ' + $HallFamilyStateLastGirl
+    *pl 'choice: ' + $HallFamilyStateLastChoice
+    *pl 'trust delta: ' + STR(HallFamilyStateLastTrustDelta)
+    *pl 'tension delta: ' + STR(HallFamilyStateLastTensionDelta)
+    *pl 'corruption delta: ' + STR(HallFamilyStateLastCorruptionDelta)
+---

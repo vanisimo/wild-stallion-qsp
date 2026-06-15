@@ -1,0 +1,311 @@
+! ================================================
+! FILE: modules/core/economy/tavern_supply_economy.qsps
+! Экономические последствия поставок вина и пива
+! Версия: supply economy v1
+! Назначение:
+! - связать конфликт с Легаре с ежедневной прибылью трактира
+! - учитывать повышение цен, нехватку алкоголя, временных поставщиков
+! - учитывать обходные маршруты Клариссы
+! - дать отдельный экран проверки поставок
+!
+! Тексты экрана поставок берутся из:
+! modules/events/tavern/tavern_supply_status_text.qsps
+!
+! Основной вызов из CalculateDailyProfit:
+! gs 'ApplyTavernSupplyEconomyModifiers', DailyProfit
+! DailyProfit = TavernSupplyProfitResult
+! ================================================
+
+#InitTavernSupplyEconomy
+    if TavernSupplyCostLevel < 0:
+        TavernSupplyCostLevel = 0
+    end
+
+    if TavernDailyCostBonus < 0:
+        TavernDailyCostBonus = 0
+    end
+
+    if TavernSupplyPenalty < 0:
+        TavernSupplyPenalty = 0
+    end
+
+    if TavernSupplyEconomyInited = 0:
+        TavernSupplyEconomyInited = 1
+    end
+---
+
+! ================================================
+! FILE: modules/core/economy/tavern_supply_economy.qsps
+! Применить модификаторы поставок к дневной прибыли
+! ARGS[0] — текущая дневная прибыль до штрафов поставок
+! Результат:
+! TavernSupplyProfitResult
+! ================================================
+
+#ApplyTavernSupplyEconomyModifiers
+    gs 'InitTavernSupplyEconomy'
+
+    TavernSupplyProfitBefore = ARGS[0]
+    TavernSupplyProfitResult = TavernSupplyProfitBefore
+
+    TavernSupplyCostLoss = 0
+    TavernDailyCostLoss = 0
+    TavernAlcoholShortageLoss = 0
+    TavernSupplyPenaltyLoss = 0
+    TavernTemporarySupplierLoss = 0
+    TavernClarissaRouteSave = 0
+
+    $TavernSupplyEconomyReport = ''
+
+    if TavernSupplyProfitResult < 0:
+        TavernSupplyProfitResult = 0
+    end
+
+    if TavernSupplyCostLevel > 0:
+        TavernSupplyCostLoss = TavernSupplyCostLevel * 10
+        TavernSupplyProfitResult -= TavernSupplyCostLoss
+        $TavernSupplyEconomyReport += 'Повышенные цены поставщика: -' + STR(TavernSupplyCostLoss) + '<br>'
+    end
+
+    if TavernDailyCostBonus > 0:
+        TavernDailyCostLoss = TavernDailyCostBonus
+        TavernSupplyProfitResult -= TavernDailyCostLoss
+        $TavernSupplyEconomyReport += 'Дополнительные расходы на поставки: -' + STR(TavernDailyCostLoss) + '<br>'
+    end
+
+    if TemporaryAlcoholSuppliers = 1:
+        TavernTemporarySupplierLoss = 20
+        TavernSupplyProfitResult -= TavernTemporarySupplierLoss
+        $TavernSupplyEconomyReport += 'Временные дорогие поставщики: -' + STR(TavernTemporarySupplierLoss) + '<br>'
+    end
+
+    TavernAlcoholShortagePercent = 0
+
+    if TavernAlcoholShortage = 1:
+        TavernAlcoholShortagePercent = 20
+
+        if ClarissaWineRouteUnlocked = 1 and ClarissaBeerRouteUnlocked = 1:
+            TavernAlcoholShortagePercent = 5
+        elseif ClarissaWineRouteUnlocked = 1 or ClarissaBeerRouteUnlocked = 1:
+            TavernAlcoholShortagePercent = 10
+        end
+
+        TavernAlcoholShortageLoss = TavernSupplyProfitBefore * TavernAlcoholShortagePercent / 100
+        TavernSupplyProfitResult -= TavernAlcoholShortageLoss
+        $TavernSupplyEconomyReport += 'Нехватка вина и пива: -' + STR(TavernAlcoholShortageLoss) + '<br>'
+    end
+
+    if TavernSupplyPenalty > 0:
+        TavernSupplyPenaltyLoss = TavernSupplyPenalty * 15
+        TavernSupplyProfitResult -= TavernSupplyPenaltyLoss
+        $TavernSupplyEconomyReport += 'Срыв поставок и недовольство гостей: -' + STR(TavernSupplyPenaltyLoss) + '<br>'
+    end
+
+    if ClarissaWineRouteUnlocked = 1:
+        TavernClarissaRouteSave += 5
+    end
+
+    if ClarissaBeerRouteUnlocked = 1:
+        TavernClarissaRouteSave += 5
+    end
+
+    if TavernClarissaRouteSave > 0:
+        TavernSupplyProfitResult += TavernClarissaRouteSave
+        $TavernSupplyEconomyReport += 'Помощь Клариссы с обходными поставками: +' + STR(TavernClarissaRouteSave) + '<br>'
+    end
+
+    if TavernSupplyProfitResult < 0:
+        TavernSupplyProfitResult = 0
+    end
+
+    TavernSupplyTotalLoss = TavernSupplyProfitBefore - TavernSupplyProfitResult
+
+    if debug = 1:
+        *pl '[DEBUG SUPPLY ECONOMY] before: ' + STR(TavernSupplyProfitBefore)
+        *pl '[DEBUG SUPPLY ECONOMY] result: ' + STR(TavernSupplyProfitResult)
+        *pl '[DEBUG SUPPLY ECONOMY] total loss: ' + STR(TavernSupplyTotalLoss)
+    end
+---
+
+! ================================================
+! FILE: modules/core/economy/tavern_supply_economy.qsps
+! Экран состояния поставок
+! Можно вызвать из TavernMain
+! ================================================
+
+#TavernSupplyStatus
+    *clr
+    clr
+    cla
+
+    gs 'InitTavernSupplyEconomy'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСТАВКИ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('TavernSupplyStatusText') = 1:
+        gs 'TavernSupplyStatusText'
+    else:
+        *p 'Вы проверяете состояние поставок вина и пива.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SUPPLY STATUS] TavernSupplyCostLevel: ' + STR(TavernSupplyCostLevel)
+        *pl '[DEBUG SUPPLY STATUS] TavernDailyCostBonus: ' + STR(TavernDailyCostBonus)
+        *pl '[DEBUG SUPPLY STATUS] TavernAlcoholShortage: ' + STR(TavernAlcoholShortage)
+        *pl '[DEBUG SUPPLY STATUS] TavernSupplyPenalty: ' + STR(TavernSupplyPenalty)
+        *pl '[DEBUG SUPPLY STATUS] TemporaryAlcoholSuppliers: ' + STR(TemporaryAlcoholSuppliers)
+        *pl '[DEBUG SUPPLY STATUS] ClarissaWineRouteUnlocked: ' + STR(ClarissaWineRouteUnlocked)
+        *pl '[DEBUG SUPPLY STATUS] ClarissaBeerRouteUnlocked: ' + STR(ClarissaBeerRouteUnlocked)
+        *pl ' '
+    end
+
+    gs 'TavernSupplyStatusBuildMenu'
+
+    *p 'Что делать с <a href="exec:gs ''Menu.Show'', ''TavernSupplyStatusMenu''">поставками</a>?'
+---
+
+! ================================================
+! FILE: modules/core/economy/tavern_supply_economy.qsps
+! Меню экрана поставок
+! ================================================
+
+#TavernSupplyStatusBuildMenu
+    gs 'Menu.Destroy', 'TavernSupplyStatusMenu'
+    gs 'Menu.Create', 'TavernSupplyStatusMenu'
+
+    if TavernAlcoholShortage = 1 or TavernSupplyPenalty > 0:
+        gs 'Menu.Add', 'TavernSupplyStatusMenu', 'Срочно закупить алкоголь у временных поставщиков', ''
+        gs 'Menu.AddModule', 'TavernSupplyStatusMenu', {
+            gt 'TavernSupplyEmergencyAction', 'temporary_buy'
+        }
+    end
+
+    if TavernSupplyPenalty > 0:
+        gs 'Menu.Add', 'TavernSupplyStatusMenu', 'Попросить Мелиссу растянуть запасы', ''
+        gs 'Menu.AddModule', 'TavernSupplyStatusMenu', {
+            gt 'TavernSupplyEmergencyAction', 'melissa_stretch'
+        }
+    end
+
+    if ClarissaWineRouteUnlocked = 1 or ClarissaBeerRouteUnlocked = 1:
+        gs 'Menu.Add', 'TavernSupplyStatusMenu', 'Проверить обходной маршрут Клариссы', ''
+        gs 'Menu.AddModule', 'TavernSupplyStatusMenu', {
+            gt 'TavernSupplyEmergencyAction', 'clarissa_route'
+        }
+    end
+
+    gs 'Menu.Add', 'TavernSupplyStatusMenu', 'Вернуться в зал', ''
+    gs 'Menu.AddModule', 'TavernSupplyStatusMenu', {
+        gt 'TavernMain'
+    }
+---
+
+! ================================================
+! FILE: modules/core/economy/tavern_supply_economy.qsps
+! Срочные действия по поставкам
+! ================================================
+
+#TavernSupplyEmergencyAction
+    *clr
+    clr
+    cla
+
+    $SupplyEmergencyAction = LCASE($ARGS[0])
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСТАВКИ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $SupplyEmergencyAction = 'temporary_buy':
+        if money >= 100:
+            money -= 100
+            TemporaryAlcoholSuppliers = 1
+            TavernAlcoholShortage = 0
+            TavernDailyCostBonus += 10
+
+            if TavernSupplyPenalty > 0:
+                TavernSupplyPenalty -= 1
+            end
+        else:
+            TavernSupplyEmergencyNoMoney = 1
+        end
+
+    elseif $SupplyEmergencyAction = 'melissa_stretch':
+        if TavernSupplyPenalty > 0:
+            TavernSupplyPenalty -= 1
+        end
+
+        MelissaControlNeed += 1
+        MelissaRespectStefan += 1
+        TavernReputation -= 1
+
+        if TavernReputation < 0:
+            TavernReputation = 0
+        end
+
+    elseif $SupplyEmergencyAction = 'clarissa_route':
+        ClarissaTrustStefan += 1
+
+        if ClarissaWineRouteUnlocked = 1 and ClarissaBeerRouteUnlocked = 1:
+            TavernAlcoholShortage = 0
+
+            if TavernSupplyPenalty > 0:
+                TavernSupplyPenalty -= 1
+            end
+        elseif ClarissaWineRouteUnlocked = 1 or ClarissaBeerRouteUnlocked = 1:
+            if TavernSupplyPenalty > 0:
+                TavernSupplyPenalty -= 1
+            end
+        end
+    end
+
+    if LOC('TavernSupplyEmergencyActionText') = 1:
+        gs 'TavernSupplyEmergencyActionText', $SupplyEmergencyAction
+    else:
+        *p 'Вы принимаете срочные меры по поставкам.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SUPPLY ACTION] action: ' + $SupplyEmergencyAction
+        *pl '[DEBUG SUPPLY ACTION] money: ' + STR(money)
+        *pl '[DEBUG SUPPLY ACTION] shortage: ' + STR(TavernAlcoholShortage)
+        *pl '[DEBUG SUPPLY ACTION] penalty: ' + STR(TavernSupplyPenalty)
+        *pl '[DEBUG SUPPLY ACTION] daily cost bonus: ' + STR(TavernDailyCostBonus)
+        *pl ' '
+    end
+
+    act 'Вернуться к поставкам':
+        gt 'TavernSupplyStatus'
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+
+    killvar '$SupplyEmergencyAction'
+---
+
+! ================================================
+! FILE: modules/core/economy/tavern_supply_economy.qsps
+! Debug-сброс экономики поставок
+! ================================================
+
+#TavernSupplyEconomyDebugReset
+    TavernSupplyCostLevel = 0
+    TavernDailyCostBonus = 0
+    TavernAlcoholShortage = 0
+    TavernSupplyPenalty = 0
+    TemporaryAlcoholSuppliers = 0
+    TavernSupplyProfitResult = 0
+    TavernSupplyProfitBefore = 0
+    TavernSupplyTotalLoss = 0
+    $TavernSupplyEconomyReport = ''
+---

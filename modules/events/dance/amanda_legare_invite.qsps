@@ -1,0 +1,277 @@
+! ================================================
+! FILE: modules/events/dance/amanda_legare_invite.qsps
+! Легаре автоматически приглашает Аманду на танец
+! Версия: legare dance rewrite v2 / short buttons + Stefan thoughts
+! Назначение:
+! - убрать кнопку "Легаре приглашает Аманду на танец" из MarketDance
+! - запускать сцену автоматически после первого замечания Легаре
+! - оставить выбор только внутри сцены
+! - дать понятные мысли Стефана перед выбором
+!
+! Тексты берутся из:
+! modules/events/dance/amanda_legare_invite_text.qsps
+!
+! Вызов из:
+! modules/locations/market_dance.qsps
+! через #AmandaLegareInviteCanStart
+! ================================================
+
+#AmandaLegareInviteCanStart
+    AmandaLegareInviteCanStart = 0
+
+    if AmandaLegareBranchUnlocked <> 1:
+        exit
+    end
+
+    if AmandaLegareNoticeStage <= 0:
+        exit
+    end
+
+    if AmandaLegareInviteReady <> 1:
+        exit
+    end
+
+    if AmandaLegareInviteStage > 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'DanceHall':
+        exit
+    end
+
+    if $GirlLocation['legare'] <> 'DanceHall':
+        exit
+    end
+
+    AmandaLegareInviteCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_invite.qsps
+! Автоматический вход
+! ================================================
+
+#AmandaLegareInviteStart
+    *clr
+    clr
+    cla
+
+    AmandaLegareInviteStage = 1
+    AmandaLegareInviteReady = 0
+    AmandaLegareInviteCanStart = 0
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/dance/amanda_legare', 'invite', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРИГЛАШЕНИЕ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareInviteIntroText') = 1:
+        gs 'AmandaLegareInviteIntroText'
+    else:
+        *p 'Легаре подходит к Аманде и протягивает руку, приглашая её на следующий танец.'
+    end
+
+    *pl ' '
+
+    if AmandaLegareHardWarningUsed = 1 or LegareConflictStage > 0:
+        if LOC('AmandaLegareInviteThoughtsHard') = 1:
+            gs 'AmandaLegareInviteThoughtsHard'
+        end
+    else:
+        if LOC('AmandaLegareInviteThoughtsSoft') = 1:
+            gs 'AmandaLegareInviteThoughtsSoft'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE INVITE] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG LEGARE INVITE] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG LEGARE INVITE] AmandaTrustStefan: ' + STR(AmandaTrustStefan)
+        *pl '[DEBUG LEGARE INVITE] AmandaRebellion: ' + STR(AmandaRebellion)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareInviteBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareInviteMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_invite.qsps
+! Короткое меню выбора
+! ================================================
+
+#AmandaLegareInviteBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareInviteMenu'
+    gs 'Menu.Create', 'AmandaLegareInviteMenu'
+
+    gs 'Menu.Add', 'AmandaLegareInviteMenu', 'Спокойно вмешаться', ''
+    gs 'Menu.AddModule', 'AmandaLegareInviteMenu', {
+        gt 'AmandaLegareInviteAction', 'calm_intervene'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareInviteMenu', 'Довериться Аманде', ''
+    gs 'Menu.AddModule', 'AmandaLegareInviteMenu', {
+        gt 'AmandaLegareInviteAction', 'trust_amanda'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareInviteMenu', 'Осадить Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareInviteMenu', {
+        gt 'AmandaLegareInviteAction', 'hard_warning'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareInviteMenu', 'Не вмешиваться', ''
+    gs 'Menu.AddModule', 'AmandaLegareInviteMenu', {
+        gt 'AmandaLegareInviteAction', 'ignore'
+    }
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_invite.qsps
+! Обработка выбора
+! ================================================
+
+#AmandaLegareInviteAction
+    *clr
+    clr
+    cla
+
+    $InviteChoice = LCASE($ARGS[0])
+
+    AmandaLegareInviteResolved = 1
+    AmandaLegareAfterDanceReady = 1
+    AmandaLegareAfterDanceDelay = 1
+    MelissaLegareWarningReady = 1
+    ClarissaTalkAboutAmandaReady = 1
+
+    ! 0 — танца с Легаре не было
+    ! 1 — короткий вежливый танец
+    ! 2 — Аманда танцевала охотно
+    ! 3 — открытый конфликт / резкий запрет
+    AmandaLegareDanceResult = 0
+
+    if $InviteChoice = 'calm_intervene':
+        AmandaLegareDanceResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaPlayerPath += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 1
+        AmandaLegareInterest -= 1
+
+        if AmandaLegareInterest < 0:
+            AmandaLegareInterest = 0
+        end
+
+    elseif $InviteChoice = 'trust_amanda':
+        if AmandaTrustStefan >= AmandaRebellion:
+            AmandaLegareDanceResult = 1
+            AmandaTrustStefan += 1
+            Friends['amanda'] += 1
+        else:
+            AmandaLegareDanceResult = 2
+            AmandaRebellion += 1
+            AmandaLegareInterest += 1
+        end
+
+        AmandaPublicAttention += 1
+        LegareAmandaInterest += 1
+
+    elseif $InviteChoice = 'hard_warning':
+        AmandaLegareDanceResult = 3
+        AmandaLegareHardWarningUsed = 1
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 2
+        ClarissaJealousy += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+
+    elseif $InviteChoice = 'ignore':
+        AmandaLegareDanceResult = 2
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        AmandaNpcPath += 1
+        AmandaSecretiveness += 1
+        AmandaPublicAttention += 1
+        ClarissaJealousy += 1
+        MelissaFamilyConcern += 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРИГЛАШЕНИЕ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareInviteActionText') = 1:
+        gs 'AmandaLegareInviteActionText', $InviteChoice
+    else:
+        *p 'Выбор сделан. Вечер продолжает катиться дальше, но взгляд Легаре уже никуда не исчез.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE INVITE] Choice: ' + $InviteChoice
+        *pl '[DEBUG LEGARE INVITE] DanceResult: ' + STR(AmandaLegareDanceResult)
+        *pl '[DEBUG LEGARE INVITE] AfterDanceReady: ' + STR(AmandaLegareAfterDanceReady)
+        *pl '[DEBUG LEGARE INVITE] AfterDanceDelay: ' + STR(AmandaLegareAfterDanceDelay)
+        *pl '[DEBUG LEGARE INVITE] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG LEGARE INVITE] ConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$InviteChoice'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_invite.qsps
+! Debug-сброс
+! ================================================
+
+#AmandaLegareInviteDebugReset
+    AmandaLegareInviteCanStart = 0
+    AmandaLegareInviteStage = 0
+    AmandaLegareInviteReady = 0
+    AmandaLegareInviteDelay = 0
+    AmandaLegareInviteResolved = 0
+    AmandaLegareDanceResult = 0
+    AmandaLegareHardWarningUsed = 0
+    AmandaLegareAfterDanceReady = 0
+    AmandaLegareAfterDanceDelay = 0
+---

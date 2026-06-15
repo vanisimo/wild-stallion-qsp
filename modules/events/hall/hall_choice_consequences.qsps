@@ -1,0 +1,65 @@
+! ================================================
+! FILE: modules/events/hall/hall_choice_consequences.qsps
+! Последствия выбора Стефана после событий зала/кухни
+! Версия: v4 / correct argument order
+! ================================================
+
+#HallChoiceConsequencesApply
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallChoiceConsequenceGirl = $GirlKey
+    $HallChoiceConsequenceEvent = LCASE($ARGS[1])
+    $HallChoiceConsequenceChoice = LCASE($ARGS[2])
+    $HallChoiceConsequenceArea = LCASE($ARGS[3])
+
+    if $HallChoiceConsequenceGirl = '': exit
+    if $HallChoiceConsequenceEvent = '': $HallChoiceConsequenceEvent = 'hall'
+    if $HallChoiceConsequenceChoice = '': $HallChoiceConsequenceChoice = 'watch'
+    if $HallChoiceConsequenceArea = '': $HallChoiceConsequenceArea = 'hall'
+
+    if LOC('HallChoiceMemorySave') = 1:
+        gs 'HallChoiceMemorySave', $HallChoiceConsequenceEvent, $HallChoiceConsequenceGirl, $HallChoiceConsequenceChoice, $HallChoiceConsequenceArea
+    end
+
+    if LOC('HallFamilyStateApplyChoice') = 1:
+        gs 'HallFamilyStateApplyChoice', $HallChoiceConsequenceEvent, $HallChoiceConsequenceGirl, $HallChoiceConsequenceChoice, $HallChoiceConsequenceArea
+    elseif LOC('HallFamilyStateApply') = 1:
+        gs 'HallFamilyStateApply', $HallChoiceConsequenceEvent, $HallChoiceConsequenceGirl, $HallChoiceConsequenceChoice
+    end
+
+    if LOC('GirlMemoryOfStefanRegister') = 1:
+        gs 'GirlMemoryOfStefanRegister', $HallChoiceConsequenceGirl, $HallChoiceConsequenceEvent, $HallChoiceConsequenceChoice, $HallChoiceConsequenceArea
+    end
+
+    if LOC('HallChoiceConsequencesPrintText') = 1:
+        gs 'HallChoiceConsequencesPrintText', $HallChoiceConsequenceGirl, $HallChoiceConsequenceEvent, $HallChoiceConsequenceChoice
+    end
+
+    if LOC('HallFamilyStatePrintLastText') = 1:
+        gs 'HallFamilyStatePrintLastText'
+    end
+
+    if LOC('GirlMemoryOfStefanPrintLastText') = 1:
+        gs 'GirlMemoryOfStefanPrintLastText'
+    end
+
+    killvar '$HallChoiceConsequenceGirl'
+    killvar '$HallChoiceConsequenceEvent'
+    killvar '$HallChoiceConsequenceChoice'
+    killvar '$HallChoiceConsequenceArea'
+---
+
+#HallChoiceConsequencesPrintText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallChoiceConsequenceTextGirl = $GirlKey
+    $HallChoiceConsequenceTextEvent = LCASE($ARGS[1])
+    $HallChoiceConsequenceTextChoice = LCASE($ARGS[2])
+
+    if LOC('HallChoiceConsequencesText') = 1:
+        gs 'HallChoiceConsequencesText', $HallChoiceConsequenceTextGirl, $HallChoiceConsequenceTextEvent, $HallChoiceConsequenceTextChoice
+        if $HallChoiceConsequencesText <> '': *p $HallChoiceConsequencesText
+    end
+
+    killvar '$HallChoiceConsequenceTextGirl'
+    killvar '$HallChoiceConsequenceTextEvent'
+    killvar '$HallChoiceConsequenceTextChoice'
+---

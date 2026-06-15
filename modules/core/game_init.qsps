@@ -1,0 +1,88 @@
+! ================================================
+! FILE: modules/core/game_init.qsps
+! Главная инициализация новой игры
+! Запускается один раз из #Start перед переходом в TavernMain
+! Не вызывает игровые меню, диалоги и действия без аргументов
+! ================================================
+
+#GameInit
+    KillAll
+    Close All
+
+    USEHTML = 1
+
+    debug = 1
+    debug_images = 1
+    gs 'InitImageDebug'
+    gs 'InitSteve'
+
+    ! ====================== БАЗОВАЯ ДАТА И ВРЕМЯ ======================
+    day = 1
+    month = 1
+    week = 1
+    year = 1100
+
+
+    ! В новой системе время работает как 1–5
+    ! 1 — утро
+    ! 2 — полдень
+    ! 3 — день
+    ! 4 — вечер
+    ! 5 — ночь
+
+    time = 1
+    money = 800
+    ! ====================== ЛИМИТЫ ИНТИМА НА ДЕНЬ ======================
+    max_daily_cum = 2
+    daily_cum_count = 0
+
+    ! ====================== ТАВЕРНА ======================
+    tavernfame = 5
+    tavern_reputation = 40
+    tavern_sex_appeal = 15
+    tavernvisitors = 25
+
+    beer_price = 10
+    wine_price = 20
+    food_price = 15
+
+    productnum = 300
+    winenum = 120
+    beernum = 120
+
+    ! ====================== СИСТЕМНЫЕ ОБРАБОТЧИКИ ======================
+    $ONGLOAD = ''
+    $ONSTAT = 'onstatusupdate'
+   $ONOBJSEL = 'ItemPanelClick'
+
+    ! ====================== СПИСОК ВСЕХ ДЕВУШЕК ======================
+    $AllGirlNames[0] = 'sandra'
+    $AllGirlNames[1] = 'melissa'
+    $AllGirlNames[2] = 'amanda'
+    $AllGirlNames[3] = 'becky'
+    $AllGirlNames[4] = 'inga'
+    $AllGirlNames[5] = 'greta'
+    $AllGirlNames[6] = 'lizette'
+    $AllGirlNames[7] = 'georgett'
+    $AllGirlNames[8] = 'clarissa'
+    $AllGirlNames[9] = 'irma'
+    $AllGirlNames[10] = 'juliette'
+
+    ! ====================== ИНИЦИАЛИЗАЦИЯ ДЕВУШЕК ======================
+    gs 'GirlsInitAll'
+
+    ! ====================== ИМЕНА ДАТЫ И ВРЕМЕНИ ДЛЯ СТАТУСА ======================
+    gs 'GetDateTimeNames'
+
+
+if LOC('InitTavernEventState') = 1:
+    gs 'InitTavernEventState'
+end
+    ! ====================== ДЕБАГ ======================
+    if debug = 1:
+        *pl '[DEBUG] Игра успешно инициализирована.'
+    end
+
+    gs 'InitBusinessSchedule'
+---
+

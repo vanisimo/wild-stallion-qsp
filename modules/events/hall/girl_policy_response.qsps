@@ -1,0 +1,309 @@
+! ================================================
+! FILE: modules/events/hall/girl_policy_response.qsps
+! Реакция девушки на рабочее правило Стефана
+! Версия: v1
+! Назначение:
+! - правило Стефана больше не выполняется автоматически
+! - девушка может отказаться, подчиниться неохотно, принять правило или перегнуть палку
+! - учитываются характер, развращённость, доверие, бунт, дисциплина и стадия семьи
+! - тексты берутся из modules/events/hall/girl_policy_response_text.qsps
+! ================================================
+
+#GirlPolicyResponseCalc
+    gs 'GirlPolicyResponseNormalizeKey', $ARGS[0]
+    $PolicyResponseGirl = $PolicyResponseGirlKey
+    $PolicyResponseArea = LCASE($ARGS[1])
+    PolicyResponsePolicy = ARGS[2]
+
+    $PolicyResponseMode = 'neutral'
+    $PolicyResponseActual = 'obey'
+    PolicyResponseLevel = 2
+    PolicyResponseScore = 50
+    $PolicyResponseText = ''
+
+    if $PolicyResponseGirl = '':
+        exit
+    end
+
+    if $PolicyResponseArea <> 'hall' and $PolicyResponseArea <> 'kitchen':
+        $PolicyResponseArea = 'hall'
+    end
+
+    if PolicyResponsePolicy < 0:
+        PolicyResponsePolicy = 0
+    end
+
+    if PolicyResponsePolicy > 3:
+        PolicyResponsePolicy = 3
+    end
+
+    gs 'EnsureGirlData', $PolicyResponseGirl
+    gs 'GirlPolicyResponsePreparePersonality'
+
+    if PolicyResponsePolicy = 0:
+        $PolicyResponseMode = 'no_rule'
+        PolicyResponseScore = 50 + GirlRebellion[$PolicyResponseGirl] - GirlWorkDiscipline[$PolicyResponseGirl] / 2
+    elseif PolicyResponsePolicy = 1:
+        $PolicyResponseMode = 'decent'
+        PolicyResponseScore = 55 + GirlTrustStefan[$PolicyResponseGirl] + GirlWorkDiscipline[$PolicyResponseGirl]
+        PolicyResponseScore -= sluttiness[$PolicyResponseGirl]
+        PolicyResponseScore -= GirlPublicAttention[$PolicyResponseGirl]
+        PolicyResponseScore -= GirlRebellion[$PolicyResponseGirl]
+    elseif PolicyResponsePolicy = 2:
+        $PolicyResponseMode = 'own_choice'
+        PolicyResponseScore = 55 + GirlTrustStefan[$PolicyResponseGirl] + GirlWorkDiscipline[$PolicyResponseGirl] / 2
+        PolicyResponseScore += GirlRebellion[$PolicyResponseGirl] / 2
+    elseif PolicyResponsePolicy = 3:
+        $PolicyResponseMode = 'keep_client'
+        PolicyResponseScore = 25 + sluttiness[$PolicyResponseGirl] + GirlPublicAttention[$PolicyResponseGirl]
+        PolicyResponseScore += GirlNpcPath[$PolicyResponseGirl]
+        PolicyResponseScore += TavernLewdFame
+        PolicyResponseScore += FamilyCorruptionStage * 8
+        PolicyResponseScore -= GirlTrustStefan[$PolicyResponseGirl] / 2
+        PolicyResponseScore -= GirlWorkDiscipline[$PolicyResponseGirl] / 2
+    end
+
+    gs 'GirlPolicyResponseApplyPersonality'
+    gs 'GirlPolicyResponseResolveLevel'
+    gs 'GirlPolicyResponseApplyStats'
+    gs 'GirlPolicyResponsePrintText'
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    if LOC('ClampGirlSocialStats') = 1:
+        gs 'ClampGirlSocialStats', $PolicyResponseGirl
+    end
+
+    killvar '$PolicyResponseArea'
+    killvar 'PolicyResponsePolicy'
+    killvar 'PolicyResponseScore'
+---
+
+! ================================================
+! FILE: modules/events/hall/girl_policy_response.qsps
+! Подготовка недостающих личных параметров
+! ================================================
+
+#GirlPolicyResponsePreparePersonality
+    if GirlWorkDiscipline[$PolicyResponseGirl] <= 0:
+        if $PolicyResponseGirl = 'amanda':
+            GirlWorkDiscipline[$PolicyResponseGirl] = 35
+        elseif $PolicyResponseGirl = 'melissa':
+            GirlWorkDiscipline[$PolicyResponseGirl] = 60
+        elseif $PolicyResponseGirl = 'sandra':
+            GirlWorkDiscipline[$PolicyResponseGirl] = 70
+        else:
+            GirlWorkDiscipline[$PolicyResponseGirl] = 45
+        end
+    end
+
+    if GirlTrustStefan[$PolicyResponseGirl] <= 0:
+        GirlTrustStefan[$PolicyResponseGirl] = Friends[$PolicyResponseGirl]
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/girl_policy_response.qsps
+! Индивидуальные поправки характера
+! ================================================
+
+#GirlPolicyResponseApplyPersonality
+    if $PolicyResponseGirl = 'amanda':
+        if $PolicyResponseMode = 'keep_client':
+            PolicyResponseScore -= 15
+            PolicyResponseScore += AmandaPublicAttention
+            PolicyResponseScore += AmandaRebellion
+            PolicyResponseScore += AmandaScandalLevel
+        elseif $PolicyResponseMode = 'decent':
+            PolicyResponseScore += 5
+            PolicyResponseScore -= AmandaRebellion
+        elseif $PolicyResponseMode = 'own_choice':
+            PolicyResponseScore += AmandaRebellion / 2
+        end
+    elseif $PolicyResponseGirl = 'melissa':
+        if $PolicyResponseMode = 'keep_client':
+            PolicyResponseScore += MelissaScandalTolerance
+            PolicyResponseScore += MelissaControlNeed / 2
+            PolicyResponseScore -= 5
+        elseif $PolicyResponseMode = 'decent':
+            PolicyResponseScore += MelissaControlNeed
+            PolicyResponseScore += MelissaRespectStefan
+        elseif $PolicyResponseMode = 'own_choice':
+            PolicyResponseScore += MelissaControlNeed
+        end
+    elseif $PolicyResponseGirl = 'sandra':
+        if $PolicyResponseMode = 'keep_client':
+            PolicyResponseScore -= 35
+            PolicyResponseScore += SandraPragmatism
+            PolicyResponseScore -= SandraMoralResistance
+            PolicyResponseScore += FamilyCorruptionStage * 10
+        elseif $PolicyResponseMode = 'decent':
+            PolicyResponseScore += SandraMoralResistance
+            PolicyResponseScore += SandraRespectStefan
+        elseif $PolicyResponseMode = 'own_choice':
+            PolicyResponseScore += SandraPragmatism
+            PolicyResponseScore += SandraRespectStefan
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/girl_policy_response.qsps
+! Итоговая стадия выполнения правила
+! 0 отказ / 1 неохотно / 2 нормально / 3 охотно / 4 перегибает
+! ================================================
+
+#GirlPolicyResponseResolveLevel
+    if PolicyResponseScore < 25:
+        PolicyResponseLevel = 0
+        $PolicyResponseActual = 'refuse'
+    elseif PolicyResponseScore < 45:
+        PolicyResponseLevel = 1
+        $PolicyResponseActual = 'reluctant'
+    elseif PolicyResponseScore < 75:
+        PolicyResponseLevel = 2
+        $PolicyResponseActual = 'obey'
+    elseif PolicyResponseScore < 105:
+        PolicyResponseLevel = 3
+        $PolicyResponseActual = 'eager'
+    else:
+        PolicyResponseLevel = 4
+        $PolicyResponseActual = 'overstep'
+    end
+
+    if $PolicyResponseMode = 'no_rule':
+        if PolicyResponseScore >= 80:
+            PolicyResponseLevel = 3
+            $PolicyResponseActual = 'self_willed'
+        elseif PolicyResponseScore <= 30:
+            PolicyResponseLevel = 1
+            $PolicyResponseActual = 'confused'
+        else:
+            PolicyResponseLevel = 2
+            $PolicyResponseActual = 'improvise'
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/girl_policy_response.qsps
+! Последствия именно фактического поведения
+! ================================================
+
+#GirlPolicyResponseApplyStats
+    if $PolicyResponseMode = 'keep_client':
+        if PolicyResponseLevel = 0:
+            GirlTrustStefan[$PolicyResponseGirl] -= 1
+            GirlRebellion[$PolicyResponseGirl] += 2
+            GirlWorkDiscipline[$PolicyResponseGirl] += 1
+        elseif PolicyResponseLevel = 1:
+            GirlTrustStefan[$PolicyResponseGirl] -= 1
+            GirlPublicAttention[$PolicyResponseGirl] += 1
+            TavernScandal += 1
+        elseif PolicyResponseLevel = 2:
+            GirlPublicAttention[$PolicyResponseGirl] += 1
+            GirlNpcPath[$PolicyResponseGirl] += 1
+            TavernScandal += 1
+        elseif PolicyResponseLevel = 3:
+            GirlPublicAttention[$PolicyResponseGirl] += 2
+            GirlNpcPath[$PolicyResponseGirl] += 1
+            TavernScandal += 1
+            TavernLewdFame += 1
+            sluttiness[$PolicyResponseGirl] += 1
+        else:
+            GirlPublicAttention[$PolicyResponseGirl] += 3
+            GirlNpcPath[$PolicyResponseGirl] += 2
+            TavernScandal += 2
+            TavernLewdFame += 2
+            sluttiness[$PolicyResponseGirl] += 2
+        end
+    elseif $PolicyResponseMode = 'decent':
+        if PolicyResponseLevel = 0:
+            GirlRebellion[$PolicyResponseGirl] += 2
+            GirlPublicAttention[$PolicyResponseGirl] += 2
+            TavernScandal += 1
+        elseif PolicyResponseLevel = 1:
+            GirlTrustStefan[$PolicyResponseGirl] -= 1
+            GirlRebellion[$PolicyResponseGirl] += 1
+        elseif PolicyResponseLevel = 2:
+            GirlTrustStefan[$PolicyResponseGirl] += 1
+            GirlWorkDiscipline[$PolicyResponseGirl] += 1
+        elseif PolicyResponseLevel = 3:
+            GirlTrustStefan[$PolicyResponseGirl] += 1
+            GirlWorkDiscipline[$PolicyResponseGirl] += 2
+            TavernScandal -= 1
+        else:
+            GirlWorkDiscipline[$PolicyResponseGirl] += 2
+            GirlPublicAttention[$PolicyResponseGirl] -= 1
+            TavernScandal -= 1
+        end
+    elseif $PolicyResponseMode = 'own_choice':
+        if PolicyResponseLevel = 0:
+            GirlRebellion[$PolicyResponseGirl] += 1
+            GirlSecretiveness[$PolicyResponseGirl] += 1
+        elseif PolicyResponseLevel = 1:
+            GirlTrustStefan[$PolicyResponseGirl] -= 1
+            GirlWorkDiscipline[$PolicyResponseGirl] += 1
+        elseif PolicyResponseLevel = 2:
+            GirlTrustStefan[$PolicyResponseGirl] += 1
+        elseif PolicyResponseLevel = 3:
+            GirlTrustStefan[$PolicyResponseGirl] += 1
+            GirlWorkDiscipline[$PolicyResponseGirl] += 1
+            GirlPublicAttention[$PolicyResponseGirl] += 1
+        else:
+            GirlRebellion[$PolicyResponseGirl] += 1
+            GirlPublicAttention[$PolicyResponseGirl] += 2
+            TavernScandal += 1
+        end
+    else:
+        if PolicyResponseLevel = 1:
+            GirlSecretiveness[$PolicyResponseGirl] += 1
+        elseif PolicyResponseLevel = 2:
+            GirlPublicAttention[$PolicyResponseGirl] += 1
+        else:
+            GirlRebellion[$PolicyResponseGirl] += 1
+            GirlPublicAttention[$PolicyResponseGirl] += 1
+        end
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    if TavernLewdFame < 0:
+        TavernLewdFame = 0
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/girl_policy_response.qsps
+! Печать текста из отдельного файла
+! ================================================
+
+#GirlPolicyResponsePrintText
+    $PolicyResponseText = ''
+
+    if LOC('GirlPolicyResponseText') = 1:
+        gs 'GirlPolicyResponseText'
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/girl_policy_response.qsps
+! Нормализация ключа девушки
+! ================================================
+
+#GirlPolicyResponseNormalizeKey
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $PolicyResponseGirlKey = $GirlKey
+    else:
+        $PolicyResponseGirlKey = LCASE($ARGS[0])
+    end
+
+    if $PolicyResponseGirlKey <> 'amanda' and $PolicyResponseGirlKey <> 'melissa' and $PolicyResponseGirlKey <> 'sandra':
+        $PolicyResponseGirlKey = ''
+    end
+---

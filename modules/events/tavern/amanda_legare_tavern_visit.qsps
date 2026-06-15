@@ -1,0 +1,394 @@
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_tavern_visit.qsps
+! Легаре приходит в трактир под предлогом поставки
+! Версия: tavern visit rewrite v2 / auto trigger + Stefan thoughts
+! Назначение:
+! - убрать кнопку "Легаре приходит в трактир с поставкой" из TavernMain
+! - запускать событие из обычных действий: осмотр зала / работа за стойкой
+! - оставить выбор только внутри сцены
+! - дать короткие кнопки и мысли Стефана перед выбором
+! - не обрывать цепочку ни одним выбором
+!
+! Тексты берутся из:
+! modules/events/tavern/amanda_legare_tavern_visit_text.qsps
+!
+! Вызов:
+! gs 'AmandaLegareTavernVisitTryAutoStart', 'TavernMain'
+! ================================================
+
+#AmandaLegareTavernVisitCanStart
+    AmandaLegareTavernVisitCanStart = 0
+
+    if AmandaLegareNextRiskReady <> 1:
+        exit
+    end
+
+    if AmandaLegareTavernVisitStage > 0:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    if $GirlLocation['amanda'] = 'Church':
+        exit
+    end
+
+    if $GirlLocation['amanda'] = 'DanceHall':
+        exit
+    end
+
+    AmandaLegareTavernVisitCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_tavern_visit.qsps
+! Попытка автозапуска из обычных действий трактира
+! ARGS[0] — куда возвращаться после события
+! ================================================
+
+#AmandaLegareTavernVisitTryAutoStart
+    $AmandaLegareTavernVisitReturnLoc = $ARGS[0]
+
+    if $AmandaLegareTavernVisitReturnLoc = '':
+        $AmandaLegareTavernVisitReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareTavernVisitReturnLoc) = 0:
+        $AmandaLegareTavernVisitReturnLoc = 'TavernMain'
+    end
+
+    if LOC('AmandaLegareTavernVisitCanStart') = 1:
+        gs 'AmandaLegareTavernVisitCanStart'
+
+        if AmandaLegareTavernVisitCanStart = 1:
+            gt 'AmandaLegareTavernVisitStart', $AmandaLegareTavernVisitReturnLoc
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_tavern_visit.qsps
+! Вход в событие
+! ================================================
+
+#AmandaLegareTavernVisitStart
+    *clr
+    clr
+    cla
+
+    $AmandaLegareTavernVisitReturnLoc = $ARGS[0]
+
+    if $AmandaLegareTavernVisitReturnLoc = '':
+        $AmandaLegareTavernVisitReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareTavernVisitReturnLoc) = 0:
+        $AmandaLegareTavernVisitReturnLoc = 'TavernMain'
+    end
+
+    if LOC('UpdateGirlLocations') = 1:
+        gs 'UpdateGirlLocations'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if $RealName['melissa'] = '':
+        $RealName['melissa'] = 'Мелисса'
+    end
+
+    AmandaLegareTavernVisitStage = 1
+    AmandaLegareNextRiskReady = 0
+    LegareVisitedTavernForAmanda = 1
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/amanda_legare', 'visit', 2
+    end
+
+    gs 'AmandaLegareTavernVisitGetRisk'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ В ТРАКТИРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareTavernVisitIntroText') = 1:
+        gs 'AmandaLegareTavernVisitIntroText'
+    else:
+        *p 'Легаре приходит с поставкой. Формально всё по делу, но его взгляд слишком быстро находит Аманду.'
+    end
+
+    *pl ' '
+
+    if AmandaLegareHardWarningUsed = 1 or LegareConflictStage > 0:
+        if LOC('AmandaLegareTavernVisitThoughtsHard') = 1:
+            gs 'AmandaLegareTavernVisitThoughtsHard'
+        end
+    else:
+        if LOC('AmandaLegareTavernVisitThoughtsSoft') = 1:
+            gs 'AmandaLegareTavernVisitThoughtsSoft'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE TAVERN] ReturnLoc: ' + $AmandaLegareTavernVisitReturnLoc
+        *pl '[DEBUG LEGARE TAVERN] Risk: ' + STR(AmandaLegareTavernVisitRisk)
+        *pl '[DEBUG LEGARE TAVERN] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG LEGARE TAVERN] ConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG LEGARE TAVERN] AmandaLegareInterest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG LEGARE TAVERN] LegareAmandaInterest: ' + STR(LegareAmandaInterest)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareTavernVisitBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareTavernVisitMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_tavern_visit.qsps
+! Расчёт риска, что Легаре успеет сказать Аманде что-то личное
+! ================================================
+
+#AmandaLegareTavernVisitGetRisk
+    AmandaLegareTavernVisitRisk = 10
+
+    AmandaLegareTavernVisitRisk += AmandaLegareInterest * 6
+    AmandaLegareTavernVisitRisk += LegareAmandaInterest * 5
+    AmandaLegareTavernVisitRisk += AmandaRebellion * 3
+    AmandaLegareTavernVisitRisk += AmandaSecretiveness * 3
+    AmandaLegareTavernVisitRisk += AmandaPublicAttention * 2
+
+    if AmandaLegareAfterDanceResult = 2:
+        AmandaLegareTavernVisitRisk += 10
+    elseif AmandaLegareAfterDanceResult = 3:
+        AmandaLegareTavernVisitRisk += 18
+    end
+
+    if AmandaLegareHardWarningUsed = 1:
+        AmandaLegareTavernVisitRisk += 8
+    end
+
+    if MelissaWatchAmandaLegare = 1:
+        AmandaLegareTavernVisitRisk -= 12
+    end
+
+    if AmandaTrustStefan >= 6:
+        AmandaLegareTavernVisitRisk -= 10
+    end
+
+    if AmandaLegareTavernVisitRisk < 5:
+        AmandaLegareTavernVisitRisk = 5
+    end
+
+    if AmandaLegareTavernVisitRisk > 90:
+        AmandaLegareTavernVisitRisk = 90
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_tavern_visit.qsps
+! Короткое меню события
+! ================================================
+
+#AmandaLegareTavernVisitBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareTavernVisitMenu'
+    gs 'Menu.Create', 'AmandaLegareTavernVisitMenu'
+
+    gs 'Menu.Add', 'AmandaLegareTavernVisitMenu', 'Пусть Аманда обслужит', ''
+    gs 'Menu.AddModule', 'AmandaLegareTavernVisitMenu', {
+        gt 'AmandaLegareTavernVisitAction', 'amanda_serves', $AmandaLegareTavernVisitReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareTavernVisitMenu', 'Выйти самому', ''
+    gs 'Menu.AddModule', 'AmandaLegareTavernVisitMenu', {
+        gt 'AmandaLegareTavernVisitAction', 'stefan_meets', $AmandaLegareTavernVisitReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareTavernVisitMenu', 'Отправить Мелиссу', ''
+    gs 'Menu.AddModule', 'AmandaLegareTavernVisitMenu', {
+        gt 'AmandaLegareTavernVisitAction', 'melissa_serves', $AmandaLegareTavernVisitReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareTavernVisitMenu', 'Остаться за стойкой', ''
+    gs 'Menu.AddModule', 'AmandaLegareTavernVisitMenu', {
+        gt 'AmandaLegareTavernVisitAction', 'watch_bar', $AmandaLegareTavernVisitReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_tavern_visit.qsps
+! Обработка выбора
+! ================================================
+
+#AmandaLegareTavernVisitAction
+    *clr
+    clr
+    cla
+
+    $TavernVisitChoice = LCASE($ARGS[0])
+    $AmandaLegareTavernVisitReturnLoc = $ARGS[1]
+
+    if $AmandaLegareTavernVisitReturnLoc = '':
+        $AmandaLegareTavernVisitReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareTavernVisitReturnLoc) = 0:
+        $AmandaLegareTavernVisitReturnLoc = 'TavernMain'
+    end
+
+    gs 'AmandaLegareTavernVisitGetRisk'
+
+    ! 0 — Легаре не добился личного разговора
+    ! 1 — публичный короткий разговор
+    ! 2 — Легаре оставил намёк / повод выйти
+    ! 3 — Стефан видит намёк и может перехватить тему
+    AmandaLegareTavernVisitResult = 0
+
+    if $TavernVisitChoice = 'amanda_serves':
+        TavernVisitRoll = RAND(1, 100)
+
+        if TavernVisitRoll <= AmandaLegareTavernVisitRisk:
+            AmandaLegareTavernVisitResult = 2
+            Fact_LegareInvitesAmandaOutside = 1
+            PlayerKnows_LegareInvitesAmandaOutside = 1
+            AmandaLegareOutsideMeetReady = 1
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+            AmandaSecretiveness += 1
+            AmandaNpcPath += 1
+            ClarissaJealousy += 1
+        else:
+            AmandaLegareTavernVisitResult = 1
+            AmandaTrustStefan += 1
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+        end
+
+        killvar 'TavernVisitRoll'
+
+    elseif $TavernVisitChoice = 'stefan_meets':
+        AmandaLegareTavernVisitResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 1
+
+        if AmandaLegareHardWarningUsed = 1:
+            LegareConflictStage += 1
+            LegareSupplyPressureReady = 1
+        end
+
+    elseif $TavernVisitChoice = 'melissa_serves':
+        AmandaLegareTavernVisitResult = 0
+        MelissaWatchAmandaLegare = 1
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaControlNeed += 1
+        AmandaTrustStefan += 1
+        MelissaLegareSupplyTalkReady = 1
+
+    elseif $TavernVisitChoice = 'watch_bar':
+        TavernVisitRoll = RAND(1, 100)
+
+        if TavernVisitRoll <= AmandaLegareTavernVisitRisk:
+            AmandaLegareTavernVisitResult = 3
+            Fact_LegareInvitesAmandaOutside = 1
+            PlayerKnows_LegareInvitesAmandaOutside = 1
+            AmandaLegareOutsideMeetReady = 1
+            AmandaLegareOutsideTalkReady = 1
+            AmandaSecretiveness += 1
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+            ClarissaJealousy += 1
+        else:
+            AmandaLegareTavernVisitResult = 1
+            PlayerKnows_LegareInvitesAmandaOutside = 0
+            AmandaLegareInterest += 1
+        end
+
+        killvar 'TavernVisitRoll'
+    end
+
+    ! Стабилизация цепочки:
+    ! Любой исход двигает ветку дальше, но в разные стороны.
+    if AmandaLegareTavernVisitResult = 0:
+        AmandaLegareOutsideMeetReady = 1
+        LegareSupplyPressureReady = 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ В ТРАКТИРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareTavernVisitActionText') = 1:
+        gs 'AmandaLegareTavernVisitActionText', $TavernVisitChoice
+    else:
+        *p 'Посещение Легаре меняет настроение в зале.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE TAVERN] Choice: ' + $TavernVisitChoice
+        *pl '[DEBUG LEGARE TAVERN] Result: ' + STR(AmandaLegareTavernVisitResult)
+        *pl '[DEBUG LEGARE TAVERN] OutsideReady: ' + STR(AmandaLegareOutsideMeetReady)
+        *pl '[DEBUG LEGARE TAVERN] Fact_Invite: ' + STR(Fact_LegareInvitesAmandaOutside)
+        *pl '[DEBUG LEGARE TAVERN] PlayerKnows_Invite: ' + STR(PlayerKnows_LegareInvitesAmandaOutside)
+        *pl '[DEBUG LEGARE TAVERN] SupplyPressureReady: ' + STR(LegareSupplyPressureReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $AmandaLegareTavernVisitReturnLoc
+    end
+
+    killvar '$TavernVisitChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_tavern_visit.qsps
+! Debug-сброс
+! ================================================
+
+#AmandaLegareTavernVisitDebugReset
+    AmandaLegareTavernVisitCanStart = 0
+    AmandaLegareTavernVisitStage = 0
+    AmandaLegareTavernVisitResult = 0
+    AmandaLegareTavernVisitRisk = 0
+    LegareVisitedTavernForAmanda = 0
+    Fact_LegareInvitesAmandaOutside = 0
+    PlayerKnows_LegareInvitesAmandaOutside = 0
+    AmandaLegareOutsideMeetReady = 0
+    AmandaLegareOutsideTalkReady = 0
+---

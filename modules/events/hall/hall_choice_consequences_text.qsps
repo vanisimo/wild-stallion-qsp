@@ -1,0 +1,87 @@
+! ================================================
+! FILE: modules/events/hall/hall_choice_consequences_text.qsps
+! Тексты последствий выбора Стефана
+! Используется логикой:
+! modules/events/hall/hall_choice_consequences.qsps
+!
+! Стиль:
+! - не сухое описание кнопки
+! - короткий социальный итог
+! - что Стефан видит, что запоминает девушка, как реагирует зал
+! - без механических подсказок вида +1 / -1
+! ================================================
+
+#HallChoiceConsequenceText
+    $HallChoiceConsequenceEventId = LCASE($ARGS[0])
+    $HallChoiceConsequenceChoiceId = LCASE($ARGS[1])
+    $HallChoiceConsequenceGirlId = LCASE($ARGS[2])
+    $HallChoiceConsequenceText = ''
+
+    if $HallChoiceConsequenceGirlId <> '':
+        if $RealName[$HallChoiceConsequenceGirlId] = '':
+            if LOC('EnsureGirlData') = 1:
+                gs 'EnsureGirlData', $HallChoiceConsequenceGirlId
+            end
+        end
+    end
+
+    if $HallChoiceConsequenceEventId = 'harassment':
+        gs 'HallChoiceConsequenceTextHarassment'
+    elseif $HallChoiceConsequenceEventId = 'hall_lewd':
+        gs 'HallChoiceConsequenceTextHallLewd'
+    elseif $HallChoiceConsequenceEventId = 'hall_missing':
+        gs 'HallChoiceConsequenceTextHallMissing'
+    elseif $HallChoiceConsequenceEventId = 'kitchen':
+        gs 'HallChoiceConsequenceTextKitchen'
+    end
+
+    killvar '$HallChoiceConsequenceEventId'
+    killvar '$HallChoiceConsequenceChoiceId'
+    killvar '$HallChoiceConsequenceGirlId'
+---
+
+#HallChoiceConsequenceTextHarassment
+    if $HallChoiceConsequenceChoiceId = 'protect_hard':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Зал стихает не сразу. Кто-то делает вид, что смотрит в кружку, кто-то прячет улыбку. ' + $RealName[$HallChoiceConsequenceGirlId] + ' отходит в сторону, и Стефан ловит себя на простой мысли: теперь все поняли, что он готов шуметь за своих. Вопрос только, кто назовёт это заботой, а кто — дурным характером хозяина.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'warn_client':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Сцена гаснет без драки, но не без следа. Клиент бурчит, гости переглядываются, а ' + $RealName[$HallChoiceConsequenceGirlId] + ' смотрит на Стефана чуть внимательнее. Не геройство, не уступка — просто хозяин напомнил залу, где проходит граница.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'self_handle':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Стефан остаётся рядом, но не делает шаг первым. Это странное чувство: вроде бы он дал ей свободу, а вроде бы переложил на неё тяжесть решения. ' + $RealName[$HallChoiceConsequenceGirlId] + ' справляется как умеет, и теперь между ними появляется новая тишина — уже не прежняя.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'profit':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Монеты звенят убедительно. Слишком убедительно. Посетитель довольный, зал будто оживляется, но Стефан замечает, как быстро люди привыкают к тому, что им однажды разрешили. ' + $RealName[$HallChoiceConsequenceGirlId] + ' тоже это понимает. По-своему.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'ignore':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Ничего страшного вроде бы не случилось. Никто не кричал, никто не упал, кружки остались на столах. Но именно это и неприятно: молчание оказалось удобным. Стефан видит, что ' + $RealName[$HallChoiceConsequenceGirlId] + ' запомнила не клиента. Она запомнила, что он смотрел и не вмешался.</i></font>'
+    end
+---
+
+#HallChoiceConsequenceTextHallLewd
+    if $HallChoiceConsequenceChoiceId = 'stop':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Стефан обрывает сцену раньше, чем она успевает стать развлечением для всего зала. Несколько гостей недовольно отворачиваются, зато воздух сразу становится чище. ' + $RealName[$HallChoiceConsequenceGirlId] + ' выглядит так, будто не решила, благодарить его или злиться за то, что он решил всё за неё.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'watch':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Он остаётся на месте и наблюдает. Снаружи это выглядит почти спокойно, но внутри всё скрипит, как старая дверь. Зал тоже наблюдает: за клиентом, за ' + $RealName[$HallChoiceConsequenceGirlId] + ', за самим Стефаном. Иногда хозяин даёт разрешение не словами, а тем, что не делает ни шага.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'encourage':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Стефан делает вид, что всё идёт как надо. Может, даже слишком хорошо. Клиент платит щедрее, гости смеются громче, а граница в зале сдвигается ещё на палец. ' + $RealName[$HallChoiceConsequenceGirlId] + ' чувствует это раньше, чем успевает назвать словами.</i></font>'
+    end
+---
+
+#HallChoiceConsequenceTextHallMissing
+    if $HallChoiceConsequenceChoiceId = 'ignore_after' or $HallChoiceConsequenceChoiceId = 'ignore':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Стефан возвращается в зал так, будто ничего не заметил. Самый удобный вид лжи — когда её не нужно произносить. Если ' + $RealName[$HallChoiceConsequenceGirlId] + ' действительно просто отошла по делу, он избежал глупого скандала. Если нет — он только что дал ей понять, что искать не будет.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'peek_scene' or $HallChoiceConsequenceChoiceId = 'peek':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Теперь Стефан знает больше, чем хотел бы. Подглядывание не похоже на приказ и не похоже на заботу, но после него уже невозможно делать вид, что всё осталось простым. Если ' + $RealName[$HallChoiceConsequenceGirlId] + ' заметила его взгляд, разговор потом будет тяжёлым.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'peek_meet':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Он появляется слишком тихо, чтобы это выглядело случайностью. ' + $RealName[$HallChoiceConsequenceGirlId] + ' понимает: Стефан пришёл не звать её обратно, а проверить. Иногда правда, найденная таким способом, сразу становится обвинением.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'interrupt_scene' or $HallChoiceConsequenceChoiceId = 'interrupt':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Стефан входит резко, и момент ломается. Клиент сразу вспоминает, что стены трактира принадлежат не ему. ' + $RealName[$HallChoiceConsequenceGirlId] + ' тоже вспоминает. Вмешательство спасает от грязи, но оставляет другой след: теперь она знает, что за ней следят.</i></font>'
+    end
+---
+
+#HallChoiceConsequenceTextKitchen
+    if $HallChoiceConsequenceChoiceId = 'stop':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>На кухне всё заканчивается быстро. Здесь не место для чужих рук и пьяной удали. Стефан выгоняет лишнее из тесного жара кухни, и даже если клиент потом будет ворчать, остальные поймут: за эту дверь без спроса лучше не лезть.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'let_her':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Стефан даёт ей самой удержать кухню. Это не зал, где можно улыбнуться и отойти к соседнему столу. Здесь всё ближе, резче, опаснее. Если она справится, станет крепче. Если нет — запомнит, что хозяин стоял рядом и ждал.</i></font>'
+    elseif $HallChoiceConsequenceChoiceId = 'client':
+        $HallChoiceConsequenceText = '<font color="#606080"><i>Клиент уходит довольный, а в кухне остаётся странная тишина. Деньги вроде бы настоящие, выгода тоже. Но Стефан понимает: кухня запоминает не хуже зала. Один раз закрыть глаза — и завтра кто-нибудь решит, что дверь уже приоткрыта.</i></font>'
+    end
+---

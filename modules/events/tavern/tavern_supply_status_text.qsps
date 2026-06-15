@@ -1,0 +1,62 @@
+! ================================================
+! FILE: modules/events/tavern/tavern_supply_status_text.qsps
+! Тексты статуса поставок трактира
+! Используется кодом:
+! modules/core/economy/tavern_supply_economy.qsps
+! ================================================
+
+#TavernSupplyStatusText
+    if TavernAlcoholShortage = 0 and TavernSupplyPenalty = 0 and TavernSupplyCostLevel = 0 and TavernDailyCostBonus = 0:
+        *p 'Сейчас поставки вина и пива выглядят стабильными. Бочки приходят вовремя, цены не вызывают лишних вопросов.'
+    else:
+        *p 'Поставки трактира уже не выглядят спокойными.'
+
+        if TavernSupplyCostLevel > 0:
+            *p 'Цены поставщиков выросли. Каждый день трактир тратит больше денег на обычный товар.'
+        end
+
+        if TavernDailyCostBonus > 0:
+            *p 'Из-за дополнительных расходов на поставки дневная прибыль проседает.'
+        end
+
+        if TavernAlcoholShortage = 1:
+            *p 'Вина и пива не хватает. Посетители быстро замечают, когда в кружках становится пусто.'
+        end
+
+        if TavernSupplyPenalty > 0:
+            *p 'Срывы поставок уже бьют по залу: гости ворчат, а репутация трактира становится уязвимой.'
+        end
+
+        if TemporaryAlcoholSuppliers = 1:
+            *p 'Временные поставщики помогают пережить нехватку, но их товар обходится дороже.'
+        end
+
+        if ClarissaWineRouteUnlocked = 1 or ClarissaBeerRouteUnlocked = 1:
+            *p 'Кларисса дала обходной путь. Это помогает, но если Легаре узнает, конфликт станет глубже.'
+        end
+    end
+---
+
+#TavernSupplyEmergencyActionText
+    $SupplyEmergencyTextAction = LCASE($ARGS[0])
+
+    if $SupplyEmergencyTextAction = 'temporary_buy':
+        if TavernSupplyEmergencyNoMoney = 1:
+            *p 'Вы пытаетесь найти временных поставщиков, но свободных денег не хватает.'
+            TavernSupplyEmergencyNoMoney = 0
+        else:
+            *p 'Вы срочно закупаете алкоголь у временных поставщиков.'
+            *p 'Это закрывает дыру в запасах, но обходится дороже обычного.'
+        end
+    elseif $SupplyEmergencyTextAction = 'melissa_stretch':
+        *p 'Вы просите Мелиссу растянуть запасы.'
+        *p 'Она быстро наводит порядок в бочках и выдаче, но гостям всё равно придётся заметить, что наливать стали осторожнее.'
+    elseif $SupplyEmergencyTextAction = 'clarissa_route':
+        *p 'Вы проверяете обходной маршрут Клариссы.'
+        *p 'Её помощь не решает все проблемы сразу, зато уменьшает зависимость от Легаре.'
+    else:
+        *p 'Вы принимаете срочные меры по поставкам.'
+    end
+
+    killvar '$SupplyEmergencyTextAction'
+---

@@ -1,0 +1,125 @@
+! ================================================
+! FILE: modules/events/hall/hall_rumors.qsps
+! Слухи после событий в зале
+! Версия: v1
+! Назначение:
+! - накапливать городские слухи после скандальных событий в зале
+! - давать мосты к Ирме, церкви и Легаре
+! - не запускать сюжетные сцены напрямую, только выставлять флаги
+!
+! Тексты берутся из:
+! modules/events/hall/hall_rumors_text.qsps
+! ================================================
+
+#HallRumorRegister
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallRumorGirl = $GirlKey
+    $HallRumorEvent = LCASE($ARGS[1])
+    HallRumorSeverity = ARGS[2]
+
+    if $HallRumorGirl = '':
+        exit
+    end
+
+    if $HallRumorEvent = '':
+        $HallRumorEvent = 'hall'
+    end
+
+    if HallRumorSeverity <= 0:
+        HallRumorSeverity = 1
+    end
+
+    HallRumorTotal += HallRumorSeverity
+    HallRumorToday += HallRumorSeverity
+    HallRumorGirlCount[$HallRumorGirl] += HallRumorSeverity
+
+    if $HallRumorEvent = 'hall_lewd' or $HallRumorEvent = 'lewd':
+        HallRumorLewd += HallRumorSeverity
+        TavernScandal += 1
+
+        if HallRumorSeverity >= 2:
+            TavernLewdFame += 1
+        end
+    elseif $HallRumorEvent = 'hall_missing' or $HallRumorEvent = 'missing':
+        HallRumorMissing += HallRumorSeverity
+        TavernScandal += 1
+    elseif $HallRumorEvent = 'kitchen':
+        HallRumorKitchen += HallRumorSeverity
+    else:
+        HallRumorCommon += HallRumorSeverity
+    end
+
+    if HallRumorGirlCount[$HallRumorGirl] >= 3:
+        HallRumorGirlNoticed[$HallRumorGirl] = 1
+    end
+
+    if HallRumorTotal >= 4:
+        IrmaUniformRumorReady = 1
+    end
+
+    if HallRumorLewd >= 4:
+        ChurchTavernRumorReady = 1
+    end
+
+    if $HallRumorGirl = 'amanda' and HallRumorGirlCount['amanda'] >= 3:
+        LegareAmandaRumorReady = 1
+    end
+
+    if $HallRumorGirl = 'melissa' and HallRumorGirlCount['melissa'] >= 3:
+        MelissaFamilyConcern += 1
+    end
+
+    if $HallRumorGirl = 'sandra' and HallRumorGirlCount['sandra'] >= 3:
+        SandraFamilyConcern += 1
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    if LOC('HallRumorBuildLastText') = 1:
+        gs 'HallRumorBuildLastText'
+    end
+
+    killvar '$HallRumorGirl'
+    killvar '$HallRumorEvent'
+    killvar 'HallRumorSeverity'
+---
+
+#HallRumorBuildLastText
+    $HallRumorLastText = ''
+
+    if $HallRumorGirl = '':
+        exit
+    end
+
+    if LOC('HallRumorText') = 1:
+        gs 'HallRumorText', $HallRumorGirl, $HallRumorEvent, HallRumorSeverity
+    else:
+        $HallRumorLastText = 'Слухи о трактире становятся громче.'
+    end
+---
+
+#HallRumorPrintLast
+    if $HallRumorLastText <> '':
+        *p $HallRumorLastText
+    end
+---
+
+#HallRumorDebugPanel
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG HALL RUMORS] total: ' + STR(HallRumorTotal)
+        *pl '[DEBUG HALL RUMORS] today: ' + STR(HallRumorToday)
+        *pl '[DEBUG HALL RUMORS] lewd: ' + STR(HallRumorLewd)
+        *pl '[DEBUG HALL RUMORS] missing: ' + STR(HallRumorMissing)
+        *pl '[DEBUG HALL RUMORS] kitchen: ' + STR(HallRumorKitchen)
+        *pl '[DEBUG HALL RUMORS] IrmaUniformRumorReady: ' + STR(IrmaUniformRumorReady)
+        *pl '[DEBUG HALL RUMORS] ChurchTavernRumorReady: ' + STR(ChurchTavernRumorReady)
+        *pl '[DEBUG HALL RUMORS] LegareAmandaRumorReady: ' + STR(LegareAmandaRumorReady)
+    end
+---
+
+#ResetHallRumorDaily
+    HallRumorToday = 0
+---

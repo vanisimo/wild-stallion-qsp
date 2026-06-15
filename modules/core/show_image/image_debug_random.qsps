@@ -1,0 +1,535 @@
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Единый вывод изображений с адаптивным размером
+! Версия: smart image size v1
+! Назначение:
+! - не использовать FILEEXISTS
+! - показывать путь картинки в debug_images
+! - поддерживать случайные картинки
+! - автоматически уменьшать широкие и вертикальные изображения
+! - сохранять совместимость со старыми вызовами ShowLocationTimeImage / ShowEventImage / ShowSexImage
+!
+! Важно:
+! Этот файл заменяет старый modules/core/show_image/image_debug_random.qsps.
+! Не подключать вторую копию с такими же локаторами.
+! ================================================
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Инициализация debug-флага и размеров изображений
+! Можно вызвать из GameInit:
+! debug_images = 1
+! gs 'InitImageDebug'
+! ================================================
+
+#InitImageDebug
+    if debug_images = 0:
+        debug_images = debug
+    end
+
+    ! Широкие локации: зал, рынок, церковь, улица
+    if $ImageWidthLocation = '':
+        $ImageWidthLocation = '35%'
+    end
+
+    ! Обычные сюжетные события
+    if $ImageWidthEvent = '':
+        $ImageWidthEvent = '70%'
+    end
+
+    ! Вертикальные события
+    if $ImageWidthEventVertical = '':
+        $ImageWidthEventVertical = '50%'
+    end
+
+    ! Портреты девушек
+    if $ImageWidthPortrait = '':
+        $ImageWidthPortrait = '50%'
+    end
+
+    ! Интимные горизонтальные сцены
+    if $ImageWidthSexHorizontal = '':
+        $ImageWidthSexHorizontal = '70%'
+    end
+
+    ! Интимные вертикальные сцены
+    if $ImageWidthSexVertical = '':
+        $ImageWidthSexVertical = '60%'
+    end
+
+    ! Всё остальное
+    if $ImageWidthDefault = '':
+        $ImageWidthDefault = '75%'
+    end
+
+    ! 1 — показывать тип и ширину изображения в debug_images
+    if ImageDebugShowType <= 0:
+        ImageDebugShowType = 1
+    end
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Ключ времени суток для картинок локаций
+! time:
+! 1 утро, 2 полдень, 3 день, 4 вечер, 5 ночь
+! ================================================
+
+#ImageTimeKey
+    $ImageTimeKey = 'day'
+
+    if time = 1:
+        $ImageTimeKey = 'morning'
+    elseif time = 2:
+        $ImageTimeKey = 'day'
+    elseif time = 3:
+        $ImageTimeKey = 'day'
+    elseif time = 4:
+        $ImageTimeKey = 'evening'
+    elseif time = 5:
+        $ImageTimeKey = 'night'
+    end
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Угадать тип картинки по пути
+! ARGS[0] — путь
+! Результат:
+! $ImageSmartType
+! ================================================
+
+#GuessImageType
+    $GuessImagePath = LCASE($ARGS[0])
+    $ImageSmartType = 'default'
+
+    if $GuessImagePath = '':
+        exit
+    end
+
+    if INSTR($GuessImagePath, 'images/locations/') > 0:
+        $ImageSmartType = 'location'
+    elseif INSTR($GuessImagePath, 'images/girls/') > 0:
+        $ImageSmartType = 'portrait'
+    elseif INSTR($GuessImagePath, 'images/events/sex/') > 0:
+        if INSTR($GuessImagePath, '_v.') > 0 or INSTR($GuessImagePath, '_vertical') > 0 or INSTR($GuessImagePath, '/vertical/') > 0:
+            $ImageSmartType = 'sex_vertical'
+        else:
+            $ImageSmartType = 'sex_horizontal'
+        end
+    elseif INSTR($GuessImagePath, 'portrait') > 0:
+        $ImageSmartType = 'portrait'
+    elseif INSTR($GuessImagePath, '_v.') > 0 or INSTR($GuessImagePath, '_vertical') > 0 or INSTR($GuessImagePath, '/vertical/') > 0:
+        $ImageSmartType = 'event_vertical'
+    elseif INSTR($GuessImagePath, 'images/events/') > 0:
+        $ImageSmartType = 'event'
+    end
+
+    killvar '$GuessImagePath'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Получить ширину по типу картинки
+! ARGS[0] — тип
+! Результат:
+! $ImageSmartWidth
+! ================================================
+
+#GetImageWidthByType
+    $ImageSmartType = LCASE($ARGS[0])
+
+    if $ImageSmartType = 'location':
+        $ImageSmartWidth = $ImageWidthLocation
+    elseif $ImageSmartType = 'event':
+        $ImageSmartWidth = $ImageWidthEvent
+    elseif $ImageSmartType = 'event_vertical':
+        $ImageSmartWidth = $ImageWidthEventVertical
+    elseif $ImageSmartType = 'portrait':
+        $ImageSmartWidth = $ImageWidthPortrait
+    elseif $ImageSmartType = 'sex_vertical':
+        $ImageSmartWidth = $ImageWidthSexVertical
+    elseif $ImageSmartType = 'sex_horizontal':
+        $ImageSmartWidth = $ImageWidthSexHorizontal
+    else:
+        $ImageSmartWidth = $ImageWidthDefault
+    end
+
+    if $ImageSmartWidth = '':
+        $ImageSmartWidth = '75%'
+    end
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Прямой вывод картинки с указанной шириной
+! ARGS[0] — путь
+! ARGS[1] — ширина, например '95%' или '700'
+! ARGS[2] — подпись, необязательно
+! ================================================
+
+#ShowSizedImage
+    $SizedImagePath = $ARGS[0]
+    $SizedImageWidth = $ARGS[1]
+    $SizedImageCaption = $ARGS[2]
+
+    if $SizedImagePath = '':
+        if debug_images = 1:
+            *pl '<small>[IMAGE ERROR] Пустой путь изображения.</small>'
+        end
+
+        exit
+    end
+
+    if $SizedImageWidth = '':
+        $SizedImageWidth = '75%'
+    end
+
+    *p '<center><img src="' + $SizedImagePath + '" width="' + $SizedImageWidth + '"></center>'
+
+    if $SizedImageCaption <> '':
+        *pl '<center><small>' + $SizedImageCaption + '</small></center>'
+    end
+
+    if debug_images = 1:
+        *pl '<small>[IMAGE] ' + $SizedImagePath + '</small>'
+
+        if ImageDebugShowType = 1:
+            *pl '<small>[IMAGE WIDTH] ' + $SizedImageWidth + '</small>'
+        end
+    end
+
+    killvar '$SizedImagePath'
+    killvar '$SizedImageWidth'
+    killvar '$SizedImageCaption'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Умный вывод картинки по типу
+! ARGS[0] — путь
+! ARGS[1] — тип:
+! location, event, event_vertical, portrait, sex_horizontal, sex_vertical
+! ARGS[2] — подпись, необязательно
+! ================================================
+
+#ShowImageSmart
+    $SmartImagePath = $ARGS[0]
+    $SmartImageType = LCASE($ARGS[1])
+    $SmartImageCaption = $ARGS[2]
+
+    if $SmartImagePath = '':
+        if debug_images = 1:
+            *pl '<small>[IMAGE ERROR] ShowImageSmart вызван без пути.</small>'
+        end
+
+        exit
+    end
+
+    if $SmartImageType = '':
+        gs 'GuessImageType', $SmartImagePath
+    else:
+        $ImageSmartType = $SmartImageType
+    end
+
+    gs 'GetImageWidthByType', $ImageSmartType
+
+    *p '<center><img src="' + $SmartImagePath + '" width="' + $ImageSmartWidth + '"></center>'
+
+    if $SmartImageCaption <> '':
+        *pl '<center><small>' + $SmartImageCaption + '</small></center>'
+    end
+
+    if debug_images = 1:
+        *pl '<small>[IMAGE] ' + $SmartImagePath + '</small>'
+
+        if ImageDebugShowType = 1:
+            *pl '<small>[IMAGE TYPE] ' + $ImageSmartType + ' / width ' + $ImageSmartWidth + '</small>'
+        end
+    end
+
+    killvar '$SmartImagePath'
+    killvar '$SmartImageType'
+    killvar '$SmartImageCaption'
+    killvar '$ImageSmartType'
+    killvar '$ImageSmartWidth'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Совместимый вывод конкретной картинки
+! ARGS[0] — путь к файлу
+! ARGS[1] — подпись, необязательно
+! ARGS[2] — тип картинки, необязательно
+! ================================================
+
+#ShowImagePath
+    $ImagePath = $ARGS[0]
+    $ImageCaption = $ARGS[1]
+    $ImageType = LCASE($ARGS[2])
+
+    if $ImagePath = '':
+        if debug_images = 1:
+            *pl '<small>[IMAGE ERROR] Пустой путь изображения.</small>'
+        end
+
+        exit
+    end
+
+    gs 'ShowImageSmart', $ImagePath, $ImageType, $ImageCaption
+
+    killvar '$ImagePath'
+    killvar '$ImageCaption'
+    killvar '$ImageType'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Вывод случайной картинки по шаблону
+! ARGS[0] — папка
+! ARGS[1] — базовое имя
+! ARGS[2] — количество вариантов
+! ARGS[3] — расширение без точки, необязательно, по умолчанию webp
+! ARGS[4] — тип картинки, необязательно
+! Пример:
+! gs 'ShowRandomImagePath', 'images/locations/tavern/hall', 'day', 4
+! images/locations/tavern/hall/day_1.webp ... day_4.webp
+! ================================================
+
+#ShowRandomImagePath
+    $ImageFolder = $ARGS[0]
+    $ImageBase = $ARGS[1]
+    ImageVariants = ARGS[2]
+    $ImageExt = $ARGS[3]
+    $ImageType = LCASE($ARGS[4])
+
+    if $ImageExt = '':
+        $ImageExt = 'webp'
+    end
+
+    if ImageVariants <= 0:
+        ImageVariants = 1
+    end
+
+    ImageRoll = RAND(1, ImageVariants)
+
+    if $ImageFolder = '':
+        $ImagePath = $ImageBase + '_' + STR(ImageRoll) + '.' + $ImageExt
+    else:
+        $ImagePath = $ImageFolder + '/' + $ImageBase + '_' + STR(ImageRoll) + '.' + $ImageExt
+    end
+
+    gs 'ShowImagePath', $ImagePath, '', $ImageType
+
+    killvar '$ImageFolder'
+    killvar '$ImageBase'
+    killvar '$ImageExt'
+    killvar '$ImageType'
+    killvar 'ImageVariants'
+    killvar 'ImageRoll'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Вывод картинки локации с учётом времени суток
+! ARGS[0] — папка локации
+! ARGS[1] — количество вариантов
+! ARGS[2] — расширение, необязательно
+! Пример:
+! gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+! images/locations/tavern/hall/morning_1.webp
+! ================================================
+
+#ShowLocationTimeImage
+    $ImageFolder = $ARGS[0]
+    ImageVariants = ARGS[1]
+    $ImageExt = $ARGS[2]
+
+    gs 'ImageTimeKey'
+    gs 'ShowRandomImagePath', $ImageFolder, $ImageTimeKey, ImageVariants, $ImageExt, 'location'
+
+    killvar '$ImageFolder'
+    killvar '$ImageExt'
+    killvar 'ImageVariants'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Быстрый вывод картинки главного зала таверны
+! Используется в TavernMain
+! ================================================
+
+#ShowTavernHallImage
+    gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Быстрый вывод картинки кухни таверны
+! Используется в Kitchen
+! ================================================
+
+#ShowTavernKitchenImage
+    gs 'ShowLocationTimeImage', 'images/locations/tavern/kitchen', 3
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Вывод картинки события
+! ARGS[0] — папка события
+! ARGS[1] — ключ события
+! ARGS[2] — количество вариантов
+! ARGS[3] — расширение, необязательно
+! ARGS[4] — тип картинки, необязательно:
+! event / event_vertical
+! Пример:
+! gs 'ShowEventImage', 'images/events/hall/harassment', 'amanda', 2
+! ================================================
+
+#ShowEventImage
+    $ImageFolder = $ARGS[0]
+    $ImageEventKey = $ARGS[1]
+    ImageVariants = ARGS[2]
+    $ImageExt = $ARGS[3]
+    $ImageType = LCASE($ARGS[4])
+
+    if $ImageType = '':
+        $ImageType = 'event'
+    end
+
+    gs 'ShowRandomImagePath', $ImageFolder, $ImageEventKey, ImageVariants, $ImageExt, $ImageType
+
+    killvar '$ImageFolder'
+    killvar '$ImageEventKey'
+    killvar '$ImageExt'
+    killvar '$ImageType'
+    killvar 'ImageVariants'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Вывод вертикальной картинки события
+! ARGS[0] — папка события
+! ARGS[1] — ключ события
+! ARGS[2] — количество вариантов
+! ARGS[3] — расширение, необязательно
+! ================================================
+
+#ShowEventImageVertical
+    gs 'ShowEventImage', $ARGS[0], $ARGS[1], ARGS[2], $ARGS[3], 'event_vertical'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Вывод картинки интимной сцены
+! ARGS[0] — девушка
+! ARGS[1] — действие
+! ARGS[2] — количество вариантов
+! ARGS[3] — расширение, необязательно
+! ARGS[4] — тип, необязательно:
+! sex_horizontal / sex_vertical
+! Пример:
+! gs 'ShowSexImage', 'amanda', 'kiss', 1
+! images/events/sex/amanda/kiss_1.webp
+! ================================================
+
+#ShowSexImage
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $ImageGirl = $GirlKey
+    $ImageAction = LCASE($ARGS[1])
+    ImageVariants = ARGS[2]
+    $ImageExt = $ARGS[3]
+    $ImageType = LCASE($ARGS[4])
+
+    if $ImageGirl = '':
+        $ImageGirl = LCASE($ARGS[0])
+    end
+
+    if $ImageAction = '':
+        $ImageAction = 'default'
+    end
+
+    if $ImageType = '':
+        $ImageType = 'sex_horizontal'
+    end
+
+    $ImageFolder = 'images/events/sex/' + $ImageGirl
+
+    gs 'ShowRandomImagePath', $ImageFolder, $ImageAction, ImageVariants, $ImageExt, $ImageType
+
+    killvar '$ImageGirl'
+    killvar '$ImageAction'
+    killvar '$ImageFolder'
+    killvar '$ImageExt'
+    killvar '$ImageType'
+    killvar 'ImageVariants'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Вывод вертикальной интимной картинки
+! ARGS[0] — девушка
+! ARGS[1] — действие
+! ARGS[2] — количество вариантов
+! ARGS[3] — расширение, необязательно
+! ================================================
+
+#ShowSexImageVertical
+    gs 'ShowSexImage', $ARGS[0], $ARGS[1], ARGS[2], $ARGS[3], 'sex_vertical'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Вывод портрета девушки
+! ARGS[0] — девушка
+! Пример:
+! gs 'ShowGirlPortraitImage', 'amanda'
+! images/girls/amanda/portrait.webp
+! ================================================
+
+#ShowGirlPortraitImage
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $ImageGirl = $GirlKey
+
+    if $ImageGirl = '':
+        $ImageGirl = LCASE($ARGS[0])
+    end
+
+    if $ImageGirl = '':
+        if debug_images = 1:
+            *pl '<small>[IMAGE ERROR] ShowGirlPortraitImage вызван без девушки.</small>'
+        end
+
+        exit
+    end
+
+    $ImagePath = 'images/girls/' + $ImageGirl + '/portrait.webp'
+
+    gs 'ShowImagePath', $ImagePath, '', 'portrait'
+
+    killvar '$ImageGirl'
+    killvar '$ImagePath'
+---
+
+! ================================================
+! FILE: modules/core/show_image/image_debug_random.qsps
+! Debug-панель текущих настроек изображений
+! Можно вызывать из любой debug-локации
+! ================================================
+
+#ImageSettingsDebugPanel
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG IMAGE SETTINGS]'
+        *pl 'location: ' + $ImageWidthLocation
+        *pl 'event: ' + $ImageWidthEvent
+        *pl 'event_vertical: ' + $ImageWidthEventVertical
+        *pl 'portrait: ' + $ImageWidthPortrait
+        *pl 'sex_horizontal: ' + $ImageWidthSexHorizontal
+        *pl 'sex_vertical: ' + $ImageWidthSexVertical
+        *pl 'default: ' + $ImageWidthDefault
+        *pl ' '
+    end
+---

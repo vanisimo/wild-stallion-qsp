@@ -1,0 +1,383 @@
+! ================================================
+! FILE: modules/events/tavern/legare_supply_aftermath.qsps
+! Последствия торгового давления Легаре
+! Версия: supply aftermath v1 / compact menu
+! Назначение:
+! - дать разговоры после проблем с поставками
+! - обработать реакцию Мелиссы на падение прибыли / нехватку вина и пива
+! - расширить осторожную ветку Клариссы после обходных поставок
+! - подготовить следующий шаг: Легаре подозревает Клариссу или усиливает блокаду
+!
+! Тексты берутся из:
+! modules/events/tavern/legare_supply_aftermath_text.qsps
+!
+! Хуки добавляются в:
+! modules/actions/dialogs/girl_talk.qsps
+! ================================================
+
+#MelissaTalkAboutLegareSupply
+    *clr
+    clr
+    cla
+
+    $SupplyAftermathReturnLoc = $ARGS[0]
+
+    if $SupplyAftermathReturnLoc = '':
+        $SupplyAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($SupplyAftermathReturnLoc) = 0:
+        $SupplyAftermathReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    MelissaLegareSupplyTalkReady = 0
+    MelissaLegareSupplyTalkDone = 1
+    MelissaFamilyConcern += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА О ПОСТАВКАХ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareSupplyIntroText') = 1:
+        gs 'MelissaTalkAboutLegareSupplyIntroText'
+    else:
+        *p 'Мелисса считает, что Легаре начал бить по трактиру через поставки.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SUPPLY AFTERMATH] TavernAlcoholShortage: ' + STR(TavernAlcoholShortage)
+        *pl '[DEBUG SUPPLY AFTERMATH] TavernSupplyPenalty: ' + STR(TavernSupplyPenalty)
+        *pl '[DEBUG SUPPLY AFTERMATH] TavernSupplyCostLevel: ' + STR(TavernSupplyCostLevel)
+        *pl '[DEBUG SUPPLY AFTERMATH] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    gs 'MelissaTalkAboutLegareSupplyBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''MelissaLegareSupplyMenu''">Мелиссе</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_aftermath.qsps
+! Меню разговора с Мелиссой
+! ================================================
+
+#MelissaTalkAboutLegareSupplyBuildMenu
+    gs 'Menu.Destroy', 'MelissaLegareSupplyMenu'
+    gs 'Menu.Create', 'MelissaLegareSupplyMenu'
+
+    gs 'Menu.Add', 'MelissaLegareSupplyMenu', 'Попросить оценить запасы', ''
+    gs 'Menu.AddModule', 'MelissaLegareSupplyMenu', {
+        gt 'MelissaTalkAboutLegareSupplyAction', 'check_stock', $SupplyAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaLegareSupplyMenu', 'Попросить экономить вино и пиво', ''
+    gs 'Menu.AddModule', 'MelissaLegareSupplyMenu', {
+        gt 'MelissaTalkAboutLegareSupplyAction', 'save_alcohol', $SupplyAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaLegareSupplyMenu', 'Сказать, что будете искать обходной путь', ''
+    gs 'Menu.AddModule', 'MelissaLegareSupplyMenu', {
+        gt 'MelissaTalkAboutLegareSupplyAction', 'seek_route', $SupplyAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaLegareSupplyMenu', 'Признать, что конфликт с Легаре опасен', ''
+    gs 'Menu.AddModule', 'MelissaLegareSupplyMenu', {
+        gt 'MelissaTalkAboutLegareSupplyAction', 'admit_danger', $SupplyAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaLegareSupplyMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'MelissaLegareSupplyMenu', {
+        gt $SupplyAftermathReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_aftermath.qsps
+! Результат разговора с Мелиссой
+! ================================================
+
+#MelissaTalkAboutLegareSupplyAction
+    *clr
+    clr
+    cla
+
+    $SupplyAftermathChoice = LCASE($ARGS[0])
+    $SupplyAftermathReturnLoc = $ARGS[1]
+
+    if $SupplyAftermathReturnLoc = '':
+        $SupplyAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($SupplyAftermathReturnLoc) = 0:
+        $SupplyAftermathReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    if $SupplyAftermathChoice = 'check_stock':
+        MelissaRespectStefan += 1
+        MelissaTrustStefan += 1
+        TavernSupplyPenalty -= 1
+
+        if TavernSupplyPenalty < 0:
+            TavernSupplyPenalty = 0
+        end
+
+    elseif $SupplyAftermathChoice = 'save_alcohol':
+        MelissaControlNeed += 1
+        MelissaRespectStefan += 1
+        TavernSupplyPenalty -= 1
+        TavernReputation -= 1
+
+        if TavernSupplyPenalty < 0:
+            TavernSupplyPenalty = 0
+        end
+
+        if TavernReputation < 0:
+            TavernReputation = 0
+        end
+
+    elseif $SupplyAftermathChoice = 'seek_route':
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        ClarissaSupplyTalkReady = 1
+        ClarissaRouteHint = 1
+
+    elseif $SupplyAftermathChoice = 'admit_danger':
+        MelissaTrustStefan += 1
+        MelissaFamilyConcern += 1
+        MelissaRespectStefan += 1
+        LegareSupplyCounterPlanReady = 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА И ПОСТАВКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareSupplyActionText') = 1:
+        gs 'MelissaTalkAboutLegareSupplyActionText', $SupplyAftermathChoice
+    else:
+        *p 'Мелисса кивает и берёт часть заботы о запасах на себя.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SUPPLY AFTERMATH] Choice: ' + $SupplyAftermathChoice
+        *pl '[DEBUG SUPPLY AFTERMATH] TavernSupplyPenalty: ' + STR(TavernSupplyPenalty)
+        *pl '[DEBUG SUPPLY AFTERMATH] ClarissaSupplyTalkReady: ' + STR(ClarissaSupplyTalkReady)
+        *pl '[DEBUG SUPPLY AFTERMATH] CounterPlanReady: ' + STR(LegareSupplyCounterPlanReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $SupplyAftermathReturnLoc
+    end
+
+    killvar '$SupplyAftermathChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_aftermath.qsps
+! Кларисса после запуска обходных поставок
+! ================================================
+
+#ClarissaTalkAboutSupplyAftermath
+    *clr
+    clr
+    cla
+
+    $SupplyAftermathReturnLoc = $ARGS[0]
+
+    if $SupplyAftermathReturnLoc = '':
+        $SupplyAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($SupplyAftermathReturnLoc) = 0:
+        $SupplyAftermathReturnLoc = 'TavernMain'
+    end
+
+    if $RealName['clarissa'] = '':
+        $RealName['clarissa'] = 'Кларисса'
+    end
+
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    ClarissaSupplyAftermathReady = 0
+    ClarissaSupplyAftermathDone = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА И ОБХОДНЫЕ ПОСТАВКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutSupplyAftermathIntroText') = 1:
+        gs 'ClarissaTalkAboutSupplyAftermathIntroText'
+    else:
+        *p 'Кларисса предупреждает, что помощь с поставками может вызвать подозрения Легаре.'
+    end
+
+    *pl ' '
+
+    gs 'ClarissaTalkAboutSupplyAftermathBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''ClarissaSupplyAftermathMenu''">Клариссе</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_aftermath.qsps
+! Меню разговора с Клариссой
+! ================================================
+
+#ClarissaTalkAboutSupplyAftermathBuildMenu
+    gs 'Menu.Destroy', 'ClarissaSupplyAftermathMenu'
+    gs 'Menu.Create', 'ClarissaSupplyAftermathMenu'
+
+    gs 'Menu.Add', 'ClarissaSupplyAftermathMenu', 'Поблагодарить её осторожно', ''
+    gs 'Menu.AddModule', 'ClarissaSupplyAftermathMenu', {
+        gt 'ClarissaTalkAboutSupplyAftermathAction', 'thank', $SupplyAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'ClarissaSupplyAftermathMenu', 'Спросить, насколько Легаре подозревает её', ''
+    gs 'Menu.AddModule', 'ClarissaSupplyAftermathMenu', {
+        gt 'ClarissaTalkAboutSupplyAftermathAction', 'ask_suspicion', $SupplyAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'ClarissaSupplyAftermathMenu', 'Предложить защиту, если Легаре узнает', ''
+    gs 'Menu.AddModule', 'ClarissaSupplyAftermathMenu', {
+        gt 'ClarissaTalkAboutSupplyAftermathAction', 'offer_protection', $SupplyAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'ClarissaSupplyAftermathMenu', 'Попросить продолжать помогать тайно', ''
+    gs 'Menu.AddModule', 'ClarissaSupplyAftermathMenu', {
+        gt 'ClarissaTalkAboutSupplyAftermathAction', 'continue_secret', $SupplyAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'ClarissaSupplyAftermathMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'ClarissaSupplyAftermathMenu', {
+        gt $SupplyAftermathReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_aftermath.qsps
+! Результат разговора с Клариссой
+! ================================================
+
+#ClarissaTalkAboutSupplyAftermathAction
+    *clr
+    clr
+    cla
+
+    $ClarissaSupplyAftermathChoice = LCASE($ARGS[0])
+    $SupplyAftermathReturnLoc = $ARGS[1]
+
+    if $SupplyAftermathReturnLoc = '':
+        $SupplyAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($SupplyAftermathReturnLoc) = 0:
+        $SupplyAftermathReturnLoc = 'TavernMain'
+    end
+
+    if $RealName['clarissa'] = '':
+        $RealName['clarissa'] = 'Кларисса'
+    end
+
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    if $ClarissaSupplyAftermathChoice = 'thank':
+        ClarissaTrustStefan += 1
+        ClarissaJealousy -= 1
+
+        if ClarissaJealousy < 0:
+            ClarissaJealousy = 0
+        end
+
+    elseif $ClarissaSupplyAftermathChoice = 'ask_suspicion':
+        ClarissaTrustStefan += 1
+        LegareSuspiciousOfClarissa += 1
+        LegareClarissaSuspicionKnown = 1
+
+    elseif $ClarissaSupplyAftermathChoice = 'offer_protection':
+        ClarissaTrustStefan += 2
+        ClarissaAgainstLegareAlliance = 1
+        ClarissaProtectedByStefanHint = 1
+        LegareSuspiciousOfClarissa += 1
+
+    elseif $ClarissaSupplyAftermathChoice = 'continue_secret':
+        ClarissaTrustStefan += 1
+        ClarissaSecretTradeRouteReady = 1
+        ClarissaSecretAllianceHint = 1
+        LegareSuspiciousOfClarissa += 2
+        LegareClarissaConflictReady = 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА И ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutSupplyAftermathActionText') = 1:
+        gs 'ClarissaTalkAboutSupplyAftermathActionText', $ClarissaSupplyAftermathChoice
+    else:
+        *p 'Кларисса внимательно слушает и делает свои выводы.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG CLARISSA SUPPLY] Choice: ' + $ClarissaSupplyAftermathChoice
+        *pl '[DEBUG CLARISSA SUPPLY] Trust: ' + STR(ClarissaTrustStefan)
+        *pl '[DEBUG CLARISSA SUPPLY] Suspicious: ' + STR(LegareSuspiciousOfClarissa)
+        *pl '[DEBUG CLARISSA SUPPLY] ConflictReady: ' + STR(LegareClarissaConflictReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $SupplyAftermathReturnLoc
+    end
+
+    killvar '$ClarissaSupplyAftermathChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_aftermath.qsps
+! Подготовка реакции Клариссы после разблокировки маршрута
+! Вызывается из #TavernSupplyStatus или после ClarissaTalkAboutSupplyRoute
+! ================================================
+
+#MarkClarissaSupplyAftermathReady
+    if ClarissaWineRouteUnlocked = 1 or ClarissaBeerRouteUnlocked = 1:
+        if ClarissaSupplyAftermathDone = 0:
+            ClarissaSupplyAftermathReady = 1
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_aftermath.qsps
+! Debug-сброс
+! ================================================
+
+#LegareSupplyAftermathDebugReset
+    MelissaLegareSupplyTalkReady = 0
+    MelissaLegareSupplyTalkDone = 0
+    ClarissaSupplyAftermathReady = 0
+    ClarissaSupplyAftermathDone = 0
+    LegareSupplyCounterPlanReady = 0
+    LegareClarissaSuspicionKnown = 0
+    ClarissaProtectedByStefanHint = 0
+    LegareClarissaConflictReady = 0
+---

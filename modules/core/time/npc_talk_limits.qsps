@@ -1,0 +1,250 @@
+! ================================================
+! FILE: modules/core/time/npc_talk_limits.qsps
+! Ограничение полезных разговоров с NPC
+! Назначение:
+! - 1 полезный разговор с одним NPC за часть дня
+! - максимум 3 полезных разговора с одним NPC за день
+! - обычная болтовня доступна всегда и не двигает сюжет
+! Используется логикой:
+! modules/actions/girl_talk.qsps
+! Локаторы вызова:
+! #GirlTalkResult
+! ================================================
+
+#InitNpcTalkLimits
+    if UsefulTalkMaxPerPart <= 0:
+        UsefulTalkMaxPerPart = 1
+    end
+
+    if UsefulTalkMaxPerDay <= 0:
+        UsefulTalkMaxPerDay = 3
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/npc_talk_limits.qsps
+! Проверка, можно ли провести полезный разговор сейчас
+! ARGS[0] — девушка / NPC
+! ARGS[1] — тема разговора
+! Результат:
+! UsefulTalkResult = 1 / 0
+! $UsefulTalkReason — причина отказа
+! ================================================
+
+#UsefulTalkCheck
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $UsefulTalkGirl = $GirlKey
+    $UsefulTalkTopic = LCASE($ARGS[1])
+
+    UsefulTalkResult = 1
+    $UsefulTalkReason = ''
+
+    if $UsefulTalkGirl = '':
+        UsefulTalkResult = 0
+        $UsefulTalkReason = 'Ошибка: UsefulTalkCheck вызван без имени NPC.'
+        exit
+    end
+
+    if UsefulTalkMaxPerPart <= 0:
+        UsefulTalkMaxPerPart = 1
+    end
+
+    if UsefulTalkMaxPerDay <= 0:
+        UsefulTalkMaxPerDay = 3
+    end
+
+    $UsefulTalkPartKey = $UsefulTalkGirl + '_' + STR(day) + '_' + STR(time)
+    $UsefulTalkDayKey = $UsefulTalkGirl + '_' + STR(day)
+
+    if UsefulTalkPartCount[$UsefulTalkPartKey] >= UsefulTalkMaxPerPart:
+        UsefulTalkResult = 0
+        $UsefulTalkReason = $RealName[$UsefulTalkGirl] + ' уже обсудила с вами важную тему в эту часть дня. Сейчас можно только поболтать ни о чём.'
+        exit
+    end
+
+    if UsefulTalkDayCount[$UsefulTalkDayKey] >= UsefulTalkMaxPerDay:
+        UsefulTalkResult = 0
+        $UsefulTalkReason = $RealName[$UsefulTalkGirl] + ' уже достаточно устала от серьёзных разговоров за сегодня. Лучше вернуться к важным темам завтра.'
+        exit
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/npc_talk_limits.qsps
+! Регистрация полезного разговора
+! Вызывать только после успешного UsefulTalkCheck
+! ARGS[0] — девушка / NPC
+! ARGS[1] — тема разговора
+! ================================================
+
+#UsefulTalkRegister
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $UsefulTalkGirl = $GirlKey
+    $UsefulTalkTopic = LCASE($ARGS[1])
+
+    if $UsefulTalkGirl = '':
+        exit
+    end
+
+    $UsefulTalkPartKey = $UsefulTalkGirl + '_' + STR(day) + '_' + STR(time)
+    $UsefulTalkDayKey = $UsefulTalkGirl + '_' + STR(day)
+
+    UsefulTalkPartCount[$UsefulTalkPartKey] += 1
+    UsefulTalkDayCount[$UsefulTalkDayKey] += 1
+
+    if debug = 1:
+        *pl '[DEBUG TALK] Полезный разговор: ' + $UsefulTalkGirl + ' / ' + $UsefulTalkTopic
+        *pl '[DEBUG TALK] В эту часть дня: ' + STR(UsefulTalkPartCount[$UsefulTalkPartKey]) + ' / ' + STR(UsefulTalkMaxPerPart)
+        *pl '[DEBUG TALK] За день: ' + STR(UsefulTalkDayCount[$UsefulTalkDayKey]) + ' / ' + STR(UsefulTalkMaxPerDay)
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/npc_talk_limits.qsps
+! Определение, считается ли тема полезным разговором
+! ARGS[0] — тема разговора из GirlTalkResult
+! Результат:
+! TalkTopicUseful = 1 / 0
+! ================================================
+
+#GirlTalkTopicIsUseful
+    $UsefulTopicCheck = LCASE($ARGS[0])
+
+    TalkTopicUseful = 0
+
+    if $UsefulTopicCheck = 'tavern':
+        TalkTopicUseful = 1
+    elseif $UsefulTopicCheck = 'family':
+        TalkTopicUseful = 1
+    elseif $UsefulTopicCheck = 'joke':
+        TalkTopicUseful = 1
+    elseif $UsefulTopicCheck = 'personal':
+        TalkTopicUseful = 1
+    elseif $UsefulTopicCheck = 'compliment':
+        TalkTopicUseful = 1
+    elseif $UsefulTopicCheck = 'hall_event':
+        TalkTopicUseful = 1
+    end
+
+    killvar '$UsefulTopicCheck'
+---
+
+! ================================================
+! FILE: modules/core/time/npc_talk_limits.qsps
+! Обычная болтовня без продвижения сюжета
+! ARGS[0] — девушка / NPC
+! ================================================
+
+#SmallTalkNpc
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $SmallTalkGirl = $GirlKey
+
+    if $SmallTalkGirl = '':
+        exit
+    end
+
+    if $RealName[$SmallTalkGirl] = '':
+        $RealName[$SmallTalkGirl] = UCASE(MID($SmallTalkGirl, 1, 1)) + LCASE(MID($SmallTalkGirl, 2))
+    end
+
+    SmallTalkRoll = RAND(1, 5)
+
+    if SmallTalkRoll = 1:
+        *p 'Вы некоторое время говорите с ' + $RealName[$SmallTalkGirl] + ' о погоде, посетителях и обычных мелочах.'
+    elseif SmallTalkRoll = 2:
+        *p $RealName[$SmallTalkGirl] + ' отвечает коротко, но без раздражения. Разговор остаётся лёгким и ни к чему не обязывающим.'
+    elseif SmallTalkRoll = 3:
+        *p 'Вы перебрасываетесь несколькими фразами. Ничего важного из этого разговора не выходит.'
+    elseif SmallTalkRoll = 4:
+        *p $RealName[$SmallTalkGirl] + ' немного улыбается, но быстро возвращается к своим делам.'
+    else:
+        *p 'Разговор получается спокойным и пустым. Иногда и такая болтовня помогает не чувствовать дом совсем чужим.'
+    end
+
+    killvar '$SmallTalkGirl'
+    killvar 'SmallTalkRoll'
+---
+
+! ================================================
+! FILE: modules/core/time/npc_talk_limits.qsps
+! Сброс дневных флагов разговоров
+! Технически система использует ключи day/time, поэтому сброс не обязателен,
+! но этот локатор полезен для debug и для будущих систем.
+! Вызывать при новом дне после смены day.
+! ================================================
+
+#ResetNpcTalkDailyFlags
+    $TalkResetGirl[0] = 'sandra'
+    $TalkResetGirl[1] = 'melissa'
+    $TalkResetGirl[2] = 'amanda'
+    $TalkResetGirl[3] = 'becky'
+    $TalkResetGirl[4] = 'inga'
+    $TalkResetGirl[5] = 'clarissa'
+    $TalkResetGirl[6] = 'lizette'
+    $TalkResetGirl[7] = 'georgett'
+    $TalkResetGirl[8] = 'irma'
+
+    TalkResetIndex = 0
+
+    :ResetNpcTalkGirlLoop
+    $TalkResetCurrentGirl = $TalkResetGirl[TalkResetIndex]
+
+    if $TalkResetCurrentGirl <> '':
+        $TalkResetDayKey = $TalkResetCurrentGirl + '_' + STR(day)
+        UsefulTalkDayCount[$TalkResetDayKey] = 0
+
+        TalkResetPart = 1
+
+        :ResetNpcTalkPartLoop
+        $TalkResetPartKey = $TalkResetCurrentGirl + '_' + STR(day) + '_' + STR(TalkResetPart)
+        UsefulTalkPartCount[$TalkResetPartKey] = 0
+
+        TalkResetPart += 1
+
+        if TalkResetPart <= 5:
+            jump 'ResetNpcTalkPartLoop'
+        end
+
+        TalkResetIndex += 1
+        jump 'ResetNpcTalkGirlLoop'
+    end
+
+    killvar '$TalkResetGirl'
+    killvar '$TalkResetCurrentGirl'
+    killvar '$TalkResetDayKey'
+    killvar '$TalkResetPartKey'
+    killvar 'TalkResetIndex'
+    killvar 'TalkResetPart'
+---
+
+! ================================================
+! FILE: modules/core/time/npc_talk_limits.qsps
+! Debug-панель лимитов разговоров для текущего NPC
+! ARGS[0] — девушка / NPC
+! ================================================
+
+#UsefulTalkDebugPanel
+    if debug = 0:
+        exit
+    end
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $UsefulTalkDebugGirl = $GirlKey
+
+    if $UsefulTalkDebugGirl = '':
+        exit
+    end
+
+    $UsefulTalkPartKey = $UsefulTalkDebugGirl + '_' + STR(day) + '_' + STR(time)
+    $UsefulTalkDayKey = $UsefulTalkDebugGirl + '_' + STR(day)
+
+    *pl ' '
+    *pl '[DEBUG TALK PANEL] NPC: ' + $UsefulTalkDebugGirl
+    *pl '[DEBUG TALK PANEL] Часть дня: ' + STR(UsefulTalkPartCount[$UsefulTalkPartKey]) + ' / ' + STR(UsefulTalkMaxPerPart)
+    *pl '[DEBUG TALK PANEL] День: ' + STR(UsefulTalkDayCount[$UsefulTalkDayKey]) + ' / ' + STR(UsefulTalkMaxPerDay)
+
+    killvar '$UsefulTalkDebugGirl'
+---

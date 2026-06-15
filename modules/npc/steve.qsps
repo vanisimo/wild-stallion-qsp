@@ -1,0 +1,100 @@
+! ================================================
+! FILE: npc/steve.qsps
+! Стефан Лонгкок — главный герой игры
+! Инициализация игрока без механики энергии
+! ================================================
+
+#InitSteve
+    $PlayerName = 'Стефан'
+    $PlayerFullName = 'Стефан Лонгкок'
+
+    age = 20
+
+    strength = 65
+    stamina = 70
+    penis_size = 18
+
+    sexual_endurance = 0
+    max_daily_cum = 2
+    daily_cum_count = 0
+
+    PlayerVirgin = 1
+    PlayerSexCount = 0
+
+    management_skill = 20
+    trading_skill = 15
+    charisma = 40
+
+    drunk = 0
+    tired = 0
+
+    $PlayerCurrentLoc = 'TavernMain'
+
+    if debug = 1:
+        *pl '[DEBUG] Стефан успешно инициализирован. Лимит оргазмов: ' + STR(max_daily_cum)
+    end
+---
+
+! ================================================
+! FILE: modules/core/player_cum.qsps
+! Система дневного лимита оргазмов Стефана
+! Проверка возможности кончить и регистрация оргазма
+! Используется интимом, мастурбацией и будущими сценами
+! ================================================
+
+#CanCumToday
+    if sexual_endurance >= 50:
+        max_daily_cum = 4
+    elseif sexual_endurance >= 25:
+        max_daily_cum = 3
+    else:
+        max_daily_cum = 2
+    end
+
+    if daily_cum_count >= max_daily_cum:
+        Result = 0
+
+        if debug = 1:
+            *pl '[DEBUG] Лимит оргазмов исчерпан: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
+        end
+    else:
+        Result = 1
+    end
+---
+
+! ================================================
+! FILE: modules/core/player_cum.qsps
+! Регистрация оргазма Стефана
+! Увеличивает дневной и общий счётчик
+! Немного повышает сексуальную выносливость
+! ================================================
+
+#RegisterPlayerCum
+    gs 'CanCumToday'
+
+    if Result = 0:
+        *p 'Стефан слишком вымотан за сегодня. Больше он не сможет кончить до завтра.'
+        Result = 0
+        exit
+    end
+
+    daily_cum_count += 1
+    total_cumshots += 1
+    total_sex_acts += 1
+
+    sexual_endurance += 1
+
+    if sexual_endurance > 100:
+        sexual_endurance = 100
+    end
+
+    if debug = 1:
+        *pl '[DEBUG] RegisterPlayerCum'
+        *pl '[DEBUG] Сегодня: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
+        *pl '[DEBUG] Всего оргазмов: ' + STR(total_cumshots)
+        *pl '[DEBUG] Выносливость: ' + STR(sexual_endurance)
+    end
+
+    Result = 1
+---
+

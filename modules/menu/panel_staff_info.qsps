@@ -1,0 +1,156 @@
+! ================================================
+! FILE: modules/menu/panel_staff_info.qsps
+! Панель управления персоналом таверны
+! Назначение работ, снятие работ, нагрузка и эффективность
+! Подготовлено для будущих работников по сюжету
+! ================================================
+
+#PanelStaffInfo
+    PanelCustomActive = 1
+
+    clr
+
+    gs 'CalculateTavernStaffEfficiency'
+
+    pl '══════════════════════════════════════════════'
+    pl ' ПЕРСОНАЛ ТАВЕРНЫ'
+    pl '══════════════════════════════════════════════'
+    pl ' '
+
+    pl 'Здесь назначаются работы в трактире.'
+    pl 'Одна девушка может выполнять несколько работ.'
+    pl 'Чем больше работ, тем ниже её эффективность.'
+    pl ' '
+
+    pl 'Общее состояние персонала:'
+    pl 'Кухня: ' + STR(tavern_kitchen_power)
+    pl 'Зал: ' + STR(tavern_waitress_power)
+    pl 'Уборка: ' + STR(tavern_cleaning_power)
+    pl 'Эффективность таверны: ' + STR(tavern_work_efficiency) + ' / 100'
+
+    if tavern_overload_penalty > 0:
+        pl 'Штраф перегрузки: ' + STR(tavern_overload_penalty)
+    end
+
+    if tavern_missing_work_penalty > 0:
+        pl 'Штраф незакрытых работ: ' + STR(tavern_missing_work_penalty)
+    end
+
+    pl ' '
+    pl 'Работники:'
+    pl ' '
+
+    gs 'PanelStaffGirlLine', 'sandra'
+    gs 'PanelStaffGirlLine', 'melissa'
+    gs 'PanelStaffGirlLine', 'amanda'
+
+    pl '══════════════════════════════════════════════'
+---
+
+! ================================================
+! FILE: modules/menu/panel_staff_info.qsps
+! Строка одного работника в панели персонала
+! Показывает работы, нагрузку, эффективность и быстрые назначения
+! Имена не кликабельные
+! ================================================
+
+#PanelStaffGirlLine
+    $PanelStaffGirl = LCASE($ARGS[0])
+
+    if $PanelStaffGirl = '':
+        exit
+    end
+
+    if $RealName[$PanelStaffGirl] = '':
+        $RealName[$PanelStaffGirl] = UCASE(MID($PanelStaffGirl, 1, 1)) + LCASE(MID($PanelStaffGirl, 2))
+    end
+
+    gs 'PanelGetGirlJobText', $PanelStaffGirl
+    gs 'GetGirlWorkLoad', $PanelStaffGirl
+    gs 'GetGirlWorkEfficiency', $PanelStaffGirl
+
+    $PanelKitchenLink = '<a href="exec:gs ''PanelStaffToggleJob'', ''' + $PanelStaffGirl + ''', ''kitchen''">Кухня</a>'
+    $PanelWaitressLink = '<a href="exec:gs ''PanelStaffToggleJob'', ''' + $PanelStaffGirl + ''', ''waitress''">Зал</a>'
+    $PanelCleaningLink = '<a href="exec:gs ''PanelStaffToggleJob'', ''' + $PanelStaffGirl + ''', ''cleaning''">Уборка</a>'
+    $PanelClearLink = '<a href="exec:gs ''PanelStaffClearJobs'', ''' + $PanelStaffGirl + '''">Снять все</a>'
+
+    pl '<b>' + $RealName[$PanelStaffGirl] + '</b>'
+    pl 'Работы: ' + $PanelJobText
+    pl 'Нагрузка: ' + STR(GirlWorkLoad)
+    pl 'Эффективность: ' + STR(GirlWorkEfficiency) + '%'
+    pl 'Навыки: кухня ' + STR(cooking[$PanelStaffGirl]) + ', зал ' + STR(waitress[$PanelStaffGirl]) + ', уборка ' + STR(cleaning[$PanelStaffGirl])
+    pl $PanelKitchenLink + ' | ' + $PanelWaitressLink + ' | ' + $PanelCleaningLink
+    pl $PanelClearLink
+    pl ' '
+
+    killvar '$PanelStaffGirl'
+    killvar '$PanelKitchenLink'
+    killvar '$PanelWaitressLink'
+    killvar '$PanelCleaningLink'
+    killvar '$PanelClearLink'
+---
+! ================================================
+! FILE: modules/menu/panel_staff_info.qsps
+! Переключение работы работника из панели персонала
+! Повторное нажатие снимает работу
+! После изменения перерисовывает текущую локацию
+! И снова открывает панель персонала в доп. описании
+! ================================================
+
+#PanelStaffToggleJob
+    $PanelStaffGirl = LCASE($ARGS[0])
+    $PanelStaffJob = LCASE($ARGS[1])
+
+    if $PanelStaffGirl = '':
+        exit
+    end
+
+    if $PanelStaffJob = '':
+        exit
+    end
+
+    $PanelReturnLoc = $CURLOC
+
+    if $PanelReturnLoc = '':
+        $PanelReturnLoc = 'TavernMain'
+    end
+
+    gs 'SetGirlJob', $PanelStaffGirl, $PanelStaffJob, 'toggle'
+    gs 'CalculateTavernStaffEfficiency'
+    gs 'UpdateGirlLocations'
+
+    $PanelRestoreAfterRefresh = 'staff'
+
+    gt $PanelReturnLoc
+---
+
+! ================================================
+! FILE: modules/menu/panel_staff_info.qsps
+! Снятие всех работ с работника из панели персонала
+! После изменения перерисовывает текущую локацию
+! И снова открывает панель персонала в доп. описании
+! ================================================
+
+#PanelStaffClearJobs
+    $PanelStaffGirl = LCASE($ARGS[0])
+
+    if $PanelStaffGirl = '':
+        exit
+    end
+
+    $PanelReturnLoc = $CURLOC
+
+    if $PanelReturnLoc = '':
+        $PanelReturnLoc = 'TavernMain'
+    end
+
+    gs 'SetGirlJob', $PanelStaffGirl, ''
+    gs 'CalculateTavernStaffEfficiency'
+    gs 'UpdateGirlLocations'
+
+    $PanelRestoreAfterRefresh = 'staff'
+
+    gt $PanelReturnLoc
+---
+
+

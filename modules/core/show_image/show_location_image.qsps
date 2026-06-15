@@ -1,0 +1,58 @@
+! ================================================
+! FILE: modules/core/show_image/show_location_image.qsps
+! Универсальный вывод картинок локаций
+! Ищет изображения в общей папке images/locations
+! Автоматически подбирает вариант по времени суток
+! Без FILEEXISTS, так как в QSP его нет
+! ================================================
+
+#ShowLocationImage
+    $LocImageName = LCASE($ARGS[0])
+    $LocImageSize = LCASE($ARGS[1])
+    $LocImageExt = LCASE($ARGS[2])
+
+    if $LocImageName = '':
+        exit
+    end
+
+    if $LocImageSize = '':
+        $LocImageSize = 'full'
+    end
+
+    if $LocImageExt = '':
+        $LocImageExt = 'png'
+    end
+
+    if time = 1:
+        $LocImageTimeSuffix = 'morning'
+    elseif time = 5:
+        $LocImageTimeSuffix = 'night'
+    else:
+        $LocImageTimeSuffix = 'day'
+    end
+
+    $LocImagePath = 'images/locations/' + $LocImageName + '_' + $LocImageTimeSuffix + '.' + $LocImageExt
+
+    if $LocImageSize = 'small':
+        $LocImageStyle = 'max-width: 360px; border: 2px solid #444;'
+    elseif $LocImageSize = 'medium':
+        $LocImageStyle = 'max-width: 560px; border: 2px solid #444;'
+    else:
+        $LocImageStyle = 'max-width: 100%; border: 2px solid #444;'
+    end
+
+    *pl '<center><img src="' + $LocImagePath + '" style="' + $LocImageStyle + '"></center>'
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG] ShowLocationImage: ' + $LocImagePath
+    end
+
+    killvar '$LocImageName'
+    killvar '$LocImageSize'
+    killvar '$LocImageExt'
+    killvar '$LocImageTimeSuffix'
+    killvar '$LocImagePath'
+    killvar '$LocImageStyle'
+---
+

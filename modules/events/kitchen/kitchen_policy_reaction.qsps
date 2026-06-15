@@ -1,0 +1,81 @@
+! ================================================
+! FILE: modules/events/kitchen/kitchen_policy_reaction.qsps
+! Реакция на правило работы на кухне
+! Версия: v3
+! Назначение:
+! - совместимость со старыми вызовами KitchenPolicyReaction
+! - использует GirlPolicyResponseCalc
+! - применяет последствия фактической реакции девушки
+! - результат печатается через $KitchenPolicyReactionText
+! Тексты берутся из:
+! modules/events/hall/girl_policy_response_text.qsps
+! modules/events/hall/girl_policy_response_consequences_text.qsps
+! ================================================
+
+#KitchenPolicyReaction
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $KitchenPolicyGirl = $GirlKey
+    $KitchenPolicyScene = LCASE($ARGS[1])
+    $KitchenPolicyReturnLoc = $ARGS[2]
+
+    $KitchenPolicyReactionText = ''
+    $KitchenPolicyResponseActual = ''
+    KitchenPolicyResponseLevel = 2
+
+    if $KitchenPolicyGirl = 'tavernmain' or $KitchenPolicyGirl = 'tavernmainlookhall' or $KitchenPolicyGirl = 'tavernhallactivitystart':
+        $KitchenPolicyGirl = ''
+    end
+
+    if $KitchenPolicyGirl = '':
+        exit
+    end
+
+    if $KitchenPolicyReturnLoc = '':
+        $KitchenPolicyReturnLoc = 'TavernMain'
+    end
+
+    if LOC($KitchenPolicyReturnLoc) = 0:
+        $KitchenPolicyReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $KitchenPolicyGirl
+
+    KitchenPolicyValue = GirlKitchenPolicy[$KitchenPolicyGirl]
+
+    if KitchenPolicyValue = 0:
+        KitchenPolicyValue = GirlWorkPolicy[$KitchenPolicyGirl]
+    end
+
+    if LOC('GirlPolicyResponseCalc') = 1:
+        gs 'GirlPolicyResponseCalc', $KitchenPolicyGirl, 'kitchen', KitchenPolicyValue
+
+        $KitchenPolicyReactionText = $PolicyResponseText
+        KitchenPolicyResponseLevel = PolicyResponseLevel
+        $KitchenPolicyResponseActual = $PolicyResponseActual
+
+        if LOC('GirlPolicyResponseApplyConsequences') = 1:
+            gs 'GirlPolicyResponseApplyConsequences', $KitchenPolicyGirl, 'kitchen', KitchenPolicyValue, KitchenPolicyResponseLevel
+
+            if $GirlPolicyResponseConsequenceText <> '':
+                if $KitchenPolicyReactionText <> '':
+                    $KitchenPolicyReactionText += '<br><br>' + $GirlPolicyResponseConsequenceText
+                else:
+                    $KitchenPolicyReactionText = $GirlPolicyResponseConsequenceText
+                end
+            end
+        end
+    else:
+        $KitchenPolicyReactionText = $RealName[$KitchenPolicyGirl] + ' действует по старому правилу кухни.'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG POLICY KITCHEN] girl: ' + $KitchenPolicyGirl
+        *pl '[DEBUG POLICY KITCHEN] rule: ' + STR(KitchenPolicyValue)
+        *pl '[DEBUG POLICY KITCHEN] response level: ' + STR(KitchenPolicyResponseLevel)
+        *pl '[DEBUG POLICY KITCHEN] actual: ' + $KitchenPolicyResponseActual
+    end
+
+    killvar '$KitchenPolicyScene'
+    killvar '$KitchenPolicyReturnLoc'
+    killvar 'KitchenPolicyValue'
+---

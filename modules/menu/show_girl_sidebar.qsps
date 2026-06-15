@@ -1,0 +1,54 @@
+! ================================================
+! FILE: modules/menu/show_girl_sidebar.qsps
+! Краткая информация о девушке в дополнительном описании
+! Не очищает главное окно
+! Использует NormalizeGirlKey для защиты от русских имён
+! ================================================
+
+#ShowGirlSidebar
+    PanelCustomActive = 1
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlName = $GirlKey
+
+    if $GirlName = '':
+        exit
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $GirlName
+    end
+
+    if $RealName[$GirlName] = '':
+        $RealName[$GirlName] = UCASE(MID($GirlName, 1, 1)) + LCASE(MID($GirlName, 2))
+    end
+
+    clr
+
+    pl '══════════════════════════════════════════════'
+    pl ' ' + $RealName[$GirlName]
+    pl '══════════════════════════════════════════════'
+    pl ' '
+
+    gs 'ShowPortraitToPanel', $GirlName, 'small'
+
+    pl 'Красота: ' + STR(beauty[$GirlName])
+    pl 'Развращённость: ' + STR(sluttiness[$GirlName])
+    pl 'Дружба: ' + STR(Friends[$GirlName])
+    pl 'Любовь: ' + STR(love[$GirlName])
+    pl 'Страх: ' + STR(fear[$GirlName])
+    pl 'Ненависть: ' + STR(hate[$GirlName])
+    pl ' '
+
+    if virginity[$GirlName] = 1:
+        pl 'Девственница'
+    else:
+        pl 'Опытная'
+    end
+
+    pl ' '
+    pl '══════════════════════════════════════════════'
+
+    killvar '$GirlName'
+---
+

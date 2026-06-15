@@ -1,0 +1,305 @@
+! ================================================
+! FILE: modules/core/time/npc_city_schedule.qsps
+! Единое расписание семьи и городских NPC
+! Версия: v1 schedule foundation
+! Важно:
+! - этот файл содержит новую версию #UpdateGirlLocations
+! - старый локатор #UpdateGirlLocations из modules/core/girl_location.qsps нужно заменить
+! - не подключать две версии #UpdateGirlLocations одновременно
+! ================================================
+
+#UpdateGirlLocations
+    gs 'GetCitySchedulePhase'
+
+    ! ====================== ПЯТНИЦА ВЕЧЕР — ТАНЦЫ ======================
+
+    if $CitySchedulePhase = 'friday_dance':
+        $GirlLocation['sandra'] = 'DanceHall'
+        $GirlLocation['melissa'] = 'DanceHall'
+        $GirlLocation['amanda'] = 'DanceHall'
+
+        gs 'UpdateCityNpcLocations'
+        exit
+    end
+
+    ! ====================== ВОСКРЕСЕНЬЕ УТРО — СЛУЖБА ======================
+
+    if $CitySchedulePhase = 'sunday_service':
+        $GirlLocation['sandra'] = 'Church'
+        $GirlLocation['melissa'] = 'Church'
+        $GirlLocation['amanda'] = 'Church'
+
+        gs 'UpdateCityNpcLocations'
+        exit
+    end
+
+    ! ====================== ВОСКРЕСЕНЬЕ ПОЛДЕНЬ — ИСПОВЕДИ ======================
+
+    if $CitySchedulePhase = 'sunday_confession':
+        $GirlLocation['sandra'] = 'Church'
+        $GirlLocation['melissa'] = 'Church'
+        $GirlLocation['amanda'] = 'Church'
+
+        gs 'UpdateCityNpcLocations'
+        exit
+    end
+
+    ! ====================== ВОСКРЕСЕНЬЕ ДЕНЬ И ВЕЧЕР — ВИЗИТЫ ======================
+
+    if $CitySchedulePhase = 'sunday_visits':
+        $GirlLocation['sandra'] = 'BeckyHouse'
+        $GirlLocation['melissa'] = 'ClarissaHouse'
+
+        if AmandaMetLizette = 1 or LizetteKnown = 1:
+            $GirlLocation['amanda'] = 'AmandaRoom'
+        else:
+            $GirlLocation['amanda'] = 'TavernMain'
+        end
+
+        gs 'UpdateCityNpcLocations'
+        exit
+    end
+
+    ! ====================== НОЧЬ — ЛИЧНЫЕ КОМНАТЫ ======================
+
+    if $CitySchedulePhase = 'night':
+        gs 'SetGirlHomeLocation', 'sandra'
+        gs 'SetGirlHomeLocation', 'melissa'
+        gs 'SetGirlHomeLocation', 'amanda'
+
+        gs 'UpdateCityNpcLocations'
+        exit
+    end
+
+    ! ====================== ОБЫЧНОЕ РАБОЧЕЕ ВРЕМЯ ======================
+
+    gs 'IsTavernOpen'
+
+    if TavernOpen = 1:
+        gs 'SetGirlWorkLocation', 'sandra'
+        gs 'SetGirlWorkLocation', 'melissa'
+        gs 'SetGirlWorkLocation', 'amanda'
+    else:
+        gs 'ClearGirlLocation', 'sandra'
+        gs 'ClearGirlLocation', 'melissa'
+        gs 'ClearGirlLocation', 'amanda'
+    end
+
+    gs 'UpdateCityNpcLocations'
+---
+
+! ================================================
+! FILE: modules/core/time/npc_city_schedule.qsps
+! Расписание городских NPC
+! Не отвечает за семью напрямую, только за городских персонажей
+! ================================================
+
+#UpdateCityNpcLocations
+    gs 'GetCitySchedulePhase'
+
+    ! ====================== СНАЧАЛА ОЧИЩАЕМ ГОРОДСКИЕ NPC ======================
+
+    $GirlLocation['becky'] = ''
+    $GirlLocation['inga'] = ''
+    $GirlLocation['eddie'] = ''
+    $GirlLocation['clarissa'] = ''
+    $GirlLocation['legare'] = ''
+    $GirlLocation['lizette'] = ''
+    $GirlLocation['georgett'] = ''
+    $GirlLocation['irma'] = ''
+
+    ! ====================== ПЯТНИЦА ВЕЧЕР — ТАНЦЫ ======================
+
+    if $CitySchedulePhase = 'friday_dance':
+        $GirlLocation['becky'] = 'DanceHall'
+        $GirlLocation['clarissa'] = 'DanceHall'
+        $GirlLocation['legare'] = 'DanceHall'
+        $GirlLocation['irma'] = 'DanceHall'
+
+        if IngaDanceUnlocked = 1:
+            $GirlLocation['inga'] = 'DanceHall'
+        end
+
+        if AmandaMetLizette = 1 or LizetteKnown = 1:
+            $GirlLocation['lizette'] = 'DanceHall'
+        end
+
+        if GeorgetteKnown = 1:
+            $GirlLocation['georgett'] = 'DanceHall'
+        end
+
+        exit
+    end
+
+    ! ====================== ВОСКРЕСЕНЬЕ УТРО — СЛУЖБА ======================
+
+    if $CitySchedulePhase = 'sunday_service':
+        $GirlLocation['becky'] = 'Church'
+        $GirlLocation['inga'] = 'Church'
+        $GirlLocation['eddie'] = 'Church'
+        $GirlLocation['clarissa'] = 'Church'
+        $GirlLocation['irma'] = 'Church'
+
+        if GeorgetteKnown = 1:
+            $GirlLocation['georgett'] = 'Church'
+        end
+
+        if AmandaMetLizette = 1 or LizetteKnown = 1:
+            $GirlLocation['lizette'] = 'Church'
+        end
+
+        exit
+    end
+
+    ! ====================== ВОСКРЕСЕНЬЕ ПОЛДЕНЬ — ИСПОВЕДИ ======================
+
+    if $CitySchedulePhase = 'sunday_confession':
+        $GirlLocation['becky'] = 'Church'
+        $GirlLocation['clarissa'] = 'Church'
+        $GirlLocation['georgett'] = 'Church'
+
+        if IngaGuardProblem > 0 or IngaLucasRelation > 0:
+            $GirlLocation['inga'] = 'Church'
+        end
+
+        if EddieChurchHint > 0:
+            $GirlLocation['eddie'] = 'Church'
+        end
+
+        if AmandaMetLizette = 1 or LizetteKnown = 1:
+            $GirlLocation['lizette'] = 'Church'
+        end
+
+        exit
+    end
+
+    ! ====================== ВОСКРЕСЕНЬЕ ДЕНЬ И ВЕЧЕР — ВИЗИТЫ ======================
+
+    if $CitySchedulePhase = 'sunday_visits':
+        $GirlLocation['becky'] = 'BeckyHouse'
+        $GirlLocation['inga'] = 'BeckyHouse'
+        $GirlLocation['eddie'] = 'BeckyHouse'
+        $GirlLocation['clarissa'] = 'ClarissaHouse'
+
+        if AmandaMetLizette = 1 or LizetteKnown = 1:
+            $GirlLocation['lizette'] = 'AmandaRoom'
+        else:
+            $GirlLocation['lizette'] = 'Market'
+        end
+
+        if GeorgetteKnown = 1:
+            $GirlLocation['georgett'] = 'Port'
+        end
+
+        exit
+    end
+
+    ! ====================== НОЧЬ ======================
+
+    if $CitySchedulePhase = 'night':
+        $GirlLocation['becky'] = 'BeckyHouse'
+        $GirlLocation['inga'] = 'BeckyHouse'
+        $GirlLocation['eddie'] = 'BeckyHouse'
+        $GirlLocation['clarissa'] = 'ClarissaHouse'
+
+        if AmandaMetLizette = 1 or LizetteKnown = 1:
+            $GirlLocation['lizette'] = 'LizetteHome'
+        end
+
+        if GeorgetteKnown = 1:
+            $GirlLocation['georgett'] = 'GeorgetteHome'
+        end
+
+        exit
+    end
+
+    ! ====================== ОБЫЧНОЕ РАБОЧЕЕ ВРЕМЯ ======================
+
+    if time = 1:
+        $GirlLocation['inga'] = 'BeckyShop'
+        $GirlLocation['clarissa'] = 'WineShop'
+    elseif time = 2:
+        $GirlLocation['eddie'] = 'BeckyShop'
+        $GirlLocation['legare'] = 'WineShop'
+    elseif time = 3:
+        $GirlLocation['becky'] = 'BeckyShop'
+        $GirlLocation['legare'] = 'WineShop'
+    elseif time = 4:
+        $GirlLocation['becky'] = 'BeckyShop'
+        $GirlLocation['legare'] = 'WineShop'
+    end
+
+    $GirlLocation['irma'] = 'IrmaShop'
+
+    if GeorgetteKnown = 1:
+        $GirlLocation['georgett'] = 'Port'
+    end
+
+    if AmandaMetLizette = 1 or LizetteKnown = 1:
+        if time = 1 or time = 2:
+            $GirlLocation['lizette'] = 'Port'
+        else:
+            $GirlLocation['lizette'] = 'Market'
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/npc_city_schedule.qsps
+! Получение имени текущего продавца в лавке Бекки
+! Используется будущей лавкой Бекки
+! ================================================
+
+#GetBeckyShopSeller
+    gs 'GetCurrentShopSeller', 'becky'
+---
+
+! ================================================
+! FILE: modules/core/time/npc_city_schedule.qsps
+! Получение имени текущего продавца в лавке Легаре
+! Используется будущей лавкой вина и пива
+! ================================================
+
+#GetWineShopSeller
+    gs 'GetCurrentShopSeller', 'wine'
+---
+
+! ================================================
+! FILE: modules/core/time/npc_city_schedule.qsps
+! Быстрая проверка находится ли NPC в указанном месте
+! Аргументы:
+! $ARGS[0] — NPC
+! $ARGS[1] — локация
+! Результат:
+! NpcAtLocation
+! Result
+! ================================================
+
+#IsNpcAtLocation
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $ScheduleNpc = $GirlKey
+    $ScheduleLoc = $ARGS[1]
+
+    NpcAtLocation = 0
+    Result = 0
+
+    if $ScheduleNpc = '':
+        killvar '$ScheduleNpc'
+        killvar '$ScheduleLoc'
+        exit
+    end
+
+    if $ScheduleLoc = '':
+        killvar '$ScheduleNpc'
+        killvar '$ScheduleLoc'
+        exit
+    end
+
+    if $GirlLocation[$ScheduleNpc] = $ScheduleLoc:
+        NpcAtLocation = 1
+        Result = 1
+    end
+
+    killvar '$ScheduleNpc'
+    killvar '$ScheduleLoc'
+---

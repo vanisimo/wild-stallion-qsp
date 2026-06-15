@@ -1,0 +1,48 @@
+! ================================================
+! FILE: modules/events/hall/hall_family_state_text.qsps
+! Тексты семейного состояния после решений Стефана
+! Используется:
+! modules/events/hall/hall_family_state.qsps
+! Стиль:
+! - внутренний вывод Стефана
+! - не сухая механика
+! - коротко, чтобы не забивать сцену
+! ================================================
+
+#HallFamilyStatePrintText
+    gs 'HallFamilyStateText', $ARGS[0]
+
+    if $HallFamilyStateText <> '':
+        *pl ' '
+        *p $HallFamilyStateText
+    end
+---
+
+#HallFamilyStateText
+    $HallFamilyStateTextId = LCASE($ARGS[0])
+    $HallFamilyStateText = ''
+
+    if $HallFamilyStateTextId = 'after_choice':
+        if HallFamilyStateLastCorruptionDelta > 0:
+            if FamilyCorruptionStage <= 0:
+                $HallFamilyStateText = '<font color="#606080"><i>Стефан чувствует, как в доме появляется первая тонкая трещина. Вроде ничего непоправимого ещё не случилось, но такие решения редко исчезают бесследно.</i></font>'
+            elseif FamilyCorruptionStage = 1:
+                $HallFamilyStateText = '<font color="#606080"><i>Это уже не первый такой случай. Семья всё ещё делает вид, что прежние правила стоят крепко, но Стефан видит: они начинают привыкать к тому, что в трактире границы двигаются.</i></font>'
+            elseif FamilyCorruptionStage = 2:
+                $HallFamilyStateText = '<font color="#606080"><i>Дом ещё помнит, каким должен быть приличный порядок, но всё чаще выбирает молчание. Главное теперь — чтобы грязь не выплеснулась наружу слишком громко.</i></font>'
+            elseif FamilyCorruptionStage = 3:
+                $HallFamilyStateText = '<font color="#606080"><i>Семья уже не вздрагивает от каждого скользкого случая. Стефану даже становится не по себе: то, что раньше вызвало бы ссору, теперь всё чаще считают частью работы.</i></font>'
+            else:
+                $HallFamilyStateText = '<font color="#606080"><i>Старые правила в этом доме держатся скорее по привычке. Стефан понимает: семья изменилась, и не только из-за клиентов. Его решения тоже приложили к этому руку.</i></font>'
+            end
+        elseif HallFamilyStateLastTensionDelta > 0:
+            $HallFamilyStateText = '<font color="#606080"><i>С виду всё заканчивается спокойно, но внутри дома такие вещи не растворяются. Кто-то промолчит, кто-то сделает вид, что ничего не заметил, но Стефан знает: напряжение прибавилось.</i></font>'
+        elseif HallFamilyStateLastTrustDelta > 0:
+            $HallFamilyStateText = '<font color="#606080"><i>Иногда хозяину достаточно вовремя показать, что он рядом. Не крикнуть, не размахивать кулаками, а дать понять: в этом доме своих не бросают.</i></font>'
+        else:
+            $HallFamilyStateText = '<font color="#606080"><i>Решение вроде бы принято, сцена вроде бы закончена. Но Стефан слишком хорошо знает трактир: настоящие последствия часто начинаются позже, когда все уже делают вид, что забыли.</i></font>'
+        end
+    end
+
+    killvar '$HallFamilyStateTextId'
+---

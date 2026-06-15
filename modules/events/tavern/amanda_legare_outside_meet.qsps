@@ -1,0 +1,605 @@
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Аманда собирается выйти из трактира после намёка Легаре
+! Версия: outside meet rewrite v2 / auto trigger + Melissa state
+! Назначение:
+! - убрать кнопку "Аманда собирается выйти из трактира" из TavernMain
+! - запускать событие из обычных действий трактира
+! - дать 4 понятные реакции Стефана
+! - отдельно учитывать строгую и развращённую Мелиссу
+! - подготовить следующую сцену: Аманда и Легаре снаружи / конфликт / семейный контроль
+!
+! Тексты берутся из:
+! modules/events/tavern/amanda_legare_outside_meet_text.qsps
+!
+! Вызов:
+! gs 'AmandaLegareOutsideMeetTryAutoStart', 'TavernMain'
+! ================================================
+
+#AmandaLegareOutsideMeetCanStart
+    AmandaLegareOutsideMeetCanStart = 0
+
+    if AmandaLegareOutsideMeetReady <> 1:
+        exit
+    end
+
+    if AmandaLegareOutsideMeetStage > 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    if $GirlLocation['amanda'] = 'Church':
+        exit
+    end
+
+    if $GirlLocation['amanda'] = 'DanceHall':
+        exit
+    end
+
+    AmandaLegareOutsideMeetCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Попытка автозапуска из обычных действий трактира
+! ARGS[0] — куда возвращаться после события
+! ================================================
+
+#AmandaLegareOutsideMeetTryAutoStart
+    $AmandaLegareOutsideMeetReturnLoc = $ARGS[0]
+
+    if $AmandaLegareOutsideMeetReturnLoc = '':
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareOutsideMeetReturnLoc) = 0:
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC('AmandaLegareOutsideMeetCanStart') = 1:
+        gs 'AmandaLegareOutsideMeetCanStart'
+
+        if AmandaLegareOutsideMeetCanStart = 1:
+            gt 'AmandaLegareOutsideMeetStart', $AmandaLegareOutsideMeetReturnLoc
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Вход в событие
+! ================================================
+
+#AmandaLegareOutsideMeetStart
+    *clr
+    clr
+    cla
+
+    $AmandaLegareOutsideMeetReturnLoc = $ARGS[0]
+
+    if $AmandaLegareOutsideMeetReturnLoc = '':
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareOutsideMeetReturnLoc) = 0:
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC('UpdateGirlLocations') = 1:
+        gs 'UpdateGirlLocations'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if $RealName['melissa'] = '':
+        $RealName['melissa'] = 'Мелисса'
+    end
+
+    AmandaLegareOutsideMeetStage = 1
+    AmandaLegareOutsideMeetReady = 0
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/amanda_legare', 'outside_meet', 2
+    end
+
+    gs 'AmandaLegareOutsideMeetGetRisk'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА КОСИТСЯ К ДВЕРИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareOutsideMeetIntroText') = 1:
+        gs 'AmandaLegareOutsideMeetIntroText'
+    else:
+        *p 'Аманда уже который раз смотрит к двери. После визита Легаре это слишком похоже на попытку выскользнуть.'
+    end
+
+    *pl ' '
+
+    if AmandaLegareHardWarningUsed = 1 or LegareConflictStage > 0:
+        if LOC('AmandaLegareOutsideMeetThoughtsHard') = 1:
+            gs 'AmandaLegareOutsideMeetThoughtsHard'
+        end
+    else:
+        if LOC('AmandaLegareOutsideMeetThoughtsSoft') = 1:
+            gs 'AmandaLegareOutsideMeetThoughtsSoft'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG OUTSIDE MEET] ReturnLoc: ' + $AmandaLegareOutsideMeetReturnLoc
+        *pl '[DEBUG OUTSIDE MEET] Risk: ' + STR(AmandaLegareOutsideMeetRisk)
+        *pl '[DEBUG OUTSIDE MEET] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG OUTSIDE MEET] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG OUTSIDE MEET] MelissaCorruptionStage: ' + STR(MelissaCorruptionStage)
+        *pl '[DEBUG OUTSIDE MEET] sluttiness_melissa: ' + STR(sluttiness['melissa'])
+        *pl ' '
+    end
+
+    gs 'AmandaLegareOutsideMeetBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareOutsideMeetMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Расчёт риска, что Аманда пойдёт на личный разговор
+! ================================================
+
+#AmandaLegareOutsideMeetGetRisk
+    AmandaLegareOutsideMeetRisk = 15
+
+    AmandaLegareOutsideMeetRisk += AmandaLegareInterest * 6
+    AmandaLegareOutsideMeetRisk += LegareAmandaInterest * 5
+    AmandaLegareOutsideMeetRisk += AmandaSecretiveness * 4
+    AmandaLegareOutsideMeetRisk += AmandaRebellion * 3
+    AmandaLegareOutsideMeetRisk += AmandaNpcPath * 4
+    AmandaLegareOutsideMeetRisk += AmandaPublicAttention * 2
+
+    if AmandaLegareTavernVisitResult = 2:
+        AmandaLegareOutsideMeetRisk += 12
+    elseif AmandaLegareTavernVisitResult = 3:
+        AmandaLegareOutsideMeetRisk += 16
+    end
+
+    if AmandaLegareHardWarningUsed = 1:
+        AmandaLegareOutsideMeetRisk += 8
+    end
+
+    if MelissaWatchAmandaLegare = 1:
+        AmandaLegareOutsideMeetRisk -= 10
+    end
+
+    if AmandaTrustStefan >= 7:
+        AmandaLegareOutsideMeetRisk -= 12
+    end
+
+    if AmandaLegareOutsideMeetRisk < 5:
+        AmandaLegareOutsideMeetRisk = 5
+    end
+
+    if AmandaLegareOutsideMeetRisk > 95:
+        AmandaLegareOutsideMeetRisk = 95
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Определить состояние Мелиссы
+! Результат:
+! MelissaLegareControlMode
+! 0 — строгая / защитная
+! 1 — развращённая / циничная, может не перехватить сразу
+! ================================================
+
+#AmandaLegareOutsideMeetGetMelissaMode
+    MelissaLegareControlMode = 0
+
+    if MelissaCorruptionStage >= 3:
+        MelissaLegareControlMode = 1
+    end
+
+    if sluttiness['melissa'] >= 20:
+        MelissaLegareControlMode = 1
+    end
+
+    if corruption['melissa'] >= 20:
+        MelissaLegareControlMode = 1
+    end
+
+    if FamilyCorruptionStage >= 3 and sluttiness['melissa'] >= 10:
+        MelissaLegareControlMode = 1
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Короткое меню
+! ================================================
+
+#AmandaLegareOutsideMeetBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareOutsideMeetMenu'
+    gs 'Menu.Create', 'AmandaLegareOutsideMeetMenu'
+
+    gs 'Menu.Add', 'AmandaLegareOutsideMeetMenu', 'Остановить Аманду', ''
+    gs 'Menu.AddModule', 'AmandaLegareOutsideMeetMenu', {
+        gt 'AmandaLegareOutsideMeetAction', 'stop_amanda', $AmandaLegareOutsideMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareOutsideMeetMenu', 'Отправить Мелиссу', ''
+    gs 'Menu.AddModule', 'AmandaLegareOutsideMeetMenu', {
+        gt 'AmandaLegareOutsideMeetAction', 'send_melissa', $AmandaLegareOutsideMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareOutsideMeetMenu', 'Проследить самому', ''
+    gs 'Menu.AddModule', 'AmandaLegareOutsideMeetMenu', {
+        gt 'AmandaLegareOutsideMeetAction', 'follow', $AmandaLegareOutsideMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareOutsideMeetMenu', 'Дать ей выйти', ''
+    gs 'Menu.AddModule', 'AmandaLegareOutsideMeetMenu', {
+        gt 'AmandaLegareOutsideMeetAction', 'let_out', $AmandaLegareOutsideMeetReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Обработка выбора
+! ================================================
+
+#AmandaLegareOutsideMeetAction
+    *clr
+    clr
+    cla
+
+    $OutsideMeetChoice = LCASE($ARGS[0])
+    $AmandaLegareOutsideMeetReturnLoc = $ARGS[1]
+
+    if $AmandaLegareOutsideMeetReturnLoc = '':
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareOutsideMeetReturnLoc) = 0:
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    gs 'AmandaLegareOutsideMeetGetRisk'
+
+    ! 0 — встреча сорвана
+    ! 1 — семейный контроль сработал
+    ! 2 — Стефан проследил и увидел, что Аманда пошла к Легаре
+    ! 3 — Аманда вышла, Стефан не знает деталей
+    ! 4 — Мелисса не стала перехватывать сразу
+    AmandaLegareOutsideMeetResult = 0
+
+    if $OutsideMeetChoice = 'stop_amanda':
+        AmandaLegareOutsideMeetResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        LegareConflictStage += 1
+        MelissaRespectStefan += 1
+
+        if AmandaLegareHardWarningUsed = 1:
+            AmandaRebellion += 1
+            AmandaSecretiveness += 1
+        end
+
+        AmandaLegareOutsideWallReady = 0
+        LegareSupplyPressureReady = 1
+
+    elseif $OutsideMeetChoice = 'send_melissa':
+        gs 'AmandaLegareOutsideMeetGetMelissaMode'
+
+        if MelissaLegareControlMode = 1:
+            gt 'AmandaLegareOutsideMeetMelissaLoose', $AmandaLegareOutsideMeetReturnLoc
+        else:
+            AmandaLegareOutsideMeetResult = 1
+            MelissaWatchAmandaLegare = 1
+            MelissaTrustStefan += 1
+            MelissaRespectStefan += 1
+            MelissaControlNeed += 1
+            AmandaTrustStefan += 1
+            AmandaRebellion += 1
+            AmandaLegareOutsideWallReady = 0
+            LegareSupplyPressureReady = 1
+        end
+
+    elseif $OutsideMeetChoice = 'follow':
+        AmandaLegareOutsideMeetResult = 2
+        Fact_AmandaLegareOutsideMeet = 1
+        PlayerKnows_AmandaLegareOutsideMeet = 1
+        AmandaLegareOutsideWallReady = 1
+        AmandaLegareOutsideMeetTalkReady = 1
+        MelissaAmandaLegareOutsideTalkReady = 1
+        ClarissaAmandaLegareOutsideTalkReady = 1
+        AmandaSecretiveness += 1
+        AmandaLegareInterest += 1
+        LegareAmandaInterest += 1
+
+    elseif $OutsideMeetChoice = 'let_out':
+        AmandaLegareOutsideMeetResult = 3
+        Fact_AmandaLegareOutsideMeet = 1
+        PlayerKnows_AmandaLegareOutsideMeet = 0
+        AmandaLegareOutsideWallReady = 1
+        AmandaSecretiveness += 2
+        AmandaNpcPath += 1
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        MelissaFamilyConcern += 1
+        ClarissaJealousy += 1
+        TavernScandal += 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА У ДВЕРИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareOutsideMeetActionText') = 1:
+        gs 'AmandaLegareOutsideMeetActionText', $OutsideMeetChoice
+    else:
+        *p 'Выбор сделан. Аманда и Легаре получают новый виток этой истории.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG OUTSIDE MEET] Choice: ' + $OutsideMeetChoice
+        *pl '[DEBUG OUTSIDE MEET] Result: ' + STR(AmandaLegareOutsideMeetResult)
+        *pl '[DEBUG OUTSIDE MEET] WallReady: ' + STR(AmandaLegareOutsideWallReady)
+        *pl '[DEBUG OUTSIDE MEET] Fact: ' + STR(Fact_AmandaLegareOutsideMeet)
+        *pl '[DEBUG OUTSIDE MEET] PlayerKnows: ' + STR(PlayerKnows_AmandaLegareOutsideMeet)
+        *pl '[DEBUG OUTSIDE MEET] SupplyPressureReady: ' + STR(LegareSupplyPressureReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $AmandaLegareOutsideMeetReturnLoc
+    end
+
+    killvar '$OutsideMeetChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Мелисса развращена и не спешит вмешиваться
+! ================================================
+
+#AmandaLegareOutsideMeetMelissaLoose
+    *clr
+    clr
+    cla
+
+    $AmandaLegareOutsideMeetReturnLoc = $ARGS[0]
+
+    if $AmandaLegareOutsideMeetReturnLoc = '':
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareOutsideMeetReturnLoc) = 0:
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    AmandaLegareOutsideMeetResult = 4
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА ВСЁ ВИДИТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareOutsideMeetMelissaLooseText') = 1:
+        gs 'AmandaLegareOutsideMeetMelissaLooseText'
+    else:
+        *p 'Мелисса замечает Аманду у двери, но не спешит её останавливать.'
+    end
+
+    *pl ' '
+
+    if LOC('AmandaLegareOutsideMeetMelissaLooseThoughts') = 1:
+        gs 'AmandaLegareOutsideMeetMelissaLooseThoughts'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MELISSA LOOSE] MelissaCorruptionStage: ' + STR(MelissaCorruptionStage)
+        *pl '[DEBUG MELISSA LOOSE] sluttiness_melissa: ' + STR(sluttiness['melissa'])
+        *pl '[DEBUG MELISSA LOOSE] corruption_melissa: ' + STR(corruption['melissa'])
+        *pl ' '
+    end
+
+    gs 'AmandaLegareOutsideMeetMelissaLooseBuildMenu'
+
+    *p 'Что делать с <a href="exec:gs ''Menu.Show'', ''AmandaLegareMelissaLooseMenu''">Мелиссой</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Меню, если развращённая Мелисса не перехватывает Аманду сразу
+! ================================================
+
+#AmandaLegareOutsideMeetMelissaLooseBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareMelissaLooseMenu'
+    gs 'Menu.Create', 'AmandaLegareMelissaLooseMenu'
+
+    gs 'Menu.Add', 'AmandaLegareMelissaLooseMenu', 'Приказать остановить Аманду', ''
+    gs 'Menu.AddModule', 'AmandaLegareMelissaLooseMenu', {
+        gt 'AmandaLegareOutsideMeetMelissaLooseAction', 'order_stop', $AmandaLegareOutsideMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMelissaLooseMenu', 'Спросить Мелиссу', ''
+    gs 'Menu.AddModule', 'AmandaLegareMelissaLooseMenu', {
+        gt 'AmandaLegareOutsideMeetMelissaLooseAction', 'ask_melissa', $AmandaLegareOutsideMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMelissaLooseMenu', 'Довериться Мелиссе', ''
+    gs 'Menu.AddModule', 'AmandaLegareMelissaLooseMenu', {
+        gt 'AmandaLegareOutsideMeetMelissaLooseAction', 'trust_melissa', $AmandaLegareOutsideMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMelissaLooseMenu', 'Вмешаться самому', ''
+    gs 'Menu.AddModule', 'AmandaLegareMelissaLooseMenu', {
+        gt 'AmandaLegareOutsideMeetMelissaLooseAction', 'intervene_self', $AmandaLegareOutsideMeetReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Обработка развращённой Мелиссы
+! ================================================
+
+#AmandaLegareOutsideMeetMelissaLooseAction
+    *clr
+    clr
+    cla
+
+    $MelissaLooseChoice = LCASE($ARGS[0])
+    $AmandaLegareOutsideMeetReturnLoc = $ARGS[1]
+
+    if $AmandaLegareOutsideMeetReturnLoc = '':
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareOutsideMeetReturnLoc) = 0:
+        $AmandaLegareOutsideMeetReturnLoc = 'TavernMain'
+    end
+
+    if $MelissaLooseChoice = 'order_stop':
+        AmandaLegareOutsideMeetResult = 1
+        MelissaWatchAmandaLegare = 1
+        MelissaControlNeed += 1
+        MelissaTrustStefan -= 1
+        AmandaRebellion += 1
+        AmandaLegareOutsideWallReady = 0
+        LegareSupplyPressureReady = 1
+
+        if MelissaTrustStefan < 0:
+            MelissaTrustStefan = 0
+        end
+
+    elseif $MelissaLooseChoice = 'ask_melissa':
+        AmandaLegareOutsideMeetResult = 4
+        MelissaLegareLooseTalkReady = 1
+        MelissaTrustStefan += 1
+        AmandaLegareOutsideWallReady = 0
+
+    elseif $MelissaLooseChoice = 'trust_melissa':
+        AmandaLegareOutsideMeetResult = 3
+        MelissaTrustedWithAmandaLegare = 1
+        Fact_AmandaLegareOutsideMeet = 1
+        PlayerKnows_AmandaLegareOutsideMeet = 1
+        AmandaLegareOutsideWallReady = 1
+        AmandaLegareOutsideMeetTalkReady = 1
+        MelissaAmandaLegareOutsideTalkReady = 1
+        AmandaSecretiveness += 1
+        AmandaNpcPath += 1
+        AmandaLegareInterest += 1
+        LegareAmandaInterest += 1
+
+    elseif $MelissaLooseChoice = 'intervene_self':
+        AmandaLegareOutsideMeetResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        LegareConflictStage += 1
+        MelissaTrustStefan -= 1
+        AmandaLegareOutsideWallReady = 0
+        LegareSupplyPressureReady = 1
+
+        if MelissaTrustStefan < 0:
+            MelissaTrustStefan = 0
+        end
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА И АМАНДА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareOutsideMeetMelissaLooseActionText') = 1:
+        gs 'AmandaLegareOutsideMeetMelissaLooseActionText', $MelissaLooseChoice
+    else:
+        *p 'Мелисса смотрит на вас так, будто вы оба отлично понимаете, что простых решений уже нет.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MELISSA LOOSE] Choice: ' + $MelissaLooseChoice
+        *pl '[DEBUG MELISSA LOOSE] Result: ' + STR(AmandaLegareOutsideMeetResult)
+        *pl '[DEBUG MELISSA LOOSE] WallReady: ' + STR(AmandaLegareOutsideWallReady)
+        *pl '[DEBUG MELISSA LOOSE] MelissaLooseTalkReady: ' + STR(MelissaLegareLooseTalkReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $AmandaLegareOutsideMeetReturnLoc
+    end
+
+    killvar '$MelissaLooseChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_meet.qsps
+! Debug-сброс
+! ================================================
+
+#AmandaLegareOutsideMeetDebugReset
+    AmandaLegareOutsideMeetCanStart = 0
+    AmandaLegareOutsideMeetReady = 0
+    AmandaLegareOutsideMeetStage = 0
+    AmandaLegareOutsideMeetResult = 0
+    AmandaLegareOutsideMeetRisk = 0
+    Fact_AmandaLegareOutsideMeet = 0
+    PlayerKnows_AmandaLegareOutsideMeet = 0
+    AmandaLegareOutsideWallReady = 0
+    AmandaLegareOutsideMeetTalkReady = 0
+    MelissaAmandaLegareOutsideTalkReady = 0
+    ClarissaAmandaLegareOutsideTalkReady = 0
+    MelissaLegareLooseTalkReady = 0
+    MelissaTrustedWithAmandaLegare = 0
+---

@@ -1,0 +1,431 @@
+! ================================================
+! FILE: modules/events/tavern/legare_clarissa_suspicion.qsps
+! Легаре начинает подозревать Клариссу
+! Версия: supply branch closure v1 / compact menu
+! Назначение:
+! - завершить первый большой кусок ветки Легаре / Кларисса / поставки
+! - обработать подозрения Легаре после тайных поставок
+! - дать игроку развилку: защитить Клариссу, отвести подозрения, пожертвовать маршрутом, усилить конфликт
+! - подготовить состояние для тестирования всей цепочки
+!
+! Тексты берутся из:
+! modules/events/tavern/legare_clarissa_suspicion_text.qsps
+!
+! Вызов из:
+! modules/locations/tavern_main.qsps
+! через #LegareClarissaSuspicionCanStart
+! ================================================
+
+#LegareClarissaSuspicionCanStart
+    LegareClarissaSuspicionCanStart = 0
+
+    if LegareClarissaSuspicionStage > 0:
+        exit
+    end
+
+    if LegareClarissaConflictReady = 0 and LegareSuspiciousOfClarissa < 2:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    LegareClarissaSuspicionCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_clarissa_suspicion.qsps
+! Вход в событие
+! ================================================
+
+#LegareClarissaSuspicionStart
+    *clr
+    clr
+    cla
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/legare_conflict', 'clarissa_suspicion', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ ЧТО-ТО ПОДОЗРЕВАЕТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('LegareClarissaSuspicionIntroText') = 1:
+        gs 'LegareClarissaSuspicionIntroText'
+    else:
+        *p 'Легаре начинает понимать, что его давление на поставки кто-то обошёл.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG CLARISSA SUSPICION] LegareSuspiciousOfClarissa: ' + STR(LegareSuspiciousOfClarissa)
+        *pl '[DEBUG CLARISSA SUSPICION] ClarissaTrustStefan: ' + STR(ClarissaTrustStefan)
+        *pl '[DEBUG CLARISSA SUSPICION] ClarissaAlliance: ' + STR(ClarissaAgainstLegareAlliance)
+        *pl '[DEBUG CLARISSA SUSPICION] WineRoute: ' + STR(ClarissaWineRouteUnlocked)
+        *pl '[DEBUG CLARISSA SUSPICION] BeerRoute: ' + STR(ClarissaBeerRouteUnlocked)
+        *pl '[DEBUG CLARISSA SUSPICION] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    gs 'LegareClarissaSuspicionBuildMenu'
+
+    *p 'Как ответить <a href="exec:gs ''Menu.Show'', ''LegareClarissaSuspicionMenu''">Легаре</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_clarissa_suspicion.qsps
+! Меню события
+! ================================================
+
+#LegareClarissaSuspicionBuildMenu
+    gs 'Menu.Destroy', 'LegareClarissaSuspicionMenu'
+    gs 'Menu.Create', 'LegareClarissaSuspicionMenu'
+
+    gs 'Menu.Add', 'LegareClarissaSuspicionMenu', 'Сделать вид, что вы ничего не понимаете', ''
+    gs 'Menu.AddModule', 'LegareClarissaSuspicionMenu', {
+        gt 'LegareClarissaSuspicionAction', 'pretend'
+    }
+
+    gs 'Menu.Add', 'LegareClarissaSuspicionMenu', 'Защитить Клариссу открыто', ''
+    gs 'Menu.AddModule', 'LegareClarissaSuspicionMenu', {
+        gt 'LegareClarissaSuspicionAction', 'protect_clarissa'
+    }
+
+    gs 'Menu.Add', 'LegareClarissaSuspicionMenu', 'Отвести подозрения на временных поставщиков', ''
+    gs 'Menu.AddModule', 'LegareClarissaSuspicionMenu', {
+        gt 'LegareClarissaSuspicionAction', 'blame_temporary'
+    }
+
+    gs 'Menu.Add', 'LegareClarissaSuspicionMenu', 'Тихо отказаться от обходного маршрута', ''
+    gs 'Menu.AddModule', 'LegareClarissaSuspicionMenu', {
+        gt 'LegareClarissaSuspicionAction', 'drop_route'
+    }
+
+    if ClarissaAgainstLegareAlliance = 1 or ClarissaProtectedByStefanHint = 1:
+        gs 'Menu.Add', 'LegareClarissaSuspicionMenu', 'Дать понять, что Кларисса не одна', ''
+        gs 'Menu.AddModule', 'LegareClarissaSuspicionMenu', {
+            gt 'LegareClarissaSuspicionAction', 'alliance_warning'
+        }
+    end
+
+    gs 'Menu.Add', 'LegareClarissaSuspicionMenu', 'Выгнать Легаре из трактира', ''
+    gs 'Menu.AddModule', 'LegareClarissaSuspicionMenu', {
+        gt 'LegareClarissaSuspicionAction', 'kick_out'
+    }
+
+    gs 'Menu.Add', 'LegareClarissaSuspicionMenu', 'Вернуться в зал', ''
+    gs 'Menu.AddModule', 'LegareClarissaSuspicionMenu', {
+        gt 'TavernMain'
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_clarissa_suspicion.qsps
+! Обработка выбора
+! ================================================
+
+#LegareClarissaSuspicionAction
+    *clr
+    clr
+    cla
+
+    $ClarissaSuspicionChoice = LCASE($ARGS[0])
+
+    LegareClarissaSuspicionStage = 1
+    LegareClarissaConflictReady = 0
+
+    ! 0 — подозрения временно сбиты
+    ! 1 — Легаре насторожен
+    ! 2 — Кларисса под риском
+    ! 3 — маршрут Клариссы закрыт
+    ! 4 — открытый конфликт Легаре и Клариссы
+    ! 5 — открытый конфликт Легаре и Стефана
+    LegareClarissaSuspicionResult = 0
+
+    if $ClarissaSuspicionChoice = 'pretend':
+        LegareClarissaSuspicionResult = 1
+        LegareSuspiciousOfClarissa += 1
+        LegareConflictStage += 1
+        ClarissaTrustStefan -= 1
+
+        if ClarissaTrustStefan < 0:
+            ClarissaTrustStefan = 0
+        end
+
+    elseif $ClarissaSuspicionChoice = 'protect_clarissa':
+        LegareClarissaSuspicionResult = 4
+        ClarissaTrustStefan += 2
+        ClarissaAgainstLegareAlliance = 1
+        ClarissaProtectedByStefanHint = 1
+        LegareSuspiciousOfClarissa += 2
+        LegareConflictStage += 2
+        TavernScandal += 1
+        TavernScandalLevel += 1
+
+    elseif $ClarissaSuspicionChoice = 'blame_temporary':
+        if TemporaryAlcoholSuppliers = 1:
+            LegareClarissaSuspicionResult = 0
+            LegareSuspiciousOfClarissa -= 1
+            LegareConflictStage += 1
+
+            if LegareSuspiciousOfClarissa < 0:
+                LegareSuspiciousOfClarissa = 0
+            end
+        else:
+            LegareClarissaSuspicionResult = 2
+            LegareSuspiciousOfClarissa += 1
+            LegareConflictStage += 1
+            ClarissaTrustStefan -= 1
+
+            if ClarissaTrustStefan < 0:
+                ClarissaTrustStefan = 0
+            end
+        end
+
+    elseif $ClarissaSuspicionChoice = 'drop_route':
+        LegareClarissaSuspicionResult = 3
+        ClarissaSecretTradeRouteReady = 0
+        ClarissaWineRouteUnlocked = 0
+        ClarissaBeerRouteUnlocked = 0
+        TavernAlcoholShortage = 1
+        TavernSupplyPenalty += 1
+        LegareSuspiciousOfClarissa -= 1
+        ClarissaTrustStefan -= 2
+
+        if LegareSuspiciousOfClarissa < 0:
+            LegareSuspiciousOfClarissa = 0
+        end
+
+        if ClarissaTrustStefan < 0:
+            ClarissaTrustStefan = 0
+        end
+
+    elseif $ClarissaSuspicionChoice = 'alliance_warning':
+        LegareClarissaSuspicionResult = 5
+        ClarissaTrustStefan += 2
+        ClarissaAgainstLegareAlliance = 1
+        LegareConflictStage += 2
+        LegareSuspiciousOfClarissa += 2
+        LegareSupplyBlockadeReady = 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+
+    elseif $ClarissaSuspicionChoice = 'kick_out':
+        LegareClarissaSuspicionResult = 5
+        LegareConflictStage += 3
+        LegareSupplyBlockadeReady = 1
+        LegareWinePressure = 1
+        LegareBeerPressure = 1
+        TavernScandal += 2
+        TavernScandalLevel += 1
+        MelissaRespectStefan += 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    LegareClarissaSuspicionAfterTalkReady = 1
+    ClarissaLegareSuspicionTalkReady = 1
+    MelissaLegareSuspicionTalkReady = 1
+
+    if LegareClarissaSuspicionResult >= 4:
+        LegareSupplyBlockadeReady = 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДОЗРЕНИЯ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('LegareClarissaSuspicionActionText') = 1:
+        gs 'LegareClarissaSuspicionActionText', $ClarissaSuspicionChoice
+    else:
+        *p 'Разговор с Легаре заканчивается новым напряжением.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG CLARISSA SUSPICION] Choice: ' + $ClarissaSuspicionChoice
+        *pl '[DEBUG CLARISSA SUSPICION] Result: ' + STR(LegareClarissaSuspicionResult)
+        *pl '[DEBUG CLARISSA SUSPICION] Suspicious: ' + STR(LegareSuspiciousOfClarissa)
+        *pl '[DEBUG CLARISSA SUSPICION] ConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG CLARISSA SUSPICION] BlockadeReady: ' + STR(LegareSupplyBlockadeReady)
+        *pl '[DEBUG CLARISSA SUSPICION] ClarissaTrust: ' + STR(ClarissaTrustStefan)
+        *pl ' '
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+
+    killvar '$ClarissaSuspicionChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_clarissa_suspicion.qsps
+! Разговор с Клариссой после подозрений Легаре
+! ================================================
+
+#ClarissaTalkAboutLegareSuspicion
+    *clr
+    clr
+    cla
+
+    $ClarissaSuspicionReturnLoc = $ARGS[0]
+
+    if $ClarissaSuspicionReturnLoc = '':
+        $ClarissaSuspicionReturnLoc = 'TavernMain'
+    end
+
+    if LOC($ClarissaSuspicionReturnLoc) = 0:
+        $ClarissaSuspicionReturnLoc = 'TavernMain'
+    end
+
+    if $RealName['clarissa'] = '':
+        $RealName['clarissa'] = 'Кларисса'
+    end
+
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    ClarissaLegareSuspicionTalkReady = 0
+    ClarissaLegareSuspicionTalkDone = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА ПОСЛЕ ПОДОЗРЕНИЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutLegareSuspicionText') = 1:
+        gs 'ClarissaTalkAboutLegareSuspicionText'
+    else:
+        *p 'Кларисса понимает, что Легаре начинает догадываться о её помощи.'
+    end
+
+    *pl ' '
+
+    act 'Пообещать защитить её':
+        ClarissaTrustStefan += 2
+        ClarissaProtectedByStefanHint = 1
+        ClarissaAgainstLegareAlliance = 1
+        gt $ClarissaSuspicionReturnLoc
+    end
+
+    act 'Попросить её быть осторожнее':
+        ClarissaTrustStefan += 1
+        LegareSuspiciousOfClarissa -= 1
+
+        if LegareSuspiciousOfClarissa < 0:
+            LegareSuspiciousOfClarissa = 0
+        end
+
+        gt $ClarissaSuspicionReturnLoc
+    end
+
+    act 'Сказать, что маршрут придётся закрыть':
+        ClarissaSecretTradeRouteReady = 0
+        ClarissaWineRouteUnlocked = 0
+        ClarissaBeerRouteUnlocked = 0
+        TavernAlcoholShortage = 1
+        ClarissaTrustStefan -= 1
+
+        if ClarissaTrustStefan < 0:
+            ClarissaTrustStefan = 0
+        end
+
+        gt $ClarissaSuspicionReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $ClarissaSuspicionReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_clarissa_suspicion.qsps
+! Разговор с Мелиссой после подозрений Легаре
+! ================================================
+
+#MelissaTalkAboutLegareSuspicion
+    *clr
+    clr
+    cla
+
+    $ClarissaSuspicionReturnLoc = $ARGS[0]
+
+    if $ClarissaSuspicionReturnLoc = '':
+        $ClarissaSuspicionReturnLoc = 'TavernMain'
+    end
+
+    if LOC($ClarissaSuspicionReturnLoc) = 0:
+        $ClarissaSuspicionReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    MelissaLegareSuspicionTalkReady = 0
+    MelissaLegareSuspicionTalkDone = 1
+    MelissaFamilyConcern += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА О КЛАРИССЕ И ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareSuspicionText') = 1:
+        gs 'MelissaTalkAboutLegareSuspicionText'
+    else:
+        *p 'Мелисса считает, что Легаре теперь может ударить и по Клариссе, и по трактиру.'
+    end
+
+    *pl ' '
+
+    act 'Согласиться, что нужен план':
+        LegareSupplyCounterPlanReady = 1
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        gt $ClarissaSuspicionReturnLoc
+    end
+
+    act 'Сказать, что справитесь силой':
+        LegareConflictStage += 1
+        MelissaRespectStefan += 1
+        TavernScandal += 1
+        gt $ClarissaSuspicionReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $ClarissaSuspicionReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_clarissa_suspicion.qsps
+! Debug-сброс
+! ================================================
+
+#LegareClarissaSuspicionDebugReset
+    LegareClarissaSuspicionCanStart = 0
+    LegareClarissaSuspicionStage = 0
+    LegareClarissaSuspicionResult = 0
+    LegareClarissaSuspicionAfterTalkReady = 0
+    ClarissaLegareSuspicionTalkReady = 0
+    ClarissaLegareSuspicionTalkDone = 0
+    MelissaLegareSuspicionTalkReady = 0
+    MelissaLegareSuspicionTalkDone = 0
+    LegareSupplyBlockadeReady = 0
+---

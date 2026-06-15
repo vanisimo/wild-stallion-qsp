@@ -1,0 +1,77 @@
+! ================================================
+! FILE: modules/events/hall/hall_policy_reaction.qsps
+! Реакция на правило работы в зале
+! Версия: v3
+! Назначение:
+! - совместимость со старыми вызовами HallPolicyReaction
+! - использует GirlPolicyResponseCalc
+! - применяет последствия фактической реакции девушки
+! - результат печатается через $HallPolicyReactionText
+! Тексты берутся из:
+! modules/events/hall/girl_policy_response_text.qsps
+! modules/events/hall/girl_policy_response_consequences_text.qsps
+! ================================================
+
+#HallPolicyReaction
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallPolicyGirl = $GirlKey
+    $HallPolicyEvent = LCASE($ARGS[1])
+    $HallPolicyReturnLoc = $ARGS[2]
+
+    $HallPolicyReactionText = ''
+    $HallPolicyResponseActual = ''
+    HallPolicyResponseLevel = 2
+
+    if $HallPolicyGirl = 'tavernmain' or $HallPolicyGirl = 'tavernmainlookhall' or $HallPolicyGirl = 'tavernhallactivitystart':
+        $HallPolicyGirl = ''
+    end
+
+    if $HallPolicyGirl = '':
+        exit
+    end
+
+    if $HallPolicyReturnLoc = '':
+        $HallPolicyReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallPolicyReturnLoc) = 0:
+        $HallPolicyReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $HallPolicyGirl
+
+    HallPolicyValue = GirlWorkPolicy[$HallPolicyGirl]
+
+    if LOC('GirlPolicyResponseCalc') = 1:
+        gs 'GirlPolicyResponseCalc', $HallPolicyGirl, 'hall', HallPolicyValue
+
+        $HallPolicyReactionText = $PolicyResponseText
+        HallPolicyResponseLevel = PolicyResponseLevel
+        $HallPolicyResponseActual = $PolicyResponseActual
+
+        if LOC('GirlPolicyResponseApplyConsequences') = 1:
+            gs 'GirlPolicyResponseApplyConsequences', $HallPolicyGirl, 'hall', HallPolicyValue, HallPolicyResponseLevel
+
+            if $GirlPolicyResponseConsequenceText <> '':
+                if $HallPolicyReactionText <> '':
+                    $HallPolicyReactionText += '<br><br>' + $GirlPolicyResponseConsequenceText
+                else:
+                    $HallPolicyReactionText = $GirlPolicyResponseConsequenceText
+                end
+            end
+        end
+    else:
+        $HallPolicyReactionText = $RealName[$HallPolicyGirl] + ' действует по старому правилу зала.'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG POLICY HALL] girl: ' + $HallPolicyGirl
+        *pl '[DEBUG POLICY HALL] rule: ' + STR(HallPolicyValue)
+        *pl '[DEBUG POLICY HALL] response level: ' + STR(HallPolicyResponseLevel)
+        *pl '[DEBUG POLICY HALL] actual: ' + $HallPolicyResponseActual
+    end
+
+    killvar '$HallPolicyEvent'
+    killvar '$HallPolicyReturnLoc'
+    killvar 'HallPolicyValue'
+---

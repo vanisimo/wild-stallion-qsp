@@ -1,0 +1,168 @@
+! ================================================
+! FILE: modules/locations/market_dance.qsps
+! Пятничные танцы на рыночной площади
+! Версия: schedule v2 / Legare auto hooks
+! Назначение:
+! - работает через единое расписание города
+! - пятница вечер: week = 5, time = 4
+! - мэр выступает перед танцами
+! - NPC общаются и дают слухи
+! - ветка Аманды и Легаре запускается автоматически, без кнопок-спойлеров
+! - большие тексты вынесены в modules/events/dance/friday_dance_text.qsps
+! ================================================
+
+#MarketDance
+    *clr
+    clr
+    cla
+
+    gs 'FridayDanceInit'
+    gs 'GetCitySchedulePhase'
+    gs 'UpdateGirlLocations'
+
+    if $CitySchedulePhase <> 'friday_dance':
+        if LOC('ShowLocationTimeImage') = 1:
+            gs 'ShowLocationTimeImage', 'images/locations/market/dance', 2
+        elseif LOC('ShowLocationImage') = 1:
+            gs 'ShowLocationImage', 'market_dance'
+        end
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' РЫНОЧНАЯ ПЛОЩАДЬ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        *p 'Сейчас здесь нет пятничных танцев. Площадь живёт обычной городской жизнью.'
+        *pl ' '
+
+        act 'Вернуться на рынок':
+            gt 'Market'
+        end
+
+        act 'Вернуться на улицу':
+            gt 'Street'
+        end
+
+        exit
+    end
+
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/market/dance', 3
+    elseif LOC('ShowLocationImage') = 1:
+        gs 'ShowLocationImage', 'market_dance'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЦЫ НА РЫНОЧНОЙ ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'Пятничный вечер. Лавки закрыты, на площади горят фонари, музыканты настраивают инструменты, а горожане собираются небольшими кругами.'
+    *p 'Здесь можно услышать больше, чем за целую неделю обычных разговоров.'
+    *pl ' '
+
+    if FridayDancesCount >= 5:
+        *p 'Праздник подходит к концу. Музыканты играют тише, люди расходятся по домам, а площадь постепенно пустеет.'
+        *pl ' '
+
+        act 'Вернуться на улицу':
+            gt 'Street'
+        end
+
+        exit
+    end
+
+    *pl 'Осталось раундов праздника: ' + STR(5 - FridayDancesCount)
+
+    if debug = 1:
+        *pl '[DEBUG DANCE] FridayDancesCount: ' + STR(FridayDancesCount)
+        *pl '[DEBUG DANCE] MayorSpeechSeen: ' + STR(FridayDanceMayorSpeechSeen)
+        *pl '[DEBUG DANCE] AmandaLegareBranchUnlocked: ' + STR(AmandaLegareBranchUnlocked)
+        *pl '[DEBUG DANCE] AmandaLegareNoticeStage: ' + STR(AmandaLegareNoticeStage)
+        *pl '[DEBUG DANCE] AmandaLegareInviteReady: ' + STR(AmandaLegareInviteReady)
+        *pl '[DEBUG DANCE] AmandaLegareAfterDanceReady: ' + STR(AmandaLegareAfterDanceReady)
+    end
+
+    *pl ' '
+
+    ! ====================== АВТО-СОБЫТИЯ: АМАНДА / ЛЕГАРЕ ======================
+    !
+    ! ВАЖНО:
+    ! Здесь больше нет кнопок:
+    ! - "Легаре смотрит на Аманду"
+    ! - "Легаре приглашает Аманду на танец"
+    ! - "Легаре пытается поговорить с Амандой после танца"
+    !
+    ! Игрок делает обычные действия на танцах, а сюжетные сцены запускаются сами,
+    ! если ветка Легаре уже открыта и выполнены условия.
+
+    if LOC('UpdateAmandaLegareBranchUnlock') = 1:
+        gs 'UpdateAmandaLegareBranchUnlock'
+    end
+
+    if LOC('AmandaLegareAutoNoticeCanStart') = 1:
+        gs 'AmandaLegareAutoNoticeCanStart'
+
+        if AmandaLegareAutoNoticeCanStart = 1:
+            gt 'AmandaLegareAutoNoticeStart'
+        end
+    end
+
+    if LOC('AmandaLegareInviteCanStart') = 1:
+        gs 'AmandaLegareInviteCanStart'
+
+        if AmandaLegareInviteCanStart = 1:
+            if AmandaLegareInviteDelay > 0:
+                AmandaLegareInviteDelay -= 1
+            else:
+                gt 'AmandaLegareInviteStart'
+            end
+        end
+    end
+
+    if LOC('AmandaLegareAfterDanceCanStart') = 1:
+        gs 'AmandaLegareAfterDanceCanStart'
+
+        if AmandaLegareAfterDanceCanStart = 1:
+            if AmandaLegareAfterDanceDelay > 0:
+                AmandaLegareAfterDanceDelay -= 1
+            else:
+                gt 'AmandaLegareAfterDanceStart'
+            end
+        end
+    end
+
+    ! ====================== ОБЫЧНЫЕ ДЕЙСТВИЯ ТАНЦЕВ ======================
+
+    if FridayDanceMayorSpeechSeen = 0:
+        act 'Послушать выступление мэра':
+            gt 'FridayDanceMayorSpeech', 'MarketDance'
+        end
+    end
+
+    act 'Понаблюдать за танцующими':
+        gt 'FridayDanceObserve', 'MarketDance'
+    end
+
+    act 'Послушать разговоры горожан':
+        gt 'FridayDanceRumor', 'MarketDance'
+    end
+
+    act 'Осмотреться среди знакомых':
+        gt 'FridayDanceNpcTalkMenu', 'MarketDance'
+    end
+
+    if $GirlLocation['amanda'] = 'DanceHall' and LOC('AmandaDance') = 1:
+        act 'Пригласить Аманду на танец':
+            gt 'AmandaDance'
+        end
+    end
+
+    if debug = 1:
+        act 'DEBUG: танцы':
+            gt 'FridayDanceDebugMenu', 'MarketDance'
+        end
+    end
+
+    act 'Вернуться на улицу':
+        gt 'Street'
+    end
+---

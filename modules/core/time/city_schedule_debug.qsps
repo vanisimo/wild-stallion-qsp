@@ -1,0 +1,142 @@
+! ================================================
+! FILE: modules/core/time/city_schedule_debug.qsps
+! Debug-панель городского расписания
+! Используется только при debug = 1
+! ================================================
+
+#CityScheduleDebug
+    *clr
+    clr
+    cla
+
+    gs 'GetDateTimeNames'
+    gs 'GetCitySchedulePhase'
+    gs 'UpdateGirlLocations'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ГОРОДСКОЕ РАСПИСАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'День: ' + STR(day)
+    *pl 'Неделя: ' + STR(week) + ' — ' + $WeekDayName
+    *pl 'Время: ' + STR(time) + ' — ' + $TimeName
+    *pl 'Фаза: ' + $CitySchedulePhase
+    *p $CityScheduleDescription
+    *pl ' '
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БИЗНЕС'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'CityScheduleDebugBusinessLine', 'tavern', 'Таверна'
+    gs 'CityScheduleDebugBusinessLine', 'becky', 'Лавка Бекки'
+    gs 'CityScheduleDebugBusinessLine', 'wine', 'Лавка Легаре'
+    gs 'CityScheduleDebugBusinessLine', 'tailor', 'Лавка Ирмы'
+    gs 'CityScheduleDebugBusinessLine', 'carpenter', 'Столяр'
+    gs 'CityScheduleDebugBusinessLine', 'capital_ship', 'Корабль из столицы'
+    gs 'CityScheduleDebugBusinessLine', 'mayor', 'Мэрия'
+
+    *pl ' '
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРОДАВЦЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'CityScheduleDebugSellerLine', 'becky', 'Лавка Бекки'
+    gs 'CityScheduleDebugSellerLine', 'wine', 'Лавка Легаре'
+    gs 'CityScheduleDebugSellerLine', 'tailor', 'Лавка Ирмы'
+    gs 'CityScheduleDebugSellerLine', 'capital_ship', 'Корабль'
+
+    *pl ' '
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕСТОПОЛОЖЕНИЕ NPC'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'CityScheduleDebugNpcLine', 'amanda'
+    gs 'CityScheduleDebugNpcLine', 'melissa'
+    gs 'CityScheduleDebugNpcLine', 'sandra'
+    gs 'CityScheduleDebugNpcLine', 'becky'
+    gs 'CityScheduleDebugNpcLine', 'inga'
+    gs 'CityScheduleDebugNpcLine', 'eddie'
+    gs 'CityScheduleDebugNpcLine', 'clarissa'
+    gs 'CityScheduleDebugNpcLine', 'legare'
+    gs 'CityScheduleDebugNpcLine', 'lizette'
+    gs 'CityScheduleDebugNpcLine', 'georgett'
+    gs 'CityScheduleDebugNpcLine', 'irma'
+
+    *pl ' '
+
+    act 'Вернуться в трактир':
+        gt 'TavernMain'
+    end
+
+    act 'Вернуться на улицу':
+        gt 'Street'
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/city_schedule_debug.qsps
+! Debug-строка бизнеса
+! ================================================
+
+#CityScheduleDebugBusinessLine
+    $DebugBusinessType = LCASE($ARGS[0])
+    $DebugBusinessName = $ARGS[1]
+
+    gs 'IsBusinessOpen', $DebugBusinessType
+
+    if BusinessOpen = 1:
+        *pl $DebugBusinessName + ': открыт'
+    else:
+        *pl $DebugBusinessName + ': закрыт — ' + $BusinessClosedReason
+    end
+
+    killvar '$DebugBusinessType'
+    killvar '$DebugBusinessName'
+---
+
+! ================================================
+! FILE: modules/core/time/city_schedule_debug.qsps
+! Debug-строка продавца
+! ================================================
+
+#CityScheduleDebugSellerLine
+    $DebugSellerShop = LCASE($ARGS[0])
+    $DebugSellerName = $ARGS[1]
+
+    gs 'GetCurrentShopSeller', $DebugSellerShop
+
+    if CurrentSellerAvailable = 1:
+        *pl $DebugSellerName + ': ' + $CurrentSellerName + ' [' + $CurrentSeller + ']'
+    else:
+        *pl $DebugSellerName + ': продавец недоступен'
+    end
+
+    killvar '$DebugSellerShop'
+    killvar '$DebugSellerName'
+---
+
+! ================================================
+! FILE: modules/core/time/city_schedule_debug.qsps
+! Debug-строка NPC
+! ================================================
+
+#CityScheduleDebugNpcLine
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $DebugNpc = $GirlKey
+
+    if $DebugNpc = '':
+        exit
+    end
+
+    if $RealName[$DebugNpc] = '':
+        *pl $DebugNpc + ': ' + $GirlLocation[$DebugNpc]
+    else:
+        *pl $RealName[$DebugNpc] + ' [' + $DebugNpc + ']: ' + $GirlLocation[$DebugNpc]
+    end
+
+    killvar '$DebugNpc'
+---

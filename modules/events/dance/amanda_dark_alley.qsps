@@ -1,0 +1,321 @@
+! ================================================
+! FILE: modules/events/dance/amanda_dark_alley.qsps
+! Подворотня после танца с Амандой
+! Версия: FridayDance / compact menu v1
+! Назначение:
+! - заменить старый большой AmandaDarkAlley
+! - сделать подворотню отдельным сюжетным ивентом после танца
+! - использовать наше меню через Menu.Show
+! - не дублировать sex_scene_core и не делать отдельные 12 поз
+!
+! Тексты берутся из:
+! modules/events/dance/amanda_dark_alley_text.qsps
+!
+! Вход сюда идёт из:
+! modules/actions/AmandaDance.qsps
+! через локатор #AmandaDanceAlleyEvent
+! ================================================
+
+#AmandaDanceAlleyEvent
+    *clr
+    clr
+    cla
+
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    if $RealName[$AmandaAlleyGirl] = '':
+        $RealName[$AmandaAlleyGirl] = 'Аманда'
+    end
+
+    if AmandaAlleyDay <> day:
+        gs 'AmandaDanceAlleyReset'
+    end
+
+    if AmandaAlleyStage = 0:
+        AmandaAlleyStage = 1
+        AmandaAlleyRisk = 10 + AmandaDancePublicRisk + AmandaPublicAttention / 5
+        AmandaSecretiveness += 1
+    end
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'amanda', 'dance', 'alley', 'intro'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyMainText') = 1:
+        gs 'AmandaDanceAlleyMainText'
+    else:
+        if $AmandaAlleyLastText <> '':
+            *p $AmandaAlleyLastText
+        else:
+            *p 'Вы с Амандой отходите с шумной площади в тёмный проход между домами.'
+            *p 'Музыка всё ещё слышна, но здесь каждый звук кажется опаснее.'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG ALLEY] Stage: ' + STR(AmandaAlleyStage)
+        *pl '[DEBUG ALLEY] Risk: ' + STR(AmandaAlleyRisk)
+        *pl '[DEBUG ALLEY] Kiss: ' + STR(AmandaAlleyKiss)
+        *pl '[DEBUG ALLEY] Close: ' + STR(AmandaAlleyClose)
+        *pl '[DEBUG ALLEY] AfterSex: ' + STR(AmandaAlleyAfterSex)
+        *pl '[DEBUG ALLEY] Caught: ' + STR(AmandaAlleyCaught)
+        *pl '[DEBUG ALLEY] IntimStage Amanda: ' + STR(IntimStage[$AmandaAlleyGirl])
+        *pl ' '
+    end
+
+    gs 'AmandaDanceAlleyBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaAlleyMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_dark_alley.qsps
+! Сброс подворотни на новый день
+! ================================================
+
+#AmandaDanceAlleyReset
+    AmandaAlleyDay = day
+    AmandaAlleyStage = 0
+    AmandaAlleyRisk = 0
+    AmandaAlleyKiss = 0
+    AmandaAlleyClose = 0
+    AmandaAlleyAfterSex = 0
+    AmandaAlleyCaught = 0
+    $AmandaAlleyLastText = ''
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_dark_alley.qsps
+! Меню подворотни
+! Все пункты идут через Menu.Show
+! ================================================
+
+#AmandaDanceAlleyBuildMenu
+    gs 'Menu.Destroy', 'AmandaAlleyMenu'
+    gs 'Menu.Create', 'AmandaAlleyMenu'
+
+    gs 'Menu.Add', 'AmandaAlleyMenu', 'Оглядеться', ''
+    gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+        gt 'AmandaDanceAlleyAction', 'look'
+    }
+
+    if AmandaAlleyKiss = 0:
+        gs 'Menu.Add', 'AmandaAlleyMenu', 'Поцеловать', ''
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'kiss'
+        }
+    end
+
+    if AmandaAlleyKiss = 1 and AmandaAlleyClose = 0:
+        gs 'Menu.Add', 'AmandaAlleyMenu', 'Прижать ближе', ''
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'close'
+        }
+    end
+
+    if AmandaAlleyClose = 1:
+        gs 'Menu.Add', 'AmandaAlleyMenu', 'Продолжить близость', ''
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyToSexScene'
+        }
+    end
+
+    gs 'Menu.Add', 'AmandaAlleyMenu', 'Вернуться на площадь', ''
+    gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+        gt 'AmandaDanceAlleyEnd'
+    }
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_dark_alley.qsps
+! Обработка пунктов меню подворотни
+! ================================================
+
+#AmandaDanceAlleyAction
+    $AmandaAlleyAction = LCASE($ARGS[0])
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    if $AmandaAlleyAction = 'look':
+        AmandaAlleyRisk += 2
+
+    elseif $AmandaAlleyAction = 'kiss':
+        AmandaAlleyKiss = 1
+        AmandaAlleyStage = 2
+        AmandaAlleyRisk += 5
+
+        Friends[$AmandaAlleyGirl] += 1
+        love[$AmandaAlleyGirl] += 1
+        otkroven[$AmandaAlleyGirl] += 1
+        AmandaPlayerPath += 1
+        AmandaSecretiveness += 1
+
+    elseif $AmandaAlleyAction = 'close':
+        AmandaAlleyClose = 1
+        AmandaAlleyStage = 3
+        AmandaAlleyRisk += 8
+
+        love[$AmandaAlleyGirl] += 1
+        otkroven[$AmandaAlleyGirl] += 1
+        sluttiness[$AmandaAlleyGirl] += 1
+        AmandaScandalLevel += 1
+        AmandaSecretiveness += 1
+
+    else:
+        AmandaAlleyRisk += 1
+    end
+
+    if LOC('AmandaDanceAlleyActionText') = 1:
+        gs 'AmandaDanceAlleyActionText', $AmandaAlleyAction
+    else:
+        if $AmandaAlleyAction = 'look':
+            $AmandaAlleyLastText = 'Вы оглядываетесь. Проход кажется пустым, но с площади всё ещё доносятся голоса.'
+        elseif $AmandaAlleyAction = 'kiss':
+            $AmandaAlleyLastText = 'Вы целуете Аманду. Она прислушивается к шагам на площади, но не отстраняется.'
+        elseif $AmandaAlleyAction = 'close':
+            $AmandaAlleyLastText = 'Вы притягиваете её ближе. Аманда оглядывается, но остаётся рядом.'
+        else:
+            $AmandaAlleyLastText = 'Вы задерживаетесь в подворотне ещё на несколько мгновений.'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', $AmandaAlleyGirl
+    gs 'AmandaDanceAlleyRiskCheck'
+
+    killvar '$AmandaAlleyAction'
+
+    gt 'AmandaDanceAlleyEvent'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_dark_alley.qsps
+! Проверка риска быть замеченными
+! Пока это лёгкое последствие и рост скандальности, не наказание
+! ================================================
+
+#AmandaDanceAlleyRiskCheck
+    AmandaAlleyRoll = RAND(1, 100)
+    AmandaAlleyChance = AmandaAlleyRisk
+
+    if AmandaAlleyChance > 60:
+        AmandaAlleyChance = 60
+    end
+
+    if AmandaAlleyRoll <= AmandaAlleyChance:
+        AmandaAlleyCaught += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+        AmandaScandalLevel += 1
+
+        if LOC('AmandaDanceAlleyRiskText') = 1:
+            gs 'AmandaDanceAlleyRiskText'
+        else:
+            $AmandaAlleyLastText += '<br><br>С улицы доносится чужой голос. Вы оба на мгновение замираете.'
+        end
+    end
+
+    killvar 'AmandaAlleyRoll'
+    killvar 'AmandaAlleyChance'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_dark_alley.qsps
+! Переход из подворотни в универсальный sex_scene_core
+! ================================================
+
+#AmandaDanceAlleyToSexScene
+    *clr
+    clr
+    cla
+
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+    gs 'SexSceneEnsureIntimStage', $AmandaAlleyGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if IntimStage[$AmandaAlleyGirl] < 1:
+        *p 'Аманда резко качает головой. После танца она позволила себе больше обычного, но к настоящей близости пока не готова.'
+        *pl ' '
+
+        act 'Вернуться в подворотню':
+            gt 'AmandaDanceAlleyEvent'
+        end
+
+        act 'Вернуться на площадь':
+            gt 'AmandaDanceAlleyEnd'
+        end
+
+        exit
+    end
+
+    AmandaAlleyAfterSex = 1
+    AmandaSecretiveness += 1
+    AmandaScandalLevel += 1
+
+    if LOC('AmandaDanceAlleyBeforeSexText') = 1:
+        gs 'AmandaDanceAlleyBeforeSexText'
+    else:
+        *p 'Вы остаётесь с Амандой в тени подворотни. Её дыхание становится тише, но напряжение между вами уже не исчезает.'
+    end
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'SexSceneStart', 'amanda', 'MarketDance', 'alley'
+    end
+
+    act 'Остановиться':
+        gt 'AmandaDanceAlleyEnd'
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_dark_alley.qsps
+! Завершение подворотни и возврат на танцы
+! ================================================
+
+#AmandaDanceAlleyEnd
+    *clr
+    clr
+    cla
+
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВОЗВРАЩЕНИЕ НА ПЛОЩАДЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyEndText') = 1:
+        gs 'AmandaDanceAlleyEndText'
+    else:
+        *p 'Вы возвращаетесь к шуму площади. Аманда старается выглядеть спокойно, но после подворотни это получается не сразу.'
+    end
+
+    AmandaDanceEnded = 1
+
+    *pl ' '
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$AmandaAlleyGirl'
+---

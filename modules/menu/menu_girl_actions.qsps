@@ -1,0 +1,240 @@
+! ================================================
+! FILE: modules/menu/menu_girl_actions.qsps
+! Безопасные обработчики кнопок меню девушки
+! Разговор, флирт, интим, работа и особые действия
+! ================================================
+
+#MenuGirlTalk
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlActionName = $GirlKey
+    $GirlReturnLoc = $ARGS[1]
+
+    if $GirlActionName = '':
+        msg 'Ошибка: MenuGirlTalk вызван без имени девушки.'
+        exit
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = 'TavernMain'
+    end
+
+    if LOC('GirlTalk') = 1:
+        gt 'GirlTalk', $GirlActionName, $GirlReturnLoc
+    else:
+        msg 'Ошибка: локация GirlTalk не найдена.'
+        gt $GirlReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/menu/menu_girl_actions.qsps
+! Безопасный вход во флирт
+! Использует MenuGirlCalcConditions
+! Не использует старую цепочку Result
+! ================================================
+
+#MenuGirlFlirt
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlActionName = $GirlKey
+    $GirlReturnLoc = $ARGS[1]
+
+    if $GirlActionName = '':
+        msg 'Ошибка: MenuGirlFlirt вызван без имени девушки.'
+        exit
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = $CURLOC
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $GirlActionName
+    gs 'UpdateGirlLocations'
+    gs 'MenuGirlCalcConditions', $GirlActionName, $GirlReturnLoc
+
+    if MenuCanFlirt = 0:
+        msg 'Сейчас не лучшее время для флирта.'
+        gt $GirlReturnLoc
+    end
+
+    if LOC('GirlFlirt') = 1:
+        gt 'GirlFlirt', $GirlActionName, $GirlReturnLoc
+    else:
+        msg 'Ошибка: локация GirlFlirt не найдена.'
+        gt $GirlReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/menu/menu_girl_actions.qsps
+! Открытие панели работы девушки
+! Выводит персонал в дополнительное описание
+! Главное окно не перерисовывает
+! ================================================
+
+#MenuGirlJob
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlActionName = $GirlKey
+    $GirlReturnLoc = $ARGS[1]
+
+    if $GirlActionName = '':
+        msg 'Ошибка: MenuGirlJob вызван без имени девушки.'
+        exit
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = $CURLOC
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = 'TavernMain'
+    end
+
+    if LOC('PanelStaffInfo') = 1:
+        gs 'PanelStaffInfo'
+    else:
+        msg 'Панель персонала пока не найдена.'
+    end
+---
+
+! ================================================
+! FILE: modules/menu/menu_girl_actions.qsps
+! Особые действия девушки
+! Безопасный обработчик из универсального меню NPC
+! Нормализует ключ девушки через NormalizeGirlKey
+! ================================================
+
+#MenuGirlSpecial
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlActionName = $GirlKey
+    $GirlReturnLoc = $ARGS[1]
+
+    if $GirlActionName = '':
+        msg 'Ошибка: MenuGirlSpecial вызван без имени девушки.'
+        exit
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $GirlActionName
+
+    if $RealName[$GirlActionName] = '':
+        $RealName[$GirlActionName] = UCASE(MID($GirlActionName, 1, 1)) + LCASE(MID($GirlActionName, 2))
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $GirlActionName
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОСОБЫЕ ДЕЙСТВИЯ: ' + $RealName[$GirlActionName]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $GirlActionName = 'amanda':
+        gs 'MenuGirlSpecialAmanda', $GirlReturnLoc
+    elseif $GirlActionName = 'melissa':
+        gs 'MenuGirlSpecialMelissa', $GirlReturnLoc
+    elseif $GirlActionName = 'sandra':
+        gs 'MenuGirlSpecialSandra', $GirlReturnLoc
+    else:
+        *p 'Сейчас нет особых действий для этого персонажа.'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $GirlReturnLoc
+    end
+---
+
+#MenuGirlSpecialAmanda
+    $GirlReturnLoc = $ARGS[0]
+
+    if week = 5 and time = 4:
+        act 'Пятничные танцы':
+            if LOC('AmandaDance') = 1:
+                gt 'AmandaDance'
+            else:
+                msg 'Событие "AmandaDance" пока не найдено.'
+                gt $GirlReturnLoc
+            end
+        end
+    end
+
+    if love['amanda'] >= 10 or sluttiness['amanda'] >= 15 or otkroven['amanda'] >= 10:
+        act 'Личный разговор с Амандой':
+            *p 'Вы решаете поговорить с Амандой о чём-то более личном.'
+
+            Friends['amanda'] += 1
+            otkroven['amanda'] += 1
+
+            act 'Продолжить':
+                gt $GirlReturnLoc
+            end
+        end
+    end
+---
+
+#MenuGirlSpecialMelissa
+    $GirlReturnLoc = $ARGS[0]
+
+    if Friends['melissa'] >= 10 or love['melissa'] >= 10:
+        act 'Поговорить с Мелиссой без споров':
+            *p 'Вы стараетесь поговорить с Мелиссой спокойно, без привычных колкостей.'
+
+            Friends['melissa'] += 1
+
+            act 'Продолжить':
+                gt $GirlReturnLoc
+            end
+        end
+    end
+
+    if sluttiness['melissa'] >= 20:
+        act 'Провокационный разговор':
+            *p 'Вы задеваете Мелиссу двусмысленной фразой. Она бросает на вас сердитый, но не совсем равнодушный взгляд.'
+
+            otkroven['melissa'] += 1
+
+            act 'Продолжить':
+                gt $GirlReturnLoc
+            end
+        end
+    end
+---
+
+#MenuGirlSpecialSandra
+    $GirlReturnLoc = $ARGS[0]
+
+    if Friends['sandra'] >= 10 or love['sandra'] >= 10:
+        act 'Поговорить о делах семьи':
+            *p 'Вы обсуждаете с Сандрой дела семьи и трактира.'
+
+            Friends['sandra'] += 1
+            management_skill += 1
+
+            act 'Продолжить':
+                gt $GirlReturnLoc
+            end
+        end
+    end
+
+    if sluttiness['sandra'] >= 20:
+        act 'Личный разговор с Сандрой':
+            *p 'Разговор с Сандрой становится более личным, чем обычно.'
+
+            otkroven['sandra'] += 1
+
+            act 'Продолжить':
+                gt $GirlReturnLoc
+            end
+        end
+    end
+---
+

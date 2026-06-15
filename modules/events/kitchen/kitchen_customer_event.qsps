@@ -1,0 +1,849 @@
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Попытка автозапуска
+! ARGS[0] — куда возвращаться после события
+! ================================================
+
+#KitchenCustomerEventTryAutoStart
+    $KitchenCustomerReturnLoc = $ARGS[0]
+
+    if $KitchenCustomerReturnLoc = '':
+        $KitchenCustomerReturnLoc = 'TavernMain'
+    end
+
+    if LOC($KitchenCustomerReturnLoc) = 0:
+        $KitchenCustomerReturnLoc = 'TavernMain'
+    end
+
+    gs 'KitchenCustomerEventCanStart'
+
+    if KitchenCustomerEventCanStart = 1:
+        gt 'KitchenCustomerEventStart', $KitchenCustomerSelectedGirl, $KitchenCustomerReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Подбор девушки
+! ================================================
+
+#KitchenCustomerPickCandidate
+    $KitchenCustomerSelectedGirl = ''
+    KitchenCustomerCandidateCount = 0
+
+    gs 'KitchenCustomerCheckCandidate', 'amanda'
+    gs 'KitchenCustomerCheckCandidate', 'melissa'
+    gs 'KitchenCustomerCheckCandidate', 'sandra'
+
+    if KitchenCustomerCandidateCount <= 0:
+        exit
+    end
+
+    KitchenCustomerPick = RAND(1, KitchenCustomerCandidateCount)
+    $KitchenCustomerSelectedGirl = $KitchenCustomerCandidate[KitchenCustomerPick]
+
+    killvar 'KitchenCustomerPick'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Проверка девушки
+! ================================================
+
+#KitchenCustomerCheckCandidate
+    gs 'KitchenCustomerNormalizeKey', $ARGS[0]
+    $KitchenCustomerCheckGirl = $KitchenCustomerGirlKey
+
+    if $KitchenCustomerCheckGirl = '':
+        exit
+    end
+
+    if KitchenCustomerLastDay[$KitchenCustomerCheckGirl] = day:
+        exit
+    end
+
+    gs 'KitchenCustomerGetStage', $KitchenCustomerCheckGirl
+
+    KitchenCustomerChance = 6
+
+    if KitchenCustomerStage = 0:
+        KitchenCustomerChance = 4
+    elseif KitchenCustomerStage = 1:
+        KitchenCustomerChance = 8
+    elseif KitchenCustomerStage = 2:
+        KitchenCustomerChance = 14
+    elseif KitchenCustomerStage = 3:
+        KitchenCustomerChance = 22
+    else:
+        KitchenCustomerChance = 32
+    end
+
+    if GirlUniformLevel[$KitchenCustomerCheckGirl] = 1:
+        KitchenCustomerChance += 4
+    end
+
+    if GirlKitchenPolicy[$KitchenCustomerCheckGirl] = 1:
+        KitchenCustomerChance -= 8
+    elseif GirlKitchenPolicy[$KitchenCustomerCheckGirl] = 3:
+        KitchenCustomerChance += 6
+    end
+
+    if TavernReputation < 25:
+        KitchenCustomerChance += 5
+    end
+
+    if TavernScandal > 60:
+        KitchenCustomerChance += 6
+    end
+
+    if $KitchenCustomerCheckGirl = 'sandra' and FamilyCorruptionStage < 2:
+        KitchenCustomerChance -= 6
+    end
+
+    if KitchenCustomerChance < 2:
+        KitchenCustomerChance = 2
+    end
+
+    if KitchenCustomerChance > 55:
+        KitchenCustomerChance = 55
+    end
+
+    if RAND(1, 100) <= KitchenCustomerChance:
+        KitchenCustomerCandidateCount += 1
+        $KitchenCustomerCandidate[KitchenCustomerCandidateCount] = $KitchenCustomerCheckGirl
+    end
+
+    killvar '$KitchenCustomerCheckGirl'
+    killvar 'KitchenCustomerChance'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Нормализация ключа девушки
+! ================================================
+
+#KitchenCustomerNormalizeKey
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $KitchenCustomerGirlKey = $GirlKey
+    else:
+        $KitchenCustomerGirlKey = LCASE($ARGS[0])
+    end
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Имя девушки
+! ================================================
+
+#KitchenCustomerEnsureName
+    gs 'KitchenCustomerNormalizeKey', $ARGS[0]
+    $KitchenCustomerNameGirl = $KitchenCustomerGirlKey
+
+    if $RealName[$KitchenCustomerNameGirl] = '':
+        if $KitchenCustomerNameGirl = 'amanda':
+            $RealName[$KitchenCustomerNameGirl] = 'Аманда'
+        elseif $KitchenCustomerNameGirl = 'melissa':
+            $RealName[$KitchenCustomerNameGirl] = 'Мелисса'
+        elseif $KitchenCustomerNameGirl = 'sandra':
+            $RealName[$KitchenCustomerNameGirl] = 'Сандра'
+        else:
+            $RealName[$KitchenCustomerNameGirl] = $KitchenCustomerNameGirl
+        end
+    end
+
+    killvar '$KitchenCustomerNameGirl'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Расчёт стадии поведения девушки на кухне
+! ================================================
+
+#KitchenCustomerGetStage
+    gs 'KitchenCustomerNormalizeKey', $ARGS[0]
+    $KitchenCustomerStageGirl = $KitchenCustomerGirlKey
+
+    KitchenCustomerStage = 0
+    KitchenCustomerScore = 0
+    KitchenCustomerPersonalScore = 0
+    KitchenCustomerGlobalScore = 0
+
+    if $KitchenCustomerStageGirl = '':
+        exit
+    end
+
+    ! Глобальная грязная репутация больше не может одна резко поднять личную стадию девушки.
+    ! Она только создаёт фон. Личная готовность считается отдельно.
+    KitchenCustomerGlobalScore += TavernScandal / 2
+    KitchenCustomerGlobalScore += TavernLewdFame / 2
+    KitchenCustomerGlobalScore += TavernKitchenRumor * 6
+    KitchenCustomerGlobalScore += TavernGirlsEasyRumor * 4
+
+    KitchenCustomerPersonalScore += GirlHallLewdStage[$KitchenCustomerStageGirl] * 10
+    KitchenCustomerPersonalScore += GirlPublicAttention[$KitchenCustomerStageGirl]
+    KitchenCustomerPersonalScore += GirlNpcPath[$KitchenCustomerStageGirl]
+    KitchenCustomerPersonalScore += GirlSecretiveness[$KitchenCustomerStageGirl]
+    KitchenCustomerPersonalScore += GirlRebellion[$KitchenCustomerStageGirl]
+
+    if GirlUniformLevel[$KitchenCustomerStageGirl] > 1:
+        GirlUniformLevel[$KitchenCustomerStageGirl] = 1
+    end
+
+    if GirlUniformLevel[$KitchenCustomerStageGirl] < 0:
+        GirlUniformLevel[$KitchenCustomerStageGirl] = 0
+    end
+
+    if GirlUniformLevel[$KitchenCustomerStageGirl] = 1:
+        KitchenCustomerPersonalScore += 6
+    end
+
+    if GirlKitchenPolicy[$KitchenCustomerStageGirl] = 1:
+        KitchenCustomerPersonalScore -= 20
+    elseif GirlKitchenPolicy[$KitchenCustomerStageGirl] = 2:
+        KitchenCustomerPersonalScore += 4
+    elseif GirlKitchenPolicy[$KitchenCustomerStageGirl] = 3:
+        KitchenCustomerPersonalScore += 12
+    end
+
+    ! Мосты к старым индивидуальным переменным.
+    if $KitchenCustomerStageGirl = 'amanda':
+        KitchenCustomerPersonalScore += AmandaScandalLevel / 2
+        KitchenCustomerPersonalScore += AmandaPublicAttention
+        KitchenCustomerPersonalScore += AmandaNpcPath
+        KitchenCustomerPersonalScore += AmandaSecretiveness
+        KitchenCustomerPersonalScore += AmandaRebellion
+
+        if uniform_purchased['amanda'] = 1 or revealing_uniform_worn = 1:
+            GirlUniformLevel['amanda'] = 1
+        end
+    elseif $KitchenCustomerStageGirl = 'melissa':
+        KitchenCustomerPersonalScore += MelissaScandalTolerance
+        KitchenCustomerPersonalScore += MelissaNpcPath
+        KitchenCustomerPersonalScore += MelissaJealousy / 2
+        KitchenCustomerPersonalScore += MelissaControlNeed / 2
+
+        if uniform_purchased['melissa'] = 1 or revealing_uniform_worn = 1:
+            GirlUniformLevel['melissa'] = 1
+        end
+    elseif $KitchenCustomerStageGirl = 'sandra':
+        KitchenCustomerPersonalScore += SandraNpcPath
+        KitchenCustomerPersonalScore += SandraPragmatism
+        KitchenCustomerPersonalScore += SandraBitterness / 2
+
+        if SandraMoralResistance > 0:
+            KitchenCustomerPersonalScore -= SandraMoralResistance
+        end
+
+        if uniform_purchased['sandra'] = 1 or revealing_uniform_worn = 1:
+            GirlUniformLevel['sandra'] = 1
+        end
+    end
+
+    if KitchenCustomerPersonalScore < 0:
+        KitchenCustomerPersonalScore = 0
+    end
+
+    if KitchenCustomerGlobalScore < 0:
+        KitchenCustomerGlobalScore = 0
+    end
+
+    KitchenCustomerScore = KitchenCustomerPersonalScore + KitchenCustomerGlobalScore
+
+    if KitchenCustomerScore < 35:
+        KitchenCustomerStage = 0
+    elseif KitchenCustomerScore < 70:
+        KitchenCustomerStage = 1
+    elseif KitchenCustomerScore < 105:
+        KitchenCustomerStage = 2
+    elseif KitchenCustomerScore < 145:
+        KitchenCustomerStage = 3
+    else:
+        KitchenCustomerStage = 4
+    end
+
+    ! Жёсткий сюжетный gate: личная история девушки должна догнать общую грязную славу трактира.
+    if KitchenCustomerStage >= 3 and KitchenCustomerPersonalScore < 55:
+        KitchenCustomerStage = 2
+    end
+
+    if KitchenCustomerStage >= 4 and KitchenCustomerPersonalScore < 90:
+        KitchenCustomerStage = 3
+    end
+
+    ! Сандра не должна рано вести себя как привыкшая к грязной игре работница.
+    if $KitchenCustomerStageGirl = 'sandra':
+        if FamilyCorruptionStage < 2 and KitchenCustomerStage > 1:
+            KitchenCustomerStage = 1
+        elseif FamilyCorruptionStage < 3 and KitchenCustomerStage > 2:
+            KitchenCustomerStage = 2
+        end
+    end
+
+    killvar '$KitchenCustomerStageGirl'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Выбор типа события
+! ================================================
+
+#KitchenCustomerPickScene
+    $KitchenCustomerScene = 'bad_food'
+
+    KitchenCustomerSceneRoll = RAND(1, 100)
+
+    if KitchenCustomerStage <= 1:
+        if KitchenCustomerSceneRoll <= 45:
+            $KitchenCustomerScene = 'bad_food'
+        elseif KitchenCustomerSceneRoll <= 80:
+            $KitchenCustomerScene = 'wrong_order'
+        else:
+            $KitchenCustomerScene = 'drunk_enters'
+        end
+    elseif KitchenCustomerStage = 2:
+        if KitchenCustomerSceneRoll <= 35:
+            $KitchenCustomerScene = 'bad_food'
+        elseif KitchenCustomerSceneRoll <= 65:
+            $KitchenCustomerScene = 'wrong_order'
+        else:
+            $KitchenCustomerScene = 'drunk_enters'
+        end
+    elseif KitchenCustomerStage = 3:
+        if KitchenCustomerSceneRoll <= 25:
+            $KitchenCustomerScene = 'bad_food'
+        elseif KitchenCustomerSceneRoll <= 45:
+            $KitchenCustomerScene = 'drunk_enters'
+        elseif KitchenCustomerSceneRoll <= 75:
+            $KitchenCustomerScene = 'grab'
+        else:
+            $KitchenCustomerScene = 'wrong_order'
+        end
+    else:
+        if KitchenCustomerSceneRoll <= 20:
+            $KitchenCustomerScene = 'drunk_enters'
+        elseif KitchenCustomerSceneRoll <= 50:
+            $KitchenCustomerScene = 'grab'
+        elseif KitchenCustomerSceneRoll <= 80:
+            $KitchenCustomerScene = 'private_offer'
+        else:
+            $KitchenCustomerScene = 'bad_food'
+        end
+    end
+
+    killvar 'KitchenCustomerSceneRoll'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Выбор клиента
+! ================================================
+
+#KitchenCustomerPickClient
+    KitchenCustomerClientRoll = RAND(1, 100)
+
+    if KitchenCustomerClientRoll <= 30:
+        $KitchenCustomerClient = 'angry_guest'
+    elseif KitchenCustomerClientRoll <= 55:
+        $KitchenCustomerClient = 'drunk_guest'
+    elseif KitchenCustomerClientRoll <= 80:
+        $KitchenCustomerClient = 'rich_merchant'
+    else:
+        $KitchenCustomerClient = 'craftsman'
+    end
+
+    killvar 'KitchenCustomerClientRoll'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Вход в событие
+! ================================================
+
+#KitchenCustomerEventStart
+    *clr
+    clr
+    cla
+
+    gs 'KitchenCustomerNormalizeKey', $ARGS[0]
+    $KitchenCustomerGirl = $KitchenCustomerGirlKey
+    $KitchenCustomerReturnLoc = $ARGS[1]
+
+    ! Защита от старых/ошибочных вызовов вида:
+    ! gt 'KitchenCustomerEventStart', 'TavernMain'
+    ! В этом случае TavernMain — это локация возврата, а не девушка.
+    if $KitchenCustomerGirl <> 'amanda' and $KitchenCustomerGirl <> 'melissa' and $KitchenCustomerGirl <> 'sandra':
+        if LOC($KitchenCustomerGirl) = 1 and $KitchenCustomerReturnLoc = '':
+            $KitchenCustomerReturnLoc = $KitchenCustomerGirl
+        end
+
+        $KitchenCustomerGirl = ''
+    end
+
+    if $KitchenCustomerGirl = '':
+        gs 'KitchenCustomerPickCandidate'
+        $KitchenCustomerGirl = $KitchenCustomerSelectedGirl
+    end
+
+    if $KitchenCustomerGirl = '':
+        gt 'TavernMain'
+    end
+
+    if $KitchenCustomerReturnLoc = '':
+        $KitchenCustomerReturnLoc = 'TavernMain'
+    end
+
+    if LOC($KitchenCustomerReturnLoc) = 0:
+        $KitchenCustomerReturnLoc = 'TavernMain'
+    end
+
+    gs 'KitchenCustomerEnsureName', $KitchenCustomerGirl
+    gs 'KitchenCustomerGetStage', $KitchenCustomerGirl
+    gs 'KitchenCustomerPickScene'
+    gs 'KitchenCustomerPickClient'
+
+    KitchenCustomerUniform = GirlUniformLevel[$KitchenCustomerGirl]
+
+    if KitchenCustomerUniform > 1:
+        KitchenCustomerUniform = 1
+    end
+
+    if KitchenCustomerUniform < 0:
+        KitchenCustomerUniform = 0
+    end
+
+    KitchenCustomerLastGlobalDay = day
+    KitchenCustomerLastGlobalTime = time
+    KitchenCustomerLastDay[$KitchenCustomerGirl] = day
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $KitchenCustomerGirl
+    end
+
+    gs 'KitchenCustomerShowImage', 'base'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОНФЛИКТ НА КУХНЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'KitchenCustomerPrintText', 'intro'
+
+    *pl ' '
+
+    gs 'KitchenCustomerPrintDecisionThoughts'
+
+    *pl ' '
+
+    if LOC('KitchenPolicyReaction') = 1:
+        gs 'KitchenPolicyReaction', $KitchenCustomerGirl, $KitchenCustomerScene, $KitchenCustomerReturnLoc
+
+        if $KitchenPolicyReactionText <> '':
+            *p $KitchenPolicyReactionText
+            *pl ' '
+        end
+    end
+
+    if debug = 1:
+
+    if LOC('GirlPolicySceneVariationPrint') = 1:
+        gs 'GirlPolicySceneVariationPrint', $KitchenCustomerGirl, 'kitchen', 'start'
+    end
+
+    *pl ' '
+        *pl '[DEBUG KITCHEN EVENT] girl: ' + $KitchenCustomerGirl
+        *pl '[DEBUG KITCHEN EVENT] stage: ' + STR(KitchenCustomerStage)
+        *pl '[DEBUG KITCHEN EVENT] score: ' + STR(KitchenCustomerScore)
+        *pl '[DEBUG KITCHEN EVENT] scene: ' + $KitchenCustomerScene
+        *pl '[DEBUG KITCHEN EVENT] client: ' + $KitchenCustomerClient
+        *pl '[DEBUG KITCHEN EVENT] uniform: ' + STR(KitchenCustomerUniform)
+        *pl '[DEBUG KITCHEN EVENT] policy: ' + STR(GirlKitchenPolicy[$KitchenCustomerGirl])
+        *pl ' '
+    end
+
+    gs 'KitchenCustomerBuildMenu'
+
+    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''KitchenCustomerMenu''">Стефану</a>?'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Меню
+! ================================================
+
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Мысли Стефана перед выбором
+! ================================================
+
+#KitchenCustomerPrintDecisionThoughts
+    gs 'HallEventChoiceThoughtsPrint', 'kitchen'
+
+    gs 'KitchenCustomerCanUseClientChoice', $KitchenCustomerGirl
+
+    if KitchenCustomerClientChoiceAllowed = 1:
+        gs 'HallEventChoiceThoughtsPrint', 'kitchen_client'
+    end
+---
+
+#KitchenCustomerBuildMenu
+    gs 'Menu.Destroy', 'KitchenCustomerMenu'
+    gs 'Menu.Create', 'KitchenCustomerMenu'
+
+    gs 'Menu.Add', 'KitchenCustomerMenu', 'Жёстко пресечь', ''
+    gs 'Menu.AddModule', 'KitchenCustomerMenu', {
+        gt 'KitchenCustomerResolve', 'stop', $KitchenCustomerReturnLoc
+    }
+
+    gs 'Menu.Add', 'KitchenCustomerMenu', 'Дать ей решить самой', ''
+    gs 'Menu.AddModule', 'KitchenCustomerMenu', {
+        gt 'KitchenCustomerResolve', 'let_her', $KitchenCustomerReturnLoc
+    }
+
+    gs 'KitchenCustomerCanUseClientChoice', $KitchenCustomerGirl
+
+    if KitchenCustomerClientChoiceAllowed = 1:
+        gs 'Menu.Add', 'KitchenCustomerMenu', 'Закрыть глаза ради клиента', ''
+        gs 'Menu.AddModule', 'KitchenCustomerMenu', {
+            gt 'KitchenCustomerResolve', 'client', $KitchenCustomerReturnLoc
+        }
+    end
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Проверка доступности грязного выбора "ради клиента"
+! ================================================
+
+#KitchenCustomerCanUseClientChoice
+    gs 'KitchenCustomerNormalizeKey', $ARGS[0]
+    $KitchenCustomerClientChoiceGirl = $KitchenCustomerGirlKey
+
+    KitchenCustomerClientChoiceAllowed = 0
+
+    if $KitchenCustomerClientChoiceGirl = '':
+        exit
+    end
+
+    if KitchenCustomerStage < 3:
+        exit
+    end
+
+    if TavernScandal < 45 and TavernLewdFame < 25:
+        exit
+    end
+
+    if GirlKitchenPolicy[$KitchenCustomerClientChoiceGirl] <> 3 and GirlNpcPath[$KitchenCustomerClientChoiceGirl] < 25:
+        exit
+    end
+
+    if $KitchenCustomerClientChoiceGirl = 'sandra':
+        if FamilyCorruptionStage < 3:
+            exit
+        end
+
+        if GirlNpcPath['sandra'] < 35:
+            exit
+        end
+
+        if GirlPublicAttention['sandra'] < 20:
+            exit
+        end
+    end
+
+    KitchenCustomerClientChoiceAllowed = 1
+
+    killvar '$KitchenCustomerClientChoiceGirl'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Разрешение
+! ================================================
+
+#KitchenCustomerResolve
+    *clr
+    clr
+    cla
+
+    $KitchenCustomerChoice = LCASE($ARGS[0])
+    $KitchenCustomerReturnLoc = $ARGS[1]
+
+    if $KitchenCustomerReturnLoc = '':
+        $KitchenCustomerReturnLoc = 'TavernMain'
+    end
+
+    if LOC($KitchenCustomerReturnLoc) = 0:
+        $KitchenCustomerReturnLoc = 'TavernMain'
+    end
+
+    if $KitchenCustomerGirl = '':
+        $KitchenCustomerGirl = 'amanda'
+    end
+
+    if $KitchenCustomerChoice = 'client':
+        gs 'KitchenCustomerGetStage', $KitchenCustomerGirl
+        gs 'KitchenCustomerCanUseClientChoice', $KitchenCustomerGirl
+
+        if KitchenCustomerClientChoiceAllowed = 0:
+            $KitchenCustomerChoice = 'let_her'
+        end
+    end
+
+    gs 'KitchenCustomerEnsureName', $KitchenCustomerGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $KitchenCustomerGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОНФЛИКТ НА КУХНЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $KitchenCustomerChoice = 'stop':
+        gs 'KitchenCustomerApplyConsequences', 'stop'
+        gs 'KitchenCustomerShowImage', 'stop'
+        gs 'KitchenCustomerPrintText', 'stop'
+
+    elseif $KitchenCustomerChoice = 'let_her':
+        gs 'KitchenCustomerApplyConsequences', 'let_her'
+        gs 'KitchenCustomerShowImage', 'let_her'
+        gs 'KitchenCustomerPrintText', 'let_her'
+
+    elseif $KitchenCustomerChoice = 'client':
+        gs 'KitchenCustomerApplyConsequences', 'client'
+        gs 'KitchenCustomerShowImage', 'client'
+        gs 'KitchenCustomerPrintText', 'client'
+
+    else:
+        gs 'KitchenCustomerApplyConsequences', 'let_her'
+        gs 'KitchenCustomerPrintText', 'let_her'
+    end
+
+    if LOC('HallChoiceConsequencePrint') = 1:
+        gs 'HallChoiceConsequencePrint', 'kitchen', $KitchenCustomerChoice, $KitchenCustomerGirl
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG KITCHEN EVENT] choice: ' + $KitchenCustomerChoice
+        *pl '[DEBUG KITCHEN EVENT] TavernReputation: ' + STR(TavernReputation)
+        *pl '[DEBUG KITCHEN EVENT] TavernScandal: ' + STR(TavernScandal)
+        *pl '[DEBUG KITCHEN EVENT] TavernKitchenRumor: ' + STR(TavernKitchenRumor)
+        *pl '[DEBUG KITCHEN EVENT] GirlNpcPath: ' + STR(GirlNpcPath[$KitchenCustomerGirl])
+        *pl ' '
+    end
+
+    if LOC('GirlWorkPolicyTalkKitchen') = 1:
+        act 'Поговорить с ней о правилах на кухне':
+            gt 'GirlWorkPolicyTalkKitchen', $KitchenCustomerGirl, $KitchenCustomerReturnLoc
+        end
+    end
+
+    act 'Вернуться':
+        gt $KitchenCustomerReturnLoc
+    end
+
+    killvar '$KitchenCustomerChoice'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Последствия
+! ================================================
+
+#KitchenCustomerApplyConsequences
+    $KitchenCustomerApplyChoice = LCASE($ARGS[0])
+
+    if $KitchenCustomerApplyChoice = 'stop':
+        GirlKitchenPolicy[$KitchenCustomerGirl] = 1
+        TavernReputation += 1
+        TavernScandal -= 1
+        GirlSecretiveness[$KitchenCustomerGirl] -= 1
+        GirlTrustStefan[$KitchenCustomerGirl] += 1
+
+        if $KitchenCustomerScene = 'bad_food' or $KitchenCustomerScene = 'wrong_order':
+            money -= 5
+        end
+
+    elseif $KitchenCustomerApplyChoice = 'let_her':
+        GirlKitchenPolicy[$KitchenCustomerGirl] = 2
+        GirlPublicAttention[$KitchenCustomerGirl] += 1
+        GirlNpcPath[$KitchenCustomerGirl] += 1
+
+        if KitchenCustomerStage >= 2:
+            money += 10
+            TavernScandal += 1
+        else:
+            TavernReputation += 1
+        end
+
+    elseif $KitchenCustomerApplyChoice = 'client':
+        GirlKitchenPolicy[$KitchenCustomerGirl] = 3
+        money += 20 + KitchenCustomerStage * 8
+        TavernScandal += 2
+        TavernKitchenRumor += 1
+        TavernGirlsEasyRumor = 1
+        GirlNpcPath[$KitchenCustomerGirl] += 2
+        GirlPublicAttention[$KitchenCustomerGirl] += 2
+        GirlSecretiveness[$KitchenCustomerGirl] += 1
+
+        if KitchenCustomerStage < 2:
+            GirlTrustStefan[$KitchenCustomerGirl] -= 1
+            GirlRebellion[$KitchenCustomerGirl] += 1
+        end
+    end
+
+    if TavernReputation < 0:
+        TavernReputation = 0
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    if GirlSecretiveness[$KitchenCustomerGirl] < 0:
+        GirlSecretiveness[$KitchenCustomerGirl] = 0
+    end
+
+    if GirlTrustStefan[$KitchenCustomerGirl] < 0:
+        GirlTrustStefan[$KitchenCustomerGirl] = 0
+    end
+
+    ! Мосты к индивидуальным переменным.
+    if $KitchenCustomerGirl = 'amanda':
+        AmandaPublicAttention = GirlPublicAttention['amanda']
+        AmandaNpcPath = GirlNpcPath['amanda']
+        AmandaSecretiveness = GirlSecretiveness['amanda']
+        AmandaRebellion = GirlRebellion['amanda']
+        AmandaScandalLevel += 1
+    elseif $KitchenCustomerGirl = 'melissa':
+        MelissaNpcPath = GirlNpcPath['melissa']
+        MelissaScandalTolerance += 1
+        MelissaFamilyConcern += 1
+    elseif $KitchenCustomerGirl = 'sandra':
+        SandraNpcPath = GirlNpcPath['sandra']
+        SandraMoralResistance -= 1
+        SandraFamilyConcern += 1
+
+        if SandraMoralResistance < 0:
+            SandraMoralResistance = 0
+        end
+    end
+
+    if LOC('GirlMemoryOfStefanRegister') = 1:
+        gs 'GirlMemoryOfStefanRegister', $KitchenCustomerGirl, 'kitchen', $KitchenCustomerApplyChoice
+    end
+
+killvar '$KitchenCustomerApplyChoice'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Показ картинки
+! ================================================
+
+#KitchenCustomerShowImage
+    $KitchenCustomerImageOutcome = LCASE($ARGS[0])
+
+    if $KitchenCustomerImageOutcome = '':
+        $KitchenCustomerImageOutcome = 'base'
+    end
+
+    if $KitchenCustomerGirl = '':
+        exit
+    end
+
+    if $KitchenCustomerScene = '':
+        $KitchenCustomerScene = 'bad_food'
+    end
+
+    KitchenCustomerUniform = GirlUniformLevel[$KitchenCustomerGirl]
+
+    if KitchenCustomerUniform > 1:
+        KitchenCustomerUniform = 1
+    end
+
+    if KitchenCustomerUniform < 0:
+        KitchenCustomerUniform = 0
+    end
+
+    if $KitchenCustomerImageOutcome = 'base':
+        $KitchenCustomerImageAction = 'kitchen_customer/' + $KitchenCustomerScene
+        $KitchenCustomerImagePose = 'uniform' + STR(KitchenCustomerUniform) + '_base'
+    else:
+        $KitchenCustomerImageAction = 'kitchen_customer/reaction'
+        $KitchenCustomerImagePose = 'uniform' + STR(KitchenCustomerUniform) + '_' + $KitchenCustomerImageOutcome
+    end
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'event', $KitchenCustomerGirl, $KitchenCustomerImageAction, $KitchenCustomerImagePose, 'webp', 'large'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG KITCHEN IMAGE] expected: images/events/' + $KitchenCustomerGirl + '/' + $KitchenCustomerImageAction + '_' + $KitchenCustomerImagePose + '.webp'
+        *pl ' '
+    end
+
+    killvar '$KitchenCustomerImageOutcome'
+    killvar '$KitchenCustomerImageAction'
+    killvar '$KitchenCustomerImagePose'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Debug-старт
+! ================================================
+
+#KitchenCustomerDebugStart
+    $DebugKitchenGirl = LCASE($ARGS[0])
+
+    if $DebugKitchenGirl <> 'amanda' and $DebugKitchenGirl <> 'melissa' and $DebugKitchenGirl <> 'sandra':
+        $DebugKitchenGirl = 'amanda'
+    end
+
+    TavernScandal = 35
+    TavernLewdFame = 20
+    TavernKitchenRumor = 1
+    TavernGirlsEasyRumor = 1
+
+    GirlUniformLevel[$DebugKitchenGirl] = 1
+    GirlKitchenPolicy[$DebugKitchenGirl] = 2
+    GirlHallLewdStage[$DebugKitchenGirl] = 3
+    GirlPublicAttention[$DebugKitchenGirl] = 30
+    GirlNpcPath[$DebugKitchenGirl] = 20
+    GirlSecretiveness[$DebugKitchenGirl] = 10
+    GirlRebellion[$DebugKitchenGirl] = 10
+
+    if $DebugKitchenGirl = 'amanda':
+        AmandaScandalLevel = 35
+        AmandaPublicAttention = 30
+        AmandaNpcPath = 20
+        AmandaSecretiveness = 10
+        AmandaRebellion = 10
+    end
+
+    gt 'KitchenCustomerEventStart', $DebugKitchenGirl, 'TavernMain'
+---
+
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! Debug-сброс
+! ================================================
+
+#KitchenCustomerDebugReset
+    KitchenCustomerEventDisabled = 0
+    KitchenCustomerEventCanStart = 0
+    KitchenCustomerLastGlobalDay = 0
+    KitchenCustomerLastGlobalTime = 0
+    TavernKitchenRumor = 0
+
+    killvar '$KitchenCustomerSelectedGirl'
+    killvar '$KitchenCustomerGirl'
+    killvar '$KitchenCustomerScene'
+    killvar '$KitchenCustomerClient'
+---
+

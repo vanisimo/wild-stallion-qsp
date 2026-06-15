@@ -1,0 +1,54 @@
+! ================================================
+! FILE: modules/events/hall/girl_policy_scene_variations.qsps
+! Вариативное поведение девушки в сценах по фактической реакции на правило
+! Версия: v1
+! Назначение:
+! - не хранит большие тексты в логике событий
+! - вызывает текст из girl_policy_scene_variations_text.qsps
+! - использует последнюю фактическую реакцию из GirlPolicyResponseConsequences
+! ================================================
+
+#GirlPolicySceneVariationPrint
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $PolicySceneGirl = $GirlKey
+    $PolicySceneEvent = LCASE($ARGS[1])
+    $PolicySceneChoice = LCASE($ARGS[2])
+
+    if $PolicySceneGirl = '':
+        exit
+    end
+
+    if $PolicySceneEvent = '':
+        $PolicySceneEvent = 'hall_lewd'
+    end
+
+    if $PolicySceneChoice = '':
+        $PolicySceneChoice = 'neutral'
+    end
+
+    PolicySceneResponseStage = 2
+
+    if $GirlPolicyLastArea[$PolicySceneGirl] <> '' or GirlPolicyLastRule[$PolicySceneGirl] > 0:
+        PolicySceneResponseStage = GirlPolicyLastResponse[$PolicySceneGirl]
+    end
+
+    if PolicySceneResponseStage < 0:
+        PolicySceneResponseStage = 0
+    end
+
+    if PolicySceneResponseStage > 4:
+        PolicySceneResponseStage = 4
+    end
+
+    gs 'GirlPolicySceneVariationText'
+
+    if $GirlPolicySceneVariationText <> '':
+        *pl ' '
+        *p $GirlPolicySceneVariationText
+    end
+
+    killvar '$PolicySceneGirl'
+    killvar '$PolicySceneEvent'
+    killvar '$PolicySceneChoice'
+    killvar 'PolicySceneResponseStage'
+---

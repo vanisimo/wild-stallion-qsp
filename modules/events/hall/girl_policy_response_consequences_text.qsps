@@ -1,0 +1,67 @@
+! ================================================
+! FILE: modules/events/hall/girl_policy_response_consequences_text.qsps
+! Тексты последствий реакции девушки на рабочее правило
+! Используется:
+! modules/events/hall/girl_policy_response_consequences.qsps
+! ================================================
+
+#GirlPolicyResponseConsequenceText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $PolicyTextGirl = $GirlKey
+    $PolicyTextArea = LCASE($ARGS[1])
+    PolicyTextRule = ARGS[2]
+    PolicyTextStage = ARGS[3]
+
+    $GirlPolicyResponseConsequenceText = ''
+
+    if $PolicyTextGirl = '':
+        exit
+    end
+
+    if $RealName[$PolicyTextGirl] = '':
+        gs 'EnsureGirlData', $PolicyTextGirl
+    end
+
+    if PolicyTextStage <= 0:
+        if $PolicyTextGirl = 'amanda':
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Аманда услышала правило, но внутри словно упёрлась. Она ещё не готова превращать неловкость в товар. Можно приказать — но нельзя заставить её поверить, что это нормально.</i></font>'
+        elseif $PolicyTextGirl = 'melissa':
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Мелисса не спорит долго, но в её взгляде ясно читается: «Ты что, сдурел?» Она не из тех, кто выполняет глупый приказ только потому, что его произнесли хозяйским голосом.</i></font>'
+        elseif $PolicyTextGirl = 'sandra':
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Сандра слушает молча, и от этого молчания в зале становится холоднее. Она может подчиниться дому, трактиру, нужде — но не всякому приказу Стефана.</i></font>'
+        else:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>' + $RealName[$PolicyTextGirl] + ' не принимает это правило всерьёз.</i></font>'
+        end
+
+    elseif PolicyTextStage = 1:
+        if PolicyTextRule = 3:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она подчиняется неохотно. Делает ровно столько, сколько нужно, чтобы нельзя было сказать, будто она ослушалась. Но инициативы в этом нет — только тяжёлое понимание, что хозяин ждёт от неё большего, чем простая работа.</i></font>'
+        else:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она принимает правило, но без радости. Формально всё правильно, только между словами остаётся неприятный осадок: ей не доверили решать самой.</i></font>'
+        end
+
+    elseif PolicyTextStage = 2:
+        $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>На этот раз правило ложится ровно. Она понимает, чего от неё ждут, и не выглядит ни униженной, ни слишком довольной. Просто рабочий порядок. Редкая вещь в трактире, где каждый день кто-то тянет руки не туда.</i></font>'
+
+    elseif PolicyTextStage = 3:
+        if PolicyTextRule = 3:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она принимает правило охотно. Не просто терпит клиента — начинает играть ситуацией, проверяя, сколько можно взять с его жадных глаз. Стефан сам подтолкнул её к этому, и теперь странно делать вид, что всё произошло само.</i></font>'
+        else:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она даже рада ясной границе. Не всякая свобода нужна, когда зал полон пьяных рук. Иногда приказ хозяина звучит не как клетка, а как щит.</i></font>'
+        end
+
+    else:
+        if PolicyTextRule = 1:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Запрет прозвучал, но она уже выросла из простого «нельзя». На словах всё прилично, а на деле — лишняя улыбка клиенту, лишний шаг ближе, лишний взгляд в сторону Стефана. Проверяет, заметит ли он.</i></font>'
+        elseif PolicyTextRule = 3:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она заходит дальше, чем было сказано. Не просто удерживает клиента — ведёт его вниманием, словно давно поняла цену каждому взгляду. Приказ стал не поводком, а разрешением.</i></font>'
+        else:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она трактует правило по-своему. Стефан хотел дать ей свободу, но свобода в таком зале быстро учится улыбаться слишком смело.</i></font>'
+        end
+    end
+
+    killvar '$PolicyTextGirl'
+    killvar '$PolicyTextArea'
+    killvar 'PolicyTextRule'
+    killvar 'PolicyTextStage'
+---

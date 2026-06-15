@@ -1,0 +1,60 @@
+! ================================================
+! FILE: modules/events/hall/hall_rumors_text.qsps
+! Тексты слухов после событий в зале
+! Используется:
+! modules/events/hall/hall_rumors.qsps
+! ================================================
+
+#HallRumorText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallRumorTextGirl = $GirlKey
+    $HallRumorTextEvent = LCASE($ARGS[1])
+    HallRumorTextSeverity = ARGS[2]
+
+    $HallRumorLastText = ''
+
+    if $HallRumorTextGirl = '':
+        exit
+    end
+
+    if $RealName[$HallRumorTextGirl] = '':
+        gs 'EnsureGirlData', $HallRumorTextGirl
+    end
+
+    if $HallRumorTextEvent = 'hall_lewd' or $HallRumorTextEvent = 'lewd':
+        if $HallRumorTextGirl = 'amanda':
+            $HallRumorLastText = 'За соседним столом кто-то уже шепчет про Аманду. Не громко, но достаточно мерзко: мол, девчонка краснеет, а всё равно остаётся в зале.'
+        elseif $HallRumorTextGirl = 'melissa':
+            $HallRumorLastText = 'Мелиссу обсуждают иначе: не как жертву, а как хитрую девку, которая сама знает цену каждому взгляду.'
+        elseif $HallRumorTextGirl = 'sandra':
+            $HallRumorLastText = 'Про Сандру говорят осторожнее. Мужики переглядываются, вспоминая её тяжёлый взгляд и то, как спокойно она выдерживает грязь зала.'
+        else:
+            $HallRumorLastText = 'По залу расползается новый грязный слух.'
+        end
+
+    elseif $HallRumorTextEvent = 'hall_missing' or $HallRumorTextEvent = 'missing':
+        if $HallRumorTextGirl = 'amanda':
+            $HallRumorLastText = 'Кто-то замечает, что Аманда снова пропадала из зала. В таких вещах посетители всегда находят смысл грязнее правды.'
+        elseif $HallRumorTextGirl = 'melissa':
+            $HallRumorLastText = 'Исчезновение Мелиссы быстро превращается в шёпот: слишком уж уверенно она потом возвращается к работе.'
+        elseif $HallRumorTextGirl = 'sandra':
+            $HallRumorLastText = 'Когда Сандра пропадает из зала, слухи звучат тише, но тяжелее. Люди любят додумывать то, чего не видели.'
+        else:
+            $HallRumorLastText = 'По залу идёт шёпот о том, что одна из девушек пропадала с глаз.'
+        end
+
+    elseif $HallRumorTextEvent = 'kitchen':
+        $HallRumorLastText = 'Даже кухонная возня постепенно становится частью трактирной молвы. Там, где есть закрытая дверь, всегда найдётся грязный язык.'
+
+    else:
+        $HallRumorLastText = 'Слухи о трактире становятся громче. Пока это ещё шёпот, но шёпот в маленьком городе живёт дольше крика.'
+    end
+
+    if HallRumorTextSeverity >= 3:
+        $HallRumorLastText += '<br><br>Это уже не мелкая болтовня. Если так пойдёт дальше, церковь или городские сплетники обязательно ухватятся за эту грязь.'
+    end
+
+    killvar '$HallRumorTextGirl'
+    killvar '$HallRumorTextEvent'
+    killvar 'HallRumorTextSeverity'
+---

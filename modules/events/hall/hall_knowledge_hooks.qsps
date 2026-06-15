@@ -1,0 +1,124 @@
+! ================================================
+! FILE: modules/events/hall/hall_knowledge_hooks.qsps
+! Интеграция событий зала с системой знаний
+! Версия: v1
+! Назначение:
+! - регистрировать факты событий зала
+! - создавать слухи по громким событиям
+! - отмечать возможных свидетелей
+! - давать мосты для семьи, Ирмы, Легаре и церкви
+!
+! Использует:
+! modules/core/knowledge/event_knowledge_system.qsps
+! modules/events/hall/hall_recent_memory.qsps
+! modules/events/hall/hall_rumors.qsps
+! ================================================
+
+#HallKnowledgeRegisterEvent
+    $HallKnowledgeGirl = LCASE($ARGS[0])
+    $HallKnowledgeType = LCASE($ARGS[1])
+    $HallKnowledgeScene = LCASE($ARGS[2])
+
+    if $HallKnowledgeGirl = '':
+        exit
+    end
+
+    if $HallKnowledgeType = '':
+        $HallKnowledgeType = 'hall_event'
+    end
+
+    if $HallKnowledgeScene = '':
+        $HallKnowledgeScene = 'common'
+    end
+
+    $HallKnowledgeEventId = $HallKnowledgeGirl + '_' + $HallKnowledgeType + '_' + $HallKnowledgeScene
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', $HallKnowledgeEventId
+    end
+
+    if LOC('KnowledgeRegisterWitness') = 1:
+        gs 'KnowledgeRegisterWitness', $HallKnowledgeEventId, 'tavern_guests'
+    end
+
+    if $HallKnowledgeGirl = 'amanda':
+        if LOC('KnowledgeRegisterSuspect') = 1:
+            gs 'KnowledgeRegisterSuspect', $HallKnowledgeEventId, 'melissa'
+            gs 'KnowledgeRegisterSuspect', $HallKnowledgeEventId, 'sandra'
+        end
+    elseif $HallKnowledgeGirl = 'melissa':
+        if LOC('KnowledgeRegisterSuspect') = 1:
+            gs 'KnowledgeRegisterSuspect', $HallKnowledgeEventId, 'sandra'
+            gs 'KnowledgeRegisterSuspect', $HallKnowledgeEventId, 'amanda'
+        end
+    elseif $HallKnowledgeGirl = 'sandra':
+        if LOC('KnowledgeRegisterSuspect') = 1:
+            gs 'KnowledgeRegisterSuspect', $HallKnowledgeEventId, 'melissa'
+        end
+    end
+
+    gs 'HallKnowledgeMaybeRumor'
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG KNOWLEDGE HALL] event: ' + $HallKnowledgeEventId
+        *pl '[DEBUG KNOWLEDGE HALL] girl: ' + $HallKnowledgeGirl
+        *pl '[DEBUG KNOWLEDGE HALL] type: ' + $HallKnowledgeType
+        *pl '[DEBUG KNOWLEDGE HALL] scene: ' + $HallKnowledgeScene
+    end
+
+    killvar '$HallKnowledgeGirl'
+    killvar '$HallKnowledgeType'
+    killvar '$HallKnowledgeScene'
+    killvar '$HallKnowledgeEventId'
+---
+
+#HallKnowledgeMaybeRumor
+    HallKnowledgeRumorChance = 10 + TavernScandal + TavernLewdFame
+
+    if GirlWorkPolicy[$HallKnowledgeGirl] = 3:
+        HallKnowledgeRumorChance += 15
+    end
+
+    if GirlUniformLevel[$HallKnowledgeGirl] = 1:
+        HallKnowledgeRumorChance += 10
+    end
+
+    if $HallKnowledgeType = 'missing':
+        HallKnowledgeRumorChance += 10
+    end
+
+    if $HallKnowledgeType = 'lewd':
+        HallKnowledgeRumorChance += 15
+    end
+
+    if HallKnowledgeRumorChance > 80:
+        HallKnowledgeRumorChance = 80
+    end
+
+    if RAND(1, 100) <= HallKnowledgeRumorChance:
+        if LOC('KnowledgeRegisterRumor') = 1:
+            gs 'KnowledgeRegisterRumor', $HallKnowledgeEventId
+        end
+
+        if LOC('HallRumorRegister') = 1:
+            gs 'HallRumorRegister', $HallKnowledgeGirl, $HallKnowledgeType, $HallKnowledgeScene
+        end
+    end
+
+    killvar 'HallKnowledgeRumorChance'
+---
+
+#HallKnowledgePlayerLearns
+    $HallKnowledgeLearnEvent = LCASE($ARGS[0])
+
+    if $HallKnowledgeLearnEvent = '':
+        exit
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', $HallKnowledgeLearnEvent
+    end
+
+    killvar '$HallKnowledgeLearnEvent'
+---

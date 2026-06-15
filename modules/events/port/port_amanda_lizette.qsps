@@ -1,0 +1,168 @@
+! ================================================
+! FILE: modules/events/port/port_amanda_lizette.qsps
+! Аманда знакомится с Лизеттой у корабля из столицы
+! Логика события
+! Большие тексты берутся из:
+! modules/events/port/port_amanda_lizette_text.qsps
+! ================================================
+
+#PortAmandaLizetteTryMeet
+    $PortAmandaReturnLoc = $ARGS[0]
+
+    if $PortAmandaReturnLoc = '':
+        $PortAmandaReturnLoc = 'Port'
+    end
+
+    if AmandaMetLizette = 1:
+        exit
+    end
+
+    if LizetteMentionedByGeorgette = 0 and debug = 0:
+        exit
+    end
+
+    gs 'PortCapitalShipCheck'
+
+    if PortCapitalShipAvailable = 0 and debug = 0:
+        exit
+    end
+
+    gt 'PortAmandaLizetteMeet', $PortAmandaReturnLoc
+---
+
+! ================================================
+! FILE: modules/events/port/port_amanda_lizette.qsps
+! Основная сцена знакомства Аманды с Лизеттой
+! ================================================
+
+#PortAmandaLizetteMeet
+    $PortAmandaReturnLoc = $ARGS[0]
+
+    if $PortAmandaReturnLoc = '':
+        $PortAmandaReturnLoc = 'Port'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'EnsureGirlData', 'lizette'
+
+    cls
+
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/events/port/amanda_lizette', 4
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛИЗЕТТА У КОРАБЛЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PortAmandaLizetteText', 'meet_intro'
+    *p $PortAmandaLizetteText
+
+    *pl ' '
+
+    if LizetteMentionedByGeorgette = 1:
+        gs 'PortAmandaLizetteText', 'stefan_recognizes'
+        *p $PortAmandaLizetteText
+        *pl ' '
+    end
+
+    act 'Подойти и представиться спокойно':
+        gt 'PortAmandaLizetteChoice', $PortAmandaReturnLoc, 'calm'
+    end
+
+    act 'Осторожно предупредить Аманду':
+        gt 'PortAmandaLizetteChoice', $PortAmandaReturnLoc, 'warn'
+    end
+
+    act 'Сразу запретить ей общаться с Лизеттой':
+        gt 'PortAmandaLizetteChoice', $PortAmandaReturnLoc, 'ban'
+    end
+
+    act 'Не вмешиваться и понаблюдать':
+        gt 'PortAmandaLizetteChoice', $PortAmandaReturnLoc, 'watch'
+    end
+---
+
+! ================================================
+! FILE: modules/events/port/port_amanda_lizette.qsps
+! Выбор реакции Стефана на знакомство
+! ================================================
+
+#PortAmandaLizetteChoice
+    $PortAmandaReturnLoc = $ARGS[0]
+    $PortAmandaChoice = LCASE($ARGS[1])
+
+    if $PortAmandaReturnLoc = '':
+        $PortAmandaReturnLoc = 'Port'
+    end
+
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    LizetteVisitStage = 1
+    $LizetteSourceKnown = 'port_amanda'
+
+    cls
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'amanda'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $PortAmandaChoice = 'calm':
+        AmandaTrustStefan += 1
+        AmandaLizaInfluence += 1
+        AmandaPublicAttention += 1
+
+        gs 'PortAmandaLizetteText', 'choice_calm'
+        *p $PortAmandaLizetteText
+    elseif $PortAmandaChoice = 'warn':
+        AmandaTrustStefan += 1
+        AmandaRebellion += 1
+        AmandaLizaInfluence += 1
+
+        gs 'PortAmandaLizetteText', 'choice_warn'
+        *p $PortAmandaLizetteText
+    elseif $PortAmandaChoice = 'ban':
+        LizetteBanned = 1
+        AmandaRebellion += 2
+        AmandaSecretiveness += 2
+
+        if AmandaTrustStefan > 0:
+            AmandaTrustStefan -= 1
+        end
+
+        gs 'PortAmandaLizetteText', 'choice_ban'
+        *p $PortAmandaLizetteText
+    else:
+        AmandaLizaInfluence += 2
+        AmandaPublicAttention += 1
+        AmandaSecretiveness += 1
+
+        gs 'PortAmandaLizetteText', 'choice_watch'
+        *p $PortAmandaLizetteText
+    end
+
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG LIZETTE PORT] AmandaMetLizette: ' + STR(AmandaMetLizette)
+        *pl '[DEBUG LIZETTE PORT] LizetteKnown: ' + STR(LizetteKnown)
+        *pl '[DEBUG LIZETTE PORT] LizetteBanned: ' + STR(LizetteBanned)
+        *pl '[DEBUG LIZETTE PORT] AmandaLizaInfluence: ' + STR(AmandaLizaInfluence)
+        *pl '[DEBUG LIZETTE PORT] AmandaRebellion: ' + STR(AmandaRebellion)
+        *pl '[DEBUG LIZETTE PORT] AmandaSecretiveness: ' + STR(AmandaSecretiveness)
+    end
+
+    *pl ' '
+
+    act 'Вернуться к причалу':
+        gt $PortAmandaReturnLoc
+    end
+
+    killvar '$PortAmandaChoice'
+---

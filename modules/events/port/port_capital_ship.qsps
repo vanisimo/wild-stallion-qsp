@@ -1,0 +1,278 @@
+! ================================================
+! FILE: modules/events/port/port_capital_ship.qsps
+! Корабль из столицы и редкие товары в порту
+! Логика события, покупки подарков и недельной доступности
+! Большие тексты берутся из:
+! modules/events/port/port_capital_ship_text.qsps
+! ================================================
+
+#PortCapitalShipCheck
+    if CapitalShipWeekDay <= 0:
+        CapitalShipWeekDay = 3
+    end
+
+    PortCapitalShipAvailable = 0
+    $PortCapitalShipReason = ''
+
+    if week = CapitalShipWeekDay and time >= 1 and time <= 3:
+        PortCapitalShipAvailable = 1
+    else:
+        $PortCapitalShipReason = 'Корабль из столицы приходит раз в неделю, обычно утром и стоит у причала до дня.'
+    end
+---
+
+! ================================================
+! FILE: modules/events/port/port_capital_ship.qsps
+! Вход в рынок редкостей у корабля
+! ================================================
+
+#PortCapitalShipMenu
+    $PortReturnLoc = $ARGS[0]
+
+    if $PortReturnLoc = '':
+        $PortReturnLoc = 'Port'
+    end
+
+    gs 'PortCapitalShipCheck'
+
+    cls
+
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/port/capital_ship', 4
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОРАБЛЬ ИЗ СТОЛИЦЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if PortCapitalShipAvailable = 0:
+        gs 'PortCapitalShipText', 'not_available'
+        *p $PortCapitalShipText
+
+        if debug = 1:
+            *pl ' '
+            *pl '[DEBUG PORT SHIP] День недели: ' + STR(week)
+            *pl '[DEBUG PORT SHIP] Время: ' + STR(time)
+            *pl '[DEBUG PORT SHIP] День корабля: ' + STR(CapitalShipWeekDay)
+        end
+
+        *pl ' '
+
+        act 'Вернуться к причалу':
+            gt $PortReturnLoc
+        end
+
+        exit
+    end
+
+    gs 'PortCapitalShipText', 'intro'
+    *p $PortCapitalShipText
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG PORT SHIP] Корабль доступен.'
+        *pl '[DEBUG PORT SHIP] День недели: ' + STR(week)
+        *pl '[DEBUG PORT SHIP] Время: ' + STR(time)
+        *pl ' '
+    end
+
+    act 'Осмотреть товары':
+        gt 'PortCapitalShipBrowse', $PortReturnLoc
+    end
+
+    act 'Купить подарок':
+        gt 'PortGiftShop', $PortReturnLoc
+    end
+
+    if LOC('PortAmandaLizetteTryMeet') = 1:
+        if LizetteMentionedByGeorgette = 1 and AmandaMetLizette = 0:
+            act 'Заметить Аманду у товаров':
+                gt 'PortAmandaLizetteTryMeet', $PortReturnLoc
+            end
+        end
+    end
+
+    if debug = 1:
+        if LOC('PortAmandaLizetteMeet') = 1:
+            act 'DEBUG: Аманда знакомится с Лизеттой':
+                gt 'PortAmandaLizetteMeet', $PortReturnLoc
+            end
+        end
+    end
+
+    act 'Вернуться к причалу':
+        gt $PortReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/port/port_capital_ship.qsps
+! Осмотр товаров без покупки
+! ================================================
+
+#PortCapitalShipBrowse
+    $PortReturnLoc = $ARGS[0]
+
+    if $PortReturnLoc = '':
+        $PortReturnLoc = 'Port'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТОВАРЫ ИЗ СТОЛИЦЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PortCapitalShipText', 'browse'
+    *p $PortCapitalShipText
+
+    *pl ' '
+
+    act 'Купить подарок':
+        gt 'PortGiftShop', $PortReturnLoc
+    end
+
+    act 'Вернуться к кораблю':
+        gt 'PortCapitalShipMenu', $PortReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/port/port_capital_ship.qsps
+! Магазин подарков у корабля
+! Пока только покупка в общий инвентарь подарков
+! Позже эти предметы можно подключить к системе подарков NPC
+! ================================================
+
+#PortGiftShop
+    $PortReturnLoc = $ARGS[0]
+
+    if $PortReturnLoc = '':
+        $PortReturnLoc = 'Port'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РЕДКИЕ ПОДАРКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PortCapitalShipText', 'gift_shop'
+    *p $PortCapitalShipText
+
+    *pl ' '
+    *pl 'Деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    act 'Южные специи — 35 мараведи':
+        gt 'PortGiftBuy', $PortReturnLoc, 'southern_spices'
+    end
+
+    act 'Шкатулка из северной мамонтовой кости — 80 мараведи':
+        gt 'PortGiftBuy', $PortReturnLoc, 'mammoth_ivory_box'
+    end
+
+    act 'Столичная лента для волос — 25 мараведи':
+        gt 'PortGiftBuy', $PortReturnLoc, 'capital_hair_ribbon'
+    end
+
+    act 'Стеклянные бусы с южных островов — 45 мараведи':
+        gt 'PortGiftBuy', $PortReturnLoc, 'island_glass_beads'
+    end
+
+    act 'Масло с пряным запахом — 55 мараведи':
+        gt 'PortGiftBuy', $PortReturnLoc, 'spiced_oil'
+    end
+
+    act 'Тонкий заморский платок — 60 мараведи':
+        gt 'PortGiftBuy', $PortReturnLoc, 'foreign_scarf'
+    end
+
+    act 'Вернуться к кораблю':
+        gt 'PortCapitalShipMenu', $PortReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/port/port_capital_ship.qsps
+! Покупка подарка
+! ================================================
+
+#PortGiftBuy
+    $PortReturnLoc = $ARGS[0]
+    $PortGiftId = LCASE($ARGS[1])
+
+    if $PortReturnLoc = '':
+        $PortReturnLoc = 'Port'
+    end
+
+    PortGiftPrice = 0
+    $PortGiftName = ''
+
+    if $PortGiftId = 'southern_spices':
+        PortGiftPrice = 35
+        $PortGiftName = 'южные специи'
+    elseif $PortGiftId = 'mammoth_ivory_box':
+        PortGiftPrice = 80
+        $PortGiftName = 'шкатулка из северной мамонтовой кости'
+    elseif $PortGiftId = 'capital_hair_ribbon':
+        PortGiftPrice = 25
+        $PortGiftName = 'столичная лента для волос'
+    elseif $PortGiftId = 'island_glass_beads':
+        PortGiftPrice = 45
+        $PortGiftName = 'стеклянные бусы с южных островов'
+    elseif $PortGiftId = 'spiced_oil':
+        PortGiftPrice = 55
+        $PortGiftName = 'масло с пряным запахом'
+    elseif $PortGiftId = 'foreign_scarf':
+        PortGiftPrice = 60
+        $PortGiftName = 'тонкий заморский платок'
+    else:
+        $PortGiftName = 'неизвестный товар'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОКУПКА ПОДАРКА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if PortGiftPrice <= 0:
+        *p 'Торговец разводит руками: такого товара у него нет.'
+    elseif money < PortGiftPrice:
+        *p 'Вам не хватает денег на ' + $PortGiftName + '.'
+    else:
+        money -= PortGiftPrice
+        GiftInventory[$PortGiftId] += 1
+        PortGiftBoughtTotal += 1
+
+        *p 'Вы покупаете ' + $PortGiftName + '. Торговец заворачивает покупку в грубую ткань и перевязывает тонкой верёвкой.'
+        *p 'Подарок добавлен в ваши вещи.'
+    end
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG GIFT] ID: ' + $PortGiftId
+        *pl '[DEBUG GIFT] Количество: ' + STR(GiftInventory[$PortGiftId])
+        *pl '[DEBUG GIFT] Деньги: ' + STR(money)
+    end
+
+    *pl ' '
+
+    act 'Купить ещё':
+        gt 'PortGiftShop', $PortReturnLoc
+    end
+
+    act 'Вернуться к кораблю':
+        gt 'PortCapitalShipMenu', $PortReturnLoc
+    end
+
+    killvar '$PortGiftId'
+    killvar '$PortGiftName'
+    killvar 'PortGiftPrice'
+---

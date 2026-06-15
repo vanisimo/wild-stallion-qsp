@@ -1,0 +1,81 @@
+! ================================================
+! FILE: modules/menu/panel_family_info.qsps
+! Информация о семье в дополнительном описании
+! Не очищает главное окно
+! Имена девушек открывают универсальное меню NPC
+! Исправлена потеря имён из-за глобальных переменных QSP
+! ================================================
+
+#PanelFamilyInfo
+    clr
+
+    pl '══════════════════════════════════════════════'
+    pl ' СЕМЬЯ'
+    pl '══════════════════════════════════════════════'
+    pl ' '
+
+    pl 'Здесь показаны девушки семьи.'
+    pl 'Нажмите на имя, чтобы открыть меню взаимодействия.'
+    pl ' '
+
+    gs 'PanelFamilyGirlLine', 'sandra'
+    gs 'PanelFamilyGirlLine', 'melissa'
+    gs 'PanelFamilyGirlLine', 'amanda'
+
+    pl ' '
+    pl '══════════════════════════════════════════════'
+---
+
+! ================================================
+! FILE: modules/menu/panel_family_info.qsps
+! Одна строка девушки в панели семьи
+! Формирует кликабельное имя и краткую информацию
+! Не использует общую переменную $GirlName
+! ================================================
+
+#PanelFamilyGirlLine
+    $PanelFamilyGirl = LCASE($ARGS[0])
+
+    if $PanelFamilyGirl = '':
+        exit
+    end
+
+    if $RealName[$PanelFamilyGirl] = '':
+        $RealName[$PanelFamilyGirl] = UCASE(MID($PanelFamilyGirl, 1, 1)) + LCASE(MID($PanelFamilyGirl, 2))
+    end
+
+    gs 'PanelGetGirlJobText', $PanelFamilyGirl
+    $PanelFamilyJobText = $PanelJobText
+
+    $PanelFamilyGirlLink = '<a href="exec:gs ''PanelGirlClick'', ''' + $PanelFamilyGirl + '''"><font color="green">' + $RealName[$PanelFamilyGirl] + '</font></a>'
+
+    pl $PanelFamilyGirlLink
+    pl 'Должность: ' + $PanelFamilyJobText
+    pl 'Дружба: ' + STR(Friends[$PanelFamilyGirl])
+    pl 'Развращённость: ' + STR(sluttiness[$PanelFamilyGirl])
+    pl ' '
+
+    killvar '$PanelFamilyGirl'
+    killvar '$PanelFamilyJobText'
+    killvar '$PanelFamilyGirlLink'
+---
+
+! ================================================
+! FILE: modules/menu/panel_family_info.qsps
+! Клик по имени девушки из дополнительного описания
+! Показывает карточку справа и открывает универсальное меню
+! ================================================
+
+#PanelGirlClick
+    $PanelClickGirl = LCASE($ARGS[0])
+
+    if $PanelClickGirl = '':
+        exit
+    end
+
+    gs 'ShowGirlSidebar', $PanelClickGirl
+    gs 'MenuGirlOverview', $PanelClickGirl
+
+    killvar '$PanelClickGirl'
+---
+

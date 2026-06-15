@@ -1,0 +1,566 @@
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Универсальный разговор с девушкой
+! Версия с лимитом полезных разговоров
+! Лимиты берутся из:
+! modules/core/time/npc_talk_limits.qsps
+! Важно: переменные, используемые в act, не очищаются в конце локатора
+! ================================================
+
+#GirlTalk
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkGirl = '':
+        msg 'Ошибка: GirlTalk вызван без имени девушки.'
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($TalkReturnLoc) = 0:
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+
+    if $RealName[$TalkGirl] = '':
+        $RealName[$TalkGirl] = UCASE(MID($TalkGirl, 1, 1)) + LCASE(MID($TalkGirl, 2))
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $TalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlTalkIntroText', $TalkGirl
+    gs 'UsefulTalkDebugPanel', $TalkGirl
+
+    *pl ' '
+    *pl 'О чём поговорить?'
+    *pl ' '
+
+    act 'О делах трактира':
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'tavern'
+    end
+
+    act 'О семье':
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'family'
+    end
+
+    act 'Пошутить':
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'joke'
+    end
+
+    act 'Поболтать ни о чём':
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    end
+
+    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
+        act 'Поговорить о случившемся в зале':
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'hall_event'
+        end
+    end
+
+    if Friends[$TalkGirl] >= 5 or love[$TalkGirl] >= 3 or otkroven[$TalkGirl] >= 5:
+        act 'Личный разговор':
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'personal'
+        end
+    end
+
+    if Friends[$TalkGirl] >= 10 or love[$TalkGirl] >= 8 or sluttiness[$TalkGirl] >= 10:
+        act 'Сделать комплимент':
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        end
+    end
+
+    ! ====================== АМАНДА / ЛЕГАРЕ: ПОСЛЕДСТВИЯ ТАНЦЕВ ======================
+
+    if $TalkGirl = 'amanda' and AmandaLegareTalkReady = 1 and LOC('AmandaTalkAboutLegare') = 1:
+        act 'Поговорить о Легаре':
+            gt 'AmandaTalkAboutLegare', $TalkReturnLoc
+        end
+    end
+
+    if $TalkGirl = 'melissa' and MelissaLegareWarningSeen = 1 and MelissaLegarePrivateTalkDone = 0 and LOC('MelissaTalkAboutLegare') = 1:
+        act 'Поговорить о предупреждении насчёт Легаре':
+            gt 'MelissaTalkAboutLegare', $TalkReturnLoc
+        end
+    end
+
+    if $TalkGirl = 'clarissa' and ClarissaTalkAboutAmandaReady = 1 and ClarissaTalkAboutAmandaDone = 0 and LOC('ClarissaTalkAboutLegareAmanda') = 1:
+        act 'Поговорить о Легаре и Аманде':
+            gt 'ClarissaTalkAboutLegareAmanda', $TalkReturnLoc
+        end
+    end
+
+    ! ====================== АМАНДА / ЛЕГАРЕ: ЛИЧНЫЙ РАЗГОВОР ПОСЛЕ ТАНЦЕВ ======================
+
+    if $TalkGirl = 'amanda' and LOC('AmandaLegarePrivateAftermathCanTalk') = 1:
+        gs 'AmandaLegarePrivateAftermathCanTalk'
+
+        if AmandaLegarePrivateAftermathCanTalk = 1:
+            act 'Спросить о разговоре с Легаре':
+                gt 'AmandaLegarePrivateAftermath', $TalkReturnLoc
+            end
+        end
+    end
+
+    if $TalkGirl = 'melissa' and Fact_AmandaLegarePrivateTalk = 1 and MelissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegarePrivate') = 1:
+        act 'Поговорить об Аманде и Легаре':
+            gt 'MelissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
+        end
+    end
+
+    if $TalkGirl = 'clarissa' and Fact_AmandaLegarePrivateTalk = 1 and ClarissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegarePrivate') = 1:
+        act 'Поговорить о личном разговоре Легаре с Амандой':
+            gt 'ClarissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
+        end
+    end
+
+    ! ====================== АМАНДА / ЛЕГАРЕ: ВЫХОД ИЗ ТРАКТИРА ======================
+
+    if $TalkGirl = 'amanda' and LOC('AmandaLegareOutsideAftermathCanTalk') = 1:
+        gs 'AmandaLegareOutsideAftermathCanTalk'
+
+        if AmandaLegareOutsideAftermathCanTalk = 1:
+            act 'Поговорить о выходе к Легаре':
+                gt 'AmandaLegareOutsideAftermath', $TalkReturnLoc
+            end
+        end
+    end
+
+    if $TalkGirl = 'melissa' and MelissaAmandaLegareOutsideTalkReady = 1 and MelissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareOutside') = 1:
+        act 'Поговорить о выходе Аманды из трактира':
+            gt 'MelissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
+        end
+    end
+
+    if $TalkGirl = 'clarissa' and ClarissaAmandaLegareOutsideTalkReady = 1 and ClarissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareOutside') = 1:
+        act 'Поговорить о том, что Легаре искал Аманду':
+            gt 'ClarissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
+        end
+    end
+
+    ! ====================== АМАНДА / ЛЕГАРЕ: КРУПНЫЙ РИСК ======================
+
+    if $TalkGirl = 'amanda' and LOC('AmandaLegareMajorAftermathCanTalk') = 1:
+        gs 'AmandaLegareMajorAftermathCanTalk'
+
+        if AmandaLegareMajorAftermathCanTalk = 1:
+            act 'Поговорить о том, что случилось с Легаре':
+                gt 'AmandaLegareMajorAftermath', $TalkReturnLoc
+            end
+        end
+    end
+
+    if $TalkGirl = 'melissa' and MelissaAmandaLegareMajorRiskTalkReady = 1 and MelissaAmandaLegareMajorRiskDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareMajor') = 1:
+        act 'Поговорить о пропаже Аманды':
+            gt 'MelissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
+        end
+    end
+
+    if $TalkGirl = 'clarissa' and ClarissaAmandaLegareMajorRiskTalkReady = 1 and ClarissaAmandaLegareMajorRiskDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareMajor') = 1:
+        act 'Поговорить с Клариссой о Легаре':
+            gt 'ClarissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
+        end
+    end
+
+       ! ====================== КЛАРИССА: ОБХОДНЫЕ ПОСТАВКИ ======================
+
+    if $TalkGirl = 'clarissa' and ClarissaSupplyTalkReady = 1 and LOC('ClarissaTalkAboutSupplyRoute') = 1:
+        act 'Поговорить о тайных поставках':
+            gt 'ClarissaTalkAboutSupplyRoute', $TalkReturnLoc
+        end
+    end
+
+    if $TalkGirl = 'melissa' and MelissaLegareSupplyTalkReady = 1 and MelissaLegareSupplyTalkDone = 0 and LOC('MelissaTalkAboutLegareSupply') = 1:
+        act 'Поговорить о проблемах с поставками':
+            gt 'MelissaTalkAboutLegareSupply', $TalkReturnLoc
+        end
+    end
+
+    if $TalkGirl = 'clarissa' and LOC('MarkClarissaSupplyAftermathReady') = 1:
+        gs 'MarkClarissaSupplyAftermathReady'
+
+        if ClarissaSupplyAftermathReady = 1 and LOC('ClarissaTalkAboutSupplyAftermath') = 1:
+            act 'Поговорить о риске тайных поставок':
+                gt 'ClarissaTalkAboutSupplyAftermath', $TalkReturnLoc
+            end
+        end
+    end
+
+    if $TalkGirl = 'clarissa' and ClarissaLegareSuspicionTalkReady = 1 and ClarissaLegareSuspicionTalkDone = 0 and LOC('ClarissaTalkAboutLegareSuspicion') = 1:
+        act 'Поговорить о подозрениях Легаре':
+            gt 'ClarissaTalkAboutLegareSuspicion', $TalkReturnLoc
+        end
+    end
+
+    if $TalkGirl = 'melissa' and MelissaLegareSuspicionTalkReady = 1 and MelissaLegareSuspicionTalkDone = 0 and LOC('MelissaTalkAboutLegareSuspicion') = 1:
+        act 'Поговорить о риске для Клариссы':
+            gt 'MelissaTalkAboutLegareSuspicion', $TalkReturnLoc
+        end
+    end
+
+        ! ====================== НЕДАВНЕЕ СОБЫТИЕ В ЗАЛЕ ======================
+
+    if LOC('HallRecentTalkCanDiscuss') = 1:
+        gs 'HallRecentTalkCanDiscuss', $TalkGirl
+
+        if HallRecentTalkAvailable = 1:
+            act 'Поговорить о том, что было в зале':
+                gt 'HallRecentTalkStart', $TalkGirl, $TalkReturnLoc
+            end
+        end
+    end
+
+        ! ====================== СЕМЕЙНАЯ РЕАКЦИЯ НА СОБЫТИЕ В ЗАЛЕ ======================
+
+    if LOC('HallFamilyReactionCanDiscuss') = 1:
+        gs 'HallFamilyReactionCanDiscuss', $TalkGirl
+
+        if HallFamilyReactionAvailable = 1:
+            act 'Обсудить реакцию семьи на случившееся':
+                gt 'HallFamilyReactionStart', $TalkGirl, $TalkReturnLoc
+            end
+        end
+    end
+    
+    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
+        gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
+
+        if HallChoiceFamilyTalkAvailable = 1:
+            act 'Поговорить о моём решении в зале':
+                gt 'HallChoiceFamilyTalkStart', $TalkGirl, $TalkReturnLoc
+            end
+        end
+    end
+
+        if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
+        gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
+
+        if GirlPolicyResponseTalkAvailable = 1:
+            act 'Поговорить о том, как она выполнила правило':
+                gt 'GirlPolicyResponseTalkStart', $TalkGirl, $TalkReturnLoc
+            end
+        end
+    end
+
+    act 'Вернуться':
+        gt $TalkReturnLoc
+    end
+
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Вступительный текст разговора
+! Учитывает девушку и место, где она находится
+! ================================================
+
+#GirlTalkIntroText
+    $TalkIntroGirl = LCASE($ARGS[0])
+
+    if $TalkIntroGirl = '':
+        exit
+    end
+
+    if $GirlLocation[$TalkIntroGirl] = 'TavernMain':
+        *p $RealName[$TalkIntroGirl] + ' отвлекается от работы в зале и смотрит на вас.'
+    elseif $GirlLocation[$TalkIntroGirl] = 'Kitchen':
+        *p $RealName[$TalkIntroGirl] + ' отрывается от кухонных дел и вытирает руки.'
+    elseif $GirlLocation[$TalkIntroGirl] = 'SandraRoom' or $GirlLocation[$TalkIntroGirl] = 'MelissaRoom' or $GirlLocation[$TalkIntroGirl] = 'AmandaRoom':
+        *p $RealName[$TalkIntroGirl] + ' находится у себя в комнате и внимательно смотрит на вас.'
+    else:
+        *p $RealName[$TalkIntroGirl] + ' готова вас выслушать.'
+    end
+
+    if Friends[$TalkIntroGirl] >= 20:
+        *p 'Она относится к вам тепло и спокойно.'
+    elseif Friends[$TalkIntroGirl] >= 10:
+        *p 'Она разговаривает с вами достаточно дружелюбно.'
+    elseif hate[$TalkIntroGirl] >= 10:
+        *p 'В её взгляде заметно раздражение.'
+    elseif fear[$TalkIntroGirl] >= 10:
+        *p 'Она держится осторожно и напряжённо.'
+    else:
+        *p 'Разговор начинается с обычной неловкой паузы.'
+    end
+
+    killvar '$TalkIntroGirl'
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Результат выбранной темы разговора
+! Использует лимит полезных разговоров:
+! modules/core/time/npc_talk_limits.qsps
+! Важно: $TalkGirl и $TalkReturnLoc не очищаются, так как нужны кнопкам act
+! ================================================
+
+#GirlTalkResult
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+    $TalkTopic = LCASE($ARGS[2])
+
+    if $TalkGirl = '':
+        msg 'Ошибка: GirlTalkResult вызван без имени девушки.'
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($TalkReturnLoc) = 0:
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+
+    if $RealName[$TalkGirl] = '':
+        $RealName[$TalkGirl] = UCASE(MID($TalkGirl, 1, 1)) + LCASE(MID($TalkGirl, 2))
+    end
+
+    ! ====================== ПРОВЕРКА ЛИМИТА ПОЛЕЗНЫХ РАЗГОВОРОВ ======================
+
+    gs 'GirlTalkTopicIsUseful', $TalkTopic
+
+    if TalkTopicUseful = 1:
+        gs 'UsefulTalkCheck', $TalkGirl, $TalkTopic
+
+        if UsefulTalkResult = 0:
+            cls
+
+            gs 'ShowGirlSidebar', $TalkGirl
+
+            *pl '══════════════════════════════════════════════'
+            *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
+            *pl '══════════════════════════════════════════════'
+            *pl ' '
+            *p $UsefulTalkReason
+            *pl ' '
+            *p 'Можно поболтать о мелочах или вернуться к важной теме позже.'
+            *pl ' '
+
+            act 'Поболтать ни о чём':
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+            end
+
+            act 'Вернуться к выбору тем':
+                gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+            end
+
+            act 'Вернуться':
+                gt $TalkReturnLoc
+            end
+
+            exit
+        end
+    end
+
+    ! ====================== ОСОБАЯ ТЕМА СОБЫТИЯ В ЗАЛЕ ======================
+    ! Важно: этот разговор передаётся в отдельный локатор, потому что там есть выбор инструкции.
+
+    if $TalkTopic = 'hall_event':
+        gs 'UsefulTalkRegister', $TalkGirl, $TalkTopic
+        gt 'GirlTalkHallEventReaction', $TalkGirl, $TalkReturnLoc
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $TalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $TalkTopic = 'smalltalk':
+        gs 'SmallTalkNpc', $TalkGirl
+
+    elseif $TalkTopic = 'tavern':
+        *p 'Вы говорите с ' + $RealName[$TalkGirl] + ' о делах трактира, посетителях, запасах и работе.'
+        *p 'Разговор получается простым, но полезным.'
+
+        Friends[$TalkGirl] += 1
+        management_skill += 1
+
+    elseif $TalkTopic = 'family':
+        *p 'Вы заводите разговор о семье и доме.'
+        *p $RealName[$TalkGirl] + ' слушает вас внимательнее, чем обычно.'
+
+        Friends[$TalkGirl] += 1
+
+        if love[$TalkGirl] > 0:
+            love[$TalkGirl] += 1
+        end
+
+    elseif $TalkTopic = 'joke':
+        *p 'Вы пытаетесь разрядить обстановку шуткой.'
+
+        TalkRoll = RAND(1, 100)
+        TalkChance = 45 + Friends[$TalkGirl] + charisma
+
+        if TalkChance > 90:
+            TalkChance = 90
+        end
+
+        if TalkRoll <= TalkChance:
+            *p $RealName[$TalkGirl] + ' улыбается. Шутка оказалась удачной.'
+
+            Friends[$TalkGirl] += 2
+        else:
+            *p $RealName[$TalkGirl] + ' смотрит на вас с сомнением. Шутка вышла не очень удачной.'
+
+            Friends[$TalkGirl] -= 1
+
+            if Friends[$TalkGirl] < 0:
+                Friends[$TalkGirl] = 0
+            end
+        end
+
+    elseif $TalkTopic = 'personal':
+        *p 'Вы осторожно переводите разговор на более личные темы.'
+        *p $RealName[$TalkGirl] + ' не сразу отвечает, но всё же поддерживает разговор.'
+
+        Friends[$TalkGirl] += 1
+        otkroven[$TalkGirl] += 1
+
+        if love[$TalkGirl] >= 5:
+            love[$TalkGirl] += 1
+        end
+
+    elseif $TalkTopic = 'compliment':
+        *p 'Вы делаете ' + $RealName[$TalkGirl] + ' осторожный комплимент.'
+
+        TalkRoll = RAND(1, 100)
+        TalkChance = 35 + Friends[$TalkGirl] + love[$TalkGirl] + otkroven[$TalkGirl]
+
+        if TalkChance > 95:
+            TalkChance = 95
+        end
+
+        if TalkRoll <= TalkChance:
+            *p 'Комплимент ей приятен. Она старается скрыть реакцию, но это получается не полностью.'
+
+            Friends[$TalkGirl] += 1
+            love[$TalkGirl] += 1
+            otkroven[$TalkGirl] += 1
+        else:
+            *p 'Она принимает комплимент сдержанно и быстро меняет тему.'
+
+            Friends[$TalkGirl] += 1
+        end
+
+    else:
+        *p 'Вы немного разговариваете ни о чём.'
+
+        Friends[$TalkGirl] += 1
+    end
+
+    if TalkTopicUseful = 1:
+        gs 'UsefulTalkRegister', $TalkGirl, $TalkTopic
+    end
+
+    gs 'ClampGirlSocialStats', $TalkGirl
+
+    *pl ' '
+
+    act 'Поговорить ещё':
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
+
+    gs 'MenuGirlCanFlirt', $TalkGirl, $TalkReturnLoc
+
+    if Result = 1:
+        act 'Флиртовать':
+            gt 'MenuGirlFlirt', $TalkGirl, $TalkReturnLoc
+        end
+    end
+
+    act 'Вернуться':
+        gt $TalkReturnLoc
+    end
+
+    killvar '$TalkTopic'
+    killvar 'TalkRoll'
+    killvar 'TalkChance'
+    killvar 'TalkTopicUseful'
+---
+
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Ограничение социальных параметров девушки
+! Не даёт отношениям выйти за диапазон 0-100
+! ================================================
+
+#ClampGirlSocialStats
+    $ClampGirl = LCASE($ARGS[0])
+
+    if $ClampGirl = '':
+        exit
+    end
+
+    if Friends[$ClampGirl] > 100:
+        Friends[$ClampGirl] = 100
+    end
+
+    if Friends[$ClampGirl] < 0:
+        Friends[$ClampGirl] = 0
+    end
+
+    if love[$ClampGirl] > 100:
+        love[$ClampGirl] = 100
+    end
+
+    if love[$ClampGirl] < 0:
+        love[$ClampGirl] = 0
+    end
+
+    if fear[$ClampGirl] > 100:
+        fear[$ClampGirl] = 100
+    end
+
+    if fear[$ClampGirl] < 0:
+        fear[$ClampGirl] = 0
+    end
+
+    if hate[$ClampGirl] > 100:
+        hate[$ClampGirl] = 100
+    end
+
+    if hate[$ClampGirl] < 0:
+        hate[$ClampGirl] = 0
+    end
+
+    if otkroven[$ClampGirl] > 100:
+        otkroven[$ClampGirl] = 100
+    end
+
+    if otkroven[$ClampGirl] < 0:
+        otkroven[$ClampGirl] = 0
+    end
+
+    if sluttiness[$ClampGirl] > 100:
+        sluttiness[$ClampGirl] = 100
+    end
+
+    if sluttiness[$ClampGirl] < 0:
+        sluttiness[$ClampGirl] = 0
+    end
+
+    killvar '$ClampGirl'
+---
+
+

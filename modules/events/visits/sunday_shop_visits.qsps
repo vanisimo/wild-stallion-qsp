@@ -1,0 +1,182 @@
+! ================================================
+! FILE: modules/events/visits/sunday_shop_visits.qsps
+! Воскресные визиты и подслушивания у закрытых лавок
+! Версия: v1
+! Назначение:
+! - воскресенье день/вечер открывает городские визиты
+! - у лавки Бекки можно подслушать Бекки и Сандру
+! - у лавки Легаре можно подслушать Клариссу и Мелиссу
+! Большие тексты берутся из:
+! modules/events/visits/sunday_shop_visits_text.qsps
+! ================================================
+
+#SundayVisitBeckySandra
+    $SundayVisitReturnLoc = $ARGS[0]
+
+    if $SundayVisitReturnLoc = '':
+        $SundayVisitReturnLoc = 'Market'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'GetCitySchedulePhase'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛАВКА БЕККИ: ВОСКРЕСНЫЙ ВИЗИТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $CitySchedulePhase <> 'sunday_visits':
+        *p 'Сейчас у лавки Бекки тихо. Дверь закрыта, но за ней не слышно разговора.'
+        *p 'Похоже, визиты начнутся позже, когда город разойдётся после службы и исповедей.'
+        *pl ' '
+
+        act 'Вернуться':
+            gt $SundayVisitReturnLoc
+        end
+
+        exit
+    end
+
+    gs 'SundayVisitBeckySandraText'
+
+    *p $SundayVisitText
+    *pl ' '
+
+    SundayBeckySandraVisitSeen[day] = 1
+    PlayerKnows_SandraBeckySundayTalk = 1
+    SandraBeckyBond += 1
+
+    if SandraBeckyBond > 100:
+        SandraBeckyBond = 100
+    end
+
+    if debug = 1:
+        *pl '[DEBUG VISIT] SandraBeckyBond: ' + STR(SandraBeckyBond)
+        *pl '[DEBUG VISIT] PlayerKnows_SandraBeckySundayTalk: ' + STR(PlayerKnows_SandraBeckySundayTalk)
+        *pl ' '
+    end
+
+    act 'Отойти от лавки':
+        gt $SundayVisitReturnLoc
+    end
+
+    killvar '$SundayVisitReturnLoc'
+---
+
+! ================================================
+! FILE: modules/events/visits/sunday_shop_visits.qsps
+! Воскресный разговор у лавки Легаре
+! ================================================
+
+#SundayVisitClarissaMelissa
+    $SundayVisitReturnLoc = $ARGS[0]
+
+    if $SundayVisitReturnLoc = '':
+        $SundayVisitReturnLoc = 'Market'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'GetCitySchedulePhase'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛАВКА ЛЕГАРЕ: ВОСКРЕСНЫЙ ВИЗИТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $CitySchedulePhase <> 'sunday_visits':
+        *p 'У лавки Легаре сейчас пусто. Ставни закрыты, а за дверью не слышно ни Клариссы, ни Мелиссы.'
+        *p 'Такие разговоры лучше искать после службы и исповедей.'
+        *pl ' '
+
+        act 'Вернуться':
+            gt $SundayVisitReturnLoc
+        end
+
+        exit
+    end
+
+    gs 'SundayVisitClarissaMelissaText'
+
+    *p $SundayVisitText
+    *pl ' '
+
+    SundayClarissaMelissaVisitSeen[day] = 1
+    PlayerKnows_ClarissaMelissaSundayTalk = 1
+    MelissaClarissaBond += 1
+
+    if MelissaClarissaBond > 100:
+        MelissaClarissaBond = 100
+    end
+
+    if debug = 1:
+        *pl '[DEBUG VISIT] MelissaClarissaBond: ' + STR(MelissaClarissaBond)
+        *pl '[DEBUG VISIT] PlayerKnows_ClarissaMelissaSundayTalk: ' + STR(PlayerKnows_ClarissaMelissaSundayTalk)
+        *pl ' '
+    end
+
+    act 'Отойти от лавки':
+        gt $SundayVisitReturnLoc
+    end
+
+    killvar '$SundayVisitReturnLoc'
+---
+
+! ================================================
+! FILE: modules/events/visits/sunday_shop_visits.qsps
+! Debug-меню воскресных визитов
+! ================================================
+
+#SundayShopVisitsDebugMenu
+    $SundayVisitReturnLoc = $ARGS[0]
+
+    if $SundayVisitReturnLoc = '':
+        $SundayVisitReturnLoc = 'Market'
+    end
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ВОСКРЕСНЫЕ ВИЗИТЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'week: ' + STR(week)
+    *pl 'time: ' + STR(time)
+    *pl 'phase: ' + $CitySchedulePhase
+    *pl ' '
+
+    act 'Установить воскресенье день':
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        gt 'Market'
+    end
+
+    act 'Установить воскресенье вечер':
+        week = 7
+        time = 4
+        gs 'GetDateTimeNames'
+        gt 'Market'
+    end
+
+    act 'Тест: Бекки и Сандра':
+        gt 'SundayVisitBeckySandra', $SundayVisitReturnLoc
+    end
+
+    act 'Тест: Кларисса и Мелисса':
+        gt 'SundayVisitClarissaMelissa', $SundayVisitReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $SundayVisitReturnLoc
+    end
+
+    killvar '$SundayVisitReturnLoc'
+---

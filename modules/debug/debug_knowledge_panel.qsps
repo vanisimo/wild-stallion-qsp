@@ -1,0 +1,90 @@
+! ================================================
+! FILE: modules/debug/debug_knowledge_panel.qsps
+! Debug-панель системы знаний о событиях
+! Версия: v1
+! Назначение:
+! - быстро посмотреть факт / знание / слух / свидетелей по событию
+! - проверить новые EventKnowledgeSystem и KnowledgeEventIds
+! - не влияет на сюжет, используется только при debug = 1
+! ================================================
+
+#DebugKnowledgePanel
+    if debug = 0:
+        exit
+    end
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ЗНАНИЯ О СОБЫТИЯХ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *pl 'Основные события:'
+    *pl ' '
+
+    gs 'DebugKnowledgePrintLine', 'Amanda_FirstHallHarassment'
+    gs 'DebugKnowledgePrintLine', 'Amanda_RevealingUniform_1'
+    gs 'DebugKnowledgePrintLine', 'Amanda_Lizette_Talk_1'
+    gs 'DebugKnowledgePrintLine', 'Amanda_Legare_Notice_1'
+    gs 'DebugKnowledgePrintLine', 'Amanda_Legare_PrivateTalk_1'
+    gs 'DebugKnowledgePrintLine', 'Amanda_Legare_MajorRisk_1'
+    gs 'DebugKnowledgePrintLine', 'Hall_Lewd_Generic'
+    gs 'DebugKnowledgePrintLine', 'Hall_Missing_Generic'
+    gs 'DebugKnowledgePrintLine', 'Kitchen_Customer_Generic'
+
+    *pl ' '
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/debug/debug_knowledge_panel.qsps
+! Строка debug-вывода по одному событию
+! ================================================
+
+#DebugKnowledgePrintLine
+    $DebugKnowledgeEvent = $ARGS[0]
+
+    if $DebugKnowledgeEvent = '':
+        exit
+    end
+
+    *pl $DebugKnowledgeEvent + ' | Fact: ' + STR(FactHappened[$DebugKnowledgeEvent]) + ' | Player: ' + STR(PlayerKnows[$DebugKnowledgeEvent]) + ' | Rumor: ' + STR(EventRumor[$DebugKnowledgeEvent]) + ' | Witness: ' + STR(EventWitnessed[$DebugKnowledgeEvent]) + ' | Confessed: ' + STR(EventConfessed[$DebugKnowledgeEvent])
+
+    killvar '$DebugKnowledgeEvent'
+---
+
+! ================================================
+! FILE: modules/debug/debug_knowledge_panel.qsps
+! Быстрое тестовое заполнение знаний
+! ================================================
+
+#DebugKnowledgeSeedHall
+    if debug = 0:
+        exit
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Amanda_FirstHallHarassment'
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'Amanda_FirstHallHarassment'
+    end
+
+    if LOC('KnowledgeRegisterRumor') = 1:
+        gs 'KnowledgeRegisterRumor', 'Amanda_FirstHallHarassment'
+    end
+
+    if LOC('KnowledgeRegisterNpcSuspects') = 1:
+        gs 'KnowledgeRegisterNpcSuspects', 'melissa', 'Amanda_FirstHallHarassment'
+        gs 'KnowledgeRegisterNpcSuspects', 'sandra', 'Amanda_FirstHallHarassment'
+    end
+
+    msg 'DEBUG: тестовые знания по первому событию Аманды добавлены.'
+---

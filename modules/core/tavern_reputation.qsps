@@ -1,0 +1,151 @@
+! ================================================
+! FILE: modules/core/tavern_reputation.qsps
+! Расчёт ежедневной прибыли таверны
+! Учитывает репутацию, запасы и эффективность персонала
+! Перегрузка девушек несколькими работами снижает доход и репутацию
+! ================================================
+
+
+
+
+! ================================================
+! FILE: modules/core/tavern_reputation.qsps
+! Расходы на одну девушку в зависимости от количества работ
+! Чем больше работ, тем выше усталость и затраты
+! ================================================
+
+
+#CalculateGirlAvailability
+    tavern_sex_appeal = 15
+
+    i = 0
+    _count = arrsize('$AllGirlNames')
+
+    :loop_girl
+    if i < _count:
+        $g = $AllGirlNames[i]
+
+        current_girl_appeal = 0
+
+        if jobwhore[$g] = 1:
+            current_girl_appeal = (sluttiness[$g] / 2) + 20
+        elseif jobwaitress[$g] = 1 and sluttiness[$g] >= 30:
+            current_girl_appeal = (sluttiness[$g] / 4) + 10
+        end
+
+        if beauty[$g] > 70:
+            current_girl_appeal += 5
+        end
+
+        tavern_sex_appeal += current_girl_appeal
+
+        i += 1
+        jump 'loop_girl'
+    end
+
+    if tavern_sex_appeal > 100:
+        tavern_sex_appeal = 100
+    end
+    if tavern_sex_appeal < 0:        tavern_sex_appeal = 0
+---
+
+#GetTavernReputationName
+    if tavern_reputation >= 90:
+        $Result = 'Легендарная таверна'
+    elseif tavern_reputation >= 75:
+        $Result = 'Отличная репутация'
+    elseif tavern_reputation >= 60:
+        $Result = 'Хорошая таверна'
+    elseif tavern_reputation >= 40:
+        $Result = 'Обычная таверна'
+    elseif tavern_reputation >= 25:
+        $Result = 'Сомнительная репутация'
+    else:
+        $Result = 'Плохая репутация (бордель?)'
+    end
+---
+
+! ================================================
+! FILE: modules/core/tavern_staff_efficiency.qsps
+! Расчёт эффективности персонала таверны
+! Учитывает только Сандру, Мелиссу и Аманду
+! Множественные работы снижают эффективность девушки
+! ================================================
+
+#CalculateTavernStaffEfficiency
+    tavern_kitchen_power = 0
+    tavern_waitress_power = 0
+    tavern_cleaning_power = 0
+    tavern_overload_penalty = 0
+    tavern_missing_work_penalty = 0
+
+    gs 'CalculateTavernGirlWorkPower', 'sandra'
+    gs 'CalculateTavernGirlWorkPower', 'melissa'
+    gs 'CalculateTavernGirlWorkPower', 'amanda'
+
+    if tavern_kitchen_power = 0:
+        tavern_missing_work_penalty += 20
+    end
+
+    if tavern_waitress_power = 0:
+        tavern_missing_work_penalty += 20
+    end
+
+    if tavern_cleaning_power = 0:
+        tavern_missing_work_penalty += 15
+    end
+
+    tavern_work_efficiency = (tavern_kitchen_power + tavern_waitress_power + tavern_cleaning_power) / 3
+
+    tavern_work_efficiency -= tavern_missing_work_penalty
+    tavern_work_efficiency -= tavern_overload_penalty
+
+    if tavern_work_efficiency > 100:
+        tavern_work_efficiency = 100
+    end
+
+    if tavern_work_efficiency < 0:
+        tavern_work_efficiency = 0
+    end
+---
+
+! ================================================
+! FILE: modules/core/tavern_staff_efficiency.qsps
+! Расчёт вклада одной девушки в работу таверны
+! Если у девушки две или три работы, её вклад снижается
+! ================================================
+
+#CalculateTavernGirlWorkPower
+    $TavernWorkGirl = LCASE($ARGS[0])
+
+    if $TavernWorkGirl = '':
+        exit
+    end
+
+    gs 'GetGirlWorkLoad', $TavernWorkGirl
+    gs 'GetGirlWorkEfficiency', $TavernWorkGirl
+
+    if GirlWorkLoad = 2:
+        tavern_overload_penalty += 6
+    elseif GirlWorkLoad >= 3:
+        tavern_overload_penalty += 14
+    end
+
+    if jobkitchen[$TavernWorkGirl] = 1:
+        gs 'GetGirlJobPower', $TavernWorkGirl, 'kitchen'
+        tavern_kitchen_power += GirlJobPower
+    end
+
+    if jobwaitress[$TavernWorkGirl] = 1:
+        gs 'GetGirlJobPower', $TavernWorkGirl, 'waitress'
+        tavern_waitress_power += GirlJobPower
+    end
+
+    if jobcleaning[$TavernWorkGirl] = 1:
+        gs 'GetGirlJobPower', $TavernWorkGirl, 'cleaning'
+        tavern_cleaning_power += GirlJobPower
+    end
+
+    killvar '$TavernWorkGirl'
+---
+

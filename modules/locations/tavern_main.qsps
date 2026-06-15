@@ -1,0 +1,340 @@
+! ================================================
+! FILE: modules/locations/tavern_main.qsps
+! Главный зал трактира
+! Версия: v4 / подключение общего входа TavernHallActivityStart
+! Назначение:
+! - кнопка Осмотреть зал теперь идёт через tavern_hall_activity.qsps
+! - кнопка Встать за стойку тоже идёт через общий activity-wrapper
+! - старые локаторы TavernMainLookHall и TavernMainBarWork сохранены для совместимости
+! ================================================
+
+#TavernMain
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
+    gs 'GetDateTimeNames'
+    gs 'CalculateTavernStaffEfficiency'
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    TavernMainOpen = TavernOpen
+    $TavernMainClosedReason = $TavernClosedReason
+
+    if LOC('ShowTavernHallImage') = 1:
+        gs 'ShowTavernHallImage'
+    elseif LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+    elseif LOC('ShowLocationImage') = 1:
+        gs 'ShowLocationImage', 'tavern', 'full', 'png'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТРАКТИР "ДИКИЙ ЖЕРЕБЕЦ"'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *pl 'Год: ' + STR(year)
+    *pl 'Месяц: ' + $MonthName + ' (' + STR(month) + ')'
+    *pl 'День: ' + STR(day)
+    *pl 'Время: ' + STR(time) + ' — ' + $TimeOfDay
+    *pl 'День недели: ' + $WeekDay
+    *pl ' '
+
+    *pl 'Деньги: ' + STR(money) + ' мараведи'
+    *pl 'Посетителей сегодня: ' + STR(tavernvisitors)
+    *pl ' '
+    *pl 'Репутация: ' + STR(tavern_reputation) + ' / 100'
+    *pl ' '
+
+    ! ====================== СОСТОЯНИЕ ТАВЕРНЫ ======================
+
+    if TavernMainOpen = 1:
+        *pl 'Таверна открыта.'
+    else:
+        *pl 'Таверна сейчас закрыта.'
+        *pl 'Причина: ' + $TavernMainClosedReason
+    end
+
+    *pl ' '
+
+    ! ====================== ОПИСАНИЕ ГЛАВНОГО ЗАЛА ======================
+
+    if TavernMainOpen = 1:
+        *p 'Главный зал полон жизни. За грубыми деревянными столами сидят посетители, в воздухе смешиваются запахи горячей еды, дыма и пролитого пива.'
+        *p 'У стойки слышны разговоры, а с кухни доносится рабочая суета.'
+    else:
+        *p 'Главный зал сейчас почти пуст. Столы убраны, огонь в очаге тлеет, а рабочая суета временно стихла.'
+    end
+
+    *pl ' '
+
+    ! ====================== ДЕВУШКИ В ГЛАВНОМ ЗАЛЕ ======================
+
+    LocationGirlShown = 0
+
+    if TavernMainOpen = 1:
+        *pl 'В зале сейчас:'
+        *pl ' '
+
+        gs 'ShowGirlInLocation', 'sandra', 'TavernMain'
+        gs 'ShowGirlInLocation', 'melissa', 'TavernMain'
+        gs 'ShowGirlInLocation', 'amanda', 'TavernMain'
+
+        if LocationGirlShown = 0:
+            *p 'Сейчас в зале нет никого из девушек.'
+        end
+    else:
+        *p 'Девушки не работают в зале, пока таверна закрыта.'
+    end
+
+    killvar 'LocationGirlShown'
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG TAVERN MAIN] TavernMain fixed v3'
+        *pl '[DEBUG TAVERN MAIN] AmandaLegareMajorRiskReady: ' + STR(AmandaLegareMajorRiskReady)
+        *pl '[DEBUG TAVERN MAIN] AmandaLegareSecondMeetReady: ' + STR(AmandaLegareSecondMeetReady)
+        *pl '[DEBUG TAVERN MAIN] AmandaLegareOutsideWallReady: ' + STR(AmandaLegareOutsideWallReady)
+        *pl '[DEBUG TAVERN MAIN] AmandaLegareNextRiskReady: ' + STR(AmandaLegareNextRiskReady)
+        *pl '[DEBUG TAVERN MAIN] AmandaLegareOutsideMeetReady: ' + STR(AmandaLegareOutsideMeetReady)
+        *pl ' '
+    end
+
+    ! ====================== ДЕЙСТВИЯ В ГЛАВНОМ ЗАЛЕ ======================
+
+    act 'Осмотреть зал':
+        gt 'TavernHallActivityStart', 'look'
+    end
+
+    act 'Встать за стойку':
+        gt 'TavernHallActivityStart', 'work'
+    end
+
+    if debug = 1:
+        act 'DEBUG: вызвать приставание':
+            TavernHallEventDay = 0
+            TavernHallEventTime = 0
+            HallHarassmentDay = 0
+            HallHarassmentTime = 0
+            gt 'HallHarassment'
+        end
+
+        if LOC('CityScheduleDebug') = 1:
+            act 'DEBUG: расписание города':
+                gt 'CityScheduleDebug'
+            end
+        end
+    end
+
+
+
+    ! ====================== ПЕРЕХОДЫ ======================
+
+    act 'Второй этаж':
+        if LOC('TavernSecondFloor') = 1:
+            gt 'TavernSecondFloor'
+        else:
+            msg 'Локация "TavernSecondFloor" пока не найдена.'
+        end
+    end
+
+    act 'Кухня':
+        if LOC('Kitchen') = 1:
+            gt 'Kitchen'
+        else:
+            msg 'Локация "Kitchen" пока не найдена.'
+        end
+    end
+
+    act 'Выйти на улицу':
+        if LOC('Street') = 1:
+            gt 'Street'
+        else:
+            msg 'Локация "Street" пока не найдена.'
+        end
+    end
+
+    act 'Закончить день и лечь спать':
+        gt 'NextDay'
+    end
+
+    killvar 'TavernMainOpen'
+    killvar '$TavernMainClosedReason'
+---
+
+! ================================================
+! FILE: modules/locations/tavern_main.qsps
+! Осмотр зала через wrapper
+! ================================================
+
+#TavernMainLookHall
+    ! Сначала проверяем сюжетные авто-события Легаре.
+    ! Если ни одно событие не сработало, показываем обычный осмотр зала.
+    ! Случайные события зала НЕ запускаются здесь.
+
+    if LOC('AmandaLegareMajorRiskCanStart') = 1:
+        gs 'AmandaLegareMajorRiskCanStart'
+
+        if AmandaLegareMajorRiskCanStart = 1:
+            gt 'AmandaLegareMajorRiskStart', 'TavernMain'
+        end
+    end
+
+    if LOC('AmandaLegareSecondMeetCanStart') = 1:
+        gs 'AmandaLegareSecondMeetCanStart'
+
+        if AmandaLegareSecondMeetCanStart = 1:
+            gt 'AmandaLegareSecondMeetStart', 'TavernMain'
+        end
+    end
+
+    if LOC('AmandaLegareOutsideWallCanStart') = 1:
+        gs 'AmandaLegareOutsideWallCanStart'
+
+        if AmandaLegareOutsideWallCanStart = 1:
+            gt 'AmandaLegareOutsideWallStart', 'TavernMain'
+        end
+    end
+
+    if LOC('AmandaLegareTavernVisitCanStart') = 1:
+        gs 'AmandaLegareTavernVisitCanStart'
+
+        if AmandaLegareTavernVisitCanStart = 1:
+            gt 'AmandaLegareTavernVisitStart', 'TavernMain'
+        end
+    end
+
+    if LOC('AmandaLegareOutsideMeetCanStart') = 1:
+        gs 'AmandaLegareOutsideMeetCanStart'
+
+        if AmandaLegareOutsideMeetCanStart = 1:
+            gt 'AmandaLegareOutsideMeetStart', 'TavernMain'
+        end
+    end
+
+    gt 'TavernMainLookHallNormal'
+---
+
+! ================================================
+! FILE: modules/locations/tavern_main.qsps
+! Обычный осмотр зала без случайного ивента
+! ================================================
+
+#TavernMainLookHallNormal
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
+    gs 'GetDateTimeNames'
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    if LOC('ShowTavernHallImage') = 1:
+        gs 'ShowTavernHallImage'
+    elseif LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+    elseif LOC('ShowLocationImage') = 1:
+        gs 'ShowLocationImage', 'tavern', 'full', 'png'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if TavernOpen = 1:
+        *p 'Вы некоторое время наблюдаете за залом.'
+        *p 'Посетители переговариваются за столами, кто-то требует ещё пива, кто-то спорит о цене вина, а у стойки привычно шумит трактирная жизнь.'
+    else:
+        *p 'Зал сейчас тихий. Столы убраны, лавки пустуют, и только запах дыма, дерева и вчерашнего пива напоминает, каким шумным это место бывает в рабочие часы.'
+    end
+
+    *pl ' '
+
+    LocationGirlShown = 0
+
+    if TavernOpen = 1:
+        *pl 'В зале сейчас:'
+        *pl ' '
+
+        gs 'ShowGirlInLocation', 'sandra', 'TavernMain'
+        gs 'ShowGirlInLocation', 'melissa', 'TavernMain'
+        gs 'ShowGirlInLocation', 'amanda', 'TavernMain'
+
+        if LocationGirlShown = 0:
+            *p 'Сейчас в зале нет никого из девушек.'
+        end
+    else:
+        *p 'Девушки сейчас не работают в зале.'
+    end
+
+    killvar 'LocationGirlShown'
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LOOK HALL] Normal look hall, no random event.'
+        *pl ' '
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/locations/tavern_main.qsps
+! Работа за стойкой через wrapper
+! ================================================
+
+#TavernMainBarWork
+    ! Сначала проверяем сюжетные авто-события Легаре.
+    ! Если событий нет, запускаем обычную работу за стойкой.
+
+    if LOC('AmandaLegareMajorRiskCanStart') = 1:
+        gs 'AmandaLegareMajorRiskCanStart'
+
+        if AmandaLegareMajorRiskCanStart = 1:
+            gt 'AmandaLegareMajorRiskStart', 'TavernMain'
+        end
+    end
+
+    if LOC('AmandaLegareSecondMeetCanStart') = 1:
+        gs 'AmandaLegareSecondMeetCanStart'
+
+        if AmandaLegareSecondMeetCanStart = 1:
+            gt 'AmandaLegareSecondMeetStart', 'TavernMain'
+        end
+    end
+
+    if LOC('AmandaLegareOutsideWallCanStart') = 1:
+        gs 'AmandaLegareOutsideWallCanStart'
+
+        if AmandaLegareOutsideWallCanStart = 1:
+            gt 'AmandaLegareOutsideWallStart', 'TavernMain'
+        end
+    end
+
+    if LOC('AmandaLegareTavernVisitCanStart') = 1:
+        gs 'AmandaLegareTavernVisitCanStart'
+
+        if AmandaLegareTavernVisitCanStart = 1:
+            gt 'AmandaLegareTavernVisitStart', 'TavernMain'
+        end
+    end
+
+    if LOC('AmandaLegareOutsideMeetCanStart') = 1:
+        gs 'AmandaLegareOutsideMeetCanStart'
+
+        if AmandaLegareOutsideMeetCanStart = 1:
+            gt 'AmandaLegareOutsideMeetStart', 'TavernMain'
+        end
+    end
+
+    gt 'TavernBarWorkStart'
+---
+

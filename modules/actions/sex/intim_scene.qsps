@@ -1,0 +1,546 @@
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Универсальная интимная сцена
+! Только добровольная близость
+! Управляет возбуждением, оргазмами, дневным лимитом Стефана
+! Используется из MenuGirlIntim
+! ================================================
+
+#IntimSceneStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = $CURLOC
+    end
+
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = 'TavernMain'
+    end
+
+    if $IntimGirl = '':
+        cls
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ИНТИМНАЯ СЦЕНА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        *p 'Ошибка: интимная сцена вызвана без имени девушки.'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt $IntimReturnLoc
+        end
+
+        exit
+    end
+
+    gs 'EnsureGirlData', $IntimGirl
+    gs 'CanStartIntimScene', $IntimGirl
+
+    if IntimSceneAllowed = 0:
+        cls
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ИНТИМНАЯ СЦЕНА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        *p $IntimSceneDenyReason
+
+        if debug = 1:
+            *pl ' '
+            *pl '[DEBUG] Девушка: ' + $IntimGirl
+            *pl '[DEBUG] Дружба: ' + STR(Friends[$IntimGirl])
+            *pl '[DEBUG] Любовь: ' + STR(love[$IntimGirl])
+            *pl '[DEBUG] Откровенность: ' + STR(otkroven[$IntimGirl])
+            *pl '[DEBUG] Развращённость: ' + STR(sluttiness[$IntimGirl])
+        end
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt $IntimReturnLoc
+        end
+
+        exit
+    end
+
+    IntimSceneActive = 1
+    IntimScenePlayerFinished = 0
+    IntimSceneGirlFinished = 0
+    IntimSceneHadMain = 0
+
+    IntimPlayerArousal = 20
+    IntimGirlArousal = 15 + sluttiness[$IntimGirl] / 5 + love[$IntimGirl] / 10
+
+    if IntimGirlArousal > 60:
+        IntimGirlArousal = 60
+    end
+
+    IntimGirlOrgasmsStart = GiveOrgasms[$IntimGirl]
+
+    gt 'IntimSceneMain', $IntimGirl, $IntimReturnLoc
+---
+
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Проверка допуска к интимной сцене
+! ================================================
+
+#CanStartIntimScene
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $CheckIntimGirl = $GirlKey
+
+    IntimSceneAllowed = 1
+    $IntimSceneDenyReason = ''
+
+    if $CheckIntimGirl = '':
+        IntimSceneAllowed = 0
+        $IntimSceneDenyReason = 'Ошибка: девушка не выбрана.'
+        exit
+    end
+
+    if Friends[$CheckIntimGirl] < 25 and love[$CheckIntimGirl] < 20:
+        IntimSceneAllowed = 0
+        $IntimSceneDenyReason = 'Сейчас между вами недостаточно доверия для такой близости.'
+        exit
+    end
+
+    if otkroven[$CheckIntimGirl] < 20:
+        IntimSceneAllowed = 0
+        $IntimSceneDenyReason = $RealName[$CheckIntimGirl] + ' пока слишком смущена для такой близости.'
+        exit
+    end
+
+    if sluttiness[$CheckIntimGirl] < 15:
+        IntimSceneAllowed = 0
+        $IntimSceneDenyReason = $RealName[$CheckIntimGirl] + ' пока не готова заходить так далеко.'
+        exit
+    end
+
+    killvar '$CheckIntimGirl'
+---
+
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Главное окно интимной сцены
+! ================================================
+
+#IntimSceneMain
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛИЗОСТЬ: ' + UCASE($RealName[$IntimGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p $RealName[$IntimGirl] + ' остаётся рядом с вами. Атмосфера между вами становится тише и напряжённее.'
+    *pl ' '
+
+    gs 'ShowIntimSceneStatus', $IntimGirl
+
+    *pl ' '
+
+    act 'Поцеловать':
+        gt 'IntimSceneKiss', $IntimGirl, $IntimReturnLoc
+    end
+
+    act 'Нежные ласки':
+        gt 'IntimSceneCaress', $IntimGirl, $IntimReturnLoc
+    end
+
+    if IntimPlayerArousal >= 35 and IntimGirlArousal >= 35:
+        act 'Продолжить близость':
+            gt 'IntimSceneContinue', $IntimGirl, $IntimReturnLoc
+        end
+    end
+
+    if IntimGirlArousal >= 80 and IntimSceneGirlFinished = 0:
+        act 'Довести её до разрядки':
+            gt 'IntimSceneGirlFinish', $IntimGirl, $IntimReturnLoc
+        end
+    end
+
+    if IntimPlayerArousal >= 100 and IntimScenePlayerFinished = 0:
+        act 'Завершить самому':
+            gt 'IntimScenePlayerFinish', $IntimGirl, $IntimReturnLoc
+        end
+    end
+
+    act 'Остановиться и поговорить':
+        gt 'IntimSceneEnd', $IntimGirl, $IntimReturnLoc
+    end
+---
+
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Статус интимной сцены
+! ================================================
+
+#ShowIntimSceneStatus
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $StatusIntimGirl = $GirlKey
+
+    if $StatusIntimGirl = '':
+        exit
+    end
+
+    *pl 'Состояние:'
+
+    if IntimPlayerArousal < 30:
+        *pl 'Стефан: спокоен.'
+    elseif IntimPlayerArousal < 60:
+        *pl 'Стефан: возбуждён.'
+    elseif IntimPlayerArousal < 90:
+        *pl 'Стефан: сильно возбуждён.'
+    elseif IntimPlayerArousal < 100:
+        *pl 'Стефан: почти на грани.'
+    else:
+        *pl 'Стефан: готов завершить.'
+    end
+
+    if IntimGirlArousal < 30:
+        *pl $RealName[$StatusIntimGirl] + ': смущена, но не отстраняется.'
+    elseif IntimGirlArousal < 60:
+        *pl $RealName[$StatusIntimGirl] + ': отвечает на ваши прикосновения.'
+    elseif IntimGirlArousal < 80:
+        *pl $RealName[$StatusIntimGirl] + ': заметно возбуждена.'
+    else:
+        *pl $RealName[$StatusIntimGirl] + ': уже почти теряет самообладание.'
+    end
+
+    if IntimSceneGirlFinished = 1:
+        *pl $RealName[$StatusIntimGirl] + ' уже получила удовольствие.'
+    end
+
+    if IntimScenePlayerFinished = 1:
+        *pl 'Стефан уже завершил.'
+    end
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG] Возбуждение Стефана: ' + STR(IntimPlayerArousal)
+        *pl '[DEBUG] Возбуждение девушки: ' + STR(IntimGirlArousal)
+    end
+
+    killvar '$StatusIntimGirl'
+---
+
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Поцелуй
+! ================================================
+
+#IntimSceneKiss
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы мягко целуете ' + $RealName[$IntimGirl] + '. Она отвечает не сразу, но постепенно расслабляется и становится смелее.'
+
+    IntimPlayerArousal += 10
+    IntimGirlArousal += 8
+
+    Friends[$IntimGirl] += 1
+
+    gs 'ClampIntimSceneValues', $IntimGirl
+    gs 'ClampGirlSocialStats', $IntimGirl
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'IntimSceneMain', $IntimGirl, $IntimReturnLoc
+    end
+---
+
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Нежные ласки
+! ================================================
+
+#IntimSceneCaress
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы не торопитесь, позволяя ' + $RealName[$IntimGirl] + ' привыкнуть к вашей близости.'
+    *p 'Она всё ещё смущается, но уже не пытается скрывать, что ей приятно ваше внимание.'
+
+    IntimPlayerArousal += 14
+    IntimGirlArousal += 18
+    otkroven[$IntimGirl] += 1
+
+    gs 'ClampIntimSceneValues', $IntimGirl
+    gs 'ClampGirlSocialStats', $IntimGirl
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'IntimSceneMain', $IntimGirl, $IntimReturnLoc
+    end
+---
+
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Продолжить близость
+! ================================================
+
+#IntimSceneContinue
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Близость становится глубже. ' + $RealName[$IntimGirl] + ' уже не просто позволяет вам быть рядом, а сама тянется к вам.'
+    *p 'В какой-то момент вы оба перестаёте думать о словах.'
+
+    IntimSceneHadMain = 1
+
+    IntimPlayerArousal += 25
+    IntimGirlArousal += 24
+
+    love[$IntimGirl] += 1
+    sluttiness[$IntimGirl] += 1
+
+    gs 'ClampIntimSceneValues', $IntimGirl
+    gs 'ClampGirlSocialStats', $IntimGirl
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'IntimSceneMain', $IntimGirl, $IntimReturnLoc
+    end
+---
+
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Разрядка девушки
+! ================================================
+
+#IntimSceneGirlFinish
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p $RealName[$IntimGirl] + ' больше не может сдерживаться. Она прижимается к вам, дрожит и на несколько мгновений забывает обо всём вокруг.'
+    *p 'Когда она приходит в себя, в её взгляде появляется мягкое смущение.'
+
+    GiveOrgasms[$IntimGirl] += 1
+    IntimSceneGirlFinished = 1
+    IntimGirlArousal = 25
+
+    Friends[$IntimGirl] += 1
+    love[$IntimGirl] += 1
+    otkroven[$IntimGirl] += 1
+
+    gs 'ClampGirlSocialStats', $IntimGirl
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'IntimSceneMain', $IntimGirl, $IntimReturnLoc
+    end
+---
+
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Завершение Стефана
+! ================================================
+
+#IntimScenePlayerFinish
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'CanCumToday'
+
+    if daily_cum_count >= can_cum_daily:
+        *p 'Стефан слишком вымотан за сегодня. Даже близость с ' + $RealName[$IntimGirl] + ' уже не помогает вернуть силы.'
+
+        IntimPlayerArousal = 0
+
+        *pl ' '
+
+        act 'Продолжить':
+            gt 'IntimSceneMain', $IntimGirl, $IntimReturnLoc
+        end
+
+        exit
+    end
+
+    *p 'Стефан больше не может сдерживаться. Напряжение наконец отпускает его, и он тяжело переводит дыхание.'
+
+    gs 'RegisterPlayerCum'
+
+    IntimScenePlayerFinished = 1
+    IntimPlayerArousal = 0
+
+    if IntimSceneGirlFinished = 1:
+        *p $RealName[$IntimGirl] + ' выглядит довольной и немного уставшей.'
+        Friends[$IntimGirl] += 1
+        love[$IntimGirl] += 1
+    else:
+        *p $RealName[$IntimGirl] + ' смотрит на вас чуть вопросительно. Кажется, ей хотелось бы, чтобы вы уделили ей больше внимания.'
+        Friends[$IntimGirl] -= 1
+    end
+
+    gs 'ClampGirlSocialStats', $IntimGirl
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'IntimSceneMain', $IntimGirl, $IntimReturnLoc
+    end
+---
+
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Завершение интимной сцены
+! ================================================
+
+#IntimSceneEnd
+    gs 'NormalizeGirlKey', $ARGS[0]
+
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if IntimSceneHadMain = 1:
+        gs 'RegisterSex', $IntimGirl
+
+        if IntimSceneGirlFinished = 1 and IntimScenePlayerFinished = 1:
+            *p 'Вы оба ещё некоторое время молчите рядом, приходя в себя после близости.'
+            *p $RealName[$IntimGirl] + ' выглядит довольной.'
+            Friends[$IntimGirl] += 1
+            love[$IntimGirl] += 1
+        elseif IntimSceneGirlFinished = 1:
+            *p $RealName[$IntimGirl] + ' выглядит смущённой, но довольной. Вы осторожно целуете её на прощание.'
+            Friends[$IntimGirl] += 1
+        elseif IntimScenePlayerFinished = 1:
+            *p $RealName[$IntimGirl] + ' поправляет одежду и молчит чуть дольше обычного.'
+            Friends[$IntimGirl] -= 1
+        else:
+            *p 'Вы решаете остановиться, пока всё не зашло дальше. ' + $RealName[$IntimGirl] + ' принимает это спокойно.'
+            Friends[$IntimGirl] += 1
+        end
+    else:
+        *p 'Вы останавливаетесь на поцелуях и тихом разговоре. ' + $RealName[$IntimGirl] + ' кажется немного смущённой, но не расстроенной.'
+        Friends[$IntimGirl] += 1
+    end
+
+    gs 'ClampGirlSocialStats', $IntimGirl
+
+    IntimSceneActive = 0
+    IntimPlayerArousal = 0
+    IntimGirlArousal = 0
+    Arousal['you'] = 0
+    Arousal[$IntimGirl] = 0
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $IntimReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/actions/sex/intim_scene.qsps
+! Ограничение значений сцены
+! ================================================
+
+#ClampIntimSceneValues
+    if IntimPlayerArousal < 0:
+        IntimPlayerArousal = 0
+    end
+
+    if IntimPlayerArousal > 100:
+        IntimPlayerArousal = 100
+    end
+
+    if IntimGirlArousal < 0:
+        IntimGirlArousal = 0
+    end
+
+    if IntimGirlArousal > 100:
+        IntimGirlArousal = 100
+    end
+---
+

@@ -1,0 +1,554 @@
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Ирма: рабочая форма для девушек трактира
+! Версия: v1 / ordinary + revealing uniforms
+! Назначение:
+! - купить / сшить откровенную рабочую форму для Аманды, Мелиссы, Сандры
+! - доступно только после предложения Ирмы IrmaUniformOfferUnlocked = 1
+! - форма имеет только 2 уровня:
+!   GirlUniformLevel[girl] = 0 обычная
+!   GirlUniformLevel[girl] = 1 откровенная
+! - покупка открывает возможность носить откровенную форму:
+!   uniform_purchased[girl] = 1
+! - назначение формы лучше делать через разговор/сцену, но здесь можно сразу выдать комплект
+!
+! Тексты берутся из:
+! modules/locations/shops/irma_uniform_orders_text.qsps
+! ================================================
+
+#IrmaUniformOrders
+    *clr
+    clr
+    cla
+
+    $IrmaUniformReturnLoc = $ARGS[0]
+
+    if $IrmaUniformReturnLoc = '':
+        $IrmaUniformReturnLoc = 'IrmaShop'
+    end
+
+    if LOC($IrmaUniformReturnLoc) = 0:
+        $IrmaUniformReturnLoc = 'IrmaShop'
+    end
+
+    if IrmaUniformOfferUnlocked = 0:
+        *pl '══════════════════════════════════════════════'
+        *pl ' ИРМА: РАБОЧАЯ ФОРМА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        *p 'Ирма пока не поднимает тему откровенной рабочей формы. Для такого заказа нужен повод: городские слухи, скандальная слава трактира, церковный упрёк или достаточно доверительный разговор с самой Ирмой.'
+
+        *pl ' '
+
+        if LOC('IrmaUniformOfferCanStart') = 1:
+            gs 'IrmaUniformOfferCanStart'
+
+            if IrmaUniformOfferCanStart = 1:
+                act 'Выслушать предложение Ирмы':
+                    gt 'IrmaUniformOfferStart', $IrmaUniformReturnLoc
+                end
+            end
+        end
+
+        if debug = 1 and LOC('IrmaUniformOfferDebugUnlock') = 1:
+            act 'DEBUG: открыть тему формы Ирмы':
+                *clr
+                gs 'IrmaUniformOfferDebugUnlock'
+
+                act 'Продолжить':
+                    gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+                end
+            end
+        end
+
+        act 'Вернуться':
+            gt $IrmaUniformReturnLoc
+        end
+
+        exit
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИРМА: РАБОЧАЯ ФОРМА ДЛЯ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformPrintText', 'intro'
+
+    *pl ' '
+
+    gs 'IrmaUniformPrintStatus'
+
+    *pl ' '
+
+    gs 'IrmaUniformBuildMenu'
+
+    *p 'Что заказать у <a href="exec:gs ''Menu.Show'', ''IrmaUniformMenu''">Ирмы</a>?'
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Меню заказов
+! ================================================
+
+#IrmaUniformBuildMenu
+    gs 'Menu.Destroy', 'IrmaUniformMenu'
+    gs 'Menu.Create', 'IrmaUniformMenu'
+
+    gs 'Menu.Add', 'IrmaUniformMenu', 'Откровенная форма для Аманды', ''
+    gs 'Menu.AddModule', 'IrmaUniformMenu', {
+        gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
+    }
+
+    gs 'Menu.Add', 'IrmaUniformMenu', 'Откровенная форма для Мелиссы', ''
+    gs 'Menu.AddModule', 'IrmaUniformMenu', {
+        gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
+    }
+
+    gs 'Menu.Add', 'IrmaUniformMenu', 'Откровенная форма для Сандры', ''
+    gs 'Menu.AddModule', 'IrmaUniformMenu', {
+        gt 'IrmaUniformOrderConfirm', 'sandra', $IrmaUniformReturnLoc
+    }
+
+    gs 'Menu.Add', 'IrmaUniformMenu', 'Комплекты для всех троих', ''
+    gs 'Menu.AddModule', 'IrmaUniformMenu', {
+        gt 'IrmaUniformOrderAllConfirm', $IrmaUniformReturnLoc
+    }
+
+    gs 'Menu.Add', 'IrmaUniformMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'IrmaUniformMenu', {
+        gt $IrmaUniformReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Статус купленных комплектов
+! ================================================
+
+#IrmaUniformPrintStatus
+    *pl '<b>Комплекты:</b>'
+
+    gs 'IrmaUniformPrintGirlStatus', 'amanda'
+    gs 'IrmaUniformPrintGirlStatus', 'melissa'
+    gs 'IrmaUniformPrintGirlStatus', 'sandra'
+
+    if revealing_uniform_all_bought = 1:
+        *pl 'Общий заказ: все комплекты уже оплачены.'
+    end
+---
+
+#IrmaUniformPrintGirlStatus
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $IrmaUniformGirl = $IrmaUniformGirlKey
+
+    if $IrmaUniformGirl = '':
+        exit
+    end
+
+    gs 'IrmaUniformEnsureName', $IrmaUniformGirl
+
+    if uniform_purchased[$IrmaUniformGirl] = 1:
+        *pl $RealName[$IrmaUniformGirl] + ': откровенная форма готова.'
+    else:
+        *pl $RealName[$IrmaUniformGirl] + ': откровенная форма не куплена.'
+    end
+
+    killvar '$IrmaUniformGirl'
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Подтверждение заказа одного комплекта
+! ================================================
+
+#IrmaUniformOrderConfirm
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $IrmaUniformGirl = $IrmaUniformGirlKey
+    $IrmaUniformReturnLoc = $ARGS[1]
+
+    if $IrmaUniformGirl = '':
+        $IrmaUniformGirl = 'amanda'
+    end
+
+    if $IrmaUniformReturnLoc = '':
+        $IrmaUniformReturnLoc = 'IrmaShop'
+    end
+
+    gs 'IrmaUniformEnsureName', $IrmaUniformGirl
+    gs 'IrmaUniformGetPrice', $IrmaUniformGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗАКАЗ ФОРМЫ: ' + UCASE($RealName[$IrmaUniformGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformPrintText', 'confirm_one'
+
+    *pl ' '
+    *pl 'Цена: ' + STR(IrmaUniformPrice) + ' монет.'
+    *pl 'У вас: ' + STR(money) + ' монет.'
+    *pl ' '
+
+    if uniform_purchased[$IrmaUniformGirl] = 1:
+        *p 'Этот комплект уже готов.'
+
+        act 'Вернуться':
+            gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+        end
+
+        exit
+    end
+
+    if money < IrmaUniformPrice:
+        gs 'IrmaUniformPrintText', 'no_money'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+        end
+
+        exit
+    end
+
+    act 'Заказать':
+        gt 'IrmaUniformOrderBuy', $IrmaUniformGirl, $IrmaUniformReturnLoc
+    end
+
+    act 'Отказаться':
+        gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Покупка одного комплекта
+! ================================================
+
+#IrmaUniformOrderBuy
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $IrmaUniformGirl = $IrmaUniformGirlKey
+    $IrmaUniformReturnLoc = $ARGS[1]
+
+    if $IrmaUniformGirl = '':
+        $IrmaUniformGirl = 'amanda'
+    end
+
+    if $IrmaUniformReturnLoc = '':
+        $IrmaUniformReturnLoc = 'IrmaShop'
+    end
+
+    gs 'IrmaUniformEnsureName', $IrmaUniformGirl
+    gs 'IrmaUniformGetPrice', $IrmaUniformGirl
+
+    if uniform_purchased[$IrmaUniformGirl] = 1:
+        gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+    end
+
+    if money < IrmaUniformPrice:
+        gt 'IrmaUniformOrderConfirm', $IrmaUniformGirl, $IrmaUniformReturnLoc
+    end
+
+    money -= IrmaUniformPrice
+    uniform_purchased[$IrmaUniformGirl] = 1
+    IrmaUniformPurchasedCount += 1
+
+    ! Важно:
+    ! Покупка открывает форму, но не обязана автоматически надевать её.
+    ! Однако для удобства теста, если включен auto_set_revealing_uniform_after_buy,
+    ! форма сразу становится рабочей.
+    if auto_set_revealing_uniform_after_buy = 1:
+        GirlUniformLevel[$IrmaUniformGirl] = 1
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ФОРМА ГОТОВА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformPrintText', 'bought_one'
+
+    *pl ' '
+
+    if auto_set_revealing_uniform_after_buy = 1:
+        *pl 'Форма сразу назначена как рабочая.'
+    else:
+        *pl 'Форма куплена. Назначить её как рабочую можно через разговор/правило после событий.'
+    end
+
+    *pl ' '
+
+    act 'Вернуться к заказам':
+        gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+    end
+
+    act 'Вернуться в лавку':
+        gt $IrmaUniformReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Подтверждение общего заказа
+! ================================================
+
+#IrmaUniformOrderAllConfirm
+    *clr
+    clr
+    cla
+
+    $IrmaUniformReturnLoc = $ARGS[0]
+
+    if $IrmaUniformReturnLoc = '':
+        $IrmaUniformReturnLoc = 'IrmaShop'
+    end
+
+    gs 'IrmaUniformGetAllPrice'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗАКАЗ ФОРМЫ ДЛЯ ВСЕХ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformPrintText', 'confirm_all'
+
+    *pl ' '
+    *pl 'Цена: ' + STR(IrmaUniformAllPrice) + ' монет.'
+    *pl 'У вас: ' + STR(money) + ' монет.'
+    *pl ' '
+
+    if revealing_uniform_all_bought = 1:
+        *p 'Все комплекты уже готовы.'
+
+        act 'Вернуться':
+            gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+        end
+
+        exit
+    end
+
+    if IrmaUniformAllNeedCount <= 0:
+        revealing_uniform_all_bought = 1
+
+        *p 'Все комплекты уже были заказаны отдельно.'
+
+        act 'Вернуться':
+            gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+        end
+
+        exit
+    end
+
+    if money < IrmaUniformAllPrice:
+        gs 'IrmaUniformPrintText', 'no_money'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+        end
+
+        exit
+    end
+
+    act 'Заказать комплекты':
+        gt 'IrmaUniformOrderAllBuy', $IrmaUniformReturnLoc
+    end
+
+    act 'Отказаться':
+        gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Покупка общего заказа
+! ================================================
+
+#IrmaUniformOrderAllBuy
+    *clr
+    clr
+    cla
+
+    $IrmaUniformReturnLoc = $ARGS[0]
+
+    if $IrmaUniformReturnLoc = '':
+        $IrmaUniformReturnLoc = 'IrmaShop'
+    end
+
+    gs 'IrmaUniformGetAllPrice'
+
+    if money < IrmaUniformAllPrice:
+        gt 'IrmaUniformOrderAllConfirm', $IrmaUniformReturnLoc
+    end
+
+    money -= IrmaUniformAllPrice
+
+    uniform_purchased['amanda'] = 1
+    uniform_purchased['melissa'] = 1
+    uniform_purchased['sandra'] = 1
+    revealing_uniform_all_bought = 1
+
+    if auto_set_revealing_uniform_after_buy = 1:
+        GirlUniformLevel['amanda'] = 1
+        GirlUniformLevel['melissa'] = 1
+        GirlUniformLevel['sandra'] = 1
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ФОРМА ДЛЯ ВСЕХ ГОТОВА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformPrintText', 'bought_all'
+
+    *pl ' '
+
+    act 'Вернуться к заказам':
+        gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+    end
+
+    act 'Вернуться в лавку':
+        gt $IrmaUniformReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Цена одного комплекта
+! ================================================
+
+#IrmaUniformGetPrice
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $IrmaUniformGirl = $IrmaUniformGirlKey
+
+    IrmaUniformPrice = 90
+
+    if $IrmaUniformGirl = 'amanda':
+        IrmaUniformPrice = 80
+    elseif $IrmaUniformGirl = 'melissa':
+        IrmaUniformPrice = 100
+    elseif $IrmaUniformGirl = 'sandra':
+        IrmaUniformPrice = 120
+    end
+
+    if TavernReputation >= 50:
+        IrmaUniformPrice += 10
+    end
+
+    if TavernScandal >= 40:
+        IrmaUniformPrice += 15
+    end
+
+    killvar '$IrmaUniformGirl'
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Цена общего заказа
+! ================================================
+
+#IrmaUniformGetAllPrice
+    IrmaUniformAllPrice = 0
+    IrmaUniformAllNeedCount = 0
+
+    if uniform_purchased['amanda'] = 0:
+        gs 'IrmaUniformGetPrice', 'amanda'
+        IrmaUniformAllPrice += IrmaUniformPrice
+        IrmaUniformAllNeedCount += 1
+    end
+
+    if uniform_purchased['melissa'] = 0:
+        gs 'IrmaUniformGetPrice', 'melissa'
+        IrmaUniformAllPrice += IrmaUniformPrice
+        IrmaUniformAllNeedCount += 1
+    end
+
+    if uniform_purchased['sandra'] = 0:
+        gs 'IrmaUniformGetPrice', 'sandra'
+        IrmaUniformAllPrice += IrmaUniformPrice
+        IrmaUniformAllNeedCount += 1
+    end
+
+    ! Скидка за общий заказ, если нужно два или три комплекта.
+    if IrmaUniformAllNeedCount >= 2:
+        IrmaUniformAllPrice -= 30
+    end
+
+    if IrmaUniformAllPrice < 0:
+        IrmaUniformAllPrice = 0
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Debug: открыть все комплекты
+! ================================================
+
+#IrmaUniformDebugUnlockAll
+    uniform_purchased['amanda'] = 1
+    uniform_purchased['melissa'] = 1
+    uniform_purchased['sandra'] = 1
+    revealing_uniform_all_bought = 1
+
+    GirlUniformLevel['amanda'] = 1
+    GirlUniformLevel['melissa'] = 1
+    GirlUniformLevel['sandra'] = 1
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    *pl 'DEBUG: все откровенные формы куплены и назначены.'
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! Служебное
+! ================================================
+
+#IrmaUniformNormalizeGirl
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $IrmaUniformGirlKey = $GirlKey
+    else:
+        $IrmaUniformGirlKey = LCASE($ARGS[0])
+    end
+---
+
+#IrmaUniformEnsureName
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $IrmaUniformNameKey = $IrmaUniformGirlKey
+
+    if $RealName[$IrmaUniformNameKey] = '':
+        if $IrmaUniformNameKey = 'amanda':
+            $RealName[$IrmaUniformNameKey] = 'Аманда'
+        elseif $IrmaUniformNameKey = 'melissa':
+            $RealName[$IrmaUniformNameKey] = 'Мелисса'
+        elseif $IrmaUniformNameKey = 'sandra':
+            $RealName[$IrmaUniformNameKey] = 'Сандра'
+        else:
+            $RealName[$IrmaUniformNameKey] = $IrmaUniformNameKey
+        end
+    end
+
+    killvar '$IrmaUniformNameKey'
+---

@@ -1,0 +1,281 @@
+! ================================================
+! FILE: modules/locations/tavern_hall_activity.qsps
+! Единый вход для действий в зале трактира
+! Версия: v5 / видимый осмотр при каждом клике
+! Назначение:
+! - кнопка "Осмотреть зал" всегда даёт видимый экран результата
+! - в debug-режиме всегда пытается запустить допустимое событие
+! - если события нет, показывает причину и счётчик кликов
+! - обычный режим больше не возвращает молча в TavernMainLookHallNormal
+! ================================================
+
+#TavernHallActivityStart
+    $TavernHallActivityMode = LCASE($ARGS[0])
+
+    if $TavernHallActivityMode = '':
+        $TavernHallActivityMode = 'look'
+    end
+
+    if $TavernHallActivityMode = 'work':
+        gt 'TavernBarWorkStart'
+    end
+
+    TavernHallLookClick += 1
+    TavernHallActivityStoryStarted = 0
+    TavernEventDispatcherResult = 0
+    TavernHallActivityDispatcherTried = 0
+    TavernHallActivityForcedByDebug = 0
+    TavernHallActivityNoEventReason = 0
+
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    if TavernOpen = 0:
+        TavernHallActivityNoEventReason = 1
+        gt 'TavernHallActivityNoEventScreen'
+    end
+
+    gs 'TavernHallActivityTryStoryEvents'
+
+    if TavernHallActivityStoryStarted = 1:
+        exit
+    end
+
+    if debug = 1:
+        TavernHallActivityForcedByDebug = 1
+        TavernHallActivityDispatcherTried = 1
+        gs 'TavernEventDispatcherTry', 'TavernMain'
+
+        if TavernEventDispatcherResult = 1:
+            exit
+        end
+
+        TavernHallActivityNoEventReason = 2
+        gt 'TavernHallActivityNoEventScreen'
+    end
+
+    gs 'TavernHallActivityCalcChance'
+
+    TavernHallActivityRoll = RAND(1, 100)
+
+    if TavernHallActivityRoll <= TavernHallActivityChance:
+        TavernHallActivityDispatcherTried = 1
+        gs 'TavernEventDispatcherTry', 'TavernMain'
+
+        if TavernEventDispatcherResult = 1:
+            exit
+        end
+
+        TavernHallActivityNoEventReason = 3
+    else:
+        TavernHallActivityNoEventReason = 4
+    end
+
+    gt 'TavernHallActivityNoEventScreen'
+---
+
+! ================================================
+! FILE: modules/locations/tavern_hall_activity.qsps
+! Проверка сюжетных событий, которые должны иметь приоритет
+! ================================================
+
+#TavernHallActivityTryStoryEvents
+    TavernHallActivityStoryStarted = 0
+
+    if LOC('AmandaLegareMajorRiskCanStart') = 1:
+        gs 'AmandaLegareMajorRiskCanStart'
+
+        if AmandaLegareMajorRiskCanStart = 1:
+            TavernHallActivityStoryStarted = 1
+            gt 'AmandaLegareMajorRiskStart', 'TavernMain'
+        end
+    end
+
+    if TavernHallActivityStoryStarted = 1:
+        exit
+    end
+
+    if LOC('AmandaLegareSecondMeetCanStart') = 1:
+        gs 'AmandaLegareSecondMeetCanStart'
+
+        if AmandaLegareSecondMeetCanStart = 1:
+            TavernHallActivityStoryStarted = 1
+            gt 'AmandaLegareSecondMeetStart', 'TavernMain'
+        end
+    end
+
+    if TavernHallActivityStoryStarted = 1:
+        exit
+    end
+
+    if LOC('AmandaLegareOutsideWallCanStart') = 1:
+        gs 'AmandaLegareOutsideWallCanStart'
+
+        if AmandaLegareOutsideWallCanStart = 1:
+            TavernHallActivityStoryStarted = 1
+            gt 'AmandaLegareOutsideWallStart', 'TavernMain'
+        end
+    end
+
+    if TavernHallActivityStoryStarted = 1:
+        exit
+    end
+
+    if LOC('AmandaLegareTavernVisitCanStart') = 1:
+        gs 'AmandaLegareTavernVisitCanStart'
+
+        if AmandaLegareTavernVisitCanStart = 1:
+            TavernHallActivityStoryStarted = 1
+            gt 'AmandaLegareTavernVisitStart', 'TavernMain'
+        end
+    end
+
+    if TavernHallActivityStoryStarted = 1:
+        exit
+    end
+
+    if LOC('AmandaLegareOutsideMeetCanStart') = 1:
+        gs 'AmandaLegareOutsideMeetCanStart'
+
+        if AmandaLegareOutsideMeetCanStart = 1:
+            TavernHallActivityStoryStarted = 1
+            gt 'AmandaLegareOutsideMeetStart', 'TavernMain'
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/locations/tavern_hall_activity.qsps
+! Расчёт шанса случайного события при осмотре зала
+! ================================================
+
+#TavernHallActivityCalcChance
+    TavernHallActivityChance = 55
+
+    if tavernvisitors >= 20:
+        TavernHallActivityChance += 10
+    end
+
+    if tavernvisitors >= 35:
+        TavernHallActivityChance += 10
+    end
+
+    if TavernScandal >= 10:
+        TavernHallActivityChance += 5
+    end
+
+    if TavernScandal >= 25:
+        TavernHallActivityChance += 5
+    end
+
+    if TavernLewdFame >= 5:
+        TavernHallActivityChance += 5
+    end
+
+    if TavernHallActivityChance > 85:
+        TavernHallActivityChance = 85
+    end
+
+    if TavernHallActivityChance < 40:
+        TavernHallActivityChance = 40
+    end
+---
+
+! ================================================
+! FILE: modules/locations/tavern_hall_activity.qsps
+! Видимый экран результата осмотра, если событие не запустилось
+! ================================================
+
+#TavernHallActivityNoEventScreen
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
+    gs 'GetDateTimeNames'
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    if LOC('ShowTavernHallImage') = 1:
+        gs 'ShowTavernHallImage'
+    elseif LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if TavernOpen = 0:
+        *p 'Вы оглядываете зал, но таверна сейчас закрыта. Столы пустуют, шум стих, и даже самый наглый клиент не может приставать к девушкам, если клиентов нет.'
+    else:
+        *p 'Вы некоторое время наблюдаете за залом. Посетители переговариваются за столами, кто-то требует ещё пива, кто-то спорит о цене вина, а у стойки привычно шумит трактирная жизнь.'
+        *pl ' '
+        *p 'На этот раз ничего такого, что требовало бы отдельной сцены, не происходит. Но сам осмотр не пропал: вы действительно прошлись взглядом по залу и оценили обстановку.'
+    end
+
+    *pl ' '
+    gs 'TavernHallActivityPrintGirlsInHall'
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG LOOK HALL] click: ' + STR(TavernHallLookClick)
+        *pl '[DEBUG LOOK HALL] mode: ' + $TavernHallActivityMode
+        *pl '[DEBUG LOOK HALL] TavernOpen: ' + STR(TavernOpen)
+        *pl '[DEBUG LOOK HALL] tavernvisitors: ' + STR(tavernvisitors)
+        *pl '[DEBUG LOOK HALL] TavernScandal: ' + STR(TavernScandal)
+        *pl '[DEBUG LOOK HALL] TavernLewdFame: ' + STR(TavernLewdFame)
+        *pl '[DEBUG LOOK HALL] debug force: ' + STR(TavernHallActivityForcedByDebug)
+        *pl '[DEBUG LOOK HALL] dispatcher tried: ' + STR(TavernHallActivityDispatcherTried)
+        *pl '[DEBUG LOOK HALL] dispatcher result: ' + STR(TavernEventDispatcherResult)
+        *pl '[DEBUG LOOK HALL] chance: ' + STR(TavernHallActivityChance)
+        *pl '[DEBUG LOOK HALL] roll: ' + STR(TavernHallActivityRoll)
+        *pl '[DEBUG LOOK HALL] no event reason: ' + STR(TavernHallActivityNoEventReason)
+        *pl '[DEBUG LOOK HALL] HallMissingGirlCanStart: ' + STR(HallMissingGirlCanStart)
+        *pl '[DEBUG LOOK HALL] HallLewdBehaviorCanStart: ' + STR(HallLewdBehaviorCanStart)
+        *pl '[DEBUG LOOK HALL] KitchenCustomerEventCanStart: ' + STR(KitchenCustomerEventCanStart)
+        *pl '[DEBUG LOOK HALL] HallHarassmentStarted: ' + STR(HallHarassmentStarted)
+    end
+
+    *pl ' '
+
+    act 'Осмотреть зал ещё раз':
+        gt 'TavernHallActivityStart', 'look'
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/locations/tavern_hall_activity.qsps
+! Список девушек в зале для экрана осмотра
+! ================================================
+
+#TavernHallActivityPrintGirlsInHall
+    *pl 'В зале сейчас:'
+    *pl ' '
+
+    TavernHallActivityGirlsShown = 0
+
+    if $GirlLocation['amanda'] = 'TavernMain':
+        *pl 'Аманда'
+        TavernHallActivityGirlsShown += 1
+    end
+
+    if $GirlLocation['melissa'] = 'TavernMain':
+        *pl 'Мелисса'
+        TavernHallActivityGirlsShown += 1
+    end
+
+    if $GirlLocation['sandra'] = 'TavernMain':
+        *pl 'Сандра'
+        TavernHallActivityGirlsShown += 1
+    end
+
+    if TavernHallActivityGirlsShown = 0:
+        *pl 'Никого из девушек сейчас нет в зале.'
+    end
+---

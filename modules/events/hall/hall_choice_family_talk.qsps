@@ -1,0 +1,143 @@
+! ================================================
+! FILE: modules/events/hall/hall_choice_family_talk.qsps
+! Разговоры семьи о последнем решении Стефана в зале
+! Версия: v1
+! Назначение:
+! - использовать HallChoiceMemory
+! - давать отдельную тему разговора после выбора Стефана
+! - учитывать девушку, тип события и тон решения
+! - тексты вынесены в hall_choice_family_talk_text.qsps
+! ================================================
+
+#HallChoiceFamilyTalkCanDiscuss
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallChoiceFamilyTalkGirl = $GirlKey
+
+    HallChoiceFamilyTalkAvailable = 0
+
+    if $HallChoiceFamilyTalkGirl = '':
+        exit
+    end
+
+    if $LastHallChoiceGirl <> $HallChoiceFamilyTalkGirl:
+        exit
+    end
+
+    if $LastHallChoiceType = '':
+        exit
+    end
+
+    if HallChoiceFamilyTalkDiscussed[$HallChoiceFamilyTalkGirl] = 1:
+        exit
+    end
+
+    HallChoiceFamilyTalkAvailable = 1
+---
+
+#HallChoiceFamilyTalkStart
+    *clr
+    clr
+    cla
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallChoiceFamilyTalkGirl = $GirlKey
+    $HallChoiceFamilyTalkReturnLoc = $ARGS[1]
+
+    if $HallChoiceFamilyTalkGirl = '':
+        msg 'Ошибка: HallChoiceFamilyTalkStart вызван без имени девушки.'
+        exit
+    end
+
+    if $HallChoiceFamilyTalkReturnLoc = '':
+        $HallChoiceFamilyTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallChoiceFamilyTalkReturnLoc) = 0:
+        $HallChoiceFamilyTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $HallChoiceFamilyTalkGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallChoiceFamilyTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР О РЕШЕНИИ СТЕФАНА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'HallChoiceFamilyTalkPrintText', 'intro'
+    *pl ' '
+    gs 'HallChoiceFamilyTalkApplyResult'
+    gs 'HallChoiceFamilyTalkPrintText', 'reaction'
+
+    HallChoiceFamilyTalkDiscussed[$HallChoiceFamilyTalkGirl] = 1
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG CHOICE FAMILY TALK] girl: ' + $HallChoiceFamilyTalkGirl
+        *pl '[DEBUG CHOICE FAMILY TALK] event: ' + $LastHallChoiceEvent
+        *pl '[DEBUG CHOICE FAMILY TALK] choice: ' + $LastHallChoiceType
+        *pl '[DEBUG CHOICE FAMILY TALK] FamilyTrust: ' + STR(FamilyTrust)
+        *pl '[DEBUG CHOICE FAMILY TALK] FamilyTension: ' + STR(FamilyTension)
+        *pl '[DEBUG CHOICE FAMILY TALK] FamilyCorruptionStage: ' + STR(FamilyCorruptionStage)
+        *pl ' '
+    end
+
+    act 'Поговорить ещё':
+        gt 'GirlTalk', $HallChoiceFamilyTalkGirl, $HallChoiceFamilyTalkReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $HallChoiceFamilyTalkReturnLoc
+    end
+---
+
+#HallChoiceFamilyTalkApplyResult
+    if $LastHallChoiceType = 'protect':
+        GirlTrustStefan[$HallChoiceFamilyTalkGirl] += 1
+        FamilyTrust += 1
+        FamilyTension -= 1
+    elseif $LastHallChoiceType = 'calm':
+        GirlTrustStefan[$HallChoiceFamilyTalkGirl] += 1
+    elseif $LastHallChoiceType = 'own_choice':
+        GirlRebellion[$HallChoiceFamilyTalkGirl] += 1
+        GirlTrustStefan[$HallChoiceFamilyTalkGirl] += 1
+    elseif $LastHallChoiceType = 'watch':
+        GirlSecretiveness[$HallChoiceFamilyTalkGirl] += 1
+        FamilyTension += 1
+    elseif $LastHallChoiceType = 'encourage' or $LastHallChoiceType = 'client':
+        GirlPublicAttention[$HallChoiceFamilyTalkGirl] += 1
+        GirlNpcPath[$HallChoiceFamilyTalkGirl] += 1
+        FamilyTension += 1
+        TavernScandal += 1
+    elseif $LastHallChoiceType = 'ignore':
+        GirlSecretiveness[$HallChoiceFamilyTalkGirl] += 1
+        GirlTrustStefan[$HallChoiceFamilyTalkGirl] -= 1
+        FamilyTension += 1
+    end
+
+    if FamilyTrust < 0:
+        FamilyTrust = 0
+    end
+
+    if FamilyTension < 0:
+        FamilyTension = 0
+    end
+
+    if FamilyTrust > 100:
+        FamilyTrust = 100
+    end
+
+    if FamilyTension > 100:
+        FamilyTension = 100
+    end
+
+    gs 'ClampGirlSocialStats', $HallChoiceFamilyTalkGirl
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+---

@@ -1,0 +1,128 @@
+! ================================================
+! FILE: modules/events/hall/hall_recent_talk.qsps
+! Разговоры после последних событий в зале
+! Версия: v1
+! Назначение:
+! - дать живую тему разговора после HallRecentMemorySave
+! - использовать последнюю память зала
+! - персонализировать реакцию Аманды, Мелиссы и Сандры
+! ================================================
+
+#HallRecentTalkCanShow
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallRecentTalkGirl = $GirlKey
+
+    HallRecentTalkCanShow = 0
+
+    if $HallRecentTalkGirl = '':
+        exit
+    end
+
+    if $HallRecentGirl = $HallRecentTalkGirl and HallRecentDay = day and HallRecentTalkDone[$HallRecentTalkGirl] = 0:
+        HallRecentTalkCanShow = 1
+    end
+
+    killvar '$HallRecentTalkGirl'
+---
+
+#HallRecentTalkStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallRecentTalkGirl = $GirlKey
+    $HallRecentTalkReturnLoc = $ARGS[1]
+
+    if $HallRecentTalkGirl = '':
+        gt 'TavernMain'
+    end
+
+    if $HallRecentTalkReturnLoc = '':
+        $HallRecentTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $HallRecentTalkGirl
+
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallRecentTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР ПОСЛЕ СЛУЧАЯ В ЗАЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'HallRecentTalkPrintText', 'intro'
+
+    HallRecentTalkDone[$HallRecentTalkGirl] = 1
+
+    if $HallRecentType = 'hall_lewd' or $HallRecentType = 'lewd':
+        GirlPublicAttention[$HallRecentTalkGirl] += 1
+    end
+
+    if $HallRecentSeverity = 'high' or HallRecentSeverity >= 3:
+        TavernScandal += 1
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    gs 'ClampGirlSocialStats', $HallRecentTalkGirl
+
+    *pl ' '
+
+    act 'Обсудить правило работы':
+        gt 'GirlWorkPolicyTalkHall', $HallRecentTalkGirl, $HallRecentTalkReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $HallRecentTalkReturnLoc
+    end
+---
+
+#HallRecentTalkPrintText
+    gs 'HallRecentTalkText', $ARGS[0]
+
+    if $HallRecentTalkText <> '':
+        *p $HallRecentTalkText
+    end
+---
+
+#HallRecentTalkText
+    $HallRecentTalkTextId = LCASE($ARGS[0])
+    $HallRecentTalkText = ''
+
+    if $HallRecentTalkTextId = 'intro':
+        if $HallRecentTalkGirl = 'amanda':
+            if GirlWorkPolicy['amanda'] = 3:
+                $HallRecentTalkText = 'Аманда мнётся перед вами и явно не знает, гордиться ей собой или провалиться сквозь пол. Она помнит ваши слова про чаевые, но теперь, когда шум в зале стих, вся эта смелость выглядит куда грязнее.'
+            elseif GirlWorkPolicy['amanda'] = 1:
+                $HallRecentTalkText = 'Аманда говорит быстро и сбивчиво. Она старалась держаться прилично, как вы велели, но всё равно смотрит на вас так, будто ждёт подтверждения: она всё сделала правильно.'
+            else:
+                $HallRecentTalkText = 'Аманда краснеет и ёрзает на месте. Видно, что случай в зале застрял у неё в голове: там было и стыдно, и страшно, и почему-то любопытно.'
+            end
+        elseif $HallRecentTalkGirl = 'melissa':
+            if GirlWorkPolicy['melissa'] = 3:
+                $HallRecentTalkText = 'Мелисса улыбается краешком губ. Она прекрасно понимает, что произошло, и ещё лучше понимает, сколько взглядов это принесло залу. Вопрос только в том, кто теперь держит поводок.'
+            elseif GirlWorkPolicy['melissa'] = 1:
+                $HallRecentTalkText = 'Мелисса говорит спокойно, но в её тоне слышно: она ждёт от вас ясности. Если вы хотите порядка — порядок должен исходить от хозяина.'
+            else:
+                $HallRecentTalkText = 'Мелисса смотрит на вас внимательно, будто проверяет, заметили ли вы, как она сама выкрутилась из ситуации.'
+            end
+        elseif $HallRecentTalkGirl = 'sandra':
+            if GirlWorkPolicy['sandra'] = 3:
+                $HallRecentTalkText = 'Сандра говорит негромко, но тяжело. Она терпела не от слабости, а потому что так было велено и выгодно. Но в её взгляде ясно написано: за такие решения кто-то должен отвечать.'
+            elseif GirlWorkPolicy['sandra'] = 1:
+                $HallRecentTalkText = 'Сандра держится спокойно. Она рада, что правило было ясным: приличие ещё можно удержать, если хозяин сам не прячется за стойкой.'
+            else:
+                $HallRecentTalkText = 'Сандра смотрит на вас долго и устало. Она справилась сама, но, кажется, этот случай стал для неё ещё одним доказательством, что трактир меняется.'
+            end
+        else:
+            $HallRecentTalkText = $RealName[$HallRecentTalkGirl] + ' вспоминает недавний случай в зале.'
+        end
+    end
+
+    killvar '$HallRecentTalkTextId'
+---

@@ -1,0 +1,257 @@
+! ================================================
+! FILE: modules/menu/menu_girl_overview.qsps
+! Универсальное выпадающее меню взаимодействия с девушкой
+! Работает через otd_lib_menu
+! Кнопки появляются по условиям места, отношений и распущенности
+! Без кнопки "Закрыть"
+! Условия считаются прямо внутри меню, без LOC/Result
+! ================================================
+
+#MenuGirlOverview
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $MenuCurrentGirl = $GirlKey
+
+    if $MenuCurrentGirl = '':
+        msg 'Ошибка: MenuGirlOverview вызван без имени девушки.'
+        exit
+    end
+
+    gs 'EnsureGirlData', $MenuCurrentGirl
+    gs 'UpdateGirlLocations'
+
+    if $RealName[$MenuCurrentGirl] = '':
+        $RealName[$MenuCurrentGirl] = UCASE(MID($MenuCurrentGirl, 1, 1)) + LCASE(MID($MenuCurrentGirl, 2))
+    end
+
+    $MenuGirlReturnLoc = $CURLOC
+
+    if $MenuGirlReturnLoc = '':
+        $MenuGirlReturnLoc = 'TavernMain'
+    end
+
+    gs 'MenuGirlCalcConditions', $MenuCurrentGirl, $MenuGirlReturnLoc
+
+    MenuCanFlirt = 0
+    MenuCanIntim = 0
+    MenuCanJob = 0
+    MenuCanSpecial = 0
+
+    ! ====================== УСЛОВИЯ ФЛИРТА ======================
+
+    if $GirlLocation[$MenuCurrentGirl] <> 'Church':
+        if $MenuGirlReturnLoc = 'PlayerRoom' or $MenuGirlReturnLoc = 'SandraRoom' or $MenuGirlReturnLoc = 'MelissaRoom' or $MenuGirlReturnLoc = 'AmandaRoom':
+            if Friends[$MenuCurrentGirl] >= 5 or love[$MenuCurrentGirl] >= 3 or sluttiness[$MenuCurrentGirl] >= 5 or otkroven[$MenuCurrentGirl] >= 5:
+                MenuCanFlirt = 1
+            end
+        elseif $MenuGirlReturnLoc = 'TavernMain':
+            if Friends[$MenuCurrentGirl] >= 8 or love[$MenuCurrentGirl] >= 5 or sluttiness[$MenuCurrentGirl] >= 10 or otkroven[$MenuCurrentGirl] >= 8:
+                MenuCanFlirt = 1
+            end
+        elseif $MenuGirlReturnLoc = 'Kitchen':
+            if Friends[$MenuCurrentGirl] >= 10 or love[$MenuCurrentGirl] >= 8 or sluttiness[$MenuCurrentGirl] >= 15 or otkroven[$MenuCurrentGirl] >= 10:
+                MenuCanFlirt = 1
+            end
+        elseif $MenuGirlReturnLoc = 'DanceHall':
+            if Friends[$MenuCurrentGirl] >= 5 or love[$MenuCurrentGirl] >= 3 or sluttiness[$MenuCurrentGirl] >= 5:
+                MenuCanFlirt = 1
+            end
+        end
+    end
+
+    ! ====================== УСЛОВИЯ ИНТИМА ======================
+
+    if $GirlLocation[$MenuCurrentGirl] <> 'Church' and $GirlLocation[$MenuCurrentGirl] <> 'DanceHall':
+        if $MenuGirlReturnLoc = 'PlayerRoom' or $MenuGirlReturnLoc = 'SandraRoom' or $MenuGirlReturnLoc = 'MelissaRoom' or $MenuGirlReturnLoc = 'AmandaRoom':
+            if HadSex[$MenuCurrentGirl] > 0:
+                MenuCanIntim = 1
+            elseif love[$MenuCurrentGirl] >= 15:
+                MenuCanIntim = 1
+            elseif sluttiness[$MenuCurrentGirl] >= 20 and otkroven[$MenuCurrentGirl] >= 10:
+                MenuCanIntim = 1
+            end
+        elseif $MenuGirlReturnLoc = 'Kitchen':
+            if HadSex[$MenuCurrentGirl] > 0 and sluttiness[$MenuCurrentGirl] >= 35:
+                MenuCanIntim = 1
+            elseif love[$MenuCurrentGirl] >= 25 and sluttiness[$MenuCurrentGirl] >= 40:
+                MenuCanIntim = 1
+            end
+        elseif $MenuGirlReturnLoc = 'TavernMain':
+            if HadSex[$MenuCurrentGirl] > 0 and sluttiness[$MenuCurrentGirl] >= 70:
+                MenuCanIntim = 1
+            end
+        end
+    end
+
+    ! ====================== УСЛОВИЯ РАБОТЫ ======================
+
+    if $MenuCurrentGirl = 'sandra':
+        MenuCanJob = 1
+    elseif $MenuCurrentGirl = 'melissa':
+        MenuCanJob = 1
+    elseif $MenuCurrentGirl = 'amanda':
+        MenuCanJob = 1
+    end
+
+    ! ====================== УСЛОВИЯ ОСОБЫХ ДЕЙСТВИЙ ======================
+
+    if $MenuCurrentGirl = 'amanda':
+        if week = 5 and time = 4:
+            MenuCanSpecial = 1
+        elseif love[$MenuCurrentGirl] >= 10 or sluttiness[$MenuCurrentGirl] >= 15 or otkroven[$MenuCurrentGirl] >= 10:
+            MenuCanSpecial = 1
+        end
+    elseif $MenuCurrentGirl = 'melissa':
+        if Friends[$MenuCurrentGirl] >= 10 or love[$MenuCurrentGirl] >= 10 or sluttiness[$MenuCurrentGirl] >= 20:
+            MenuCanSpecial = 1
+        end
+    elseif $MenuCurrentGirl = 'sandra':
+        if Friends[$MenuCurrentGirl] >= 10 or love[$MenuCurrentGirl] >= 10 or sluttiness[$MenuCurrentGirl] >= 20:
+            MenuCanSpecial = 1
+        end
+    end
+
+    ! ====================== СОЗДАНИЕ МЕНЮ ======================
+
+    $MenuName = 'MenuGirlOverview_' + $MenuCurrentGirl
+
+    gs 'Menu.Create', $MenuName
+
+    gs 'Menu.Add', $MenuName, 'Осмотреть', ''
+    gs 'Menu.AddModule', $MenuName, {
+        gs 'MenuGirlInspect', $MenuCurrentGirl
+    }
+
+    gs 'Menu.Add', $MenuName, 'Поговорить', ''
+    gs 'Menu.AddModule', $MenuName, {
+        gt 'MenuGirlTalk', $MenuCurrentGirl, $MenuGirlReturnLoc
+    }
+
+    if MenuCanFlirt = 1:
+        gs 'Menu.Add', $MenuName, 'Флиртовать', ''
+        gs 'Menu.AddModule', $MenuName, {
+            gt 'MenuGirlFlirt', $MenuCurrentGirl, $MenuGirlReturnLoc
+        }
+    end
+
+    if MenuCanIntim = 1:
+        gs 'Menu.Add', $MenuName, 'Интим', ''
+        gs 'Menu.AddModule', $MenuName, {
+            gt 'MenuGirlIntim', $MenuCurrentGirl, $MenuGirlReturnLoc
+        }
+    end
+
+    if MenuCanSpecial = 1:
+        gs 'Menu.Add', $MenuName, 'Особые действия', ''
+        gs 'Menu.AddModule', $MenuName, {
+            gt 'MenuGirlSpecial', $MenuCurrentGirl, $MenuGirlReturnLoc
+        }
+    end
+        ! ====================== ДЕБАГ УСЛОВИЙ МЕНЮ ======================
+
+    if debug = 1:
+        gs 'Menu.Add', $MenuName, 'DEBUG условия меню', ''
+        gs 'Menu.AddModule', $MenuName, {
+            gs 'DebugMenuGirlConditions', $MenuCurrentGirl, $MenuGirlReturnLoc
+        }
+    end
+
+    gs 'Menu.Show', $MenuName
+---
+
+! ================================================
+! FILE: modules/menu/menu_girl_overview.qsps
+! Обработка пункта "Осмотреть"
+! Выводит описание девушки в дополнительную панель
+! Главное окно не очищает и не перерисовывает
+! ================================================
+
+#MenuGirlInspect
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $InspectGirl = $GirlKey
+
+    if $InspectGirl = '':
+        exit
+    end
+
+    gs 'EnsureGirlData', $InspectGirl
+    gs 'NpcShowDescriptionPanel', $InspectGirl
+---
+
+! ================================================
+! FILE: modules/menu/menu_girl_overview.qsps
+! Дебаг условий выпадающего меню девушки
+! Показывает, почему появились или не появились кнопки
+! Выводит информацию в дополнительное описание
+! ================================================
+
+#DebugMenuGirlConditions
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $DebugMenuGirl = $GirlKey
+    $DebugMenuLoc = $ARGS[1]
+
+    if $DebugMenuGirl = '':
+        exit
+    end
+
+    if $DebugMenuLoc = '':
+        $DebugMenuLoc = $CURLOC
+    end
+
+    gs 'EnsureGirlData', $DebugMenuGirl
+    gs 'UpdateGirlLocations'
+    gs 'MenuGirlCalcConditions', $DebugMenuGirl, $DebugMenuLoc
+
+    PanelCustomActive = 1
+
+    clr
+
+    pl '══════════════════════════════════════════════'
+    pl ' DEBUG УСЛОВИЯ МЕНЮ'
+    pl '══════════════════════════════════════════════'
+    pl ' '
+
+    pl 'Девушка: ' + $RealName[$DebugMenuGirl]
+    pl 'Ключ: ' + $DebugMenuGirl
+    pl 'Текущая локация: ' + $DebugMenuLoc
+    pl 'Локация девушки: ' + $GirlLocation[$DebugMenuGirl]
+    pl ' '
+
+    pl 'Параметры:'
+    pl 'Дружба: ' + STR(Friends[$DebugMenuGirl])
+    pl 'Любовь: ' + STR(love[$DebugMenuGirl])
+    pl 'Откровенность: ' + STR(otkroven[$DebugMenuGirl])
+    pl 'Развращённость: ' + STR(sluttiness[$DebugMenuGirl])
+    pl 'Был секс: ' + STR(HadSex[$DebugMenuGirl])
+    pl ' '
+
+    pl 'Проверка кнопок:'
+    pl ' '
+
+    if MenuCanFlirt = 1:
+        pl 'Флирт: доступен'
+    else:
+        pl 'Флирт: недоступен'
+    end
+
+    if MenuCanIntim = 1:
+        pl 'Интим: доступен'
+    else:
+        pl 'Интим: недоступен'
+    end
+
+    if MenuCanJob = 1:
+        pl 'Работа: доступна'
+    else:
+        pl 'Работа: недоступна'
+    end
+
+    if MenuCanSpecial = 1:
+        pl 'Особые действия: доступны'
+    else:
+        pl 'Особые действия: недоступны'
+    end
+
+    pl ' '
+    pl '══════════════════════════════════════════════'
+---
+

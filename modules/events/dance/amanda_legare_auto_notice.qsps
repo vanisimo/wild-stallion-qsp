@@ -1,0 +1,126 @@
+! ================================================
+! FILE: modules/events/dance/amanda_legare_auto_notice.qsps
+! Автоматическое первое замечание Легаре после танца Стефана с Амандой
+! Версия: legare dance rewrite v2
+! Назначение:
+! - убрать кнопку "Легаре смотрит на Аманду"
+! - запускать первый крючок автоматически после танца Стефана с Амандой
+! - поставить флаги для разговоров с Амандой, Мелиссой и Клариссой
+!
+! Тексты берутся из:
+! modules/events/dance/amanda_legare_auto_notice_text.qsps
+!
+! Вызов из:
+! modules/locations/market_dance.qsps
+! ================================================
+
+#AmandaLegareAutoNoticeCanStart
+    AmandaLegareAutoNoticeCanStart = 0
+
+    if LOC('UpdateAmandaLegareBranchUnlock') = 1:
+        gs 'UpdateAmandaLegareBranchUnlock'
+    end
+
+    if AmandaLegareBranchUnlocked <> 1:
+        exit
+    end
+
+    if AmandaLegareNoticeStage > 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'DanceHall':
+        exit
+    end
+
+    if $GirlLocation['legare'] <> 'DanceHall':
+        exit
+    end
+
+    ! Поддержка нескольких возможных флагов танца.
+    ! Основной debug-флаг из текущих тестов: AmandaDanceStage.
+    if AmandaDanceStage <= 0 and AmandaFirstDanceWithStefan <= 0 and DanceStefanAmandaDone <= 0 and AmandaDancedWithStefan <= 0:
+        exit
+    end
+
+    AmandaLegareAutoNoticeCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_auto_notice.qsps
+! Автоматический вход
+! ================================================
+
+#AmandaLegareAutoNoticeStart
+    *clr
+    clr
+    cla
+
+    AmandaLegareNoticeStage = 1
+    LegareNoticedAmanda = 1
+    ClarissaSawLegareAmanda = 1
+    MelissaLegareWarningReady = 1
+    AmandaLegareTalkReady = 1
+    ClarissaTalkAboutAmandaReady = 1
+
+    AmandaLegareInviteReady = 1
+    AmandaLegareInviteDelay = 1
+
+    LegareAmandaInterest += 1
+    AmandaPublicAttention += 1
+    ClarissaJealousy += 1
+    MelissaFamilyConcern += 1
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/dance/amanda_legare', 'notice', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВЗГЛЯД У КРАЯ ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareAutoNoticeText') = 1:
+        gs 'AmandaLegareAutoNoticeText'
+    else:
+        *p 'Когда музыка стихает, вы замечаете, что Легаре смотрит на Аманду слишком внимательно.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE NOTICE] BranchUnlocked: ' + STR(AmandaLegareBranchUnlocked)
+        *pl '[DEBUG LEGARE NOTICE] NoticeStage: ' + STR(AmandaLegareNoticeStage)
+        *pl '[DEBUG LEGARE NOTICE] InviteReady: ' + STR(AmandaLegareInviteReady)
+        *pl '[DEBUG LEGARE NOTICE] InviteDelay: ' + STR(AmandaLegareInviteDelay)
+        *pl ' '
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_auto_notice.qsps
+! Debug-сброс первого крючка
+! ================================================
+
+#AmandaLegareAutoNoticeDebugReset
+    AmandaLegareNoticeStage = 0
+    LegareNoticedAmanda = 0
+    ClarissaSawLegareAmanda = 0
+    MelissaLegareWarningReady = 0
+    AmandaLegareTalkReady = 0
+    ClarissaTalkAboutAmandaReady = 0
+    AmandaLegareInviteReady = 0
+    AmandaLegareInviteDelay = 0
+---

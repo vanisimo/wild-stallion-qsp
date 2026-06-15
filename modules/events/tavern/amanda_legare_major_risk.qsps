@@ -1,0 +1,401 @@
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_risk.qsps
+! Крупный риск: Аманда пропала из зала
+! Версия: major risk rewrite v1 / auto trigger + clear fork
+! Назначение:
+! - заменить старую кнопку "Аманда пропала из зала" на автособытие
+! - запускать событие через осмотр зала / работу за стойкой
+! - дать 4 понятные реакции Стефана
+! - разделить знание игрока: видел он развитие или пропустил
+! - подготовить разговоры после события и конфликт с Легаре
+!
+! Тексты берутся из:
+! modules/events/tavern/amanda_legare_major_risk_text.qsps
+!
+! Вызов:
+! gs 'AmandaLegareMajorRiskTryAutoStart', 'TavernMain'
+! ================================================
+
+#AmandaLegareMajorRiskCanStart
+    AmandaLegareMajorRiskCanStart = 0
+
+    if AmandaLegareMajorRiskReady <> 1:
+        exit
+    end
+
+    if AmandaLegareMajorRiskStage > 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    AmandaLegareMajorRiskCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_risk.qsps
+! Попытка автозапуска из обычных действий трактира
+! ARGS[0] — куда возвращаться после события
+! ================================================
+
+#AmandaLegareMajorRiskTryAutoStart
+    $AmandaLegareMajorRiskReturnLoc = $ARGS[0]
+
+    if $AmandaLegareMajorRiskReturnLoc = '':
+        $AmandaLegareMajorRiskReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareMajorRiskReturnLoc) = 0:
+        $AmandaLegareMajorRiskReturnLoc = 'TavernMain'
+    end
+
+    if LOC('AmandaLegareMajorRiskCanStart') = 1:
+        gs 'AmandaLegareMajorRiskCanStart'
+
+        if AmandaLegareMajorRiskCanStart = 1:
+            gt 'AmandaLegareMajorRiskStart', $AmandaLegareMajorRiskReturnLoc
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_risk.qsps
+! Вход в событие
+! ================================================
+
+#AmandaLegareMajorRiskStart
+    *clr
+    clr
+    cla
+
+    $AmandaLegareMajorRiskReturnLoc = $ARGS[0]
+
+    if $AmandaLegareMajorRiskReturnLoc = '':
+        $AmandaLegareMajorRiskReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareMajorRiskReturnLoc) = 0:
+        $AmandaLegareMajorRiskReturnLoc = 'TavernMain'
+    end
+
+    if LOC('UpdateGirlLocations') = 1:
+        gs 'UpdateGirlLocations'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if $RealName['melissa'] = '':
+        $RealName['melissa'] = 'Мелисса'
+    end
+
+    AmandaLegareMajorRiskStage = 1
+    AmandaLegareMajorRiskReady = 0
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/amanda_legare', 'major_risk', 2
+    end
+
+    gs 'AmandaLegareMajorRiskGetRisk'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА ПРОПАЛА ИЗ ЗАЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareMajorRiskIntroText') = 1:
+        gs 'AmandaLegareMajorRiskIntroText'
+    else:
+        *p 'Вы вдруг понимаете, что Аманды нет в зале. И после всего, что уже было с Легаре, это не похоже на обычную случайность.'
+    end
+
+    *pl ' '
+
+    if PlayerKnows_AmandaLegareMajorRisk = 1:
+        if LOC('AmandaLegareMajorRiskThoughtsKnown') = 1:
+            gs 'AmandaLegareMajorRiskThoughtsKnown'
+        end
+    else:
+        if LOC('AmandaLegareMajorRiskThoughtsHidden') = 1:
+            gs 'AmandaLegareMajorRiskThoughtsHidden'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MAJOR RISK] ReturnLoc: ' + $AmandaLegareMajorRiskReturnLoc
+        *pl '[DEBUG MAJOR RISK] Risk: ' + STR(AmandaLegareMajorRiskValue)
+        *pl '[DEBUG MAJOR RISK] PlayerKnows: ' + STR(PlayerKnows_AmandaLegareMajorRisk)
+        *pl '[DEBUG MAJOR RISK] Hidden: ' + STR(AmandaLegareMajorRiskHidden)
+        *pl '[DEBUG MAJOR RISK] SecondMeetResult: ' + STR(AmandaLegareSecondMeetResult)
+        *pl '[DEBUG MAJOR RISK] Secretiveness: ' + STR(AmandaSecretiveness)
+        *pl '[DEBUG MAJOR RISK] NpcPath: ' + STR(AmandaNpcPath)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareMajorRiskBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareMajorRiskMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_risk.qsps
+! Расчёт риска тяжёлого последствия
+! ================================================
+
+#AmandaLegareMajorRiskGetRisk
+    AmandaLegareMajorRiskValue = 30
+
+    AmandaLegareMajorRiskValue += AmandaLegareInterest * 7
+    AmandaLegareMajorRiskValue += LegareAmandaInterest * 7
+    AmandaLegareMajorRiskValue += AmandaSecretiveness * 6
+    AmandaLegareMajorRiskValue += AmandaRebellion * 4
+    AmandaLegareMajorRiskValue += AmandaNpcPath * 6
+    AmandaLegareMajorRiskValue += AmandaPublicAttention * 2
+
+    if AmandaLegareSecondMeetResult = 2:
+        AmandaLegareMajorRiskValue += 12
+    elseif AmandaLegareSecondMeetResult = 3:
+        AmandaLegareMajorRiskValue += 22
+    end
+
+    if AmandaLegareOutsideWallResult = 3:
+        AmandaLegareMajorRiskValue += 10
+    end
+
+    if AmandaLegareHardWarningUsed = 1:
+        AmandaLegareMajorRiskValue += 6
+    end
+
+    if MelissaWatchAmandaLegare = 1:
+        AmandaLegareMajorRiskValue -= 12
+    end
+
+    if AmandaTrustStefan >= 8:
+        AmandaLegareMajorRiskValue -= 15
+    end
+
+    if FamilyTension >= 5:
+        AmandaLegareMajorRiskValue += 6
+    end
+
+    if AmandaLegareMajorRiskValue < 5:
+        AmandaLegareMajorRiskValue = 5
+    end
+
+    if AmandaLegareMajorRiskValue > 95:
+        AmandaLegareMajorRiskValue = 95
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_risk.qsps
+! Короткое меню
+! ================================================
+
+#AmandaLegareMajorRiskBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareMajorRiskMenu'
+    gs 'Menu.Create', 'AmandaLegareMajorRiskMenu'
+
+    gs 'Menu.Add', 'AmandaLegareMajorRiskMenu', 'Искать самому', ''
+    gs 'Menu.AddModule', 'AmandaLegareMajorRiskMenu', {
+        gt 'AmandaLegareMajorRiskAction', 'search_self', $AmandaLegareMajorRiskReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMajorRiskMenu', 'Взять Мелиссу', ''
+    gs 'Menu.AddModule', 'AmandaLegareMajorRiskMenu', {
+        gt 'AmandaLegareMajorRiskAction', 'take_melissa', $AmandaLegareMajorRiskReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMajorRiskMenu', 'Идти тихо', ''
+    gs 'Menu.AddModule', 'AmandaLegareMajorRiskMenu', {
+        gt 'AmandaLegareMajorRiskAction', 'sneak', $AmandaLegareMajorRiskReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMajorRiskMenu', 'Ждать в зале', ''
+    gs 'Menu.AddModule', 'AmandaLegareMajorRiskMenu', {
+        gt 'AmandaLegareMajorRiskAction', 'wait_hall', $AmandaLegareMajorRiskReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_risk.qsps
+! Обработка выбора
+! ================================================
+
+#AmandaLegareMajorRiskAction
+    *clr
+    clr
+    cla
+
+    $MajorRiskChoice = LCASE($ARGS[0])
+    $AmandaLegareMajorRiskReturnLoc = $ARGS[1]
+
+    if $AmandaLegareMajorRiskReturnLoc = '':
+        $AmandaLegareMajorRiskReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareMajorRiskReturnLoc) = 0:
+        $AmandaLegareMajorRiskReturnLoc = 'TavernMain'
+    end
+
+    gs 'AmandaLegareMajorRiskGetRisk'
+
+    ! 0 — Стефан нашёл Аманду до тяжёлого момента
+    ! 1 — Мелисса помогла сорвать опасную сцену
+    ! 2 — Стефан увидел компрометирующий момент
+    ! 3 — Аманда вернулась сама, Стефан не знает деталей
+    ! 4 — открытый конфликт с Легаре
+    AmandaLegareMajorRiskResult = 0
+
+    Fact_AmandaLegareMajorRisk = 1
+    AmandaLegareMajorAftermathReady = 1
+    MelissaAmandaLegareMajorRiskTalkReady = 1
+    ClarissaAmandaLegareMajorRiskTalkReady = 1
+
+    if $MajorRiskChoice = 'search_self':
+        MajorRiskRoll = RAND(1, 100)
+        PlayerKnows_AmandaLegareMajorRisk = 1
+
+        if MajorRiskRoll <= AmandaLegareMajorRiskValue:
+            AmandaLegareMajorRiskResult = 4
+            AmandaTrustStefan += 1
+            Friends['amanda'] += 1
+            LegareConflictStage += 2
+            TavernScandal += 1
+            TavernScandalLevel += 1
+            AmandaLegareConflictWithLegareReady = 1
+            LegareSupplyPressureReady = 1
+        else:
+            AmandaLegareMajorRiskResult = 0
+            AmandaTrustStefan += 1
+            Friends['amanda'] += 1
+            LegareConflictStage += 1
+            LegareSupplyPressureReady = 1
+        end
+
+        killvar 'MajorRiskRoll'
+
+    elseif $MajorRiskChoice = 'take_melissa':
+        AmandaLegareMajorRiskResult = 1
+        PlayerKnows_AmandaLegareMajorRisk = 1
+        MelissaWatchAmandaLegare = 1
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaControlNeed += 1
+        AmandaTrustStefan += 1
+        AmandaRebellion += 1
+        LegareConflictStage += 1
+        LegareSupplyPressureReady = 1
+
+    elseif $MajorRiskChoice = 'sneak':
+        MajorRiskRoll = RAND(1, 100)
+        PlayerKnows_AmandaLegareMajorRisk = 1
+
+        if MajorRiskRoll <= AmandaLegareMajorRiskValue:
+            AmandaLegareMajorRiskResult = 2
+            AmandaSecretiveness += 1
+            AmandaNpcPath += 1
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+            TavernScandal += 1
+            AmandaLegareConflictWithLegareReady = 1
+        else:
+            AmandaLegareMajorRiskResult = 0
+            AmandaTrustStefan += 1
+            AmandaLegareInterest += 1
+        end
+
+        killvar 'MajorRiskRoll'
+
+    elseif $MajorRiskChoice = 'wait_hall':
+        AmandaLegareMajorRiskResult = 3
+        PlayerKnows_AmandaLegareMajorRisk = 0
+        AmandaLegareMajorRiskHidden = 1
+        AmandaSecretiveness += 3
+        AmandaNpcPath += 2
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        MelissaFamilyConcern += 1
+        ClarissaJealousy += 1
+        TavernScandal += 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА ПРОПАЛА ИЗ ЗАЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareMajorRiskActionText') = 1:
+        gs 'AmandaLegareMajorRiskActionText', $MajorRiskChoice
+    else:
+        *p 'Вы находите Аманду, но спокойнее от этого не становится.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MAJOR RISK] Choice: ' + $MajorRiskChoice
+        *pl '[DEBUG MAJOR RISK] Result: ' + STR(AmandaLegareMajorRiskResult)
+        *pl '[DEBUG MAJOR RISK] AftermathReady: ' + STR(AmandaLegareMajorAftermathReady)
+        *pl '[DEBUG MAJOR RISK] ConflictReady: ' + STR(AmandaLegareConflictWithLegareReady)
+        *pl '[DEBUG MAJOR RISK] SupplyPressureReady: ' + STR(LegareSupplyPressureReady)
+        *pl '[DEBUG MAJOR RISK] Hidden: ' + STR(AmandaLegareMajorRiskHidden)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $AmandaLegareMajorRiskReturnLoc
+    end
+
+    killvar '$MajorRiskChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_risk.qsps
+! Debug-сброс
+! ================================================
+
+#AmandaLegareMajorRiskDebugReset
+    AmandaLegareMajorRiskCanStart = 0
+    AmandaLegareMajorRiskReady = 0
+    AmandaLegareMajorRiskStage = 0
+    AmandaLegareMajorRiskResult = 0
+    AmandaLegareMajorRiskValue = 0
+    AmandaLegareMajorRiskHidden = 0
+    Fact_AmandaLegareMajorRisk = 0
+    PlayerKnows_AmandaLegareMajorRisk = 0
+    AmandaLegareMajorAftermathReady = 0
+---

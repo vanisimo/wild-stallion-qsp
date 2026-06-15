@@ -1,0 +1,87 @@
+! ================================================
+! FILE: modules/events/kitchen/kitchen_customer_event_text.qsps
+! Тексты клиентского конфликта на кухне
+! Версия: spicy non-graphic v1
+! Используется логикой:
+! modules/events/kitchen/kitchen_customer_event.qsps
+!
+! Тон:
+! - средневековая таверна, кухня тесная, жаркая, грубая
+! - клиенты простые, злые, пьяные, иногда богатые и наглые
+! - поздние скандальные исходы стали конкретнее по ситуации
+! ================================================
+
+#KitchenCustomerPrintText
+    gs 'KitchenCustomerText', $ARGS[0]
+
+    if $KitchenCustomerText <> '':
+        *p $KitchenCustomerText
+    end
+---
+
+#KitchenCustomerText
+    $KitchenCustomerTextId = LCASE($ARGS[0])
+    $KitchenCustomerText = ''
+
+    if $KitchenCustomerGirl = '':
+        $KitchenCustomerGirl = 'amanda'
+    end
+
+    if $RealName[$KitchenCustomerGirl] = '':
+        gs 'KitchenCustomerEnsureName', $KitchenCustomerGirl
+    end
+
+    if $KitchenCustomerTextId = 'intro':
+        if $KitchenCustomerScene = 'bad_food':
+            $KitchenCustomerText = 'С кухни доносится грохот. Клиент стоит у двери с миской в руке и орёт, что похлёбка годится только свиньям. ' + $RealName[$KitchenCustomerGirl] + ' держит половник так, будто это уже не посуда, а оружие ближнего боя.'
+        elseif $KitchenCustomerScene = 'wrong_order':
+            $KitchenCustomerText = 'На кухню вваливается злой гость и тычет пальцем в тарелку: "Я просил мясо, а не эту собачью радость!" ' + $RealName[$KitchenCustomerGirl] + ' стоит перед ним, сдерживаясь из последних сил.'
+        elseif $KitchenCustomerScene = 'drunk_enters':
+            $KitchenCustomerText = 'Пьяный клиент просачивается на кухню, как таракан в щель. "Эй, красавица, я человек скромный и одинокий... не поможешь решить одну маленькую беду?" — говорит он и неприлично кивает вниз, туда, где беда у него явно распирает штаны.'
+        elseif $KitchenCustomerScene = 'grab':
+            $KitchenCustomerText = 'Клиент влезает на кухню слишком уверенно. Он хватает ' + $RealName[$KitchenCustomerGirl] + ' за бедро и тянет ближе к столу с мукой. "Не сердись, милая. Может, извинения будут не словами?"'
+        elseif $KitchenCustomerScene = 'private_offer':
+            $KitchenCustomerText = 'Богатый клиент заходит на кухню без спроса и кладёт на стол монету. "Еда была так себе. Но, может, хозяйка кухни умеет извиняться лучше, чем готовить?" Он улыбается слишком широко, явно предлагая не скидку и не новую порцию.'
+        else:
+            $KitchenCustomerText = 'На кухне начинается шум. Клиент чем-то недоволен, ' + $RealName[$KitchenCustomerGirl] + ' стоит напротив него, а воздух уже пахнет не только жареным луком, но и большой проблемой.'
+        end
+
+    elseif $KitchenCustomerTextId = 'thoughts':
+        $KitchenCustomerText = 'Кухня — не зал. Тут тесно, жарко, ножи под рукой, и любое "эй, красотка" звучит вдвое мерзее. Можно пресечь сразу: клиенту по рукам, девчонку за спину, порядок на место. Можно дать ей самой решить — пусть покажет, кто тут держит кухню. А можно закрыть глаза ради клиента. Только потом не удивляться, если слухи поползут быстрее тараканов.'
+
+    elseif $KitchenCustomerTextId = 'stop':
+        if $KitchenCustomerScene = 'bad_food' or $KitchenCustomerScene = 'wrong_order':
+            $KitchenCustomerText = 'Вы входите и ставите разговор на место. Клиент получает замену или деньги назад, но без крика и без рук. ' + $RealName[$KitchenCustomerGirl] + ' выдыхает. На кухне снова пахнет едой, а не дракой.'
+        elseif $KitchenCustomerScene = 'drunk_enters' or $KitchenCustomerScene = 'grab':
+            $KitchenCustomerText = 'Вы входите так резко, что клиент сразу вспоминает, где дверь. "Руки убрал и пошёл в зал, пока сам целый", — говорите вы. ' + $RealName[$KitchenCustomerGirl] + ' отступает к печи, всё ещё сжимая половник.'
+        else:
+            $KitchenCustomerText = 'Вы пресекаете богатого умника до того, как его монета решила за него слишком многое. Он морщится, но уходит. ' + $RealName[$KitchenCustomerGirl] + ' смотрит на вас внимательно: не каждый хозяин выбирает порядок вместо лёгких денег.'
+        end
+
+    elseif $KitchenCustomerTextId = 'let_her':
+        if KitchenCustomerStage <= 1:
+            if RAND(1, 100) <= 50:
+                $KitchenCustomerText = $RealName[$KitchenCustomerGirl] + ' вспыхивает и хватает скалку. Удар выходит не смертельный, но звонкий: клиент хватается за голову и, матерясь, пятится к двери. С кухней он сегодня договорился плохо.'
+            else:
+                $KitchenCustomerText = $RealName[$KitchenCustomerGirl] + ' сама гасит конфликт. Голос дрожит, но она держится: предлагает заменить блюдо и велит клиенту ждать в зале. Неровно, зато без вашего прямого вмешательства.'
+            end
+        elseif KitchenCustomerStage = 2:
+            $KitchenCustomerText = $RealName[$KitchenCustomerGirl] + ' не зовёт вас. Она то огрызается, то улыбается, то ставит тарелку так резко, что клиент наконец понимает намёк. Конфликт гаснет, но у него на лице остаётся интерес: такая девчонка умеет кусаться.'
+        else:
+            $KitchenCustomerText = $RealName[$KitchenCustomerGirl] + ' решает вопрос по-своему. Без крика, без скалки, без лишних свидетелей. Клиент возвращается в зал заметно спокойнее, поправляя пояс и оставляя на столе слишком щедрую монету, а она потом вытирает руки о полотенце и делает вид, что просто нашла правильные слова.'
+        end
+
+    elseif $KitchenCustomerTextId = 'client':
+        if KitchenCustomerStage <= 1:
+            $KitchenCustomerText = 'Вы не вмешиваетесь сразу, и ' + $RealName[$KitchenCustomerGirl] + ' понимает это слишком хорошо. Она справляется, но взгляд потом бросает такой, что хоть в котёл ныряй. Клиент остаётся доволен, а между вами появляется неприятная трещина.'
+        elseif KitchenCustomerStage = 2:
+            $KitchenCustomerText = 'Вы делаете вид, что заняты делами. ' + $RealName[$KitchenCustomerGirl] + ' улаживает спор мягче, чем нужно: ближе подходит, тише говорит, позволяет клиенту почувствовать себя победителем. На кухне всё заканчивается тихо, но Стефан не дурак: такие тишины потом дорого стоят.'
+        else:
+            $KitchenCustomerText = 'Вы закрываете глаза ради богатого клиента. ' + $RealName[$KitchenCustomerGirl] + ' понимает правила игры без лишних слов. Через несколько минут клиент выходит из кухни довольный, а она вытирает руки о полотенце, будто это был просто тяжёлый заказ. Деньги звенят. Совесть молчит. Пока.'
+        end
+    else:
+        $KitchenCustomerText = ''
+    end
+
+    killvar '$KitchenCustomerTextId'
+---

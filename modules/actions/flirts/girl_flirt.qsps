@@ -1,0 +1,331 @@
+! ================================================
+! FILE: modules/actions/girl_flirt.qsps
+! Универсальный флирт с девушкой
+! Принимает имя девушки и локацию возврата
+! Учитывает место, отношения, откровенность и распущенность
+! ================================================
+
+! ================================================
+! FILE: modules/actions/girl_flirt.qsps
+! Универсальный флирт с девушкой
+! Принимает имя девушки и локацию возврата
+! Использует MenuGirlCalcConditions
+! ================================================
+
+#GirlFlirt
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $FlirtGirl = $GirlKey
+    $FlirtReturnLoc = $ARGS[1]
+
+    if $FlirtGirl = '':
+        msg 'Ошибка: GirlFlirt вызван без имени девушки.'
+        exit
+    end
+
+    if $FlirtReturnLoc = '':
+        $FlirtReturnLoc = $CURLOC
+    end
+
+    if $FlirtReturnLoc = '':
+        $FlirtReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $FlirtGirl
+    gs 'UpdateGirlLocations'
+    gs 'MenuGirlCalcConditions', $FlirtGirl, $FlirtReturnLoc
+
+    if MenuCanFlirt = 0:
+        msg 'Сейчас не лучшее время для флирта.'
+        gt $FlirtReturnLoc
+    end
+
+    if $RealName[$FlirtGirl] = '':
+        $RealName[$FlirtGirl] = UCASE(MID($FlirtGirl, 1, 1)) + LCASE(MID($FlirtGirl, 2))
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $FlirtGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ФЛИРТ: ' + $RealName[$FlirtGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlFlirtIntroText', $FlirtGirl, $FlirtReturnLoc
+
+    *pl ' '
+    *pl 'Выберите подход:'
+    *pl ' '
+
+    act 'Лёгкий комплимент':
+        gt 'GirlFlirtResult', $FlirtGirl, $FlirtReturnLoc, 'soft'
+    end
+
+    if Friends[$FlirtGirl] >= 8 or love[$FlirtGirl] >= 5 or otkroven[$FlirtGirl] >= 8:
+        act 'Тёплый намёк':
+            gt 'GirlFlirtResult', $FlirtGirl, $FlirtReturnLoc, 'warm'
+        end
+    end
+
+    if sluttiness[$FlirtGirl] >= 15 or otkroven[$FlirtGirl] >= 15 or love[$FlirtGirl] >= 12:
+        act 'Смелый намёк':
+            gt 'GirlFlirtResult', $FlirtGirl, $FlirtReturnLoc, 'bold'
+        end
+    end
+
+    if sluttiness[$FlirtGirl] >= 30 or HadSex[$FlirtGirl] > 0:
+        act 'Откровенный флирт':
+            gt 'GirlFlirtResult', $FlirtGirl, $FlirtReturnLoc, 'open'
+        end
+    end
+
+    act 'Вернуться':
+        gt $FlirtReturnLoc
+    end
+---
+
+
+! ================================================
+! FILE: modules/actions/girl_flirt.qsps
+! Вступительный текст флирта
+! Учитывает место действия
+! ================================================
+
+#GirlFlirtIntroText
+    $FlirtIntroGirl = LCASE($ARGS[0])
+    $FlirtIntroLoc = $ARGS[1]
+
+    if $FlirtIntroGirl = '':
+        exit
+    end
+
+    if $FlirtIntroLoc = 'TavernMain':
+        *p 'В зале не самое удобное место для слишком личных разговоров, но лёгкий флирт здесь возможен.'
+    elseif $FlirtIntroLoc = 'Kitchen':
+        *p 'На кухне жарко и тесно, но именно это делает разговор чуть более личным.'
+    elseif $FlirtIntroLoc = 'PlayerRoom' or $FlirtIntroLoc = 'SandraRoom' or $FlirtIntroLoc = 'MelissaRoom' or $FlirtIntroLoc = 'AmandaRoom':
+        *p 'В комнате тише и уединённее, поэтому ваши слова звучат заметно интимнее.'
+    else:
+        *p 'Вы выбираете момент, чтобы немного сблизиться с ней.'
+    end
+
+    if sluttiness[$FlirtIntroGirl] >= 40:
+        *p $RealName[$FlirtIntroGirl] + ' уже не так легко смущается от подобных намёков.'
+    elseif otkroven[$FlirtIntroGirl] >= 20:
+        *p $RealName[$FlirtIntroGirl] + ' слушает осторожно, но не отстраняется.'
+    elseif love[$FlirtIntroGirl] >= 10:
+        *p 'Её отношение к вам делает разговор мягче.'
+    else:
+        *p 'Она смотрит на вас настороженно, ожидая, что вы скажете дальше.'
+    end
+
+    killvar '$FlirtIntroGirl'
+    killvar '$FlirtIntroLoc'
+---
+
+
+
+! ================================================
+! FILE: modules/actions/girl_flirt.qsps
+! Результат флирта
+! Использует целочисленные шансы без дробей
+! ================================================
+
+#GirlFlirtResult
+    $FlirtGirl = LCASE($ARGS[0])
+    $FlirtReturnLoc = $ARGS[1]
+    $FlirtType = LCASE($ARGS[2])
+
+    if $FlirtGirl = '':
+        msg 'Ошибка: GirlFlirtResult вызван без имени девушки.'
+        exit
+    end
+
+    if $FlirtReturnLoc = '':
+        $FlirtReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $FlirtGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ФЛИРТ: ' + $RealName[$FlirtGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    FlirtChance = 25
+    FlirtLoveGain = 0
+    FlirtOpenGain = 0
+    FlirtSlutGain = 0
+    FlirtFriendGain = 0
+    FlirtFailFear = 0
+    FlirtFailHate = 0
+
+    if $FlirtType = 'soft':
+        FlirtChance = 45 + Friends[$FlirtGirl] + love[$FlirtGirl] + charisma
+        FlirtLoveGain = 1
+        FlirtFriendGain = 1
+    elseif $FlirtType = 'warm':
+        FlirtChance = 35 + Friends[$FlirtGirl] + love[$FlirtGirl] + otkroven[$FlirtGirl] + charisma
+        FlirtLoveGain = 1
+        FlirtOpenGain = 1
+        FlirtFriendGain = 1
+        FlirtFailFear = 1
+    elseif $FlirtType = 'bold':
+        FlirtChance = 25 + love[$FlirtGirl] + otkroven[$FlirtGirl] + sluttiness[$FlirtGirl] + charisma
+        FlirtLoveGain = 1
+        FlirtOpenGain = 1
+        FlirtSlutGain = 1
+        FlirtFailFear = 1
+        FlirtFailHate = 1
+    elseif $FlirtType = 'open':
+        FlirtChance = 20 + love[$FlirtGirl] + otkroven[$FlirtGirl] + sluttiness[$FlirtGirl] + charisma
+        FlirtLoveGain = 1
+        FlirtOpenGain = 2
+        FlirtSlutGain = 2
+        FlirtFailFear = 2
+        FlirtFailHate = 1
+    else:
+        FlirtChance = 35 + Friends[$FlirtGirl] + charisma
+        FlirtFriendGain = 1
+    end
+
+    ! ====================== МОДИФИКАТОР МЕСТА ======================
+
+    if $FlirtReturnLoc = 'PlayerRoom' or $FlirtReturnLoc = 'SandraRoom' or $FlirtReturnLoc = 'MelissaRoom' or $FlirtReturnLoc = 'AmandaRoom':
+        FlirtChance += 10
+    elseif $FlirtReturnLoc = 'TavernMain':
+        FlirtChance -= 5
+    elseif $FlirtReturnLoc = 'Kitchen':
+        FlirtChance += 3
+    end
+
+    ! ====================== ОГРАНИЧЕНИЯ ШАНСА ======================
+
+    if FlirtChance > 95:
+        FlirtChance = 95
+    end
+
+    if FlirtChance < 5:
+        FlirtChance = 5
+    end
+
+    FlirtRoll = RAND(1, 100)
+
+    if FlirtRoll <= FlirtChance:
+        gs 'GirlFlirtSuccessText', $FlirtGirl, $FlirtType
+
+        Friends[$FlirtGirl] += FlirtFriendGain
+        love[$FlirtGirl] += FlirtLoveGain
+        otkroven[$FlirtGirl] += FlirtOpenGain
+        sluttiness[$FlirtGirl] += FlirtSlutGain
+    else:
+        gs 'GirlFlirtFailText', $FlirtGirl, $FlirtType
+
+        fear[$FlirtGirl] += FlirtFailFear
+        hate[$FlirtGirl] += FlirtFailHate
+    end
+
+    gs 'ClampGirlSocialStats', $FlirtGirl
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG] Шанс флирта: ' + STR(FlirtChance) + ', бросок: ' + STR(FlirtRoll)
+        *pl '[DEBUG] Любовь: ' + STR(love[$FlirtGirl]) + ', откровенность: ' + STR(otkroven[$FlirtGirl]) + ', распущенность: ' + STR(sluttiness[$FlirtGirl])
+        *pl ' '
+    end
+
+    act 'Флиртовать ещё':
+        gt 'GirlFlirt', $FlirtGirl, $FlirtReturnLoc
+    end
+
+    gs 'MenuGirlCalcConditions', $FlirtGirl, $FlirtReturnLoc
+
+    if MenuCanIntim = 1:
+        act 'Интим':
+            gt 'MenuGirlIntim', $FlirtGirl, $FlirtReturnLoc
+        end
+    end
+
+    act 'Поговорить':
+        gt 'GirlTalk', $FlirtGirl, $FlirtReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $FlirtReturnLoc
+    end
+
+    
+    killvar '$FlirtType'
+    killvar 'FlirtChance'
+    killvar 'FlirtLoveGain'
+    killvar 'FlirtOpenGain'
+    killvar 'FlirtSlutGain'
+    killvar 'FlirtFriendGain'
+    killvar 'FlirtFailFear'
+    killvar 'FlirtFailHate'
+    killvar 'FlirtRoll'
+---
+
+! ================================================
+! FILE: modules/actions/girl_flirt.qsps
+! Текст успешного флирта
+! ================================================
+
+#GirlFlirtSuccessText
+    $FlirtTextGirl = LCASE($ARGS[0])
+    $FlirtTextType = LCASE($ARGS[1])
+
+    if $FlirtTextType = 'soft':
+        *p 'Вы делаете ' + $RealName[$FlirtTextGirl] + ' лёгкий комплимент.'
+        *p 'Она принимает его спокойно, но в её взгляде появляется немного тепла.'
+    elseif $FlirtTextType = 'warm':
+        *p 'Ваш намёк звучит мягче и личнее.'
+        *p $RealName[$FlirtTextGirl] + ' слегка смущается, но не отстраняется.'
+    elseif $FlirtTextType = 'bold':
+        *p 'Вы позволяете себе более смелые слова.'
+        *p 'На мгновение между вами возникает напряжённая пауза, но она не обрывает разговор.'
+    elseif $FlirtTextType = 'open':
+        *p 'Ваш флирт звучит почти откровенно.'
+        *p $RealName[$FlirtTextGirl] + ' реагирует заметно сильнее, чем пытается показать.'
+    else:
+        *p 'Флирт проходит удачно.'
+    end
+
+    killvar '$FlirtTextGirl'
+    killvar '$FlirtTextType'
+---
+
+
+! ================================================
+! FILE: modules/actions/girl_flirt.qsps
+! Текст неудачного флирта
+! ================================================
+
+#GirlFlirtFailText
+    $FlirtTextGirl = LCASE($ARGS[0])
+    $FlirtTextType = LCASE($ARGS[1])
+
+    if $FlirtTextType = 'soft':
+        *p 'Вы пытаетесь сделать комплимент, но он звучит неловко.'
+        *p $RealName[$FlirtTextGirl] + ' отвечает сдержанно.'
+    elseif $FlirtTextType = 'warm':
+        *p 'Ваш намёк оказывается слишком поспешным.'
+        *p $RealName[$FlirtTextGirl] + ' делает вид, что не поняла вас.'
+    elseif $FlirtTextType = 'bold':
+        *p 'Смелый намёк оказывается не к месту.'
+        *p $RealName[$FlirtTextGirl] + ' смотрит на вас настороженно.'
+    elseif $FlirtTextType = 'open':
+        *p 'Вы заходите слишком далеко.'
+        *p $RealName[$FlirtTextGirl] + ' резко меняет тон разговора.'
+    else:
+        *p 'Флирт выходит неудачным.'
+    end
+
+    killvar '$FlirtTextGirl'
+    killvar '$FlirtTextType'
+---
+

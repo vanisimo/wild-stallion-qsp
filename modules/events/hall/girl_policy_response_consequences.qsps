@@ -1,0 +1,108 @@
+! ================================================
+! FILE: modules/events/hall/girl_policy_response_consequences.qsps
+! Последствия фактической реакции девушки на рабочее правило
+! Версия: v1
+! Назначение:
+! - применять последствия отказа, неохотного подчинения, охотного исполнения и перегиба
+! - запоминать фактическое поведение девушки
+! - отдавать текст в $GirlPolicyResponseConsequenceText
+! Тексты берутся из:
+! modules/events/hall/girl_policy_response_consequences_text.qsps
+! ================================================
+
+#GirlPolicyResponseApplyConsequences
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $PolicyConsequenceGirl = $GirlKey
+    $PolicyConsequenceArea = LCASE($ARGS[1])
+    PolicyConsequenceRule = ARGS[2]
+    PolicyConsequenceStage = ARGS[3]
+
+    $GirlPolicyResponseConsequenceText = ''
+
+    if $PolicyConsequenceGirl = '':
+        exit
+    end
+
+    if $PolicyConsequenceArea = '':
+        $PolicyConsequenceArea = 'hall'
+    end
+
+    GirlPolicyLastRule[$PolicyConsequenceGirl] = PolicyConsequenceRule
+    GirlPolicyLastResponse[$PolicyConsequenceGirl] = PolicyConsequenceStage
+    $GirlPolicyLastArea[$PolicyConsequenceGirl] = $PolicyConsequenceArea
+
+    if PolicyConsequenceStage <= 0:
+        GirlPolicyRefused[$PolicyConsequenceGirl] += 1
+        GirlRebellion[$PolicyConsequenceGirl] += 2
+        GirlTrustStefan[$PolicyConsequenceGirl] -= 1
+
+        if PolicyConsequenceRule = 3:
+            GirlSecretiveness[$PolicyConsequenceGirl] += 1
+        end
+
+    elseif PolicyConsequenceStage = 1:
+        GirlPolicyReluctant[$PolicyConsequenceGirl] += 1
+        GirlRebellion[$PolicyConsequenceGirl] += 1
+
+        if PolicyConsequenceRule = 3:
+            GirlTrustStefan[$PolicyConsequenceGirl] -= 1
+            GirlPublicAttention[$PolicyConsequenceGirl] += 1
+        end
+
+    elseif PolicyConsequenceStage = 2:
+        GirlPolicyObeyed[$PolicyConsequenceGirl] += 1
+        GirlTrustStefan[$PolicyConsequenceGirl] += 1
+
+    elseif PolicyConsequenceStage = 3:
+        GirlPolicyEnthusiastic[$PolicyConsequenceGirl] += 1
+        GirlTrustStefan[$PolicyConsequenceGirl] += 1
+        GirlPublicAttention[$PolicyConsequenceGirl] += 1
+
+        if PolicyConsequenceRule = 3:
+            TavernScandal += 1
+            TavernLewdFame += 1
+        end
+
+    else:
+        GirlPolicyOverstep[$PolicyConsequenceGirl] += 1
+        GirlRebellion[$PolicyConsequenceGirl] += 1
+        GirlPublicAttention[$PolicyConsequenceGirl] += 2
+        TavernScandal += 1
+
+        if PolicyConsequenceRule = 3:
+            TavernLewdFame += 1
+            GirlNpcPath[$PolicyConsequenceGirl] += 1
+        end
+    end
+
+    if GirlTrustStefan[$PolicyConsequenceGirl] < 0:
+        GirlTrustStefan[$PolicyConsequenceGirl] = 0
+    end
+
+    if GirlSecretiveness[$PolicyConsequenceGirl] < 0:
+        GirlSecretiveness[$PolicyConsequenceGirl] = 0
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    if TavernLewdFame < 0:
+        TavernLewdFame = 0
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    if LOC('ClampGirlSocialStats') = 1:
+        gs 'ClampGirlSocialStats', $PolicyConsequenceGirl
+    end
+
+    gs 'GirlPolicyResponseConsequenceText', $PolicyConsequenceGirl, $PolicyConsequenceArea, PolicyConsequenceRule, PolicyConsequenceStage
+
+    killvar '$PolicyConsequenceGirl'
+    killvar '$PolicyConsequenceArea'
+    killvar 'PolicyConsequenceRule'
+    killvar 'PolicyConsequenceStage'
+---

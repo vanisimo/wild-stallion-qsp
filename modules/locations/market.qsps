@@ -1,0 +1,142 @@
+#Market
+    *clr
+    clr
+    cla
+
+    gs 'GetCitySchedulePhase'
+
+    if $CitySchedulePhase = 'friday_dance':
+        gt 'MarketDance'
+    end
+
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/market/market', 3
+    elseif LOC('ShowLocationImage') = 1:
+        gs 'ShowLocationImage', 'market'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГОРОДСКОЙ РЫНОК'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if time = 5:
+        *p 'Ночь. Рыночная площадь почти пуста. Лавки закрыты, ставни опущены, а между рядами гуляет только холодный ветер.'
+        *p 'Сейчас здесь нечего покупать, но днём это место снова наполнится голосами торговцев.'
+        *pl ' '
+
+        act 'Вернуться на улицу':
+            gt 'Street'
+        end
+
+        exit
+    end
+
+    if week = 7:
+        if $CitySchedulePhase = 'sunday_service':
+            *p 'Воскресное утро. Рынок не торгует, но сама площадь не закрыта. Лавки стоят с опущенными ставнями, а горожане тянутся к церкви.'
+            *p 'В такие часы город выглядит особенно приличным, будто все его тайны спрятаны за дверями домов и лавок.'
+            *pl ' '
+
+            act 'Пойти к церкви':
+                gt 'Church'
+            end
+
+        elseif $CitySchedulePhase = 'sunday_confession':
+            *p 'Воскресный полдень. Торговли нет: лавки закрыты, а у церкви идут исповеди.'
+            *p 'На рынке тихо, зато слухи сегодня можно искать не у прилавков, а возле церкви и закрытых дверей.'
+            *pl ' '
+
+            act 'Пойти к церкви':
+                gt 'Church'
+            end
+
+        else:
+            *p 'Воскресенье. Лавки закрыты, но рынок не пуст. Люди проходят через площадь по своим делам, кто-то наносит визиты, кто-то задерживается у знакомых дверей.'
+            *p 'Покупать сегодня нечего, зато закрытые лавки иногда говорят больше, чем открытые.'
+            *pl ' '
+
+            if LOC('SundayVisitBeckySandra') = 1:
+                act 'Подойти к лавке Бекки и прислушаться':
+                    gt 'SundayVisitBeckySandra', 'Market'
+                end
+            end
+
+            if LOC('SundayVisitClarissaMelissa') = 1:
+                act 'Подойти к лавке Легаре и прислушаться':
+                    gt 'SundayVisitClarissaMelissa', 'Market'
+                end
+            end
+
+            act 'Побродить по тихому рынку':
+                *pl ' '
+                *p 'Вы проходите между закрытыми рядами. Воскресная тишина кажется непривычной, но именно в ней легче заметить, кто к кому заходит и кто с кем говорит.'
+            end
+        end
+
+        *pl ' '
+
+        if debug = 1:
+            *pl '[DEBUG MARKET] week: ' + STR(week)
+            *pl '[DEBUG MARKET] time: ' + STR(time)
+            *pl '[DEBUG MARKET] phase: ' + $CitySchedulePhase
+            *pl ' '
+        end
+
+        act 'Вернуться на улицу':
+            gt 'Street'
+        end
+
+        exit
+    end
+
+    if time = 1:
+        *p 'Утро. Торговцы раскрывают лавки, поправляют вывески и раскладывают товар.'
+    elseif time = 2:
+        *p 'Полдень. Рынок шумит громче всего: покупатели спорят о ценах, лавочники перекрикивают друг друга.'
+    elseif time = 3:
+        *p 'День. Торговля идёт ровно, без утренней спешки, но покупателей всё ещё хватает.'
+    else:
+        *p 'Вечер. Лавки ещё работают, но торговцы уже поглядывают на небо и начинают думать о закрытии.'
+    end
+
+    *pl ' '
+
+    act 'Лавка продовольствия Блэнкеншип':
+        gt 'BeckyShop'
+    end
+
+    act 'Лавка виноторговца Легаре':
+        gt 'WineShop'
+    end
+
+    if LOC('CraftsmenQuarter') = 1:
+        act 'Пойти к ремесленникам':
+            gt 'CraftsmenQuarter'
+        end
+    end
+
+    if LOC('GuardPost') = 1:
+        act 'Пойти к посту стражников':
+            gt 'GuardPost'
+        end
+    end
+
+    act 'Побродить по рынку':
+        *pl ' '
+        *p 'Вы неторопливо проходите между рядами, присматриваясь к лицам и прислушиваясь к обрывкам разговоров.'
+    end
+
+    if debug = 1:
+        act 'DEBUG: расписание рынка':
+            *pl ' '
+            *pl '[DEBUG MARKET] week: ' + STR(week)
+            *pl '[DEBUG MARKET] time: ' + STR(time)
+            *pl '[DEBUG MARKET] phase: ' + $CitySchedulePhase
+        end
+    end
+
+    act 'Вернуться на улицу':
+        gt 'Street'
+    end
+---

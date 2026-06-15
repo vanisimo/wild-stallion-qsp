@@ -1,0 +1,385 @@
+! ================================================
+! FILE: modules/events/tavern/legare_supply_pressure.qsps
+! Первое торговое давление Легаре
+! Версия: tavern economy v1 / compact menu
+! Назначение:
+! - продолжить первый конфликт с Легаре
+! - перевести конфликт в цены, поставки вина и пива
+! - открыть обходной путь через Клариссу
+! - подготовить будущую систему поставок
+!
+! Тексты берутся из:
+! modules/events/tavern/legare_supply_pressure_text.qsps
+!
+! Вызов из:
+! modules/locations/tavern_main.qsps
+! через #LegareSupplyPressureCanStart
+! ================================================
+
+#LegareSupplyPressureCanStart
+    LegareSupplyPressureCanStart = 0
+
+    if LegareSupplyPressureReady <> 1:
+        exit
+    end
+
+    if LegareSupplyPressureStage > 0:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    LegareSupplyPressureCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_pressure.qsps
+! Вход в событие торгового давления
+! ================================================
+
+#LegareSupplyPressureStart
+    *clr
+    clr
+    cla
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/legare_conflict', 'supply_pressure', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРОБЛЕМЫ С ПОСТАВКАМИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('LegareSupplyPressureIntroText') = 1:
+        gs 'LegareSupplyPressureIntroText'
+    else:
+        *p 'После конфликта с Легаре поставки вина и пива уже не выглядят надёжными.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SUPPLY] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG SUPPLY] PricesRaised: ' + STR(LegarePricesRaised)
+        *pl '[DEBUG SUPPLY] WinePressure: ' + STR(LegareWinePressure)
+        *pl '[DEBUG SUPPLY] BeerPressure: ' + STR(LegareBeerPressure)
+        *pl '[DEBUG SUPPLY] ClarissaAlliance: ' + STR(ClarissaAgainstLegareAlliance)
+        *pl ' '
+    end
+
+    gs 'LegareSupplyPressureBuildMenu'
+
+    *p 'Что делать с <a href="exec:gs ''Menu.Show'', ''LegareSupplyPressureMenu''">поставками</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_pressure.qsps
+! Меню торгового давления
+! ================================================
+
+#LegareSupplyPressureBuildMenu
+    gs 'Menu.Destroy', 'LegareSupplyPressureMenu'
+    gs 'Menu.Create', 'LegareSupplyPressureMenu'
+
+    gs 'Menu.Add', 'LegareSupplyPressureMenu', 'Принять новые цены Легаре', ''
+    gs 'Menu.AddModule', 'LegareSupplyPressureMenu', {
+        gt 'LegareSupplyPressureAction', 'accept_prices'
+    }
+
+    gs 'Menu.Add', 'LegareSupplyPressureMenu', 'Попытаться торговаться', ''
+    gs 'Menu.AddModule', 'LegareSupplyPressureMenu', {
+        gt 'LegareSupplyPressureAction', 'bargain'
+    }
+
+    if ClarissaAgainstLegareAlliance = 1 or ClarissaSecretAllianceHint = 1 or ClarissaTrustStefan >= 2:
+        gs 'Menu.Add', 'LegareSupplyPressureMenu', 'Тихо обратиться к Клариссе', ''
+        gs 'Menu.AddModule', 'LegareSupplyPressureMenu', {
+            gt 'LegareSupplyPressureAction', 'ask_clarissa'
+        }
+    end
+
+    gs 'Menu.Add', 'LegareSupplyPressureMenu', 'Искать временных поставщиков', ''
+    gs 'Menu.AddModule', 'LegareSupplyPressureMenu', {
+        gt 'LegareSupplyPressureAction', 'temporary_suppliers'
+    }
+
+    gs 'Menu.Add', 'LegareSupplyPressureMenu', 'Сократить продажу вина и пива', ''
+    gs 'Menu.AddModule', 'LegareSupplyPressureMenu', {
+        gt 'LegareSupplyPressureAction', 'reduce_sales'
+    }
+
+    gs 'Menu.Add', 'LegareSupplyPressureMenu', 'Ничего не менять', ''
+    gs 'Menu.AddModule', 'LegareSupplyPressureMenu', {
+        gt 'LegareSupplyPressureAction', 'do_nothing'
+    }
+
+    gs 'Menu.Add', 'LegareSupplyPressureMenu', 'Вернуться в зал', ''
+    gs 'Menu.AddModule', 'LegareSupplyPressureMenu', {
+        gt 'TavernMain'
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_pressure.qsps
+! Обработка выбора
+! ================================================
+
+#LegareSupplyPressureAction
+    *clr
+    clr
+    cla
+
+    $SupplyPressureChoice = LCASE($ARGS[0])
+
+    LegareSupplyPressureStage = 1
+    LegareSupplyPressureReady = 0
+
+    ! 0 — временно решено
+    ! 1 — цены выросли
+    ! 2 — частичная нехватка
+    ! 3 — открыт обход через Клариссу
+    ! 4 — проблема отложена, будет удар по прибыли
+    LegareSupplyPressureResult = 0
+
+    if $SupplyPressureChoice = 'accept_prices':
+        LegareSupplyPressureResult = 1
+        LegarePricesRaised = 1
+        TavernSupplyCostLevel += 1
+        TavernDailyCostBonus += 15
+        LegareConflictStage -= 1
+
+        if LegareConflictStage < 0:
+            LegareConflictStage = 0
+        end
+
+        MelissaRespectStefan -= 1
+        AmandaTrustStefan -= 1
+
+        if MelissaRespectStefan < 0:
+            MelissaRespectStefan = 0
+        end
+
+        if AmandaTrustStefan < 0:
+            AmandaTrustStefan = 0
+        end
+
+    elseif $SupplyPressureChoice = 'bargain':
+        if LegareConflictStage <= 2:
+            LegareSupplyPressureResult = 1
+            LegarePricesRaised = 1
+            TavernSupplyCostLevel += 1
+            TavernDailyCostBonus += 10
+            LegareConflictStage += 1
+        else:
+            LegareSupplyPressureResult = 2
+            LegarePricesRaised = 1
+            LegareWinePressure = 1
+            LegareBeerPressure = 1
+            TavernAlcoholShortage = 1
+            TavernSupplyPenalty += 1
+            LegareConflictStage += 1
+        end
+
+    elseif $SupplyPressureChoice = 'ask_clarissa':
+        LegareSupplyPressureResult = 3
+        ClarissaSecretTradeRouteReady = 1
+        ClarissaHelpsWithWineReady = 1
+        ClarissaHelpsWithBeerReady = 1
+        ClarissaTrustStefan += 1
+        ClarissaAgainstLegareAlliance = 1
+        LegareSuspiciousOfClarissa = 1
+
+    elseif $SupplyPressureChoice = 'temporary_suppliers':
+        LegareSupplyPressureResult = 2
+        TavernSupplyCostLevel += 1
+        TavernDailyCostBonus += 20
+        TavernReputation -= 1
+        TemporaryAlcoholSuppliers = 1
+        LegareConflictStage += 1
+
+        if TavernReputation < 0:
+            TavernReputation = 0
+        end
+
+    elseif $SupplyPressureChoice = 'reduce_sales':
+        LegareSupplyPressureResult = 4
+        TavernAlcoholShortage = 1
+        TavernSupplyPenalty += 1
+        TavernReputation -= 1
+        TavernScandal -= 1
+
+        if TavernReputation < 0:
+            TavernReputation = 0
+        end
+
+        if TavernScandal < 0:
+            TavernScandal = 0
+        end
+
+    elseif $SupplyPressureChoice = 'do_nothing':
+        LegareSupplyPressureResult = 4
+        TavernAlcoholShortage = 1
+        TavernSupplyPenalty += 2
+        TavernReputation -= 1
+        LegareConflictStage += 1
+
+        if TavernReputation < 0:
+            TavernReputation = 0
+        end
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    LegareSupplyAfterTalkReady = 1
+    MelissaLegareSupplyTalkReady = 1
+
+    if LegareSupplyPressureResult = 3:
+        ClarissaSupplyTalkReady = 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТОРГОВОЕ ДАВЛЕНИЕ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('LegareSupplyPressureActionText') = 1:
+        gs 'LegareSupplyPressureActionText', $SupplyPressureChoice
+    else:
+        *p 'Поставки трактира меняются после вашего решения.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SUPPLY] Choice: ' + $SupplyPressureChoice
+        *pl '[DEBUG SUPPLY] Result: ' + STR(LegareSupplyPressureResult)
+        *pl '[DEBUG SUPPLY] SupplyCostLevel: ' + STR(TavernSupplyCostLevel)
+        *pl '[DEBUG SUPPLY] DailyCostBonus: ' + STR(TavernDailyCostBonus)
+        *pl '[DEBUG SUPPLY] AlcoholShortage: ' + STR(TavernAlcoholShortage)
+        *pl '[DEBUG SUPPLY] ClarissaRoute: ' + STR(ClarissaSecretTradeRouteReady)
+        *pl '[DEBUG SUPPLY] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+
+    killvar '$SupplyPressureChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_pressure.qsps
+! Разговор с Клариссой о тайном обходе поставок
+! Может вызываться из GirlTalk, если открыт ClarissaSupplyTalkReady
+! ================================================
+
+#ClarissaTalkAboutSupplyRoute
+    *clr
+    clr
+    cla
+
+    $SupplyTalkReturnLoc = $ARGS[0]
+
+    if $SupplyTalkReturnLoc = '':
+        $SupplyTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($SupplyTalkReturnLoc) = 0:
+        $SupplyTalkReturnLoc = 'TavernMain'
+    end
+
+    if $RealName['clarissa'] = '':
+        $RealName['clarissa'] = 'Кларисса'
+    end
+
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА И ПОСТАВКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutSupplyRouteText') = 1:
+        gs 'ClarissaTalkAboutSupplyRouteText'
+    else:
+        *p 'Кларисса осторожно объясняет, как можно обойти давление Легаре.'
+    end
+
+    *pl ' '
+
+    act 'Попросить помочь с вином':
+        ClarissaSupplyTalkReady = 0
+        ClarissaHelpsWithWineReady = 0
+        ClarissaWineRouteUnlocked = 1
+        TavernAlcoholShortage = 0
+        TavernSupplyPenalty -= 1
+
+        if TavernSupplyPenalty < 0:
+            TavernSupplyPenalty = 0
+        end
+
+        gt $SupplyTalkReturnLoc
+    end
+
+    act 'Попросить помочь и с вином, и с пивом':
+        ClarissaSupplyTalkReady = 0
+        ClarissaHelpsWithWineReady = 0
+        ClarissaHelpsWithBeerReady = 0
+        ClarissaWineRouteUnlocked = 1
+        ClarissaBeerRouteUnlocked = 1
+        TavernAlcoholShortage = 0
+        TavernSupplyPenalty -= 2
+        ClarissaTrustStefan += 1
+        LegareSuspiciousOfClarissa = 1
+
+        if TavernSupplyPenalty < 0:
+            TavernSupplyPenalty = 0
+        end
+
+        gt $SupplyTalkReturnLoc
+    end
+
+    act 'Пока не втягивать Клариссу':
+        ClarissaSupplyTalkReady = 0
+        ClarissaTrustStefan += 1
+        gt $SupplyTalkReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $SupplyTalkReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_supply_pressure.qsps
+! Debug-сброс
+! ================================================
+
+#LegareSupplyPressureDebugReset
+    LegareSupplyPressureCanStart = 0
+    LegareSupplyPressureStage = 0
+    LegareSupplyPressureResult = 0
+    LegareSupplyAfterTalkReady = 0
+    MelissaLegareSupplyTalkReady = 0
+    ClarissaSupplyTalkReady = 0
+    ClarissaSecretTradeRouteReady = 0
+    ClarissaHelpsWithWineReady = 0
+    ClarissaHelpsWithBeerReady = 0
+    ClarissaWineRouteUnlocked = 0
+    ClarissaBeerRouteUnlocked = 0
+    TemporaryAlcoholSuppliers = 0
+    TavernAlcoholShortage = 0
+    TavernSupplyPenalty = 0
+    TavernSupplyCostLevel = 0
+    TavernDailyCostBonus = 0
+---

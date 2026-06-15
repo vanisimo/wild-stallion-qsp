@@ -1,0 +1,600 @@
+! ================================================
+! FILE: modules/actions/tavern/girl_work_rules.qsps
+! Правила работы девушек в зале и на кухне
+! Версия: v1 / universal girls + 2 uniform levels
+! Назначение:
+! - дать игроку понятный способ выставлять политику работы
+! - используется системами зала, пропажи из зала и кухни
+! - форма только двух уровней: обычная / откровенная
+!
+! Тексты берутся из:
+! modules/actions/tavern/girl_work_rules_text.qsps
+! ================================================
+
+#GirlWorkRulesSelect
+    *clr
+    clr
+    cla
+
+    $GirlRuleReturnLoc = $ARGS[0]
+
+    if $GirlRuleReturnLoc = '':
+        $GirlRuleReturnLoc = 'TavernMain'
+    end
+
+    if LOC($GirlRuleReturnLoc) = 0:
+        $GirlRuleReturnLoc = 'TavernMain'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРАВИЛА РАБОТЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'С кем обсудить правила работы в зале и на кухне?'
+    *pl ' '
+
+    gs 'GirlWorkRulesBuildSelectMenu'
+
+    *p 'Выберите <a href="exec:gs ''Menu.Show'', ''GirlWorkRulesSelectMenu''">девушку</a>.'
+---
+
+#GirlWorkRulesBuildSelectMenu
+    gs 'Menu.Destroy', 'GirlWorkRulesSelectMenu'
+    gs 'Menu.Create', 'GirlWorkRulesSelectMenu'
+
+    gs 'Menu.Add', 'GirlWorkRulesSelectMenu', 'Аманда', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesSelectMenu', {
+        gt 'GirlWorkRulesMenu', 'amanda', $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesSelectMenu', 'Мелисса', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesSelectMenu', {
+        gt 'GirlWorkRulesMenu', 'melissa', $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesSelectMenu', 'Сандра', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesSelectMenu', {
+        gt 'GirlWorkRulesMenu', 'sandra', $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesSelectMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesSelectMenu', {
+        gt $GirlRuleReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_rules.qsps
+! Главное меню правил конкретной девушки
+! ================================================
+
+#GirlWorkRulesMenu
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleGirl = $GirlRuleKey
+    $GirlRuleReturnLoc = $ARGS[1]
+
+    if $GirlRuleGirl = '':
+        $GirlRuleGirl = 'amanda'
+    end
+
+    if $GirlRuleReturnLoc = '':
+        $GirlRuleReturnLoc = 'TavernMain'
+    end
+
+    if LOC($GirlRuleReturnLoc) = 0:
+        $GirlRuleReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlWorkRulesEnsureName', $GirlRuleGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $GirlRuleGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРАВИЛА РАБОТЫ: ' + UCASE($RealName[$GirlRuleGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintText', 'intro'
+
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintCurrent'
+
+    *pl ' '
+
+    gs 'GirlWorkRulesBuildMainMenu'
+
+    *p 'Что обсудить <a href="exec:gs ''Menu.Show'', ''GirlWorkRulesMainMenu''">с ' + $RealName[$GirlRuleGirl] + '</a>?'
+---
+
+#GirlWorkRulesBuildMainMenu
+    gs 'Menu.Destroy', 'GirlWorkRulesMainMenu'
+    gs 'Menu.Create', 'GirlWorkRulesMainMenu'
+
+    gs 'Menu.Add', 'GirlWorkRulesMainMenu', 'Правила в зале', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesMainMenu', {
+        gt 'GirlWorkRulesHallMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesMainMenu', 'Правила на кухне', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesMainMenu', {
+        gt 'GirlWorkRulesKitchenMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesMainMenu', 'Рабочая форма', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesMainMenu', {
+        gt 'GirlWorkRulesUniformMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesMainMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesMainMenu', {
+        gt $GirlRuleReturnLoc
+    }
+---
+
+#GirlWorkRulesPrintCurrent
+    gs 'GirlWorkRulesPolicyName', 'hall', GirlWorkPolicy[$GirlRuleGirl]
+    $GirlRuleHallName = $GirlRulePolicyName
+
+    gs 'GirlWorkRulesPolicyName', 'kitchen', GirlKitchenPolicy[$GirlRuleGirl]
+    $GirlRuleKitchenName = $GirlRulePolicyName
+
+    gs 'GirlWorkRulesUniformName', GirlUniformLevel[$GirlRuleGirl]
+    $GirlRuleUniformName = $GirlRuleUniformText
+
+    *pl '<b>Текущие правила:</b>'
+    *pl 'Зал: ' + $GirlRuleHallName
+    *pl 'Кухня: ' + $GirlRuleKitchenName
+    *pl 'Форма: ' + $GirlRuleUniformName
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG GIRL RULES] girl: ' + $GirlRuleGirl
+        *pl '[DEBUG GIRL RULES] GirlWorkPolicy: ' + STR(GirlWorkPolicy[$GirlRuleGirl])
+        *pl '[DEBUG GIRL RULES] GirlKitchenPolicy: ' + STR(GirlKitchenPolicy[$GirlRuleGirl])
+        *pl '[DEBUG GIRL RULES] GirlUniformLevel: ' + STR(GirlUniformLevel[$GirlRuleGirl])
+        *pl '[DEBUG GIRL RULES] uniform_purchased: ' + STR(uniform_purchased[$GirlRuleGirl])
+    end
+
+    killvar '$GirlRuleHallName'
+    killvar '$GirlRuleKitchenName'
+    killvar '$GirlRuleUniformName'
+---
+
+#GirlWorkRulesPolicyName
+    $GirlRulePolicyType = LCASE($ARGS[0])
+    GirlRulePolicyValue = ARGS[1]
+    $GirlRulePolicyName = 'правил нет'
+
+    if $GirlRulePolicyType = 'hall':
+        if GirlRulePolicyValue = 1:
+            $GirlRulePolicyName = 'держаться прилично и звать Стефана'
+        elseif GirlRulePolicyValue = 2:
+            $GirlRulePolicyName = 'решать самой'
+        elseif GirlRulePolicyValue = 3:
+            $GirlRulePolicyName = 'удерживать клиента ради чаевых'
+        else:
+            $GirlRulePolicyName = 'правил нет'
+        end
+    elseif $GirlRulePolicyType = 'kitchen':
+        if GirlRulePolicyValue = 1:
+            $GirlRulePolicyName = 'звать Стефана и держаться прилично'
+        elseif GirlRulePolicyValue = 2:
+            $GirlRulePolicyName = 'решать самой'
+        elseif GirlRulePolicyValue = 3:
+            $GirlRulePolicyName = 'удерживать клиента любой ценой'
+        else:
+            $GirlRulePolicyName = 'правил нет'
+        end
+    end
+
+    killvar '$GirlRulePolicyType'
+    killvar 'GirlRulePolicyValue'
+---
+
+#GirlWorkRulesUniformName
+    GirlRuleUniformValue = ARGS[0]
+    $GirlRuleUniformText = 'обычная форма'
+
+    if GirlRuleUniformValue = 1:
+        $GirlRuleUniformText = 'откровенная форма'
+    end
+
+    killvar 'GirlRuleUniformValue'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_rules.qsps
+! Правила зала
+! ================================================
+
+#GirlWorkRulesHallMenu
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleGirl = $GirlRuleKey
+    $GirlRuleReturnLoc = $ARGS[1]
+
+    if $GirlRuleReturnLoc = '':
+        $GirlRuleReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlWorkRulesEnsureName', $GirlRuleGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $GirlRuleGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРАВИЛА ЗАЛА: ' + UCASE($RealName[$GirlRuleGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintText', 'hall_thoughts'
+
+    *pl ' '
+
+    gs 'GirlWorkRulesBuildHallMenu'
+
+    *p 'Какое правило дать <a href="exec:gs ''Menu.Show'', ''GirlWorkRulesHallMenuBox''">для зала</a>?'
+---
+
+#GirlWorkRulesBuildHallMenu
+    gs 'Menu.Destroy', 'GirlWorkRulesHallMenuBox'
+    gs 'Menu.Create', 'GirlWorkRulesHallMenuBox'
+
+    gs 'Menu.Add', 'GirlWorkRulesHallMenuBox', 'Правил нет', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesHallMenuBox', {
+        gt 'GirlWorkRulesSetHall', $GirlRuleGirl, 0, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesHallMenuBox', 'Держаться прилично', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesHallMenuBox', {
+        gt 'GirlWorkRulesSetHall', $GirlRuleGirl, 1, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesHallMenuBox', 'Решать самой', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesHallMenuBox', {
+        gt 'GirlWorkRulesSetHall', $GirlRuleGirl, 2, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesHallMenuBox', 'Удерживать клиента ради чаевых', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesHallMenuBox', {
+        gt 'GirlWorkRulesSetHall', $GirlRuleGirl, 3, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesHallMenuBox', 'Назад', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesHallMenuBox', {
+        gt 'GirlWorkRulesMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    }
+---
+
+#GirlWorkRulesSetHall
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleGirl = $GirlRuleKey
+    GirlRuleNewValue = ARGS[1]
+    $GirlRuleReturnLoc = $ARGS[2]
+
+    if GirlRuleNewValue < 0:
+        GirlRuleNewValue = 0
+    end
+
+    if GirlRuleNewValue > 3:
+        GirlRuleNewValue = 3
+    end
+
+    GirlWorkPolicy[$GirlRuleGirl] = GirlRuleNewValue
+
+    gs 'GirlWorkRulesEnsureName', $GirlRuleGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $GirlRuleGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРАВИЛО ЗАЛА ОБНОВЛЕНО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintText', 'hall_set'
+
+    *pl ' '
+
+    act 'Вернуться к правилам':
+        gt 'GirlWorkRulesMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    end
+
+    killvar 'GirlRuleNewValue'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_rules.qsps
+! Правила кухни
+! ================================================
+
+#GirlWorkRulesKitchenMenu
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleGirl = $GirlRuleKey
+    $GirlRuleReturnLoc = $ARGS[1]
+
+    if $GirlRuleReturnLoc = '':
+        $GirlRuleReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlWorkRulesEnsureName', $GirlRuleGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $GirlRuleGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРАВИЛА КУХНИ: ' + UCASE($RealName[$GirlRuleGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintText', 'kitchen_thoughts'
+
+    *pl ' '
+
+    gs 'GirlWorkRulesBuildKitchenMenu'
+
+    *p 'Какое правило дать <a href="exec:gs ''Menu.Show'', ''GirlWorkRulesKitchenMenuBox''">для кухни</a>?'
+---
+
+#GirlWorkRulesBuildKitchenMenu
+    gs 'Menu.Destroy', 'GirlWorkRulesKitchenMenuBox'
+    gs 'Menu.Create', 'GirlWorkRulesKitchenMenuBox'
+
+    gs 'Menu.Add', 'GirlWorkRulesKitchenMenuBox', 'Правил нет', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesKitchenMenuBox', {
+        gt 'GirlWorkRulesSetKitchen', $GirlRuleGirl, 0, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesKitchenMenuBox', 'Звать Стефана', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesKitchenMenuBox', {
+        gt 'GirlWorkRulesSetKitchen', $GirlRuleGirl, 1, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesKitchenMenuBox', 'Решать самой', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesKitchenMenuBox', {
+        gt 'GirlWorkRulesSetKitchen', $GirlRuleGirl, 2, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesKitchenMenuBox', 'Удерживать клиента любой ценой', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesKitchenMenuBox', {
+        gt 'GirlWorkRulesSetKitchen', $GirlRuleGirl, 3, $GirlRuleReturnLoc
+    }
+
+    gs 'Menu.Add', 'GirlWorkRulesKitchenMenuBox', 'Назад', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesKitchenMenuBox', {
+        gt 'GirlWorkRulesMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    }
+---
+
+#GirlWorkRulesSetKitchen
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleGirl = $GirlRuleKey
+    GirlRuleNewValue = ARGS[1]
+    $GirlRuleReturnLoc = $ARGS[2]
+
+    if GirlRuleNewValue < 0:
+        GirlRuleNewValue = 0
+    end
+
+    if GirlRuleNewValue > 3:
+        GirlRuleNewValue = 3
+    end
+
+    GirlKitchenPolicy[$GirlRuleGirl] = GirlRuleNewValue
+
+    gs 'GirlWorkRulesEnsureName', $GirlRuleGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $GirlRuleGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРАВИЛО КУХНИ ОБНОВЛЕНО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintText', 'kitchen_set'
+
+    *pl ' '
+
+    act 'Вернуться к правилам':
+        gt 'GirlWorkRulesMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    end
+
+    killvar 'GirlRuleNewValue'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_rules.qsps
+! Форма
+! ================================================
+
+#GirlWorkRulesUniformMenu
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleGirl = $GirlRuleKey
+    $GirlRuleReturnLoc = $ARGS[1]
+
+    if $GirlRuleReturnLoc = '':
+        $GirlRuleReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlWorkRulesEnsureName', $GirlRuleGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $GirlRuleGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАБОЧАЯ ФОРМА: ' + UCASE($RealName[$GirlRuleGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintText', 'uniform_thoughts'
+
+    *pl ' '
+
+    gs 'GirlWorkRulesBuildUniformMenu'
+
+    *p 'Какую форму назначить <a href="exec:gs ''Menu.Show'', ''GirlWorkRulesUniformMenuBox''">для работы</a>?'
+---
+
+#GirlWorkRulesBuildUniformMenu
+    gs 'Menu.Destroy', 'GirlWorkRulesUniformMenuBox'
+    gs 'Menu.Create', 'GirlWorkRulesUniformMenuBox'
+
+    gs 'Menu.Add', 'GirlWorkRulesUniformMenuBox', 'Обычная форма', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesUniformMenuBox', {
+        gt 'GirlWorkRulesSetUniform', $GirlRuleGirl, 0, $GirlRuleReturnLoc
+    }
+
+    if uniform_purchased[$GirlRuleGirl] = 1 or revealing_uniform_all_bought = 1:
+        gs 'Menu.Add', 'GirlWorkRulesUniformMenuBox', 'Откровенная форма', ''
+        gs 'Menu.AddModule', 'GirlWorkRulesUniformMenuBox', {
+            gt 'GirlWorkRulesSetUniform', $GirlRuleGirl, 1, $GirlRuleReturnLoc
+        }
+    else:
+        gs 'Menu.Add', 'GirlWorkRulesUniformMenuBox', 'Откровенная форма недоступна', ''
+        gs 'Menu.AddModule', 'GirlWorkRulesUniformMenuBox', {
+            gt 'GirlWorkRulesUniformBlocked', $GirlRuleGirl, $GirlRuleReturnLoc
+        }
+    end
+
+    gs 'Menu.Add', 'GirlWorkRulesUniformMenuBox', 'Назад', ''
+    gs 'Menu.AddModule', 'GirlWorkRulesUniformMenuBox', {
+        gt 'GirlWorkRulesMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    }
+---
+
+#GirlWorkRulesSetUniform
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleGirl = $GirlRuleKey
+    GirlRuleUniformNew = ARGS[1]
+    $GirlRuleReturnLoc = $ARGS[2]
+
+    if GirlRuleUniformNew < 0:
+        GirlRuleUniformNew = 0
+    end
+
+    if GirlRuleUniformNew > 1:
+        GirlRuleUniformNew = 1
+    end
+
+    if GirlRuleUniformNew = 1:
+        if uniform_purchased[$GirlRuleGirl] = 0 and revealing_uniform_all_bought = 0:
+            gt 'GirlWorkRulesUniformBlocked', $GirlRuleGirl, $GirlRuleReturnLoc
+        end
+    end
+
+    GirlUniformLevel[$GirlRuleGirl] = GirlRuleUniformNew
+
+    gs 'GirlWorkRulesEnsureName', $GirlRuleGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $GirlRuleGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ФОРМА ОБНОВЛЕНА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintText', 'uniform_set'
+
+    *pl ' '
+
+    act 'Вернуться к правилам':
+        gt 'GirlWorkRulesMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    end
+
+    killvar 'GirlRuleUniformNew'
+---
+
+#GirlWorkRulesUniformBlocked
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleGirl = $GirlRuleKey
+    $GirlRuleReturnLoc = $ARGS[1]
+
+    if $GirlRuleReturnLoc = '':
+        $GirlRuleReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlWorkRulesEnsureName', $GirlRuleGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ФОРМА НЕДОСТУПНА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkRulesPrintText', 'uniform_blocked'
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'GirlWorkRulesUniformMenu', $GirlRuleGirl, $GirlRuleReturnLoc
+    end
+---
+
+#GirlWorkRulesNormalizeKey
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $GirlRuleKey = $GirlKey
+    else:
+        $GirlRuleKey = LCASE($ARGS[0])
+    end
+---
+
+#GirlWorkRulesEnsureName
+    gs 'GirlWorkRulesNormalizeKey', $ARGS[0]
+    $GirlRuleNameKey = $GirlRuleKey
+
+    if $RealName[$GirlRuleNameKey] = '':
+        if $GirlRuleNameKey = 'amanda':
+            $RealName[$GirlRuleNameKey] = 'Аманда'
+        elseif $GirlRuleNameKey = 'melissa':
+            $RealName[$GirlRuleNameKey] = 'Мелисса'
+        elseif $GirlRuleNameKey = 'sandra':
+            $RealName[$GirlRuleNameKey] = 'Сандра'
+        else:
+            $RealName[$GirlRuleNameKey] = $GirlRuleNameKey
+        end
+    end
+
+    killvar '$GirlRuleNameKey'
+---

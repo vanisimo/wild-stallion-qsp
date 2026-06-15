@@ -1,0 +1,124 @@
+! ================================================
+! FILE: modules/menu/panel_tavern_supply_block.qsps
+! Блок поставок для глобальной кнопки "Трактир"
+! Версия: panel supply v1
+! Назначение:
+! - убрать "Проверить поставки трактира" из обычных действий TavernMain
+! - показывать состояние вина/пива внутри кнопки "Трактир"
+! - дать быстрые действия без перехода на отдельную локацию
+!
+! Используется в:
+! modules/menu/panel_tavern_info.qsps
+!
+! Вставить в #PanelTavernInfo:
+! if LOC('PanelTavernSupplyBlock') = 1:
+!     gs 'PanelTavernSupplyBlock'
+! end
+! ================================================
+
+#PanelTavernSupplyBlock
+    if LOC('InitTavernSupplyEconomy') = 1:
+        gs 'InitTavernSupplyEconomy'
+    end
+
+    pl ' '
+    pl 'Поставки вина и пива:'
+
+    if TavernAlcoholShortage = 0 and TavernSupplyPenalty = 0 and TavernSupplyCostLevel = 0 and TavernDailyCostBonus = 0 and TemporaryAlcoholSuppliers = 0:
+        pl 'Состояние: стабильно'
+    else:
+        if TavernSupplyCostLevel > 0:
+            pl 'Повышение цен: уровень ' + STR(TavernSupplyCostLevel)
+        end
+
+        if TavernDailyCostBonus > 0:
+            pl 'Дополнительные расходы: ' + STR(TavernDailyCostBonus) + ' мараведи в день'
+        end
+
+        if TavernAlcoholShortage = 1:
+            pl 'Нехватка алкоголя: есть'
+        end
+
+        if TavernSupplyPenalty > 0:
+            pl 'Штраф поставок: ' + STR(TavernSupplyPenalty)
+        end
+
+        if TemporaryAlcoholSuppliers = 1:
+            pl 'Временные поставщики: используются'
+        end
+
+        if ClarissaWineRouteUnlocked = 1:
+            pl 'Обходной маршрут вина: открыт через Клариссу'
+        end
+
+        if ClarissaBeerRouteUnlocked = 1:
+            pl 'Обходной маршрут пива: открыт через Клариссу'
+        end
+    end
+
+    if TavernAlcoholShortage = 1 or TavernSupplyPenalty > 0:
+        pl ' '
+        pl '<a href="exec:gs ''PanelTavernSupplyAction'', ''temporary_buy''">Срочно закупить алкоголь у временных поставщиков</a>'
+        pl '<a href="exec:gs ''PanelTavernSupplyAction'', ''melissa_stretch''">Попросить Мелиссу растянуть запасы</a>'
+    end
+
+    if ClarissaWineRouteUnlocked = 1 or ClarissaBeerRouteUnlocked = 1:
+        pl '<a href="exec:gs ''PanelTavernSupplyAction'', ''clarissa_route''">Проверить обходной маршрут Клариссы</a>'
+    end
+---
+
+! ================================================
+! FILE: modules/menu/panel_tavern_supply_block.qsps
+! Действия блока поставок из панели "Трактир"
+! ================================================
+
+#PanelTavernSupplyAction
+    $PanelSupplyAction = LCASE($ARGS[0])
+
+    if $PanelSupplyAction = 'temporary_buy':
+        if money >= 100:
+            money -= 100
+            TemporaryAlcoholSuppliers = 1
+            TavernAlcoholShortage = 0
+            TavernDailyCostBonus += 10
+
+            if TavernSupplyPenalty > 0:
+                TavernSupplyPenalty -= 1
+            end
+        else:
+            TavernSupplyPanelMessage = 1
+        end
+
+    elseif $PanelSupplyAction = 'melissa_stretch':
+        if TavernSupplyPenalty > 0:
+            TavernSupplyPenalty -= 1
+        end
+
+        MelissaControlNeed += 1
+        MelissaRespectStefan += 1
+        TavernReputation -= 1
+
+        if TavernReputation < 0:
+            TavernReputation = 0
+        end
+
+    elseif $PanelSupplyAction = 'clarissa_route':
+        ClarissaTrustStefan += 1
+
+        if ClarissaWineRouteUnlocked = 1 and ClarissaBeerRouteUnlocked = 1:
+            TavernAlcoholShortage = 0
+
+            if TavernSupplyPenalty > 0:
+                TavernSupplyPenalty -= 1
+            end
+        elseif ClarissaWineRouteUnlocked = 1 or ClarissaBeerRouteUnlocked = 1:
+            if TavernSupplyPenalty > 0:
+                TavernSupplyPenalty -= 1
+            end
+        end
+    end
+
+    gs 'PanelTavernInfo'
+
+    killvar '$PanelSupplyAction'
+---

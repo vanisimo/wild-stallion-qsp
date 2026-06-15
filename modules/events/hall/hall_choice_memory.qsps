@@ -1,0 +1,125 @@
+! ================================================
+! FILE: modules/events/hall/hall_choice_memory.qsps
+! Память решений Стефана в событиях зала и кухни
+! Версия: v1
+! Назначение:
+! - запоминать последнее событие, девушку и выбор Стефана
+! - копить счётчики защитных, нейтральных и грязных решений
+! - давать будущим разговорам семьи и девушек опору на прошлые решения
+! - не содержит больших художественных текстов
+! ================================================
+
+#HallChoiceMemoryRegister
+    $HallChoiceMemoryEvent = LCASE($ARGS[0])
+    $HallChoiceMemoryChoice = LCASE($ARGS[1])
+    $HallChoiceMemoryGirl = LCASE($ARGS[2])
+
+    if $HallChoiceMemoryEvent = '':
+        exit
+    end
+
+    if $HallChoiceMemoryGirl <> '':
+        if LOC('NormalizeGirlKey') = 1:
+            gs 'NormalizeGirlKey', $HallChoiceMemoryGirl
+            $HallChoiceMemoryGirl = $GirlKey
+        end
+    end
+
+    $LastHallChoiceEvent = $HallChoiceMemoryEvent
+    $LastHallChoiceChoice = $HallChoiceMemoryChoice
+    $LastHallChoiceGirl = $HallChoiceMemoryGirl
+    LastHallChoiceDay = day
+    LastHallChoiceTime = time
+
+    HallChoiceTotal += 1
+    HallChoiceByEvent[$HallChoiceMemoryEvent] += 1
+
+    if $HallChoiceMemoryGirl <> '':
+        HallChoiceByGirl[$HallChoiceMemoryGirl] += 1
+        $LastGirlChoiceEvent[$HallChoiceMemoryGirl] = $HallChoiceMemoryEvent
+        $LastGirlChoiceChoice[$HallChoiceMemoryGirl] = $HallChoiceMemoryChoice
+        LastGirlChoiceDay[$HallChoiceMemoryGirl] = day
+        LastGirlChoiceTime[$HallChoiceMemoryGirl] = time
+    end
+
+    gs 'HallChoiceMemoryClassify', $HallChoiceMemoryEvent, $HallChoiceMemoryChoice
+
+    if HallChoiceMemoryKind = 1:
+        HallChoiceProtectTotal += 1
+        HallChoiceProtectByGirl[$HallChoiceMemoryGirl] += 1
+        FamilyTrust += 1
+    elseif HallChoiceMemoryKind = 2:
+        HallChoiceNeutralTotal += 1
+        HallChoiceNeutralByGirl[$HallChoiceMemoryGirl] += 1
+    elseif HallChoiceMemoryKind = 3:
+        HallChoiceDirtyTotal += 1
+        HallChoiceDirtyByGirl[$HallChoiceMemoryGirl] += 1
+        FamilyTension += 1
+    elseif HallChoiceMemoryKind = 4:
+        HallChoiceControlTotal += 1
+        HallChoiceControlByGirl[$HallChoiceMemoryGirl] += 1
+        FamilyTension += 1
+    end
+
+    if FamilyTrust < 0:
+        FamilyTrust = 0
+    end
+
+    if FamilyTension < 0:
+        FamilyTension = 0
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    killvar '$HallChoiceMemoryEvent'
+    killvar '$HallChoiceMemoryChoice'
+    killvar '$HallChoiceMemoryGirl'
+    killvar 'HallChoiceMemoryKind'
+---
+
+#HallChoiceMemoryClassify
+    $HallChoiceMemoryClassEvent = LCASE($ARGS[0])
+    $HallChoiceMemoryClassChoice = LCASE($ARGS[1])
+    HallChoiceMemoryKind = 0
+
+    if $HallChoiceMemoryClassChoice = 'hard' or $HallChoiceMemoryClassChoice = 'stop' or $HallChoiceMemoryClassChoice = 'interrupt':
+        HallChoiceMemoryKind = 1
+    elseif $HallChoiceMemoryClassChoice = 'calm' or $HallChoiceMemoryClassChoice = 'self' or $HallChoiceMemoryClassChoice = 'let_her':
+        HallChoiceMemoryKind = 2
+    elseif $HallChoiceMemoryClassChoice = 'watch' or $HallChoiceMemoryClassChoice = 'ignore' or $HallChoiceMemoryClassChoice = 'peek':
+        HallChoiceMemoryKind = 4
+    elseif $HallChoiceMemoryClassChoice = 'encourage' or $HallChoiceMemoryClassChoice = 'client' or $HallChoiceMemoryClassChoice = 'ignore_after':
+        HallChoiceMemoryKind = 3
+    end
+
+    if $HallChoiceMemoryClassEvent = 'kitchen' and $HallChoiceMemoryClassChoice = 'client':
+        HallChoiceMemoryKind = 3
+    end
+
+    killvar '$HallChoiceMemoryClassEvent'
+    killvar '$HallChoiceMemoryClassChoice'
+---
+
+#HallChoiceMemoryDebugPanel
+    *pl ' '
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ПАМЯТЬ РЕШЕНИЙ СТЕФАНА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Последнее событие: ' + $LastHallChoiceEvent
+    *pl 'Последний выбор: ' + $LastHallChoiceChoice
+    *pl 'Девушка: ' + $LastHallChoiceGirl
+    *pl 'День / время: ' + STR(LastHallChoiceDay) + ' / ' + STR(LastHallChoiceTime)
+    *pl ' '
+    *pl 'Всего решений: ' + STR(HallChoiceTotal)
+    *pl 'Защитные решения: ' + STR(HallChoiceProtectTotal)
+    *pl 'Нейтральные решения: ' + STR(HallChoiceNeutralTotal)
+    *pl 'Контроль / наблюдение: ' + STR(HallChoiceControlTotal)
+    *pl 'Грязные решения: ' + STR(HallChoiceDirtyTotal)
+    *pl ' '
+    *pl 'Аманда: ' + STR(HallChoiceByGirl['amanda']) + ' / dirty: ' + STR(HallChoiceDirtyByGirl['amanda'])
+    *pl 'Мелисса: ' + STR(HallChoiceByGirl['melissa']) + ' / dirty: ' + STR(HallChoiceDirtyByGirl['melissa'])
+    *pl 'Сандра: ' + STR(HallChoiceByGirl['sandra']) + ' / dirty: ' + STR(HallChoiceDirtyByGirl['sandra'])
+---

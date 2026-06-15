@@ -1,0 +1,329 @@
+! ================================================
+! FILE: modules/events/dance/amanda_legare_dance.qsps
+! Легаре замечает Аманду на пятничных танцах
+! Версия: dance story v1 / compact menu
+! Назначение:
+! - первый внешний риск для ветки Аманды
+! - связать Аманду, Легаре, Клариссу и Мелиссу
+! - создать будущие темы разговоров
+!
+! Тексты берутся из:
+! modules/events/dance/amanda_legare_dance_text.qsps
+!
+! Вызов из:
+! modules/locations/market_dance.qsps
+! через проверку #AmandaLegareDanceCanStart
+! ================================================
+
+#AmandaLegareDanceCanStart
+    AmandaLegareDanceCanStart = 0
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if AmandaLegareNoticeStage > 0:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'DanceHall':
+        exit
+    end
+
+    if $GirlLocation['legare'] <> 'DanceHall':
+        exit
+    end
+
+    if AmandaDanceStage < 1 and AmandaPublicAttention < 2:
+        exit
+    end
+
+    AmandaLegareDanceCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_dance.qsps
+! Вход в событие
+! ================================================
+
+#AmandaLegareDanceStart
+    *clr
+    clr
+    cla
+
+    gs 'UpdateGirlLocations'
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/events/dance/amanda_legare', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ ЗАМЕЧАЕТ АМАНДУ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareDanceIntroText') = 1:
+        gs 'AmandaLegareDanceIntroText'
+    else:
+        *p 'Легаре замечает Аманду среди танцующих и смотрит на неё слишком внимательно.'
+        *p 'Кларисса тоже видит этот взгляд, а Мелисса настороженно следит за вашей реакцией.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE DANCE] AmandaDanceStage: ' + STR(AmandaDanceStage)
+        *pl '[DEBUG LEGARE DANCE] AmandaPublicAttention: ' + STR(AmandaPublicAttention)
+        *pl '[DEBUG LEGARE DANCE] AmandaLegareInterest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG LEGARE DANCE] ClarissaJealousy: ' + STR(ClarissaJealousy)
+        *pl '[DEBUG LEGARE DANCE] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareDanceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareDanceMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_dance.qsps
+! Меню события
+! ================================================
+
+#AmandaLegareDanceBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareDanceMenu'
+    gs 'Menu.Create', 'AmandaLegareDanceMenu'
+
+    gs 'Menu.Add', 'AmandaLegareDanceMenu', 'Понаблюдать за Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'AmandaLegareDanceAction', 'observe'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareDanceMenu', 'Подойти к Аманде', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'AmandaLegareDanceAction', 'approach_amanda'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareDanceMenu', 'Предупредить Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'AmandaLegareDanceAction', 'warn_legare'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareDanceMenu', 'Сделать вид, что не заметили', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'AmandaLegareDanceAction', 'ignore'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareDanceMenu', 'Вернуться к танцам', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'MarketDance'
+    }
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_dance.qsps
+! Обработка выбора Стефана
+! ================================================
+
+#AmandaLegareDanceAction
+    *clr
+    clr
+    cla
+
+    $AmandaLegareDanceChoice = LCASE($ARGS[0])
+
+    AmandaLegareNoticeStage = 1
+    LegareNoticedAmanda = 1
+    ClarissaSawLegareAmanda = 1
+    MelissaLegareWarningReady = 1
+    AmandaLegareTalkReady = 1
+
+    if $AmandaLegareDanceChoice = 'observe':
+        AmandaLegareInterest += 1
+        LegareAmandaInterest += 1
+        AmandaPublicAttention += 1
+        ClarissaJealousy += 1
+        MelissaFamilyConcern += 1
+
+    elseif $AmandaLegareDanceChoice = 'approach_amanda':
+        AmandaTrustStefan += 1
+        AmandaPlayerPath += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        AmandaLegareInterest -= 1
+
+        if AmandaLegareInterest < 0:
+            AmandaLegareInterest = 0
+        end
+
+    elseif $AmandaLegareDanceChoice = 'warn_legare':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        LegareConflictStage += 1
+        ClarissaJealousy += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+
+    elseif $AmandaLegareDanceChoice = 'ignore':
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        AmandaNpcPath += 1
+        AmandaSecretiveness += 1
+        AmandaPublicAttention += 1
+        ClarissaJealousy += 1
+        MelissaFamilyConcern += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ И АМАНДА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareDanceActionText') = 1:
+        gs 'AmandaLegareDanceActionText', $AmandaLegareDanceChoice
+    else:
+        *p 'Ваш выбор меняет настроение на площади. Легаре, Аманда, Кларисса и Мелисса делают свои выводы.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE DANCE] Choice: ' + $AmandaLegareDanceChoice
+        *pl '[DEBUG LEGARE DANCE] AmandaLegareInterest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG LEGARE DANCE] LegareAmandaInterest: ' + STR(LegareAmandaInterest)
+        *pl '[DEBUG LEGARE DANCE] ClarissaJealousy: ' + STR(ClarissaJealousy)
+        *pl '[DEBUG LEGARE DANCE] MelissaLegareWarningReady: ' + STR(MelissaLegareWarningReady)
+        *pl '[DEBUG LEGARE DANCE] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    if ClarissaLegareJealousSeen = 0:
+        act 'Посмотреть на Клариссу':
+            gt 'AmandaLegareClarissaReaction'
+        end
+    end
+
+    if MelissaLegareWarningSeen = 0:
+        act 'Поговорить с Мелиссой':
+            gt 'AmandaLegareMelissaWarning'
+        end
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$AmandaLegareDanceChoice'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_dance.qsps
+! Кларисса замечает интерес Легаре
+! ================================================
+
+#AmandaLegareClarissaReaction
+    *clr
+    clr
+    cla
+
+    ClarissaLegareJealousSeen = 1
+    ClarissaJealousy += 1
+    ClarissaTalkAboutAmandaReady = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА НАБЛЮДАЕТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareClarissaReactionText') = 1:
+        gs 'AmandaLegareClarissaReactionText'
+    else:
+        *p 'Кларисса стоит у края площади и смотрит не на танцы, а на Легаре.'
+        *p 'Она заметила его интерес к Аманде.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG CLARISSA] ClarissaJealousy: ' + STR(ClarissaJealousy)
+        *pl '[DEBUG CLARISSA] ClarissaTalkAboutAmandaReady: ' + STR(ClarissaTalkAboutAmandaReady)
+        *pl ' '
+    end
+
+    act 'Поговорить с Мелиссой':
+        gt 'AmandaLegareMelissaWarning'
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_dance.qsps
+! Мелисса предупреждает Стефана
+! ================================================
+
+#AmandaLegareMelissaWarning
+    *clr
+    clr
+    cla
+
+    MelissaLegareWarningSeen = 1
+    MelissaLegareWarningReady = 0
+    MelissaFamilyConcern += 1
+    MelissaRespectStefan += 1
+    AmandaLegareTalkReady = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРЕДУПРЕЖДЕНИЕ МЕЛИССЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareMelissaWarningText') = 1:
+        gs 'AmandaLegareMelissaWarningText'
+    else:
+        *p 'Мелисса тихо предупреждает вас, что Легаре слишком внимательно смотрит на Аманду.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MELISSA] MelissaLegareWarningSeen: ' + STR(MelissaLegareWarningSeen)
+        *pl '[DEBUG MELISSA] AmandaLegareTalkReady: ' + STR(AmandaLegareTalkReady)
+        *pl '[DEBUG MELISSA] MelissaFamilyConcern: ' + STR(MelissaFamilyConcern)
+        *pl ' '
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_dance.qsps
+! Debug-сброс события
+! ================================================
+
+#AmandaLegareDanceDebugReset
+    AmandaLegareNoticeStage = 0
+    LegareNoticedAmanda = 0
+    LegareAmandaInterest = 0
+    ClarissaSawLegareAmanda = 0
+    ClarissaLegareJealousSeen = 0
+    ClarissaTalkAboutAmandaReady = 0
+    MelissaLegareWarningReady = 0
+    MelissaLegareWarningSeen = 0
+    AmandaLegareTalkReady = 0
+---

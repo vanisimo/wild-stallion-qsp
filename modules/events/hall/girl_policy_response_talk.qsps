@@ -1,0 +1,154 @@
+! ================================================
+! FILE: modules/events/hall/girl_policy_response_talk.qsps
+! Разговор после фактической реакции девушки на правило работы
+! Версия: v1
+! Назначение:
+! - дать Стефану обсудить не только событие, но и то, как девушка выполнила правило
+! - работает после GirlPolicyResponse / GirlPolicyResponseConsequences
+! - тексты берутся из girl_policy_response_talk_text.qsps
+! ================================================
+
+#GirlPolicyResponseTalkCanDiscuss
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $PolicyTalkCheckGirl = $GirlKey
+
+    GirlPolicyResponseTalkAvailable = 0
+
+    if $PolicyTalkCheckGirl = '':
+        exit
+    end
+
+    if GirlPolicyLastResponseStage[$PolicyTalkCheckGirl] > 0 and GirlPolicyResponseTalkDone[$PolicyTalkCheckGirl] = 0:
+        GirlPolicyResponseTalkAvailable = 1
+    end
+
+    killvar '$PolicyTalkCheckGirl'
+---
+
+#GirlPolicyResponseTalkStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $PolicyResponseTalkGirl = $GirlKey
+    $PolicyResponseTalkReturnLoc = $ARGS[1]
+
+    if $PolicyResponseTalkGirl = '':
+        msg 'Ошибка: GirlPolicyResponseTalkStart вызван без девушки.'
+        exit
+    end
+
+    if $PolicyResponseTalkReturnLoc = '':
+        $PolicyResponseTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($PolicyResponseTalkReturnLoc) = 0:
+        $PolicyResponseTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $PolicyResponseTalkGirl
+
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $PolicyResponseTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР О ПРАВИЛАХ РАБОТЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlPolicyResponseTalkPrintText', 'intro'
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG POLICY RESPONSE TALK] girl: ' + $PolicyResponseTalkGirl
+        *pl '[DEBUG POLICY RESPONSE TALK] response stage: ' + STR(GirlPolicyLastResponseStage[$PolicyResponseTalkGirl])
+        *pl '[DEBUG POLICY RESPONSE TALK] policy: ' + STR(GirlWorkPolicy[$PolicyResponseTalkGirl])
+        *pl '[DEBUG POLICY RESPONSE TALK] kitchen policy: ' + STR(GirlKitchenPolicy[$PolicyResponseTalkGirl])
+        *pl ' '
+    end
+
+    act 'Говорить жёстко':
+        gt 'GirlPolicyResponseTalkResult', $PolicyResponseTalkGirl, $PolicyResponseTalkReturnLoc, 'hard'
+    end
+
+    act 'Говорить спокойно':
+        gt 'GirlPolicyResponseTalkResult', $PolicyResponseTalkGirl, $PolicyResponseTalkReturnLoc, 'calm'
+    end
+
+    act 'Признать, что правило было спорным':
+        gt 'GirlPolicyResponseTalkResult', $PolicyResponseTalkGirl, $PolicyResponseTalkReturnLoc, 'admit'
+    end
+
+    act 'Не продолжать разговор':
+        gt $PolicyResponseTalkReturnLoc
+    end
+---
+
+#GirlPolicyResponseTalkResult
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $PolicyResponseTalkGirl = $GirlKey
+    $PolicyResponseTalkReturnLoc = $ARGS[1]
+    $PolicyResponseTalkTone = LCASE($ARGS[2])
+
+    if $PolicyResponseTalkGirl = '':
+        msg 'Ошибка: GirlPolicyResponseTalkResult вызван без девушки.'
+        exit
+    end
+
+    if $PolicyResponseTalkReturnLoc = '':
+        $PolicyResponseTalkReturnLoc = 'TavernMain'
+    end
+
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $PolicyResponseTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕДСТВИЕ РАЗГОВОРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $PolicyResponseTalkTone = 'hard':
+        GirlRebellion[$PolicyResponseTalkGirl] += 1
+        GirlTrustStefan[$PolicyResponseTalkGirl] -= 1
+        FamilyTension += 1
+    elseif $PolicyResponseTalkTone = 'calm':
+        GirlTrustStefan[$PolicyResponseTalkGirl] += 1
+        GirlWorkDiscipline[$PolicyResponseTalkGirl] += 1
+    elseif $PolicyResponseTalkTone = 'admit':
+        GirlTrustStefan[$PolicyResponseTalkGirl] += 1
+        GirlSecretiveness[$PolicyResponseTalkGirl] -= 1
+        FamilyTrust += 1
+    end
+
+    if GirlSecretiveness[$PolicyResponseTalkGirl] < 0:
+        GirlSecretiveness[$PolicyResponseTalkGirl] = 0
+    end
+
+    if LOC('ClampGirlSocialStats') = 1:
+        gs 'ClampGirlSocialStats', $PolicyResponseTalkGirl
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    gs 'GirlPolicyResponseTalkPrintText', $PolicyResponseTalkTone
+
+    GirlPolicyResponseTalkDone[$PolicyResponseTalkGirl] = 1
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $PolicyResponseTalkReturnLoc
+    end
+
+    killvar '$PolicyResponseTalkTone'
+---

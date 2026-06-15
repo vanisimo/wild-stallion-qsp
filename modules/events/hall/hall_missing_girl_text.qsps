@@ -1,0 +1,237 @@
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl_text.qsps
+! Тексты события "девушка пропала из зала"
+! Версия: progression gate fix v1
+! Используется логикой: modules/events/hall/hall_missing_girl.qsps
+! Назначение:
+! - убрать ранние слишком грязные сцены
+! - разделить stage 0-3 и stage 4
+! - не давать tavernmain попадать в текст как имя девушки
+! ================================================
+
+#HallMissingGirlPrintText
+    $HallMissingPrintTextId = LCASE($ARGS[0])
+
+    if $HallMissingPrintTextId = 'ignore_after':
+        if LOC('HallMissingGirlShowImage') = 1:
+            gs 'HallMissingGirlShowImage', 'after'
+        end
+    elseif $HallMissingPrintTextId = 'peek_scene':
+        if LOC('HallMissingGirlShowImage') = 1:
+            gs 'HallMissingGirlShowImage', 'peek'
+        end
+    elseif $HallMissingPrintTextId = 'interrupt_scene':
+        if LOC('HallMissingGirlShowImage') = 1:
+            gs 'HallMissingGirlShowImage', 'interrupt'
+        end
+    end
+
+    gs 'HallMissingGirlText', $HallMissingPrintTextId
+
+    if $HallMissingGirlText <> '':
+        *p $HallMissingGirlText
+    end
+
+    gs 'HallMissingGirlReaction', $HallMissingPrintTextId
+
+    if $HallMissingGirlReactionText <> '':
+        *p $HallMissingGirlReactionText
+    end
+
+    killvar '$HallMissingPrintTextId'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl_text.qsps
+! Персональные реакции девушек
+! ================================================
+
+#HallMissingGirlReaction
+    $HallMissingReactionId = LCASE($ARGS[0])
+    $HallMissingGirlReactionText = ''
+
+    gs 'HallMissingGirlNormalizeKey', $HallMissingGirl
+    $HallMissingGirl = $HallMissingGirlKey
+
+    if $HallMissingGirl = '':
+        exit
+    end
+
+    if $RealName[$HallMissingGirl] = '':
+        gs 'HallMissingGirlEnsureName', $HallMissingGirl
+    end
+
+    if $HallMissingGirl = 'amanda':
+        if $HallMissingReactionId = 'ignore_after':
+            $HallMissingGirlReactionText = 'Аманда возвращается в зал слишком быстро, будто хочет проскочить мимо ваших глаз. Щёки горят, пальцы теребят край фартука, а маленькая попка выдаёт нервную походку даже сильнее, чем виноватый взгляд.'
+        elseif $HallMissingReactionId = 'peek_scene':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlReactionText = 'Аманда уже не пугается внимания. Она всё ещё краснеет, но в её движениях появляется опасное любопытство: будто она сама проверяет, насколько далеко теперь можно зайти.'
+            else:
+                $HallMissingGirlReactionText = 'Аманда выглядит растерянной. Она не кажется уверенной или опытной — скорее сама не понимает, почему не ушла сразу, когда клиент начал говорить слишком тихо и слишком близко.'
+            end
+        elseif $HallMissingReactionId = 'peek_meet':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlReactionText = 'Она пытается улыбнуться дерзко, но всё равно краснеет. "И что теперь, Стефан? Будешь ругаться?"'
+            else:
+                $HallMissingGirlReactionText = 'Аманда смотрит на вас большими глазами. Ей явно стыдно, но под стыдом мелькает испуганное любопытство.'
+            end
+        elseif $HallMissingReactionId = 'interrupt_scene':
+            if GirlWorkPolicy[$HallMissingGirl] = 3:
+                $HallMissingGirlReactionText = 'Аманда вскакивает и судорожно поправляет одежду. "Ты же сам сказал удерживать клиента. Я старалась... как умела".'
+            else:
+                $HallMissingGirlReactionText = 'Аманда отступает к стене, красная и скомканная. Кажется, она рада, что вы вмешались, но боится признать это вслух.'
+            end
+        end
+    elseif $HallMissingGirl = 'melissa':
+        if $HallMissingReactionId = 'ignore_after':
+            $HallMissingGirlReactionText = 'Мелисса возвращается с таким видом, будто всё было под контролем. Только слишком ровная улыбка и быстрый взгляд на вас выдают: она отлично понимает, как это выглядело со стороны.'
+        elseif $HallMissingReactionId = 'peek_scene':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlReactionText = 'Мелисса держит ситуацию почти хладнокровно. Клиент думает, что ведёт игру, но по её полуулыбке видно: она уже считает монеты и последствия.'
+            else:
+                $HallMissingGirlReactionText = 'Даже здесь Мелисса старается не потерять контроль. Она стоит слишком близко к клиенту, но взгляд у неё трезвый: она проверяет границы, а не теряет голову.'
+            end
+        elseif $HallMissingReactionId = 'peek_meet':
+            $HallMissingGirlReactionText = 'Мелисса замечает вас и чуть прищуривается. "Подглядывать за мной, Стефан? Или это теперь новый способ следить за порядком?"'
+        elseif $HallMissingReactionId = 'interrupt_scene':
+            if GirlWorkPolicy[$HallMissingGirl] = 3:
+                $HallMissingGirlReactionText = 'Мелисса поправляет платье без спешки. "Ты хотел, чтобы клиент остался доволен. Так в чём теперь проблема — в деньгах или в том, что ты это увидел?"'
+            else:
+                $HallMissingGirlReactionText = 'Мелисса встречает ваше вмешательство холодной злостью. Не потому что ей понравился клиент, а потому что вы решили за неё в момент, когда она почти сама взяла ситуацию в руки.'
+            end
+        end
+    elseif $HallMissingGirl = 'sandra':
+        if $HallMissingReactionId = 'ignore_after':
+            $HallMissingGirlReactionText = 'Сандра возвращается без суеты. Грудь тяжело поднимается под платьем, лицо каменное, взгляд прямой. Если что-то и случилось, она не позволит залу увидеть себя сломанной.'
+        elseif $HallMissingReactionId = 'peek_scene':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlReactionText = 'Сандра не выглядит неопытной и не выглядит потерянной. Она терпит не из страха, а из расчёта, но в тяжёлом дыхании уже слышно раздражение.'
+            else:
+                $HallMissingGirlReactionText = 'Сандра держится жёстко. Она не дрожит и не мечется, только молча взвешивает, сколько ещё можно позволить этому клиенту, прежде чем он пожалеет.'
+            end
+        elseif $HallMissingReactionId = 'peek_meet':
+            $HallMissingGirlReactionText = 'Сандра замечает вас и не отворачивается. "Насмотрелся, Стефан?" — спрашивает она тихо. В голосе усталость и злость.'
+        elseif $HallMissingReactionId = 'interrupt_scene':
+            if GirlWorkPolicy[$HallMissingGirl] = 3:
+                $HallMissingGirlReactionText = 'Сандра медленно поправляет платье. "Ты сам велел удерживать клиента любой ценой. Теперь реши, цена тебе не понравилась или то, что ты её увидел?"'
+            else:
+                $HallMissingGirlReactionText = 'Сандра отступает от клиента и тяжело выдыхает. Это не испуг. Это ярость, которую она пока решила не выпускать.'
+            end
+        end
+    end
+
+    killvar '$HallMissingReactionId'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl_text.qsps
+! Основные тексты события
+! ================================================
+
+#HallMissingGirlText
+    $HallMissingTextId = LCASE($ARGS[0])
+    $HallMissingGirlText = ''
+
+    gs 'HallMissingGirlNormalizeKey', $HallMissingGirl
+    $HallMissingGirl = $HallMissingGirlKey
+
+    if $HallMissingGirl = '':
+        exit
+    end
+
+    if $RealName[$HallMissingGirl] = '':
+        gs 'HallMissingGirlEnsureName', $HallMissingGirl
+    end
+
+    if $HallMissingTextId = 'intro':
+        if $HallMissingPlace = 'under_table':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlText = 'Вы вдруг понимаете, что ' + $RealName[$HallMissingGirl] + ' пропала у дальнего стола. Там слишком много смешков, слишком много локтей на скатерти и слишком довольная рожа у клиента. Похоже, разговор давно перестал быть обычной просьбой о выпивке.'
+            else:
+                $HallMissingGirlText = 'Вы замечаете, что ' + $RealName[$HallMissingGirl] + ' задержалась у дальнего стола. Клиент говорит тихо, почти в ухо, и явно пытается купить не только кружку пива.'
+            end
+        elseif $HallMissingPlace = 'kitchen':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlText = $RealName[$HallMissingGirl] + ' исчезла в сторону кухни вместе с посетителем, который только что ругался из-за еды. Теперь за дверью слишком тихо для обычной жалобы.'
+            else:
+                $HallMissingGirlText = $RealName[$HallMissingGirl] + ' ушла к кухне с недовольным клиентом. Он вроде бы жаловался на еду, но шагал за ней слишком охотно.'
+            end
+        elseif $HallMissingPlace = 'stairs':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlText = 'Вы замечаете, что ' + $RealName[$HallMissingGirl] + ' поднялась к лестнице вслед за клиентом. Перед этим он долго шептал ей на ухо и показывал монету.'
+            else:
+                $HallMissingGirlText = 'Вы замечаете, что ' + $RealName[$HallMissingGirl] + ' задержалась у лестницы. Клиент стоит слишком близко и говорит тихо, будто боится, что зал услышит лишнее.'
+            end
+        else:
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlText = $RealName[$HallMissingGirl] + ' исчезла у подсобки. Перед этим какой-то гость держал её за талию и шептал что-то про серебро.'
+            else:
+                $HallMissingGirlText = $RealName[$HallMissingGirl] + ' задержалась у подсобки. Клиент стоит рядом, слишком довольный собой, и явно ждёт, что его просьбу поймут без лишних слов.'
+            end
+        end
+
+    elseif $HallMissingTextId = 'thoughts':
+        if HallMissingGirlStage >= 4:
+            $HallMissingGirlText = 'Что делать? Можно сделать вид, что ничего не видел: деньги в трактире не пахнут, пока их не сунули тебе под нос. Можно подсмотреть и понять, насколько далеко зашли эти чаевые. А можно ворваться сразу. Только если я сам раньше велел удерживать клиентов ради выручки, потом нечего строить из себя святого.'
+        else:
+            $HallMissingGirlText = 'Что делать? Ситуация пока не выглядит как законченный скандал, но пахнет им уже крепко. Можно не лезть и посмотреть, чем кончится. Можно тихо проверить, не перешёл ли клиент черту. А можно сразу вмешаться и напомнить, что это трактир, а не двор у пьяных свиней.'
+        end
+
+    elseif $HallMissingTextId = 'ignore_after':
+        if HallMissingGirlStage >= 4:
+            $HallMissingGirlText = $RealName[$HallMissingGirl] + ' возвращается через несколько минут. Одежда чуть сбита, клиент доволен и щедрее обычного. Зал делает вид, что ничего не понял, но такие вещи в маленьком городе не прячутся.'
+        else:
+            $HallMissingGirlText = $RealName[$HallMissingGirl] + ' возвращается в зал немного позже. Ничего явного не случилось, но клиент выглядит слишком довольным, а она слишком быстро отводит глаза. Вы понимаете: ещё пара таких случаев — и слухи сами найдут дорогу.'
+        end
+
+    elseif $HallMissingTextId = 'peek_scene':
+        if $HallMissingPlace = 'under_table':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlText = 'Вы подходите ближе и видите достаточно, чтобы понять: у дальнего стола уже не просто флирт. Клиент расслаблен, ' + $RealName[$HallMissingGirl] + ' слишком близко, а монеты на краю стола объясняют всё лучше слов.'
+            else:
+                $HallMissingGirlText = 'Вы подходите ближе и видите: клиент наклонился к ' + $RealName[$HallMissingGirl] + ', держит её за руку и что-то горячо шепчет. Она смущена, но не сразу отходит.'
+            end
+        elseif $HallMissingPlace = 'kitchen':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlText = 'Вы заглядываете на кухню через щель. Клиент уже не спорит о еде. Он стоит слишком близко, рядом лежат монеты, а ' + $RealName[$HallMissingGirl] + ' явно пытается уладить конфликт не словами.'
+            else:
+                $HallMissingGirlText = 'Вы заглядываете на кухню через щель. Клиент стоит у рабочего стола, слишком близко к ' + $RealName[$HallMissingGirl] + '. Она держится напряжённо, но пока не зовёт вас.'
+            end
+        elseif $HallMissingPlace = 'stairs':
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlText = 'Вы поднимаетесь тихо и видите их у поворота лестницы. Клиент держит ' + $RealName[$HallMissingGirl] + ' за бедро, она стоит слишком близко и уже не выглядит случайно задержанной.'
+            else:
+                $HallMissingGirlText = 'Вы поднимаетесь тихо и видите их у поворота лестницы. Клиент держит ' + $RealName[$HallMissingGirl] + ' за локоть и шепчет ей что-то на ухо. Она смущена, но ещё не решилась оттолкнуть его.'
+            end
+        else:
+            if HallMissingGirlStage >= 4:
+                $HallMissingGirlText = 'Вы тихо подходите к подсобке. Внутри слышен приглушённый смех, тяжёлое дыхание клиента и голос ' + $RealName[$HallMissingGirl] + ', слишком спокойный для простой работницы, которую застали врасплох.'
+            else:
+                $HallMissingGirlText = 'Вы тихо подходите к подсобке. Клиент говорит вкрадчиво, ' + $RealName[$HallMissingGirl] + ' отвечает тише обычного. Сцена ещё не стала грязной, но уже стоит на краю.'
+            end
+        end
+
+    elseif $HallMissingTextId = 'peek_meet':
+        if HallMissingGirlStage >= 4:
+            $HallMissingGirlText = $RealName[$HallMissingGirl] + ' замечает вас уже после. Она поправляет одежду и смотрит прямо. "Нравится подглядывать, Стефан? Или ты просто проверяешь, хорошо ли я удерживаю клиентов?"'
+        elseif GirlWorkPolicy[$HallMissingGirl] = 3:
+            $HallMissingGirlText = $RealName[$HallMissingGirl] + ' встречает ваш взгляд нервно, но не отступает. "Ты же сам говорил — богатого клиента надо удержать. Я только пыталась понять, как далеко можно".'
+        else:
+            $HallMissingGirlText = $RealName[$HallMissingGirl] + ' замечает вас и резко краснеет. "Ты... смотрел?" В голосе у неё злость, смущение и страх, что вы всё поняли неправильно.'
+        end
+
+    elseif $HallMissingTextId = 'interrupt_scene':
+        if GirlWorkPolicy[$HallMissingGirl] = 3:
+            $HallMissingGirlText = 'Вы врываетесь без предупреждения. Клиент тут же начинает возмущаться, а ' + $RealName[$HallMissingGirl] + ' смотрит на вас зло. "Ты же сам разрешил удерживать клиентов ради больших чаевых. А теперь что, святого из себя строишь?"'
+        elseif HallMissingGirlStage >= 4:
+            $HallMissingGirlText = 'Вы врываетесь и обрываете сцену до того, как она станет настоящим позором. Клиент матерится, ' + $RealName[$HallMissingGirl] + ' отступает, но благодарности в её взгляде нет — скорее раздражение, что вы сорвали игру.'
+        else:
+            $HallMissingGirlText = 'Вы резко входите и ставите точку. Клиент пытается орать, но быстро понимает, что сейчас не его вечер. ' + $RealName[$HallMissingGirl] + ' отходит к стене, сбитая с толку и явно не готовая к такому шуму.'
+        end
+    else:
+        $HallMissingGirlText = ''
+    end
+
+    killvar '$HallMissingTextId'
+---

@@ -1,0 +1,65 @@
+! ================================================
+! FILE: modules/events/dance/amanda_legare_branch_unlock.qsps
+! Открытие ветки Легаре для Аманды
+! Версия: legare dance rewrite v2
+! Назначение:
+! - не запускать ветку Легаре с начала игры
+! - открывать ветку только когда Аманда уже стала заметной в городе
+! - отделить публичную заметность от личной развращённости
+!
+! Используется:
+! modules/locations/market_dance.qsps
+! modules/events/dance/amanda_legare_auto_notice.qsps
+!
+! Важно:
+! Развращённость Аманды не является главным замком ветки.
+! Она влияет на риск внутри ветки.
+! ================================================
+
+#UpdateAmandaLegareBranchUnlock
+    if AmandaLegareBranchUnlocked = 1:
+        exit
+    end
+
+    ! Первый вариант открытия:
+    ! Аманда уже сталкивалась с вниманием в зале.
+    if AmandaHallHarassmentStage >= 1 and AmandaPublicAttention >= 2:
+        AmandaLegareBranchUnlocked = 1
+    end
+
+    ! Второй вариант открытия:
+    ! Аманда достаточно долго работает в зале и стала заметной.
+    if AmandaWorkHallDays >= 3 and AmandaPublicAttention >= 3:
+        AmandaLegareBranchUnlocked = 1
+    end
+
+    ! Третий вариант:
+    ! Откровенная форма резко повышает заметность Аманды.
+    if AmandaRevealingUniformSeen = 1 and AmandaPublicAttention >= 1:
+        AmandaLegareBranchUnlocked = 1
+    end
+
+    ! Четвёртый вариант:
+    ! Скандальность Аманды уже вышла наружу.
+    if AmandaScandalLevel >= 1 and AmandaPublicAttention >= 2:
+        AmandaLegareBranchUnlocked = 1
+    end
+
+    if AmandaLegareBranchUnlocked = 1:
+        AmandaLegareBranchUnlockDay = day
+        AmandaLegareBranchUnlockWeek = week
+        AmandaLegareBranchUnlockTime = time
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_branch_unlock.qsps
+! Debug-открытие ветки
+! ================================================
+
+#AmandaLegareBranchDebugUnlock
+    AmandaLegareBranchUnlocked = 1
+    AmandaLegareBranchUnlockDay = day
+    AmandaLegareBranchUnlockWeek = week
+    AmandaLegareBranchUnlockTime = time
+---

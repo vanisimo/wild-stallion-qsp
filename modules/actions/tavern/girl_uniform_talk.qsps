@@ -1,0 +1,362 @@
+! ================================================
+! FILE: modules/actions/tavern/girl_uniform_talk.qsps
+! Разговор с девушкой о рабочей форме
+! Версия: v1
+! Назначение:
+! - НЕ админ-меню
+! - живой разговор после покупки формы у Ирмы
+! - назначает обычную или откровенную рабочую форму
+! - работает для Аманды, Мелиссы и Сандры
+!
+! Тексты берутся из:
+! modules/actions/tavern/girl_uniform_talk_text.qsps
+!
+! Использует:
+! uniform_purchased[girl]
+! revealing_uniform_all_bought
+! GirlUniformLevel[girl]
+! GirlWorkPolicy[girl]
+! GirlPublicAttention[girl]
+! GirlNpcPath[girl]
+! GirlSecretiveness[girl]
+! GirlRebellion[girl]
+! GirlTrustStefan[girl]
+! TavernScandal
+! TavernLewdFame
+! ================================================
+
+#GirlUniformTalkStart
+    *clr
+    clr
+    cla
+
+    gs 'GirlUniformTalkNormalizeKey', $ARGS[0]
+    $UniformTalkGirl = $UniformTalkGirlKey
+    $UniformTalkReturnLoc = $ARGS[1]
+
+    if $UniformTalkGirl = '':
+        $UniformTalkGirl = 'amanda'
+    end
+
+    if $UniformTalkReturnLoc = '':
+        $UniformTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($UniformTalkReturnLoc) = 0:
+        $UniformTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlUniformTalkEnsureName', $UniformTalkGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $UniformTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР О РАБОЧЕЙ ФОРМЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlUniformTalkPrintText', 'intro'
+
+    *pl ' '
+
+    gs 'GirlUniformTalkPrintCurrent'
+
+    *pl ' '
+
+    gs 'GirlUniformTalkPrintText', 'thoughts'
+
+    *pl ' '
+
+    gs 'GirlUniformTalkBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''GirlUniformTalkMenu''">' + $RealName[$UniformTalkGirl] + '</a>?'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_uniform_talk.qsps
+! Меню выбора
+! ================================================
+
+#GirlUniformTalkBuildMenu
+    gs 'Menu.Destroy', 'GirlUniformTalkMenu'
+    gs 'Menu.Create', 'GirlUniformTalkMenu'
+
+    gs 'Menu.Add', 'GirlUniformTalkMenu', 'Оставить обычную форму', ''
+    gs 'Menu.AddModule', 'GirlUniformTalkMenu', {
+        gt 'GirlUniformTalkSet', $UniformTalkGirl, 0, $UniformTalkReturnLoc
+    }
+
+    if uniform_purchased[$UniformTalkGirl] = 1 or revealing_uniform_all_bought = 1:
+        gs 'Menu.Add', 'GirlUniformTalkMenu', 'Надеть откровенную форму', ''
+        gs 'Menu.AddModule', 'GirlUniformTalkMenu', {
+            gt 'GirlUniformTalkSet', $UniformTalkGirl, 1, $UniformTalkReturnLoc
+        }
+    else:
+        gs 'Menu.Add', 'GirlUniformTalkMenu', 'Откровенная форма ещё не куплена', ''
+        gs 'Menu.AddModule', 'GirlUniformTalkMenu', {
+            gt 'GirlUniformTalkBlocked', $UniformTalkGirl, $UniformTalkReturnLoc
+        }
+    end
+
+    gs 'Menu.Add', 'GirlUniformTalkMenu', 'Не говорить о форме', ''
+    gs 'Menu.AddModule', 'GirlUniformTalkMenu', {
+        gt $UniformTalkReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_uniform_talk.qsps
+! Назначение формы
+! ================================================
+
+#GirlUniformTalkSet
+    *clr
+    clr
+    cla
+
+    gs 'GirlUniformTalkNormalizeKey', $ARGS[0]
+    $UniformTalkGirl = $UniformTalkGirlKey
+    UniformTalkLevel = ARGS[1]
+    $UniformTalkReturnLoc = $ARGS[2]
+
+    if $UniformTalkGirl = '':
+        $UniformTalkGirl = 'amanda'
+    end
+
+    if $UniformTalkReturnLoc = '':
+        $UniformTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($UniformTalkReturnLoc) = 0:
+        $UniformTalkReturnLoc = 'TavernMain'
+    end
+
+    if UniformTalkLevel < 0:
+        UniformTalkLevel = 0
+    end
+
+    if UniformTalkLevel > 1:
+        UniformTalkLevel = 1
+    end
+
+    if UniformTalkLevel = 1:
+        if uniform_purchased[$UniformTalkGirl] = 0 and revealing_uniform_all_bought = 0:
+            gt 'GirlUniformTalkBlocked', $UniformTalkGirl, $UniformTalkReturnLoc
+        end
+    end
+
+    gs 'GirlUniformTalkEnsureName', $UniformTalkGirl
+
+    GirlUniformLevel[$UniformTalkGirl] = UniformTalkLevel
+
+    if UniformTalkLevel = 1:
+        TavernScandal += 1
+        GirlPublicAttention[$UniformTalkGirl] += 2
+
+        if GirlWorkPolicy[$UniformTalkGirl] = 3:
+            GirlNpcPath[$UniformTalkGirl] += 1
+            TavernLewdFame += 1
+        end
+
+        if GirlTrustStefan[$UniformTalkGirl] < 20:
+            GirlRebellion[$UniformTalkGirl] += 1
+        else:
+            GirlTrustStefan[$UniformTalkGirl] += 1
+        end
+    else:
+        GirlSecretiveness[$UniformTalkGirl] -= 1
+        GirlPublicAttention[$UniformTalkGirl] -= 1
+    end
+
+    if GirlSecretiveness[$UniformTalkGirl] < 0:
+        GirlSecretiveness[$UniformTalkGirl] = 0
+    end
+
+    if GirlPublicAttention[$UniformTalkGirl] < 0:
+        GirlPublicAttention[$UniformTalkGirl] = 0
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    if TavernLewdFame < 0:
+        TavernLewdFame = 0
+    end
+
+    ! Мосты к старым индивидуальным переменным.
+    if $UniformTalkGirl = 'amanda':
+        AmandaPublicAttention = GirlPublicAttention['amanda']
+        AmandaNpcPath = GirlNpcPath['amanda']
+        AmandaSecretiveness = GirlSecretiveness['amanda']
+        AmandaRebellion = GirlRebellion['amanda']
+
+        if GirlUniformLevel['amanda'] = 1:
+            AmandaScandalLevel += 1
+        end
+    elseif $UniformTalkGirl = 'melissa':
+        MelissaNpcPath = GirlNpcPath['melissa']
+        MelissaFamilyConcern += 1
+
+        if GirlUniformLevel['melissa'] = 1:
+            MelissaScandalTolerance += 1
+        end
+    elseif $UniformTalkGirl = 'sandra':
+        SandraNpcPath = GirlNpcPath['sandra']
+        SandraFamilyConcern += 1
+
+        if GirlUniformLevel['sandra'] = 1:
+            SandraMoralResistance -= 1
+
+            if SandraMoralResistance < 0:
+                SandraMoralResistance = 0
+            end
+        end
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $UniformTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ФОРМА НАЗНАЧЕНА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlUniformTalkPrintText', 'set'
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG UNIFORM TALK] girl: ' + $UniformTalkGirl
+        *pl '[DEBUG UNIFORM TALK] GirlUniformLevel: ' + STR(GirlUniformLevel[$UniformTalkGirl])
+        *pl '[DEBUG UNIFORM TALK] uniform_purchased: ' + STR(uniform_purchased[$UniformTalkGirl])
+        *pl '[DEBUG UNIFORM TALK] TavernScandal: ' + STR(TavernScandal)
+        *pl '[DEBUG UNIFORM TALK] TavernLewdFame: ' + STR(TavernLewdFame)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $UniformTalkReturnLoc
+    end
+
+    killvar 'UniformTalkLevel'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_uniform_talk.qsps
+! Откровенная форма ещё не куплена
+! ================================================
+
+#GirlUniformTalkBlocked
+    *clr
+    clr
+    cla
+
+    gs 'GirlUniformTalkNormalizeKey', $ARGS[0]
+    $UniformTalkGirl = $UniformTalkGirlKey
+    $UniformTalkReturnLoc = $ARGS[1]
+
+    if $UniformTalkGirl = '':
+        $UniformTalkGirl = 'amanda'
+    end
+
+    if $UniformTalkReturnLoc = '':
+        $UniformTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlUniformTalkEnsureName', $UniformTalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ФОРМА НЕ ГОТОВА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlUniformTalkPrintText', 'blocked'
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'GirlUniformTalkStart', $UniformTalkGirl, $UniformTalkReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_uniform_talk.qsps
+! Текущий статус
+! ================================================
+
+#GirlUniformTalkPrintCurrent
+    if GirlUniformLevel[$UniformTalkGirl] = 1:
+        $UniformTalkCurrent = 'откровенная форма'
+    else:
+        $UniformTalkCurrent = 'обычная форма'
+    end
+
+    if uniform_purchased[$UniformTalkGirl] = 1 or revealing_uniform_all_bought = 1:
+        $UniformTalkAvailable = 'откровенная форма куплена'
+    else:
+        $UniformTalkAvailable = 'откровенная форма ещё не куплена'
+    end
+
+    *pl '<b>Сейчас:</b> ' + $UniformTalkCurrent
+    *pl '<b>Доступно:</b> ' + $UniformTalkAvailable
+
+    killvar '$UniformTalkCurrent'
+    killvar '$UniformTalkAvailable'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_uniform_talk.qsps
+! Debug-входы
+! ================================================
+
+#GirlUniformTalkDebugStart
+    $DebugUniformGirl = LCASE($ARGS[0])
+
+    if $DebugUniformGirl = '':
+        $DebugUniformGirl = 'amanda'
+    end
+
+    uniform_purchased[$DebugUniformGirl] = 1
+    gt 'GirlUniformTalkStart', $DebugUniformGirl, 'TavernMain'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_uniform_talk.qsps
+! Служебное
+! ================================================
+
+#GirlUniformTalkNormalizeKey
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $UniformTalkGirlKey = $GirlKey
+    else:
+        $UniformTalkGirlKey = LCASE($ARGS[0])
+    end
+---
+
+#GirlUniformTalkEnsureName
+    gs 'GirlUniformTalkNormalizeKey', $ARGS[0]
+    $UniformTalkNameKey = $UniformTalkGirlKey
+
+    if $RealName[$UniformTalkNameKey] = '':
+        if $UniformTalkNameKey = 'amanda':
+            $RealName[$UniformTalkNameKey] = 'Аманда'
+        elseif $UniformTalkNameKey = 'melissa':
+            $RealName[$UniformTalkNameKey] = 'Мелисса'
+        elseif $UniformTalkNameKey = 'sandra':
+            $RealName[$UniformTalkNameKey] = 'Сандра'
+        else:
+            $RealName[$UniformTalkNameKey] = $UniformTalkNameKey
+        end
+    end
+
+    killvar '$UniformTalkNameKey'
+---

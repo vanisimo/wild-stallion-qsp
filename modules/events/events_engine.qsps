@@ -1,0 +1,118 @@
+! ================================================
+! MODULE: events/events_engine.qsps
+! Движок случайных событий таверны
+! Влияет на прибыль, репутацию и девушек
+! ================================================
+
+#TavernRandomEvents
+    ! Шанс события каждый день (примерно 35%)
+    if Rand(1, 100) > 35: exit 
+
+    event_roll = Rand(1, 100)
+
+    if event_roll <= 30:
+        gs 'Event_Brawl'             
+          ! Драка
+    elseif event_roll <= 50:
+        gs 'Event_GuardCheck'         
+         ! Проверка стражи
+    elseif event_roll <= 65:
+        gs 'Event_RichGuest'           
+        ! Богатый гость
+    elseif event_roll <= 78:
+        gs 'Event_RatInfestation'      
+        ! Нашествие крыс
+    elseif event_roll <= 88:
+        gs 'Event_HarvestFestival'    
+         ! Фестиваль урожая (хорошее событие)
+    elseif event_roll <= 95:
+        gs 'Event_AmandaSpecial'      
+         ! Специальное событие с Амандой
+    else:
+        gs 'Event_SandraNewDish'      
+         ! Новое блюдо Сандры
+    end
+---
+
+! ====================== ПЛОХИЕ СОБЫТИЯ ======================
+#Event_Brawl
+    *clr
+    gs 'ShowLocationImage', 'TavernMain', 'shake'
+    *pl '=== МАССОВАЯ ДРАКА В ЗАЛЕ ==='
+    *p 'Группа пьяных наёмников не поделила что-то с местными. Полетели стулья, разбились кружки.'
+    damage = Rand(80, 180)
+    money -= damage
+    tavern_reputation -= 4
+    *p 'Ремонт обошёлся в <<damage>> мараведи. Репутация упала.'
+    act 'Продолжить': exit
+---
+
+#Event_GuardCheck
+    *clr
+    gs 'ShowLocationImage', 'TavernMain'
+    *pl '=== ИНСПЕКЦИЯ ГОРОДСКОЙ СТРАЖИ ==='
+    if tavern_reputation >= 65:
+        *p 'Стражники осмотрели заведение, выпили бесплатно и остались довольны.'
+        tavern_reputation += 2
+    else:
+        fine = Rand(120, 280)
+        money -= fine
+        tavern_reputation -= 5
+        *p 'Инспектор нашёл нарушения и выписал штраф <<fine>> мараведи.'
+    end
+    act 'Продолжить': exit
+---
+
+#Event_RatInfestation
+    *clr
+    *pl '=== НАШЕСТВИЕ КРЫС ==='
+    *p 'Крысы завелись на складе! Часть продуктов испорчена.'
+    productnum -= Rand(40, 90)
+    tavern_reputation -= 3
+    act 'Продолжить': exit
+---
+
+! ====================== ХОРОШИЕ СОБЫТИЯ ======================
+#Event_RichGuest
+    *clr
+    gs 'ShowLocationImage', 'TavernMain'
+    *pl '=== БОГАТЫЙ ГОСТЬ ==='
+    *p 'В таверну зашёл богатый купец с караваном. Он остался очень доволен обслуживанием.'
+    money += Rand(250, 450)
+    tavern_reputation += 3
+    act 'Продолжить': exit
+---
+
+#Event_HarvestFestival
+    *clr
+    gs 'ShowLocationImage', 'TavernMain'
+    *pl '=== ФЕСТИВАЛЬ УРОЖАЯ ==='
+    *p 'Сегодня в городе фестиваль урожая. К вам пришло очень много посетителей.'
+    tavernvisitors += Rand(15, 30)
+    money += Rand(180, 320)
+    tavern_reputation += 4
+    act 'Продолжить': exit
+---
+
+#Event_SandraNewDish
+    *clr
+    gs 'ShowLocationImage', 'Kitchen'
+    *pl '=== НОВОЕ БЛЮДО САНДРЫ ==='
+    *p 'Сандра придумала новое фирменное блюдо. Посетители в восторге!'
+    cooking['sandra'] += 4
+    money += Rand(120, 220)
+    tavern_reputation += 3
+    act 'Продолжить': exit
+---
+
+! ====================== СОБЫТИЯ С ДЕВУШКАМИ ======================
+#Event_AmandaSpecial
+    *clr
+    gs 'ShowLocationImage', 'TavernMain'
+    *pl '=== ОСОБОЕ СОБЫТИЕ — АМАНДА ==='
+    *p 'Аманда сегодня особенно старалась. Один богатый посетитель оставил ей очень крупные чаевые.'
+    money += Rand(80, 160)
+    Friends['amanda'] += 3
+    act 'Продолжить': exit
+---
+

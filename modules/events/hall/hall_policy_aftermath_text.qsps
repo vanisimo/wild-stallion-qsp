@@ -1,0 +1,59 @@
+! ================================================
+! FILE: modules/events/hall/hall_policy_aftermath_text.qsps
+! Текст последствий политики работы девушек
+! Используется:
+! modules/events/hall/hall_policy_aftermath.qsps
+! ================================================
+
+#HallPolicyAftermathText
+    $HallPolicyTextGirl = LCASE($ARGS[0])
+    $HallPolicyTextEvent = LCASE($ARGS[1])
+    $HallPolicyTextResult = LCASE($ARGS[2])
+    HallPolicyTextSeverity = ARGS[3]
+
+    $HallPolicyAftermathText = ''
+
+    if HallPolicyTextSeverity <= 0:
+        killvar '$HallPolicyTextGirl'
+        killvar '$HallPolicyTextEvent'
+        killvar '$HallPolicyTextResult'
+        killvar 'HallPolicyTextSeverity'
+        exit
+    end
+
+    if HallPolicyTextSeverity = 1:
+        $HallPolicyAftermathText = 'Случай не проходит совсем незаметно. У пары столов переглядываются, но пока никто не решается говорить вслух.'
+    elseif HallPolicyTextSeverity = 2:
+        $HallPolicyAftermathText = 'По залу проходит тихий смешок. Кто-то уже пересказывает увиденное соседу, приукрашивая каждую мелочь.'
+    elseif HallPolicyTextSeverity = 3:
+        $HallPolicyAftermathText = 'Гости начинают смотреть на девушек иначе. Для одних это просто забава, для других — знак, что в вашем трактире дозволено чуть больше обычного.'
+    elseif HallPolicyTextSeverity = 4:
+        $HallPolicyAftermathText = 'Такие вещи долго не остаются в стенах трактира. К вечеру об этом будут шептаться у лавок, а к воскресенью кто-нибудь обязательно донесёт слух до церковных ушей.'
+    else:
+        $HallPolicyAftermathText = 'Слишком много глаз всё видело. Сегодняшний случай уже не просто шум в зале — это новая отметина на репутации «Дикого Жеребца».'
+    end
+
+    if $HallPolicyTextGirl = 'amanda':
+        if HallPolicyTextSeverity >= 3:
+            $HallPolicyAftermathText += '<br><br>Аманда старается делать вид, что всё уже позади, но её красные щёки и беспокойные движения выдают: она понимает, что теперь на неё будут смотреть внимательнее.'
+        end
+    elseif $HallPolicyTextGirl = 'melissa':
+        if HallPolicyTextSeverity >= 3:
+            $HallPolicyAftermathText += '<br><br>Мелисса замечает перемену в зале почти сразу. В её взгляде мелькает не страх, а расчёт — если внимание всё равно пришло, им можно управлять.'
+        end
+    elseif $HallPolicyTextGirl = 'sandra':
+        if HallPolicyTextSeverity >= 3:
+            $HallPolicyAftermathText += '<br><br>Сандра молчит, но её тяжёлый взгляд говорит достаточно. Она не испугалась, но прекрасно понимает цену таким слухам.'
+        end
+    end
+
+    if $HallPolicyAftermathText <> '':
+        *p $HallPolicyAftermathText
+    end
+
+    killvar '$HallPolicyTextGirl'
+    killvar '$HallPolicyTextEvent'
+    killvar '$HallPolicyTextResult'
+    killvar '$HallPolicyAftermathText'
+    killvar 'HallPolicyTextSeverity'
+---

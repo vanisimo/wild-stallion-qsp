@@ -1,0 +1,364 @@
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Разговор с девушкой после событий о правилах работы
+! Версия: v1 / replaces menu-like girl_work_rules
+! Назначение:
+! - НЕ является отдельной "админ-панелью" правил
+! - вызывается после живых событий:
+!   hall_harassment
+!   hall_lewd_behavior
+!   hall_missing_girl
+!   kitchen_customer_event
+! - через диалог Стефан выставляет:
+!   GirlWorkPolicy[girl]
+!   GirlKitchenPolicy[girl]
+!
+! Тексты берутся из:
+! modules/actions/tavern/girl_work_policy_talk_text.qsps
+! ================================================
+
+#GirlWorkPolicyTalkStart
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkPolicyTalkNormalizeKey', $ARGS[0]
+    $PolicyTalkGirl = $PolicyTalkGirlKey
+    $PolicyTalkArea = LCASE($ARGS[1])
+    $PolicyTalkReturnLoc = $ARGS[2]
+
+    if $PolicyTalkGirl = '':
+        $PolicyTalkGirl = 'amanda'
+    end
+
+    if $PolicyTalkArea = '':
+        $PolicyTalkArea = 'hall'
+    end
+
+    if $PolicyTalkArea <> 'hall' and $PolicyTalkArea <> 'kitchen':
+        $PolicyTalkArea = 'hall'
+    end
+
+    if $PolicyTalkReturnLoc = '':
+        $PolicyTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($PolicyTalkReturnLoc) = 0:
+        $PolicyTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlWorkPolicyTalkEnsureName', $PolicyTalkGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $PolicyTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+
+    if $PolicyTalkArea = 'kitchen':
+        *pl ' РАЗГОВОР ПОСЛЕ КУХОННОГО СЛУЧАЯ'
+    else:
+        *pl ' РАЗГОВОР ПОСЛЕ СЛУЧАЯ В ЗАЛЕ'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkPolicyTalkPrintText', 'intro'
+
+    *pl ' '
+
+    gs 'GirlWorkPolicyTalkPrintCurrent'
+
+    *pl ' '
+
+    if $PolicyTalkArea = 'kitchen':
+        gs 'GirlWorkPolicyTalkPrintText', 'kitchen_thoughts'
+    else:
+        gs 'GirlWorkPolicyTalkPrintText', 'hall_thoughts'
+    end
+
+    *pl ' '
+
+    gs 'GirlWorkPolicyTalkBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''GirlWorkPolicyTalkMenu''">ей теперь</a>?'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Быстрый вход после событий зала
+! ================================================
+
+#GirlWorkPolicyTalkHall
+    gt 'GirlWorkPolicyTalkStart', $ARGS[0], 'hall', $ARGS[1]
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Быстрый вход после событий кухни
+! ================================================
+
+#GirlWorkPolicyTalkKitchen
+    gt 'GirlWorkPolicyTalkStart', $ARGS[0], 'kitchen', $ARGS[1]
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Меню выбора правила
+! ================================================
+
+#GirlWorkPolicyTalkBuildMenu
+    gs 'Menu.Destroy', 'GirlWorkPolicyTalkMenu'
+    gs 'Menu.Create', 'GirlWorkPolicyTalkMenu'
+
+    gs 'Menu.Add', 'GirlWorkPolicyTalkMenu', 'Не давать нового правила', ''
+    gs 'Menu.AddModule', 'GirlWorkPolicyTalkMenu', {
+        gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 0, $PolicyTalkReturnLoc
+    }
+
+    if $PolicyTalkArea = 'kitchen':
+        gs 'Menu.Add', 'GirlWorkPolicyTalkMenu', 'Звать Стефана', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyTalkMenu', {
+            gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 1, $PolicyTalkReturnLoc
+        }
+
+        gs 'Menu.Add', 'GirlWorkPolicyTalkMenu', 'Решать самой', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyTalkMenu', {
+            gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 2, $PolicyTalkReturnLoc
+        }
+
+        gs 'Menu.Add', 'GirlWorkPolicyTalkMenu', 'Удерживать клиента любой ценой', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyTalkMenu', {
+            gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 3, $PolicyTalkReturnLoc
+        }
+    else:
+        gs 'Menu.Add', 'GirlWorkPolicyTalkMenu', 'Держаться прилично', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyTalkMenu', {
+            gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 1, $PolicyTalkReturnLoc
+        }
+
+        gs 'Menu.Add', 'GirlWorkPolicyTalkMenu', 'Решать самой', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyTalkMenu', {
+            gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 2, $PolicyTalkReturnLoc
+        }
+
+        gs 'Menu.Add', 'GirlWorkPolicyTalkMenu', 'Удерживать клиента ради чаевых', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyTalkMenu', {
+            gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 3, $PolicyTalkReturnLoc
+        }
+    end
+
+    gs 'Menu.Add', 'GirlWorkPolicyTalkMenu', 'Вернуться без разговора', ''
+    gs 'Menu.AddModule', 'GirlWorkPolicyTalkMenu', {
+        gt $PolicyTalkReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Применение правила
+! ================================================
+
+#GirlWorkPolicyTalkSet
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkPolicyTalkNormalizeKey', $ARGS[0]
+    $PolicyTalkGirl = $PolicyTalkGirlKey
+    $PolicyTalkArea = LCASE($ARGS[1])
+    PolicyTalkValue = ARGS[2]
+    $PolicyTalkReturnLoc = $ARGS[3]
+
+    if $PolicyTalkGirl = '':
+        $PolicyTalkGirl = 'amanda'
+    end
+
+    if $PolicyTalkArea <> 'hall' and $PolicyTalkArea <> 'kitchen':
+        $PolicyTalkArea = 'hall'
+    end
+
+    if PolicyTalkValue < 0:
+        PolicyTalkValue = 0
+    end
+
+    if PolicyTalkValue > 3:
+        PolicyTalkValue = 3
+    end
+
+    if $PolicyTalkReturnLoc = '':
+        $PolicyTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($PolicyTalkReturnLoc) = 0:
+        $PolicyTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlWorkPolicyTalkEnsureName', $PolicyTalkGirl
+
+    if $PolicyTalkArea = 'kitchen':
+        GirlKitchenPolicy[$PolicyTalkGirl] = PolicyTalkValue
+    else:
+        GirlWorkPolicy[$PolicyTalkGirl] = PolicyTalkValue
+    end
+
+    ! Небольшие последствия самого разговора.
+    if PolicyTalkValue = 1:
+        GirlTrustStefan[$PolicyTalkGirl] += 1
+        GirlSecretiveness[$PolicyTalkGirl] -= 1
+    elseif PolicyTalkValue = 2:
+        GirlTrustStefan[$PolicyTalkGirl] += 1
+        GirlRebellion[$PolicyTalkGirl] += 1
+    elseif PolicyTalkValue = 3:
+        GirlPublicAttention[$PolicyTalkGirl] += 1
+        GirlNpcPath[$PolicyTalkGirl] += 1
+        TavernScandal += 1
+    end
+
+    if GirlSecretiveness[$PolicyTalkGirl] < 0:
+        GirlSecretiveness[$PolicyTalkGirl] = 0
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    ! Мосты к индивидуальным переменным.
+    if $PolicyTalkGirl = 'amanda':
+        AmandaPublicAttention = GirlPublicAttention['amanda']
+        AmandaNpcPath = GirlNpcPath['amanda']
+        AmandaSecretiveness = GirlSecretiveness['amanda']
+        AmandaRebellion = GirlRebellion['amanda']
+    elseif $PolicyTalkGirl = 'melissa':
+        MelissaNpcPath = GirlNpcPath['melissa']
+        MelissaFamilyConcern += 1
+    elseif $PolicyTalkGirl = 'sandra':
+        SandraNpcPath = GirlNpcPath['sandra']
+        SandraFamilyConcern += 1
+    end
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $PolicyTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРАВИЛО ОБНОВЛЕНО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkPolicyTalkPrintText', 'set'
+
+    *pl ' '
+
+    if LOC('GirlWorkPolicyAssignmentReactionPrint') = 1:
+        gs 'GirlWorkPolicyAssignmentReactionPrint', $PolicyTalkGirl, $PolicyTalkArea, PolicyTalkValue
+        *pl ' '
+    end
+
+    if debug = 1:
+        *pl '[DEBUG POLICY TALK] girl: ' + $PolicyTalkGirl
+        *pl '[DEBUG POLICY TALK] area: ' + $PolicyTalkArea
+        *pl '[DEBUG POLICY TALK] value: ' + STR(PolicyTalkValue)
+        *pl '[DEBUG POLICY TALK] GirlWorkPolicy: ' + STR(GirlWorkPolicy[$PolicyTalkGirl])
+        *pl '[DEBUG POLICY TALK] GirlKitchenPolicy: ' + STR(GirlKitchenPolicy[$PolicyTalkGirl])
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $PolicyTalkReturnLoc
+    end
+
+    killvar 'PolicyTalkValue'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Печать текущего правила
+! ================================================
+
+#GirlWorkPolicyTalkPrintCurrent
+    if $PolicyTalkArea = 'kitchen':
+        gs 'GirlWorkPolicyTalkPolicyName', 'kitchen', GirlKitchenPolicy[$PolicyTalkGirl]
+        *pl '<b>Текущее правило кухни:</b> ' + $PolicyTalkPolicyName
+    else:
+        gs 'GirlWorkPolicyTalkPolicyName', 'hall', GirlWorkPolicy[$PolicyTalkGirl]
+        *pl '<b>Текущее правило зала:</b> ' + $PolicyTalkPolicyName
+    end
+---
+
+#GirlWorkPolicyTalkPolicyName
+    $PolicyTalkNameArea = LCASE($ARGS[0])
+    PolicyTalkNameValue = ARGS[1]
+    $PolicyTalkPolicyName = 'правил нет'
+
+    if $PolicyTalkNameArea = 'kitchen':
+        if PolicyTalkNameValue = 1:
+            $PolicyTalkPolicyName = 'звать Стефана и держаться прилично'
+        elseif PolicyTalkNameValue = 2:
+            $PolicyTalkPolicyName = 'решать самой'
+        elseif PolicyTalkNameValue = 3:
+            $PolicyTalkPolicyName = 'удерживать клиента любой ценой'
+        else:
+            $PolicyTalkPolicyName = 'правил нет'
+        end
+    else:
+        if PolicyTalkNameValue = 1:
+            $PolicyTalkPolicyName = 'держаться прилично и звать Стефана'
+        elseif PolicyTalkNameValue = 2:
+            $PolicyTalkPolicyName = 'решать самой'
+        elseif PolicyTalkNameValue = 3:
+            $PolicyTalkPolicyName = 'удерживать клиента ради чаевых'
+        else:
+            $PolicyTalkPolicyName = 'правил нет'
+        end
+    end
+
+    killvar '$PolicyTalkNameArea'
+    killvar 'PolicyTalkNameValue'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Тестовые входы
+! ================================================
+
+#GirlWorkPolicyTalkDebugHall
+    gt 'GirlWorkPolicyTalkStart', $ARGS[0], 'hall', 'TavernMain'
+---
+
+#GirlWorkPolicyTalkDebugKitchen
+    gt 'GirlWorkPolicyTalkStart', $ARGS[0], 'kitchen', 'TavernMain'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Служебное
+! ================================================
+
+#GirlWorkPolicyTalkNormalizeKey
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $PolicyTalkGirlKey = $GirlKey
+    else:
+        $PolicyTalkGirlKey = LCASE($ARGS[0])
+    end
+---
+
+#GirlWorkPolicyTalkEnsureName
+    gs 'GirlWorkPolicyTalkNormalizeKey', $ARGS[0]
+    $PolicyTalkNameKey = $PolicyTalkGirlKey
+
+    if $RealName[$PolicyTalkNameKey] = '':
+        if $PolicyTalkNameKey = 'amanda':
+            $RealName[$PolicyTalkNameKey] = 'Аманда'
+        elseif $PolicyTalkNameKey = 'melissa':
+            $RealName[$PolicyTalkNameKey] = 'Мелисса'
+        elseif $PolicyTalkNameKey = 'sandra':
+            $RealName[$PolicyTalkNameKey] = 'Сандра'
+        else:
+            $RealName[$PolicyTalkNameKey] = $PolicyTalkNameKey
+        end
+    end
+
+    killvar '$PolicyTalkNameKey'
+---

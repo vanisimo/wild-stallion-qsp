@@ -1,0 +1,161 @@
+! ================================================
+! FILE: modules/menu/panel_time_info.qsps
+! Панель времени
+! Обычный режим: информация, ожидание и пропуск дней
+! Debug-режим: ручной выбор времени суток и дня недели
+! ================================================
+
+#PanelTimeInfo
+    PanelCustomActive = 1
+
+    clr
+
+    gs 'GetDateTimeNames'
+    gs 'GetNextTimeName'
+
+    pl '══════════════════════════════════════════════'
+    pl ' ВРЕМЯ'
+    pl '══════════════════════════════════════════════'
+    pl ' '
+
+    pl 'Сейчас: ' + $TimeOfDay
+    pl 'День недели: ' + $WeekDay
+    pl 'Дата: ' + STR(day) + ' ' + $MonthName + ' ' + STR(year) + ' года'
+    pl ' '
+    pl 'Следующая часть дня: ' + $NextTimeName
+    pl ' '
+
+    pl 'Быстрые действия:'
+    pl '<a href="exec:gs ''AdvanceTimeFromPanel'', ''time_panel''">Ждать до следующей части дня</a>'
+    pl '<a href="exec:gt ''ConfirmSkipDays'', 1">Пропустить до завтра</a>'
+    pl '<a href="exec:gt ''ConfirmSkipDays'', 5">Пропустить 5 дней</a>'
+    pl ' '
+
+    if debug = 1:
+        pl '══════════════════════════════════════════════'
+        pl ' DEBUG: ручное управление временем'
+        pl '══════════════════════════════════════════════'
+        pl ' '
+
+        pl 'Время суток:'
+
+        if time = 1:
+            pl 'Утро — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetTimeFromPanel'', 1">Утро</a>'
+        end
+
+        if time = 2:
+            pl 'Полдень — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetTimeFromPanel'', 2">Полдень</a>'
+        end
+
+        if time = 3:
+            pl 'День — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetTimeFromPanel'', 3">День</a>'
+        end
+
+        if time = 4:
+            pl 'Вечер — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetTimeFromPanel'', 4">Вечер</a>'
+        end
+
+        if time = 5:
+            pl 'Ночь — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetTimeFromPanel'', 5">Ночь</a>'
+        end
+
+        pl ' '
+        pl 'День недели:'
+
+        if week = 1:
+            pl 'Понедельник — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetWeekFromPanel'', 1">Понедельник</a>'
+        end
+
+        if week = 2:
+            pl 'Вторник — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetWeekFromPanel'', 2">Вторник</a>'
+        end
+
+        if week = 3:
+            pl 'Среда — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetWeekFromPanel'', 3">Среда</a>'
+        end
+
+        if week = 4:
+            pl 'Четверг — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetWeekFromPanel'', 4">Четверг</a>'
+        end
+
+        if week = 5:
+            pl 'Пятница — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetWeekFromPanel'', 5">Пятница</a>'
+        end
+
+        if week = 6:
+            pl 'Суббота — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetWeekFromPanel'', 6">Суббота</a>'
+        end
+
+        if week = 7:
+            pl 'Воскресенье — сейчас'
+        else:
+            pl '<a href="exec:gs ''SetWeekFromPanel'', 7">Воскресенье</a>'
+        end
+
+        pl ' '
+    end
+
+    pl '══════════════════════════════════════════════'
+---
+
+! ================================================
+! FILE: modules/menu/panel_time_info.qsps
+! Название следующей части дня
+! ================================================
+
+#GetNextTimeName
+    if time = 1:
+        $NextTimeName = 'Полдень'
+    elseif time = 2:
+        $NextTimeName = 'День'
+    elseif time = 3:
+        $NextTimeName = 'Вечер'
+    elseif time = 4:
+        $NextTimeName = 'Ночь'
+    else:
+        $NextTimeName = 'Утро нового дня'
+    end
+---
+
+! ================================================
+! FILE: modules/menu/panel_time_info.qsps
+! Совместимость со старыми вызовами PanelSetTime
+! Теперь переводит на новую SetTimeFromPanel
+! ================================================
+
+#PanelSetTime
+    gs 'SetTimeFromPanel', ARGS[0]
+---
+
+! ================================================
+! FILE: modules/menu/panel_time_info.qsps
+! Совместимость со старыми вызовами PanelSetWeek
+! Теперь переводит на новую SetWeekFromPanel
+! ================================================
+
+#PanelSetWeek
+    gs 'SetWeekFromPanel', ARGS[0]
+---
+

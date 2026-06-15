@@ -1,0 +1,145 @@
+! ================================================
+! FILE: modules/core/refresh_location.qsps
+! Обновление текущей локации после действий из боковой панели
+! Используется после смены работы, времени и дня недели
+! Перерисовывает главное окно и окно действий
+! ================================================
+
+#RefreshCurrentLocation
+    $RefreshLoc = $CURLOC
+
+    if $RefreshLoc = '':
+        $RefreshLoc = 'TavernMain'
+    end
+
+    gs 'UpdateGirlLocations'
+    gs 'GetDateTimeNames'
+
+    gt $RefreshLoc
+---
+
+! ================================================
+! FILE: modules/core/refresh_location.qsps
+! Назначение работы девушке из панели персонала
+! После назначения перерисовывает текущую локацию
+! ================================================
+
+#SetGirlJobFromPanel
+    $PanelJobGirl = LCASE($ARGS[0])
+    $PanelJobName = LCASE($ARGS[1])
+    $PanelJobMode = LCASE($ARGS[2])
+
+    if $PanelJobGirl = '':
+        exit
+    end
+
+    if $PanelJobMode = '':
+        $PanelJobMode = 'toggle'
+    end
+
+    gs 'SetGirlJob', $PanelJobGirl, $PanelJobName, $PanelJobMode
+    gs 'CalculateTavernStaffEfficiency'
+    gs 'UpdateGirlLocations'
+
+    gt $CURLOC
+---
+
+! ================================================
+! FILE: modules/core/refresh_location.qsps
+! Быстрый переход к следующей части дня
+! Используется кнопкой "Ждать" и панелью времени
+! Без лишнего экрана подтверждения
+! Если сейчас ночь — запускает новый день
+! ================================================
+
+#AdvanceTimeFromPanel
+    $AdvanceReturnLoc = $CURLOC
+    $AdvanceMode = LCASE($ARGS[0])
+
+    if $AdvanceReturnLoc = '':
+        $AdvanceReturnLoc = 'TavernMain'
+    end
+
+    if time < 5:
+        time += 1
+
+        gs 'UpdateGirlLocations'
+        gs 'GetDateTimeNames'
+
+        if $AdvanceMode = 'time_panel':
+            $PanelRestoreAfterRefresh = 'time'
+        end
+
+        gt $AdvanceReturnLoc
+    else:
+        gt 'NextDay'
+    end
+
+    killvar '$AdvanceReturnLoc'
+    killvar '$AdvanceMode'
+---
+
+! ================================================
+! FILE: modules/core/refresh_location.qsps
+! Изменение времени суток из debug-панели времени
+! Не даёт выбрать значение вне диапазона 1-5
+! После изменения восстанавливает панель времени
+! ================================================
+
+#SetTimeFromPanel
+    NewPanelTime = ARGS[0]
+
+    if NewPanelTime < 1:
+        NewPanelTime = 1
+    end
+
+    if NewPanelTime > 5:
+        NewPanelTime = 5
+    end
+
+    time = NewPanelTime
+
+    gs 'UpdateGirlLocations'
+    gs 'GetDateTimeNames'
+
+    $PanelRestoreAfterRefresh = 'time'
+
+    if $CURLOC = '':
+        gt 'TavernMain'
+    else:
+        gt $CURLOC
+    end
+---
+
+! ================================================
+! FILE: modules/core/refresh_location.qsps
+! Изменение дня недели из debug-панели времени
+! Не даёт выбрать значение вне диапазона 1-7
+! После изменения восстанавливает панель времени
+! ================================================
+
+#SetWeekFromPanel
+    NewPanelWeek = ARGS[0]
+
+    if NewPanelWeek < 1:
+        NewPanelWeek = 1
+    end
+
+    if NewPanelWeek > 7:
+        NewPanelWeek = 7
+    end
+
+    week = NewPanelWeek
+
+    gs 'UpdateGirlLocations'
+    gs 'GetDateTimeNames'
+
+    $PanelRestoreAfterRefresh = 'time'
+
+    if $CURLOC = '':
+        gt 'TavernMain'
+    else:
+        gt $CURLOC
+    end
+---
+

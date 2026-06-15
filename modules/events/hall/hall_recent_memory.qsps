@@ -1,0 +1,70 @@
+! ================================================
+! FILE: modules/events/hall/hall_recent_memory.qsps
+! Память последних событий зала
+! Версия: v1
+! Назначение:
+! - хранить последнее заметное событие в зале
+! - давать основу для слухов, семейных реакций, Легаре и церкви
+! - не выводить текст напрямую, только сохранять состояние
+! ================================================
+
+#HallRecentMemorySave
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallRecentGirl = $GirlKey
+    $HallRecentType = LCASE($ARGS[1])
+    $HallRecentPlace = LCASE($ARGS[2])
+    HallRecentSeverity = ARGS[3]
+
+    if $HallRecentGirl = '':
+        exit
+    end
+
+    if $HallRecentType = '':
+        $HallRecentType = 'hall_event'
+    end
+
+    if $HallRecentPlace = '':
+        $HallRecentPlace = 'hall'
+    end
+
+    if HallRecentSeverity < 0:
+        HallRecentSeverity = 0
+    end
+
+    $LastHallMemoryGirl = $HallRecentGirl
+    $LastHallMemoryType = $HallRecentType
+    $LastHallMemoryPlace = $HallRecentPlace
+    LastHallMemorySeverity = HallRecentSeverity
+    LastHallMemoryDay = day
+    LastHallMemoryTime = time
+    LastHallMemoryDiscussed = 0
+
+    HallMemoryCount[$HallRecentGirl] += 1
+
+    if HallRecentSeverity >= 2:
+        HallMemorySeriousCount[$HallRecentGirl] += 1
+    end
+
+    if HallRecentSeverity >= 3:
+        HallMemoryDirtyCount[$HallRecentGirl] += 1
+    end
+
+    killvar '$HallRecentGirl'
+    killvar '$HallRecentType'
+    killvar '$HallRecentPlace'
+    killvar 'HallRecentSeverity'
+---
+
+#HallRecentMemoryClear
+    $LastHallMemoryGirl = ''
+    $LastHallMemoryType = ''
+    $LastHallMemoryPlace = ''
+    LastHallMemorySeverity = 0
+    LastHallMemoryDay = 0
+    LastHallMemoryTime = 0
+    LastHallMemoryDiscussed = 0
+---
+
+#HallRecentMemoryMarkDiscussed
+    LastHallMemoryDiscussed = 1
+---

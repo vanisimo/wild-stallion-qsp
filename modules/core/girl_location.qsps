@@ -1,0 +1,164 @@
+
+
+
+
+! ================================================
+! FILE: modules/core/girl_location.qsps
+! Назначение домашней комнаты девушки
+! Используется только ночью
+! ================================================
+
+#SetGirlHomeLocation
+    $LocGirl = LCASE($ARGS[0])
+
+    if $LocGirl = 'sandra':
+        $GirlLocation[$LocGirl] = 'SandraRoom'
+    elseif $LocGirl = 'melissa':
+        $GirlLocation[$LocGirl] = 'MelissaRoom'
+    elseif $LocGirl = 'amanda':
+        $GirlLocation[$LocGirl] = 'AmandaRoom'
+    else:
+        $GirlLocation[$LocGirl] = ''
+    end
+
+    killvar '$LocGirl'
+---
+
+! ================================================
+! FILE: modules/core/girl_location.qsps
+! Назначение рабочей локации девушки
+! Кухня имеет приоритет над залом и уборкой
+! Зал используется для официантки и уборщицы
+! Если девушка не работает, она не отображается
+! ================================================
+
+#SetGirlWorkLocation
+    $LocGirl = LCASE($ARGS[0])
+
+    if $LocGirl = '':
+        exit
+    end
+
+    if jobkitchen[$LocGirl] = 1:
+        $GirlLocation[$LocGirl] = 'Kitchen'
+    elseif jobwaitress[$LocGirl] = 1:
+        $GirlLocation[$LocGirl] = 'TavernMain'
+    elseif jobcleaning[$LocGirl] = 1:
+        $GirlLocation[$LocGirl] = 'TavernMain'
+    else:
+        $GirlLocation[$LocGirl] = ''
+    end
+
+    killvar '$LocGirl'
+---
+
+! ================================================
+! FILE: modules/core/girl_location.qsps
+! Очистка текущей локации девушки
+! Используется когда девушка не должна отображаться в доступных местах
+! ================================================
+
+#ClearGirlLocation
+    $LocGirl = LCASE($ARGS[0])
+
+    if $LocGirl = '':
+        exit
+    end
+
+    $GirlLocation[$LocGirl] = ''
+
+    killvar '$LocGirl'
+---
+
+! ================================================
+! FILE: modules/core/girl_location.qsps
+! Вывод кликабельного имени девушки в локации
+! Имя появляется только если девушка сейчас находится здесь
+! ================================================
+
+#ShowGirlInLocation
+    $LocGirl = LCASE($ARGS[0])
+    $LocName = $ARGS[1]
+
+    if $LocGirl = '':
+        exit
+    end
+
+    if $LocName = '':
+        exit
+    end
+
+    if $GirlLocation[$LocGirl] = $LocName:
+        gs 'NpcClickableLink', $LocGirl
+        LocationGirlShown = 1
+    end
+
+    killvar '$LocGirl'
+    killvar '$LocName'
+---
+
+! ================================================
+! FILE: modules/core/girl_location.qsps
+! Получение текстового описания местоположения девушки
+! Используется на втором этаже и в будущих навигационных панелях
+! ================================================
+
+#GetGirlLocationText
+    $LocationTextGirl = LCASE($ARGS[0])
+
+    if $LocationTextGirl = '':
+        $GirlLocationText = 'местоположение неизвестно'
+        exit
+    end
+
+    if $GirlLocation[$LocationTextGirl] = 'TavernMain':
+        if jobwaitress[$LocationTextGirl] = 1:
+            $GirlLocationText = 'работает в зале'
+        elseif jobcleaning[$LocationTextGirl] = 1:
+            $GirlLocationText = 'убирает главный зал'
+        else:
+            $GirlLocationText = 'находится в главном зале'
+        end
+    elseif $GirlLocation[$LocationTextGirl] = 'Kitchen':
+        $GirlLocationText = 'работает на кухне'
+    elseif $GirlLocation[$LocationTextGirl] = 'SandraRoom':
+        $GirlLocationText = 'у себя в комнате'
+    elseif $GirlLocation[$LocationTextGirl] = 'MelissaRoom':
+        $GirlLocationText = 'у себя в комнате'
+    elseif $GirlLocation[$LocationTextGirl] = 'AmandaRoom':
+        $GirlLocationText = 'у себя в комнате'
+    elseif $GirlLocation[$LocationTextGirl] = 'DanceHall':
+        $GirlLocationText = 'на пятничных танцах'
+    elseif $GirlLocation[$LocationTextGirl] = 'Church':
+        $GirlLocationText = 'на службе в церкви'
+    else:
+        $GirlLocationText = 'сейчас не на виду'
+    end
+
+    killvar '$LocationTextGirl'
+---
+
+! ================================================
+! FILE: modules/core/girl_location.qsps
+! Вывод строки местоположения девушки
+! Показывает имя и где она сейчас находится
+! ================================================
+
+#ShowGirlLocationLine
+    $LocationLineGirl = LCASE($ARGS[0])
+
+    if $LocationLineGirl = '':
+        exit
+    end
+
+    if $RealName[$LocationLineGirl] = '':
+        $RealName[$LocationLineGirl] = UCASE(MID($LocationLineGirl, 1, 1)) + LCASE(MID($LocationLineGirl, 2))
+    end
+
+    gs 'GetGirlLocationText', $LocationLineGirl
+
+    *pl $RealName[$LocationLineGirl] + ': ' + $GirlLocationText
+
+    killvar '$LocationLineGirl'
+---
+

@@ -1,0 +1,82 @@
+! ================================================
+! FILE: modules/events/hall/girl_policy_response_talk_text.qsps
+! Тексты разговора после реакции девушки на правило работы
+! Используется:
+! modules/events/hall/girl_policy_response_talk.qsps
+! ================================================
+
+#GirlPolicyResponseTalkPrintText
+    gs 'GirlPolicyResponseTalkText', $ARGS[0]
+    if $GirlPolicyResponseTalkText <> '':
+        *p $GirlPolicyResponseTalkText
+    end
+---
+
+#GirlPolicyResponseTalkText
+    $GirlPolicyResponseTalkTextId = LCASE($ARGS[0])
+    $GirlPolicyResponseTalkText = ''
+    PolicyResponseStage = GirlPolicyLastResponseStage[$PolicyResponseTalkGirl]
+    if $RealName[$PolicyResponseTalkGirl] = '':
+        gs 'EnsureGirlData', $PolicyResponseTalkGirl
+    end
+
+    if $GirlPolicyResponseTalkTextId = 'intro':
+        if PolicyResponseStage = 1:
+            if $PolicyResponseTalkGirl = 'amanda':
+                $GirlPolicyResponseTalkText = 'Аманда стоит перед вами, сцепив пальцы. Она явно нервничает, но не от страха — скорее оттого, что сама ещё не решила, права вы или нет. "Я... я сделала, как вы сказали. Но мне было... неприятно. Очень."'
+            elseif $PolicyResponseTalkGirl = 'melissa':
+                $GirlPolicyResponseTalkText = 'Мелисса смотрит прямо, без улыбки. В её глазах нет открытого вызова, но и согласия тоже. "Вы сами-то понимаете, что приказали? Или вам просто нужно было, чтобы я кивнула и ушла?"'
+            elseif $PolicyResponseTalkGirl = 'sandra':
+                $GirlPolicyResponseTalkText = 'Сандра стоит спокойно, но взгляд у неё тяжёлый. Она не оправдывается и не спорит. Просто ждёт, что вы скажете. И в этой тишине чувствуется: она считает вас ещё слишком молодым, чтобы учить её, как жить.'
+            else:
+                $GirlPolicyResponseTalkText = $RealName[$PolicyResponseTalkGirl] + ' явно не приняла ваше правило. Она стоит напряжённо и ждёт, что вы скажете дальше.'
+            end
+        elseif PolicyResponseStage = 2:
+            $GirlPolicyResponseTalkText = $RealName[$PolicyResponseTalkGirl] + ' выполнила правило, но без всякого удовольствия. По её лицу видно, что внутри она до сих пор спорит сама с собой. "Я сделала, как вы просили. Но мне это... не понравилось."'
+        elseif PolicyResponseStage = 3:
+            $GirlPolicyResponseTalkText = $RealName[$PolicyResponseTalkGirl] + ' выполнила правило ровно так, как вы просили. Без восторга, без бунта. Просто как ещё одну часть работы. "Всё было... нормально. Я справилась."'
+        elseif PolicyResponseStage = 4:
+            $GirlPolicyResponseTalkText = $RealName[$PolicyResponseTalkGirl] + ' явно приняла правило охотнее, чем вы ожидали. Она даже не пытается скрыть, что ей это не противно. "Я... я подумала, что так будет лучше. Для всех."'
+        elseif PolicyResponseStage >= 5:
+            $GirlPolicyResponseTalkText = $RealName[$PolicyResponseTalkGirl] + ' зашла дальше, чем вы просили. И теперь стоит перед вами с таким видом, будто сама не до конца понимает, как далеко зашла. "Я просто... сделала то, что, по-моему, вы хотели."'
+        else:
+            $GirlPolicyResponseTalkText = 'Вы решаете поговорить о том, как она выполнила ваше правило.'
+        end
+
+    elseif $GirlPolicyResponseTalkTextId = 'hard':
+        if $PolicyResponseTalkGirl = 'amanda':
+            $GirlPolicyResponseTalkText = 'Вы говорите жёстко. Аманда краснеет, но не опускает взгляд. В её глазах появляется что-то новое — не страх, а упрямство. "Если вы всё равно будете ругать... тогда зачем вообще спрашивать, как я себя чувствую?"'
+        elseif $PolicyResponseTalkGirl = 'melissa':
+            $GirlPolicyResponseTalkText = 'Вы давите голосом. Мелисса слушает молча, но её губы сжимаются в тонкую линию. "Вы можете говорить со мной как хотите. Только не ждите, что я буду улыбаться и говорить «да, Стефан» после каждого слова."'
+        elseif $PolicyResponseTalkGirl = 'sandra':
+            $GirlPolicyResponseTalkText = 'Вы пытаетесь поставить точку жёстко. Сандра принимает слова без вспышки, но её взгляд становится холоднее. "Ты ещё слишком молод, чтобы учить меня, как себя вести. Но если тебе так нужно — я выслушаю."'
+        else:
+            $GirlPolicyResponseTalkText = 'Жёсткий разговор ставит её на место, но в её взгляде появляется лёгкая стена. Доверия от этого явно не прибавилось.'
+        end
+
+    elseif $GirlPolicyResponseTalkTextId = 'calm':
+        if $PolicyResponseTalkGirl = 'amanda':
+            $GirlPolicyResponseTalkText = 'Вы говорите спокойнее, чем могли бы. Аманда слушает настороженно, но постепенно расслабляется. "Спасибо, что... не просто приказали. Мне важно, когда вы объясняете, а не просто говорите «делай так»."'
+        elseif $PolicyResponseTalkGirl = 'melissa':
+            $GirlPolicyResponseTalkText = 'Вы раскладываете всё спокойно. Мелисса кивает не сразу, но внимательно. "Знаете... когда вы говорите со мной как со взрослой, а не как с девочкой, которая должна слушаться... мне проще вас услышать."'
+        elseif $PolicyResponseTalkGirl = 'sandra':
+            $GirlPolicyResponseTalkText = 'Вы говорите без нажима. Сандра слушает тяжело, но уже без прежней злости. "Хорошо, что ты не прячешься за хозяйским голосом. Хотя бы это."'
+        else:
+            $GirlPolicyResponseTalkText = 'Спокойный разговор помогает сгладить острые углы. Она слушает внимательнее, чем при жёстком тоне.'
+        end
+
+    elseif $GirlPolicyResponseTalkTextId = 'admit':
+        if $PolicyResponseTalkGirl = 'amanda':
+            $GirlPolicyResponseTalkText = 'Вы признаёте, что правило могло быть слишком тяжёлым. Аманда смотрит удивлённо, потом тихо говорит: "Я... я думала, вы будете злиться, если я скажу, что мне было плохо. А вы... спасибо. Мне стало легче."'
+        elseif $PolicyResponseTalkGirl = 'melissa':
+            $GirlPolicyResponseTalkText = 'Вы признаёте спорность приказа. Мелисса заметно смягчается. "Знаете, я не жду, что вы всегда будете правы. Я просто хочу, чтобы вы иногда признавали, когда сомневаетесь. Это... важно."'
+        elseif $PolicyResponseTalkGirl = 'sandra':
+            $GirlPolicyResponseTalkText = 'Вы признаёте, что перегнули. Сандра долго молчит, потом устало кивает. "Хорошо, что ты это сказал. Не каждый хозяин умеет признавать ошибки. Особенно перед женщиной, которая старше его."'
+        else:
+            $GirlPolicyResponseTalkText = 'Вы признаёте, что правило было спорным. Разговор выходит трудным, но она явно ценит вашу честность.'
+        end
+    end
+    killvar '$GirlPolicyResponseTalkTextId'
+    killvar 'PolicyResponseStage'
+---
+

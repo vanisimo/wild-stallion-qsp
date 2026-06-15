@@ -1,0 +1,894 @@
+! ================================================
+! FILE: modules/events/hall/hall_harassment.qsps
+! Базовые приставания в главном зале
+! Версия: modern v1
+! Назначение:
+! - привести старый HallHarassment к стилю новых событий зала
+! - оставить ранний слой приставаний до hall_lewd и hall_missing
+! - использовать только Аманду, Мелиссу и Сандру
+! - сохранять последнее событие для разговоров и слухов
+! - не хранить текстовые локаторы в этом файле
+! ================================================
+
+#HallHarassment
+    *clr
+    clr
+    cla
+
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    if LOC('CalculateTavernStaffEfficiency') = 1:
+        gs 'CalculateTavernStaffEfficiency'
+    end
+
+    $HallHarassReturnLoc = $ARGS[0]
+
+    if $HallHarassReturnLoc = '':
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallHarassReturnLoc) = 0:
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+
+    if HallHarassmentDay = day and HallHarassmentTime = time:
+        *pl '══════════════════════════════════════════════'
+        *pl ' ГЛАВНЫЙ ЗАЛ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'HallHarassmentPrintText', 'no_repeat'
+
+        *pl ' '
+
+        act 'Вернуться в зал':
+            gt $HallHarassReturnLoc
+        end
+
+        exit
+    end
+
+    if TavernOpen = 0:
+        *pl '══════════════════════════════════════════════'
+        *pl ' ГЛАВНЫЙ ЗАЛ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'HallHarassmentPrintText', 'closed'
+
+        *pl ' '
+
+        act 'Вернуться в зал':
+            gt $HallHarassReturnLoc
+        end
+
+        exit
+    end
+
+    gs 'HallHarassmentPickGirl'
+
+    if $HallHarassGirl = '':
+        *pl '══════════════════════════════════════════════'
+        *pl ' ГЛАВНЫЙ ЗАЛ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'HallHarassmentPrintText', 'no_girl'
+
+        if LOC('SaveLastHallEvent') = 1:
+            gs 'SaveLastHallEvent', 'calm', '', 'Вы осмотрели главный зал, но ничего особенного не произошло.', 'none'
+        end
+
+        *pl ' '
+
+        act 'Вернуться в зал':
+            gt $HallHarassReturnLoc
+        end
+
+        exit
+    end
+
+    HallHarassmentDay = day
+    HallHarassmentTime = time
+
+    gs 'EnsureGirlData', $HallHarassGirl
+
+    if $RealName[$HallHarassGirl] = '':
+        $RealName[$HallHarassGirl] = UCASE(MID($HallHarassGirl, 1, 1)) + LCASE(MID($HallHarassGirl, 2))
+    end
+
+    HallHarassType = RAND(1, 4)
+
+    if $HallHarassGirl = 'amanda' and Amanda_FirstHallHarassment = 0:
+        HallHarassFirstAmanda = 1
+        Amanda_FirstHallHarassment = 1
+    else:
+        HallHarassFirstAmanda = 0
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: НЕПРИЯТНЫЙ СЛУЧАЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'HallHarassmentShowIntroImage', $HallHarassGirl, $HallHarassJob, HallHarassType
+    gs 'HallHarassmentIntro'
+
+    *pl ' '
+    gs 'HallHarassmentPrintSceneState'
+    *pl ' '
+
+    gs 'HallHarassmentPrintPolicyHint'
+
+    *pl ' '
+    gs 'HallHarassmentPrintDecisionThoughts'
+
+    $HallPolicyReactionText = ''
+
+    if LOC('HallPolicyReaction') = 1:
+        gs 'HallPolicyReaction', $HallHarassGirl, 'harassment', $HallHarassReturnLoc
+
+        if $HallPolicyReactionText <> '':
+            *p $HallPolicyReactionText
+            *pl ' '
+        end
+    end
+
+    if LOC('GirlPolicySceneVariationPrint') = 1:
+        gs 'GirlPolicySceneVariationPrint', $HallHarassGirl, 'harassment', 'start'
+    end
+
+    *pl ' '
+    *pl ' '
+
+    gs 'HallHarassmentBuildMenu'
+
+    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''HallHarassmentMenu''">Стефану</a>?'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_harassment.qsps
+! Мысли Стефана перед выбором
+! ================================================
+
+#HallHarassmentPrintDecisionThoughts
+    gs 'HallEventChoiceThoughtsPrint', 'harassment'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_harassment.qsps
+! Меню выбора
+! ================================================
+
+#HallHarassmentBuildMenu
+    gs 'Menu.Destroy', 'HallHarassmentMenu'
+    gs 'Menu.Create', 'HallHarassmentMenu'
+
+    gs 'Menu.Add', 'HallHarassmentMenu', 'Жёстко вмешаться', ''
+    gs 'Menu.AddModule', 'HallHarassmentMenu', {
+        gt 'HallHarassmentResolve', $HallHarassGirl, $HallHarassJob, HallHarassType, 'protect_hard', $HallHarassReturnLoc
+    }
+
+    gs 'Menu.Add', 'HallHarassmentMenu', 'Спокойно предупредить клиента', ''
+    gs 'Menu.AddModule', 'HallHarassmentMenu', {
+        gt 'HallHarassmentResolve', $HallHarassGirl, $HallHarassJob, HallHarassType, 'warn_client', $HallHarassReturnLoc
+    }
+
+    gs 'Menu.Add', 'HallHarassmentMenu', 'Сказать ей справиться самой', ''
+    gs 'Menu.AddModule', 'HallHarassmentMenu', {
+        gt 'HallHarassmentResolve', $HallHarassGirl, $HallHarassJob, HallHarassType, 'self_handle', $HallHarassReturnLoc
+    }
+
+    gs 'Menu.Add', 'HallHarassmentMenu', 'Сделать вид, что это часть работы', ''
+    gs 'Menu.AddModule', 'HallHarassmentMenu', {
+        gt 'HallHarassmentResolve', $HallHarassGirl, $HallHarassJob, HallHarassType, 'profit', $HallHarassReturnLoc
+    }
+
+    gs 'Menu.Add', 'HallHarassmentMenu', 'Не вмешиваться', ''
+    gs 'Menu.AddModule', 'HallHarassmentMenu', {
+        gt 'HallHarassmentResolve', $HallHarassGirl, $HallHarassJob, HallHarassType, 'ignore', $HallHarassReturnLoc
+    }
+---
+
+#TavernHarassmentEvent
+    gt 'HallHarassment', 'TavernMain'
+---
+
+#TavernHallEventHarassGirl
+    gt 'HallHarassment', 'TavernMain'
+---
+
+#HallHarassmentTryFromBar
+    $HallHarassReturnLoc = $ARGS[0]
+
+    if $HallHarassReturnLoc = '':
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+
+    HallHarassmentStarted = 0
+
+    gs 'UpdateGirlLocations'
+
+    if LOC('CalculateTavernStaffEfficiency') = 1:
+        gs 'CalculateTavernStaffEfficiency'
+    end
+
+    gs 'HallHarassmentPickGirl'
+
+    if $HallHarassGirl <> '':
+        if RAND(1, 100) <= 35:
+            HallHarassmentStarted = 1
+            gt 'HallHarassment', $HallHarassReturnLoc
+        end
+    end
+---
+
+#HallHarassmentTry
+    $HallHarassReturnLoc = $ARGS[0]
+
+    if $HallHarassReturnLoc = '':
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+
+    HallHarassmentStarted = 0
+
+    gs 'UpdateGirlLocations'
+
+    if LOC('CalculateTavernStaffEfficiency') = 1:
+        gs 'CalculateTavernStaffEfficiency'
+    end
+
+    gs 'HallHarassmentPickGirl'
+
+    if $HallHarassGirl <> '':
+        if RAND(1, 100) <= 25:
+            HallHarassmentStarted = 1
+            gt 'HallHarassment', $HallHarassReturnLoc
+        end
+    end
+---
+
+#HallHarassmentPickGirl
+    $HallHarassGirl = ''
+    $HallHarassJob = ''
+
+    HallHarassJobRoll = RAND(1, 2)
+
+    if HallHarassJobRoll = 1:
+        gs 'HallHarassmentPickWaitress'
+
+        if $HallHarassGirl = '':
+            gs 'HallHarassmentPickCleaning'
+        end
+    else:
+        gs 'HallHarassmentPickCleaning'
+
+        if $HallHarassGirl = '':
+            gs 'HallHarassmentPickWaitress'
+        end
+    end
+
+    killvar 'HallHarassJobRoll'
+---
+
+#HallHarassmentPickWaitress
+    $HallHarassGirl = ''
+    $HallHarassJob = 'waitress'
+
+    HallHarassGirlRoll = RAND(1, 3)
+
+    if HallHarassGirlRoll = 1:
+        if jobwaitress['amanda'] = 1 and $GirlLocation['amanda'] = 'TavernMain':
+            $HallHarassGirl = 'amanda'
+        end
+    elseif HallHarassGirlRoll = 2:
+        if jobwaitress['melissa'] = 1 and $GirlLocation['melissa'] = 'TavernMain':
+            $HallHarassGirl = 'melissa'
+        end
+    else:
+        if jobwaitress['sandra'] = 1 and $GirlLocation['sandra'] = 'TavernMain':
+            $HallHarassGirl = 'sandra'
+        end
+    end
+
+    if $HallHarassGirl = '':
+        if jobwaitress['amanda'] = 1 and $GirlLocation['amanda'] = 'TavernMain':
+            $HallHarassGirl = 'amanda'
+        elseif jobwaitress['melissa'] = 1 and $GirlLocation['melissa'] = 'TavernMain':
+            $HallHarassGirl = 'melissa'
+        elseif jobwaitress['sandra'] = 1 and $GirlLocation['sandra'] = 'TavernMain':
+            $HallHarassGirl = 'sandra'
+        end
+    end
+
+    killvar 'HallHarassGirlRoll'
+---
+
+#HallHarassmentPickCleaning
+    $HallHarassGirl = ''
+    $HallHarassJob = 'cleaning'
+
+    HallHarassGirlRoll = RAND(1, 3)
+
+    if HallHarassGirlRoll = 1:
+        if jobcleaning['amanda'] = 1 and $GirlLocation['amanda'] = 'TavernMain':
+            $HallHarassGirl = 'amanda'
+        end
+    elseif HallHarassGirlRoll = 2:
+        if jobcleaning['melissa'] = 1 and $GirlLocation['melissa'] = 'TavernMain':
+            $HallHarassGirl = 'melissa'
+        end
+    else:
+        if jobcleaning['sandra'] = 1 and $GirlLocation['sandra'] = 'TavernMain':
+            $HallHarassGirl = 'sandra'
+        end
+    end
+
+    if $HallHarassGirl = '':
+        if jobcleaning['amanda'] = 1 and $GirlLocation['amanda'] = 'TavernMain':
+            $HallHarassGirl = 'amanda'
+        elseif jobcleaning['melissa'] = 1 and $GirlLocation['melissa'] = 'TavernMain':
+            $HallHarassGirl = 'melissa'
+        elseif jobcleaning['sandra'] = 1 and $GirlLocation['sandra'] = 'TavernMain':
+            $HallHarassGirl = 'sandra'
+        end
+    end
+
+    killvar 'HallHarassGirlRoll'
+---
+
+#HallHarassmentIntro
+    if $HallHarassGirl = 'amanda' and HallHarassFirstAmanda = 1:
+        gs 'HallHarassmentPrintText', 'amanda_first_intro'
+    else:
+        if $HallHarassJob = 'cleaning':
+            if HallHarassType = 1:
+                gs 'HallHarassmentPrintText', 'cleaning_intro_1'
+            elseif HallHarassType = 2:
+                gs 'HallHarassmentPrintText', 'cleaning_intro_2'
+            elseif HallHarassType = 3:
+                gs 'HallHarassmentPrintText', 'cleaning_intro_3'
+            else:
+                gs 'HallHarassmentPrintText', 'cleaning_intro_4'
+            end
+        else:
+            if HallHarassType = 1:
+                gs 'HallHarassmentPrintText', 'waitress_intro_1'
+            elseif HallHarassType = 2:
+                gs 'HallHarassmentPrintText', 'waitress_intro_2'
+            elseif HallHarassType = 3:
+                gs 'HallHarassmentPrintText', 'waitress_intro_3'
+            else:
+                gs 'HallHarassmentPrintText', 'waitress_intro_4'
+            end
+        end
+    end
+---
+
+#HallHarassmentPrintSceneState
+    *pl '<b>Ситуация:</b> раннее приставание клиента.'
+    *pl '<b>Девушка:</b> ' + $RealName[$HallHarassGirl]
+
+    if $HallHarassJob = 'cleaning':
+        *pl '<b>Работа:</b> уборка зала.'
+    else:
+        *pl '<b>Работа:</b> обслуживание столов.'
+    end
+
+    if GirlWorkPolicy[$HallHarassGirl] = 1:
+        *pl '<b>Правило:</b> держаться прилично и звать хозяина.'
+    elseif GirlWorkPolicy[$HallHarassGirl] = 2:
+        *pl '<b>Правило:</b> решать самой.'
+    elseif GirlWorkPolicy[$HallHarassGirl] = 3:
+        *pl '<b>Правило:</b> удерживать клиента ради чаевых.'
+    else:
+        *pl '<b>Правило:</b> правил нет.'
+    end
+---
+
+#HallHarassmentPrintPolicyHint
+    if GirlWorkPolicy[$HallHarassGirl] = 1:
+        gs 'HallHarassmentPrintText', 'policy_decent'
+    elseif GirlWorkPolicy[$HallHarassGirl] = 2:
+        gs 'HallHarassmentPrintText', 'policy_own'
+    elseif GirlWorkPolicy[$HallHarassGirl] = 3:
+        gs 'HallHarassmentPrintText', 'policy_profit'
+    else:
+        gs 'HallHarassmentPrintText', 'policy_none'
+    end
+---
+
+#HallHarassmentResolve
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallHarassGirl = $GirlKey
+    $HallHarassJob = LCASE($ARGS[1])
+    HallHarassType = ARGS[2]
+    $HallHarassReaction = LCASE($ARGS[3])
+    $HallHarassReturnLoc = $ARGS[4]
+
+    if $HallHarassGirl = '':
+        gt 'TavernMain'
+    end
+
+    if $HallHarassJob = '':
+        $HallHarassJob = 'waitress'
+    end
+
+    if $HallHarassReaction = '':
+        $HallHarassReaction = 'ignore'
+    end
+
+    if $HallHarassReturnLoc = '':
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallHarassReturnLoc) = 0:
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $HallHarassGirl
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: ПОСЛЕДСТВИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'HallHarassmentShowImage', $HallHarassGirl, $HallHarassJob, HallHarassType, $HallHarassReaction
+
+    if $HallHarassReaction = 'protect_hard':
+        gs 'HallHarassmentResultProtectHard'
+    elseif $HallHarassReaction = 'warn_client':
+        gs 'HallHarassmentResultWarnClient'
+    elseif $HallHarassReaction = 'self_handle':
+        gs 'HallHarassmentResultSelfHandle'
+    elseif $HallHarassReaction = 'profit':
+        gs 'HallHarassmentResultProfit'
+    else:
+        gs 'HallHarassmentResultIgnore'
+    end
+
+    gs 'HallHarassmentAftermathFamily'
+    gs 'HallHarassmentClampStats'
+    gs 'ClampGirlSocialStats', $HallHarassGirl
+    gs 'HallHarassmentRegisterExtraSystems'
+
+    if LOC('HallChoiceConsequencePrint') = 1:
+        gs 'HallChoiceConsequencePrint', 'harassment', $HallHarassReaction, $HallHarassGirl
+    end
+
+    gs 'HallHarassmentDebug'
+
+    *pl ' '
+
+    act 'Поговорить с ней о случившемся':
+        gt 'GirlWorkPolicyTalkHall', $HallHarassGirl, $HallHarassReturnLoc
+    end
+
+    act 'Вернуться в зал':
+        gt $HallHarassReturnLoc
+    end
+---
+
+#HallHarassmentResultProtectHard
+    HallProtectChance = 35 + strength + charisma + management_skill
+    HallProtectChance = HallProtectChance / 2
+
+    if HallProtectChance > 90:
+        HallProtectChance = 90
+    end
+
+    if HallProtectChance < 20:
+        HallProtectChance = 20
+    end
+
+    HallProtectRoll = RAND(1, 100)
+
+    if HallProtectRoll <= HallProtectChance:
+        if sluttiness[$HallHarassGirl] >= 70 or ($HallHarassGirl = 'amanda' and AmandaPublicAttention >= 40):
+            gs 'HallHarassmentPrintText', 'protect_hard_dislike'
+
+            Friends[$HallHarassGirl] -= 1
+            otkroven[$HallHarassGirl] += 1
+            sluttiness[$HallHarassGirl] += 1
+            tavern_reputation += 1
+            TavernScandal -= 1
+            FamilyTrust += 1
+
+            if $HallHarassGirl = 'amanda':
+                AmandaRebellion += 1
+                AmandaPublicAttention += 1
+            end
+
+            $HallHarassTalkReaction = 'protect_dislike'
+            $HallHarassEventText = 'Стефан жёстко вмешался, когда к ' + $RealName[$HallHarassGirl] + ' приставал посетитель, но она решила, что могла справиться сама.'
+        else:
+            gs 'HallHarassmentPrintText', 'protect_hard_success'
+
+            Friends[$HallHarassGirl] += 2
+            love[$HallHarassGirl] += 1
+            tavern_reputation += 1
+            TavernScandal -= 1
+            FamilyTrust += 1
+
+            if $HallHarassGirl = 'amanda':
+                AmandaTrustStefan += 2
+                AmandaWorkDiscipline += 1
+            end
+
+            $HallHarassTalkReaction = 'protect_success'
+            $HallHarassEventText = 'Стефан вступился за ' + $RealName[$HallHarassGirl] + ', когда к ней приставал посетитель.'
+        end
+    else:
+        gs 'HallHarassmentPrintText', 'protect_hard_fail'
+
+        Friends[$HallHarassGirl] += 1
+        tavern_reputation -= 1
+        money -= 10
+        FamilyTension += 1
+
+        $HallHarassTalkReaction = 'protect_fail'
+        $HallHarassEventText = 'Стефан попытался защитить ' + $RealName[$HallHarassGirl] + ', но вмешательство закончилось шумом и потерями.'
+    end
+
+    killvar 'HallProtectChance'
+    killvar 'HallProtectRoll'
+---
+
+#HallHarassmentResultWarnClient
+    HallWarnChance = 55 + charisma + management_skill
+    HallWarnChance = HallWarnChance / 2
+
+    if HallWarnChance > 92:
+        HallWarnChance = 92
+    end
+
+    if HallWarnChance < 25:
+        HallWarnChance = 25
+    end
+
+    HallWarnRoll = RAND(1, 100)
+
+    if HallWarnRoll <= HallWarnChance:
+        gs 'HallHarassmentPrintText', 'warn_client_success'
+
+        Friends[$HallHarassGirl] += 1
+        tavern_reputation += 1
+        TavernScandal -= 1
+        FamilyTrust += 1
+
+        if $HallHarassGirl = 'amanda':
+            AmandaTrustStefan += 1
+            AmandaWorkDiscipline += 1
+        end
+
+        $HallHarassTalkReaction = 'protect_success'
+        $HallHarassEventText = 'Стефан спокойно остановил клиента, который приставал к ' + $RealName[$HallHarassGirl] + '.'
+    else:
+        gs 'HallHarassmentPrintText', 'warn_client_fail'
+
+        tavern_reputation -= 1
+        FamilyTension += 1
+
+        $HallHarassTalkReaction = 'protect_fail'
+        $HallHarassEventText = 'Стефан попытался спокойно остановить клиента, но зал всё равно услышал шум.'
+    end
+
+    killvar 'HallWarnChance'
+    killvar 'HallWarnRoll'
+---
+
+#HallHarassmentResultSelfHandle
+    HallSelfChance = 35 + Friends[$HallHarassGirl] / 2 + otkroven[$HallHarassGirl] / 3 + GirlWorkPolicy[$HallHarassGirl] * 5
+
+    if $HallHarassGirl = 'melissa':
+        HallSelfChance += 15
+    elseif $HallHarassGirl = 'sandra':
+        HallSelfChance += 10
+    end
+
+    if HallSelfChance > 90:
+        HallSelfChance = 90
+    end
+
+    if HallSelfChance < 20:
+        HallSelfChance = 20
+    end
+
+    HallSelfRoll = RAND(1, 100)
+
+    if HallSelfRoll <= HallSelfChance:
+        gs 'HallHarassmentPrintText', 'self_handle_success'
+
+        Friends[$HallHarassGirl] += 1
+        otkroven[$HallHarassGirl] += 1
+        GirlWorkPolicy[$HallHarassGirl] = 2
+        GirlPublicAttention[$HallHarassGirl] += 1
+
+        if $HallHarassGirl = 'amanda':
+            AmandaWorkDiscipline += 1
+            AmandaPublicAttention += 1
+        end
+
+        $HallHarassTalkReaction = 'self_success'
+        $HallHarassEventText = $RealName[$HallHarassGirl] + ' сама справилась с приставшим посетителем, потому что Стефан дал ей решить.'
+    else:
+        gs 'HallHarassmentPrintText', 'self_handle_bad'
+
+        Friends[$HallHarassGirl] -= 1
+        fear[$HallHarassGirl] += 1
+        FamilyTension += 1
+
+        if $HallHarassGirl = 'amanda':
+            AmandaSecretiveness += 1
+        end
+
+        $HallHarassTalkReaction = 'self_bad'
+        $HallHarassEventText = 'Стефан велел ' + $RealName[$HallHarassGirl] + ' справиться самой, но ей это далось тяжело.'
+    end
+
+    killvar 'HallSelfChance'
+    killvar 'HallSelfRoll'
+---
+
+#HallHarassmentResultProfit
+    if GirlWorkPolicy[$HallHarassGirl] <> 3:
+        GirlWorkPolicy[$HallHarassGirl] = 3
+    end
+
+    money += 8
+    TavernScandal += 1
+    TavernLewdFame += 1
+    GirlPublicAttention[$HallHarassGirl] += 2
+    GirlNpcPath[$HallHarassGirl] += 1
+
+    if sluttiness[$HallHarassGirl] >= 20 or TavernScandal >= 15:
+        gs 'HallHarassmentPrintText', 'profit_high'
+
+        Friends[$HallHarassGirl] += 1
+        sluttiness[$HallHarassGirl] += 1
+        $HallHarassTalkReaction = 'profit_high'
+        $HallHarassEventText = 'Стефан сделал вид, что приставание к ' + $RealName[$HallHarassGirl] + ' — часть работы, и зал это заметил.'
+    else:
+        gs 'HallHarassmentPrintText', 'profit_low'
+
+        Friends[$HallHarassGirl] -= 2
+        fear[$HallHarassGirl] += 1
+        FamilyTension += 1
+        $HallHarassTalkReaction = 'profit_low'
+        $HallHarassEventText = 'Стефан закрыл глаза на приставание ради денег, и ' + $RealName[$HallHarassGirl] + ' это запомнила.'
+    end
+
+    if $HallHarassGirl = 'amanda':
+        AmandaPublicAttention += 2
+        AmandaNpcPath += 1
+        AmandaScandalLevel += 1
+    elseif $HallHarassGirl = 'melissa':
+        MelissaScandalTolerance += 1
+    elseif $HallHarassGirl = 'sandra':
+        SandraFamilyConcern += 1
+    end
+---
+
+#HallHarassmentResultIgnore
+    gs 'HallHarassmentPrintText', 'ignore'
+
+    Friends[$HallHarassGirl] -= 1
+    GirlSecretiveness[$HallHarassGirl] += 1
+    GirlPublicAttention[$HallHarassGirl] += 1
+    TavernScandal += 1
+    FamilyTension += 1
+
+    if $HallHarassGirl = 'amanda':
+        AmandaSecretiveness += 1
+        AmandaRebellion += 1
+    elseif $HallHarassGirl = 'melissa':
+        MelissaControlNeed += 1
+    elseif $HallHarassGirl = 'sandra':
+        SandraFamilyConcern += 1
+    end
+
+    $HallHarassTalkReaction = 'ignore'
+    $HallHarassEventText = 'Стефан не вмешался, когда к ' + $RealName[$HallHarassGirl] + ' приставал посетитель.'
+---
+
+#HallHarassmentAftermathFamily
+    if $HallHarassGirl = 'amanda':
+        if $HallHarassReaction = 'protect_hard' or $HallHarassReaction = 'warn_client':
+            gs 'HallHarassmentPrintText', 'family_amanda_protected'
+
+            MelissaFamilyConcern += 1
+            SandraFamilyConcern += 1
+            MelissaRespectStefan += 1
+            SandraRespectStefan += 1
+        elseif $HallHarassReaction = 'profit' or $HallHarassReaction = 'ignore':
+            gs 'HallHarassmentPrintText', 'family_amanda_bad'
+
+            MelissaFamilyConcern += 2
+            SandraFamilyConcern += 2
+            FamilyTension += 1
+        else:
+            gs 'HallHarassmentPrintText', 'family_amanda_self'
+
+            MelissaFamilyConcern += 1
+            SandraFamilyConcern += 1
+        end
+    elseif $HallHarassGirl = 'melissa':
+        if $HallHarassReaction = 'protect_hard' or $HallHarassReaction = 'warn_client':
+            MelissaRespectStefan += 1
+        else:
+            MelissaControlNeed += 1
+            FamilyTension += 1
+        end
+    elseif $HallHarassGirl = 'sandra':
+        if $HallHarassReaction = 'protect_hard' or $HallHarassReaction = 'warn_client':
+            SandraRespectStefan += 1
+        else:
+            SandraFamilyConcern += 1
+            FamilyTension += 1
+        end
+    end
+---
+
+#HallHarassmentRegisterLastEvent
+    if LOC('SaveLastHallEvent') = 1:
+        gs 'SaveLastHallEvent', 'harassment', $HallHarassGirl, $HallHarassEventText, $HallHarassTalkReaction
+    end
+
+    HallEventDiscussed[$HallHarassGirl] = 0
+    $LastHallEventType = 'harassment'
+    $LastHallEventGirl = $HallHarassGirl
+
+    if $HallHarassGirl = 'amanda':
+        Amanda_AfterHarassmentTalk = 1
+    end
+---
+
+#HallHarassmentRegisterExtraSystems
+    gs 'HallHarassmentRegisterLastEvent'
+
+    if LOC('HallRecentMemorySave') = 1:
+        gs 'HallRecentMemorySave', 'harassment', $HallHarassGirl, $HallHarassReaction
+    end
+
+    if LOC('HallRumorRegister') = 1:
+        if $HallHarassReaction = 'profit' or $HallHarassReaction = 'ignore':
+            gs 'HallRumorRegister', 'hall_lewd', $HallHarassGirl, 2
+        else:
+            gs 'HallRumorRegister', 'hall_lewd', $HallHarassGirl, 1
+        end
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'HallHarassment_' + $HallHarassGirl
+    end
+
+    if LOC('GirlMemoryOfStefanRegister') = 1:
+        gs 'GirlMemoryOfStefanRegister', $HallHarassGirl, 'harassment', $HallHarassReaction
+    end
+---
+
+#HallHarassmentShowIntroImage
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallImageGirl = $GirlKey
+    $HallImageJob = LCASE($ARGS[1])
+    HallImageType = ARGS[2]
+
+    if $HallImageGirl = '':
+        exit
+    end
+
+    if $HallImageJob = '':
+        $HallImageJob = 'waitress'
+    end
+
+    if HallImageType <= 0:
+        HallImageType = 1
+    end
+
+    $HallImageAction = 'hall_harass/' + $HallImageJob
+    $HallImagePose = STR(HallImageType) + '_base'
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'event', $HallImageGirl, $HallImageAction, $HallImagePose, 'webp', 'large'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG HALL IMAGE] expected: images/events/' + $HallImageGirl + '/' + $HallImageAction + '_' + $HallImagePose + '.webp'
+        *pl ' '
+    end
+
+    killvar '$HallImageGirl'
+    killvar '$HallImageJob'
+    killvar 'HallImageType'
+    killvar '$HallImageAction'
+    killvar '$HallImagePose'
+---
+
+#HallHarassmentShowImage
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallImageGirl = $GirlKey
+    $HallImageJob = LCASE($ARGS[1])
+    HallImageType = ARGS[2]
+    $HallImageReaction = LCASE($ARGS[3])
+
+    if $HallImageGirl = '':
+        exit
+    end
+
+    if $HallImageJob = '':
+        $HallImageJob = 'waitress'
+    end
+
+    if HallImageType <= 0:
+        HallImageType = 1
+    end
+
+    if $HallImageReaction = '':
+        $HallImageReaction = 'ignore'
+    end
+
+    $HallImageAction = 'hall_harass/reaction'
+    $HallImagePose = $HallImageReaction
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'event', $HallImageGirl, $HallImageAction, $HallImagePose, 'webp', 'large'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG HALL IMAGE] expected: images/events/' + $HallImageGirl + '/' + $HallImageAction + '_' + $HallImagePose + '.webp'
+        *pl ' '
+    end
+
+    killvar '$HallImageGirl'
+    killvar '$HallImageJob'
+    killvar 'HallImageType'
+    killvar '$HallImageReaction'
+    killvar '$HallImageAction'
+    killvar '$HallImagePose'
+---
+
+#HallHarassmentClampStats
+    if tavern_reputation < 0:
+        tavern_reputation = 0
+    end
+
+    if tavern_reputation > 100:
+        tavern_reputation = 100
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    if TavernLewdFame < 0:
+        TavernLewdFame = 0
+    end
+
+    if FamilyTrust < 0:
+        FamilyTrust = 0
+    end
+
+    if FamilyTension < 0:
+        FamilyTension = 0
+    end
+---
+
+#HallHarassmentDebug
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG HALL HARASS] girl: ' + $HallHarassGirl
+        *pl '[DEBUG HALL HARASS] job: ' + $HallHarassJob
+        *pl '[DEBUG HALL HARASS] type: ' + STR(HallHarassType)
+        *pl '[DEBUG HALL HARASS] reaction: ' + $HallHarassReaction
+        *pl '[DEBUG HALL HARASS] TavernScandal: ' + STR(TavernScandal)
+        *pl '[DEBUG HALL HARASS] TavernLewdFame: ' + STR(TavernLewdFame)
+        *pl '[DEBUG HALL HARASS] GirlWorkPolicy: ' + STR(GirlWorkPolicy[$HallHarassGirl])
+        *pl ' '
+    end
+---
+

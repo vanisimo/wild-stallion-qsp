@@ -1,0 +1,729 @@
+! ================================================
+! FILE: modules/npc/amanda/amanda_lizette.qsps
+! Ветка Лизетты как внешнего влияния на Аманду
+! Логика событий, условий, выборов Стефана и последствий
+! Большие тексты берутся из:
+! modules/events/amanda/amanda_lizette_text.qsps
+! Основной текстовый локатор: #AmandaLizetteText
+! ================================================
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Попытка запустить ближайшее событие Лизетты
+! Можно вызывать из TavernMain, AmandaRoom, MarketDance или debug-кнопкой
+! Ничего не делает, если условий нет
+! ================================================
+
+#AmandaLizetteTryEvent
+    $AmandaLizetteReturnLoc = $ARGS[0]
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = $CURLOC
+    end
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'EnsureGirlData', 'lizette'
+    gs 'AmandaLizetteEnsureVars'
+
+    AmandaLizetteCanStart = 0
+    $AmandaLizetteNextEvent = ''
+
+    ! ====================== ПЕРВЫЙ СЛЕД ЛИЗЕТТЫ ======================
+
+    if LizetteKnown = 0:
+        if HallEventDiscussed['amanda'] = 1:
+            AmandaLizetteCanStart = 1
+            $AmandaLizetteNextEvent = 'first_talk'
+        elseif AmandaPublicAttention >= 2:
+            AmandaLizetteCanStart = 1
+            $AmandaLizetteNextEvent = 'first_talk'
+        elseif AmandaScandalLevel >= 2:
+            AmandaLizetteCanStart = 1
+            $AmandaLizetteNextEvent = 'first_talk'
+        end
+    end
+
+    ! ====================== ВИЗИТ В КОМНАТУ АМАНДЫ ======================
+
+    if AmandaLizetteCanStart = 0:
+        if LizetteKnown = 1 and LizetteVisitStage = 1 and time = 5:
+            AmandaLizetteCanStart = 1
+            $AmandaLizetteNextEvent = 'room_visit'
+        end
+    end
+
+    ! ====================== ТАЙНЫЙ ВИЗИТ ПОСЛЕ ЗАПРЕТА ======================
+
+    if AmandaLizetteCanStart = 0:
+        if LizetteBanned = 1 and LizetteSecretVisit = 0 and AmandaRebellion >= 3 and time = 5:
+            AmandaLizetteCanStart = 1
+            $AmandaLizetteNextEvent = 'secret_visit'
+        end
+    end
+
+    if AmandaLizetteCanStart = 0:
+        if debug = 1:
+            *pl '[DEBUG LIZETTE] Нет подходящего события Лизетты.'
+        end
+        exit
+    end
+
+    if $AmandaLizetteNextEvent = 'first_talk':
+        gt 'AmandaLizetteFirstTalk', $AmandaLizetteReturnLoc
+    elseif $AmandaLizetteNextEvent = 'room_visit':
+        gt 'AmandaLizetteRoomVisit', $AmandaLizetteReturnLoc
+    elseif $AmandaLizetteNextEvent = 'secret_visit':
+        gt 'AmandaLizetteSecretVisit', $AmandaLizetteReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Безопасная инициализация сюжетных переменных Лизетты
+! Не перезаписывает уже накопленный прогресс
+! ================================================
+
+#AmandaLizetteEnsureVars
+    if LizetteVisitStage < 0:
+        LizetteVisitStage = 0
+    end
+
+    if AmandaLizaInfluence < 0:
+        AmandaLizaInfluence = 0
+    end
+
+    if AmandaRebellion < 0:
+        AmandaRebellion = 0
+    end
+
+    if AmandaSecretiveness < 0:
+        AmandaSecretiveness = 0
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    if AmandaPublicAttention < 0:
+        AmandaPublicAttention = 0
+    end
+
+    if AmandaScandalLevel < 0:
+        AmandaScandalLevel = 0
+    end
+
+    if AmandaWorkDiscipline < 0:
+        AmandaWorkDiscipline = 0
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Debug-меню ветки Лизетты
+! Можно временно повесить в TavernMain для тестирования
+! ================================================
+
+#AmandaLizetteDebugMenu
+    $AmandaLizetteReturnLoc = $ARGS[0]
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = $CURLOC
+    end
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ЛИЗЕТТА И АМАНДА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLizetteEnsureVars'
+    gs 'AmandaLizetteDebugPanel'
+
+    *pl ' '
+
+    act 'Запустить первое появление Лизетты':
+        gt 'AmandaLizetteFirstTalk', $AmandaLizetteReturnLoc
+    end
+
+    act 'Запустить визит Лизетты в комнату Аманды':
+        gt 'AmandaLizetteRoomVisit', $AmandaLizetteReturnLoc
+    end
+
+    act 'Запустить тайный визит после запрета':
+        gt 'AmandaLizetteSecretVisit', $AmandaLizetteReturnLoc
+    end
+
+    act 'Сбросить ветку Лизетты для теста':
+        LizetteKnown = 0
+        LizetteVisitStage = 0
+        LizetteBanned = 0
+        LizetteSecretVisit = 0
+        AmandaLizaInfluence = 0
+        AmandaRebellion = 0
+        AmandaSecretiveness = 0
+        AmandaTrustStefan = 0
+        gt 'AmandaLizetteDebugMenu', $AmandaLizetteReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $AmandaLizetteReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Debug-панель текущих переменных ветки
+! ================================================
+
+#AmandaLizetteDebugPanel
+    if debug = 1:
+        *pl '[DEBUG LIZETTE] LizetteKnown: ' + STR(LizetteKnown)
+        *pl '[DEBUG LIZETTE] LizetteVisitStage: ' + STR(LizetteVisitStage)
+        *pl '[DEBUG LIZETTE] LizetteBanned: ' + STR(LizetteBanned)
+        *pl '[DEBUG LIZETTE] LizetteSecretVisit: ' + STR(LizetteSecretVisit)
+        *pl '[DEBUG LIZETTE] AmandaLizaInfluence: ' + STR(AmandaLizaInfluence)
+        *pl '[DEBUG LIZETTE] AmandaRebellion: ' + STR(AmandaRebellion)
+        *pl '[DEBUG LIZETTE] AmandaSecretiveness: ' + STR(AmandaSecretiveness)
+        *pl '[DEBUG LIZETTE] AmandaTrustStefan: ' + STR(AmandaTrustStefan)
+        *pl '[DEBUG LIZETTE] AmandaPublicAttention: ' + STR(AmandaPublicAttention)
+        *pl '[DEBUG LIZETTE] AmandaScandalLevel: ' + STR(AmandaScandalLevel)
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Первое появление Лизетты рядом с Амандой
+! Событие мягкое: Лизетта просто замечает изменения Аманды
+! ================================================
+
+#AmandaLizetteFirstTalk
+    $AmandaLizetteReturnLoc = $ARGS[0]
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = $CURLOC
+    end
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'EnsureGirlData', 'lizette'
+    gs 'AmandaLizetteEnsureVars'
+
+    cls
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLizettePrintText', 'first_talk_intro'
+
+    LizetteKnown = 1
+    LizetteVisitStage = 1
+    AmandaLizaInfluence += 1
+    AmandaPublicAttention += 1
+
+    if AmandaTrustStefan > 0:
+        AmandaTrustStefan += 1
+    end
+
+    if debug = 1:
+        *pl ' '
+        gs 'AmandaLizetteDebugPanel'
+    end
+
+    *pl ' '
+
+    act 'Подойти к ним спокойно':
+        gt 'AmandaLizetteFirstTalkChoice', $AmandaLizetteReturnLoc, 'calm'
+    end
+
+    act 'Сделать вид, что ничего не заметили':
+        gt 'AmandaLizetteFirstTalkChoice', $AmandaLizetteReturnLoc, 'ignore'
+    end
+
+    act 'Сразу оборвать разговор':
+        gt 'AmandaLizetteFirstTalkChoice', $AmandaLizetteReturnLoc, 'strict'
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Выбор Стефана при первом разговоре Лизетты с Амандой
+! ================================================
+
+#AmandaLizetteFirstTalkChoice
+    $AmandaLizetteReturnLoc = $ARGS[0]
+    $AmandaLizetteChoice = LCASE($ARGS[1])
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $AmandaLizetteChoice = 'calm':
+        gs 'AmandaLizettePrintText', 'first_choice_calm'
+
+        AmandaTrustStefan += 2
+        AmandaRebellion -= 1
+        AmandaSecretiveness -= 1
+        AmandaLizaInfluence += 1
+        Friends['lizette'] += 1
+    elseif $AmandaLizetteChoice = 'strict':
+        gs 'AmandaLizettePrintText', 'first_choice_strict'
+
+        AmandaRebellion += 2
+        AmandaSecretiveness += 2
+        AmandaTrustStefan -= 1
+        LizetteBanned = 1
+    else:
+        gs 'AmandaLizettePrintText', 'first_choice_ignore'
+
+        AmandaLizaInfluence += 2
+        AmandaSecretiveness += 1
+        AmandaPublicAttention += 1
+    end
+
+    gs 'AmandaLizetteClampVars'
+    gs 'ClampGirlSocialStats', 'amanda'
+    gs 'ClampGirlSocialStats', 'lizette'
+
+    if debug = 1:
+        *pl ' '
+        gs 'AmandaLizetteDebugPanel'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $AmandaLizetteReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Ночной визит Лизетты в комнату Аманды
+! ================================================
+
+#AmandaLizetteRoomVisit
+    $AmandaLizetteReturnLoc = $ARGS[0]
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = $CURLOC
+    end
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'EnsureGirlData', 'lizette'
+    gs 'AmandaLizetteEnsureVars'
+
+    cls
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' НОЧНОЙ ВИЗИТ ЛИЗЕТТЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLizettePrintText', 'room_visit_intro'
+
+    LizetteVisitStage = 2
+    AmandaLizaInfluence += 2
+    AmandaSecretiveness += 1
+    AmandaRebellion += 1
+
+    gs 'AmandaLizetteClampVars'
+
+    *pl ' '
+
+    act 'Постучать и войти':
+        gt 'AmandaLizetteCaughtByStefan', $AmandaLizetteReturnLoc, 'enter'
+    end
+
+    act 'Подслушать немного':
+        gt 'AmandaLizetteCaughtByStefan', $AmandaLizetteReturnLoc, 'listen'
+    end
+
+    act 'Уйти и ничего не делать':
+        gt 'AmandaLizetteCaughtByStefan', $AmandaLizetteReturnLoc, 'leave'
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Стефан застал или подслушал разговор Аманды с Лизеттой
+! ================================================
+
+#AmandaLizetteCaughtByStefan
+    $AmandaLizetteReturnLoc = $ARGS[0]
+    $AmandaLizetteChoice = LCASE($ARGS[1])
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $AmandaLizetteChoice = 'enter':
+        gs 'AmandaLizettePrintText', 'caught_enter'
+    elseif $AmandaLizetteChoice = 'listen':
+        gs 'AmandaLizettePrintText', 'caught_listen'
+        PlayerKnows_LizetteInfluence = 1
+    else:
+        gs 'AmandaLizettePrintText', 'caught_leave'
+        AmandaSecretiveness += 1
+        AmandaLizaInfluence += 1
+    end
+
+    gs 'AmandaLizetteClampVars'
+
+    *pl ' '
+
+    if $AmandaLizetteChoice = 'leave':
+        act 'Вернуться':
+            gt $AmandaLizetteReturnLoc
+        end
+
+        exit
+    end
+
+    act 'Запретить Лизетте приходить к Аманде':
+        gt 'AmandaLizetteBanChoice', $AmandaLizetteReturnLoc, 'ban'
+    end
+
+    act 'Разрешить, но попросить не скрываться':
+        gt 'AmandaLizetteBanChoice', $AmandaLizetteReturnLoc, 'soft_allow'
+    end
+
+    act 'Сказать Аманде самой решать':
+        gt 'AmandaLizetteBanChoice', $AmandaLizetteReturnLoc, 'freedom'
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Решение Стефана: запретить, разрешить мягко или дать свободу
+! ================================================
+
+#AmandaLizetteBanChoice
+    $AmandaLizetteReturnLoc = $ARGS[0]
+    $AmandaLizetteChoice = LCASE($ARGS[1])
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РЕШЕНИЕ О ЛИЗЕТТЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $AmandaLizetteChoice = 'ban':
+        gs 'AmandaLizettePrintText', 'ban_hard'
+
+        LizetteBanned = 1
+        AmandaRebellion += 3
+        AmandaSecretiveness += 2
+        AmandaTrustStefan -= 2
+        FamilyTension += 1
+    elseif $AmandaLizetteChoice = 'soft_allow':
+        gs 'AmandaLizettePrintText', 'ban_soft_allow'
+
+        LizetteBanned = 0
+        AmandaTrustStefan += 2
+        AmandaRebellion -= 1
+        AmandaSecretiveness -= 1
+        AmandaLizaInfluence += 1
+    else:
+        gs 'AmandaLizettePrintText', 'ban_freedom'
+
+        LizetteBanned = 0
+        AmandaTrustStefan += 1
+        AmandaRebellion -= 1
+        AmandaLizaInfluence += 2
+        AmandaPublicAttention += 1
+    end
+
+    gs 'AmandaLizetteClampVars'
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    if debug = 1:
+        *pl ' '
+        gs 'AmandaLizetteDebugPanel'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $AmandaLizetteReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Тайный визит Лизетты после жёсткого запрета
+! ================================================
+
+#AmandaLizetteSecretVisit
+    $AmandaLizetteReturnLoc = $ARGS[0]
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = $CURLOC
+    end
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАЙНЫЙ ВИЗИТ ЛИЗЕТТЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLizettePrintText', 'secret_visit_intro'
+
+    LizetteSecretVisit = 1
+    AmandaSecretiveness += 3
+    AmandaRebellion += 2
+    AmandaLizaInfluence += 2
+    PlayerKnows_LizetteSecretVisit = 1
+
+    gs 'AmandaLizetteClampVars'
+
+    *pl ' '
+
+    act 'Потребовать объяснений у Аманды':
+        gt 'AmandaLizetteSecretVisitChoice', $AmandaLizetteReturnLoc, 'demand'
+    end
+
+    act 'Поговорить спокойно':
+        gt 'AmandaLizetteSecretVisitChoice', $AmandaLizetteReturnLoc, 'calm'
+    end
+
+    act 'Пока не трогать эту тему':
+        gt 'AmandaLizetteSecretVisitChoice', $AmandaLizetteReturnLoc, 'wait'
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Реакция Стефана на тайный визит
+! ================================================
+
+#AmandaLizetteSecretVisitChoice
+    $AmandaLizetteReturnLoc = $ARGS[0]
+    $AmandaLizetteChoice = LCASE($ARGS[1])
+
+    if $AmandaLizetteReturnLoc = '':
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizetteReturnLoc) = 0:
+        $AmandaLizetteReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ТАЙНОГО ВИЗИТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $AmandaLizetteChoice = 'demand':
+        gs 'AmandaLizettePrintText', 'secret_choice_demand'
+
+        AmandaTrustStefan -= 2
+        AmandaRebellion += 2
+        AmandaSecretiveness += 2
+        FamilyTension += 1
+    elseif $AmandaLizetteChoice = 'calm':
+        gs 'AmandaLizettePrintText', 'secret_choice_calm'
+
+        AmandaTrustStefan += 2
+        AmandaRebellion -= 1
+        AmandaSecretiveness -= 1
+        AmandaLizaInfluence += 1
+    else:
+        gs 'AmandaLizettePrintText', 'secret_choice_wait'
+
+        AmandaSecretiveness += 1
+        AmandaLizaInfluence += 1
+    end
+
+    gs 'AmandaLizetteClampVars'
+
+    if debug = 1:
+        *pl ' '
+        gs 'AmandaLizetteDebugPanel'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $AmandaLizetteReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Ограничение переменных ветки
+! ================================================
+
+#AmandaLizetteClampVars
+    if AmandaLizaInfluence < 0:
+        AmandaLizaInfluence = 0
+    end
+
+    if AmandaLizaInfluence > 100:
+        AmandaLizaInfluence = 100
+    end
+
+    if AmandaRebellion < 0:
+        AmandaRebellion = 0
+    end
+
+    if AmandaRebellion > 100:
+        AmandaRebellion = 100
+    end
+
+    if AmandaSecretiveness < 0:
+        AmandaSecretiveness = 0
+    end
+
+    if AmandaSecretiveness > 100:
+        AmandaSecretiveness = 100
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    if AmandaTrustStefan > 100:
+        AmandaTrustStefan = 100
+    end
+
+    if AmandaPublicAttention < 0:
+        AmandaPublicAttention = 0
+    end
+
+    if AmandaPublicAttention > 100:
+        AmandaPublicAttention = 100
+    end
+
+    if AmandaScandalLevel < 0:
+        AmandaScandalLevel = 0
+    end
+
+    if AmandaScandalLevel > 100:
+        AmandaScandalLevel = 100
+    end
+
+    if AmandaWorkDiscipline < 0:
+        AmandaWorkDiscipline = 0
+    end
+
+    if AmandaWorkDiscipline > 100:
+        AmandaWorkDiscipline = 100
+    end
+
+    if FamilyTension < 0:
+        FamilyTension = 0
+    end
+
+    if FamilyTension > 100:
+        FamilyTension = 100
+    end
+---
+
+! ================================================
+! FILE: modules/events/amanda/amanda_lizette.qsps
+! Печать текста из отдельного текстового файла
+! ================================================
+
+#AmandaLizettePrintText
+    $AmandaLizetteTextId = LCASE($ARGS[0])
+
+    if LOC('AmandaLizetteText') = 1:
+        gs 'AmandaLizetteText', $AmandaLizetteTextId
+        *p $AmandaLizetteText
+    else:
+        *p '[Текст не найден: ' + $AmandaLizetteTextId + ']'
+    end
+
+    killvar '$AmandaLizetteTextId'
+---
+

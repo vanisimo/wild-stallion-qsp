@@ -1,0 +1,1027 @@
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Универсальный движок добровольных интимных сцен
+! Новая версия:
+! - действия открываются по IntimStage
+! - одежда меняется автоматически по стадии сцены
+! - девушка получает оргазм автоматически при высоком возбуждении
+! - Стефан при пределе возбуждения переходит к выбору финала
+! - выбор финала может вызвать общий финал
+! - после финала девушка блокируется до завтра только если Стефан закончил
+! - беременность пока намеренно не обрабатывается
+! ================================================
+
+#SexSceneStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $SexGirl = $GirlKey
+    $SexReturnLoc = $ARGS[1]
+    $SexMode = LCASE($ARGS[2])
+
+    if $SexReturnLoc = '':
+        $SexReturnLoc = $CURLOC
+    end
+
+    if $SexReturnLoc = '':
+        $SexReturnLoc = 'TavernMain'
+    end
+
+    if $SexMode = '':
+        $SexMode = 'normal'
+    end
+
+    if $SexGirl = '':
+        *clr
+        clr
+        cla
+        *pl 'Ошибка: SexSceneStart вызван без имени девушки.'
+        act 'Вернуться':
+            gt $SexReturnLoc
+        end
+        exit
+    end
+
+    gs 'EnsureGirlData', $SexGirl
+    gs 'SexSceneEnsureIntimStage', $SexGirl
+    gs 'CanStartSexScene', $SexGirl
+
+    if SexSceneAllowed = 0:
+        *clr
+        clr
+        cla
+        *pl '══════════════════════════════════════════════'
+        *pl ' ИНТИМНАЯ СЦЕНА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        *p $SexSceneDenyReason
+
+        if debug = 1:
+            *pl ' '
+            *pl '[DEBUG] Девушка: ' + $SexGirl
+            *pl '[DEBUG] IntimStage: ' + STR(IntimStage[$SexGirl])
+            *pl '[DEBUG] Дружба: ' + STR(Friends[$SexGirl])
+            *pl '[DEBUG] Любовь: ' + STR(love[$SexGirl])
+            *pl '[DEBUG] Откровенность: ' + STR(otkroven[$SexGirl])
+            *pl '[DEBUG] Развращённость: ' + STR(sluttiness[$SexGirl])
+        end
+
+        act 'Вернуться':
+            gt $SexReturnLoc
+        end
+        exit
+    end
+
+    gs 'SexSceneInitState', $SexGirl
+    gt 'SexSceneMain'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Проверка допуска к сцене
+! ================================================
+
+#CanStartSexScene
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $SexCheckGirl = $GirlKey
+
+    SexSceneAllowed = 1
+    $SexSceneDenyReason = ''
+
+    if $SexCheckGirl = '':
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = 'Ошибка: девушка не выбрана.'
+        exit
+    end
+
+    if IntimStage[$SexCheckGirl] < 1:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = $RealName[$SexCheckGirl] + ' пока не готова к такой близости.'
+        exit
+    end
+
+    if Friends[$SexCheckGirl] < 20 and love[$SexCheckGirl] < 15:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = 'Сейчас между вами недостаточно доверия для такой близости.'
+        exit
+    end
+
+    if otkroven[$SexCheckGirl] < 10:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = $RealName[$SexCheckGirl] + ' пока слишком смущена для такой близости.'
+        exit
+    end
+
+    killvar '$SexCheckGirl'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Временная поддержка старых данных
+! Если IntimStage ещё не задан, стадия выводится из старых отношений
+! Позже это можно заменить чистой сюжетной прогрессией
+! ================================================
+
+#SexSceneEnsureIntimStage
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $SexStageGirl = $GirlKey
+
+    if $SexStageGirl = '':
+        exit
+    end
+
+    if IntimStage[$SexStageGirl] <= 0:
+        if sluttiness[$SexStageGirl] >= 60 and otkroven[$SexStageGirl] >= 40 and Friends[$SexStageGirl] >= 45:
+            IntimStage[$SexStageGirl] = 5
+        elseif sluttiness[$SexStageGirl] >= 45 and otkroven[$SexStageGirl] >= 35:
+            IntimStage[$SexStageGirl] = 4
+        elseif sluttiness[$SexStageGirl] >= 30 and otkroven[$SexStageGirl] >= 25:
+            IntimStage[$SexStageGirl] = 3
+        elseif Friends[$SexStageGirl] >= 30 or love[$SexStageGirl] >= 25:
+            IntimStage[$SexStageGirl] = 2
+        elseif Friends[$SexStageGirl] >= 20 or love[$SexStageGirl] >= 15:
+            IntimStage[$SexStageGirl] = 1
+        end
+    end
+
+    killvar '$SexStageGirl'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Инициализация состояния сцены
+! ================================================
+
+#SexSceneInitState
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $SexGirl = $GirlKey
+
+    SexSceneActive = 1
+    SexSceneMode = 0
+
+    SexStage = IntimStage[$SexGirl]
+    SexRound = 1
+    SexClothesStage = 0
+
+    if SexStage >= 2:
+        SexClothesStage = 1
+    end
+
+    if SexStage >= 4:
+        SexClothesStage = 2
+    end
+
+    SexMainStarted = 0
+    SexSceneHadVaginal = 0
+    SexSceneHadPlayerCum = 0
+
+    SexPlayerArousal = 20
+    SexGirlArousal = 15 + sluttiness[$SexGirl] / 5 + love[$SexGirl] / 10
+
+    if SexGirlArousal > 60:
+        SexGirlArousal = 60
+    end
+
+    SexPlayerCameInScene = 0
+    SexGirlCameInScene = 0
+    SexGirlOrgasmStart = GiveOrgasms[$SexGirl]
+
+    SexPlayerRest = 0
+    SexPlayerOut = 0
+    SexSimultaneousOrgasm = 0
+
+    $SexPose = 'intro'
+    $SexActType = 'intro'
+    $SexFinishPlace = ''
+    $SexLastText = ''
+
+    gs 'SexSceneTextAction', 'intro'
+    gs 'SexSceneClampValues'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Главное окно сцены
+! ================================================
+
+#SexSceneMain
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', $SexGirl
+    gs 'SexSceneClampValues'
+    gs 'SexSceneShowStatusPanel'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛИЗОСТЬ: ' + $RealName[$SexGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $SexLastText <> '':
+        *p $SexLastText
+    else:
+        *p $RealName[$SexGirl] + ' смотрит на вас, ожидая вашего следующего шага.'
+    end
+
+    *pl ' '
+    gs 'SexSceneBuildMenu'
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''SexSceneMenu''">делать</a>?'
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG] SexSceneMode: ' + STR(SexSceneMode)
+        *pl '[DEBUG] IntimStage: ' + STR(IntimStage[$SexGirl])
+        *pl '[DEBUG] SexStage: ' + STR(SexStage)
+        *pl '[DEBUG] SexRound: ' + STR(SexRound)
+        *pl '[DEBUG] SexClothesStage: ' + STR(SexClothesStage)
+        *pl '[DEBUG] SexActType: ' + $SexActType
+        *pl '[DEBUG] SexPlayerArousal: ' + STR(SexPlayerArousal)
+        *pl '[DEBUG] SexGirlArousal: ' + STR(SexGirlArousal)
+        *pl '[DEBUG] SexPlayerCameInScene: ' + STR(SexPlayerCameInScene)
+        *pl '[DEBUG] SexGirlCameInScene: ' + STR(SexGirlCameInScene)
+        *pl '[DEBUG] SexSceneHadPlayerCum: ' + STR(SexSceneHadPlayerCum)
+        *pl '[DEBUG] SexUsedToday: ' + STR(SexUsedToday[$SexGirl])
+        *pl '[DEBUG] daily_cum_count: ' + STR(daily_cum_count)
+    end
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Дополнительное описание: состояние Стефана и девушки
+! ================================================
+
+#SexSceneShowStatusPanel
+    clr
+
+    SexDailyMax = can_cum_daily
+
+    if SexDailyMax <= 0:
+        SexDailyMax = max_daily_cum
+    end
+
+    if SexDailyMax <= 0:
+        SexDailyMax = 2
+    end
+
+    if SexPlayerOut = 1:
+        pl 'Стефан вымотан за сегодня.'
+    elseif SexPlayerArousal < 20:
+        pl 'Стефан спокоен.'
+    elseif SexPlayerArousal < 40:
+        pl 'Стефан возбуждён. У него хороший стояк.'
+    elseif SexPlayerArousal < 65:
+        pl 'Стефан сильно возбуждён.'
+    elseif SexPlayerArousal < 85:
+        pl 'Стефан очень близок к финалу.'
+    elseif SexPlayerArousal < 100:
+        pl 'Стефан на грани. Он едва сдерживается.'
+    else:
+        pl 'Стефан уже не может сдерживаться.'
+    end
+
+    if SexGirlArousal < 20:
+        pl $RealName[$SexGirl] + ' пока держится спокойно.'
+    elseif SexGirlArousal < 40:
+        pl $RealName[$SexGirl] + ' начинает отвечать на ваши ласки.'
+    elseif SexGirlArousal < 65:
+        pl $RealName[$SexGirl] + ' заметно возбуждена.'
+    elseif SexGirlArousal < 85:
+        pl $RealName[$SexGirl] + ' близка к оргазму.'
+    elseif SexGirlArousal < 100:
+        pl $RealName[$SexGirl] + ' почти теряет самообладание.'
+    else:
+        pl $RealName[$SexGirl] + ' уже на грани.'
+    end
+
+    pl ' '
+
+    if SexClothesStage = 0:
+        pl 'Одежда: на месте.'
+    elseif SexClothesStage = 1:
+        pl 'Одежда: сбита и мешает всё меньше.'
+    else:
+        pl 'Одежда: уже не мешает близости.'
+    end
+
+    if $SexActType <> '':
+        pl 'Текущее действие: ' + $SexActType + '.'
+    end
+
+    if SexGirlCameInScene > 0:
+        pl $RealName[$SexGirl] + ' получила удовольствие: ' + STR(SexGirlCameInScene) + ' раз.'
+    end
+
+    if SexPlayerCameInScene > 0:
+        pl 'Стефан завершал в этой сцене: ' + STR(SexPlayerCameInScene) + ' раз.'
+    end
+
+    pl 'Сегодня Стефан кончил: ' + STR(daily_cum_count) + ' / ' + STR(SexDailyMax) + '.'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Построение меню интимной сцены
+! ================================================
+
+#SexSceneBuildMenu
+    gs 'Menu.Destroy', 'SexSceneMenu'
+    gs 'Menu.Create', 'SexSceneMenu'
+
+    if SexSceneMode = 1:
+        gs 'SexSceneBuildFinishMenu'
+        exit
+    end
+
+    if SexSceneMode = 2:
+        gs 'SexSceneBuildAfterFinishMenu'
+        exit
+    end
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Осмотреть', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionLook'
+    }
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Целовать', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionKiss'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=1,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Ласкать', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionCaress'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=2,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Ласкать грудь', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionBreastCaress'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=3,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Кунилингус', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionCuni'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Минет', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionBlowjob'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Вагинальный секс', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionVaginal'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=5,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Попрощаться и уйти', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneEnd'
+    }
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Меню выбора финала Стефана
+! ================================================
+
+#SexSceneBuildFinishMenu
+    if $SexActType = 'blowjob':
+        gs 'Menu.Add', 'SexSceneMenu', 'Завершить в рот', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'mouth'
+        }
+
+        gs 'Menu.Add', 'SexSceneMenu', 'Завершить на лицо', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'face'
+        }
+
+        gs 'Menu.Add', 'SexSceneMenu', 'Завершить на грудь', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'chest'
+        }
+    elseif $SexActType = 'vaginal':
+        gs 'Menu.Add', 'SexSceneMenu', 'Завершить внутри', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'inside'
+        }
+
+        gs 'Menu.Add', 'SexSceneMenu', 'Вынуть и завершить снаружи', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'outside'
+        }
+
+        gs 'Menu.Add', 'SexSceneMenu', 'Завершить на живот', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'belly'
+        }
+
+        gs 'Menu.Add', 'SexSceneMenu', 'Завершить на грудь', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'chest'
+        }
+    else
+        gs 'Menu.Add', 'SexSceneMenu', 'Завершить на тело', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'body'
+        }
+
+        gs 'Menu.Add', 'SexSceneMenu', 'Отстраниться и завершить снаружи', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'outside'
+        }
+    end
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Попытаться сдержаться', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionHoldBack'
+    }
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Меню после финала Стефана
+! ================================================
+
+#SexSceneBuildAfterFinishMenu
+    gs 'CanCumToday'
+
+    if Result = 1 or debug = 1:
+        gs 'Menu.Add', 'SexSceneMenu', 'Передохнуть и продолжить', ''
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionRest'
+        }
+    end
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Обнять и поговорить', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionAfterTalk'
+    }
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Попрощаться и уйти', ''
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneEnd'
+    }
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: осмотреть
+! ================================================
+
+#SexSceneActionLook
+    $SexPose = 'look'
+    $SexActType = 'look'
+    gs 'SexSceneTextAction', 'look'
+    gt 'SexSceneMain'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: целовать
+! ================================================
+
+#SexSceneActionKiss
+    $SexPose = 'kiss'
+    $SexActType = 'kiss'
+
+    SexPlayerArousal += 8
+    SexGirlArousal += 8
+    KissCount[$SexGirl] += 1
+    Friends[$SexGirl] += 1
+
+    if SexClothesStage < 1 and KissCount[$SexGirl] >= 2:
+        SexClothesStage = 1
+    end
+
+    gs 'SexSceneTextAction', 'kiss'
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: ласкать
+! ================================================
+
+#SexSceneActionCaress
+    $SexPose = 'caress'
+    $SexActType = 'caress'
+
+    SexPlayerArousal += 12
+    SexGirlArousal += 14
+    CaressCount[$SexGirl] += 1
+    otkroven[$SexGirl] += 1
+
+    if SexClothesStage < 1:
+        SexClothesStage = 1
+    end
+
+    gs 'SexSceneTextAction', 'caress'
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: ласкать грудь
+! ================================================
+
+#SexSceneActionBreastCaress
+    $SexPose = 'breast_caress'
+    $SexActType = 'breast_caress'
+
+    SexPlayerArousal += 14
+    SexGirlArousal += 18
+    DeepCaressCount[$SexGirl] += 1
+    otkroven[$SexGirl] += 1
+
+    if SexClothesStage < 1:
+        SexClothesStage = 1
+    end
+
+    gs 'SexSceneTextAction', 'breast_caress'
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: кунилингус
+! ================================================
+
+#SexSceneActionCuni
+    $SexPose = 'cuni'
+    $SexActType = 'cuni'
+
+    SexPlayerArousal += 10
+    SexGirlArousal += 30
+    CuniCount[$SexGirl] += 1
+    OralCount[$SexGirl] += 1
+    otkroven[$SexGirl] += 1
+    love[$SexGirl] += 1
+
+    if SexClothesStage < 2:
+        SexClothesStage = 2
+    end
+
+    gs 'SexSceneTextAction', 'cuni'
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: минет
+! ================================================
+
+#SexSceneActionBlowjob
+    $SexPose = 'blowjob'
+    $SexActType = 'blowjob'
+
+    SexPlayerArousal += 32
+    SexGirlArousal += 10
+    BlowjobCount[$SexGirl] += 1
+    OralCount[$SexGirl] += 1
+    sluttiness[$SexGirl] += 1
+
+    if SexClothesStage < 2:
+        SexClothesStage = 2
+    end
+
+    gs 'SexSceneTextAction', 'blowjob'
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: вагинальный секс
+! ================================================
+
+#SexSceneActionVaginal
+    $SexPose = 'vaginal'
+    $SexActType = 'vaginal'
+
+    SexMainStarted = 1
+    SexSceneHadVaginal = 1
+
+    SexPlayerArousal += 26
+    SexGirlArousal += 24
+    VaginalCount[$SexGirl] += 1
+    love[$SexGirl] += 1
+    sluttiness[$SexGirl] += 1
+
+    if SexClothesStage < 2:
+        SexClothesStage = 2
+    end
+
+    if HadVaginalWithPlayer[$SexGirl] = 0:
+        HadVaginalWithPlayer[$SexGirl] = 1
+
+        if PlayerVirgin = 1:
+            PlayerVirgin = 0
+        end
+
+        PlayerSexCount += 1
+
+        if virginity[$SexGirl] = 1:
+            virginity[$SexGirl] = 0
+            $FirstVaginalPartner[$SexGirl] = 'stefan'
+        end
+    end
+
+    gs 'SexSceneTextAction', 'vaginal'
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Общая обработка после обычного действия
+! ================================================
+
+#SexSceneAfterAction
+    SexSimultaneousOrgasm = 0
+
+    gs 'SexSceneClampValues'
+    gs 'SexSceneCheckGirlOrgasm'
+    gs 'SexSceneClampValues'
+
+    if SexPlayerArousal >= 100:
+        SexPlayerArousal = 100
+        SexSceneMode = 1
+        $SexLastText += '<br><br>Стефан уже не может сдерживаться. Нужно решить, как завершить этот момент.'
+        gs 'ClampGirlSocialStats', $SexGirl
+        gt 'SexSceneMain'
+    end
+
+    gs 'ClampGirlSocialStats', $SexGirl
+    gt 'SexSceneMain'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Проверка оргазма девушки
+! ================================================
+
+#SexSceneCheckGirlOrgasm
+    SexGirlOrgasmNow = 0
+
+    if SexGirlArousal >= 100:
+        SexGirlOrgasmNow = 1
+        SexGirlCameInScene += 1
+        GiveOrgasms[$SexGirl] += 1
+        SexGirlArousal = 40
+
+        if SexSceneMode = 1:
+            SexSimultaneousOrgasm = 1
+        end
+
+        if SexSimultaneousOrgasm = 1:
+            if $SexGirl = 'amanda':
+                $SexLastText += '<br><br>Это стало последней каплей и для Аманды. Почти одновременно с вами она теряет самообладание и долго не может отдышаться.'
+            elseif $SexGirl = 'melissa':
+                $SexLastText += '<br><br>Мелисса срывается почти одновременно с вами и потом долго не решается поднять глаза.'
+            elseif $SexGirl = 'sandra':
+                $SexLastText += '<br><br>Сандра пытается сохранить самообладание, но общий финал всё же ломает её выдержку.'
+            else:
+                $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' достигает пика почти одновременно с вами.'
+            end
+        else
+            if $SexGirl = 'amanda':
+                $SexLastText += '<br><br>Аманда больше не выдерживает. Её дыхание сбивается, она дрожит и на несколько мгновений забывает обо всём вокруг.'
+            elseif $SexGirl = 'melissa':
+                $SexLastText += '<br><br>Мелисса больше не может сдерживаться. Она дрожит в ваших руках и потом смущённо отворачивается.'
+            elseif $SexGirl = 'sandra':
+                $SexLastText += '<br><br>Сандра на мгновение теряет привычную сдержанность, а потом медленно приходит в себя.'
+            else:
+                $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' получает удовольствие и некоторое время приходит в себя.'
+            end
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Финал Стефана
+! Место финала влияет на возбуждение девушки
+! Беременность пока не обрабатывается
+! ================================================
+
+#SexSceneActionFinish
+    $SexFinishPlace = LCASE($ARGS[0])
+    SexSimultaneousOrgasm = 0
+    SexSceneMode = 1
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        SexPlayerArousal = 0
+        SexPlayerOut = 1
+        SexPlayerRest = 0
+        gs 'SexSceneTextAction', 'player_out'
+        gt 'SexSceneMain'
+    end
+
+    if $SexFinishPlace = 'inside':
+        SexGirlArousal += 25
+    elseif $SexFinishPlace = 'mouth':
+        SexGirlArousal += 15
+    elseif $SexFinishPlace = 'face':
+        SexGirlArousal += 10
+    elseif $SexFinishPlace = 'chest':
+        SexGirlArousal += 10
+    elseif $SexFinishPlace = 'belly':
+        SexGirlArousal += 10
+    elseif $SexFinishPlace = 'body':
+        SexGirlArousal += 8
+    else
+        SexGirlArousal += 5
+    end
+
+    gs 'SexSceneTextFinish', $SexFinishPlace
+    gs 'SexSceneCheckGirlOrgasm'
+
+    SexCumBefore = daily_cum_count
+
+    if Result = 1:
+        gs 'RegisterPlayerCum'
+    end
+
+    if debug = 1 and Result = 0:
+        daily_cum_count += 1
+        total_cumshots += 1
+        sexual_endurance += 1
+
+        if sexual_endurance > 100:
+            sexual_endurance = 100
+        end
+    end
+
+    if Result = 1 and daily_cum_count = SexCumBefore:
+        daily_cum_count += 1
+    end
+
+    SexSceneHadPlayerCum = 1
+    SexPlayerCameInScene += 1
+    SexPlayerArousal = 0
+    SexPlayerRest = 1
+
+    gs 'SexSceneCleanupText', $SexFinishPlace
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        SexPlayerOut = 1
+    end
+
+    SexSceneMode = 2
+
+    gs 'ClampGirlSocialStats', $SexGirl
+    gs 'SexSceneClampValues'
+    gt 'SexSceneMain'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Попытка сдержаться
+! ================================================
+
+#SexSceneActionHoldBack
+    if Rand(1, 100) <= 40:
+        SexPlayerArousal = 90
+        SexSceneMode = 0
+        $SexLastText = 'Стефану удаётся на несколько мгновений взять себя в руки. Напряжение не исчезло, но вы получили ещё немного времени.'
+    else
+        SexSceneMode = 1
+        $SexLastText = 'Стефан пытается сдержаться, но тело уже почти не слушается.'
+    end
+
+    gt 'SexSceneMain'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Передохнуть и продолжить сцену
+! ================================================
+
+#SexSceneActionRest
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        SexPlayerOut = 1
+        SexPlayerRest = 0
+        SexPlayerArousal = 0
+        gs 'SexSceneTextAction', 'player_out'
+        gt 'SexSceneMain'
+    end
+
+    SexRound += 1
+    SexSceneMode = 0
+    SexPlayerRest = 0
+    SexPlayerArousal = 18
+
+    if SexGirlArousal < 35:
+        SexGirlArousal = 35
+    end
+
+    gs 'SexSceneTextAction', 'rest'
+    gt 'SexSceneMain'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Короткий разговор после финала
+! ================================================
+
+#SexSceneActionAfterTalk
+    if SexGirlCameInScene > 0:
+        $SexLastText = $RealName[$SexGirl] + ' остаётся рядом с вами. После случившегося между вами повисает уже совсем другая тишина.'
+    else
+        $SexLastText = $RealName[$SexGirl] + ' выглядит не до конца довольной. Кажется, ей хотелось бы, чтобы вы уделили ей больше внимания.'
+    end
+
+    gt 'SexSceneMain'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Тексты обычных действий
+! ================================================
+
+#SexSceneTextAction
+    $SexTextAction = LCASE($ARGS[0])
+
+    if $SexTextAction = 'intro':
+        if $SexGirl = 'amanda':
+            $SexLastText = 'Аманда задерживает на вас взгляд чуть дольше обычного. В её улыбке есть и смущение, и вызов.'
+        elseif $SexGirl = 'melissa':
+            $SexLastText = 'Мелисса стоит рядом чуть напряжённо. Она явно волнуется, но не уходит.'
+        elseif $SexGirl = 'sandra':
+            $SexLastText = 'Сандра смотрит на вас спокойно, но в её взгляде чувствуется внутреннее напряжение.'
+        else
+            $SexLastText = $RealName[$SexGirl] + ' остаётся рядом с вами. Между вами повисает тихое напряжение.'
+        end
+    elseif $SexTextAction = 'look':
+        $SexLastText = $RealName[$SexGirl] + ' ждёт вашего следующего шага.'
+    elseif $SexTextAction = 'kiss':
+        $SexLastText = 'Вы целуете ' + $RealName[$SexGirl] + '. Она отвечает на вашу близость и постепенно становится смелее.'
+    elseif $SexTextAction = 'caress':
+        $SexLastText = 'Вы не торопитесь, позволяя ' + $RealName[$SexGirl] + ' привыкнуть к вашим ласкам.'
+    elseif $SexTextAction = 'breast_caress':
+        $SexLastText = 'Ваши ласки становятся смелее. ' + $RealName[$SexGirl] + ' уже не может скрыть, что это действует на неё.'
+    elseif $SexTextAction = 'cuni':
+        $SexLastText = 'Вы уделяете ' + $RealName[$SexGirl] + ' всё внимание, и она постепенно перестаёт сдерживаться.'
+    elseif $SexTextAction = 'blowjob':
+        $SexLastText = $RealName[$SexGirl] + ' решается на более смелую близость. Смущение ещё заметно, но она уже не отступает.'
+    elseif $SexTextAction = 'vaginal':
+        $SexLastText = 'Близость с ' + $RealName[$SexGirl] + ' становится полной. Теперь между вами уже почти не остаётся прежней дистанции.'
+    elseif $SexTextAction = 'rest':
+        $SexLastText = 'Вы даёте себе немного времени отдышаться. ' + $RealName[$SexGirl] + ' остаётся рядом.'
+    elseif $SexTextAction = 'player_out':
+        $SexLastText = 'Стефан слишком вымотан за сегодня. Даже близость с ' + $RealName[$SexGirl] + ' уже не помогает вернуть силы.'
+    else
+        $SexLastText = $RealName[$SexGirl] + ' ждёт вашего следующего шага.'
+    end
+
+    killvar '$SexTextAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Текст финала Стефана
+! ================================================
+
+!#SexSceneTextFinish
+ !   $SexFinishPlace = LCASE($ARGS[0])
+!
+ !   if $SexFinishPlace = 'inside':
+ !       $SexLastText = 'Стефан больше не может сдерживаться и завершает внутри. ' + $RealName[$SexGirl] + ' крепче прижимается к вам, будто этот момент задел её сильнее, чем она ожидала.'
+ !   elseif $SexFinishPlace = 'mouth':
+  !      $SexLastText = 'Стефан завершает, а ' + $RealName[$SexGirl] + ' принимает это с заметным смущением.'
+ !   elseif $SexFinishPlace = 'face':
+  !      $SexLastText = 'Стефан завершает на лицо. ' + $RealName[$SexGirl] + ' замирает на мгновение, потом медленно переводит дыхание.'
+ !   elseif $SexFinishPlace = 'chest':
+  !      $SexLastText = 'Стефан завершает на грудь. ' + $RealName[$SexGirl] + ' тяжело дышит и старается прийти в себя.'
+  !  elseif $SexFinishPlace = 'belly':
+  !      $SexLastText = 'Стефан завершает на живот. ' + $RealName[$SexGirl] + ' смотрит на следы вашей близости и смущённо отворачивается.'
+  !  elseif $SexFinishPlace = 'body':
+  !      $SexLastText = 'Стефан наконец достигает финала. ' + $RealName[$SexGirl] + ' ещё некоторое время приходит в себя.'
+  !  else
+ !       $SexLastText = 'Стефан отстраняется в последний момент и завершает снаружи. ' + $RealName[$SexGirl] + ' медленно переводит дыхание.'
+ !   end
+!
+ !   killvar '$SexFinishPlace'
+!---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Автоматическое приведение себя в порядок после финала
+! Отдельные кнопки и картинки не нужны
+! ================================================
+
+!#SexSceneCleanupText
+  !  $SexFinishPlace = LCASE($ARGS[0])
+
+   ! if $SexGirl = 'amanda':
+  !      $SexLastText += '<br><br>Аманда берёт платок, быстро приводит себя в порядок и поправляет сбившуюся одежду.'
+  !  elseif $SexGirl = 'melissa':
+   !     $SexLastText += '<br><br>Мелисса молча приводит себя в порядок, стараясь как можно скорее вернуть себе привычную собранность.'
+   ! elseif $SexGirl = 'sandra':
+   !     $SexLastText += '<br><br>Сандра спокойно убирает следы вашей близости и поправляет одежду, словно старается вернуть комнате прежний вид.'
+   ! else
+   !     $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' приводит себя в порядок и поправляет одежду.'
+  !  end
+
+  !  killvar '$SexFinishPlace'
+!---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Завершение сцены
+! Если Стефан завершал с девушкой, она блокируется до завтра
+! ================================================
+
+#SexSceneEnd
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', $SexGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗАВЕРШЕНИЕ БЛИЗОСТИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if SexSceneHadVaginal = 1:
+        gs 'RegisterSex', $SexGirl
+    end
+
+    if SexSceneHadPlayerCum = 1:
+        SexUsedToday[$SexGirl] = 1
+    end
+
+    if SexSceneHadPlayerCum = 1:
+        if SexGirlCameInScene > 0:
+            *p $RealName[$SexGirl] + ' выглядит уставшей, но довольной. На сегодня ей явно нужно прийти в себя.'
+            Friends[$SexGirl] += 1
+            love[$SexGirl] += 1
+        else
+            *p $RealName[$SexGirl] + ' поправляет одежду и молчит чуть дольше обычного. Кажется, ей хотелось бы большего внимания.'
+            Friends[$SexGirl] -= 1
+        end
+    else
+        *p 'Вы решаете остановиться, пока всё не зашло дальше.'
+        *p $RealName[$SexGirl] + ' принимает это спокойно.'
+        Friends[$SexGirl] += 1
+    end
+
+    gs 'ClampGirlSocialStats', $SexGirl
+
+    SexSceneActive = 0
+    SexPlayerArousal = 0
+    SexGirlArousal = 0
+    SexSceneMode = 0
+
+    Arousal['you'] = 0
+    Arousal[$SexGirl] = 0
+
+    gs 'Menu.Destroy', 'SexSceneMenu'
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $SexReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Ограничение значений сцены
+! ================================================
+
+#SexSceneClampValues
+    if SexPlayerArousal < 0:
+        SexPlayerArousal = 0
+    end
+
+    if SexPlayerArousal > 100:
+        SexPlayerArousal = 100
+    end
+
+    if SexGirlArousal < 0:
+        SexGirlArousal = 0
+    end
+
+    if SexGirlArousal > 120:
+        SexGirlArousal = 120
+    end
+
+    if SexClothesStage < 0:
+        SexClothesStage = 0
+    end
+
+    if SexClothesStage > 2:
+        SexClothesStage = 2
+    end
+---
+

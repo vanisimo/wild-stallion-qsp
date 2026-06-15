@@ -1,0 +1,438 @@
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Информация о трактире в дополнительном описании
+! Показывает деньги, дату, репутацию, запасы и персонал
+! Прогноз дохода фиксируется в отдельные переменные панели
+! ================================================
+
+#PanelTavernInfo
+    PanelCustomActive = 1
+
+    clr
+
+    gs 'GetDateTimeNames'
+    gs 'PanelGetTavernReputationText'
+
+    gs 'IsTavernOpen'
+    TavernOpenNow = TavernOpen
+    $TavernClosedNowReason = $TavernClosedReason
+
+        ! ====================== ПРОГНОЗ ДОХОДА ======================
+    ! Статус открытия выше остаётся реальным.
+    ! Но прогноз считаем как рабочий день, чтобы ночью/после переходов он не обнулялся.
+
+    TavernForceIncomeOpen = 1
+    gs 'CalculateTavernIncomePreview'
+    TavernForceIncomeOpen = 0
+
+    ! ====================== ФИКСИРУЕМ ПРОГНОЗ ДЛЯ ПАНЕЛИ ======================
+
+    PanelForecastFoodIncome = tavern_food_income
+    PanelForecastWineIncome = tavern_wine_income
+    PanelForecastBeerIncome = tavern_beer_income
+    PanelForecastGrossIncome = tavern_gross_income
+    PanelForecastExpenses = tavern_daily_expenses
+    PanelForecastProfit = tavern_expected_profit
+    PanelForecastStockPenalty = tavern_stock_penalty
+
+    PanelForecastKitchenPower = tavern_kitchen_power
+    PanelForecastWaitressPower = tavern_waitress_power
+    PanelForecastCleaningPower = tavern_cleaning_power
+    PanelForecastEfficiency = tavern_work_efficiency
+    PanelForecastOverloadPenalty = tavern_overload_penalty
+    PanelForecastMissingWorkPenalty = tavern_missing_work_penalty
+
+    pl '══════════════════════════════════════════════'
+    pl ' ТРАКТИР "ДИКИЙ ЖЕРЕБЕЦ"'
+    pl '══════════════════════════════════════════════'
+    pl ' '
+
+    pl 'Дата: ' + $WeekDay + ', ' + STR(day) + ' ' + $MonthName + ' ' + STR(year) + ' года'
+    pl 'Время: ' + $TimeOfDay
+    pl ' '
+
+    if TavernOpenNow = 1:
+        pl 'Статус: открыто'
+    else:
+        pl 'Статус: закрыто'
+        pl 'Причина: ' + $TavernClosedNowReason
+    end
+        ! ====================== ПОСЛЕДНЕЕ СОБЫТИЕ ЗАЛА ======================
+
+    if $LastHallEventText <> '':
+        pl ' '
+        pl 'Последнее событие зала:'
+        pl $LastHallEventText
+
+        if $LastHallEventGirl <> '':
+            gs 'EnsureGirlData', $LastHallEventGirl
+
+            if $RealName[$LastHallEventGirl] <> '':
+                pl 'Связано с: ' + $RealName[$LastHallEventGirl]
+            end
+        end
+
+        pl 'Когда: день ' + STR(LastHallEventDay) + ', часть суток ' + STR(LastHallEventTime)
+    end
+
+    pl ' '
+
+    pl 'Деньги: ' + STR(money) + ' мараведи'
+    pl 'Посетители: ' + STR(tavernvisitors)
+    pl 'Репутация: ' + STR(tavern_reputation) + ' / 100'
+    pl 'Оценка: ' + $PanelTavernRepText
+    pl ' '
+
+    pl 'Запасы:'
+    gs 'PanelTavernResourceLine', 'Продукты', productnum, 100
+    gs 'PanelTavernResourceLine', 'Вино', winenum, 60
+    gs 'PanelTavernResourceLine', 'Пиво', beernum, 80
+    if LOC('PanelTavernSupplyBlock') = 1:
+        gs 'PanelTavernSupplyBlock'
+    end
+
+    pl ' '
+    pl 'Прогноз дохода за день:'
+    pl 'Еда: ' + STR(PanelForecastFoodIncome) + ' мараведи'
+    pl 'Вино: ' + STR(PanelForecastWineIncome) + ' мараведи'
+    pl 'Пиво: ' + STR(PanelForecastBeerIncome) + ' мараведи'
+    pl 'Валовый доход: ' + STR(PanelForecastGrossIncome) + ' мараведи'
+    pl 'Расходы: ' + STR(PanelForecastExpenses) + ' мараведи'
+    pl 'Ожидаемая прибыль: ' + STR(PanelForecastProfit) + ' мараведи'
+
+    if PanelForecastStockPenalty > 0:
+        pl 'Штраф запасов: ' + STR(PanelForecastStockPenalty) + '%'
+    end
+
+    if debug = 1:
+        pl ' '
+        pl '[DEBUG PANEL] Еда: ' + STR(PanelForecastFoodIncome)
+        pl '[DEBUG PANEL] Вино: ' + STR(PanelForecastWineIncome)
+        pl '[DEBUG PANEL] Пиво: ' + STR(PanelForecastBeerIncome)
+        pl '[DEBUG PANEL] Прибыль: ' + STR(PanelForecastProfit)
+    end
+
+    pl ' '
+    pl 'Состояние работы:'
+
+    gs 'PanelGetWorkPowerText', PanelForecastKitchenPower
+    pl 'Кухня: ' + $PanelWorkPowerText + ' (' + STR(PanelForecastKitchenPower) + ')'
+
+    gs 'PanelGetWorkPowerText', PanelForecastWaitressPower
+    pl 'Зал: ' + $PanelWorkPowerText + ' (' + STR(PanelForecastWaitressPower) + ')'
+
+    gs 'PanelGetWorkPowerText', PanelForecastCleaningPower
+    pl 'Чистота: ' + $PanelWorkPowerText + ' (' + STR(PanelForecastCleaningPower) + ')'
+
+    gs 'PanelGetEfficiencyText', PanelForecastEfficiency
+    pl 'Общая эффективность: ' + $PanelEfficiencyText + ' (' + STR(PanelForecastEfficiency) + ' / 100)'
+
+    if PanelForecastOverloadPenalty > 0:
+        pl 'Штраф перегрузки: ' + STR(PanelForecastOverloadPenalty)
+    end
+
+    if PanelForecastMissingWorkPenalty > 0:
+        pl 'Штраф за незакрытые работы: ' + STR(PanelForecastMissingWorkPenalty)
+    end
+
+    gs 'PanelTavernProblemsText'
+
+    pl ' '
+    pl 'Персонал:'
+    pl 'Назначение работ вынесено в отдельную кнопку "Персонал".'
+    pl '<a href="exec:gs ''PanelStaffInfo''">Открыть управление персоналом</a>'
+    pl ' '
+
+    pl '══════════════════════════════════════════════'
+
+    killvar 'TavernOpenNow'
+    killvar '$TavernClosedNowReason'
+---
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Строка запаса ресурсов трактира
+! Показывает состояние ресурса обычным текстом
+! ================================================
+
+#PanelTavernResourceLine
+    $PanelResourceName = $ARGS[0]
+    PanelResourceValue = ARGS[1]
+    PanelResourceGoodLevel = ARGS[2]
+
+    if $PanelResourceName = '':
+        exit
+    end
+
+    if PanelResourceGoodLevel <= 0:
+        PanelResourceGoodLevel = 1
+    end
+
+    if PanelResourceValue <= 0:
+        $PanelResourceState = 'нет'
+    elseif PanelResourceValue < PanelResourceGoodLevel / 2:
+        $PanelResourceState = 'мало'
+    elseif PanelResourceValue < PanelResourceGoodLevel:
+        $PanelResourceState = 'средне'
+    else:
+        $PanelResourceState = 'достаточно'
+    end
+
+    pl $PanelResourceName + ': ' + STR(PanelResourceValue) + ' — ' + $PanelResourceState
+
+    killvar '$PanelResourceName'
+    killvar 'PanelResourceValue'
+    killvar 'PanelResourceGoodLevel'
+    killvar '$PanelResourceState'
+---
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Строка девушки в панели трактира
+! Показывает текущие работы, нагрузку и эффективность
+! Кликабельными остаются только назначения работ
+! ================================================
+
+#PanelTavernGirlJobLine
+    $PanelTavernGirl = LCASE($ARGS[0])
+
+    if $PanelTavernGirl = '':
+        exit
+    end
+
+    if $RealName[$PanelTavernGirl] = '':
+        $RealName[$PanelTavernGirl] = UCASE(MID($PanelTavernGirl, 1, 1)) + LCASE(MID($PanelTavernGirl, 2))
+    end
+
+    gs 'PanelGetGirlJobText', $PanelTavernGirl
+    gs 'GetGirlWorkLoad', $PanelTavernGirl
+    gs 'GetGirlWorkEfficiency', $PanelTavernGirl
+
+    $PanelKitchenLink = '<a href="exec:gs ''PanelToggleGirlJob'', ''' + $PanelTavernGirl + ''', ''kitchen''">Кухня</a>'
+    $PanelWaitressLink = '<a href="exec:gs ''PanelToggleGirlJob'', ''' + $PanelTavernGirl + ''', ''waitress''">Зал</a>'
+    $PanelCleaningLink = '<a href="exec:gs ''PanelToggleGirlJob'', ''' + $PanelTavernGirl + ''', ''cleaning''">Уборка</a>'
+    $PanelClearLink = '<a href="exec:gs ''PanelClearGirlJobs'', ''' + $PanelTavernGirl + '''">Снять все</a>'
+
+    pl '<b>' + $RealName[$PanelTavernGirl] + '</b>'
+    pl 'Работы: ' + $PanelJobText
+    pl 'Нагрузка: ' + STR(GirlWorkLoad)
+    pl 'Эффективность: ' + STR(GirlWorkEfficiency) + '%'
+    pl 'Навыки: кухня ' + STR(cooking[$PanelTavernGirl]) + ', зал ' + STR(waitress[$PanelTavernGirl]) + ', уборка ' + STR(cleaning[$PanelTavernGirl])
+    pl $PanelKitchenLink + ' | ' + $PanelWaitressLink + ' | ' + $PanelCleaningLink
+    pl $PanelClearLink
+    pl ' '
+
+    killvar '$PanelTavernGirl'
+    killvar '$PanelKitchenLink'
+    killvar '$PanelWaitressLink'
+    killvar '$PanelCleaningLink'
+    killvar '$PanelClearLink'
+---
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Переключение работы девушки из панели трактира
+! Повторное нажатие снимает работу
+! После изменения обновляет дополнительное описание
+! ================================================
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Переключение работы девушки из панели трактира
+! Повторное нажатие снимает работу
+! После изменения перерисовывает текущую локацию
+! ================================================
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Переключение работы девушки из панели трактира
+! Повторное нажатие снимает работу
+! После изменения перерисовывает текущую локацию
+! ================================================
+
+#PanelToggleGirlJob
+    $PanelToggleGirl = LCASE($ARGS[0])
+    $PanelToggleJob = LCASE($ARGS[1])
+
+    if $PanelToggleGirl = '':
+        exit
+    end
+
+    if $PanelToggleJob = '':
+        exit
+    end
+
+    $PanelReturnLoc = $CURLOC
+
+    if $PanelReturnLoc = '':
+        $PanelReturnLoc = 'TavernMain'
+    end
+
+    gs 'SetGirlJob', $PanelToggleGirl, $PanelToggleJob, 'toggle'
+    gs 'CalculateTavernStaffEfficiency'
+    gs 'UpdateGirlLocations'
+
+    gt $PanelReturnLoc
+---
+
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Снятие всех работ с девушки из панели трактира
+! После изменения перерисовывает текущую локацию
+! ================================================
+
+#PanelClearGirlJobs
+    $PanelClearGirl = LCASE($ARGS[0])
+
+    if $PanelClearGirl = '':
+        exit
+    end
+
+    $PanelReturnLoc = $CURLOC
+
+    if $PanelReturnLoc = '':
+        $PanelReturnLoc = 'TavernMain'
+    end
+
+    gs 'SetGirlJob', $PanelClearGirl, ''
+    gs 'CalculateTavernStaffEfficiency'
+    gs 'UpdateGirlLocations'
+
+    gt $PanelReturnLoc
+---
+
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Текстовая оценка репутации трактира
+! Используется только в панели трактира
+! ================================================
+
+#PanelGetTavernReputationText
+    if tavern_reputation >= 90:
+        $PanelTavernRepText = 'Легендарная таверна'
+    elseif tavern_reputation >= 75:
+        $PanelTavernRepText = 'Отличная репутация'
+    elseif tavern_reputation >= 60:
+        $PanelTavernRepText = 'Хорошая таверна'
+    elseif tavern_reputation >= 40:
+        $PanelTavernRepText = 'Обычная таверна'
+    elseif tavern_reputation >= 25:
+        $PanelTavernRepText = 'Сомнительная репутация'
+    else:
+        $PanelTavernRepText = 'Плохая репутация'
+    end
+---
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Текстовая оценка силы отдельного направления работы
+! Используется для кухни, зала и чистоты
+! ================================================
+
+#PanelGetWorkPowerText
+    PanelWorkPowerValue = ARGS[0]
+
+    if PanelWorkPowerValue >= 80:
+        $PanelWorkPowerText = 'отлично'
+    elseif PanelWorkPowerValue >= 60:
+        $PanelWorkPowerText = 'хорошо'
+    elseif PanelWorkPowerValue >= 40:
+        $PanelWorkPowerText = 'нормально'
+    elseif PanelWorkPowerValue >= 20:
+        $PanelWorkPowerText = 'слабо'
+    elseif PanelWorkPowerValue > 0:
+        $PanelWorkPowerText = 'очень слабо'
+    else:
+        $PanelWorkPowerText = 'не работает'
+    end
+
+    killvar 'PanelWorkPowerValue'
+---
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Текстовая оценка общей эффективности таверны
+! ================================================
+
+#PanelGetEfficiencyText
+    PanelEfficiencyValue = ARGS[0]
+
+    if PanelEfficiencyValue >= 85:
+        $PanelEfficiencyText = 'таверна работает прекрасно'
+    elseif PanelEfficiencyValue >= 70:
+        $PanelEfficiencyText = 'таверна работает хорошо'
+    elseif PanelEfficiencyValue >= 50:
+        $PanelEfficiencyText = 'таверна работает терпимо'
+    elseif PanelEfficiencyValue >= 30:
+        $PanelEfficiencyText = 'таверна работает плохо'
+    elseif PanelEfficiencyValue > 0:
+        $PanelEfficiencyText = 'таверна почти разваливается'
+    else:
+        $PanelEfficiencyText = 'работа таверны остановлена'
+    end
+
+    killvar 'PanelEfficiencyValue'
+---
+
+! ================================================
+! FILE: modules/menu/panel_tavern_info.qsps
+! Текстовые проблемы трактира
+! Выводит подсказки игроку, что нужно исправить
+! ================================================
+
+#PanelTavernProblemsText
+    PanelProblemShown = 0
+
+    if productnum <= 0:
+        pl 'Проблема: на кухне нет продуктов.'
+        PanelProblemShown = 1
+    elseif productnum < 50:
+        pl 'Проблема: продуктов скоро не хватит.'
+        PanelProblemShown = 1
+    end
+
+    if winenum <= 0:
+        pl 'Проблема: вино закончилось.'
+        PanelProblemShown = 1
+    elseif winenum < 30:
+        pl 'Проблема: запас вина низкий.'
+        PanelProblemShown = 1
+    end
+
+    if beernum <= 0:
+        pl 'Проблема: пиво закончилось.'
+        PanelProblemShown = 1
+    elseif beernum < 40:
+        pl 'Проблема: запас пива низкий.'
+        PanelProblemShown = 1
+    end
+
+    if tavern_kitchen_power <= 0:
+        pl 'Проблема: никто не работает на кухне.'
+        PanelProblemShown = 1
+    end
+
+    if tavern_waitress_power <= 0:
+        pl 'Проблема: никто не обслуживает зал.'
+        PanelProblemShown = 1
+    end
+
+    if tavern_cleaning_power <= 0:
+        pl 'Проблема: никто не занимается уборкой.'
+        PanelProblemShown = 1
+    end
+
+    if tavern_overload_penalty >= 10:
+        pl 'Проблема: девушки перегружены работой.'
+        PanelProblemShown = 1
+    end
+
+    if PanelProblemShown = 0:
+        pl 'Серьёзных проблем сейчас нет.'
+    end
+
+    killvar 'PanelProblemShown'
+---
+

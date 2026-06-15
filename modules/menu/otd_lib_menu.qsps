@@ -1,0 +1,230 @@
+! ================================================
+! БИБЛИОТЕКА МЕНЮ modules/menu/otd_lib_menu.qsps
+! Адаптирована для проекта "Дикий Жеребец"
+! ================================================
+! ================================================
+! MODULE: otd_lib_menu.qsps
+! Библиотека меню
+! ================================================
+
+#otd_lib_menu
+---
+
+#Menu.Info
+    *NL 'Модуль для работы с меню'
+    *NL 'Версия: 1.1 (адаптированная)'
+    *NL 'Оригинал: Olegus t.Gl. (c) 2011'
+---
+
+
+#Menu.Create
+    if $ARGS[0] = '': exit
+    $ARGS[0] = 'otg_Меню_' + $ARGS[0]
+    killvar '<<$ARGS[0]>>'
+    killvar '<<$ARGS[0]>>_Параметры'
+    killvar '<<$ARGS[0]>>_Выбрали'
+    killvar '<<$ARGS[0]>>_ВыбранныйПункт'
+    killvar '<<$ARGS[0]>>_Время'
+    killvar '<<$ARGS[0]>>_МодулиСобытий'
+---
+
+
+#Menu.Add
+    if $ARGS[0] = '' or $ARGS[1] = '': exit
+    if $ARGS[1] = '---' or lcase($ARGS[1]) = 'разделитель':
+        dynamic "$otg_Меню_<<$ARGS[0]>>[] = '-:-'"
+        exit
+    end
+    ARGS[10] = arrsize('ARGS')
+    if ARGS[10] < 3: $ARGS[2] = ''
+    if ARGS[10] < 4: $ARGS[3] = ''
+    $ARGS[0] = 'otg_Меню_' + $ARGS[0]
+    $ARGS[1] = replace($ARGS[1], '''', '''''')
+    if $ARGS[2] <> '': $ARGS[2] = ':' + replace($ARGS[2], '''', '''''')
+    if $ARGS[3] <> '': $ARGS[3] = replace($ARGS[3], '''', '''''')
+    dynamic "
+        $<<$ARGS[0]>>[] = '<<$ARGS[1]>>:Menu.Processing<<$ARGS[2]>>'
+        $<<$ARGS[0]>>_Параметры[str(arrsize('<<$ARGS[0]>>')) + '_З'] = '<<$ARGS[1]>>'
+        $<<$ARGS[0]>>_Параметры[str(arrsize('<<$ARGS[0]>>')) + '_Ф'] = '<<$ARGS[3]>>'
+    "
+    $ARGS[3] = ''
+    if ARGS[10] > 4:
+        ARGS[11] = 4
+        :otg_меню_метка_1
+        if ARGS[11] < ARGS[10]:
+            if $ARGS[ARGS[11]] <> '':
+                $ARGS[3] += ',''' + replace($ARGS[ARGS[11]], '''', '''''') + ''''
+            else
+                if ARGS[ARGS[11]] <> 0:
+                    $ARGS[3] += ',' + str(ARGS[ARGS[11]])
+                else
+                    $ARGS[3] += ','''
+                end
+            end
+            ARGS[11] += 1
+            jump 'otg_меню_метка_1'
+        end
+    end
+    dynamic "
+        $<<$ARGS[0]>>_Параметры[str(arrsize('<<$ARGS[0]>>')) + '_П'] = '<<replace($ARGS[3], '''', '''''')>>'
+    "
+---
+
+#Menu.Show
+    if $ARGS[0] = '':
+        exit
+    end
+
+    gs 'Menu.Call', $ARGS[0]
+---
+
+#Menu.AddCondition
+    if $ARGS[0] = '' or $ARGS[1] = '': exit
+    ARGS[10] = dyneval("Result = arrsize('otg_Меню_<<$ARGS[0]>>')")
+    if dyneval("$Result = $otg_Меню_<<$ARGS[0]>>[<<ARGS[10]>> - 1]") = '-:-': exit
+    dynamic "
+        $otg_Меню_<<$ARGS[0]>>_Параметры['<<ARGS[10]>>_У'] = '<<replace($ARGS[1], '''', '''''')>>'
+    "
+---
+
+
+#Menu.AddModule
+    if $ARGS[0] = '' or $ARGS[1] = '': exit
+    ARGS[10] = dyneval("Result = arrsize('otg_Меню_<<$ARGS[0]>>')")
+    if dyneval("$Result = $otg_Меню_<<$ARGS[0]>>[<<ARGS[10]>> - 1]") = '-:-': exit
+    dynamic "
+        $otg_Меню_<<$ARGS[0]>>_Параметры['<<ARGS[10]>>_М'] = '<<replace($ARGS[1], '''', '''''')>>'
+    "
+---
+
+
+#Menu.Call
+    if $ARGS[0] = '': exit
+    ARGS[10] = arrsize('otg_Меню_<<$ARGS[0]>>')
+    if ARGS[10] = 0: exit
+    $otg_Меню_Текущее = 'otg_Меню_' + $ARGS[0]
+    killvar 'otg_Меню_Вызываемое'
+    killvar 'otg_Меню_Соответствия'
+    ARGS[11] = 0
+    :otg_меню_метка_2
+    if ARGS[11] < ARGS[10]:
+        dynamic "
+            $ARGS[0] = $<<$otg_Меню_Текущее>>_Параметры['<<ARGS[11] + 1>>_У']
+            if $ARGS[0] = '':
+                $otg_Меню_Вызываемое[] = $<<$otg_Меню_Текущее>>[<<ARGS[11]>>]
+                otg_Меню_Соответствия[] = <<ARGS[11] + 1>>
+            else
+                if dyneval($ARGS[0]) <> 0:
+                    $otg_Меню_Вызываемое[] = $<<$otg_Меню_Текущее>>[<<ARGS[11]>>]
+                    otg_Меню_Соответствия[] = <<ARGS[11] + 1>>
+                end
+            end
+        "
+        ARGS[11] += 1
+        jump 'otg_меню_метка_2'
+    end
+    otg_Меню_Время = 0
+    dynamic "
+        <<$otg_Меню_Текущее>>_Выбрали = 0
+        <<$otg_Меню_Текущее>>_ВыбранныйПункт = 0
+        <<$otg_Меню_Текущее>>_Время = MSECSCOUNT
+    "
+    menu 'otg_Меню_Вызываемое'
+    dynamic "
+        if <<$otg_Меню_Текущее>>_Выбрали = 0:
+            <<$otg_Меню_Текущее>>_Время = MSECSCOUNT - <<$otg_Меню_Текущее>>_Время
+            $ARGS[0] = $<<$otg_Меню_Текущее>>_МодулиСобытий['при отказе от выбора']
+            if $ARGS[0] <> '': dynamic $ARGS[0]
+        else
+            $ARGS[0] = $<<$otg_Меню_Текущее>>_МодулиСобытий['после обработки выбора']
+            if $ARGS[0] <> '': dynamic $ARGS[0], $<<$otg_Меню_Текущее>>_Параметры[str(<<$otg_Меню_Текущее>>_ВыбранныйПункт) + '_З']" + dyneval("$Result = $<<$otg_Меню_Текущее>>_Параметры[str(<<$otg_Меню_Текущее>>_ВыбранныйПункт) + '_П']") + "
+        end
+    "
+    killvar 'otg_Меню_Текущее'
+    killvar 'otg_Меню_Вызываемое'
+    killvar 'otg_Меню_Соответствия'
+    Result = dyneval("Result = otg_Меню_<<$ARGS[0]>>_Выбрали")
+---
+
+
+#Menu.Chosen
+    if $ARGS[0] = '': exit
+    Result = dyneval("Result = otg_Меню_<<$ARGS[0]>>_Выбрали")
+---
+
+
+#Menu.Time
+    if $ARGS[0] = '':
+        Result = otg_Меню_Время
+    else
+        Result = dyneval("Result = otg_Меню_<<$ARGS[0]>>_Время")
+    end
+---
+
+
+#Menu.Destroy
+    if $ARGS[0] = '': exit
+    GS 'Menu.Create', $ARGS[0]
+---
+
+
+#Menu.Processing
+    ARGS[0] = otg_Меню_Соответствия[ARGS[0] - 1]
+
+    if ARGS[0] = 0:
+        exit
+    end
+
+    $MenuFunc = dyneval("$Result = $<<$otg_Меню_Текущее>>_Параметры['<<ARGS[0]>>_Ф']")
+    $MenuModule = dyneval("$Result = $<<$otg_Меню_Текущее>>_Параметры['<<ARGS[0]>>_М']")
+    $MenuParams = dyneval("$Result = $<<$otg_Меню_Текущее>>_Параметры['<<ARGS[0]>>_П']")
+
+    if $MenuModule <> '' or ($MenuFunc <> '' and LOC($MenuFunc) = 1):
+        dynamic "
+            <<$otg_Меню_Текущее>>_Время = MSECSCOUNT - <<$otg_Меню_Текущее>>_Время
+            otg_Меню_Время = <<$otg_Меню_Текущее>>_Время
+            <<$otg_Меню_Текущее>>_Выбрали = -1
+            <<$otg_Меню_Текущее>>_ВыбранныйПункт = <<ARGS[0]>>
+        "
+
+        $MenuEvent = dyneval("$Result = $<<$otg_Меню_Текущее>>_МодулиСобытий['при выборе пункта']")
+
+        if $MenuEvent <> '':
+            if $MenuParams <> '':
+                dynamic $MenuEvent + ',' + dyneval("$Result = $<<$otg_Меню_Текущее>>_Параметры['<<ARGS[0]>>_З']") + $MenuParams
+            else:
+                dynamic $MenuEvent
+            end
+        end
+
+        if $MenuModule <> '':
+            if $MenuParams <> '':
+                dynamic $MenuModule + $MenuParams
+            else:
+                dynamic $MenuModule
+            end
+        else:
+            if $MenuParams <> '':
+                dynamic "gs '" + $MenuFunc + "'" + $MenuParams
+            else:
+                gs $MenuFunc
+            end
+        end
+    else:
+        msg 'Локация "' + $MenuFunc + '" не найдена!'
+    end
+
+    killvar '$MenuFunc'
+    killvar '$MenuModule'
+    killvar '$MenuParams'
+    killvar '$MenuEvent'
+---
+
+#Меню.{Обработка}
+    gs 'Menu.Processing', ARGS[0]
+---
+
+
+
+
+

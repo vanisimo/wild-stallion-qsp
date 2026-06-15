@@ -1,0 +1,85 @@
+! ================================================
+! FILE: modules/events/hall/hall_family_reactions.qsps
+! Семейные реакции на недавние события в зале
+! Версия: v1
+! Назначение:
+! - дать семье реакцию на последнюю память зала
+! - использовать HallRecentMemory / HallRecentTalk
+! - подготовить последствия для слухов, церкви и Легаре
+! ================================================
+
+#HallFamilyReactionCanShow
+    $HallFamilyReactionGirl = LCASE($ARGS[0])
+
+    HallFamilyReactionAvailable = 0
+
+    if $HallFamilyReactionGirl = '':
+        exit
+    end
+
+    if $HallRecentGirl = $HallFamilyReactionGirl and HallRecentSeverity >= 1 and HallFamilyReactionSeen[$HallFamilyReactionGirl] = 0:
+        HallFamilyReactionAvailable = 1
+    end
+
+    killvar '$HallFamilyReactionGirl'
+---
+
+#HallFamilyReactionStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallFamilyReactionGirl = $GirlKey
+    $HallFamilyReactionReturnLoc = $ARGS[1]
+
+    if $HallFamilyReactionGirl = '':
+        gt 'TavernMain'
+    end
+
+    if $HallFamilyReactionReturnLoc = '':
+        $HallFamilyReactionReturnLoc = 'TavernMain'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', $HallFamilyReactionGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallFamilyReactionGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СЕМЕЙНАЯ РЕАКЦИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'HallFamilyReactionText', $HallFamilyReactionGirl
+
+    HallFamilyReactionSeen[$HallFamilyReactionGirl] = 1
+
+    if $HallFamilyReactionGirl = 'amanda':
+        FamilyTension += 1
+        if HallRecentSeverity >= 2:
+            AmandaScandalLevel += 1
+        end
+    elseif $HallFamilyReactionGirl = 'melissa':
+        MelissaFamilyConcern += 1
+        FamilyTension += 1
+    elseif $HallFamilyReactionGirl = 'sandra':
+        SandraFamilyConcern += 1
+        FamilyTension += 1
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $HallFamilyReactionReturnLoc
+    end
+---

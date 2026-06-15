@@ -1,0 +1,166 @@
+#IrmaShop
+    cls
+    
+    ! ====================== ПРОВЕРКА РАБОЧЕГО ВРЕМЕНИ ======================
+    ! Версия: final current game fix v5
+    ! Проверка встроена прямо в лавку.
+    ! Больше НЕ зависит от #IsShopOpen / #IsBusinessOpen.
+    !
+    ! Новая система времени:
+    ! time = 1 утро
+    ! time = 2 полдень
+    ! time = 3 день
+    ! time = 4 вечер
+    ! time = 5 ночь
+
+    ShopOpen = 1
+    $ClosedReason = ''
+
+    if time = 5:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас ночь, лавки закрыты'
+    elseif week = 5 and time = 4:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас пятничный вечер, лавки закрыты, горожане идут на танцы'
+    elseif week = 7:
+        ShopOpen = 0
+
+        if time = 1:
+            $ClosedReason = 'сейчас воскресное утро, все ушли на службу в церковь'
+        elseif time = 2:
+            $ClosedReason = 'сейчас воскресный полдень, в церкви идут исповеди'
+        else:
+            $ClosedReason = 'сейчас воскресенье, лавки закрыты'
+        end
+    end
+
+    if ShopOpen < 1:
+        *clr
+        gs 'ShowImage', 'irma', 'shop', 'closed', 'normal'
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' 🧵 ЛАВКА ПОРТНИХИ ИРМЫ — ЗАКРЫТО 🧵'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        *p 'Лавка закрыта. Причина: ' + $ClosedReason + '.'
+
+        *pl ' '
+
+        act 'Вернуться к ремесленникам':
+            gt 'CraftsmenQuarter'
+        end
+
+        exit
+    end
+
+    if debug = 1:
+        *pl '[DEBUG IRMA SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time)
+        *pl ' '
+    end
+    ! =====================================================================
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' 🧵 ЛАВКА ПОРТНИХИ ИРМЫ 🧵'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ShowImage', 'irma', 'shop', 'talk', 'normal'
+
+    *p 'Ты заходишь в уютную лавку, где повсюду висят отрезы ткани, кружева и готовые платья. За прилавком стоит полуэльфийка Ирма.'
+
+    if revealing_uniform_all_bought = 1 and revealing_uniform_worn = 0:
+        *p 'Ирма тепло улыбается: "Всё уже готово. Твои девушки будут выглядеть просто сногсшибательно."'
+    end
+
+    *pl ' '
+
+    ! ====================== ЗНАКОМСТВО С ИРМОЙ ======================
+    ! Ирма должна быть знакомой NPC, прежде чем предлагать скандальную форму.
+
+    if IrmaMet < 1:
+        IrmaMet = 1
+    end
+
+    if IrmaLastVisitDay <> day:
+        IrmaVisits += 1
+        IrmaLastVisitDay = day
+    end
+
+    ! ====================== РАБОЧАЯ ФОРМА ДЛЯ ДЕВУШЕК ======================
+    ! Версия: offer trigger v1
+    ! Откровенная форма больше не доступна сразу.
+    ! Сначала Ирма должна сама поднять тему после слухов/скандала/церковного упрёка
+    ! или при достаточно хороших отношениях.
+
+    if IrmaUniformOfferUnlocked = 1:
+        if LOC('IrmaUniformOrders') = 1:
+            act 'Заказать рабочую форму для девушек':
+                gt 'IrmaUniformOrders', 'IrmaShop'
+            end
+        else:
+            if debug = 1:
+                *pl '[DEBUG IRMA] Не подключён модуль IrmaUniformOrders.'
+                *pl 'modules/locations/shops/irma_uniform_orders.qsps'
+                *pl 'modules/locations/shops/irma_uniform_orders_text.qsps'
+                *pl ' '
+            end
+        end
+    else:
+        if LOC('IrmaUniformOfferCanStart') = 1:
+            gs 'IrmaUniformOfferCanStart'
+
+            if IrmaUniformOfferCanStart = 1 and IrmaUniformOfferDeclined = 0:
+                *p 'Ирма смотрит на вас так, будто давно ждала подходящего момента для неприятно выгодного разговора.'
+
+                act 'Выслушать предложение Ирмы':
+                    gt 'IrmaUniformOfferStart', 'IrmaShop'
+                end
+            elseif IrmaUniformOfferDeclined = 1:
+                act 'Вернуться к разговору о форме':
+                    gt 'IrmaUniformOfferStart', 'IrmaShop'
+                end
+            else:
+                if debug = 1:
+                    *pl '[DEBUG IRMA OFFER] Тема формы ещё не открыта.'
+                    *pl 'Нужны слухи/скандальность/пастор/отношения с Ирмой.'
+                    *pl ' '
+                end
+            end
+        else:
+            if debug = 1:
+                *pl '[DEBUG IRMA] Не подключён модуль IrmaUniformOffer.'
+                *pl 'modules/locations/shops/irma_uniform_offer.qsps'
+                *pl 'modules/locations/shops/irma_uniform_offer_text.qsps'
+                *pl ' '
+            end
+        end
+    end
+
+    if debug = 1 and LOC('IrmaUniformOfferDebugUnlock') = 1:
+        act 'DEBUG: открыть тему формы Ирмы':
+            *clr
+            gs 'IrmaUniformOfferDebugUnlock'
+
+            act 'Продолжить':
+                gt 'IrmaShop'
+            end
+        end
+    end
+
+    if debug = 1 and LOC('IrmaUniformDebugUnlockAll') = 1:
+        act 'DEBUG: открыть всю откровенную форму':
+            *clr
+            gs 'IrmaUniformDebugUnlockAll'
+
+            act 'Продолжить':
+                gt 'IrmaShop'
+            end
+        end
+    end
+
+    *pl ' '
+    act 'Вернуться к ремесленникам':
+        gt 'CraftsmenQuarter'
+    end
+---

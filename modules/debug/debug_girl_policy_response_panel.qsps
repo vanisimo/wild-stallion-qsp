@@ -1,0 +1,69 @@
+! ================================================
+! FILE: modules/debug/debug_girl_policy_response_panel.qsps
+! Debug-панель реакции девушек на рабочие правила
+! ================================================
+
+#DebugGirlPolicyResponsePanel
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: РЕАКЦИЯ НА РАБОЧИЕ ПРАВИЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'DebugGirlPolicyResponsePrintGirl', 'amanda'
+    gs 'DebugGirlPolicyResponsePrintGirl', 'melissa'
+    gs 'DebugGirlPolicyResponsePrintGirl', 'sandra'
+
+    *pl ' '
+
+    act 'Тест: Аманда / удерживать клиента':
+        gs 'GirlPolicyResponseEvaluate', 'amanda', 'hall', 3
+        gs 'GirlPolicyResponseApplyConsequences', 'amanda', 'hall', 3, GirlPolicyResponseStage
+        gt 'DebugGirlPolicyResponsePanel'
+    end
+
+    act 'Тест: Мелисса / держаться прилично':
+        gs 'GirlPolicyResponseEvaluate', 'melissa', 'hall', 1
+        gs 'GirlPolicyResponseApplyConsequences', 'melissa', 'hall', 1, GirlPolicyResponseStage
+        gt 'DebugGirlPolicyResponsePanel'
+    end
+
+    act 'Тест: Сандра / удерживать клиента':
+        gs 'GirlPolicyResponseEvaluate', 'sandra', 'hall', 3
+        gs 'GirlPolicyResponseApplyConsequences', 'sandra', 'hall', 3, GirlPolicyResponseStage
+        gt 'DebugGirlPolicyResponsePanel'
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+---
+
+#DebugGirlPolicyResponsePrintGirl
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $DebugPolicyGirl = $GirlKey
+
+    if $DebugPolicyGirl = '':
+        exit
+    end
+
+    gs 'EnsureGirlData', $DebugPolicyGirl
+
+    *pl '<b>' + $RealName[$DebugPolicyGirl] + '</b>'
+    *pl 'Правило зала: ' + STR(GirlWorkPolicy[$DebugPolicyGirl])
+    *pl 'Правило кухни: ' + STR(GirlKitchenPolicy[$DebugPolicyGirl])
+    *pl 'Последняя реакция: ' + STR(GirlPolicyLastResponse[$DebugPolicyGirl])
+    *pl 'Отказы: ' + STR(GirlPolicyRefused[$DebugPolicyGirl])
+    *pl 'Неохотно: ' + STR(GirlPolicyReluctant[$DebugPolicyGirl])
+    *pl 'Подчинилась: ' + STR(GirlPolicyObeyed[$DebugPolicyGirl])
+    *pl 'Охотно: ' + STR(GirlPolicyEnthusiastic[$DebugPolicyGirl])
+    *pl 'Перегибы: ' + STR(GirlPolicyOverstep[$DebugPolicyGirl])
+    *pl 'Бунт: ' + STR(GirlRebellion[$DebugPolicyGirl])
+    *pl 'Внимание: ' + STR(GirlPublicAttention[$DebugPolicyGirl])
+    *pl ' '
+
+    killvar '$DebugPolicyGirl'
+---

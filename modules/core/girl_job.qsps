@@ -1,0 +1,175 @@
+! ================================================
+! FILE: modules/core/girl_job.qsps
+! Универсальная система работ девушек в таверне
+! Поддерживает несколько работ одновременно
+! Чем больше работ у одной девушки, тем ниже эффективность
+! ================================================
+
+#SetGirlJob
+    $WorkGirl = LCASE($ARGS[0])
+    $WorkJob = LCASE($ARGS[1])
+    $WorkMode = LCASE($ARGS[2])
+
+    if $WorkGirl = '':
+        exit
+    end
+
+    if $WorkMode = '':
+        $WorkMode = 'set'
+    end
+
+    ! ====================== ПОЛНОЕ СНЯТИЕ СО ВСЕХ РАБОТ ======================
+
+    if $WorkJob = '':
+        jobkitchen[$WorkGirl] = 0
+        jobwaitress[$WorkGirl] = 0
+        jobcleaning[$WorkGirl] = 0
+        jobwhore[$WorkGirl] = 0
+        exit
+    end
+
+    ! ====================== ПЕРЕКЛЮЧЕНИЕ РАБОТЫ ======================
+
+    if $WorkMode = 'toggle':
+        if $WorkJob = 'kitchen':
+            if jobkitchen[$WorkGirl] = 1:
+                jobkitchen[$WorkGirl] = 0
+            else
+                jobkitchen[$WorkGirl] = 1
+            end
+        elseif $WorkJob = 'waitress':
+            if jobwaitress[$WorkGirl] = 1:
+                jobwaitress[$WorkGirl] = 0
+            else
+                jobwaitress[$WorkGirl] = 1
+            end
+        elseif $WorkJob = 'cleaning':
+            if jobcleaning[$WorkGirl] = 1:
+                jobcleaning[$WorkGirl] = 0
+            else
+                jobcleaning[$WorkGirl] = 1
+            end
+        elseif $WorkJob = 'whore':
+            if jobwhore[$WorkGirl] = 1:
+                jobwhore[$WorkGirl] = 0
+            else
+                if sluttiness[$WorkGirl] >= 40:
+                    jobwhore[$WorkGirl] = 1
+                end
+            end
+        end
+
+        exit
+    end
+
+    ! ====================== ОБЫЧНОЕ ДОБАВЛЕНИЕ РАБОТЫ ======================
+
+    if $WorkJob = 'kitchen':
+        jobkitchen[$WorkGirl] = 1
+    elseif $WorkJob = 'waitress':
+        jobwaitress[$WorkGirl] = 1
+    elseif $WorkJob = 'cleaning':
+        jobcleaning[$WorkGirl] = 1
+    elseif $WorkJob = 'whore':
+        if sluttiness[$WorkGirl] >= 40:
+            jobwhore[$WorkGirl] = 1
+        end
+    end
+
+    killvar '$WorkGirl'
+    killvar '$WorkJob'
+    killvar '$WorkMode'
+---
+
+! ================================================
+! FILE: modules/core/girl_job.qsps
+! Подсчёт количества работ у девушки
+! Используется для расчёта перегрузки и эффективности
+! ================================================
+
+#GetGirlWorkLoad
+    $WorkLoadGirl = LCASE($ARGS[0])
+
+    GirlWorkLoad = 0
+
+    if $WorkLoadGirl = '':
+        exit
+    end
+
+    if jobkitchen[$WorkLoadGirl] = 1:
+        GirlWorkLoad += 1
+    end
+
+    if jobwaitress[$WorkLoadGirl] = 1:
+        GirlWorkLoad += 1
+    end
+
+    if jobcleaning[$WorkLoadGirl] = 1:
+        GirlWorkLoad += 1
+    end
+
+    killvar '$WorkLoadGirl'
+---
+
+! ================================================
+! FILE: modules/core/girl_job.qsps
+! Расчёт эффективности девушки при нескольких работах
+! 1 работа  = 100 процентов
+! 2 работы = 75 процентов
+! 3 работы = 55 процентов
+! ================================================
+
+#GetGirlWorkEfficiency
+    $EfficiencyGirl = LCASE($ARGS[0])
+
+    GirlWorkEfficiency = 100
+
+    if $EfficiencyGirl = '':
+        exit
+    end
+
+    gs 'GetGirlWorkLoad', $EfficiencyGirl
+
+    if GirlWorkLoad <= 1:
+        GirlWorkEfficiency = 100
+    elseif GirlWorkLoad = 2:
+        GirlWorkEfficiency = 75
+    elseif GirlWorkLoad = 3:
+        GirlWorkEfficiency = 55
+    else
+        GirlWorkEfficiency = 40
+    end
+
+    killvar '$EfficiencyGirl'
+---
+
+! ================================================
+! FILE: modules/core/girl_job.qsps
+! Расчёт силы девушки на конкретной работе
+! Навык умножается на эффективность от нагрузки
+! ================================================
+
+#GetGirlJobPower
+    $PowerGirl = LCASE($ARGS[0])
+    $PowerJob = LCASE($ARGS[1])
+
+    GirlJobPower = 0
+
+    if $PowerGirl = '':
+        exit
+    end
+
+    gs 'GetGirlWorkEfficiency', $PowerGirl
+
+    if $PowerJob = 'kitchen':
+        GirlJobPower = (cooking[$PowerGirl] * GirlWorkEfficiency) / 100
+    elseif $PowerJob = 'waitress':
+        GirlJobPower = (waitress[$PowerGirl] * GirlWorkEfficiency) / 100
+    elseif $PowerJob = 'cleaning':
+        GirlJobPower = (cleaning[$PowerGirl] * GirlWorkEfficiency) / 100
+    end
+
+    killvar '$PowerGirl'
+    killvar '$PowerJob'
+---
+

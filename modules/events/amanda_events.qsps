@@ -1,0 +1,86 @@
+! ================================================
+! MODULE: events/amanda_events.qsps
+! Специальные события и ивенты для Аманды
+! ================================================
+
+#CheckAmandaEvents
+    ! Вызывается из HallHarassment, TalkWithAmanda, StartIntimMenu и т.д.
+    ! $CurrentGirl должен быть 'amanda' или проверяется внутри
+
+    if $CurrentGirl <> 'amanda': exit 
+
+
+    tmp = Rand(1, 100)
+
+    ! ====================== СОБЫТИЕ 1: Аманда и Лиза ======================
+    if tmp <= 25 and AmandaVar['lizafriends'] >= 1 and otkroven['amanda'] >= 20 and AmandaVar['liza_event_shown'] = 0:
+        AmandaVar['liza_event_shown'] = 1
+        *pl '=== ОСОБОЕ СОБЫТИЕ ==='
+        *p 'Аманда краснеет и тихо говорит тебе на ушко:'
+        *p '"Стефан... Лиза вчера спрашивала про тебя... Она сказала, что ты очень... интересный."'
+        *p 'Аманда смущённо отводит взгляд.'
+        Friends['amanda'] += 2
+        otkroven['amanda'] += 3
+        gs 'CorruptionProgress', 'amanda', 'talk'
+        act 'Продолжить': exit
+    end
+
+    ! ====================== СОБЫТИЕ 2: Аманда начинает проявлять инициативу ======================
+    if tmp <= 40 and otkroven['amanda'] >= 30 and sluttiness['amanda'] >= 25 and AmandaVar['amanda_initiative'] = 0:
+        AmandaVar['amanda_initiative'] = 1
+        *pl '=== ОСОБОЕ СОБЫТИЕ ==='
+        *p 'Аманда вдруг сама подходит ближе и тихо шепчет:'
+        *p '"Я... я иногда думаю о тебе по ночам..."'
+        *p 'Её щёки горят, она быстро отворачивается.'
+        Friends['amanda'] += 4
+        otkroven['amanda'] += 5
+        gs 'CorruptionProgress', 'amanda', 'flirt'
+        act 'Продолжить': exit
+    end
+
+    ! ====================== СОБЫТИЕ 3: Сильное приставание в зале ======================
+    if tmp <= 55 and (jobwaitress['amanda'] = 1 or jobwhore['amanda'] = 1) and sluttiness['amanda'] < 40:
+        *pl '=== ОСОБОЕ СОБЫТИЕ ==='
+        *p 'Пьяный посетитель слишком нагло прижал Аманду к стене и пытается засунуть руку ей под юбку.'
+        *p 'Аманда выглядит очень испуганной и пытается вырваться.'
+        Friends['amanda'] -= 2
+        act 'Вмешаться':
+            *p 'Ты резко оттаскиваешь мужчину.'
+            Friends['amanda'] += 5
+            act 'Продолжить': exit
+        end
+        act 'Не вмешиваться':
+            gs 'CorruptionProgress', 'amanda', 'flirt'
+            act 'Продолжить': exit
+        end
+    end
+
+    ! ====================== СОБЫТИЕ 4: Аманда делится секретом ======================
+    if tmp <= 70 and otkroven['amanda'] >= 35 and AmandaVar['secret_shared'] = 0:
+        AmandaVar['secret_shared'] = 1
+        *pl '=== ОСОБОЕ СОБЫТИЕ ==='
+        *p 'Аманда неожиданно говорит:'
+        *p '"Знаешь... я иногда представляю, как ты меня целуешь... когда остаюсь одна в комнате."'
+        *p 'Она тут же закрывает лицо руками от стыда.'
+        otkroven['amanda'] += 6
+        Friends['amanda'] += 3
+        gs 'CorruptionProgress', 'amanda', 'talk'
+        act 'Продолжить': exit
+    end
+
+    ! ====================== СОБЫТИЕ 5: Аманда начинает флиртовать сама ======================
+    if tmp <= 85 and otkroven['amanda'] >= 40 and sluttiness['amanda'] >= 35:
+        *pl '=== ОСОБОЕ СОБЫТИЕ ==='
+        *p 'Аманда сама подходит к тебе ближе, чем обычно, и тихо говорит:'
+        *p '"Ты сегодня очень хорошо выглядишь..."'
+        *p 'Она краснеет и быстро отходит.'
+        Friends['amanda'] += 3
+        gs 'CorruptionProgress', 'amanda', 'flirt'
+        act 'Продолжить': exit
+    end
+
+
+    exit
+---
+
+

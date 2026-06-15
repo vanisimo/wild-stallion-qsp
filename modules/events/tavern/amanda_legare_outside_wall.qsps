@@ -1,0 +1,388 @@
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_wall.qsps
+! Аманда и Легаре снаружи у стены трактира
+! Версия: outside wall v1 / auto trigger + clear fork
+! Назначение:
+! - продолжить ветку после AmandaLegareOutsideWallReady
+! - дать первую настоящую развилку: конфликт или тайная линия
+! - учитывать, знал ли Стефан о выходе Аманды
+! - подготовить последствия через разговор с Амандой и второй шаг Легаре
+!
+! Тексты берутся из:
+! modules/events/tavern/amanda_legare_outside_wall_text.qsps
+!
+! Вызов:
+! gs 'AmandaLegareOutsideWallTryAutoStart', 'TavernMain'
+! ================================================
+
+#AmandaLegareOutsideWallCanStart
+    AmandaLegareOutsideWallCanStart = 0
+
+    if AmandaLegareOutsideWallReady <> 1:
+        exit
+    end
+
+    if AmandaLegareOutsideWallStage > 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    AmandaLegareOutsideWallCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_wall.qsps
+! Попытка автозапуска из обычных действий трактира
+! ARGS[0] — куда возвращаться после события
+! ================================================
+
+#AmandaLegareOutsideWallTryAutoStart
+    $AmandaLegareOutsideWallReturnLoc = $ARGS[0]
+
+    if $AmandaLegareOutsideWallReturnLoc = '':
+        $AmandaLegareOutsideWallReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareOutsideWallReturnLoc) = 0:
+        $AmandaLegareOutsideWallReturnLoc = 'TavernMain'
+    end
+
+    if LOC('AmandaLegareOutsideWallCanStart') = 1:
+        gs 'AmandaLegareOutsideWallCanStart'
+
+        if AmandaLegareOutsideWallCanStart = 1:
+            gt 'AmandaLegareOutsideWallStart', $AmandaLegareOutsideWallReturnLoc
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_wall.qsps
+! Вход в событие
+! ================================================
+
+#AmandaLegareOutsideWallStart
+    *clr
+    clr
+    cla
+
+    $AmandaLegareOutsideWallReturnLoc = $ARGS[0]
+
+    if $AmandaLegareOutsideWallReturnLoc = '':
+        $AmandaLegareOutsideWallReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareOutsideWallReturnLoc) = 0:
+        $AmandaLegareOutsideWallReturnLoc = 'TavernMain'
+    end
+
+    if LOC('UpdateGirlLocations') = 1:
+        gs 'UpdateGirlLocations'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    AmandaLegareOutsideWallStage = 1
+    AmandaLegareOutsideWallReady = 0
+
+    Fact_AmandaLegareOutsideMeet = 1
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/amanda_legare', 'outside_wall', 2
+    end
+
+    gs 'AmandaLegareOutsideWallGetRisk'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗА СТЕНОЙ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareOutsideWallIntroText') = 1:
+        gs 'AmandaLegareOutsideWallIntroText'
+    else:
+        *p 'Аманда и Легаре стоят снаружи у стены трактира. Это уже не случайный разговор в зале.'
+    end
+
+    *pl ' '
+
+    if AmandaLegareHardWarningUsed = 1 or LegareConflictStage > 0:
+        if LOC('AmandaLegareOutsideWallThoughtsHard') = 1:
+            gs 'AmandaLegareOutsideWallThoughtsHard'
+        end
+    else:
+        if LOC('AmandaLegareOutsideWallThoughtsSoft') = 1:
+            gs 'AmandaLegareOutsideWallThoughtsSoft'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG OUTSIDE WALL] ReturnLoc: ' + $AmandaLegareOutsideWallReturnLoc
+        *pl '[DEBUG OUTSIDE WALL] Risk: ' + STR(AmandaLegareOutsideWallRisk)
+        *pl '[DEBUG OUTSIDE WALL] PlayerKnowsBefore: ' + STR(PlayerKnows_AmandaLegareOutsideMeet)
+        *pl '[DEBUG OUTSIDE WALL] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG OUTSIDE WALL] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareOutsideWallBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareOutsideWallMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_wall.qsps
+! Расчёт риска продолжения тайной линии
+! ================================================
+
+#AmandaLegareOutsideWallGetRisk
+    AmandaLegareOutsideWallRisk = 20
+
+    AmandaLegareOutsideWallRisk += AmandaLegareInterest * 7
+    AmandaLegareOutsideWallRisk += LegareAmandaInterest * 6
+    AmandaLegareOutsideWallRisk += AmandaSecretiveness * 5
+    AmandaLegareOutsideWallRisk += AmandaRebellion * 4
+    AmandaLegareOutsideWallRisk += AmandaNpcPath * 5
+    AmandaLegareOutsideWallRisk += AmandaPublicAttention * 2
+
+    if AmandaLegareOutsideMeetResult = 3:
+        AmandaLegareOutsideWallRisk += 15
+    elseif AmandaLegareOutsideMeetResult = 2:
+        AmandaLegareOutsideWallRisk += 8
+    end
+
+    if AmandaLegareTavernVisitResult = 2:
+        AmandaLegareOutsideWallRisk += 8
+    elseif AmandaLegareTavernVisitResult = 3:
+        AmandaLegareOutsideWallRisk += 10
+    end
+
+    if AmandaLegareHardWarningUsed = 1:
+        AmandaLegareOutsideWallRisk += 8
+    end
+
+    if MelissaWatchAmandaLegare = 1:
+        AmandaLegareOutsideWallRisk -= 12
+    end
+
+    if AmandaTrustStefan >= 7:
+        AmandaLegareOutsideWallRisk -= 12
+    end
+
+    if AmandaLegareOutsideWallRisk < 5:
+        AmandaLegareOutsideWallRisk = 5
+    end
+
+    if AmandaLegareOutsideWallRisk > 95:
+        AmandaLegareOutsideWallRisk = 95
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_wall.qsps
+! Короткое меню
+! ================================================
+
+#AmandaLegareOutsideWallBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareOutsideWallMenu'
+    gs 'Menu.Create', 'AmandaLegareOutsideWallMenu'
+
+    gs 'Menu.Add', 'AmandaLegareOutsideWallMenu', 'Выйти спокойно', ''
+    gs 'Menu.AddModule', 'AmandaLegareOutsideWallMenu', {
+        gt 'AmandaLegareOutsideWallAction', 'calm_step', $AmandaLegareOutsideWallReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareOutsideWallMenu', 'Позвать Аманду', ''
+    gs 'Menu.AddModule', 'AmandaLegareOutsideWallMenu', {
+        gt 'AmandaLegareOutsideWallAction', 'call_amanda', $AmandaLegareOutsideWallReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareOutsideWallMenu', 'Осадить Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareOutsideWallMenu', {
+        gt 'AmandaLegareOutsideWallAction', 'confront_legare', $AmandaLegareOutsideWallReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareOutsideWallMenu', 'Остаться в тени', ''
+    gs 'Menu.AddModule', 'AmandaLegareOutsideWallMenu', {
+        gt 'AmandaLegareOutsideWallAction', 'stay_shadow', $AmandaLegareOutsideWallReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_wall.qsps
+! Обработка выбора
+! ================================================
+
+#AmandaLegareOutsideWallAction
+    *clr
+    clr
+    cla
+
+    $OutsideWallChoice = LCASE($ARGS[0])
+    $AmandaLegareOutsideWallReturnLoc = $ARGS[1]
+
+    if $AmandaLegareOutsideWallReturnLoc = '':
+        $AmandaLegareOutsideWallReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareOutsideWallReturnLoc) = 0:
+        $AmandaLegareOutsideWallReturnLoc = 'TavernMain'
+    end
+
+    gs 'AmandaLegareOutsideWallGetRisk'
+
+    ! 0 — Стефан спокойно прервал разговор
+    ! 1 — Аманда вернулась на зов
+    ! 2 — Аманда вернулась неохотно / с раздражением
+    ! 3 — Стефан увидел, что Легаре получил опасный личный момент
+    ! 4 — открытый конфликт с Легаре
+    AmandaLegareOutsideWallResult = 0
+
+    PlayerKnows_AmandaLegareOutsideMeet = 1
+    AmandaLegareOutsideMeetTalkReady = 1
+    MelissaAmandaLegareOutsideTalkReady = 1
+    ClarissaAmandaLegareOutsideTalkReady = 1
+
+    if $OutsideWallChoice = 'calm_step':
+        AmandaLegareOutsideWallResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        LegareConflictStage += 1
+        AmandaLegareSecondMeetReady = 0
+        LegareSupplyPressureReady = 1
+
+    elseif $OutsideWallChoice = 'call_amanda':
+        WallRoll = RAND(1, 100)
+
+        if WallRoll <= AmandaLegareOutsideWallRisk:
+            AmandaLegareOutsideWallResult = 2
+            AmandaRebellion += 1
+            AmandaSecretiveness += 1
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+            AmandaLegareSecondMeetReady = 1
+        else:
+            AmandaLegareOutsideWallResult = 1
+            AmandaTrustStefan += 1
+            Friends['amanda'] += 1
+            AmandaLegareSecondMeetReady = 0
+        end
+
+        killvar 'WallRoll'
+
+    elseif $OutsideWallChoice = 'confront_legare':
+        AmandaLegareOutsideWallResult = 4
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 2
+        TavernScandal += 1
+        TavernScandalLevel += 1
+        LegareSupplyPressureReady = 1
+        AmandaLegareSecondMeetReady = 0
+
+        if AmandaLegareHardWarningUsed = 1:
+            LegareConflictStage += 1
+            LegarePricesRaised = 1
+        end
+
+    elseif $OutsideWallChoice = 'stay_shadow':
+        WallRoll = RAND(1, 100)
+
+        if WallRoll <= AmandaLegareOutsideWallRisk:
+            AmandaLegareOutsideWallResult = 3
+            AmandaLegareSecondMeetReady = 1
+            AmandaSecretiveness += 2
+            AmandaNpcPath += 1
+            AmandaLegareInterest += 2
+            LegareAmandaInterest += 2
+            ClarissaJealousy += 1
+            MelissaFamilyConcern += 1
+            TavernScandal += 1
+        else:
+            AmandaLegareOutsideWallResult = 2
+            AmandaLegareSecondMeetReady = 1
+            AmandaSecretiveness += 1
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+        end
+
+        killvar 'WallRoll'
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗА СТЕНОЙ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareOutsideWallActionText') = 1:
+        gs 'AmandaLegareOutsideWallActionText', $OutsideWallChoice
+    else:
+        *p 'Разговор у стены заканчивается, но история с Легаре явно не закончена.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG OUTSIDE WALL] Choice: ' + $OutsideWallChoice
+        *pl '[DEBUG OUTSIDE WALL] Result: ' + STR(AmandaLegareOutsideWallResult)
+        *pl '[DEBUG OUTSIDE WALL] SecondMeetReady: ' + STR(AmandaLegareSecondMeetReady)
+        *pl '[DEBUG OUTSIDE WALL] SupplyPressureReady: ' + STR(LegareSupplyPressureReady)
+        *pl '[DEBUG OUTSIDE WALL] PlayerKnows: ' + STR(PlayerKnows_AmandaLegareOutsideMeet)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $AmandaLegareOutsideWallReturnLoc
+    end
+
+    killvar '$OutsideWallChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_outside_wall.qsps
+! Debug-сброс
+! ================================================
+
+#AmandaLegareOutsideWallDebugReset
+    AmandaLegareOutsideWallCanStart = 0
+    AmandaLegareOutsideWallReady = 0
+    AmandaLegareOutsideWallStage = 0
+    AmandaLegareOutsideWallResult = 0
+    AmandaLegareOutsideWallRisk = 0
+---

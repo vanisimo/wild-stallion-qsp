@@ -1,0 +1,338 @@
+! ================================================
+! FILE: modules/npc/amanda/dance.qsps
+! Танец с Амандой на пятничной рыночной площади
+! Версия: FridayDance v3 / меню через Menu.Show
+! Назначение:
+! - привести танец к общему стилю проекта через меню
+! - убрать лишние пункты
+! - сделать строгую цепочку:
+!   танец -> талия -> попа -> поцелуй -> поцелуй в шею -> подворотня
+!
+! Тексты берутся из:
+! modules/events/dance/amanda_dance_text.qsps
+!
+! Если текстовый файл не подключён, используются короткие fallback-тексты.
+! ================================================
+
+#AmandaDance
+    *clr
+    clr
+    cla
+
+    $AmandaDanceGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaDanceGirl
+
+    if $RealName[$AmandaDanceGirl] = '':
+        $RealName[$AmandaDanceGirl] = 'Аманда'
+    end
+
+    if AmandaDanceDay <> day:
+        gs 'AmandaDanceReset'
+    end
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'amanda', 'dance', 'dance', 'normal'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЕЦ С АМАНДОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaDanceMainText') = 1:
+        gs 'AmandaDanceMainText'
+    else:
+        if $AmandaDanceLastText <> '':
+            *p $AmandaDanceLastText
+        elseif AmandaDanceStage = 0:
+            *p 'Аманда стоит у края площади и смотрит на танцующих.'
+        else:
+            *p 'Вы танцуете с Амандой на рыночной площади.'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AMANDA DANCE] Stage: ' + STR(AmandaDanceStage)
+        *pl '[DEBUG AMANDA DANCE] Waist: ' + STR(AmandaDanceWaist)
+        *pl '[DEBUG AMANDA DANCE] Ass: ' + STR(AmandaDanceAss)
+        *pl '[DEBUG AMANDA DANCE] Kiss: ' + STR(AmandaDanceKiss)
+        *pl '[DEBUG AMANDA DANCE] Neck: ' + STR(AmandaDanceNeck)
+        *pl '[DEBUG AMANDA DANCE] Alley: ' + STR(AmandaDanceAlley)
+        *pl ' '
+    end
+
+    if AmandaDanceEnded = 1:
+        *p 'Танец с Амандой на сегодня уже закончен.'
+        *pl ' '
+
+        act 'Вернуться к танцам':
+            gt 'MarketDance'
+        end
+
+        exit
+    end
+
+    gs 'AmandaDanceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaDanceMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/actions/AmandaDance.qsps
+! Сброс состояния танца Аманды
+! ================================================
+
+#AmandaDanceReset
+    AmandaDanceDay = day
+
+    AmandaDanceStage = 0
+    AmandaDanceStep = 0
+    AmandaDanceEnded = 0
+
+    AmandaDanceWaist = 0
+    AmandaDanceAss = 0
+    AmandaDanceKiss = 0
+    AmandaDanceNeck = 0
+    AmandaDanceAlley = 0
+
+    AmandaDancePublicRisk = 0
+    AmandaDanceMaxStep = 6
+
+    $AmandaDanceHandPosition = ''
+    $AmandaDanceLastText = ''
+---
+
+! ================================================
+! FILE: modules/actions/AmandaDance.qsps
+! Построение меню танца
+! Пункты открываются строго по цепочке.
+! ================================================
+
+#AmandaDanceBuildMenu
+    gs 'Menu.Destroy', 'AmandaDanceMenu'
+    gs 'Menu.Create', 'AmandaDanceMenu'
+
+    if AmandaDanceStage = 0:
+        gs 'Menu.Add', 'AmandaDanceMenu', 'Танец', ''
+        gs 'Menu.AddModule', 'AmandaDanceMenu', {
+            gt 'AmandaDanceAction', 'dance'
+        }
+    else:
+        gs 'Menu.Add', 'AmandaDanceMenu', 'Танец', ''
+        gs 'Menu.AddModule', 'AmandaDanceMenu', {
+            gt 'AmandaDanceAction', 'continue'
+        }
+    end
+
+    if AmandaDanceStage >= 1 and AmandaDanceWaist = 0:
+        gs 'Menu.Add', 'AmandaDanceMenu', 'Талия', ''
+        gs 'Menu.AddModule', 'AmandaDanceMenu', {
+            gt 'AmandaDanceAction', 'waist'
+        }
+    end
+
+    if AmandaDanceWaist = 1 and AmandaDanceAss = 0:
+        gs 'Menu.Add', 'AmandaDanceMenu', 'Попа', ''
+        gs 'Menu.AddModule', 'AmandaDanceMenu', {
+            gt 'AmandaDanceAction', 'ass'
+        }
+    end
+
+    if AmandaDanceAss = 1 and AmandaDanceKiss = 0:
+        gs 'Menu.Add', 'AmandaDanceMenu', 'Поцелуй', ''
+        gs 'Menu.AddModule', 'AmandaDanceMenu', {
+            gt 'AmandaDanceAction', 'kiss'
+        }
+    end
+
+    if AmandaDanceKiss = 1 and AmandaDanceNeck = 0:
+        gs 'Menu.Add', 'AmandaDanceMenu', 'Поцелуй в шею', ''
+        gs 'Menu.AddModule', 'AmandaDanceMenu', {
+            gt 'AmandaDanceAction', 'neck'
+        }
+    end
+
+    if AmandaDanceNeck = 1 and AmandaDanceAlley = 0:
+        gs 'Menu.Add', 'AmandaDanceMenu', 'Подворотня', ''
+        gs 'Menu.AddModule', 'AmandaDanceMenu', {
+            gt 'AmandaDanceAction', 'alley'
+        }
+    end
+
+    gs 'Menu.Add', 'AmandaDanceMenu', 'Закончить танец', ''
+    gs 'Menu.AddModule', 'AmandaDanceMenu', {
+        AmandaDanceEnded = 1
+        gt 'MarketDance'
+    }
+---
+
+! ================================================
+! FILE: modules/actions/AmandaDance.qsps
+! Обработка выбранного пункта меню танца
+! ================================================
+
+#AmandaDanceAction
+    $AmandaDanceAction = LCASE($ARGS[0])
+    $AmandaDanceGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaDanceGirl
+
+    if $RealName[$AmandaDanceGirl] = '':
+        $RealName[$AmandaDanceGirl] = 'Аманда'
+    end
+
+    if $AmandaDanceAction = 'dance':
+        AmandaDanceStage = 1
+        AmandaDanceStep = 1
+
+        Friends[$AmandaDanceGirl] += 1
+        AmandaPublicAttention += 1
+        AmandaPlayerPath += 1
+
+    elseif $AmandaDanceAction = 'continue':
+        AmandaDanceStep += 1
+
+        if AmandaDanceStep > AmandaDanceMaxStep:
+            AmandaDanceStep = AmandaDanceMaxStep
+        end
+
+        AmandaPublicAttention += 1
+
+    elseif $AmandaDanceAction = 'waist':
+        AmandaDanceStage = 2
+        AmandaDanceStep = 2
+        AmandaDanceWaist = 1
+        $AmandaDanceHandPosition = 'waist'
+
+        Friends[$AmandaDanceGirl] += 1
+        otkroven[$AmandaDanceGirl] += 1
+        AmandaPublicAttention += 1
+
+    elseif $AmandaDanceAction = 'ass':
+        AmandaDanceStage = 3
+        AmandaDanceStep = 3
+        AmandaDanceAss = 1
+        $AmandaDanceHandPosition = 'ass'
+
+        otkroven[$AmandaDanceGirl] += 1
+        sluttiness[$AmandaDanceGirl] += 1
+        AmandaPublicAttention += 1
+        AmandaDancePublicRisk += 1
+
+        if sluttiness[$AmandaDanceGirl] < 10 and Friends[$AmandaDanceGirl] < 8:
+            AmandaRebellion += 1
+        end
+
+    elseif $AmandaDanceAction = 'kiss':
+        AmandaDanceStage = 4
+        AmandaDanceStep = 4
+        AmandaDanceKiss = 1
+
+        love[$AmandaDanceGirl] += 1
+        otkroven[$AmandaDanceGirl] += 1
+        AmandaPlayerPath += 1
+        AmandaPublicAttention += 1
+        AmandaDancePublicRisk += 1
+
+    elseif $AmandaDanceAction = 'neck':
+        AmandaDanceStage = 5
+        AmandaDanceStep = 5
+        AmandaDanceNeck = 1
+
+        love[$AmandaDanceGirl] += 1
+        otkroven[$AmandaDanceGirl] += 1
+        sluttiness[$AmandaDanceGirl] += 1
+        AmandaPublicAttention += 1
+        AmandaScandalLevel += 1
+        AmandaDancePublicRisk += 1
+
+    elseif $AmandaDanceAction = 'alley':
+        AmandaDanceStage = 6
+        AmandaDanceStep = 6
+        AmandaDanceAlley = 1
+        AmandaDanceEnded = 1
+
+        AmandaPlayerPath += 1
+        AmandaSecretiveness += 1
+        AmandaScandalLevel += 1
+
+        gs 'ClampGirlSocialStats', $AmandaDanceGirl
+        gt 'AmandaDanceAlleyIntro'
+
+    else:
+        AmandaDanceStep += 1
+    end
+
+    gs 'ClampGirlSocialStats', $AmandaDanceGirl
+
+    if LOC('AmandaDanceActionText') = 1:
+        gs 'AmandaDanceActionText', $AmandaDanceAction
+    else:
+        if $AmandaDanceAction = 'dance':
+            $AmandaDanceLastText = 'Вы приглашаете Аманду на танец. Она смущается, но принимает вашу руку.'
+        elseif $AmandaDanceAction = 'waist':
+            $AmandaDanceLastText = 'Вы кладёте руки ей на талию.'
+        elseif $AmandaDanceAction = 'ass':
+            $AmandaDanceLastText = 'Ваша ладонь опускается ниже. Аманда вздрагивает, но не сразу отстраняется.'
+        elseif $AmandaDanceAction = 'kiss':
+            $AmandaDanceLastText = 'Вы целуете Аманду. На мгновение шум площади будто отступает.'
+        elseif $AmandaDanceAction = 'neck':
+            $AmandaDanceLastText = 'Вы целуете её в шею. Аманда сбивается с шага и сильнее краснеет.'
+        else:
+            $AmandaDanceLastText = 'Танец продолжается.'
+        end
+    end
+
+    killvar '$AmandaDanceAction'
+
+    gt 'AmandaDance'
+---
+
+! ================================================
+! FILE: modules/actions/AmandaDance.qsps
+! Переход к подворотне после танца
+! Пока это короткий безопасный вход в будущий отдельный ивент.
+! ================================================
+
+#AmandaDanceAlleyIntro
+    *clr
+    clr
+    cla
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'amanda', 'dance', 'alley', 'intro'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyText') = 1:
+        gs 'AmandaDanceAlleyText'
+    else:
+        *p 'Вы уводите Аманду с шумной площади к тёмному проходу между домами.'
+        *p 'Она оглядывается на танцующих, потом смотрит на вас. До настоящей сцены здесь нужен отдельный ивент.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AMANDA DANCE] Alley intro reached.'
+        *pl '[DEBUG AMANDA DANCE] Future hook: AmandaDanceAlleyEvent'
+        *pl ' '
+    end
+
+    if LOC('AmandaDanceAlleyEvent') = 1:
+        act 'Продолжить в подворотне':
+            gt 'AmandaDanceAlleyEvent'
+        end
+    end
+
+    act 'Вернуться на площадь':
+        gt 'MarketDance'
+    end
+---

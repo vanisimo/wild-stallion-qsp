@@ -1,0 +1,154 @@
+! ================================================
+! FILE: modules/events/georgette/georgette_lizette_intro.qsps
+! Первое знакомство Стефана с Жоржеттой и упоминание Лизетты
+! Логика события
+! Большие тексты берутся из:
+! modules/events/georgette/georgette_lizette_intro_text.qsps
+! ================================================
+
+#GeorgetteFirstMeet
+    $GeorgetteReturnLoc = $ARGS[0]
+
+    if $GeorgetteReturnLoc = '':
+        $GeorgetteReturnLoc = 'Port'
+    end
+
+    GeorgetteKnown = 1
+
+    cls
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'georgett'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЖОРЖЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GeorgetteLizetteIntroText', 'first_meet'
+    *p $GeorgetteLizetteIntroText
+
+    *pl ' '
+
+    act 'Спросить, что она здесь делает':
+        gt 'GeorgettePortTalk', $GeorgetteReturnLoc, 'port'
+    end
+
+    act 'Спросить, не её ли дочь часто бывает в порту':
+        gt 'GeorgettePortTalk', $GeorgetteReturnLoc, 'daughter'
+    end
+
+    act 'Закончить разговор':
+        gt $GeorgetteReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/georgette/georgette_lizette_intro.qsps
+! Разговор с Жоржеттой в порту
+! ================================================
+
+#GeorgettePortTalk
+    $GeorgetteReturnLoc = $ARGS[0]
+    $GeorgetteTalkTopic = LCASE($ARGS[1])
+
+    if $GeorgetteReturnLoc = '':
+        $GeorgetteReturnLoc = 'Port'
+    end
+
+    GeorgetteKnown = 1
+
+    cls
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'georgett'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЖОРЖЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $GeorgetteTalkTopic = 'daughter':
+        LizetteMentionedByGeorgette = 1
+        $LizetteSourceKnown = 'georgette'
+
+        gs 'GeorgetteLizetteIntroText', 'daughter'
+        *p $GeorgetteLizetteIntroText
+    elseif $GeorgetteTalkTopic = 'port':
+        gs 'GeorgetteLizetteIntroText', 'port'
+        *p $GeorgetteLizetteIntroText
+    else:
+        gs 'GeorgetteLizetteIntroText', 'smalltalk'
+        *p $GeorgetteLizetteIntroText
+    end
+
+    *pl ' '
+
+    if LizetteMentionedByGeorgette = 0:
+        act 'Спросить о дочери':
+            gt 'GeorgettePortTalk', $GeorgetteReturnLoc, 'daughter'
+        end
+    end
+
+    if LOC('PortCapitalShipMenu') = 1:
+        act 'Посмотреть товары у корабля':
+            gt 'PortCapitalShipMenu', $GeorgetteReturnLoc
+        end
+    end
+
+    act 'Вернуться к причалу':
+        gt $GeorgetteReturnLoc
+    end
+
+    killvar '$GeorgetteTalkTopic'
+---
+
+! ================================================
+! FILE: modules/events/georgette/georgette_lizette_intro.qsps
+! Debug-меню для проверки цепочки Жоржетта → Лизетта
+! ================================================
+
+#GeorgetteLizetteDebugMenu
+    $GeorgetteReturnLoc = $ARGS[0]
+
+    if $GeorgetteReturnLoc = '':
+        $GeorgetteReturnLoc = 'Port'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ЖОРЖЕТТА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *pl 'GeorgetteKnown: ' + STR(GeorgetteKnown)
+    *pl 'LizetteMentionedByGeorgette: ' + STR(LizetteMentionedByGeorgette)
+    *pl 'AmandaMetLizette: ' + STR(AmandaMetLizette)
+    *pl 'LizetteKnown: ' + STR(LizetteKnown)
+    *pl ' '
+
+    act 'Познакомиться с Жоржеттой':
+        gt 'GeorgetteFirstMeet', $GeorgetteReturnLoc
+    end
+
+    act 'Сразу отметить, что Жоржетта рассказала о Лизетте':
+        GeorgetteKnown = 1
+        LizetteMentionedByGeorgette = 1
+        $LizetteSourceKnown = 'georgette'
+        gt 'GeorgetteLizetteDebugMenu', $GeorgetteReturnLoc
+    end
+
+    if LOC('PortAmandaLizetteMeet') = 1:
+        act 'Запустить знакомство Аманды с Лизеттой':
+            gt 'PortAmandaLizetteMeet', $GeorgetteReturnLoc
+        end
+    end
+
+    act 'Вернуться':
+        gt $GeorgetteReturnLoc
+    end
+---
+

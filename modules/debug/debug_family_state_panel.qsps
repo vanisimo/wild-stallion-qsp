@@ -1,0 +1,97 @@
+! ================================================
+! FILE: modules/debug/debug_family_state_panel.qsps
+! Debug-панель семейного состояния
+! Версия: v1
+! Назначение:
+! - показать FamilyTrust / FamilyTension / FamilyCorruptionPoints / FamilyCorruptionStage
+! - показать память последних решений Стефана в зале
+! - дать быстрые тестовые действия для проверки стадий
+! ================================================
+
+#DebugFamilyStatePanel
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: СЕМЕЙНОЕ СОСТОЯНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('HallFamilyStateClamp') = 1:
+        gs 'HallFamilyStateClamp'
+    end
+
+    *pl '<b>Общие семейные параметры:</b>'
+    *pl 'FamilyTrust: ' + STR(FamilyTrust)
+    *pl 'FamilyTension: ' + STR(FamilyTension)
+    *pl 'FamilyCorruptionPoints: ' + STR(FamilyCorruptionPoints)
+    *pl 'FamilyCorruptionStage: ' + STR(FamilyCorruptionStage)
+    *pl ' '
+
+    if LOC('HallFamilyStateStageName') = 1:
+        gs 'HallFamilyStateStageName'
+        *pl '<b>Стадия:</b> ' + $HallFamilyStateStageName
+        *pl ' '
+    end
+
+    *pl '<b>Последний выбор Стефана:</b>'
+    *pl 'LastHallChoiceEvent: ' + $LastHallChoiceEvent
+    *pl 'LastHallChoiceGirl: ' + $LastHallChoiceGirl
+    *pl 'LastHallChoiceType: ' + $LastHallChoiceType
+    *pl 'LastHallChoiceArea: ' + $LastHallChoiceArea
+    *pl ' '
+
+    *pl '<b>Счётчики решений:</b>'
+    *pl 'HallChoiceProtectCount: ' + STR(HallChoiceProtectCount)
+    *pl 'HallChoiceNeutralCount: ' + STR(HallChoiceNeutralCount)
+    *pl 'HallChoiceDirtyCount: ' + STR(HallChoiceDirtyCount)
+    *pl 'HallChoiceControlCount: ' + STR(HallChoiceControlCount)
+    *pl 'HallChoiceIgnoreCount: ' + STR(HallChoiceIgnoreCount)
+    *pl ' '
+
+    act 'DEBUG: добавить защитное решение':
+        gs 'HallChoiceMemorySave', 'hall_lewd', 'amanda', 'protect', 'hall'
+        if LOC('HallFamilyStateApplyChoice') = 1:
+            gs 'HallFamilyStateApplyChoice', 'hall_lewd', 'amanda', 'protect', 'hall'
+        end
+        gt 'DebugFamilyStatePanel'
+    end
+
+    act 'DEBUG: добавить грязное решение':
+        gs 'HallChoiceMemorySave', 'hall_lewd', 'amanda', 'dirty', 'hall'
+        if LOC('HallFamilyStateApplyChoice') = 1:
+            gs 'HallFamilyStateApplyChoice', 'hall_lewd', 'amanda', 'dirty', 'hall'
+        end
+        gt 'DebugFamilyStatePanel'
+    end
+
+    act 'DEBUG: добавить игнорирование':
+        gs 'HallChoiceMemorySave', 'hall_missing', 'melissa', 'ignore', 'hall'
+        if LOC('HallFamilyStateApplyChoice') = 1:
+            gs 'HallFamilyStateApplyChoice', 'hall_missing', 'melissa', 'ignore', 'hall'
+        end
+        gt 'DebugFamilyStatePanel'
+    end
+
+    act 'DEBUG: сброс семейного состояния':
+        FamilyTrust = 0
+        FamilyTension = 0
+        FamilyCorruptionPoints = 0
+        FamilyCorruptionStage = 0
+        HallChoiceProtectCount = 0
+        HallChoiceNeutralCount = 0
+        HallChoiceDirtyCount = 0
+        HallChoiceControlCount = 0
+        HallChoiceIgnoreCount = 0
+        $LastHallChoiceEvent = ''
+        $LastHallChoiceGirl = ''
+        $LastHallChoiceType = ''
+        $LastHallChoiceArea = ''
+        gt 'DebugFamilyStatePanel'
+    end
+
+    act 'Вернуться в трактир':
+        gt 'TavernMain'
+    end
+---

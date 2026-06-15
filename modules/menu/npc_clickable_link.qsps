@@ -1,0 +1,28 @@
+! FILE: modules/menu/npc_clickable_link.qsps
+
+#NpcClickableLink
+$group = LCASE($Args[0])
+if $group = 'family' or $group = 'семья':
+  gs 'NpcClickableLink', 'sandra'
+  gs 'NpcClickableLink', 'melissa'
+  gs 'NpcClickableLink', 'amanda'
+  exit
+end
+if $group = 'all' or $group = 'все' or $group = 'girls':
+  counter = 0
+  :loopgirls
+  if counter < arrsize('$AllGirlNames'):
+    gs 'NpcClickableLink', $AllGirlNames[counter]
+    counter += 1
+    jump 'loopgirls'
+  end
+  exit
+end
+$girl = LCASE($Args[0])
+if $RealName[$girl] = '':
+  $RealName[$girl] = ucase(mid($girl,1,1)) + lcase(mid($girl,2))
+end
+$link = '<a href="exec:gs ''NPC_Click'', ''' + $girl + '''"><font color="green">' + $RealName[$girl] + '</font></a>'
+*pl $link
+---
+

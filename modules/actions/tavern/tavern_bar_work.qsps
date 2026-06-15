@@ -1,0 +1,298 @@
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Работа Стефана за барной стойкой
+! Версия: v3 / daily aftermath hook
+! Назначение:
+! - Стефан видит экран рабочей смены до возможного события
+! - флаг BarWorkedToday ставится только после нормальной проверки
+! - события зала/кухни запускаются после нажатия "Закончить смену"
+! - если событие перехватывает экран через gt, рабочий результат уже был показан игроку
+! ================================================
+
+#TavernBarWorkStart
+    *clr
+    clr
+    cla
+
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    if LOC('CalculateTavernStaffEfficiency') = 1:
+        gs 'CalculateTavernStaffEfficiency'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАБОТА ЗА БАРНОЙ СТОЙКОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if time >= 5:
+        *p 'Сейчас уже слишком поздно. Таверна закрыта, и становиться за стойку бессмысленно.'
+        *pl ' '
+
+        act 'Вернуться в зал':
+            gt 'TavernMain'
+        end
+
+        exit
+    end
+
+    if TavernOpen = 0:
+        *p 'Сейчас таверна закрыта. За стойкой делать нечего.'
+        *pl ' '
+
+        act 'Вернуться в зал':
+            gt 'TavernMain'
+        end
+
+        exit
+    end
+
+    if BarWorkedToday[time] = 1:
+        *p 'В эту часть дня вы уже работали за стойкой. Сейчас лучше заняться чем-нибудь другим.'
+        *pl ' '
+
+        act 'Вернуться в зал':
+            gt 'TavernMain'
+        end
+
+        exit
+    end
+
+    BarWorkedToday[time] = 1
+    BarWorkCountToday += 1
+
+    gs 'TavernBarWorkCalculateIncome'
+
+    money += BarWorkIncome
+    TavernBarIncomeToday += BarWorkIncome
+    TavernBarWineIncomeToday += BarWorkWineIncome
+    TavernBarBeerIncomeToday += BarWorkBeerIncome
+    TavernBarTipsToday += BarWorkTips
+
+    *p 'Вы становитесь за стойку и берёте часть работы на себя. Приходится наливать пиво, следить за кружками, отвечать на грубоватые шутки гостей и не выпускать из виду зал.'
+    *pl ' '
+    *p 'Пока вы работаете за стойкой, обслуживание идёт быстрее, а гости охотнее делают новые заказы.'
+
+    *pl ' '
+    *pl 'Дополнительный доход за смену: ' + STR(BarWorkIncome) + ' мараведи.'
+    *pl 'Вино: +' + STR(BarWorkWineIncome)
+    *pl 'Пиво: +' + STR(BarWorkBeerIncome)
+    *pl 'Чаевые: +' + STR(BarWorkTips)
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG BAR] Посетители: ' + STR(tavernvisitors)
+        *pl '[DEBUG BAR] Сила зала: ' + STR(tavern_waitress_power)
+        *pl '[DEBUG BAR] Доход стойки: ' + STR(BarWorkIncome)
+        *pl '[DEBUG BAR] Смен за стойкой сегодня: ' + STR(BarWorkCountToday)
+        *pl '[DEBUG BAR] time: ' + STR(time)
+        *pl '[DEBUG BAR] BarWorkedToday[time]: ' + STR(BarWorkedToday[time])
+    end
+
+    *pl ' '
+
+    act 'Закончить смену':
+        gt 'TavernBarWorkFinish'
+    end
+---
+
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Завершение смены за стойкой
+! Сначала даёт шанс событию, потом двигает время.
+! Если событие запустилось через dispatcher, оно само забирает экран.
+! ================================================
+
+#TavernBarWorkFinish
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОНЕЦ СМЕНЫ ЗА СТОЙКОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    TavernEventDispatcherResult = 0
+
+    gs 'TavernBarWorkMaybeHallEvent'
+
+    if TavernEventDispatcherResult = 1:
+        exit
+    end
+
+    *p 'Смена за стойкой подходит к концу. Вы вытираете руки, оглядываете зал и наконец отходите от бочек и кружек.'
+    *pl ' '
+
+    act 'Вернуться в зал':
+        gs 'TavernBarWorkAdvanceTime'
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Расчёт дополнительного дохода за стойкой
+! Доход выдаётся сразу, чтобы не зависеть от имён переменных
+! дневного расчёта прибыли
+! ================================================
+
+#TavernBarWorkCalculateIncome
+    BarWorkVisitors = tavernvisitors / 4
+
+    if BarWorkVisitors < 1:
+        BarWorkVisitors = 1
+    end
+
+    BarWorkHallPower = tavern_waitress_power
+
+    if BarWorkHallPower < 10:
+        BarWorkHallPower = 10
+    end
+
+    BarWorkWineIncome = BarWorkVisitors * 2
+    BarWorkBeerIncome = BarWorkVisitors * 1
+    BarWorkTips = RAND(2, 8)
+
+    if BarWorkHallPower >= 50:
+        BarWorkTips += 3
+    end
+
+    if BarWorkHallPower >= 75:
+        BarWorkTips += 5
+    end
+
+    BarWorkIncome = BarWorkWineIncome + BarWorkBeerIncome + BarWorkTips
+
+    if BarWorkIncome < 1:
+        BarWorkIncome = 1
+    end
+---
+
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Возможное событие трактира после смены за стойкой
+! ================================================
+
+#TavernBarWorkMaybeHallEvent
+    TavernEventDispatcherResult = 0
+
+    if LOC('TavernEventDispatcherTry') = 1:
+        gs 'TavernEventDispatcherTry', 'TavernMain'
+
+        if TavernEventDispatcherResult = 1:
+            exit
+        end
+    end
+
+    BarWorkEventRoll = RAND(1, 100)
+
+    if BarWorkEventRoll <= 20:
+        *p 'Пока вы отходите от стойки, замечаете пару лишних взглядов в сторону девушек. Один гость уже тянет лапу, но под вашим взглядом быстро вспоминает, что кружка — это не повод хватать всё подряд.'
+    elseif BarWorkEventRoll <= 35:
+        *p 'У дальнего стола кто-то громко шутит, слишком грязно даже для вашего зала. Девушки проходят мимо быстрее обычного, а вы на всякий случай держите ситуацию краем глаза.'
+    elseif BarWorkEventRoll <= 45:
+        *p 'Несколько посетителей явно довольны, что хозяин сам стоял за стойкой. В зале становится спокойнее: когда Стефан рядом, даже самый наглый хрен думает дважды.'
+    elseif BarWorkEventRoll <= 55:
+        *p 'Из кухни доносится звон посуды и чей-то недовольный голос, но всё быстро стихает. Видимо, сегодня обошлось без скалки по башке.'
+    else:
+        *p 'На этот раз смена проходит без особых происшествий. Только пиво, кружки, мелкие ругательства и обычный трактирный шум.'
+    end
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG BAR EVENT] dispatcher result: ' + STR(TavernEventDispatcherResult)
+        *pl '[DEBUG BAR EVENT] fallback roll: ' + STR(BarWorkEventRoll)
+    end
+---
+
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Продвижение времени после работы за стойкой
+! Если в проекте есть свой локатор продвижения времени,
+! лучше заменить fallback на него
+! ================================================
+
+#TavernBarWorkAdvanceTime
+    if LOC('AdvanceTimePart') = 1:
+        gs 'AdvanceTimePart'
+        exit
+    end
+
+    if LOC('NextTimePart') = 1:
+        gs 'NextTimePart'
+        exit
+    end
+
+    if LOC('NextTime') = 1:
+        gs 'NextTime'
+        exit
+    end
+
+    time += 1
+
+    if time > 4:
+        time = 1
+
+        if LOC('NextDay') = 1:
+            gs 'NextDay'
+        elseif LOC('ProcessNewDay') = 1:
+            gs 'ProcessNewDay'
+        else:
+            day += 1
+
+            if LOC('ResetSexDailyFlags') = 1:
+                gs 'ResetSexDailyFlags'
+            end
+
+            if LOC('ResetTavernBarWorkDailyFlags') = 1:
+                gs 'ResetTavernBarWorkDailyFlags'
+            end
+
+            if LOC('DailyAftermathResetDaily') = 1:
+                gs 'DailyAftermathResetDaily'
+            end
+
+            if LOC('DailyAftermathProcess') = 1:
+                gs 'DailyAftermathProcess'
+            end
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Debug-вывод накопленной работы за стойкой
+! Можно вызвать в панели трактира
+! ================================================
+
+#TavernBarWorkDebugPanel
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG BAR PANEL] Смен за стойкой: ' + STR(BarWorkCountToday)
+        *pl '[DEBUG BAR PANEL] Доход стойки: ' + STR(TavernBarIncomeToday)
+        *pl '[DEBUG BAR PANEL] Вино: ' + STR(TavernBarWineIncomeToday)
+        *pl '[DEBUG BAR PANEL] Пиво: ' + STR(TavernBarBeerIncomeToday)
+        *pl '[DEBUG BAR PANEL] Чаевые: ' + STR(TavernBarTipsToday)
+    end
+---
+
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Сброс дневных флагов работы за стойкой
+! Вызывать при начале нового дня
+! ================================================
+
+#ResetTavernBarWorkDailyFlags
+    BarWorkedToday[1] = 0
+    BarWorkedToday[2] = 0
+    BarWorkedToday[3] = 0
+    BarWorkedToday[4] = 0
+
+    BarWorkCountToday = 0
+    TavernBarIncomeToday = 0
+    TavernBarWineIncomeToday = 0
+    TavernBarBeerIncomeToday = 0
+    TavernBarTipsToday = 0
+---

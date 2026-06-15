@@ -1,0 +1,92 @@
+! ================================================
+! FILE: modules/events/tavern_events.qsps
+! События рабочего дня таверны
+! Срабатывают при завершении дня
+! Могут менять прибыль, репутацию и итоговый текст дня
+! ================================================
+
+#TavernWorkDayEvent
+    tavern_event_profit_bonus = 0
+    tavern_event_reputation_bonus = 0
+    $LastTavernEventText = ''
+
+    ! ====================== ЕСЛИ ТАВЕРНА НЕ РАБОТАЛА ======================
+
+    if tavern_can_serve_drinks = 0:
+        $LastTavernEventText = 'Таверна почти не работала: без обслуживания зала посетители быстро расходились.'
+        tavern_event_reputation_bonus = -1
+        exit
+    end
+
+    ! ====================== ВЫБОР СОБЫТИЯ ======================
+
+    TavernEventRoll = RAND(1, 100)
+
+    ! ====================== ДОВОЛЬНЫЕ ГОСТИ ======================
+
+    if TavernEventRoll <= 18:
+        if tavern_work_efficiency >= 60:
+            $LastTavernEventText = 'Гости остались довольны работой таверны. Несколько человек обещали зайти снова.'
+            tavern_event_reputation_bonus = 1
+        else:
+            $LastTavernEventText = 'Гости в целом остались довольны, хотя обслуживание было неидеальным.'
+        end
+
+    ! ====================== ЖАЛОБА НА ГРЯЗЬ ======================
+
+    elseif TavernEventRoll <= 34:
+        if tavern_cleaning_power < 35:
+            $LastTavernEventText = 'Несколько посетителей пожаловались на грязные столы и липкий пол.'
+            tavern_event_reputation_bonus = -2
+        else:
+            $LastTavernEventText = 'Один из посетителей попытался пожаловаться на чистоту, но зал выглядел достаточно прилично.'
+        end
+
+    ! ====================== МЕДЛЕННОЕ ОБСЛУЖИВАНИЕ ======================
+
+    elseif TavernEventRoll <= 50:
+        if tavern_waitress_power < 35:
+            $LastTavernEventText = 'Посетители ворчали из-за медленного обслуживания. Кто-то ушёл, так и не дождавшись заказа.'
+            tavern_event_profit_bonus = -20
+            tavern_event_reputation_bonus = -1
+        else:
+            $LastTavernEventText = 'Зал был шумным, но обслуживание справилось с наплывом гостей.'
+        end
+
+    ! ====================== ССОРА ПОСЕТИТЕЛЕЙ ======================
+
+    elseif TavernEventRoll <= 64:
+        $LastTavernEventText = 'К вечеру между двумя посетителями вспыхнула ссора. Её удалось быстро погасить, но настроение в зале испортилось.'
+        tavern_event_profit_bonus = -10
+
+        if tavern_reputation < 35:
+            tavern_event_reputation_bonus = -1
+        end
+
+    ! ====================== ЩЕДРЫЕ ЧАЕВЫЕ ======================
+
+    elseif TavernEventRoll <= 80:
+        if tavern_waitress_power >= 30:
+            $LastTavernEventText = 'Несколько гостей оставили щедрые чаевые за хорошее обслуживание.'
+            tavern_event_profit_bonus = 25
+        else:
+            $LastTavernEventText = 'Кто-то из гостей хотел оставить чаевые, но обслуживание оказалось слишком слабым.'
+        end
+
+    ! ====================== СПОКОЙНЫЙ ДЕНЬ ======================
+
+    else:
+        $LastTavernEventText = 'День прошёл спокойно, без особых происшествий.'
+    end
+
+    ! ====================== ПРИМЕНЕНИЕ К ПРИБЫЛИ ======================
+
+    tavern_expected_profit += tavern_event_profit_bonus
+
+    if tavern_expected_profit < -150:
+        tavern_expected_profit = -150
+    end
+
+    killvar 'TavernEventRoll'
+---
+

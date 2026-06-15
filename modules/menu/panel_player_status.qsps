@@ -1,0 +1,56 @@
+! ================================================
+! FILE: modules/menu/panel_player_status.qsps
+! Стандартное дополнительное описание главного героя
+! Использует данные из InitSteve и GetDateTimeNames
+! Показывается по умолчанию, если не открыта другая панель
+! ================================================
+
+#PanelPlayerStatus
+    clr
+
+    gs 'GetDateTimeNames'
+   
+
+    if $PlayerClothesDesc = '':
+        $PlayerClothesDesc = 'простые холщовые штаны, подпоясанные веревкой и рубаху из грубого полотна'
+    end
+
+    PanelYearsPassed = year - 1100
+
+    if PanelYearsPassed < 0:
+        PanelYearsPassed = 0
+    end
+
+    PanelDaysPassed = day - 1
+
+    if PanelDaysPassed < 0:
+        PanelDaysPassed = 0
+    end
+
+    $PanelTimeText = LCASE($TimeOfDay)
+
+    pl 'Сейчас ' + $PanelTimeText + '.'
+    pl 'Сейчас ' + $WeekDay + ', ' + STR(day) + ' ' + $MonthName + ' ' + STR(year) + ' года.'
+    pl 'Прошло ' + STR(PanelYearsPassed) + ' лет (' + STR(PanelDaysPassed) + ' дней) от начала игры.'
+    pl ' '
+
+    pl 'Вам ' + STR(age) + ' лет.'
+    pl 'Вы одеты в ' + $PlayerClothesDesc + '.'
+    pl 'У вас в кошельке ' + STR(money) + ' мараведи.'
+
+  ! ====================== СЕКСУАЛЬНЫЙ ОПЫТ ГГ ======================
+
+    if PlayerVirgin = 1:
+        pl 'Вы девственник.'
+    else:
+        pl 'Вы уже имели сексуальный опыт.'
+        pl 'Половых актов: ' + STR(PlayerSexCount) + '.'
+    end
+    pl 'Вы можете кончить ' + STR(max_daily_cum) + ' раз за день.'
+    pl 'Сегодня вы кончили ' + STR(daily_cum_count) + ' раз.'
+
+    killvar 'PanelYearsPassed'
+    killvar 'PanelDaysPassed'
+    killvar '$PanelTimeText'
+---
+

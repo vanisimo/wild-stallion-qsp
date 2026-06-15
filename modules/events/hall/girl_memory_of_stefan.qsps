@@ -1,0 +1,256 @@
+! ================================================
+! FILE: modules/events/hall/girl_memory_of_stefan.qsps
+! Память девушек о поведении Стефана в событиях зала
+! Версия: v1
+! Назначение:
+! - запоминать не только событие, но и стиль решений Стефана
+! - накапливать защиту, пренебрежение, грязные решения, контроль и непоследовательность
+! - давать основу для будущих разговоров, ревности, доверия и семейных реакций
+! - тексты берутся из modules/events/hall/girl_memory_of_stefan_text.qsps
+! ================================================
+
+#GirlMemoryOfStefanRegister
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlMemoryGirl = $GirlKey
+    $GirlMemoryEvent = LCASE($ARGS[1])
+    $GirlMemoryChoice = LCASE($ARGS[2])
+
+    if $GirlMemoryGirl = '':
+        exit
+    end
+
+    if $GirlMemoryEvent = '':
+        $GirlMemoryEvent = 'hall'
+    end
+
+    if $GirlMemoryChoice = '':
+        $GirlMemoryChoice = 'neutral'
+    end
+
+    gs 'EnsureGirlData', $GirlMemoryGirl
+    gs 'GirlMemoryOfStefanClassifyChoice', $GirlMemoryChoice
+
+    LastStefanChoiceType[$GirlMemoryGirl] = GirlMemoryChoiceType
+    $LastStefanChoiceText[$GirlMemoryGirl] = $GirlMemoryChoice
+    $LastStefanChoiceEvent[$GirlMemoryGirl] = $GirlMemoryEvent
+
+    if GirlMemoryChoiceType = 1:
+        GirlRemembersProtection[$GirlMemoryGirl] += 1
+        GirlTrustStefan[$GirlMemoryGirl] += 1
+    elseif GirlMemoryChoiceType = 2:
+        GirlRemembersNeglect[$GirlMemoryGirl] += 1
+        GirlSecretiveness[$GirlMemoryGirl] += 1
+    elseif GirlMemoryChoiceType = 3:
+        GirlRemembersProfitChoices[$GirlMemoryGirl] += 1
+        GirlPublicAttention[$GirlMemoryGirl] += 1
+        GirlNpcPath[$GirlMemoryGirl] += 1
+    elseif GirlMemoryChoiceType = 4:
+        GirlRemembersControl[$GirlMemoryGirl] += 1
+        GirlRebellion[$GirlMemoryGirl] += 1
+    else:
+        GirlRemembersNeutral[$GirlMemoryGirl] += 1
+    end
+
+    gs 'GirlMemoryOfStefanPersonalEffects'
+    gs 'GirlMemoryOfStefanCheckConsistency'
+
+    if LOC('ClampGirlSocialStats') = 1:
+        gs 'ClampGirlSocialStats', $GirlMemoryGirl
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    $LastHallMemoryGirl = $GirlMemoryGirl
+    $LastHallMemoryEvent = $GirlMemoryEvent
+    $LastHallMemoryChoice = $GirlMemoryChoice
+
+    DailyAftermathPending = 1
+    DailyAftermathReasonDay = day
+    $DailyAftermathReasonGirl = $GirlMemoryGirl
+    $DailyAftermathReasonEvent = $GirlMemoryEvent
+    $DailyAftermathReasonChoice = $GirlMemoryChoice
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG GIRL MEMORY WRITE] girl: ' + $GirlMemoryGirl
+        *pl '[DEBUG GIRL MEMORY WRITE] event: ' + $GirlMemoryEvent
+        *pl '[DEBUG GIRL MEMORY WRITE] choice: ' + $GirlMemoryChoice
+        *pl '[DEBUG GIRL MEMORY WRITE] type: ' + STR(GirlMemoryChoiceType)
+        *pl '[DEBUG GIRL MEMORY WRITE] protect: ' + STR(GirlRemembersProtection[$GirlMemoryGirl])
+        *pl '[DEBUG GIRL MEMORY WRITE] ignore: ' + STR(GirlRemembersNeglect[$GirlMemoryGirl])
+        *pl '[DEBUG GIRL MEMORY WRITE] profit: ' + STR(GirlRemembersProfitChoices[$GirlMemoryGirl])
+        *pl '[DEBUG GIRL MEMORY WRITE] control: ' + STR(GirlRemembersControl[$GirlMemoryGirl])
+        *pl '[DEBUG GIRL MEMORY WRITE] DailyAftermathPending: ' + STR(DailyAftermathPending)
+    end
+
+    killvar '$GirlMemoryEvent'
+    killvar '$GirlMemoryChoice'
+    killvar 'GirlMemoryChoiceType'
+---
+
+#GirlMemoryOfStefanClassifyChoice
+    $GirlMemoryClassChoice = LCASE($ARGS[0])
+    GirlMemoryChoiceType = 0
+
+    if $GirlMemoryClassChoice = 'protect' or $GirlMemoryClassChoice = 'protect_hard' or $GirlMemoryClassChoice = 'warn_client' or $GirlMemoryClassChoice = 'stop' or $GirlMemoryClassChoice = 'hard_stop' or $GirlMemoryClassChoice = 'interrupt' or $GirlMemoryClassChoice = 'calm_stop':
+        GirlMemoryChoiceType = 1
+    elseif $GirlMemoryClassChoice = 'ignore' or $GirlMemoryClassChoice = 'watch' or $GirlMemoryClassChoice = 'peek' or $GirlMemoryClassChoice = 'do_nothing':
+        GirlMemoryChoiceType = 2
+    elseif $GirlMemoryClassChoice = 'encourage' or $GirlMemoryClassChoice = 'client' or $GirlMemoryClassChoice = 'profit' or $GirlMemoryClassChoice = 'let_client':
+        GirlMemoryChoiceType = 3
+    elseif $GirlMemoryClassChoice = 'order' or $GirlMemoryClassChoice = 'force_rule' or $GirlMemoryClassChoice = 'control' or $GirlMemoryClassChoice = 'send_melissa':
+        GirlMemoryChoiceType = 4
+    else:
+        GirlMemoryChoiceType = 0
+    end
+
+    killvar '$GirlMemoryClassChoice'
+---
+
+#GirlMemoryOfStefanPersonalEffects
+    if $GirlMemoryGirl = 'amanda':
+        if GirlMemoryChoiceType = 1:
+            AmandaTrustStefan += 1
+            AmandaRebellion += 1
+        elseif GirlMemoryChoiceType = 2:
+            AmandaSecretiveness += 1
+            AmandaPublicAttention += 1
+        elseif GirlMemoryChoiceType = 3:
+            AmandaNpcPath += 1
+            AmandaScandalLevel += 1
+            AmandaPublicAttention += 1
+        elseif GirlMemoryChoiceType = 4:
+            AmandaRebellion += 2
+        end
+    elseif $GirlMemoryGirl = 'melissa':
+        if GirlMemoryChoiceType = 1:
+            MelissaTrustStefan += 1
+            MelissaRespectStefan += 1
+        elseif GirlMemoryChoiceType = 2:
+            MelissaTrustStefan -= 1
+            MelissaControlNeed += 1
+        elseif GirlMemoryChoiceType = 3:
+            MelissaScandalTolerance += 1
+            MelissaRespectStefan -= 1
+        elseif GirlMemoryChoiceType = 4:
+            MelissaControlNeed += 1
+        end
+    elseif $GirlMemoryGirl = 'sandra':
+        if GirlMemoryChoiceType = 1:
+            SandraTrustStefan += 1
+            SandraRespectStefan += 1
+            FamilyTrust += 1
+        elseif GirlMemoryChoiceType = 2:
+            SandraFamilyConcern += 1
+            FamilyTension += 1
+        elseif GirlMemoryChoiceType = 3:
+            SandraMoralResistance += 1
+            SandraBitterness += 1
+            FamilyTension += 1
+        elseif GirlMemoryChoiceType = 4:
+            SandraFamilyConcern += 1
+        end
+    end
+---
+
+#GirlMemoryOfStefanCheckConsistency
+    if LastStefanGlobalChoiceType > 0 and GirlMemoryChoiceType > 0 and LastStefanGlobalChoiceType <> GirlMemoryChoiceType:
+        StefanInconsistentChoices += 1
+
+        if $GirlMemoryGirl = 'melissa':
+            MelissaRespectStefan -= 1
+            MelissaControlNeed += 1
+        elseif $GirlMemoryGirl = 'sandra':
+            SandraFamilyConcern += 1
+            FamilyTension += 1
+        elseif $GirlMemoryGirl = 'amanda':
+            AmandaSecretiveness += 1
+        end
+    end
+
+    LastStefanGlobalChoiceType = GirlMemoryChoiceType
+    $LastStefanGlobalChoiceGirl = $GirlMemoryGirl
+    $LastStefanGlobalChoiceEvent = $GirlMemoryEvent
+---
+
+#GirlMemoryOfStefanPrintLast
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlMemoryPrintGirl = $GirlKey
+
+    if $GirlMemoryPrintGirl = '':
+        exit
+    end
+
+    gs 'GirlMemoryOfStefanText', $GirlMemoryPrintGirl
+
+    if $GirlMemoryText <> '':
+        *p $GirlMemoryText
+    end
+
+    killvar '$GirlMemoryPrintGirl'
+---
+
+#GirlMemoryOfStefanDebugPanel
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ПАМЯТЬ ДЕВУШЕК О СТЕФАНЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlMemoryOfStefanDebugPrintGirl', 'amanda'
+    gs 'GirlMemoryOfStefanDebugPrintGirl', 'melissa'
+    gs 'GirlMemoryOfStefanDebugPrintGirl', 'sandra'
+
+    *pl ' '
+    *pl 'Непоследовательных решений Стефана: ' + STR(StefanInconsistentChoices)
+    *pl 'Последний общий тип решения: ' + STR(LastStefanGlobalChoiceType)
+    *pl 'Последняя девушка: ' + $LastStefanGlobalChoiceGirl
+
+    act 'Вернуться в трактир':
+        gt 'TavernMain'
+    end
+---
+
+#GirlMemoryOfStefanDebugPrintGirl
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlMemoryDebugGirl = $GirlKey
+
+    if $GirlMemoryDebugGirl = '':
+        exit
+    end
+
+    if $RealName[$GirlMemoryDebugGirl] = '':
+        gs 'EnsureGirlData', $GirlMemoryDebugGirl
+    end
+
+    *pl '<b>' + $RealName[$GirlMemoryDebugGirl] + '</b>'
+    *pl 'Защита: ' + STR(GirlRemembersProtection[$GirlMemoryDebugGirl])
+    *pl 'Пренебрежение/наблюдение: ' + STR(GirlRemembersNeglect[$GirlMemoryDebugGirl])
+    *pl 'Грязные/прибыльные решения: ' + STR(GirlRemembersProfitChoices[$GirlMemoryDebugGirl])
+    *pl 'Контроль: ' + STR(GirlRemembersControl[$GirlMemoryDebugGirl])
+    *pl 'Нейтральные решения: ' + STR(GirlRemembersNeutral[$GirlMemoryDebugGirl])
+    *pl 'Последнее решение: ' + $LastStefanChoiceText[$GirlMemoryDebugGirl]
+    *pl ' '
+
+    killvar '$GirlMemoryDebugGirl'
+---
+
+
+
+! ================================================
+! FILE: modules/events/hall/girl_memory_of_stefan.qsps
+! Совместимость вызовов из новых систем
+! ================================================
+
+#GirlMemoryOfStefanApplyChoice
+    gs 'GirlMemoryOfStefanRegister', $ARGS[0], $ARGS[1], $ARGS[2]
+---
+
+#GirlMemoryOfStefanPrintLastText
+    gs 'GirlMemoryOfStefanPrintLast', $ARGS[0]
+---

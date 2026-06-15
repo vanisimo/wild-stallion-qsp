@@ -1,0 +1,81 @@
+! ================================================
+! FILE: modules/core/init_npc/common.qsps
+! Общая система инициализации всех девушек и NPC
+! Улучшенная структура — легко расширяемая
+! ================================================
+
+! ====================== СПИСОК ВСЕХ ДЕВУШЕК ======================
+! 0  sandra     — мать
+! 1  melissa    — средняя сестра
+! 2  amanda     — младшая сестра
+! 3  becky      — вдова Блэнкеншип, владелица продуктовой лавки
+! 4  inga       — Ингеборга, старшая дочь Бекки
+! 5  greta      — Герта, младшая дочь Бекки
+! 6  lizette    — Лизетта, дочь Жоржетты
+! 7  georgett   — Жоржетта, портовая проститутка
+! 8  clarissa   — Кларисса Легре, жена Альбера
+! 9  irma       — Ирма, портниха и владелица лавки
+! 10 juliette   — Жюльетта, младшая дочь Жоржетты
+
+$AllGirlNames[0]  = 'sandra'
+$AllGirlNames[1]  = 'melissa'
+$AllGirlNames[2]  = 'amanda'
+$AllGirlNames[3]  = 'becky'
+$AllGirlNames[4]  = 'inga'
+$AllGirlNames[5]  = 'greta'
+$AllGirlNames[6]  = 'lizette'
+$AllGirlNames[7]  = 'georgett'
+$AllGirlNames[8]  = 'clarissa'
+$AllGirlNames[9]  = 'irma'
+$AllGirlNames[10] = 'juliette'
+
+! ====================== ИНИЦИАЛИЗАЦИЯ ВСЕХ ДЕВУШЕК ======================
+#GirlsInitAll
+gs 'DebugEnter'
+InitGirlsCounter = 0
+_totalGirls = arrsize('$AllGirlNames')
+
+if _totalGirls = 0:
+    if debug = 1: *pl '[DEBUG] Список имен пуст, инициализация отменена.'
+    exit
+end
+
+:loopInitGirls
+    $GirlName = $AllGirlNames[InitGirlsCounter]
+    
+    gs 'GirlInitBase', $GirlName
+    
+    $First = UCASE(MID($GirlName,1,1))
+    $Rest = LCASE(MID($GirlName,2))
+    $TargetLoc = 'Init' + $First + $Rest
+    
+    if debug = 1:
+        *pl '[DEBUG] >>> Пытаюсь вызвать: <<$TargetLoc>> для <<$GirlName>>'
+    end
+    
+    if LOC($TargetLoc) = 1:
+        dynamic "gs '<<$TargetLoc>>'"
+        if debug = 1:
+            *pl '[DEBUG]     ✓ Локация <<$TargetLoc>> вызвана успешно'
+        end
+    else:
+        if debug = 1:
+            *pl '[DEBUG]     ✗ Локация <<$TargetLoc>> НЕ НАЙДЕНА!'
+        end
+    end
+    
+    InitGirlsCounter += 1
+if InitGirlsCounter < _totalGirls: jump 'loopInitGirls'
+
+if debug = 1:
+    *pl '[DEBUG] Инициализация завершена. Обработано: <<_totalGirls>>'
+end
+
+killvar 'InitGirlsCounter'
+killvar '_totalGirls'
+killvar '$GirlName'
+killvar '$First'
+killvar '$Rest'
+killvar '$TargetLoc'
+---
+

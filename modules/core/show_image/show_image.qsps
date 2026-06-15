@@ -1,0 +1,152 @@
+! ================================================
+! FILE: modules/core/show_image/show_image.qsps
+! Универсальная система вывода изображений
+! Картинки лежат в общей папке images/
+! Без FILEEXISTS, так как в QSP его нет
+! Поддерживает старые и новые вызовы ShowImage
+! ================================================
+
+#ShowImage
+    $ImgType = LCASE($ARGS[0])
+    $ImgGirl = LCASE($ARGS[1])
+    $ImgAction = LCASE($ARGS[2])
+    $ImgPose = LCASE($ARGS[3])
+    $ImgExt = LCASE($ARGS[4])
+    $ImgSize = LCASE($ARGS[5])
+
+    if $ImgType = '':
+        exit
+    end
+
+    if $ImgSize = '':
+        $ImgSize = 'medium'
+    end
+
+    ! ====================== СОВМЕСТИМОСТЬ СО СТАРЫМИ ВЫЗОВАМИ ======================
+
+    if $ImgType <> 'location' and $ImgType <> 'portrait' and $ImgType <> 'dance' and $ImgType <> 'event' and $ImgType <> 'sex' and $ImgType <> 'common':
+        if $ImgGirl = 'portraits':
+            $ImgOldGirl = $ImgType
+            $ImgOldAction = $ImgAction
+
+            $ImgType = 'portrait'
+            $ImgGirl = $ImgOldGirl
+            $ImgAction = $ImgOldAction
+            $ImgPose = ''
+        elseif $ImgGirl = 'dance':
+            $ImgOldGirl = $ImgType
+            $ImgOldAction = $ImgAction
+            $ImgOldPose = $ImgPose
+
+            $ImgType = 'dance'
+            $ImgGirl = $ImgOldGirl
+            $ImgAction = $ImgOldAction
+            $ImgPose = $ImgOldPose
+        else:
+            $ImgOldAction = $ImgAction
+
+            $ImgType = 'common'
+            $ImgAction = $ImgOldAction
+        end
+    end
+
+    ! ====================== РАСШИРЕНИЕ ПО УМОЛЧАНИЮ ======================
+
+    if $ImgExt = '':
+        if $ImgType = 'location':
+            $ImgExt = 'png'
+        elseif $ImgType = 'portrait':
+            $ImgExt = 'webp'
+        elseif $ImgType = 'dance':
+            $ImgExt = 'webp'
+        elseif $ImgType = 'event':
+            $ImgExt = 'webp'
+        elseif $ImgType = 'sex':
+            $ImgExt = 'webp'
+        else:
+            $ImgExt = 'webp'
+        end
+    end
+
+    ! ====================== СТИЛЬ ИЗОБРАЖЕНИЯ ======================
+
+    if $ImgSize = 'small':
+        $ImgStyle = 'max-width: 120px; max-height: 150px; border: 1px solid #555;'
+    elseif $ImgSize = 'medium':
+        $ImgStyle = 'max-width: 180px; max-height: 220px; border: 2px solid #444; border-radius: 6px;'
+    elseif $ImgSize = 'large':
+        $ImgStyle = 'max-width: 300px; max-height: 380px; border: 2px solid #333; border-radius: 6px;'
+    elseif $ImgSize = 'full':
+        $ImgStyle = 'max-width: 100%; border: 2px solid #444;'
+    else:
+        $ImgStyle = 'max-width: 180px; max-height: 220px; border: 2px solid #444; border-radius: 6px;'
+    end
+
+    ! ====================== ФОРМИРОВАНИЕ ПУТИ ======================
+
+    $ImgPath = ''
+
+    if $ImgType = 'portrait':
+        if $ImgAction <> '':
+            $ImgPath = 'images/portraits/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+        else:
+            $ImgPath = 'images/portraits/' + $ImgGirl + '.' + $ImgExt
+        end
+    elseif $ImgType = 'dance':
+        if $ImgPose <> '':
+            $ImgPath = 'images/dance/' + $ImgGirl + '/' + $ImgAction + '_' + $ImgPose + '.' + $ImgExt
+        else:
+            $ImgPath = 'images/dance/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+        end
+    elseif $ImgType = 'event':
+        if $ImgGirl <> '':
+            if $ImgPose <> '':
+                $ImgPath = 'images/events/' + $ImgGirl + '/' + $ImgAction + '_' + $ImgPose + '.' + $ImgExt
+            else:
+                $ImgPath = 'images/events/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+            end
+        else:
+            $ImgPath = 'images/events/' + $ImgAction + '.' + $ImgExt
+        end
+    elseif $ImgType = 'sex':
+        if $ImgPose <> '':
+            $ImgPath = 'images/sex/' + $ImgGirl + '/' + $ImgAction + '/' + $ImgPose + '.' + $ImgExt
+        else:
+            $ImgPath = 'images/sex/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+        end
+    elseif $ImgType = 'location':
+        if $ImgAction <> '':
+            $ImgPath = 'images/locations/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+        else:
+            $ImgPath = 'images/locations/' + $ImgGirl + '.' + $ImgExt
+        end
+    else:
+        $ImgPath = 'images/common/' + $ImgAction + '.' + $ImgExt
+    end
+
+    if $ImgPath = '':
+        exit
+    end
+
+    ! ====================== ВЫВОД ======================
+
+    *pl '<center><img src="' + $ImgPath + '" style="' + $ImgStyle + '"></center>'
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG] ShowImage: ' + $ImgPath
+    end
+
+    killvar '$ImgType'
+    killvar '$ImgGirl'
+    killvar '$ImgAction'
+    killvar '$ImgPose'
+    killvar '$ImgExt'
+    killvar '$ImgSize'
+    killvar '$ImgStyle'
+    killvar '$ImgPath'
+    killvar '$ImgOldGirl'
+    killvar '$ImgOldAction'
+    killvar '$ImgOldPose'
+---
+

@@ -1,0 +1,290 @@
+! ================================================
+! FILE: modules/events/tavern/legare_first_conflict.qsps
+! Первый настоящий конфликт с Легаре
+! Версия: tavern conflict v1 / compact menu
+! Назначение:
+! - продолжить ветку после AmandaLegareConflictWithLegareReady
+! - перевести личный конфликт вокруг Аманды в торговое давление
+! - открыть первые проблемы с поставками вина/пива
+! - дать пути: жёсткий конфликт, осторожная сделка, Кларисса, временное отступление
+!
+! Тексты берутся из:
+! modules/events/tavern/legare_first_conflict_text.qsps
+!
+! Вызов из:
+! modules/locations/tavern_main.qsps
+! через #LegareFirstConflictCanStart
+! ================================================
+
+#LegareFirstConflictCanStart
+    LegareFirstConflictCanStart = 0
+
+    if AmandaLegareConflictWithLegareReady <> 1:
+        exit
+    end
+
+    if LegareFirstConflictStage > 0:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    LegareFirstConflictCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_first_conflict.qsps
+! Вход в конфликт
+! ================================================
+
+#LegareFirstConflictStart
+    *clr
+    clr
+    cla
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/legare_conflict', 'first_conflict', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ И ТРАКТИР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('LegareFirstConflictIntroText') = 1:
+        gs 'LegareFirstConflictIntroText'
+    else:
+        *p 'Легаре приходит в трактир уже не как обычный поставщик. Теперь в его вежливости слишком много угрозы.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE CONFLICT] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG LEGARE CONFLICT] ClarissaAlliance: ' + STR(ClarissaAgainstLegareAlliance)
+        *pl '[DEBUG LEGARE CONFLICT] AmandaMajorResult: ' + STR(AmandaLegareMajorRiskResult)
+        *pl '[DEBUG LEGARE CONFLICT] TavernScandal: ' + STR(TavernScandal)
+        *pl ' '
+    end
+
+    gs 'LegareFirstConflictBuildMenu'
+
+    *p 'Как говорить с <a href="exec:gs ''Menu.Show'', ''LegareFirstConflictMenu''">Легаре</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_first_conflict.qsps
+! Меню первого конфликта
+! ================================================
+
+#LegareFirstConflictBuildMenu
+    gs 'Menu.Destroy', 'LegareFirstConflictMenu'
+    gs 'Menu.Create', 'LegareFirstConflictMenu'
+
+    gs 'Menu.Add', 'LegareFirstConflictMenu', 'Говорить спокойно, но твёрдо', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'calm_firm'
+    }
+
+    gs 'Menu.Add', 'LegareFirstConflictMenu', 'Жёстко предупредить его об Аманде', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'hard_warning'
+    }
+
+    gs 'Menu.Add', 'LegareFirstConflictMenu', 'Напомнить, что он поставщик, а не хозяин', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'supplier_place'
+    }
+
+    if ClarissaAgainstLegareAlliance = 1 or ClarissaSecretAllianceHint = 1:
+        gs 'Menu.Add', 'LegareFirstConflictMenu', 'Намекнуть, что Кларисса уже всё понимает', ''
+        gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+            gt 'LegareFirstConflictAction', 'clarissa_hint'
+        }
+    end
+
+    gs 'Menu.Add', 'LegareFirstConflictMenu', 'Попытаться сохранить поставки любой ценой', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'save_supplies'
+    }
+
+    gs 'Menu.Add', 'LegareFirstConflictMenu', 'Выгнать Легаре из трактира', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'kick_out'
+    }
+
+    gs 'Menu.Add', 'LegareFirstConflictMenu', 'Вернуться в зал', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'TavernMain'
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_first_conflict.qsps
+! Обработка выбора
+! ================================================
+
+#LegareFirstConflictAction
+    *clr
+    clr
+    cla
+
+    $LegareConflictChoice = LCASE($ARGS[0])
+
+    LegareFirstConflictStage = 1
+    AmandaLegareConflictWithLegareReady = 0
+
+    ! 0 — конфликт смягчён
+    ! 1 — холодное предупреждение
+    ! 2 — Легаре повышает цены
+    ! 3 — частичная угроза поставкам
+    ! 4 — открытый публичный конфликт
+    LegareFirstConflictResult = 0
+
+    if $LegareConflictChoice = 'calm_firm':
+        LegareFirstConflictResult = 1
+        LegareConflictStage += 1
+        MelissaRespectStefan += 1
+        AmandaTrustStefan += 1
+        LegareSupplyPressureReady = 1
+
+    elseif $LegareConflictChoice = 'hard_warning':
+        LegareFirstConflictResult = 2
+        LegareConflictStage += 2
+        MelissaRespectStefan += 1
+        AmandaTrustStefan += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+        LegarePricesRaised = 1
+        LegareSupplyPressureReady = 1
+
+    elseif $LegareConflictChoice = 'supplier_place':
+        LegareFirstConflictResult = 3
+        LegareConflictStage += 2
+        TavernReputation += 1
+        TavernScandal += 1
+        LegarePricesRaised = 1
+        LegareWinePressure = 1
+        LegareSupplyPressureReady = 1
+
+    elseif $LegareConflictChoice = 'clarissa_hint':
+        LegareFirstConflictResult = 1
+        LegareConflictStage += 1
+        ClarissaTrustStefan += 1
+        ClarissaAgainstLegareAlliance = 1
+        ClarissaPrivateTalkReady = 1
+        LegareSupplyPressureReady = 1
+
+    elseif $LegareConflictChoice = 'save_supplies':
+        LegareFirstConflictResult = 0
+        LegareConflictStage -= 1
+        LegareHumiliatedStefan = 1
+        MelissaRespectStefan -= 1
+        AmandaTrustStefan -= 1
+        TavernReputation -= 1
+
+        if LegareConflictStage < 0:
+            LegareConflictStage = 0
+        end
+
+        if MelissaRespectStefan < 0:
+            MelissaRespectStefan = 0
+        end
+
+        if AmandaTrustStefan < 0:
+            AmandaTrustStefan = 0
+        end
+
+        if TavernReputation < 0:
+            TavernReputation = 0
+        end
+
+    elseif $LegareConflictChoice = 'kick_out':
+        LegareFirstConflictResult = 4
+        LegareConflictStage += 3
+        TavernScandal += 2
+        TavernScandalLevel += 1
+        MelissaRespectStefan += 1
+        AmandaTrustStefan += 1
+        LegarePricesRaised = 1
+        LegareWinePressure = 1
+        LegareBeerPressure = 1
+        LegareSupplyPressureReady = 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if ClarissaTrustStefan < 0:
+        ClarissaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    LegareFirstConflictAfterTalkReady = 1
+    MelissaLegareConflictTalkReady = 1
+
+    if LegareFirstConflictResult >= 2:
+        ClarissaLegareConflictTalkReady = 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВЫЙ КОНФЛИКТ С ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('LegareFirstConflictActionText') = 1:
+        gs 'LegareFirstConflictActionText', $LegareConflictChoice
+    else:
+        *p 'Разговор с Легаре заканчивается тяжёлым напряжением.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE CONFLICT] Choice: ' + $LegareConflictChoice
+        *pl '[DEBUG LEGARE CONFLICT] Result: ' + STR(LegareFirstConflictResult)
+        *pl '[DEBUG LEGARE CONFLICT] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG LEGARE CONFLICT] PricesRaised: ' + STR(LegarePricesRaised)
+        *pl '[DEBUG LEGARE CONFLICT] WinePressure: ' + STR(LegareWinePressure)
+        *pl '[DEBUG LEGARE CONFLICT] BeerPressure: ' + STR(LegareBeerPressure)
+        *pl '[DEBUG LEGARE CONFLICT] SupplyPressureReady: ' + STR(LegareSupplyPressureReady)
+        *pl ' '
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+
+    killvar '$LegareConflictChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/legare_first_conflict.qsps
+! Debug-сброс
+! ================================================
+
+#LegareFirstConflictDebugReset
+    LegareFirstConflictCanStart = 0
+    LegareFirstConflictStage = 0
+    LegareFirstConflictResult = 0
+    LegareFirstConflictAfterTalkReady = 0
+    LegareSupplyPressureReady = 0
+    LegarePricesRaised = 0
+    LegareWinePressure = 0
+    LegareBeerPressure = 0
+    LegareHumiliatedStefan = 0
+    MelissaLegareConflictTalkReady = 0
+    ClarissaLegareConflictTalkReady = 0
+---

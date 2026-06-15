@@ -1,0 +1,569 @@
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Разговоры после события "Легаре замечает Аманду"
+! Версия: aftermath v1 / compact menu
+! Назначение:
+! - дать последствия пятничному событию с Легаре
+! - открыть тему разговора с Амандой
+! - закрепить предупреждение Мелиссы
+! - открыть осторожный вход к Клариссе
+!
+! Тексты берутся из:
+! modules/events/dance/amanda_legare_talk_text.qsps
+!
+! Хуки добавляются в:
+! modules/actions/dialogs/girl_talk.qsps
+! ================================================
+
+#AmandaTalkAboutLegare
+    *clr
+    clr
+    cla
+
+    $LegareTalkReturnLoc = $ARGS[0]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaTalkAboutLegareIntroText') = 1:
+        gs 'AmandaTalkAboutLegareIntroText'
+    else:
+        *p 'Вы заводите разговор о том, как Легаре смотрел на Аманду во время танцев.'
+    end
+
+    *pl ' '
+
+    if LOC('AmandaTalkAboutLegareThoughts') = 1:
+        gs 'AmandaTalkAboutLegareThoughts'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AMANDA LEGARE TALK] AmandaLegareInterest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG AMANDA LEGARE TALK] AmandaRebellion: ' + STR(AmandaRebellion)
+        *pl '[DEBUG AMANDA LEGARE TALK] AmandaTrustStefan: ' + STR(AmandaTrustStefan)
+        *pl '[DEBUG AMANDA LEGARE TALK] AmandaLegareInstruction: ' + STR(AmandaLegareInstruction)
+        *pl ' '
+    end
+
+    gs 'AmandaTalkAboutLegareBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''AmandaLegareTalkMenu''">Аманде</a>?'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Меню разговора с Амандой о Легаре
+! ================================================
+
+#AmandaTalkAboutLegareBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareTalkMenu'
+    gs 'Menu.Create', 'AmandaLegareTalkMenu'
+
+    gs 'Menu.Add', 'AmandaLegareTalkMenu', 'Спросить спокойно', ''
+    gs 'Menu.AddModule', 'AmandaLegareTalkMenu', {
+        gt 'AmandaTalkAboutLegareAction', 'ask', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareTalkMenu', 'Держать дистанцию', ''
+    gs 'Menu.AddModule', 'AmandaLegareTalkMenu', {
+        gt 'AmandaTalkAboutLegareAction', 'keep_distance', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareTalkMenu', 'Довериться Аманде', ''
+    gs 'Menu.AddModule', 'AmandaLegareTalkMenu', {
+        gt 'AmandaTalkAboutLegareAction', 'trust_amanda', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareTalkMenu', 'Запретить общение', ''
+    gs 'Menu.AddModule', 'AmandaLegareTalkMenu', {
+        gt 'AmandaTalkAboutLegareAction', 'forbid', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareTalkMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'AmandaLegareTalkMenu', {
+        gt $LegareTalkReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Результат разговора с Амандой
+! ================================================
+
+#AmandaTalkAboutLegareAction
+    *clr
+    clr
+    cla
+
+    $AmandaLegareTalkChoice = LCASE($ARGS[0])
+    $LegareTalkReturnLoc = $ARGS[1]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    AmandaLegareTalkReady = 0
+    AmandaLegareTalkDone = 1
+
+    if $AmandaLegareTalkChoice = 'ask':
+        AmandaLegareInstruction = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaLegareInterest += 1
+        AmandaSecretiveness -= 1
+
+        if AmandaSecretiveness < 0:
+            AmandaSecretiveness = 0
+        end
+
+    elseif $AmandaLegareTalkChoice = 'keep_distance':
+        AmandaLegareInstruction = 1
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaLegareInterest -= 1
+        MelissaRespectStefan += 1
+        MelissaFamilyConcern += 1
+
+        if AmandaLegareInterest < 0:
+            AmandaLegareInterest = 0
+        end
+
+    elseif $AmandaLegareTalkChoice = 'trust_amanda':
+        AmandaLegareInstruction = 2
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaRebellion -= 1
+        AmandaSecretiveness -= 1
+        AmandaLegareInterest += 1
+        AmandaPublicAttention += 1
+
+        if AmandaRebellion < 0:
+            AmandaRebellion = 0
+        end
+
+        if AmandaSecretiveness < 0:
+            AmandaSecretiveness = 0
+        end
+
+    elseif $AmandaLegareTalkChoice = 'forbid':
+        AmandaLegareInstruction = 4
+        AmandaLegareHardWarningUsed = 1
+        AmandaRebellion += 2
+        AmandaSecretiveness += 1
+        AmandaLegareInterest += 1
+        Friends['amanda'] -= 1
+        LegareConflictStage += 1
+        MelissaFamilyConcern += 1
+
+        if Friends['amanda'] < 0:
+            Friends['amanda'] = 0
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С АМАНДОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaTalkAboutLegareActionText') = 1:
+        gs 'AmandaTalkAboutLegareActionText', $AmandaLegareTalkChoice
+    else:
+        *p 'Аманда выслушивает вас и делает свои выводы.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AMANDA LEGARE TALK] Choice: ' + $AmandaLegareTalkChoice
+        *pl '[DEBUG AMANDA LEGARE TALK] Instruction: ' + STR(AmandaLegareInstruction)
+        *pl '[DEBUG AMANDA LEGARE TALK] Interest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG AMANDA LEGARE TALK] Rebellion: ' + STR(AmandaRebellion)
+        *pl '[DEBUG AMANDA LEGARE TALK] Secretiveness: ' + STR(AmandaSecretiveness)
+        *pl '[DEBUG AMANDA LEGARE TALK] HardWarningUsed: ' + STR(AmandaLegareHardWarningUsed)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $LegareTalkReturnLoc
+    end
+
+    killvar '$AmandaLegareTalkChoice'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Разговор с Мелиссой после предупреждения о Легаре
+! ================================================
+
+#MelissaTalkAboutLegare
+    *clr
+    clr
+    cla
+
+    $LegareTalkReturnLoc = $ARGS[0]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+
+    if $RealName['melissa'] = '':
+        $RealName['melissa'] = 'Мелисса'
+    end
+
+    gs 'ShowGirlSidebar', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА О ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareIntroText') = 1:
+        gs 'MelissaTalkAboutLegareIntroText'
+    else:
+        *p 'Мелисса возвращается к разговору о Легаре и Аманде.'
+    end
+
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareThoughts') = 1:
+        gs 'MelissaTalkAboutLegareThoughts'
+    end
+
+    *pl ' '
+
+    gs 'MelissaTalkAboutLegareBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''MelissaLegareTalkMenu''">Мелиссе</a>?'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Меню разговора с Мелиссой
+! ================================================
+
+#MelissaTalkAboutLegareBuildMenu
+    gs 'Menu.Destroy', 'MelissaLegareTalkMenu'
+    gs 'Menu.Create', 'MelissaLegareTalkMenu'
+
+    gs 'Menu.Add', 'MelissaLegareTalkMenu', 'Что ты видела?', ''
+    gs 'Menu.AddModule', 'MelissaLegareTalkMenu', {
+        gt 'MelissaTalkAboutLegareAction', 'what_seen', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaLegareTalkMenu', 'О Клариссе', ''
+    gs 'Menu.AddModule', 'MelissaLegareTalkMenu', {
+        gt 'MelissaTalkAboutLegareAction', 'clarissa', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaLegareTalkMenu', 'Присмотри за Амандой', ''
+    gs 'Menu.AddModule', 'MelissaLegareTalkMenu', {
+        gt 'MelissaTalkAboutLegareAction', 'watch_amanda', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaLegareTalkMenu', 'Я сам разберусь', ''
+    gs 'Menu.AddModule', 'MelissaLegareTalkMenu', {
+        gt 'MelissaTalkAboutLegareAction', 'handle_self', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaLegareTalkMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'MelissaLegareTalkMenu', {
+        gt $LegareTalkReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Результат разговора с Мелиссой
+! ================================================
+
+#MelissaTalkAboutLegareAction
+    *clr
+    clr
+    cla
+
+    $MelissaLegareTalkChoice = LCASE($ARGS[0])
+    $LegareTalkReturnLoc = $ARGS[1]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    MelissaLegarePrivateTalkDone = 1
+
+    if $MelissaLegareTalkChoice = 'what_seen':
+        MelissaTrustStefan += 1
+        MelissaFamilyConcern += 1
+        MelissaRespectStefan += 1
+        AmandaLegareTalkReady = 1
+
+    elseif $MelissaLegareTalkChoice = 'clarissa':
+        MelissaTrustStefan += 1
+        ClarissaTalkAboutAmandaReady = 1
+        ClarissaRouteHint = 1
+        MelissaClarissaBond += 1
+
+    elseif $MelissaLegareTalkChoice = 'watch_amanda':
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaWatchAmandaLegare = 1
+        MelissaControlNeed += 1
+        AmandaRebellion += 1
+
+    elseif $MelissaLegareTalkChoice = 'handle_self':
+        MelissaRespectStefan += 1
+        MelissaFamilyConcern += 1
+        AmandaLegareConflictWithLegareReady = 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С МЕЛИССОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareActionText') = 1:
+        gs 'MelissaTalkAboutLegareActionText', $MelissaLegareTalkChoice
+    else:
+        *p 'Мелисса кивает, но видно, что тема Легаре её тревожит.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MELISSA LEGARE TALK] Choice: ' + $MelissaLegareTalkChoice
+        *pl '[DEBUG MELISSA LEGARE TALK] ClarissaTalkAboutAmandaReady: ' + STR(ClarissaTalkAboutAmandaReady)
+        *pl '[DEBUG MELISSA LEGARE TALK] MelissaWatchAmandaLegare: ' + STR(MelissaWatchAmandaLegare)
+        *pl '[DEBUG MELISSA LEGARE TALK] ConflictReady: ' + STR(AmandaLegareConflictWithLegareReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $LegareTalkReturnLoc
+    end
+
+    killvar '$MelissaLegareTalkChoice'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Разговор с Клариссой о Легаре и Аманде
+! ================================================
+
+#ClarissaTalkAboutLegareAmanda
+    *clr
+    clr
+    cla
+
+    $LegareTalkReturnLoc = $ARGS[0]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    if $RealName['clarissa'] = '':
+        $RealName['clarissa'] = 'Кларисса'
+    end
+
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА И ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutLegareIntroText') = 1:
+        gs 'ClarissaTalkAboutLegareIntroText'
+    else:
+        *p 'Кларисса явно помнит, как Легаре смотрел на Аманду.'
+    end
+
+    *pl ' '
+
+    gs 'ClarissaTalkAboutLegareBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''ClarissaLegareTalkMenu''">Клариссе</a>?'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Меню разговора с Клариссой
+! ================================================
+
+#ClarissaTalkAboutLegareBuildMenu
+    gs 'Menu.Destroy', 'ClarissaLegareTalkMenu'
+    gs 'Menu.Create', 'ClarissaLegareTalkMenu'
+
+    gs 'Menu.Add', 'ClarissaLegareTalkMenu', 'Сказать правду', ''
+    gs 'Menu.AddModule', 'ClarissaLegareTalkMenu', {
+        gt 'ClarissaTalkAboutLegareAction', 'truth', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'ClarissaLegareTalkMenu', 'Сделать вид, что ничего не понял', ''
+    gs 'Menu.AddModule', 'ClarissaLegareTalkMenu', {
+        gt 'ClarissaTalkAboutLegareAction', 'pretend', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'ClarissaLegareTalkMenu', 'Спросить о Легаре', ''
+    gs 'Menu.AddModule', 'ClarissaLegareTalkMenu', {
+        gt 'ClarissaTalkAboutLegareAction', 'ask_legare', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'ClarissaLegareTalkMenu', 'Предложить поговорить позже без лишних глаз', ''
+    gs 'Menu.AddModule', 'ClarissaLegareTalkMenu', {
+        gt 'ClarissaTalkAboutLegareAction', 'private_later', $LegareTalkReturnLoc
+    }
+
+    gs 'Menu.Add', 'ClarissaLegareTalkMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'ClarissaLegareTalkMenu', {
+        gt $LegareTalkReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Результат разговора с Клариссой
+! ================================================
+
+#ClarissaTalkAboutLegareAction
+    *clr
+    clr
+    cla
+
+    $ClarissaLegareTalkChoice = LCASE($ARGS[0])
+    $LegareTalkReturnLoc = $ARGS[1]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    if $RealName['clarissa'] = '':
+        $RealName['clarissa'] = 'Кларисса'
+    end
+
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    ClarissaTalkAboutAmandaReady = 0
+    ClarissaTalkAboutAmandaDone = 1
+
+    if $ClarissaLegareTalkChoice = 'truth':
+        ClarissaTrustStefan += 1
+        ClarissaJealousy += 1
+        ClarissaLegareSuspicion += 1
+
+    elseif $ClarissaLegareTalkChoice = 'pretend':
+        ClarissaJealousy += 1
+        ClarissaTrustStefan -= 1
+        ClarissaLegareSuspicion += 1
+
+    elseif $ClarissaLegareTalkChoice = 'ask_legare':
+        ClarissaTrustStefan += 1
+        ClarissaLegareSuspicion += 1
+        ClarissaPrivateTalkReady = 1
+
+    elseif $ClarissaLegareTalkChoice = 'private_later':
+        ClarissaTrustStefan += 1
+        ClarissaPrivateTalkReady = 1
+        ClarissaRouteHint = 1
+    end
+
+    if ClarissaTrustStefan < 0:
+        ClarissaTrustStefan = 0
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С КЛАРИССОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutLegareActionText') = 1:
+        gs 'ClarissaTalkAboutLegareActionText', $ClarissaLegareTalkChoice
+    else:
+        *p 'Кларисса слушает внимательно и явно запоминает ваши слова.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG CLARISSA LEGARE TALK] Choice: ' + $ClarissaLegareTalkChoice
+        *pl '[DEBUG CLARISSA LEGARE TALK] Trust: ' + STR(ClarissaTrustStefan)
+        *pl '[DEBUG CLARISSA LEGARE TALK] Jealousy: ' + STR(ClarissaJealousy)
+        *pl '[DEBUG CLARISSA LEGARE TALK] PrivateTalkReady: ' + STR(ClarissaPrivateTalkReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $LegareTalkReturnLoc
+    end
+
+    killvar '$ClarissaLegareTalkChoice'
+---
+
+! ================================================
+! FILE: modules/events/dance/amanda_legare_talk.qsps
+! Debug-сброс разговоров после танцев
+! ================================================
+
+#AmandaLegareTalkDebugReset
+    AmandaLegareTalkReady = 0
+    AmandaLegareTalkDone = 0
+    AmandaLegareInstruction = 0
+
+    MelissaLegarePrivateTalkDone = 0
+    MelissaWatchAmandaLegare = 0
+
+    ClarissaTalkAboutAmandaReady = 0
+    ClarissaTalkAboutAmandaDone = 0
+    ClarissaPrivateTalkReady = 0
+    ClarissaRouteHint = 0
+---

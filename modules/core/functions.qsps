@@ -1,0 +1,80 @@
+! ================================================
+! MODULE: core/functions.qsps
+! Общие вспомогательные функции игры
+! Чистая версия для Sublime Text + QSP Package
+! ================================================
+
+#RandomBool
+    ! Возвращает 1 (true) или 0 (false) с вероятностью 50/50
+    Result = (Rand(1,2) = 1)
+---
+
+#Clamp
+    ! Ограничивает значение между min и max
+    ! Пример: gs 'Clamp', value, min, max
+    Result = $Args[0]
+    if Result < $Args[1]: Result = $Args[1]
+    if Result > $Args[2]: Result = $Args[2]
+---
+
+! ================================================
+! СИСТЕМА ДИАЛОГОВ
+! ================================================
+
+#GetRandomTalkPhraseFromTable
+    ! Универсальная функция выбора случайной фразы из таблицы
+    $Result = ''
+    $TableName = $Args[0]
+
+    if $TableName = '' or func('Table.Exists', $TableName) = 0:
+        exit
+    end
+
+    gs 'Table.Select', $TableName
+
+    TotalWeight = 0
+    :loopCalcWeight
+    if func('Table.Next', $TableName, 'tmpRow'):
+        TotalWeight += tmpRow['Weight']
+        jump 'loopCalcWeight'
+    end
+
+    if TotalWeight <= 0:
+        gs 'Table.Destroy', $TableName
+        exit
+    end
+
+    RandWeight = Rand(1, TotalWeight)
+    CurrentSum = 0
+
+    gs 'Table.Select', $TableName
+
+    :loopSelect
+    if func('Table.Next', $TableName, 'tmpRow2'):
+        CurrentSum += tmpRow2['Weight']
+
+        if CurrentSum >= RandWeight:
+            $Result = $tmpRow2['Phrase']
+            $ExecCode = $tmpRow2['Code']
+
+            if tmpRow2['Once'] = 1:
+                gs 'Table.SetValue', $TableName, 'id:' + tmpRow2['ID'], 'Shown', 1
+            end
+
+            if Trim($ExecCode) > '':
+                dynamic $ExecCode
+            end
+            break
+        end
+        jump 'loopSelect'
+    end
+
+    gs 'Table.Destroy', $TableName
+---
+
+#GetStefanAmandaTalk
+    ! Специальная обёртка для диалогов Стефана и Аманды
+    $Result = func('GetRandomTalkPhraseFromTable', 'StefanAmandaTalk')
+---
+
+

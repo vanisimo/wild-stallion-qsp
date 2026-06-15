@@ -1,0 +1,246 @@
+! ================================================
+! FILE: modules/core/first_sex.qsps
+! Универсальная система первого раза
+! Не требует индивидуальных локаций вида melissaFirstSex
+! В debug-режиме не блокируется дневным лимитом Стефана
+! ================================================
+
+#GirlFirstSex
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $FirstGirl = $GirlKey
+    $FirstReturnLoc = $ARGS[1]
+
+    if $FirstGirl = '':
+        msg 'Ошибка: GirlFirstSex вызван без имени девушки.'
+        exit
+    end
+
+    if $FirstReturnLoc = '':
+        $FirstReturnLoc = 'PlayerRoom'
+    end
+
+    gs 'EnsureGirlData', $FirstGirl
+
+    if $RealName[$FirstGirl] = '':
+        $RealName[$FirstGirl] = UCASE(MID($FirstGirl, 1, 1)) + LCASE(MID($FirstGirl, 2))
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $FirstGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВЫЙ РАЗ: ' + $RealName[$FirstGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if virginity[$FirstGirl] = 0:
+        *p 'Это уже не первый раз с ' + $RealName[$FirstGirl] + '.'
+
+        act 'Вернуться':
+            gt 'StartIntimMenu', $FirstGirl, $FirstReturnLoc
+        end
+
+        exit
+    end
+
+    *p 'Момент становится особенно тихим и напряжённым.'
+    *p $RealName[$FirstGirl] + ' заметно волнуется, но не отступает.'
+
+    *pl ' '
+
+    act 'Быть максимально нежным':
+        gt 'GirlFirstSexResult', $FirstGirl, $FirstReturnLoc, 'gentle'
+    end
+
+    act 'Действовать уверенно':
+        gt 'GirlFirstSexResult', $FirstGirl, $FirstReturnLoc, 'confident'
+    end
+
+    act 'Передумать':
+        gt 'StartIntimMenu', $FirstGirl, $FirstReturnLoc
+    end
+---
+
+
+! ================================================
+! FILE: modules/core/first_sex.qsps
+! Результат первого раза
+! Регистрирует вагинальный акт и снимает девственность
+! ================================================
+
+#GirlFirstSexResult
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $FirstGirl = $GirlKey
+    $FirstReturnLoc = $ARGS[1]
+    $FirstStyle = LCASE($ARGS[2])
+
+    if $FirstGirl = '':
+        msg 'Ошибка: GirlFirstSexResult вызван без имени девушки.'
+        exit
+    end
+
+    if $FirstReturnLoc = '':
+        $FirstReturnLoc = 'PlayerRoom'
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $FirstGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВЫЙ РАЗ: ' + $RealName[$FirstGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $FirstStyle = 'gentle':
+        *p 'Вы действуете осторожно и мягко, стараясь не напугать её.'
+        *p $RealName[$FirstGirl] + ' постепенно расслабляется и доверяется вам.'
+
+        Friends[$FirstGirl] += 2
+        love[$FirstGirl] += 2
+        otkroven[$FirstGirl] += 2
+    else:
+        *p 'Вы действуете увереннее, но всё равно не теряете внимательности.'
+        *p $RealName[$FirstGirl] + ' тяжело дышит и крепче держится за вас.'
+
+        Friends[$FirstGirl] += 1
+        love[$FirstGirl] += 1
+        otkroven[$FirstGirl] += 2
+        sluttiness[$FirstGirl] += 1
+    end
+
+    virginity[$FirstGirl] = 0
+
+    gs 'RegisterSex', $FirstGirl, 'vaginal', 1, 1
+    gs 'IntimSoftProgress', $FirstGirl, 'vaginal'
+    gs 'IntimRegisterPlayerCumSoft'
+    gs 'ClampGirlSocialStats', $FirstGirl
+
+    IntimForeplayDone = 1
+
+    *pl ' '
+    *p 'После этого между вами уже не всё будет как прежде.'
+
+    *pl ' '
+
+    act 'Остаться рядом':
+        gt 'StartIntimMenu', $FirstGirl, $FirstReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $FirstReturnLoc
+    end
+---
+
+
+! ================================================
+! FILE: modules/core/first_sex.qsps
+! Универсальный первый анальный опыт
+! ================================================
+
+#GirlFirstAnal
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $FirstAnalGirl = $GirlKey
+    $FirstAnalReturnLoc = $ARGS[1]
+
+    if $FirstAnalGirl = '':
+        msg 'Ошибка: GirlFirstAnal вызван без имени девушки.'
+        exit
+    end
+
+    if $FirstAnalReturnLoc = '':
+        $FirstAnalReturnLoc = 'PlayerRoom'
+    end
+
+    gs 'EnsureGirlData', $FirstAnalGirl
+
+    cls
+
+    gs 'ShowGirlSidebar', $FirstAnalGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВЫЙ АНАЛЬНЫЙ ОПЫТ: ' + $RealName[$FirstAnalGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if analvirgin[$FirstAnalGirl] = 0:
+        *p 'Это уже не первый анальный опыт с ' + $RealName[$FirstAnalGirl] + '.'
+
+        act 'Вернуться':
+            gt 'StartIntimMenu', $FirstAnalGirl, $FirstAnalReturnLoc
+        end
+
+        exit
+    end
+
+    *p $RealName[$FirstAnalGirl] + ' сильно волнуется и просит не торопиться.'
+    *p 'Такой шаг требует осторожности и доверия.'
+
+    *pl ' '
+
+    act 'Действовать очень осторожно':
+        gt 'GirlFirstAnalResult', $FirstAnalGirl, $FirstAnalReturnLoc
+    end
+
+    act 'Передумать':
+        gt 'StartIntimMenu', $FirstAnalGirl, $FirstAnalReturnLoc
+    end
+---
+
+
+! ================================================
+! FILE: modules/core/first_sex.qsps
+! Результат первого анального опыта
+! ================================================
+
+#GirlFirstAnalResult
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $FirstAnalGirl = $GirlKey
+    $FirstAnalReturnLoc = $ARGS[1]
+
+    if $FirstAnalGirl = '':
+        msg 'Ошибка: GirlFirstAnalResult вызван без имени девушки.'
+        exit
+    end
+
+    if $FirstAnalReturnLoc = '':
+        $FirstAnalReturnLoc = 'PlayerRoom'
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $FirstAnalGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВЫЙ АНАЛЬНЫЙ ОПЫТ: ' + $RealName[$FirstAnalGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы действуете медленно и осторожно.'
+    *p $RealName[$FirstAnalGirl] + ' напряжена, но постепенно справляется с волнением.'
+
+    analvirgin[$FirstAnalGirl] = 0
+
+    Friends[$FirstAnalGirl] += 1
+    otkroven[$FirstAnalGirl] += 2
+    sluttiness[$FirstAnalGirl] += 2
+
+    gs 'RegisterSex', $FirstAnalGirl, 'anal', 1, 1
+    gs 'IntimSoftProgress', $FirstAnalGirl, 'anal'
+    gs 'IntimRegisterPlayerCumSoft'
+    gs 'ClampGirlSocialStats', $FirstAnalGirl
+
+    IntimForeplayDone = 1
+
+    *pl ' '
+
+    act 'Остаться рядом':
+        gt 'StartIntimMenu', $FirstAnalGirl, $FirstAnalReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $FirstAnalReturnLoc
+    end
+---
+

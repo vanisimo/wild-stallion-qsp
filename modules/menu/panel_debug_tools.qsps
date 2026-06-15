@@ -1,0 +1,242 @@
+! ================================================
+! FILE: modules/menu/panel_debug_tools.qsps
+! Единая debug-панель через предмет "Дебаг"
+! Версия: v7 / возврат к рабочему выводу через clr/pl
+! Назначение:
+! - совместимость с ItemPanelClick: gs 'PanelDebugTools'
+! - выводит отладку в окно описания предмета через clr/pl
+! - не использует $DESC, потому что в текущей панели он не обновлялся при клике
+! - все разделы открываются через exec:gs внутри панели
+! ================================================
+
+#PanelDebugTools
+    if debug = 0:
+        clr
+        pl 'DEBUG отключён.'
+        exit
+    end
+
+    gs 'PanelDebugToolsMain'
+---
+
+#PanelDebugToolsOpen
+    gs 'PanelDebugTools'
+---
+
+#PanelDebugToolsHeader
+    clr
+    PanelCustomActive = 1
+
+    pl '══════════════════════════════════════════════'
+    pl ' DEBUG-ПАНЕЛЬ'
+    pl '══════════════════════════════════════════════'
+    pl ' '
+---
+
+#PanelDebugToolsBack
+    pl ' '
+    pl '<a href="exec:gs ''PanelDebugToolsMain''">← Назад в debug-панель</a>'
+    pl ' '
+---
+
+#PanelDebugToolsMain
+    gs 'PanelDebugToolsHeader'
+
+    pl 'Все инструменты отладки открываются здесь, через предмет "Дебаг".'
+    pl 'Экран локации не меняется.'
+    pl ' '
+    pl '<a href="exec:gs ''PanelDebugToolsGirls''">Девушки / отношения</a>'
+    pl '<a href="exec:gs ''PanelDebugToolsFamily''">Семья</a>'
+    pl '<a href="exec:gs ''PanelDebugToolsHall''">Зал / слухи / знания</a>'
+    pl '<a href="exec:gs ''PanelDebugToolsPolicy''">Правила поведения девушек</a>'
+    pl '<a href="exec:gs ''PanelDebugToolsMemory''">Память девушек о Стефане</a>'
+    pl '<a href="exec:gs ''PanelDebugToolsDailyAftermath''">Daily aftermath</a>'
+    pl '<a href="exec:gs ''PanelDebugToolsStefan''">Стефан</a>'
+
+    if LOC('TavernEventDispatcherDebugMenu') = 1:
+        pl ' '
+        pl '<a href="exec:gt ''TavernEventDispatcherDebugMenu''">Полноэкранный тест событий трактира</a>'
+    end
+---
+
+#PanelDebugToolsGirls
+    gs 'PanelDebugToolsHeader'
+    pl 'DEBUG: ДЕВУШКИ / ОТНОШЕНИЯ'
+    pl ' '
+
+    gs 'PanelDebugToolsGirlLine', 'amanda'
+    gs 'PanelDebugToolsGirlLine', 'melissa'
+    gs 'PanelDebugToolsGirlLine', 'sandra'
+
+    gs 'PanelDebugToolsBack'
+---
+
+#PanelDebugToolsGirlLine
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $DebugPanelGirl = $GirlKey
+
+    if $DebugPanelGirl = '':
+        exit
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $DebugPanelGirl
+    end
+
+    pl '<b>' + $RealName[$DebugPanelGirl] + '</b>'
+    pl 'Дружба: ' + STR(Friends[$DebugPanelGirl]) + ', любовь: ' + STR(love[$DebugPanelGirl]) + ', откровенность: ' + STR(otkroven[$DebugPanelGirl]) + ', развращённость: ' + STR(sluttiness[$DebugPanelGirl])
+    pl 'Бунт: ' + STR(GirlRebellion[$DebugPanelGirl]) + ', внимание: ' + STR(GirlPublicAttention[$DebugPanelGirl]) + ', NPC-путь: ' + STR(GirlNpcPath[$DebugPanelGirl])
+    pl '<a href="exec:Friends[''' + $DebugPanelGirl + '''] += 5 & gs ''PanelDebugToolsGirls''">+ дружба</a> | <a href="exec:sluttiness[''' + $DebugPanelGirl + '''] += 5 & gs ''PanelDebugToolsGirls''">+ развращённость</a> | <a href="exec:otkroven[''' + $DebugPanelGirl + '''] += 5 & gs ''PanelDebugToolsGirls''">+ откровенность</a>'
+    pl ' '
+
+    killvar '$DebugPanelGirl'
+---
+
+#PanelDebugToolsFamily
+    gs 'PanelDebugToolsHeader'
+    pl 'DEBUG: СЕМЬЯ'
+    pl ' '
+    pl 'FamilyTrust: ' + STR(FamilyTrust)
+    pl 'FamilyTension: ' + STR(FamilyTension)
+    pl 'FamilyCorruptionPoints: ' + STR(FamilyCorruptionPoints)
+    pl 'FamilyCorruptionStage: ' + STR(FamilyCorruptionStage)
+    pl ' '
+    pl 'Последний выбор: ' + $HallChoiceMemoryLastChoice
+    pl 'Последняя девушка: ' + $HallChoiceMemoryLastGirl
+    pl ' '
+    pl '<a href="exec:FamilyTrust += 5 & gs ''PanelDebugToolsFamily''">FamilyTrust +5</a>'
+    pl '<a href="exec:FamilyTension += 5 & gs ''PanelDebugToolsFamily''">FamilyTension +5</a>'
+    pl '<a href="exec:FamilyCorruptionPoints += 5 & gs ''PanelDebugToolsFamily''">FamilyCorruptionPoints +5</a>'
+    pl '<a href="exec:FamilyTrust = 0 & FamilyTension = 0 & FamilyCorruptionPoints = 0 & FamilyCorruptionStage = 0 & gs ''PanelDebugToolsFamily''">Сброс семьи</a>'
+
+    gs 'PanelDebugToolsBack'
+---
+
+#PanelDebugToolsHall
+    gs 'PanelDebugToolsHeader'
+    pl 'DEBUG: ЗАЛ / СЛУХИ / ЗНАНИЯ'
+    pl ' '
+    pl 'TavernScandal: ' + STR(TavernScandal)
+    pl 'TavernLewdFame: ' + STR(TavernLewdFame)
+    pl 'HallRumorTotal: ' + STR(HallRumorTotal)
+    pl 'HallRumorToday: ' + STR(HallRumorToday)
+    pl 'HallRumorLewd: ' + STR(HallRumorLewd)
+    pl 'HallRumorMissing: ' + STR(HallRumorMissing)
+    pl 'HallRumorKitchen: ' + STR(HallRumorKitchen)
+    pl ' '
+    pl 'IrmaRumorReady: ' + STR(IrmaRumorReady)
+    pl 'ChurchRumorReady: ' + STR(ChurchRumorReady)
+    pl 'LegareRumorReady: ' + STR(LegareRumorReady)
+    pl ' '
+    pl '<a href="exec:HallRumorTotal += 1 & HallRumorToday += 1 & gs ''PanelDebugToolsHall''">+ слух</a>'
+    pl '<a href="exec:TavernScandal += 5 & gs ''PanelDebugToolsHall''">+ скандальность</a>'
+
+    if LOC('TavernEventDispatcherDebugMenu') = 1:
+        pl '<a href="exec:gt ''TavernEventDispatcherDebugMenu''">Полноэкранный тест событий</a>'
+    end
+
+    gs 'PanelDebugToolsBack'
+---
+
+#PanelDebugToolsPolicy
+    gs 'PanelDebugToolsHeader'
+    pl 'DEBUG: ПРАВИЛА ПОВЕДЕНИЯ ДЕВУШЕК'
+    pl ' '
+
+    gs 'PanelDebugToolsPolicyGirl', 'amanda'
+    gs 'PanelDebugToolsPolicyGirl', 'melissa'
+    gs 'PanelDebugToolsPolicyGirl', 'sandra'
+
+    gs 'PanelDebugToolsBack'
+---
+
+#PanelDebugToolsPolicyGirl
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $DebugPolicyGirl = $GirlKey
+
+    if $DebugPolicyGirl = '':
+        exit
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $DebugPolicyGirl
+    end
+
+    pl '<b>' + $RealName[$DebugPolicyGirl] + '</b>'
+    pl 'Зал: ' + STR(GirlWorkPolicy[$DebugPolicyGirl]) + ', кухня: ' + STR(GirlKitchenPolicy[$DebugPolicyGirl])
+    pl '<a href="exec:GirlWorkPolicy[''' + $DebugPolicyGirl + '''] = 0 & gs ''PanelDebugToolsPolicy''">Зал 0</a> | <a href="exec:GirlWorkPolicy[''' + $DebugPolicyGirl + '''] = 1 & gs ''PanelDebugToolsPolicy''">Зал 1</a> | <a href="exec:GirlWorkPolicy[''' + $DebugPolicyGirl + '''] = 2 & gs ''PanelDebugToolsPolicy''">Зал 2</a> | <a href="exec:GirlWorkPolicy[''' + $DebugPolicyGirl + '''] = 3 & gs ''PanelDebugToolsPolicy''">Зал 3</a>'
+    pl '<a href="exec:GirlKitchenPolicy[''' + $DebugPolicyGirl + '''] = 0 & gs ''PanelDebugToolsPolicy''">Кухня 0</a> | <a href="exec:GirlKitchenPolicy[''' + $DebugPolicyGirl + '''] = 1 & gs ''PanelDebugToolsPolicy''">Кухня 1</a> | <a href="exec:GirlKitchenPolicy[''' + $DebugPolicyGirl + '''] = 2 & gs ''PanelDebugToolsPolicy''">Кухня 2</a> | <a href="exec:GirlKitchenPolicy[''' + $DebugPolicyGirl + '''] = 3 & gs ''PanelDebugToolsPolicy''">Кухня 3</a>'
+    pl ' '
+
+    killvar '$DebugPolicyGirl'
+---
+
+#PanelDebugToolsMemory
+    gs 'PanelDebugToolsHeader'
+    pl 'DEBUG: ПАМЯТЬ ДЕВУШЕК О СТЕФАНЕ'
+    pl ' '
+
+    gs 'PanelDebugToolsMemoryGirl', 'amanda'
+    gs 'PanelDebugToolsMemoryGirl', 'melissa'
+    gs 'PanelDebugToolsMemoryGirl', 'sandra'
+
+    pl '<a href="exec:killvar ''GirlRemembersProtection'' & killvar ''GirlRemembersNeglect'' & killvar ''GirlRemembersProfitChoices'' & killvar ''GirlRemembersControl'' & killvar ''GirlRemembersDirty'' & gs ''PanelDebugToolsMemory''">Сбросить память девушек</a>'
+
+    gs 'PanelDebugToolsBack'
+---
+
+#PanelDebugToolsMemoryGirl
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $DebugMemoryGirl = $GirlKey
+
+    if $DebugMemoryGirl = '':
+        exit
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $DebugMemoryGirl
+    end
+
+    pl '<b>' + $RealName[$DebugMemoryGirl] + '</b>'
+    pl 'Защита: ' + STR(GirlRemembersProtection[$DebugMemoryGirl])
+    pl 'Игнор: ' + STR(GirlRemembersNeglect[$DebugMemoryGirl])
+    pl 'Прибыль важнее неё: ' + STR(GirlRemembersProfitChoices[$DebugMemoryGirl])
+    pl 'Контроль/опека: ' + STR(GirlRemembersControl[$DebugMemoryGirl])
+    pl 'Грязные решения: ' + STR(GirlRemembersDirty[$DebugMemoryGirl])
+    pl '<a href="exec:GirlRemembersProtection[''' + $DebugMemoryGirl + '''] += 1 & gs ''PanelDebugToolsMemory''">+ защита</a> | <a href="exec:GirlRemembersNeglect[''' + $DebugMemoryGirl + '''] += 1 & gs ''PanelDebugToolsMemory''">+ игнор</a> | <a href="exec:GirlRemembersProfitChoices[''' + $DebugMemoryGirl + '''] += 1 & gs ''PanelDebugToolsMemory''">+ прибыль</a> | <a href="exec:GirlRemembersControl[''' + $DebugMemoryGirl + '''] += 1 & gs ''PanelDebugToolsMemory''">+ контроль</a> | <a href="exec:GirlRemembersDirty[''' + $DebugMemoryGirl + '''] += 1 & gs ''PanelDebugToolsMemory''">+ грязь</a>'
+    pl ' '
+
+    killvar '$DebugMemoryGirl'
+---
+
+#PanelDebugToolsStefan
+    gs 'PanelDebugToolsHeader'
+    pl 'DEBUG: СТЕФАН'
+    pl ' '
+    pl 'Деньги: ' + STR(money)
+    pl 'daily_cum_count: ' + STR(daily_cum_count)
+    pl 'max_daily_cum: ' + STR(max_daily_cum)
+    pl ' '
+    pl '<a href="exec:money += 100 & gs ''PanelDebugToolsStefan''">+100 денег</a>'
+    pl '<a href="exec:daily_cum_count = 0 & gs ''PanelDebugToolsStefan''">Сбросить дневной лимит</a>'
+
+    gs 'PanelDebugToolsBack'
+---
+
+
+#PanelDebugToolsDailyAftermath
+    gs 'PanelDebugToolsHeader'
+    pl 'DEBUG: DAILY AFTERMATH'
+    pl ' '
+    pl 'DailyAftermathPending: ' + STR(DailyAftermathPending)
+    pl 'DailyAftermathShownToday: ' + STR(DailyAftermathShownToday)
+    pl 'DailyAftermathReasonDay: ' + STR(DailyAftermathReasonDay)
+    pl 'Reason girl: ' + $DailyAftermathLastGirl
+    pl 'Reason event: ' + $DailyAftermathLastEvent
+    pl 'Reason choice: ' + $DailyAftermathLastChoice
+    pl ' '
+    pl '<a href="exec:gs ''DailyAftermathDebugForce'', ''amanda'', ''harassment'', ''protect''">Тест: Аманда / защита</a>'
+    pl '<a href="exec:gs ''DailyAftermathDebugForce'', ''melissa'', ''hall_lewd'', ''watch''">Тест: Мелисса / наблюдение</a>'
+    pl '<a href="exec:gs ''DailyAftermathDebugForce'', ''sandra'', ''kitchen'', ''client''">Тест: Сандра / прибыль</a>'
+    gs 'PanelDebugToolsBack'
+---

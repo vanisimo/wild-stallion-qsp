@@ -1,0 +1,346 @@
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_offer.qsps
+! Ирма предлагает откровенную форму после слухов
+! Версия: v1 / rumor trigger
+! Назначение:
+! - убрать раннюю доступность откровенной формы
+! - дать сюжетный толчок: слухи, плохая репутация, пастор, доверие Ирмы
+! - открыть заказы формы только после разговора с Ирмой
+!
+! Условия открытия:
+! - игрок познакомился с Ирмой
+! - накопились слухи / скандальность трактира / пастор ругал за распущенность
+! - или отношения с Ирмой достаточно высокие
+!
+! Тексты:
+! modules/locations/shops/irma_uniform_offer_text.qsps
+! ================================================
+
+#IrmaUniformOfferCanStart
+    IrmaUniformOfferCanStart = 0
+    IrmaUniformOfferScore = 0
+    $IrmaUniformOfferReason = ''
+
+    if IrmaUniformOfferUnlocked = 1:
+        exit
+    end
+
+    if IrmaMet < 1:
+        exit
+    end
+
+    ! ====================== СЛУХИ О ТРАКТИРЕ ======================
+
+    if TavernScandal >= 25:
+        IrmaUniformOfferScore += 2
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'scandal'
+        end
+    end
+
+    if TavernLewdFame >= 10:
+        IrmaUniformOfferScore += 2
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'lewd_fame'
+        end
+    end
+
+    if TavernGirlsEasyRumor = 1:
+        IrmaUniformOfferScore += 2
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'rumor'
+        end
+    end
+
+    if TavernBackroomRumor = 1:
+        IrmaUniformOfferScore += 1
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'backroom'
+        end
+    end
+
+    if TavernKitchenRumor = 1:
+        IrmaUniformOfferScore += 1
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'kitchen'
+        end
+    end
+
+    ! ====================== ПАСТОР / ЦЕРКОВЬ ======================
+    ! Поддерживаем несколько возможных имён флагов,
+    ! чтобы модуль спокойно пережил будущую церковную ветку.
+
+    if PastorScoldedTavern = 1 or ChurchScoldedTavern = 1 or PriestScoldedTavern = 1 or PastorWarnedLewdTavern = 1 or ChurchLewdWarning = 1:
+        IrmaUniformOfferScore += 3
+        $IrmaUniformOfferReason = 'pastor'
+    end
+
+    ! ====================== ОТНОШЕНИЯ С ИРМОЙ ======================
+
+    if IrmaRelationship >= 20:
+        IrmaUniformOfferScore += 2
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'trust'
+        end
+    end
+
+    if IrmaTrust >= 20:
+        IrmaUniformOfferScore += 2
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'trust'
+        end
+    end
+
+    if IrmaFavor >= 20:
+        IrmaUniformOfferScore += 1
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'trust'
+        end
+    end
+
+    if IrmaVisits >= 2 and TavernScandal >= 15:
+        IrmaUniformOfferScore += 1
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'visits'
+        end
+    end
+
+    ! ====================== ПЛОХАЯ ОБЫЧНАЯ РЕПУТАЦИЯ + СКАНДАЛ ======================
+
+    if TavernReputation > 0 and TavernReputation < 25 and TavernScandal >= 15:
+        IrmaUniformOfferScore += 1
+
+        if $IrmaUniformOfferReason = '':
+            $IrmaUniformOfferReason = 'bad_reputation'
+        end
+    end
+
+    if IrmaUniformOfferScore >= 3:
+        IrmaUniformOfferCanStart = 1
+    end
+
+    if debug = 1:
+        *pl '[DEBUG IRMA OFFER] score=' + STR(IrmaUniformOfferScore) + ' reason=' + $IrmaUniformOfferReason
+        *pl ' '
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_offer.qsps
+! Старт предложения Ирмы
+! ================================================
+
+#IrmaUniformOfferStart
+    *clr
+    clr
+    cla
+
+    $IrmaUniformOfferReturnLoc = $ARGS[0]
+
+    if $IrmaUniformOfferReturnLoc = '':
+        $IrmaUniformOfferReturnLoc = 'IrmaShop'
+    end
+
+    if LOC($IrmaUniformOfferReturnLoc) = 0:
+        $IrmaUniformOfferReturnLoc = 'IrmaShop'
+    end
+
+    IrmaMet = 1
+
+    if $IrmaUniformOfferReason = '':
+        gs 'IrmaUniformOfferCanStart'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИРМА: НЕОБЫЧНОЕ ПРЕДЛОЖЕНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformOfferPrintText', 'intro'
+
+    *pl ' '
+
+    gs 'IrmaUniformOfferPrintText', 'offer'
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG IRMA OFFER] score=' + STR(IrmaUniformOfferScore)
+        *pl '[DEBUG IRMA OFFER] reason=' + $IrmaUniformOfferReason
+        *pl '[DEBUG IRMA OFFER] unlocked=' + STR(IrmaUniformOfferUnlocked)
+        *pl ' '
+    end
+
+    act 'Согласиться выслушать Ирму':
+        gt 'IrmaUniformOfferAccept', $IrmaUniformOfferReturnLoc
+    end
+
+    act 'Сказать, что подумаете':
+        gt 'IrmaUniformOfferLater', $IrmaUniformOfferReturnLoc
+    end
+
+    act 'Осадить Ирму':
+        gt 'IrmaUniformOfferRefuseHard', $IrmaUniformOfferReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_offer.qsps
+! Принять предложение
+! ================================================
+
+#IrmaUniformOfferAccept
+    *clr
+    clr
+    cla
+
+    $IrmaUniformOfferReturnLoc = $ARGS[0]
+
+    if $IrmaUniformOfferReturnLoc = '':
+        $IrmaUniformOfferReturnLoc = 'IrmaShop'
+    end
+
+    IrmaUniformOfferSeen = 1
+    IrmaUniformOfferAccepted = 1
+    IrmaUniformOfferDeclined = 0
+    IrmaUniformOfferUnlocked = 1
+    IrmaRelationship += 2
+    IrmaTrust += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТЕМА ФОРМЫ ОТКРЫТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformOfferPrintText', 'accept'
+
+    *pl ' '
+
+    act 'Посмотреть заказы формы':
+        gt 'IrmaUniformOrders', 'IrmaShop'
+    end
+
+    act 'Вернуться в лавку':
+        gt $IrmaUniformOfferReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_offer.qsps
+! Отложить разговор
+! ================================================
+
+#IrmaUniformOfferLater
+    *clr
+    clr
+    cla
+
+    $IrmaUniformOfferReturnLoc = $ARGS[0]
+
+    if $IrmaUniformOfferReturnLoc = '':
+        $IrmaUniformOfferReturnLoc = 'IrmaShop'
+    end
+
+    IrmaUniformOfferSeen = 1
+    IrmaUniformOfferDeclined = 1
+    IrmaRelationship += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР ОТЛОЖЕН'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformOfferPrintText', 'later'
+
+    *pl ' '
+
+    act 'Вернуться в лавку':
+        gt $IrmaUniformOfferReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_offer.qsps
+! Жёстко отказать
+! ================================================
+
+#IrmaUniformOfferRefuseHard
+    *clr
+    clr
+    cla
+
+    $IrmaUniformOfferReturnLoc = $ARGS[0]
+
+    if $IrmaUniformOfferReturnLoc = '':
+        $IrmaUniformOfferReturnLoc = 'IrmaShop'
+    end
+
+    IrmaUniformOfferSeen = 1
+    IrmaUniformOfferDeclined = 1
+    IrmaUniformOfferHardRefused = 1
+    IrmaRelationship -= 2
+    IrmaTrust -= 1
+
+    if IrmaRelationship < 0:
+        IrmaRelationship = 0
+    end
+
+    if IrmaTrust < 0:
+        IrmaTrust = 0
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИРМА УМОЛКАЕТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IrmaUniformOfferPrintText', 'refuse_hard'
+
+    *pl ' '
+
+    act 'Вернуться в лавку':
+        gt $IrmaUniformOfferReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_offer.qsps
+! Debug-открытие темы
+! ================================================
+
+#IrmaUniformOfferDebugUnlock
+    IrmaMet = 1
+    IrmaUniformOfferSeen = 1
+    IrmaUniformOfferAccepted = 1
+    IrmaUniformOfferDeclined = 0
+    IrmaUniformOfferUnlocked = 1
+    IrmaRelationship += 10
+    IrmaTrust += 10
+
+    *pl 'DEBUG: тема откровенной формы у Ирмы открыта.'
+---
+
+! ================================================
+! FILE: modules/locations/shops/irma_uniform_offer.qsps
+! Debug-сброс
+! ================================================
+
+#IrmaUniformOfferDebugReset
+    IrmaUniformOfferSeen = 0
+    IrmaUniformOfferAccepted = 0
+    IrmaUniformOfferDeclined = 0
+    IrmaUniformOfferUnlocked = 0
+    IrmaUniformOfferHardRefused = 0
+    $IrmaUniformOfferReason = ''
+
+    *pl 'DEBUG: тема откровенной формы у Ирмы сброшена.'
+---

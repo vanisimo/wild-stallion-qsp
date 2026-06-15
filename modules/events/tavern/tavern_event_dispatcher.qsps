@@ -1,0 +1,63 @@
+! ================================================
+! FILE: modules/events/tavern/tavern_event_dispatcher.qsps
+! Диспетчер событий трактира
+! Версия: v1.1 / policy aftermath hooks
+! Назначение:
+! - выбрать и запустить подходящее событие трактира
+! - приоритет: hall_missing -> hall_lewd -> kitchen_customer
+! - оставляет совместимые переменные результата
+! ================================================
+
+#TavernEventDispatcherTry
+    $TavernEventDispatcherReturnLoc = $ARGS[0]
+
+    if $TavernEventDispatcherReturnLoc = '':
+        $TavernEventDispatcherReturnLoc = 'TavernMain'
+    end
+
+    TavernEventDispatcherResult = 0
+    TavernEventDispatcherRoll = RAND(1, 100)
+
+    if LOC('UpdateGirlLocations') = 1:
+        gs 'UpdateGirlLocations'
+    end
+
+    if TavernEventDispatcherRoll <= 25 and LOC('HallMissingGirlStart') = 1:
+        TavernEventDispatcherResult = 1
+        gt 'HallMissingGirlStart', $TavernEventDispatcherReturnLoc
+    elseif TavernEventDispatcherRoll <= 60 and LOC('HallLewdBehaviorStart') = 1:
+        TavernEventDispatcherResult = 1
+        gt 'HallLewdBehaviorStart', $TavernEventDispatcherReturnLoc
+    elseif TavernEventDispatcherRoll <= 85 and LOC('KitchenCustomerEventStart') = 1:
+        TavernEventDispatcherResult = 1
+        gt 'KitchenCustomerEventStart', $TavernEventDispatcherReturnLoc
+    end
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG TAVERN DISPATCHER] roll: ' + STR(TavernEventDispatcherRoll)
+        *pl '[DEBUG TAVERN DISPATCHER] result: ' + STR(TavernEventDispatcherResult)
+    end
+
+    killvar '$TavernEventDispatcherReturnLoc'
+    killvar 'TavernEventDispatcherRoll'
+---
+
+! ================================================
+! FILE: modules/events/tavern/tavern_event_dispatcher.qsps
+! Универсальный вызов последствий политики события
+! ================================================
+
+#TavernEventDispatcherPolicyAftermath
+    $DispatcherAftermathGirl = LCASE($ARGS[0])
+    $DispatcherAftermathEvent = LCASE($ARGS[1])
+    $DispatcherAftermathResult = LCASE($ARGS[2])
+
+    if $DispatcherAftermathGirl <> '' and LOC('HallPolicyAftermath') = 1:
+        gs 'HallPolicyAftermath', $DispatcherAftermathGirl, $DispatcherAftermathEvent, $DispatcherAftermathResult
+    end
+
+    killvar '$DispatcherAftermathGirl'
+    killvar '$DispatcherAftermathEvent'
+    killvar '$DispatcherAftermathResult'
+---

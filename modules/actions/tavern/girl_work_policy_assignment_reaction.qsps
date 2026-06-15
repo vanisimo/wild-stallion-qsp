@@ -1,0 +1,215 @@
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_assignment_reaction.qsps
+! Реакция девушки в момент выдачи правила работы
+! Версия: v1
+! Назначение:
+! - показывает, согласна ли девушка с новым правилом
+! - не заменяет будущую фактическую реакцию в событиях
+! - тексты берутся из girl_work_policy_assignment_reaction_text.qsps
+! ================================================
+
+#GirlWorkPolicyAssignmentReactionPrint
+    gs 'GirlWorkPolicyAssignmentReactionCalc', $ARGS[0], $ARGS[1], ARGS[2]
+    gs 'GirlWorkPolicyAssignmentReactionText'
+
+    if $PolicyAssignReactionText <> '':
+        *p $PolicyAssignReactionText
+    end
+
+    if debug = 1:
+        *pl '[DEBUG POLICY ASSIGN] girl: ' + $PolicyAssignGirl
+        *pl '[DEBUG POLICY ASSIGN] area: ' + $PolicyAssignArea
+        *pl '[DEBUG POLICY ASSIGN] policy: ' + STR(PolicyAssignPolicy)
+        *pl '[DEBUG POLICY ASSIGN] score: ' + STR(PolicyAssignScore)
+        *pl '[DEBUG POLICY ASSIGN] level: ' + STR(PolicyAssignLevel)
+    end
+
+    killvar '$PolicyAssignReactionText'
+---
+
+#GirlWorkPolicyAssignmentReactionCalc
+    gs 'GirlWorkPolicyAssignmentNormalizeKey', $ARGS[0]
+    $PolicyAssignGirl = $PolicyAssignGirlKey
+    $PolicyAssignArea = LCASE($ARGS[1])
+    PolicyAssignPolicy = ARGS[2]
+
+    if $PolicyAssignGirl = '':
+        $PolicyAssignGirl = 'amanda'
+    end
+
+    if $PolicyAssignArea <> 'hall' and $PolicyAssignArea <> 'kitchen':
+        $PolicyAssignArea = 'hall'
+    end
+
+    if PolicyAssignPolicy < 0:
+        PolicyAssignPolicy = 0
+    end
+
+    if PolicyAssignPolicy > 3:
+        PolicyAssignPolicy = 3
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $PolicyAssignGirl
+    end
+
+    if $RealName[$PolicyAssignGirl] = '':
+        if $PolicyAssignGirl = 'amanda':
+            $RealName[$PolicyAssignGirl] = 'Аманда'
+        elseif $PolicyAssignGirl = 'melissa':
+            $RealName[$PolicyAssignGirl] = 'Мелисса'
+        elseif $PolicyAssignGirl = 'sandra':
+            $RealName[$PolicyAssignGirl] = 'Сандра'
+        else:
+            $RealName[$PolicyAssignGirl] = $PolicyAssignGirl
+        end
+    end
+
+    PolicyAssignScore = 50
+    $PolicyAssignMode = 'no_rule'
+
+    if PolicyAssignPolicy = 0:
+        $PolicyAssignMode = 'no_rule'
+        PolicyAssignScore = 45 + GirlRebellion[$PolicyAssignGirl] - GirlWorkDiscipline[$PolicyAssignGirl] / 3
+    elseif PolicyAssignPolicy = 1:
+        $PolicyAssignMode = 'decent'
+        PolicyAssignScore = 60 + GirlWorkDiscipline[$PolicyAssignGirl] + GirlTrustStefan[$PolicyAssignGirl] / 2
+        PolicyAssignScore -= sluttiness[$PolicyAssignGirl]
+        PolicyAssignScore -= GirlPublicAttention[$PolicyAssignGirl]
+        PolicyAssignScore -= GirlRebellion[$PolicyAssignGirl]
+    elseif PolicyAssignPolicy = 2:
+        $PolicyAssignMode = 'own_choice'
+        PolicyAssignScore = 50 + GirlTrustStefan[$PolicyAssignGirl] / 2 + GirlRebellion[$PolicyAssignGirl] / 2
+        PolicyAssignScore += GirlWorkDiscipline[$PolicyAssignGirl] / 3
+    elseif PolicyAssignPolicy = 3:
+        $PolicyAssignMode = 'keep_client'
+        PolicyAssignScore = 25 + sluttiness[$PolicyAssignGirl] + GirlPublicAttention[$PolicyAssignGirl]
+        PolicyAssignScore += GirlNpcPath[$PolicyAssignGirl]
+        PolicyAssignScore += TavernLewdFame
+        PolicyAssignScore += FamilyCorruptionStage * 8
+        PolicyAssignScore -= GirlWorkDiscipline[$PolicyAssignGirl] / 2
+        PolicyAssignScore -= GirlTrustStefan[$PolicyAssignGirl] / 3
+    end
+
+    gs 'GirlWorkPolicyAssignmentPersonality'
+    gs 'GirlWorkPolicyAssignmentResolve'
+    gs 'GirlWorkPolicyAssignmentApplyLightStats'
+---
+
+#GirlWorkPolicyAssignmentPersonality
+    if GirlWorkDiscipline[$PolicyAssignGirl] <= 0:
+        if $PolicyAssignGirl = 'amanda':
+            GirlWorkDiscipline[$PolicyAssignGirl] = 35
+        elseif $PolicyAssignGirl = 'melissa':
+            GirlWorkDiscipline[$PolicyAssignGirl] = 60
+        elseif $PolicyAssignGirl = 'sandra':
+            GirlWorkDiscipline[$PolicyAssignGirl] = 70
+        else:
+            GirlWorkDiscipline[$PolicyAssignGirl] = 45
+        end
+    end
+
+    if GirlTrustStefan[$PolicyAssignGirl] <= 0:
+        GirlTrustStefan[$PolicyAssignGirl] = Friends[$PolicyAssignGirl]
+    end
+
+    if $PolicyAssignGirl = 'amanda':
+        if $PolicyAssignMode = 'keep_client':
+            PolicyAssignScore -= 10
+            PolicyAssignScore += AmandaPublicAttention
+            PolicyAssignScore += AmandaRebellion
+        elseif $PolicyAssignMode = 'decent':
+            PolicyAssignScore += 8
+            PolicyAssignScore -= AmandaRebellion
+        elseif $PolicyAssignMode = 'own_choice':
+            PolicyAssignScore += AmandaRebellion / 2
+        end
+    elseif $PolicyAssignGirl = 'melissa':
+        if $PolicyAssignMode = 'keep_client':
+            PolicyAssignScore += MelissaScandalTolerance
+            PolicyAssignScore += MelissaControlNeed / 2
+            PolicyAssignScore -= 5
+        elseif $PolicyAssignMode = 'decent':
+            PolicyAssignScore += MelissaControlNeed
+            PolicyAssignScore += MelissaRespectStefan
+        elseif $PolicyAssignMode = 'own_choice':
+            PolicyAssignScore += MelissaControlNeed
+        end
+    elseif $PolicyAssignGirl = 'sandra':
+        if $PolicyAssignMode = 'keep_client':
+            PolicyAssignScore -= 35
+            PolicyAssignScore += SandraPragmatism
+            PolicyAssignScore -= SandraMoralResistance
+            PolicyAssignScore += FamilyCorruptionStage * 10
+        elseif $PolicyAssignMode = 'decent':
+            PolicyAssignScore += SandraMoralResistance
+            PolicyAssignScore += SandraRespectStefan
+        elseif $PolicyAssignMode = 'own_choice':
+            PolicyAssignScore += SandraPragmatism
+            PolicyAssignScore += SandraRespectStefan
+        end
+    end
+---
+
+#GirlWorkPolicyAssignmentResolve
+    if PolicyAssignScore < 25:
+        PolicyAssignLevel = 0
+        $PolicyAssignReaction = 'reject'
+    elseif PolicyAssignScore < 45:
+        PolicyAssignLevel = 1
+        $PolicyAssignReaction = 'against'
+    elseif PolicyAssignScore < 75:
+        PolicyAssignLevel = 2
+        $PolicyAssignReaction = 'accept'
+    elseif PolicyAssignScore < 105:
+        PolicyAssignLevel = 3
+        $PolicyAssignReaction = 'agree'
+    else:
+        PolicyAssignLevel = 4
+        $PolicyAssignReaction = 'eager'
+    end
+---
+
+#GirlWorkPolicyAssignmentApplyLightStats
+    GirlPolicyAgreement[$PolicyAssignGirl] = PolicyAssignLevel
+    $LastPolicyAssignGirl = $PolicyAssignGirl
+    $LastPolicyAssignArea = $PolicyAssignArea
+    LastPolicyAssignPolicy = PolicyAssignPolicy
+    LastPolicyAssignLevel = PolicyAssignLevel
+
+    if PolicyAssignLevel <= 1:
+        GirlRebellion[$PolicyAssignGirl] += 1
+        GirlTrustStefan[$PolicyAssignGirl] -= 1
+    elseif PolicyAssignLevel >= 3:
+        GirlTrustStefan[$PolicyAssignGirl] += 1
+    end
+
+    if PolicyAssignPolicy = 3 and PolicyAssignLevel <= 1:
+        FamilyTension += 1
+    end
+
+    if PolicyAssignPolicy = 1 and PolicyAssignLevel <= 1:
+        GirlSecretiveness[$PolicyAssignGirl] += 1
+    end
+
+    if GirlTrustStefan[$PolicyAssignGirl] < 0:
+        GirlTrustStefan[$PolicyAssignGirl] = 0
+    end
+
+    if GirlRebellion[$PolicyAssignGirl] < 0:
+        GirlRebellion[$PolicyAssignGirl] = 0
+    end
+
+    if GirlSecretiveness[$PolicyAssignGirl] < 0:
+        GirlSecretiveness[$PolicyAssignGirl] = 0
+    end
+---
+
+#GirlWorkPolicyAssignmentNormalizeKey
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $PolicyAssignGirlKey = $GirlKey
+    else:
+        $PolicyAssignGirlKey = LCASE($ARGS[0])
+    end
+---

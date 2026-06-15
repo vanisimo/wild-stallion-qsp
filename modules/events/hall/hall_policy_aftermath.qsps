@@ -1,0 +1,129 @@
+! ================================================
+! FILE: modules/events/hall/hall_policy_aftermath.qsps
+! Последствия политики работы девушек после событий зала
+! Версия: v1
+! Назначение:
+! - фиксировать последствия после hall_lewd / hall_missing / kitchen_customer
+! - усиливать слухи, публичное внимание и грязную славу трактира
+! - подготавливать крючки для церкви, Ирмы, Легаре и Лизетты
+! ================================================
+
+#HallPolicyAftermath
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallPolicyAftermathGirl = $GirlKey
+    $HallPolicyAftermathEvent = LCASE($ARGS[1])
+    $HallPolicyAftermathResult = LCASE($ARGS[2])
+
+    if $HallPolicyAftermathGirl = '':
+        exit
+    end
+
+    if $HallPolicyAftermathEvent = '':
+        $HallPolicyAftermathEvent = 'hall'
+    end
+
+    if $HallPolicyAftermathResult = '':
+        $HallPolicyAftermathResult = 'neutral'
+    end
+
+    gs 'EnsureGirlData', $HallPolicyAftermathGirl
+
+    HallPolicyAftermathPolicy = GirlWorkPolicy[$HallPolicyAftermathGirl]
+    HallPolicyAftermathSeverity = 0
+
+    if HallPolicyAftermathPolicy = 3:
+        HallPolicyAftermathSeverity += 2
+    elseif HallPolicyAftermathPolicy = 2:
+        HallPolicyAftermathSeverity += 1
+    end
+
+    if GirlUniformLevel[$HallPolicyAftermathGirl] = 1:
+        HallPolicyAftermathSeverity += 1
+    end
+
+    if $HallPolicyAftermathResult = 'encourage' or $HallPolicyAftermathResult = 'peek_scene' or $HallPolicyAftermathResult = 'client':
+        HallPolicyAftermathSeverity += 2
+    elseif $HallPolicyAftermathResult = 'watch' or $HallPolicyAftermathResult = 'ignore_after' or $HallPolicyAftermathResult = 'let_her':
+        HallPolicyAftermathSeverity += 1
+    end
+
+    if TavernScandal >= 10:
+        HallPolicyAftermathSeverity += 1
+    end
+
+    if HallPolicyAftermathSeverity < 0:
+        HallPolicyAftermathSeverity = 0
+    end
+
+    if HallPolicyAftermathSeverity > 5:
+        HallPolicyAftermathSeverity = 5
+    end
+
+    if HallPolicyAftermathSeverity >= 1:
+        TavernScandal += 1
+        GirlPublicAttention[$HallPolicyAftermathGirl] += 1
+    end
+
+    if HallPolicyAftermathSeverity >= 2:
+        TavernLewdFame += 1
+        TavernRumorHeat += 1
+    end
+
+    if HallPolicyAftermathSeverity >= 3:
+        GirlNpcPath[$HallPolicyAftermathGirl] += 1
+        TavernDirtyTalk += 1
+    end
+
+    if HallPolicyAftermathSeverity >= 4:
+        ChurchRumorSeed += 1
+        IrmaUniformRumorSeed += 1
+    end
+
+    if HallPolicyAftermathSeverity >= 5:
+        LegareNoticeSeed += 1
+    end
+
+    if $HallPolicyAftermathGirl = 'amanda':
+        AmandaPublicAttention = GirlPublicAttention['amanda']
+        AmandaNpcPath = GirlNpcPath['amanda']
+        AmandaScandalLevel += HallPolicyAftermathSeverity / 2
+    elseif $HallPolicyAftermathGirl = 'melissa':
+        MelissaNpcPath = GirlNpcPath['melissa']
+        MelissaScandalTolerance += HallPolicyAftermathSeverity / 3
+    elseif $HallPolicyAftermathGirl = 'sandra':
+        SandraNpcPath = GirlNpcPath['sandra']
+        SandraFamilyConcern += HallPolicyAftermathSeverity / 3
+
+        if HallPolicyAftermathSeverity >= 3:
+            SandraMoralResistance -= 1
+        end
+
+        if SandraMoralResistance < 0:
+            SandraMoralResistance = 0
+        end
+    end
+
+    gs 'HallPolicyAftermathText', $HallPolicyAftermathGirl, $HallPolicyAftermathEvent, $HallPolicyAftermathResult, HallPolicyAftermathSeverity
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    gs 'ClampGirlSocialStats', $HallPolicyAftermathGirl
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG HALL POLICY AFTERMATH] girl: ' + $HallPolicyAftermathGirl
+        *pl '[DEBUG HALL POLICY AFTERMATH] event: ' + $HallPolicyAftermathEvent
+        *pl '[DEBUG HALL POLICY AFTERMATH] result: ' + $HallPolicyAftermathResult
+        *pl '[DEBUG HALL POLICY AFTERMATH] severity: ' + STR(HallPolicyAftermathSeverity)
+        *pl '[DEBUG HALL POLICY AFTERMATH] TavernScandal: ' + STR(TavernScandal)
+        *pl '[DEBUG HALL POLICY AFTERMATH] TavernLewdFame: ' + STR(TavernLewdFame)
+    end
+
+    killvar '$HallPolicyAftermathGirl'
+    killvar '$HallPolicyAftermathEvent'
+    killvar '$HallPolicyAftermathResult'
+    killvar 'HallPolicyAftermathPolicy'
+    killvar 'HallPolicyAftermathSeverity'
+---

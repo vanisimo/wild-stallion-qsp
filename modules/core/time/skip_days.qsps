@@ -1,0 +1,183 @@
+! ================================================
+! FILE: modules/core/time/skip_days.qsps
+! Подтверждение пропуска нескольких дней
+! Используется панелью времени
+! ================================================
+
+#ConfirmSkipDays
+    SkipConfirmCount = ARGS[0]
+
+    if SkipConfirmCount < 1:
+        SkipConfirmCount = 1
+    end
+
+    if SkipConfirmCount > 30:
+        SkipConfirmCount = 30
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРОПУСК ВРЕМЕНИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if SkipConfirmCount = 1:
+        *p 'Вы собираетесь пропустить остаток дня и перейти к следующему утру.'
+    else:
+        *p 'Вы собираетесь пропустить ' + STR(SkipConfirmCount) + ' дней.'
+    end
+
+    *p 'За каждый день таверна отработает, будут изменены деньги, запасы и репутация.'
+    *pl ' '
+
+    act 'Да, пропустить':
+        gt 'SkipDaysFromPanel', SkipConfirmCount
+    end
+
+    act 'Отмена':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/skip_days.qsps
+! Пропуск нескольких дней с обработкой экономики таверны
+! Каждый день считается как полноценный рабочий день
+! ================================================
+
+#SkipDaysFromPanel
+    SkipDaysCount = ARGS[0]
+
+    if SkipDaysCount < 1:
+        SkipDaysCount = 1
+    end
+
+    if SkipDaysCount > 30:
+        SkipDaysCount = 30
+    end
+
+    $SkipDaysReturnLoc = $CURLOC
+
+    if $SkipDaysReturnLoc = '':
+        $SkipDaysReturnLoc = 'TavernMain'
+    end
+
+    SkipDaysDone = 0
+
+    SkipProfitTotal = 0
+    SkipFoodIncomeTotal = 0
+    SkipWineIncomeTotal = 0
+    SkipBeerIncomeTotal = 0
+    SkipExpensesTotal = 0
+
+    SkipFoodUsedTotal = 0
+    SkipWineUsedTotal = 0
+    SkipBeerUsedTotal = 0
+
+    SkipStartMoney = money
+    SkipStartReputation = tavern_reputation
+
+    :skip_days_loop
+    if SkipDaysDone < SkipDaysCount:
+        gs 'ProcessTavernWorkDay'
+
+        SkipProfitTotal += tavern_expected_profit
+        SkipFoodIncomeTotal += tavern_food_income
+        SkipWineIncomeTotal += tavern_wine_income
+        SkipBeerIncomeTotal += tavern_beer_income
+        SkipExpensesTotal += tavern_daily_expenses
+
+        SkipFoodUsedTotal += tavern_food_used
+        SkipWineUsedTotal += tavern_wine_used
+        SkipBeerUsedTotal += tavern_beer_used
+
+        gs 'AdvanceOneDaySilent'
+
+        SkipDaysDone += 1
+
+        jump 'skip_days_loop'
+    end
+
+    cls
+
+    gs 'GetDateTimeNames'
+    gs 'UpdateGirlLocations'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРОПУСК ВРЕМЕНИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *pl 'Прошло дней: ' + STR(SkipDaysDone)
+    *pl 'Сегодня: ' + $WeekDay + ', ' + STR(day) + ' ' + $MonthName + ' ' + STR(year) + ' года.'
+    *pl 'Время суток: ' + $TimeOfDay
+    *pl ' '
+
+    *pl 'Итоги за пропущенное время:'
+    *pl 'Еда: ' + STR(SkipFoodIncomeTotal) + ' мараведи'
+    *pl 'Вино: ' + STR(SkipWineIncomeTotal) + ' мараведи'
+    *pl 'Пиво: ' + STR(SkipBeerIncomeTotal) + ' мараведи'
+    *pl 'Расходы: ' + STR(SkipExpensesTotal) + ' мараведи'
+    *pl 'Итоговая прибыль: ' + STR(SkipProfitTotal) + ' мараведи'
+    *pl ' '
+
+    *pl 'Израсходовано запасов:'
+    *pl 'Продукты: ' + STR(SkipFoodUsedTotal)
+    *pl 'Вино: ' + STR(SkipWineUsedTotal)
+    *pl 'Пиво: ' + STR(SkipBeerUsedTotal)
+    *pl ' '
+
+    *pl 'Остатки:'
+    *pl 'Продукты: ' + STR(productnum)
+    *pl 'Вино: ' + STR(winenum)
+    *pl 'Пиво: ' + STR(beernum)
+    *pl ' '
+
+    *pl 'Деньги: ' + STR(SkipStartMoney) + ' → ' + STR(money) + ' мараведи'
+    *pl 'Репутация: ' + STR(SkipStartReputation) + ' → ' + STR(tavern_reputation) + ' / 100'
+    *pl ' '
+
+    act 'Продолжить':
+        gt $SkipDaysReturnLoc
+    end
+
+    ! $SkipDaysReturnLoc не очищаем, она нужна кнопке act
+---
+
+! ================================================
+! FILE: modules/core/time/skip_days.qsps
+! Тихий переход календаря на следующий день
+! Без вывода большого экрана NextDay
+! ================================================
+
+#AdvanceOneDaySilent
+    day += 1
+    time = 1
+
+    week += 1
+
+    if week > 7:
+        week = 1
+    end
+
+    gs 'AdvanceMonthIfNeeded'
+
+    daily_cum_count = 0
+    cametoday = 0
+    ChurchDonatedToday = 0
+
+    gs 'GirlsResetDailyFlags'
+
+    TavernHallEventDay = 0
+    TavernHallEventTime = 0
+
+    HallHarassmentDay = 0
+    HallHarassmentTime = 0
+
+    gs 'CanCumToday'
+    gs 'TavernDailyUpdate'
+    gs 'GetDateTimeNames'
+    gs 'UpdateGirlLocations'
+---
+

@@ -1,0 +1,426 @@
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Единое расписание города, бизнеса, лавок и особых дней
+! Версия: v1 schedule foundation
+! Назначение:
+! - обычный бизнес работает утром, в полдень, днём и вечером
+! - пятница вечером бизнес закрыт, город уходит на танцы
+! - воскресенье весь день бизнес закрыт
+! - воскресенье утром служба, полдень исповеди, день/вечер визиты NPC
+! - ночь закрывает обычный бизнес
+! ================================================
+
+#InitBusinessSchedule
+    if CapitalShipWeekDay = 0:
+        CapitalShipWeekDay = 3
+    end
+
+    if TaxPercent = 0:
+        TaxPercent = 10
+    end
+
+    gs 'GetCitySchedulePhase'
+---
+
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Определение текущей фазы городского расписания
+! Результаты:
+! CitySchedulePhaseCode
+! $CitySchedulePhase
+! $CityScheduleTitle
+! $CityScheduleDescription
+! ================================================
+
+#GetCitySchedulePhase
+    CitySchedulePhaseCode = 0
+    $CitySchedulePhase = 'business'
+    $CityScheduleTitle = 'Обычный рабочий день'
+    $CityScheduleDescription = 'Город живёт обычной жизнью. Лавки и заведения работают с утра до вечера.'
+
+    if time = 5:
+        CitySchedulePhaseCode = 5
+        $CitySchedulePhase = 'night'
+        $CityScheduleTitle = 'Ночь'
+        $CityScheduleDescription = 'Ночь. Обычные лавки и заведения закрыты.'
+        exit
+    end
+
+    if week = 5 and time = 4:
+        CitySchedulePhaseCode = 1
+        $CitySchedulePhase = 'friday_dance'
+        $CityScheduleTitle = 'Пятничный вечер танцев'
+        $CityScheduleDescription = 'Пятничный вечер. Заведения закрываются, горожане собираются на танцы, а мэр произносит речь перед праздником.'
+        exit
+    end
+
+    if week = 7 and time = 1:
+        CitySchedulePhaseCode = 2
+        $CitySchedulePhase = 'sunday_service'
+        $CityScheduleTitle = 'Воскресная служба'
+        $CityScheduleDescription = 'Воскресное утро. Обычный бизнес закрыт, горожане собираются в церкви на службу.'
+        exit
+    end
+
+    if week = 7 and time = 2:
+        CitySchedulePhaseCode = 3
+        $CitySchedulePhase = 'sunday_confession'
+        $CityScheduleTitle = 'Воскресные исповеди'
+        $CityScheduleDescription = 'Воскресный полдень. Обычный бизнес закрыт, в церкви идут исповеди. Это время слухов, тайн и подслушиваний.'
+        exit
+    end
+
+    if week = 7 and (time = 3 or time = 4):
+        CitySchedulePhaseCode = 4
+        $CitySchedulePhase = 'sunday_visits'
+        $CityScheduleTitle = 'Воскресные визиты'
+        $CityScheduleDescription = 'Воскресенье. Лавки закрыты, а горожане ходят друг к другу в гости. В такие часы можно услышать то, что в будни прячут.'
+        exit
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Проверка открыт ли обычный бизнес
+! Аргумент:
+! $ARGS[0] — тип бизнеса
+!
+! Совместимость со старым кодом:
+! BusinessOpen
+! Result
+! $BusinessClosedReason
+! $ClosedReason
+! ================================================
+
+#IsBusinessOpen
+    $BusinessType = LCASE($ARGS[0])
+
+    gs 'GetCitySchedulePhase'
+
+    BusinessOpen = 1
+    Result = 1
+    $BusinessClosedReason = ''
+    $ClosedReason = ''
+
+    ! ====================== ОСОБЫЙ СЛУЧАЙ: МЭРИЯ ======================
+    if $BusinessType = 'mayor':
+        gs 'IsMayorOfficeOpen'
+        BusinessOpen = MayorOfficeOpen
+        Result = BusinessOpen
+        $BusinessClosedReason = $MayorOfficeClosedReason
+        $ClosedReason = $BusinessClosedReason
+        killvar '$BusinessType'
+        exit
+    end
+
+    if $BusinessType = 'mayor_office':
+        gs 'IsMayorOfficeOpen'
+        BusinessOpen = MayorOfficeOpen
+        Result = BusinessOpen
+        $BusinessClosedReason = $MayorOfficeClosedReason
+        $ClosedReason = $BusinessClosedReason
+        killvar '$BusinessType'
+        exit
+    end
+
+    ! ====================== ОСОБЫЙ СЛУЧАЙ: КОРАБЛЬ ИЗ СТОЛИЦЫ ======================
+    if $BusinessType = 'capital_ship':
+        gs 'IsCapitalShipAvailable'
+        BusinessOpen = CapitalShipAvailable
+        Result = BusinessOpen
+        $BusinessClosedReason = $CapitalShipClosedReason
+        $ClosedReason = $BusinessClosedReason
+        killvar '$BusinessType'
+        exit
+    end
+
+    ! ====================== ОБЩИЕ ЗАКРЫТИЯ ======================
+
+    if time = 5:
+        BusinessOpen = 0
+        Result = 0
+        $BusinessClosedReason = 'сейчас ночь, обычные заведения закрыты'
+        $ClosedReason = $BusinessClosedReason
+        killvar '$BusinessType'
+        exit
+    end
+
+    if week = 5 and time = 4:
+        BusinessOpen = 0
+        Result = 0
+        $BusinessClosedReason = 'сейчас пятничный вечер, заведения закрыты, горожане идут на танцы'
+        $ClosedReason = $BusinessClosedReason
+        killvar '$BusinessType'
+        exit
+    end
+
+    if week = 7:
+        BusinessOpen = 0
+        Result = 0
+
+        if time = 1:
+            $BusinessClosedReason = 'сейчас воскресное утро, все ушли на службу в церковь'
+        elseif time = 2:
+            $BusinessClosedReason = 'сейчас воскресный полдень, в церкви идут исповеди'
+        elseif time = 3 or time = 4:
+            $BusinessClosedReason = 'сейчас воскресенье, обычный бизнес закрыт, горожане ходят в гости'
+        else:
+            $BusinessClosedReason = 'сейчас воскресенье, обычный бизнес закрыт'
+        end
+
+        $ClosedReason = $BusinessClosedReason
+        killvar '$BusinessType'
+        exit
+    end
+
+    BusinessOpen = 1
+    Result = 1
+    $BusinessClosedReason = ''
+    $ClosedReason = ''
+
+    killvar '$BusinessType'
+---
+
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Проверка открыта ли таверна
+! Совместимость:
+! TavernOpen
+! Result
+! $TavernClosedReason
+! ================================================
+
+#IsTavernOpen
+    gs 'IsBusinessOpen', 'tavern'
+
+    TavernOpen = BusinessOpen
+    Result = TavernOpen
+    $TavernClosedReason = $BusinessClosedReason
+    $ClosedReason = $TavernClosedReason
+---
+
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Проверка открыта ли лавка
+! Аргумент:
+! $ARGS[0] — becky / wine / legare / tailor / carpenter / gifts / mayor
+! Совместимость:
+! ShopOpen
+! Result
+! $ShopClosedReason
+! ================================================
+
+#IsShopOpen
+    $ShopType = LCASE($ARGS[0])
+
+    if $ShopType = '':
+        $ShopType = 'shop'
+    end
+
+    if $ShopType = 'legare':
+        $ShopType = 'wine'
+    end
+
+    if $ShopType = 'irma':
+        $ShopType = 'tailor'
+    end
+
+    if $ShopType = 'port_gifts':
+        $ShopType = 'capital_ship'
+    end
+
+    if $ShopType = 'gifts':
+        $ShopType = 'capital_ship'
+    end
+
+    gs 'IsBusinessOpen', $ShopType
+
+    ShopOpen = BusinessOpen
+    Result = ShopOpen
+    $ShopClosedReason = $BusinessClosedReason
+    $ClosedReason = $ShopClosedReason
+
+    killvar '$ShopType'
+---
+
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Кто сейчас работает в лавке
+! Аргумент:
+! $ARGS[0] — becky / wine / legare / tailor / carpenter / capital_ship
+! Результаты:
+! $CurrentSeller
+! $CurrentSellerName
+! CurrentSellerAvailable
+! ================================================
+
+#GetCurrentShopSeller
+    $ScheduleShop = LCASE($ARGS[0])
+
+    $CurrentSeller = ''
+    $CurrentSellerName = ''
+    CurrentSellerAvailable = 0
+
+    if $ScheduleShop = '':
+        exit
+    end
+
+    if $ScheduleShop = 'legare':
+        $ScheduleShop = 'wine'
+    end
+
+    if $ScheduleShop = 'irma':
+        $ScheduleShop = 'tailor'
+    end
+
+    if $ScheduleShop = 'port_gifts':
+        $ScheduleShop = 'capital_ship'
+    end
+
+    if $ScheduleShop = 'gifts':
+        $ScheduleShop = 'capital_ship'
+    end
+
+    gs 'IsShopOpen', $ScheduleShop
+
+    if ShopOpen = 0:
+        killvar '$ScheduleShop'
+        exit
+    end
+
+    if $ScheduleShop = 'becky':
+        if time = 1:
+            $CurrentSeller = 'inga'
+            $CurrentSellerName = 'Инга'
+        elseif time = 2:
+            $CurrentSeller = 'eddie'
+            $CurrentSellerName = 'Эдди'
+        else:
+            $CurrentSeller = 'becky'
+            $CurrentSellerName = 'Бекки'
+        end
+    elseif $ScheduleShop = 'wine':
+        if time = 1:
+            $CurrentSeller = 'clarissa'
+            $CurrentSellerName = 'Кларисса'
+        else:
+            $CurrentSeller = 'legare'
+            $CurrentSellerName = 'Легаре'
+        end
+    elseif $ScheduleShop = 'tailor':
+        $CurrentSeller = 'irma'
+        $CurrentSellerName = 'Ирма'
+    elseif $ScheduleShop = 'carpenter':
+        $CurrentSeller = 'carpenter'
+        $CurrentSellerName = 'Столяр'
+    elseif $ScheduleShop = 'capital_ship':
+        $CurrentSeller = 'capital_merchant'
+        $CurrentSellerName = 'торговец с корабля из столицы'
+    else:
+        $CurrentSeller = $ScheduleShop
+        $CurrentSellerName = $ScheduleShop
+    end
+
+    if $CurrentSeller <> '':
+        CurrentSellerAvailable = 1
+    end
+
+    killvar '$ScheduleShop'
+---
+
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Проверка открыт ли приём в мэрии
+! Приёмные дни: среда и четверг
+! Рабочее время: полдень и день
+! ================================================
+
+#IsMayorOfficeOpen
+    MayorOfficeOpen = 0
+    Result = 0
+    $MayorOfficeClosedReason = ''
+
+    if time = 5:
+        $MayorOfficeClosedReason = 'сейчас ночь, мэрия закрыта'
+        exit
+    end
+
+    if week = 5 and time = 4:
+        $MayorOfficeClosedReason = 'сейчас пятничный вечер, мэр выступает перед танцами'
+        exit
+    end
+
+    if week = 7:
+        $MayorOfficeClosedReason = 'сейчас воскресенье, мэрия не работает'
+        exit
+    end
+
+    if week <> 3 and week <> 4:
+        $MayorOfficeClosedReason = 'приём в мэрии проходит только по средам и четвергам'
+        exit
+    end
+
+    if  time <> 2 or time <> 3:
+        $MayorOfficeClosedReason = 'клерки принимают посетителей только в полдень и днём'
+        exit
+    end
+
+    MayorOfficeOpen = 1
+    Result = 1
+    $MayorOfficeClosedReason = ''
+---
+
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Проверка доступен ли корабль из столицы
+! По умолчанию приходит раз в неделю в среду
+! CapitalShipWeekDay можно менять в GameInit
+! ================================================
+
+#IsCapitalShipAvailable
+    if CapitalShipWeekDay = 0:
+        CapitalShipWeekDay = 3
+    end
+
+    CapitalShipAvailable = 0
+    Result = 0
+    $CapitalShipClosedReason = ''
+
+    if time = 5:
+        $CapitalShipClosedReason = 'сейчас ночь, торговцы с корабля уже закрыли тюки и ушли'
+        exit
+    end
+
+    if week = 7:
+        $CapitalShipClosedReason = 'сегодня воскресенье, даже торговцы с корабля не раскрывают товары открыто'
+        exit
+    end
+
+    if week <> CapitalShipWeekDay:
+        $CapitalShipClosedReason = 'корабль из столицы приходит только раз в неделю'
+        exit
+    end
+
+    if week = 5 and time = 4:
+        $CapitalShipClosedReason = 'сейчас пятничный вечер, торговля закрыта из-за танцев'
+        exit
+    end
+
+    CapitalShipAvailable = 1
+    Result = 1
+    $CapitalShipClosedReason = ''
+---
+
+! ================================================
+! FILE: modules/core/time/business_schedule.qsps
+! Текстовая подсказка по текущему расписанию города
+! Используется для debug и будущих описаний улицы
+! ================================================
+
+#PrintCityScheduleHint
+    gs 'GetCitySchedulePhase'
+
+    *pl ' '
+    *pl 'Текущее расписание города: ' + $CityScheduleTitle
+    *p $CityScheduleDescription
+---

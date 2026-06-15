@@ -1,0 +1,104 @@
+! ================================================
+! FILE: modules/menu/npc_show_description_panel.qsps
+! Полное описание NPC в дополнительном описании
+! Не очищает главное окно
+! Не закрывает текущую локацию
+! ================================================
+
+#NpcShowDescriptionPanel
+    PanelCustomActive = 1
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlName = $GirlKey
+
+    if $GirlName = '':
+        msg 'Ошибка: NpcShowDescriptionPanel вызван без имени NPC.'
+        exit
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $GirlName
+    end
+
+    if $RealName[$GirlName] = '':
+        $RealName[$GirlName] = UCASE(MID($GirlName, 1, 1)) + LCASE(MID($GirlName, 2))
+    end
+
+    clr
+
+    pl '══════════════════════════════════════════════'
+    pl ' ОПИСАНИЕ: ' + $RealName[$GirlName]
+    pl '══════════════════════════════════════════════'
+    pl ' '
+
+    gs 'ShowPortraitToPanel', $GirlName, 'small'
+
+    if $girltextdesc[$GirlName] <> '':
+        pl $girltextdesc[$GirlName]
+        pl ' '
+    end
+
+    pl 'Возраст: ' + STR(age[$GirlName]) + ' лет'
+    pl 'Красота: ' + STR(beauty[$GirlName])
+    pl 'Дружба: ' + STR(Friends[$GirlName])
+    pl 'Любовь: ' + STR(love[$GirlName])
+    pl 'Страх: ' + STR(fear[$GirlName])
+    pl 'Ненависть: ' + STR(hate[$GirlName])
+    pl 'Откровенность: ' + STR(otkroven[$GirlName])
+    pl 'Развращённость: ' + STR(sluttiness[$GirlName])
+    pl ' '
+
+    if virginity[$GirlName] = 1:
+        pl 'Вагинальная девственница'
+    else:
+        pl 'Вагинально опытна'
+    end
+
+    if analvirgin[$GirlName] = 1:
+        pl 'Анальная девственница'
+    else:
+        pl 'Анально опытна'
+    end
+
+    pl ' '
+
+    pl 'Навыки:'
+    pl 'Кулинария: ' + FUNC('ArtLevelText', cooking[$GirlName])
+    pl 'Уборка: ' + FUNC('ArtLevelText', cleaning[$GirlName])
+    pl 'Обслуживание: ' + FUNC('ArtLevelText', waitress[$GirlName])
+    pl 'Соблазнение: ' + FUNC('ArtLevelText', seduction[$GirlName])
+
+    if dance[$GirlName] > 0:
+        pl 'Танцы: ' + FUNC('ArtLevelText', dance[$GirlName])
+    end
+
+    pl ' '
+
+    pl 'Текущая работа:'
+
+    if jobkitchen[$GirlName] = 1:
+        pl 'Работает на кухне'
+    end
+
+    if jobwaitress[$GirlName] = 1:
+        pl 'Работает официанткой'
+    end
+
+    if jobcleaning[$GirlName] = 1:
+        pl 'Работает уборщицей'
+    end
+
+    if jobwhore[$GirlName] = 1:
+        pl 'Работает шлюхой'
+    end
+
+    if jobkitchen[$GirlName] = 0 and jobwaitress[$GirlName] = 0 and jobcleaning[$GirlName] = 0 and jobwhore[$GirlName] = 0:
+        pl 'Сейчас свободна'
+    end
+
+    pl ' '
+    pl '══════════════════════════════════════════════'
+
+    killvar '$GirlName'
+---
+

@@ -1,0 +1,164 @@
+! ================================================
+! MODULE: core/sex_register.qsps
+! СИСТЕМА РЕГИСТРАЦИИ СЕКСУАЛЬНЫХ АКТОВ
+! Чистая версия без лишних end
+! ================================================
+
+#RegisterSex
+    ! Основная функция регистрации сексуального акта
+    !
+    ! Аргументы:
+    !   0 - $GirlName     → Имя девушки ('amanda', 'melissa', 'sandra')
+    !   1 - $SexType      → Тип секса (vaginal, anal, oral, oral_deep, handjob, titjob и т.д.)
+    !   2 - CumInside     → 1 = кончил внутрь/на цель, 0 = нет
+    !   3 - IsWithYou     → 1 = акт был со Стефаном (по умолчанию 1)
+
+    $GirlName   = $Args[0]
+    $SexType    = $Args[1]
+    CumInside   = Args[2]
+    IsWithYou   = Args[3]
+
+    ! Значения по умолчанию
+    if $GirlName = '':   $GirlName = 'You' 
+    if CumInside = '':   CumInside = 0 
+    if IsWithYou = '':   IsWithYou = 1 
+
+    ! Общий счётчик всех актов
+    sexacts[$GirlName] += 1
+
+    ! ====================== РЕГИСТРАЦИЯ ПО ТИПУ ======================
+    if $SexType = 'vaginal' or $SexType = 'pussy':
+        vaginalacts[$GirlName] += 1
+        if CumInside = 1: cuminside[$GirlName] += 1 
+
+    elseif $SexType = 'anal':
+        analacts[$GirlName] += 1
+        hadanal[$GirlName] = 1
+        analvirgin[$GirlName] = 0
+        if CumInside = 1: analcum[$GirlName] += 1 
+
+    elseif $SexType = 'oral' or $SexType = 'oral_deep' or $SexType = 'deepthroat':
+        oralacts[$GirlName] += 1
+        hadoral[$GirlName] = 1
+        if $SexType = 'oral_deep' or $SexType = 'deepthroat':
+            oraldeep[$GirlName] += 1
+        end
+        if CumInside = 1:
+            oralcum[$GirlName] += 1
+            oralswallow[$GirlName] += 1
+        end
+
+    elseif $SexType = 'facial' or $SexType = 'creampie_face':
+        facialcum[$GirlName] += 1
+        hadoral[$GirlName] = 1
+
+    elseif $SexType = 'titjob' or $SexType = 'paizuri' or $SexType = 'tittyfuck':
+        tittyfuck[$GirlName] += 1
+
+    elseif $SexType = 'handjob':
+        handjob[$GirlName] += 1
+
+    elseif $SexType = 'footjob':
+        footjob[$GirlName] += 1
+
+    elseif $SexType = 'anilingus' or $SexType = 'rimming_her':
+        anilingus[$GirlName] += 1
+
+    elseif $SexType = 'rimjob' or $SexType = 'rimming_him':
+        rimjob[$GirlName] += 1
+
+    elseif $SexType = 'kiss' or $SexType = 'kissing':
+        kissed[$GirlName] += 1
+
+    elseif $SexType = 'lesbian' or $SexType = 'lesbi':
+        lesbianacts[$GirlName] += 1
+
+    ! ====================== ГРУППОВОЙ СЕКС ======================
+    elseif $SexType = 'group' or $SexType = 'gangbang':
+        groupsex[$GirlName] += 1
+        if $SexType = 'gangbang': gangbang[$GirlName] += 1 
+
+    elseif $SexType = 'double_vaginal' or $SexType = 'dv':
+        doublevaginal[$GirlName] += 1
+
+    elseif $SexType = 'double_anal' or $SexType = 'da':
+        doubleanal[$GirlName] += 1
+
+    elseif $SexType = 'airtight' or $SexType = 'all_holes':
+        airtight[$GirlName] += 1
+
+    elseif $SexType = 'bukkake':
+        facialcum[$GirlName] += 1
+        groupsex[$GirlName] += 1
+    end
+
+    ! ====================== СТАТИСТИКА СО СТЕФАНОМ ======================
+    if IsWithYou = 1:
+        HadSex[$GirlName] += 1
+        if $SexType = 'anal':
+            analfromyou[$GirlName] += 1
+        elseif ($SexType = 'oral' or $SexType = 'facial') and CumInside = 1:
+            oralfromyouswallow[$GirlName] += 1
+        end
+    end
+
+    ! ====================== ДЕБАГ ======================
+    if debug = 1:
+        *pl '[DEBUG] Sex Registered → <<$GirlName>> | <<$SexType>> | CumInside: <<CumInside>>'
+    end
+---
+
+! ====================== УДОБНЫЕ ОБЁРТКИ ======================
+
+#RegisterVaginal
+    gs 'RegisterSex', $Args[0], 'vaginal', $Args[1], $Args[2]
+---
+
+#RegisterAnal
+    gs 'RegisterSex', $Args[0], 'anal', $Args[1], $Args[2]
+---
+
+#RegisterOral
+    gs 'RegisterSex', $Args[0], 'oral', $Args[1], $Args[2]
+---
+
+#RegisterDeepOral
+    gs 'RegisterSex', $Args[0], 'oral_deep', $Args[1], $Args[2]
+---
+
+#RegisterFacial
+    gs 'RegisterSex', $Args[0], 'facial', 0, $Args[1]
+---
+
+#RegisterTittyFuck
+    gs 'RegisterSex', $Args[0], 'titjob', 0, $Args[1]
+---
+
+#RegisterHandjob
+    gs 'RegisterSex', $Args[0], 'handjob', 0, $Args[1]
+---
+
+#RegisterAnilingus
+    gs 'RegisterSex', $Args[0], 'anilingus', 0, $Args[1]
+---
+
+#RegisterRimjob
+    gs 'RegisterSex', $Args[0], 'rimjob', 0, $Args[1]
+---
+
+#RegisterGroup
+    gs 'RegisterSex', $Args[0], 'group', 0, $Args[1]
+---
+
+#RegisterDoubleVaginal
+    gs 'RegisterSex', $Args[0], 'double_vaginal', 0, $Args[1]
+---
+
+#RegisterDoubleAnal
+    gs 'RegisterSex', $Args[0], 'double_anal', 0, $Args[1]
+---
+
+#RegisterAirtight
+    gs 'RegisterSex', $Args[0], 'airtight', 0, $Args[1]
+---
+

@@ -1,0 +1,204 @@
+! ================================================
+! FILE: modules/events/family/daily_aftermath.qsps
+! MODULE: family
+! Система ежедневных последствий
+! Версия: v4 / unified with GirlRemembers* memory
+! ================================================
+
+#DailyAftermathQueue
+    DailyAftermathPending = 1
+---
+
+#DailyAftermathCanRun
+    DailyAftermathAvailable = 0
+
+    if DailyAftermathPending = 1:
+        DailyAftermathAvailable = 1
+    end
+---
+
+#DailyAftermathProcess
+    if DailyAftermathPending = 0:
+        exit
+    end
+
+    if DailyAftermathShownToday = 1:
+        exit
+    end
+
+    if $DailyAftermathReasonGirl = '' and $LastHallMemoryGirl <> '':
+        $DailyAftermathReasonGirl = $LastHallMemoryGirl
+        $DailyAftermathReasonEvent = $LastHallMemoryEvent
+        $DailyAftermathReasonChoice = $LastHallMemoryChoice
+    end
+
+    gs 'DailyAftermathSelect'
+
+    if $DailyAftermathSelected = '':
+        exit
+    end
+
+    DailyAftermathPending = 0
+    DailyAftermathShownToday = 1
+
+    gt 'DailyAftermathShow', $DailyAftermathSelected
+---
+
+#DailyAftermathResetDaily
+    DailyAftermathShownToday = 0
+---
+
+#DailyAftermathMarkFromChoice
+    DailyAftermathPending = 1
+    DailyAftermathReasonDay = day
+
+    if $LastHallMemoryGirl <> '':
+        $DailyAftermathReasonGirl = $LastHallMemoryGirl
+        $DailyAftermathReasonChoice = $LastHallMemoryChoice
+        $DailyAftermathReasonEvent = $LastHallMemoryEvent
+    end
+---
+
+#DailyAftermathSelect
+    $DailyAftermathSelected = ''
+
+    if $DailyAftermathReasonGirl = 'amanda':
+        if GirlRemembersProtection['amanda'] > GirlRemembersNeglect['amanda']:
+            $DailyAftermathSelected = 'amanda_protection'
+            exit
+        end
+
+        if GirlRemembersNeglect['amanda'] > GirlRemembersProtection['amanda']:
+            $DailyAftermathSelected = 'amanda_neglect'
+            exit
+        end
+
+        if GirlRemembersProfitChoices['amanda'] > 0:
+            $DailyAftermathSelected = 'amanda_profit'
+            exit
+        end
+    end
+
+    if $DailyAftermathReasonGirl = 'melissa':
+        if StefanInconsistentChoices > 0:
+            $DailyAftermathSelected = 'melissa_doubt'
+            exit
+        end
+
+        if GirlRemembersProtection['melissa'] > GirlRemembersNeglect['melissa']:
+            $DailyAftermathSelected = 'melissa_respect'
+            exit
+        end
+
+        if GirlRemembersProfitChoices['melissa'] > 0:
+            $DailyAftermathSelected = 'melissa_profit'
+            exit
+        end
+    end
+
+    if $DailyAftermathReasonGirl = 'sandra':
+        if GirlRemembersProfitChoices['sandra'] > 0 or FamilyTension > FamilyTrust:
+            $DailyAftermathSelected = 'sandra_concern'
+            exit
+        end
+
+        if GirlRemembersProtection['sandra'] > 0 or FamilyTrust >= FamilyTension:
+            $DailyAftermathSelected = 'sandra_trust'
+            exit
+        end
+    end
+
+    if FamilyTension >= FamilyTrust + 5:
+        $DailyAftermathSelected = 'family_tension'
+        exit
+    end
+
+    if FamilyTrust >= FamilyTension + 5:
+        $DailyAftermathSelected = 'family_trust'
+        exit
+    end
+---
+
+#DailyAftermathShow
+    $DailyAftermathScene = LCASE($ARGS[0])
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УТРО ПОСЛЕ СОБЫТИЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'DailyAftermathPrintText', $DailyAftermathScene
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG AFTERMATH] scene: ' + $DailyAftermathScene
+        *pl '[DEBUG AFTERMATH] reason girl: ' + $DailyAftermathReasonGirl
+        *pl '[DEBUG AFTERMATH] reason choice: ' + $DailyAftermathReasonChoice
+        *pl '[DEBUG AFTERMATH] reason event: ' + $DailyAftermathReasonEvent
+        *pl '[DEBUG AFTERMATH] FamilyTrust: ' + STR(FamilyTrust)
+        *pl '[DEBUG AFTERMATH] FamilyTension: ' + STR(FamilyTension)
+        *pl '[DEBUG AFTERMATH] protect amanda: ' + STR(GirlRemembersProtection['amanda'])
+        *pl '[DEBUG AFTERMATH] ignore amanda: ' + STR(GirlRemembersNeglect['amanda'])
+        *pl '[DEBUG AFTERMATH] profit amanda: ' + STR(GirlRemembersProfitChoices['amanda'])
+    end
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'TavernMain'
+    end
+---
+
+#DailyAftermathDebugPanel
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: DAILY AFTERMATH'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *pl 'DailyAftermathPending: ' + STR(DailyAftermathPending)
+    *pl 'DailyAftermathShownToday: ' + STR(DailyAftermathShownToday)
+    *pl 'DailyAftermathReasonDay: ' + STR(DailyAftermathReasonDay)
+    *pl 'Reason girl: ' + $DailyAftermathReasonGirl
+    *pl 'Reason choice: ' + $DailyAftermathReasonChoice
+    *pl 'Reason event: ' + $DailyAftermathReasonEvent
+    *pl ' '
+    *pl 'FamilyTrust: ' + STR(FamilyTrust)
+    *pl 'FamilyTension: ' + STR(FamilyTension)
+    *pl ' '
+    *pl '<b>Память:</b>'
+    *pl 'Аманда защита/игнор/прибыль: ' + STR(GirlRemembersProtection['amanda']) + ' / ' + STR(GirlRemembersNeglect['amanda']) + ' / ' + STR(GirlRemembersProfitChoices['amanda'])
+    *pl 'Мелисса защита/игнор/прибыль: ' + STR(GirlRemembersProtection['melissa']) + ' / ' + STR(GirlRemembersNeglect['melissa']) + ' / ' + STR(GirlRemembersProfitChoices['melissa'])
+    *pl 'Сандра защита/игнор/прибыль: ' + STR(GirlRemembersProtection['sandra']) + ' / ' + STR(GirlRemembersNeglect['sandra']) + ' / ' + STR(GirlRemembersProfitChoices['sandra'])
+    *pl ' '
+
+    act 'Тест: Аманда / защита':
+        gs 'GirlMemoryOfStefanRegister', 'amanda', 'debug', 'protect'
+        gt 'DailyAftermathDebugPanel'
+    end
+
+    act 'Тест: Аманда / игнор':
+        gs 'GirlMemoryOfStefanRegister', 'amanda', 'debug', 'ignore'
+        gt 'DailyAftermathDebugPanel'
+    end
+
+    act 'Тест: Сандра / прибыль':
+        gs 'GirlMemoryOfStefanRegister', 'sandra', 'debug', 'profit'
+        gt 'DailyAftermathDebugPanel'
+    end
+
+    act 'Запустить aftermath сейчас':
+        gt 'DailyAftermathProcess'
+    end
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+---

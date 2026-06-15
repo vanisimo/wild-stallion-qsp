@@ -1,0 +1,484 @@
+! FILE: modules/events/tavern_hall_events.qsps
+! События главного зала таверны
+! Запускаются через кнопку "Осмотреть зал"
+! Одно событие на одну часть дня
+! Сохраняют последнее событие для панели трактира
+! ================================================
+
+#TavernHallEventStart
+    *clr
+    clr
+    cla
+
+    gs 'GetDateTimeNames'
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    if LOC('CalculateTavernStaffEfficiency') = 1:
+        gs 'CalculateTavernStaffEfficiency'
+    end
+
+    if TavernOpen = 0:
+        *pl '══════════════════════════════════════════════'
+        *pl ' ОСМОТР ГЛАВНОГО ЗАЛА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        *p 'Сейчас таверна закрыта, и наблюдать в зале почти не за чем.'
+
+        if $TavernClosedReason <> '':
+            *p 'Причина: ' + $TavernClosedReason
+        end
+
+        gs 'SaveLastHallEvent', 'closed', '', 'Стефан осмотрел главный зал, но таверна была закрыта.', 'none'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt 'TavernMain'
+        end
+
+        exit
+    end
+
+    if TavernHallEventDay = day and TavernHallEventTime = time:
+        *pl '══════════════════════════════════════════════'
+        *pl ' ОСМОТР ГЛАВНОГО ЗАЛА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        *p 'Вы уже внимательно осматривали зал в это время суток.'
+        *p 'Пока ничего нового не происходит.'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt 'TavernMain'
+        end
+
+        exit
+    end
+
+    TavernHallEventDay = day
+    TavernHallEventTime = time
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОСМОТР ГЛАВНОГО ЗАЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы внимательнее осматриваете зал. Столы стоят вдоль стен, возле стойки осталось несколько пустых кружек, а на полу видны следы тяжёлых сапог посетителей.'
+    *p 'Это сердце вашего трактира. От работы кухни, зала и чистоты зависит доход и репутация "Дикого Жеребца".'
+    *pl ' '
+
+    TavernHallEventRoll = RAND(1, 100)
+
+    if debug = 1:
+        *pl '[DEBUG] TavernHallEventRoll = ' + STR(TavernHallEventRoll)
+        *pl ' '
+    end
+
+    if TavernHallEventRoll <= 20:
+        gt 'TavernHallEventTips'
+    elseif TavernHallEventRoll <= 38:
+        gt 'TavernHallEventDirtyTable'
+    elseif TavernHallEventRoll <= 56:
+        gt 'TavernHallEventSlowService'
+    elseif TavernHallEventRoll <= 74:
+        gt 'TavernHallEventQuarrel'
+    elseif TavernHallEventRoll <= 88:
+        gt 'HallHarassment'
+    else:
+        gt 'TavernHallEventCalm'
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Сохранение последнего события главного зала
+! Используется панелью трактира и будущими реакциями девушек
+! ================================================
+
+#SaveLastHallEvent
+    $LastHallEventType = LCASE($ARGS[0])
+    $LastHallEventGirl = LCASE($ARGS[1])
+    $LastHallEventText = $ARGS[2]
+    $LastHallEventReaction = LCASE($ARGS[3])
+
+    LastHallEventDay = day
+    LastHallEventTime = time
+    LastHallEventWeek = week
+
+    if $LastHallEventGirl <> '':
+        gs 'EnsureGirlData', $LastHallEventGirl
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Спокойный час
+! ================================================
+
+#TavernHallEventCalm
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: СПОКОЙНЫЙ ЧАС'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы некоторое время наблюдаете за главным залом.'
+    *p 'Посетители едят, пьют, переговариваются между собой и не доставляют особых хлопот.'
+    *p 'Такой спокойный час редко запоминается, но именно из таких часов и складывается обычная работа таверны.'
+
+    gs 'SaveLastHallEvent', 'calm', '', 'День в главном зале прошёл спокойно, без особых происшествий.', 'none'
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Щедрые чаевые
+! ================================================
+
+#TavernHallEventTips
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: ЧАЕВЫЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if tavern_waitress_power >= 30:
+        TavernHallTips = 10 + RAND(5, 25)
+
+        money += TavernHallTips
+
+        *p 'За одним из столов довольные гости оставляют несколько монет сверх счёта.'
+        *p 'Похоже, им понравилось обслуживание.'
+
+        *pl ' '
+        *pl 'Получено чаевых: ' + STR(TavernHallTips) + ' мараведи.'
+
+        if tavern_reputation < 100:
+            tavern_reputation += 1
+        end
+
+        gs 'SaveLastHallEvent', 'tips', '', 'Гости оставили щедрые чаевые за хорошее обслуживание.', 'good'
+    else:
+        *p 'Один из гостей собирался оставить чаевые, но слишком долго ждал заказ.'
+        *p 'В итоге он только недовольно буркнул что-то себе под нос и ушёл.'
+
+        gs 'SaveLastHallEvent', 'tips_failed', '', 'Гость хотел оставить чаевые, но обслуживание оказалось слишком слабым.', 'bad'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+
+    killvar 'TavernHallTips'
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Жалоба на грязный стол
+! ================================================
+
+#TavernHallEventDirtyTable
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: ГРЯЗНЫЙ СТОЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if tavern_cleaning_power < 35:
+        *p 'Один из посетителей раздражённо отодвигает кружку.'
+        *p 'На столе остались липкие пятна, хлебные крошки и следы пролитого пива.'
+        *p 'Он громко жалуется, чтобы это услышали соседние столы.'
+
+        tavern_reputation -= 1
+
+        if tavern_reputation < 0:
+            tavern_reputation = 0
+        end
+
+        *pl ' '
+        *pl 'Репутация таверны снизилась на 1.'
+
+        gs 'SaveLastHallEvent', 'dirty_table', '', 'Посетитель пожаловался на грязный стол и липкий пол.', 'bad'
+    else:
+        *p 'Один из посетителей пытается придраться к чистоте, но столы выглядят вполне прилично.'
+        *p 'После короткого ворчания он успокаивается и возвращается к еде.'
+
+        gs 'SaveLastHallEvent', 'dirty_table', '', 'Посетитель попытался пожаловаться на чистоту, но зал выглядел достаточно прилично.', 'neutral'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Медленное обслуживание
+! ================================================
+
+#TavernHallEventSlowService
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: МЕДЛЕННЫЙ ЗАКАЗ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if tavern_waitress_power < 35:
+        *p 'Несколько посетителей начинают нетерпеливо стучать кружками по столу.'
+        *p 'Заказы задерживаются, и в зале растёт недовольный гул.'
+
+        tavern_reputation -= 1
+
+        if tavern_reputation < 0:
+            tavern_reputation = 0
+        end
+
+        *pl ' '
+        *pl 'Репутация таверны снизилась на 1.'
+
+        gs 'SaveLastHallEvent', 'slow_service', '', 'Посетители ворчали из-за медленного обслуживания.', 'bad'
+    else:
+        *p 'Зал шумный и полный, но обслуживание справляется.'
+        *p 'Даже самые нетерпеливые гости получают свои кружки до того, как начинают всерьёз злиться.'
+
+        gs 'SaveLastHallEvent', 'slow_service', '', 'Зал был шумным, но обслуживание справилось с наплывом гостей.', 'good'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Ссора посетителей
+! ================================================
+
+#TavernHallEventQuarrel
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: ССОРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'У дальнего стола двое мужчин начинают спорить всё громче.'
+    *p 'Один резко встаёт, скамья скрипит по полу, и несколько гостей оборачиваются.'
+
+    *pl ' '
+
+    act 'Вмешаться спокойно':
+        gt 'TavernHallEventQuarrelCalm'
+    end
+
+    act 'Прикрикнуть на них':
+        gt 'TavernHallEventQuarrelHard'
+    end
+
+    act 'Не вмешиваться':
+        gt 'TavernHallEventQuarrelIgnore'
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Ссора: спокойное вмешательство
+! ================================================
+
+#TavernHallEventQuarrelCalm
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: ССОРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    TavernQuarrelChance = 45 + charisma + management_skill
+
+    if TavernQuarrelChance > 90:
+        TavernQuarrelChance = 90
+    end
+
+    TavernQuarrelRoll = RAND(1, 100)
+
+    if TavernQuarrelRoll <= TavernQuarrelChance:
+        *p 'Вы подходите к столу и говорите ровно, но твёрдо.'
+        *p 'Спорщики ещё немного ворчат, но всё же садятся обратно.'
+
+        tavern_reputation += 1
+
+        if tavern_reputation > 100:
+            tavern_reputation = 100
+        end
+
+        *pl ' '
+        *pl 'Репутация таверны выросла на 1.'
+
+        gs 'SaveLastHallEvent', 'quarrel', '', 'Стефан спокойно погасил ссору между посетителями.', 'good'
+    else:
+        *p 'Вы пытаетесь успокоить спорщиков, но они почти не слушают.'
+        *p 'В итоге один из них уходит, хлопнув кружкой о стол.'
+
+        tavern_reputation -= 1
+
+        if tavern_reputation < 0:
+            tavern_reputation = 0
+        end
+
+        *pl ' '
+        *pl 'Репутация таверны снизилась на 1.'
+
+        gs 'SaveLastHallEvent', 'quarrel', '', 'Стефан попытался успокоить спорщиков, но один из гостей ушёл недовольным.', 'bad'
+    end
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG] Шанс успокоить: ' + STR(TavernQuarrelChance)
+        *pl '[DEBUG] Бросок: ' + STR(TavernQuarrelRoll)
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+
+    killvar 'TavernQuarrelChance'
+    killvar 'TavernQuarrelRoll'
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Ссора: жёсткое вмешательство
+! ================================================
+
+#TavernHallEventQuarrelHard
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: ССОРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    TavernQuarrelChance = 35 + strength + management_skill
+
+    if TavernQuarrelChance > 90:
+        TavernQuarrelChance = 90
+    end
+
+    TavernQuarrelRoll = RAND(1, 100)
+
+    if TavernQuarrelRoll <= TavernQuarrelChance:
+        *p 'Вы резко прикрикиваете на спорщиков.'
+        *p 'Они замолкают, понимая, что продолжать драку здесь им не дадут.'
+
+        *pl ' '
+        *pl 'Ссора погашена.'
+
+        gs 'SaveLastHallEvent', 'quarrel', '', 'Стефан жёстко пресёк ссору в главном зале.', 'hard_success'
+    else:
+        *p 'Вы повышаете голос, но это только подливает масла в огонь.'
+        *p 'Несколько кружек падают на пол, а один посетитель уходит не заплатив.'
+
+        money -= 10
+        tavern_reputation -= 1
+
+        if money < 0:
+            money = 0
+        end
+
+        if tavern_reputation < 0:
+            tavern_reputation = 0
+        end
+
+        *pl ' '
+        *pl 'Потери: 10 мараведи.'
+        *pl 'Репутация таверны снизилась на 1.'
+
+        gs 'SaveLastHallEvent', 'quarrel', '', 'Жёсткое вмешательство в ссору привело к шуму и потерям.', 'hard_fail'
+    end
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG] Шанс жёстко погасить: ' + STR(TavernQuarrelChance)
+        *pl '[DEBUG] Бросок: ' + STR(TavernQuarrelRoll)
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+
+    killvar 'TavernQuarrelChance'
+    killvar 'TavernQuarrelRoll'
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Ссора: не вмешиваться
+! ================================================
+
+#TavernHallEventQuarrelIgnore
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: ССОРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы решаете не вмешиваться.'
+    *p 'Через несколько минут спор сам собой стихает, но часть гостей поглядывает на вас с сомнением.'
+
+    tavern_reputation -= 1
+
+    if tavern_reputation < 0:
+        tavern_reputation = 0
+    end
+
+    *pl ' '
+    *pl 'Репутация таверны снизилась на 1.'
+
+    gs 'SaveLastHallEvent', 'quarrel', '', 'Стефан не вмешался в ссору посетителей, и часть гостей осталась недовольна.', 'ignore'
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+---

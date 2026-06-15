@@ -1,0 +1,438 @@
+! ================================================
+! FILE: modules/npc/amanda/amanda_legare_major_aftermath.qsps
+! Последствия крупного риска Аманды и Легаре
+! Версия: aftermath v1 / compact menu
+! Назначение:
+! - обработать последствия события "Аманда пропала из зала"
+! - дать разговоры с Амандой, Мелиссой и Клариссой
+! - усилить или смягчить конфликт с Легаре
+! - сохранить разницу между фактом и знанием Стефана
+! - подготовить будущую развилку: конфликт с Легаре / союз с Клариссой / дальнейший NPC-путь Аманды
+!
+! Тексты берутся из:
+! modules/events/tavern/amanda_legare_major_aftermath_text.qsps
+!
+! Хуки добавляются в:
+! modules/actions/dialogs/girl_talk.qsps
+! ================================================
+
+#AmandaLegareMajorAftermathCanTalk
+    AmandaLegareMajorAftermathCanTalk = 0
+
+    if AmandaLegareMajorRiskTalkReady = 0:
+        exit
+    end
+
+    if AmandaLegareMajorAftermathDiscussed = 1:
+        exit
+    end
+
+    AmandaLegareMajorAftermathCanTalk = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_aftermath.qsps
+! Разговор с Амандой после крупного риска
+! ================================================
+
+#AmandaLegareMajorAftermath
+    *clr
+    clr
+    cla
+
+    $MajorAftermathReturnLoc = $ARGS[0]
+
+    if $MajorAftermathReturnLoc = '':
+        $MajorAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($MajorAftermathReturnLoc) = 0:
+        $MajorAftermathReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛЕГАРЕ: ПОСЛЕДСТВИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareMajorAftermathIntroText') = 1:
+        gs 'AmandaLegareMajorAftermathIntroText'
+    else:
+        *p 'После исчезновения Аманды из зала разговор с ней уже нельзя откладывать.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MAJOR AFTERMATH] MajorResult: ' + STR(AmandaLegareMajorRiskResult)
+        *pl '[DEBUG MAJOR AFTERMATH] Fact: ' + STR(Fact_AmandaLegareMajorRisk)
+        *pl '[DEBUG MAJOR AFTERMATH] PlayerKnows: ' + STR(PlayerKnows_AmandaLegareMajorRisk)
+        *pl '[DEBUG MAJOR AFTERMATH] CompromiseReady: ' + STR(AmandaLegareCompromiseReady)
+        *pl '[DEBUG MAJOR AFTERMATH] Instruction: ' + STR(AmandaLegareInstruction)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareMajorAftermathBuildMenu'
+
+    *p 'Как говорить с <a href="exec:gs ''Menu.Show'', ''AmandaLegareMajorAftermathMenu''">Амандой</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_aftermath.qsps
+! Меню разговора с Амандой
+! ================================================
+
+#AmandaLegareMajorAftermathBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareMajorAftermathMenu'
+    gs 'Menu.Create', 'AmandaLegareMajorAftermathMenu'
+
+    if PlayerKnows_AmandaLegareMajorRisk = 1:
+        gs 'Menu.Add', 'AmandaLegareMajorAftermathMenu', 'Спросить спокойно, что произошло', ''
+        gs 'Menu.AddModule', 'AmandaLegareMajorAftermathMenu', {
+            gt 'AmandaLegareMajorAftermathAction', 'calm_ask', $MajorAftermathReturnLoc
+        }
+
+        gs 'Menu.Add', 'AmandaLegareMajorAftermathMenu', 'Потребовать объяснений', ''
+        gs 'Menu.AddModule', 'AmandaLegareMajorAftermathMenu', {
+            gt 'AmandaLegareMajorAftermathAction', 'demand'
+        }
+    else:
+        gs 'Menu.Add', 'AmandaLegareMajorAftermathMenu', 'Осторожно спросить, где она была', ''
+        gs 'Menu.AddModule', 'AmandaLegareMajorAftermathMenu', {
+            gt 'AmandaLegareMajorAftermathAction', 'soft_where', $MajorAftermathReturnLoc
+        }
+
+        gs 'Menu.Add', 'AmandaLegareMajorAftermathMenu', 'Сделать вид, что ничего не знаете', ''
+        gs 'Menu.AddModule', 'AmandaLegareMajorAftermathMenu', {
+            gt 'AmandaLegareMajorAftermathAction', 'pretend', $MajorAftermathReturnLoc
+        }
+    end
+
+    gs 'Menu.Add', 'AmandaLegareMajorAftermathMenu', 'Запретить Легаре приближаться к ней', ''
+    gs 'Menu.AddModule', 'AmandaLegareMajorAftermathMenu', {
+        gt 'AmandaLegareMajorAftermathAction', 'ban_legare', $MajorAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMajorAftermathMenu', 'Сказать, что теперь всё будет только через вас', ''
+    gs 'Menu.AddModule', 'AmandaLegareMajorAftermathMenu', {
+        gt 'AmandaLegareMajorAftermathAction', 'through_stefan', $MajorAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMajorAftermathMenu', 'Утешить и не давить', ''
+    gs 'Menu.AddModule', 'AmandaLegareMajorAftermathMenu', {
+        gt 'AmandaLegareMajorAftermathAction', 'comfort', $MajorAftermathReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareMajorAftermathMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'AmandaLegareMajorAftermathMenu', {
+        gt $MajorAftermathReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_aftermath.qsps
+! Результат разговора с Амандой
+! ================================================
+
+#AmandaLegareMajorAftermathAction
+    *clr
+    clr
+    cla
+
+    $MajorAftermathChoice = LCASE($ARGS[0])
+    $MajorAftermathReturnLoc = $ARGS[1]
+
+    if $MajorAftermathReturnLoc = '':
+        $MajorAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($MajorAftermathReturnLoc) = 0:
+        $MajorAftermathReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    AmandaLegareMajorAftermathDiscussed = 1
+    AmandaLegareMajorRiskTalkReady = 0
+
+    if $MajorAftermathChoice = 'calm_ask':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaSecretiveness -= 1
+        PlayerKnows_AmandaLegareMajorRisk = 1
+
+        if AmandaLegareMajorRiskResult >= 2:
+            AmandaLegareConfessionHint = 1
+        end
+
+        if AmandaSecretiveness < 0:
+            AmandaSecretiveness = 0
+        end
+
+    elseif $MajorAftermathChoice = 'demand':
+        AmandaRebellion += 2
+        AmandaSecretiveness += 2
+        AmandaTrustStefan -= 1
+        PlayerKnows_AmandaLegareMajorRisk = 1
+
+        if AmandaLegareMajorRiskResult >= 2:
+            AmandaLegareDenialStage += 1
+            AmandaLegareNpcPathLockHint = 1
+        end
+
+    elseif $MajorAftermathChoice = 'soft_where':
+        AmandaTrustStefan += 1
+        AmandaSecretiveness += 1
+
+        if Fact_AmandaLegareMajorRisk = 1:
+            AmandaLegareConfessionHint = 1
+        end
+
+    elseif $MajorAftermathChoice = 'pretend':
+        AmandaSecretiveness += 2
+        AmandaNpcPath += 1
+        AmandaLegareInterest += 1
+
+        if AmandaLegareMajorRiskResult >= 2:
+            AmandaLegareMajorRiskHidden = 1
+        end
+
+    elseif $MajorAftermathChoice = 'ban_legare':
+        AmandaLegareInstruction = 4
+        AmandaRebellion += 2
+        AmandaSecretiveness += 2
+        AmandaLegareInterest += 1
+        LegareConflictStage += 1
+        MelissaFamilyConcern += 1
+
+    elseif $MajorAftermathChoice = 'through_stefan':
+        AmandaLegareInstruction = 1
+        AmandaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaWatchAmandaLegare = 1
+        AmandaLegareInterest -= 1
+
+        if AmandaLegareInterest < 0:
+            AmandaLegareInterest = 0
+        end
+
+    elseif $MajorAftermathChoice = 'comfort':
+        AmandaTrustStefan += 2
+        Friends['amanda'] += 1
+        AmandaRebellion -= 1
+        AmandaSecretiveness -= 1
+        AmandaLegareConfessionHint = 1
+
+        if AmandaRebellion < 0:
+            AmandaRebellion = 0
+        end
+
+        if AmandaSecretiveness < 0:
+            AmandaSecretiveness = 0
+        end
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    if AmandaLegareMajorRiskResult >= 2:
+        AmandaLegareConflictWithLegareReady = 1
+        MelissaAmandaLegareMajorRiskTalkReady = 1
+        ClarissaAmandaLegareMajorRiskTalkReady = 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С АМАНДОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareMajorAftermathActionText') = 1:
+        gs 'AmandaLegareMajorAftermathActionText', $MajorAftermathChoice
+    else:
+        *p 'Аманда отвечает не сразу. После этого разговора прежней простоты уже не будет.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MAJOR AFTERMATH] Choice: ' + $MajorAftermathChoice
+        *pl '[DEBUG MAJOR AFTERMATH] Instruction: ' + STR(AmandaLegareInstruction)
+        *pl '[DEBUG MAJOR AFTERMATH] Secretiveness: ' + STR(AmandaSecretiveness)
+        *pl '[DEBUG MAJOR AFTERMATH] Rebellion: ' + STR(AmandaRebellion)
+        *pl '[DEBUG MAJOR AFTERMATH] ConflictReady: ' + STR(AmandaLegareConflictWithLegareReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $MajorAftermathReturnLoc
+    end
+
+    killvar '$MajorAftermathChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_aftermath.qsps
+! Разговор с Мелиссой после крупного риска
+! ================================================
+
+#MelissaTalkAboutAmandaLegareMajor
+    *clr
+    clr
+    cla
+
+    $MajorAftermathReturnLoc = $ARGS[0]
+
+    if $MajorAftermathReturnLoc = '':
+        $MajorAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($MajorAftermathReturnLoc) = 0:
+        $MajorAftermathReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    MelissaAmandaLegareMajorRiskTalkReady = 0
+    MelissaAmandaLegareMajorRiskDiscussed = 1
+    MelissaFamilyConcern += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА О ПРОПАЖЕ АМАНДЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutAmandaLegareMajorText') = 1:
+        gs 'MelissaTalkAboutAmandaLegareMajorText'
+    else:
+        *p 'Мелисса понимает, что история с Легаре стала опаснее обычного флирта.'
+    end
+
+    *pl ' '
+
+    act 'Попросить Мелиссу следить за Амандой постоянно':
+        MelissaWatchAmandaLegare = 1
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaControlNeed += 2
+        FamilyTension += 1
+        gt $MajorAftermathReturnLoc
+    end
+
+    act 'Сказать, что нужно поговорить с Легаре':
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        AmandaLegareConflictWithLegareReady = 1
+        gt $MajorAftermathReturnLoc
+    end
+
+    act 'Сказать, что нельзя давить на Аманду':
+        MelissaTrustStefan += 1
+        MelissaFamilyConcern += 1
+        gt $MajorAftermathReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $MajorAftermathReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_aftermath.qsps
+! Разговор с Клариссой после крупного риска
+! ================================================
+
+#ClarissaTalkAboutAmandaLegareMajor
+    *clr
+    clr
+    cla
+
+    $MajorAftermathReturnLoc = $ARGS[0]
+
+    if $MajorAftermathReturnLoc = '':
+        $MajorAftermathReturnLoc = 'TavernMain'
+    end
+
+    if LOC($MajorAftermathReturnLoc) = 0:
+        $MajorAftermathReturnLoc = 'TavernMain'
+    end
+
+    if $RealName['clarissa'] = '':
+        $RealName['clarissa'] = 'Кларисса'
+    end
+
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    ClarissaAmandaLegareMajorRiskTalkReady = 0
+    ClarissaAmandaLegareMajorRiskDiscussed = 1
+    ClarissaPrivateTalkReady = 1
+    ClarissaRouteHint = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА О ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutAmandaLegareMajorText') = 1:
+        gs 'ClarissaTalkAboutAmandaLegareMajorText'
+    else:
+        *p 'Кларисса уже не делает вид, что это просто ревность.'
+    end
+
+    *pl ' '
+
+    act 'Сказать, что Легаре зашёл слишком далеко':
+        ClarissaTrustStefan += 1
+        ClarissaJealousy += 1
+        ClarissaSecretAllianceHint = 1
+        AmandaLegareConflictWithLegareReady = 1
+        gt $MajorAftermathReturnLoc
+    end
+
+    act 'Предложить союз против Легаре':
+        ClarissaTrustStefan += 2
+        ClarissaSecretAllianceHint = 1
+        ClarissaAgainstLegareAlliance = 1
+        ClarissaPrivateTalkReady = 1
+        gt $MajorAftermathReturnLoc
+    end
+
+    act 'Сказать, что это семейное дело':
+        ClarissaJealousy += 1
+        ClarissaTrustStefan -= 1
+
+        if ClarissaTrustStefan < 0:
+            ClarissaTrustStefan = 0
+        end
+
+        gt $MajorAftermathReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $MajorAftermathReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_major_aftermath.qsps
+! Debug-сброс
+! ================================================
+
+#AmandaLegareMajorAftermathDebugReset
+    AmandaLegareMajorAftermathDiscussed = 0
+    AmandaLegareConfessionHint = 0
+    AmandaLegareDenialStage = 0
+    AmandaLegareNpcPathLockHint = 0
+    AmandaLegareMajorRiskHidden = 0
+    AmandaLegareConflictWithLegareReady = 0
+    MelissaAmandaLegareMajorRiskDiscussed = 0
+    ClarissaAmandaLegareMajorRiskDiscussed = 0
+    ClarissaAgainstLegareAlliance = 0
+---

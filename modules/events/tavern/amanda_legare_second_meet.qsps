@@ -1,0 +1,400 @@
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_second_meet.qsps
+! Вторая попытка Легаре увести Аманду дальше от трактира
+! Версия: second meet rewrite v1 / auto trigger + clear fork
+! Назначение:
+! - заменить старое большое меню на 4 понятные реакции
+! - запускать событие автоматически через осмотр зала / работу за стойкой
+! - продолжить ветку после AmandaLegareSecondMeetReady
+! - дать развилку: защита / конфликт / наблюдение / скрытая линия
+! - подготовить крупный риск через AmandaLegareMajorRiskReady
+!
+! Тексты берутся из:
+! modules/events/tavern/amanda_legare_second_meet_text.qsps
+!
+! Вызов:
+! gs 'AmandaLegareSecondMeetTryAutoStart', 'TavernMain'
+! ================================================
+
+#AmandaLegareSecondMeetCanStart
+    AmandaLegareSecondMeetCanStart = 0
+
+    if AmandaLegareSecondMeetReady <> 1:
+        exit
+    end
+
+    if AmandaLegareSecondMeetStage > 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    if $GirlLocation['amanda'] = 'Church':
+        exit
+    end
+
+    if $GirlLocation['amanda'] = 'DanceHall':
+        exit
+    end
+
+    AmandaLegareSecondMeetCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_second_meet.qsps
+! Попытка автозапуска из обычных действий трактира
+! ARGS[0] — куда возвращаться после события
+! ================================================
+
+#AmandaLegareSecondMeetTryAutoStart
+    $AmandaLegareSecondMeetReturnLoc = $ARGS[0]
+
+    if $AmandaLegareSecondMeetReturnLoc = '':
+        $AmandaLegareSecondMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareSecondMeetReturnLoc) = 0:
+        $AmandaLegareSecondMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC('AmandaLegareSecondMeetCanStart') = 1:
+        gs 'AmandaLegareSecondMeetCanStart'
+
+        if AmandaLegareSecondMeetCanStart = 1:
+            gt 'AmandaLegareSecondMeetStart', $AmandaLegareSecondMeetReturnLoc
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_second_meet.qsps
+! Вход в событие
+! ================================================
+
+#AmandaLegareSecondMeetStart
+    *clr
+    clr
+    cla
+
+    $AmandaLegareSecondMeetReturnLoc = $ARGS[0]
+
+    if $AmandaLegareSecondMeetReturnLoc = '':
+        $AmandaLegareSecondMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareSecondMeetReturnLoc) = 0:
+        $AmandaLegareSecondMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC('UpdateGirlLocations') = 1:
+        gs 'UpdateGirlLocations'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    AmandaLegareSecondMeetStage = 1
+    AmandaLegareSecondMeetReady = 0
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/amanda_legare', 'second_meet', 2
+    end
+
+    gs 'AmandaLegareSecondMeetGetRisk'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВТОРАЯ ПОПЫТКА ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSecondMeetIntroText') = 1:
+        gs 'AmandaLegareSecondMeetIntroText'
+    else:
+        *p 'Легаре снова ищет момент, чтобы отвести Аманду от света и чужих глаз.'
+    end
+
+    *pl ' '
+
+    if AmandaLegareHardWarningUsed = 1 or LegareConflictStage > 0:
+        if LOC('AmandaLegareSecondMeetThoughtsHard') = 1:
+            gs 'AmandaLegareSecondMeetThoughtsHard'
+        end
+    else:
+        if LOC('AmandaLegareSecondMeetThoughtsSoft') = 1:
+            gs 'AmandaLegareSecondMeetThoughtsSoft'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SECOND MEET] ReturnLoc: ' + $AmandaLegareSecondMeetReturnLoc
+        *pl '[DEBUG SECOND MEET] Risk: ' + STR(AmandaLegareSecondMeetRisk)
+        *pl '[DEBUG SECOND MEET] OutsideWallResult: ' + STR(AmandaLegareOutsideWallResult)
+        *pl '[DEBUG SECOND MEET] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG SECOND MEET] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG SECOND MEET] AmandaSecretiveness: ' + STR(AmandaSecretiveness)
+        *pl '[DEBUG SECOND MEET] AmandaNpcPath: ' + STR(AmandaNpcPath)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareSecondMeetBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareSecondMeetMenu''">делать</a>?'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_second_meet.qsps
+! Расчёт риска крупного события
+! ================================================
+
+#AmandaLegareSecondMeetGetRisk
+    AmandaLegareSecondMeetRisk = 25
+
+    AmandaLegareSecondMeetRisk += AmandaLegareInterest * 7
+    AmandaLegareSecondMeetRisk += LegareAmandaInterest * 6
+    AmandaLegareSecondMeetRisk += AmandaSecretiveness * 5
+    AmandaLegareSecondMeetRisk += AmandaRebellion * 4
+    AmandaLegareSecondMeetRisk += AmandaNpcPath * 5
+    AmandaLegareSecondMeetRisk += AmandaPublicAttention * 2
+
+    if AmandaLegareOutsideWallResult = 3:
+        AmandaLegareSecondMeetRisk += 18
+    elseif AmandaLegareOutsideWallResult = 2:
+        AmandaLegareSecondMeetRisk += 10
+    end
+
+    if AmandaLegareOutsideMeetResult = 3:
+        AmandaLegareSecondMeetRisk += 10
+    end
+
+    if AmandaLegareHardWarningUsed = 1:
+        AmandaLegareSecondMeetRisk += 8
+    end
+
+    if MelissaWatchAmandaLegare = 1:
+        AmandaLegareSecondMeetRisk -= 12
+    end
+
+    if AmandaTrustStefan >= 7:
+        AmandaLegareSecondMeetRisk -= 12
+    end
+
+    if FamilyTension >= 5:
+        AmandaLegareSecondMeetRisk += 5
+    end
+
+    if AmandaLegareSecondMeetRisk < 5:
+        AmandaLegareSecondMeetRisk = 5
+    end
+
+    if AmandaLegareSecondMeetRisk > 95:
+        AmandaLegareSecondMeetRisk = 95
+    end
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_second_meet.qsps
+! Короткое меню
+! ================================================
+
+#AmandaLegareSecondMeetBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareSecondMeetMenu'
+    gs 'Menu.Create', 'AmandaLegareSecondMeetMenu'
+
+    gs 'Menu.Add', 'AmandaLegareSecondMeetMenu', 'Вернуть Аманду', ''
+    gs 'Menu.AddModule', 'AmandaLegareSecondMeetMenu', {
+        gt 'AmandaLegareSecondMeetAction', 'bring_back', $AmandaLegareSecondMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareSecondMeetMenu', 'Осадить Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareSecondMeetMenu', {
+        gt 'AmandaLegareSecondMeetAction', 'confront_legare', $AmandaLegareSecondMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareSecondMeetMenu', 'Проследить дальше', ''
+    gs 'Menu.AddModule', 'AmandaLegareSecondMeetMenu', {
+        gt 'AmandaLegareSecondMeetAction', 'follow_more', $AmandaLegareSecondMeetReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaLegareSecondMeetMenu', 'Не вмешиваться', ''
+    gs 'Menu.AddModule', 'AmandaLegareSecondMeetMenu', {
+        gt 'AmandaLegareSecondMeetAction', 'ignore', $AmandaLegareSecondMeetReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_second_meet.qsps
+! Обработка выбора
+! ================================================
+
+#AmandaLegareSecondMeetAction
+    *clr
+    clr
+    cla
+
+    $SecondMeetChoice = LCASE($ARGS[0])
+    $AmandaLegareSecondMeetReturnLoc = $ARGS[1]
+
+    if $AmandaLegareSecondMeetReturnLoc = '':
+        $AmandaLegareSecondMeetReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareSecondMeetReturnLoc) = 0:
+        $AmandaLegareSecondMeetReturnLoc = 'TavernMain'
+    end
+
+    gs 'AmandaLegareSecondMeetGetRisk'
+
+    ! 0 — встреча сорвана без открытой войны
+    ! 1 — открытый конфликт с Легаре
+    ! 2 — Стефан проследил и увидел опасное продолжение
+    ! 3 — Стефан отпустил ситуацию, риск скрыт
+    AmandaLegareSecondMeetResult = 0
+
+    AmandaLegareSecondMeetTalkReady = 1
+    AmandaLegareMajorRiskReady = 0
+
+    if $SecondMeetChoice = 'bring_back':
+        AmandaLegareSecondMeetResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaSecretiveness += 1
+        AmandaRebellion += 1
+        LegareConflictStage += 1
+        LegareSupplyPressureReady = 1
+        PlayerKnows_AmandaLegareMajorRisk = 0
+        Fact_AmandaLegareMajorRisk = 0
+
+    elseif $SecondMeetChoice = 'confront_legare':
+        AmandaLegareSecondMeetResult = 1
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 3
+        TavernScandal += 1
+        TavernScandalLevel += 1
+        LegareSupplyPressureReady = 1
+        AmandaLegareConflictWithLegareReady = 1
+        PlayerKnows_AmandaLegareMajorRisk = 0
+        Fact_AmandaLegareMajorRisk = 0
+
+        if AmandaLegareHardWarningUsed = 1:
+            LegarePricesRaised = 1
+            LegareWinePressure = 1
+        end
+
+    elseif $SecondMeetChoice = 'follow_more':
+        SecondMeetRoll = RAND(1, 100)
+        PlayerKnows_AmandaLegareMajorRisk = 1
+
+        if SecondMeetRoll <= AmandaLegareSecondMeetRisk:
+            AmandaLegareSecondMeetResult = 2
+            Fact_AmandaLegareMajorRisk = 1
+            AmandaLegareMajorRiskReady = 1
+            AmandaSecretiveness += 1
+            AmandaNpcPath += 1
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+            ClarissaJealousy += 1
+            MelissaFamilyConcern += 1
+        else:
+            AmandaLegareSecondMeetResult = 0
+            Fact_AmandaLegareMajorRisk = 0
+            AmandaTrustStefan += 1
+            AmandaLegareInterest += 1
+        end
+
+        killvar 'SecondMeetRoll'
+
+    elseif $SecondMeetChoice = 'ignore':
+        AmandaLegareSecondMeetResult = 3
+        Fact_AmandaLegareMajorRisk = 1
+        PlayerKnows_AmandaLegareMajorRisk = 0
+        AmandaLegareMajorRiskReady = 1
+        AmandaLegareMajorRiskHidden = 1
+        AmandaSecretiveness += 2
+        AmandaNpcPath += 2
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        ClarissaJealousy += 1
+        MelissaFamilyConcern += 1
+        TavernScandal += 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВТОРАЯ ПОПЫТКА ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSecondMeetActionText') = 1:
+        gs 'AmandaLegareSecondMeetActionText', $SecondMeetChoice
+    else:
+        *p 'Вторая попытка Легаре заканчивается, но цена этого вечера ещё впереди.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SECOND MEET] Choice: ' + $SecondMeetChoice
+        *pl '[DEBUG SECOND MEET] Result: ' + STR(AmandaLegareSecondMeetResult)
+        *pl '[DEBUG SECOND MEET] MajorRiskReady: ' + STR(AmandaLegareMajorRiskReady)
+        *pl '[DEBUG SECOND MEET] MajorRiskHidden: ' + STR(AmandaLegareMajorRiskHidden)
+        *pl '[DEBUG SECOND MEET] ConflictReady: ' + STR(AmandaLegareConflictWithLegareReady)
+        *pl '[DEBUG SECOND MEET] SupplyPressureReady: ' + STR(LegareSupplyPressureReady)
+        *pl ' '
+    end
+
+    act 'Вернуться':
+        gt $AmandaLegareSecondMeetReturnLoc
+    end
+
+    killvar '$SecondMeetChoice'
+---
+
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_second_meet.qsps
+! Debug-сброс
+! ================================================
+
+#AmandaLegareSecondMeetDebugReset
+    AmandaLegareSecondMeetCanStart = 0
+    AmandaLegareSecondMeetReady = 0
+    AmandaLegareSecondMeetStage = 0
+    AmandaLegareSecondMeetResult = 0
+    AmandaLegareSecondMeetRisk = 0
+    AmandaLegareSecondMeetTalkReady = 0
+    AmandaLegareMajorRiskReady = 0
+    AmandaLegareMajorRiskHidden = 0
+---

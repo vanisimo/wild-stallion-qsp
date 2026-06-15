@@ -1,0 +1,301 @@
+! ================================================
+! FILE: modules/events/dance/amanda_legare_after_dance.qsps
+! Легаре пытается поговорить с Амандой после танца
+! Версия: legare dance rewrite v3 / short buttons + Stefan thoughts
+! Назначение:
+! - запускать сцену автоматически после приглашения / танца Легаре
+! - убрать боковые разговоры с Клариссой из главной сцены
+! - не обрывать цепочку ни одним выбором
+!
+! Тексты берутся из:
+! modules/events/dance/amanda_legare_after_dance_text.qsps
+!
+! Вызов из:
+! modules/locations/market_dance.qsps
+! через #AmandaLegareAfterDanceCanStart
+! ================================================
+
+#AmandaLegareAfterDanceCanStart
+    AmandaLegareAfterDanceCanStart = 0
+
+    if AmandaLegareAfterDanceReady <> 1:
+        exit
+    end
+
+    if AmandaLegareAfterDanceStage > 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'DanceHall':
+        exit
+    end
+
+    if $GirlLocation['legare'] <> 'DanceHall':
+        exit
+    end
+
+    AmandaLegareAfterDanceCanStart = 1
+---
+
+#AmandaLegareAfterDanceStart
+    *clr
+    clr
+    cla
+
+    AmandaLegareAfterDanceStage = 1
+    AmandaLegareAfterDanceReady = 0
+    AmandaLegareAfterDanceCanStart = 0
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/dance/amanda_legare', 'after_dance', 2
+    end
+
+    gs 'AmandaLegareAfterDanceGetRisk'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПАРА СЛОВ ПОСЛЕ ТАНЦА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareAfterDanceIntroText') = 1:
+        gs 'AmandaLegareAfterDanceIntroText'
+    else:
+        *p 'После танца Легаре пытается поймать момент и сказать Аманде пару слов без лишних ушей.'
+    end
+
+    *pl ' '
+
+    if AmandaLegareHardWarningUsed = 1 or LegareConflictStage > 0:
+        if LOC('AmandaLegareAfterDanceThoughtsHard') = 1:
+            gs 'AmandaLegareAfterDanceThoughtsHard'
+        end
+    else:
+        if LOC('AmandaLegareAfterDanceThoughtsSoft') = 1:
+            gs 'AmandaLegareAfterDanceThoughtsSoft'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AFTER DANCE] Risk: ' + STR(AmandaLegareAfterDanceRisk)
+        *pl '[DEBUG AFTER DANCE] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG AFTER DANCE] DanceResult: ' + STR(AmandaLegareDanceResult)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareAfterDanceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareAfterDanceMenu''">делать</a>?'
+---
+
+#AmandaLegareAfterDanceGetRisk
+    AmandaLegareAfterDanceRisk = 10
+
+    if AmandaLegareDanceResult = 1:
+        AmandaLegareAfterDanceRisk += 10
+    elseif AmandaLegareDanceResult = 2:
+        AmandaLegareAfterDanceRisk += 25
+    elseif AmandaLegareDanceResult = 3:
+        AmandaLegareAfterDanceRisk += 5
+    end
+
+    AmandaLegareAfterDanceRisk += AmandaLegareInterest * 5
+    AmandaLegareAfterDanceRisk += LegareAmandaInterest * 5
+    AmandaLegareAfterDanceRisk += AmandaRebellion * 3
+    AmandaLegareAfterDanceRisk += AmandaPublicAttention * 2
+    AmandaLegareAfterDanceRisk += AmandaSecretiveness * 2
+
+    if AmandaLegareHardWarningUsed = 1:
+        AmandaLegareAfterDanceRisk += 8
+    end
+
+    if MelissaWatchAmandaLegare = 1:
+        AmandaLegareAfterDanceRisk -= 10
+    end
+
+    if AmandaTrustStefan >= 5:
+        AmandaLegareAfterDanceRisk -= 10
+    end
+
+    if AmandaLegareAfterDanceRisk < 5:
+        AmandaLegareAfterDanceRisk = 5
+    end
+
+    if AmandaLegareAfterDanceRisk > 90:
+        AmandaLegareAfterDanceRisk = 90
+    end
+---
+
+#AmandaLegareAfterDanceBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareAfterDanceMenu'
+    gs 'Menu.Create', 'AmandaLegareAfterDanceMenu'
+
+    gs 'Menu.Add', 'AmandaLegareAfterDanceMenu', 'Подойти самому', ''
+    gs 'Menu.AddModule', 'AmandaLegareAfterDanceMenu', {
+        gt 'AmandaLegareAfterDanceAction', 'approach'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareAfterDanceMenu', 'Отправить Мелиссу', ''
+    gs 'Menu.AddModule', 'AmandaLegareAfterDanceMenu', {
+        gt 'AmandaLegareAfterDanceAction', 'send_melissa'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareAfterDanceMenu', 'Довериться Аманде', ''
+    gs 'Menu.AddModule', 'AmandaLegareAfterDanceMenu', {
+        gt 'AmandaLegareAfterDanceAction', 'trust_amanda'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareAfterDanceMenu', 'Отойти в сторону', ''
+    gs 'Menu.AddModule', 'AmandaLegareAfterDanceMenu', {
+        gt 'AmandaLegareAfterDanceAction', 'step_aside'
+    }
+---
+
+#AmandaLegareAfterDanceAction
+    *clr
+    clr
+    cla
+
+    $AfterDanceChoice = LCASE($ARGS[0])
+
+    gs 'AmandaLegareAfterDanceGetRisk'
+
+    AmandaLegareAfterDanceResolved = 1
+
+    ! 0 — Легаре не получил личного разговора
+    ! 1 — короткий разговор при людях
+    ! 2 — личный разговор состоялся, Стефан знает
+    ! 3 — личный разговор состоялся, Стефан не знает деталей
+    AmandaLegareAfterDanceResult = 0
+
+    if $AfterDanceChoice = 'approach':
+        AmandaLegareAfterDanceResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 1
+
+        if AmandaLegareHardWarningUsed = 1:
+            LegareConflictStage += 1
+        end
+
+    elseif $AfterDanceChoice = 'send_melissa':
+        AmandaLegareAfterDanceResult = 0
+        MelissaWatchAmandaLegare = 1
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaControlNeed += 1
+        AmandaTrustStefan += 1
+
+    elseif $AfterDanceChoice = 'trust_amanda':
+        AfterDanceRoll = RAND(1, 100)
+        PlayerKnows_AmandaLegarePrivateTalk = 1
+        Fact_AmandaLegarePrivateTalk = 1
+
+        if AfterDanceRoll <= AmandaLegareAfterDanceRisk:
+            AmandaLegareAfterDanceResult = 2
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+            AmandaSecretiveness += 1
+            AmandaNpcPath += 1
+            ClarissaJealousy += 1
+        else:
+            AmandaLegareAfterDanceResult = 1
+            AmandaTrustStefan += 1
+        end
+
+        killvar 'AfterDanceRoll'
+
+    elseif $AfterDanceChoice = 'step_aside':
+        AfterDanceRoll = RAND(1, 100)
+        Fact_AmandaLegarePrivateTalk = 1
+
+        if AfterDanceRoll <= AmandaLegareAfterDanceRisk:
+            AmandaLegareAfterDanceResult = 3
+            PlayerKnows_AmandaLegarePrivateTalk = 0
+            AmandaLegareInterest += 2
+            LegareAmandaInterest += 2
+            AmandaSecretiveness += 2
+            AmandaNpcPath += 1
+            ClarissaJealousy += 1
+            MelissaFamilyConcern += 1
+            TavernScandal += 1
+        else:
+            AmandaLegareAfterDanceResult = 1
+            PlayerKnows_AmandaLegarePrivateTalk = 0
+            AmandaLegareInterest += 1
+        end
+
+        killvar 'AfterDanceRoll'
+    end
+
+    ! Стабилизация цепочки:
+    ! Любой выбор ведёт дальше к трактирному этапу, но с разным риском и тоном.
+    AmandaLegareNextRiskReady = 1
+    MelissaLegareWarningReady = 1
+    ClarissaTalkAboutAmandaReady = 1
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ТАНЦА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareAfterDanceActionText') = 1:
+        gs 'AmandaLegareAfterDanceActionText', $AfterDanceChoice
+    else:
+        *p 'Момент прошёл, но Легаре явно не собирается исчезать из этой истории.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AFTER DANCE] Choice: ' + $AfterDanceChoice
+        *pl '[DEBUG AFTER DANCE] Result: ' + STR(AmandaLegareAfterDanceResult)
+        *pl '[DEBUG AFTER DANCE] NextRiskReady: ' + STR(AmandaLegareNextRiskReady)
+        *pl '[DEBUG AFTER DANCE] FactPrivate: ' + STR(Fact_AmandaLegarePrivateTalk)
+        *pl '[DEBUG AFTER DANCE] PlayerKnowsPrivate: ' + STR(PlayerKnows_AmandaLegarePrivateTalk)
+        *pl ' '
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$AfterDanceChoice'
+---
+
+#AmandaLegareAfterDanceDebugReset
+    AmandaLegareAfterDanceCanStart = 0
+    AmandaLegareAfterDanceReady = 0
+    AmandaLegareAfterDanceStage = 0
+    AmandaLegareAfterDanceResolved = 0
+    AmandaLegareAfterDanceResult = 0
+    AmandaLegareAfterDanceRisk = 0
+    Fact_AmandaLegarePrivateTalk = 0
+    PlayerKnows_AmandaLegarePrivateTalk = 0
+---

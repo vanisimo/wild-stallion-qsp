@@ -1,0 +1,560 @@
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Ядро состояния скандальных событий трактира
+! Версия: v1
+! Назначение:
+! - единая инициализация новых переменных зала/кухни
+! - единый clamp, чтобы значения не уходили в минус и не раздувались бесконечно
+! - debug-профили для быстрого теста новых событий
+! - короткий статус трактира для проверки TavernScandal / TavernLewdFame / слухов
+!
+! Используется системами:
+! modules/events/hall/hall_harassment.qsps
+! modules/events/hall/hall_lewd_behavior.qsps
+! modules/events/hall/hall_missing_girl.qsps
+! modules/events/kitchen/kitchen_customer_event.qsps
+! modules/actions/tavern/girl_work_policy_talk.qsps
+! modules/events/tavern/tavern_event_dispatcher.qsps
+! ================================================
+
+#InitTavernEventState
+    ! ====================== ОБЩИЕ ШКАЛЫ ТРАКТИРА ======================
+    ! TavernReputation — обычная репутация: качество еды, порядок, обслуживание.
+    ! TavernScandal — скандальность: слухи, откровенная форма, грязные истории.
+    ! TavernLewdFame — поздняя слава "тут можно договориться".
+    ! TavernGirlsEasyRumor — слух, что девушки в трактире "простые".
+    ! TavernBackroomRumor — слухи про подсобку / лестницу / дальние углы.
+    ! TavernKitchenRumor — слухи про кухню и "особые извинения".
+
+    if TavernReputation <= 0:
+        TavernReputation = 30
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    if TavernLewdFame < 0:
+        TavernLewdFame = 0
+    end
+
+    if TavernGirlsEasyRumor < 0:
+        TavernGirlsEasyRumor = 0
+    end
+
+    if TavernBackroomRumor < 0:
+        TavernBackroomRumor = 0
+    end
+
+    if TavernKitchenRumor < 0:
+        TavernKitchenRumor = 0
+    end
+
+    ! ====================== ДЕВУШКИ ======================
+    gs 'InitGirlTavernEventState', 'amanda'
+    gs 'InitGirlTavernEventState', 'melissa'
+    gs 'InitGirlTavernEventState', 'sandra'
+
+    gs 'ClampTavernEventState'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Инициализация одной девушки
+! ================================================
+
+#InitGirlTavernEventState
+    gs 'TavernEventStateNormalizeGirl', $ARGS[0]
+    $TavernStateGirl = $TavernStateGirlKey
+
+    if $TavernStateGirl = '':
+        exit
+    end
+
+    if $RealName[$TavernStateGirl] = '':
+        if $TavernStateGirl = 'amanda':
+            $RealName[$TavernStateGirl] = 'Аманда'
+        elseif $TavernStateGirl = 'melissa':
+            $RealName[$TavernStateGirl] = 'Мелисса'
+        elseif $TavernStateGirl = 'sandra':
+            $RealName[$TavernStateGirl] = 'Сандра'
+        else:
+            $RealName[$TavernStateGirl] = $TavernStateGirl
+        end
+    end
+
+    ! Политики:
+    ! GirlWorkPolicy:
+    ! 0 — правил нет
+    ! 1 — держаться прилично и звать Стефана
+    ! 2 — решать самой
+    ! 3 — удерживать клиента ради чаевых
+    !
+    ! GirlKitchenPolicy:
+    ! 0 — правил нет
+    ! 1 — звать Стефана / держаться прилично
+    ! 2 — решать самой
+    ! 3 — удерживать клиента любой ценой
+    !
+    ! GirlUniformLevel:
+    ! 0 — обычная форма
+    ! 1 — откровенная форма
+
+    if GirlWorkPolicy[$TavernStateGirl] < 0:
+        GirlWorkPolicy[$TavernStateGirl] = 0
+    end
+
+    if GirlKitchenPolicy[$TavernStateGirl] < 0:
+        GirlKitchenPolicy[$TavernStateGirl] = 0
+    end
+
+    if GirlUniformLevel[$TavernStateGirl] < 0:
+        GirlUniformLevel[$TavernStateGirl] = 0
+    end
+
+    ! Мост к уже купленной форме.
+    if uniform_purchased[$TavernStateGirl] = 1:
+        if GirlUniformLevel[$TavernStateGirl] < 1:
+            GirlUniformLevel[$TavernStateGirl] = 1
+        end
+    end
+
+    killvar '$TavernStateGirl'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Clamp всех новых шкал
+! ================================================
+
+#ClampTavernEventState
+    if TavernReputation < 0:
+        TavernReputation = 0
+    elseif TavernReputation > 100:
+        TavernReputation = 100
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    elseif TavernScandal > 100:
+        TavernScandal = 100
+    end
+
+    if TavernLewdFame < 0:
+        TavernLewdFame = 0
+    elseif TavernLewdFame > 100:
+        TavernLewdFame = 100
+    end
+
+    if TavernGirlsEasyRumor < 0:
+        TavernGirlsEasyRumor = 0
+    elseif TavernGirlsEasyRumor > 1:
+        TavernGirlsEasyRumor = 1
+    end
+
+    if TavernBackroomRumor < 0:
+        TavernBackroomRumor = 0
+    elseif TavernBackroomRumor > 1:
+        TavernBackroomRumor = 1
+    end
+
+    if TavernKitchenRumor < 0:
+        TavernKitchenRumor = 0
+    elseif TavernKitchenRumor > 1:
+        TavernKitchenRumor = 1
+    end
+
+    gs 'ClampGirlTavernEventState', 'amanda'
+    gs 'ClampGirlTavernEventState', 'melissa'
+    gs 'ClampGirlTavernEventState', 'sandra'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Clamp одной девушки
+! ================================================
+
+#ClampGirlTavernEventState
+    gs 'TavernEventStateNormalizeGirl', $ARGS[0]
+    $TavernStateGirl = $TavernStateGirlKey
+
+    if $TavernStateGirl = '':
+        exit
+    end
+
+    if GirlWorkPolicy[$TavernStateGirl] < 0:
+        GirlWorkPolicy[$TavernStateGirl] = 0
+    elseif GirlWorkPolicy[$TavernStateGirl] > 3:
+        GirlWorkPolicy[$TavernStateGirl] = 3
+    end
+
+    if GirlKitchenPolicy[$TavernStateGirl] < 0:
+        GirlKitchenPolicy[$TavernStateGirl] = 0
+    elseif GirlKitchenPolicy[$TavernStateGirl] > 3:
+        GirlKitchenPolicy[$TavernStateGirl] = 3
+    end
+
+    if GirlUniformLevel[$TavernStateGirl] < 0:
+        GirlUniformLevel[$TavernStateGirl] = 0
+    elseif GirlUniformLevel[$TavernStateGirl] > 1:
+        GirlUniformLevel[$TavernStateGirl] = 1
+    end
+
+    if GirlHallLewdStage[$TavernStateGirl] < 0:
+        GirlHallLewdStage[$TavernStateGirl] = 0
+    elseif GirlHallLewdStage[$TavernStateGirl] > 4:
+        GirlHallLewdStage[$TavernStateGirl] = 4
+    end
+
+    if GirlPublicAttention[$TavernStateGirl] < 0:
+        GirlPublicAttention[$TavernStateGirl] = 0
+    elseif GirlPublicAttention[$TavernStateGirl] > 100:
+        GirlPublicAttention[$TavernStateGirl] = 100
+    end
+
+    if GirlNpcPath[$TavernStateGirl] < 0:
+        GirlNpcPath[$TavernStateGirl] = 0
+    elseif GirlNpcPath[$TavernStateGirl] > 100:
+        GirlNpcPath[$TavernStateGirl] = 100
+    end
+
+    if GirlSecretiveness[$TavernStateGirl] < 0:
+        GirlSecretiveness[$TavernStateGirl] = 0
+    elseif GirlSecretiveness[$TavernStateGirl] > 100:
+        GirlSecretiveness[$TavernStateGirl] = 100
+    end
+
+    if GirlRebellion[$TavernStateGirl] < 0:
+        GirlRebellion[$TavernStateGirl] = 0
+    elseif GirlRebellion[$TavernStateGirl] > 100:
+        GirlRebellion[$TavernStateGirl] = 100
+    end
+
+    if GirlTrustStefan[$TavernStateGirl] < 0:
+        GirlTrustStefan[$TavernStateGirl] = 0
+    elseif GirlTrustStefan[$TavernStateGirl] > 100:
+        GirlTrustStefan[$TavernStateGirl] = 100
+    end
+
+    killvar '$TavernStateGirl'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Печать статуса трактира
+! ================================================
+
+#PrintTavernEventState
+    gs 'ClampTavernEventState'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СТАТУС ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *pl 'Репутация: ' + STR(TavernReputation)
+    *pl 'Скандальность: ' + STR(TavernScandal)
+    *pl 'Скандальная слава: ' + STR(TavernLewdFame)
+
+    if TavernGirlsEasyRumor = 1:
+        *pl 'Слух: клиенты считают девушек трактира доступными.'
+    else:
+        *pl 'Слух: про доступность девушек пока говорят осторожно.'
+    end
+
+    if TavernBackroomRumor = 1:
+        *pl 'Слух: подсобка и дальние углы стали слишком интересны гостям.'
+    end
+
+    if TavernKitchenRumor = 1:
+        *pl 'Слух: кухня улаживает жалобы не только едой.'
+    end
+
+    *pl ' '
+
+    gs 'PrintGirlTavernEventState', 'amanda'
+    gs 'PrintGirlTavernEventState', 'melissa'
+    gs 'PrintGirlTavernEventState', 'sandra'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Печать статуса девушки
+! ================================================
+
+#PrintGirlTavernEventState
+    gs 'TavernEventStateNormalizeGirl', $ARGS[0]
+    $TavernStateGirl = $TavernStateGirlKey
+
+    if $TavernStateGirl = '':
+        exit
+    end
+
+    gs 'TavernEventStatePolicyName', 'hall', GirlWorkPolicy[$TavernStateGirl]
+    $TavernStateHallPolicy = $TavernStatePolicyName
+
+    gs 'TavernEventStatePolicyName', 'kitchen', GirlKitchenPolicy[$TavernStateGirl]
+    $TavernStateKitchenPolicy = $TavernStatePolicyName
+
+    if GirlUniformLevel[$TavernStateGirl] = 1:
+        $TavernStateUniform = 'откровенная'
+    else:
+        $TavernStateUniform = 'обычная'
+    end
+
+    *pl '<b>' + $RealName[$TavernStateGirl] + '</b>'
+    *pl 'Форма: ' + $TavernStateUniform
+    *pl 'Правило зала: ' + $TavernStateHallPolicy
+    *pl 'Правило кухни: ' + $TavernStateKitchenPolicy
+    *pl 'Публичное внимание: ' + STR(GirlPublicAttention[$TavernStateGirl])
+    *pl 'NPC-путь: ' + STR(GirlNpcPath[$TavernStateGirl])
+    *pl 'Скрытность: ' + STR(GirlSecretiveness[$TavernStateGirl])
+    *pl 'Бунт: ' + STR(GirlRebellion[$TavernStateGirl])
+    *pl ' '
+
+    killvar '$TavernStateGirl'
+    killvar '$TavernStateHallPolicy'
+    killvar '$TavernStateKitchenPolicy'
+    killvar '$TavernStateUniform'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Название политики
+! ================================================
+
+#TavernEventStatePolicyName
+    $TavernStatePolicyArea = LCASE($ARGS[0])
+    TavernStatePolicyValue = ARGS[1]
+    $TavernStatePolicyName = 'правил нет'
+
+    if $TavernStatePolicyArea = 'kitchen':
+        if TavernStatePolicyValue = 1:
+            $TavernStatePolicyName = 'звать Стефана'
+        elseif TavernStatePolicyValue = 2:
+            $TavernStatePolicyName = 'решать самой'
+        elseif TavernStatePolicyValue = 3:
+            $TavernStatePolicyName = 'удерживать клиента любой ценой'
+        end
+    else:
+        if TavernStatePolicyValue = 1:
+            $TavernStatePolicyName = 'держаться прилично'
+        elseif TavernStatePolicyValue = 2:
+            $TavernStatePolicyName = 'решать самой'
+        elseif TavernStatePolicyValue = 3:
+            $TavernStatePolicyName = 'удерживать клиента ради чаевых'
+        end
+    end
+
+    killvar '$TavernStatePolicyArea'
+    killvar 'TavernStatePolicyValue'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Debug-профиль: чистая таверна
+! ================================================
+
+#DebugSetTavernProfileClean
+    TavernReputation = 45
+    TavernScandal = 0
+    TavernLewdFame = 0
+    TavernGirlsEasyRumor = 0
+    TavernBackroomRumor = 0
+    TavernKitchenRumor = 0
+
+    gs 'DebugSetGirlTavernProfile', 'amanda', 0
+    gs 'DebugSetGirlTavernProfile', 'melissa', 0
+    gs 'DebugSetGirlTavernProfile', 'sandra', 0
+
+    gs 'ClampTavernEventState'
+
+    *pl 'DEBUG: профиль "чистая таверна" установлен.'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Debug-профиль: средняя скандальность
+! ================================================
+
+#DebugSetTavernProfileMiddle
+    TavernReputation = 45
+    TavernScandal = 35
+    TavernLewdFame = 15
+    TavernGirlsEasyRumor = 1
+    TavernBackroomRumor = 0
+    TavernKitchenRumor = 0
+
+    gs 'DebugSetGirlTavernProfile', 'amanda', 2
+    gs 'DebugSetGirlTavernProfile', 'melissa', 1
+    gs 'DebugSetGirlTavernProfile', 'sandra', 1
+
+    gs 'ClampTavernEventState'
+
+    *pl 'DEBUG: профиль "средняя скандальность" установлен.'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Debug-профиль: грязная слава
+! ================================================
+
+#DebugSetTavernProfileDirty
+    TavernReputation = 35
+    TavernScandal = 70
+    TavernLewdFame = 60
+    TavernGirlsEasyRumor = 1
+    TavernBackroomRumor = 1
+    TavernKitchenRumor = 1
+
+    gs 'DebugSetGirlTavernProfile', 'amanda', 4
+    gs 'DebugSetGirlTavernProfile', 'melissa', 3
+    gs 'DebugSetGirlTavernProfile', 'sandra', 2
+
+    gs 'ClampTavernEventState'
+
+    *pl 'DEBUG: профиль "грязная слава" установлен.'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Debug-профиль одной девушки
+! ARGS[0] girl
+! ARGS[1] stage 0..4
+! ================================================
+
+#DebugSetGirlTavernProfile
+    gs 'TavernEventStateNormalizeGirl', $ARGS[0]
+    $TavernStateGirl = $TavernStateGirlKey
+    TavernStateStage = ARGS[1]
+
+    if $TavernStateGirl = '':
+        exit
+    end
+
+    if TavernStateStage < 0:
+        TavernStateStage = 0
+    elseif TavernStateStage > 4:
+        TavernStateStage = 4
+    end
+
+    GirlHallLewdStage[$TavernStateGirl] = TavernStateStage
+    GirlUniformLevel[$TavernStateGirl] = 0
+    GirlWorkPolicy[$TavernStateGirl] = 0
+    GirlKitchenPolicy[$TavernStateGirl] = 0
+    GirlPublicAttention[$TavernStateGirl] = TavernStateStage * 15
+    GirlNpcPath[$TavernStateGirl] = TavernStateStage * 10
+    GirlSecretiveness[$TavernStateGirl] = TavernStateStage * 5
+    GirlRebellion[$TavernStateGirl] = TavernStateStage * 5
+
+    if TavernStateStage >= 2:
+        GirlUniformLevel[$TavernStateGirl] = 1
+        GirlWorkPolicy[$TavernStateGirl] = 2
+        GirlKitchenPolicy[$TavernStateGirl] = 2
+    end
+
+    if TavernStateStage >= 3:
+        GirlWorkPolicy[$TavernStateGirl] = 3
+    end
+
+    if TavernStateStage >= 4:
+        GirlKitchenPolicy[$TavernStateGirl] = 3
+    end
+
+    if $TavernStateGirl = 'amanda':
+        AmandaScandalLevel = TavernStateStage * 20
+        AmandaPublicAttention = GirlPublicAttention['amanda']
+        AmandaNpcPath = GirlNpcPath['amanda']
+        AmandaSecretiveness = GirlSecretiveness['amanda']
+        AmandaRebellion = GirlRebellion['amanda']
+    elseif $TavernStateGirl = 'melissa':
+        MelissaScandalTolerance = TavernStateStage * 15
+        MelissaNpcPath = GirlNpcPath['melissa']
+    elseif $TavernStateGirl = 'sandra':
+        SandraNpcPath = GirlNpcPath['sandra']
+        SandraMoralResistance = 60 - TavernStateStage * 10
+
+        if SandraMoralResistance < 0:
+            SandraMoralResistance = 0
+        end
+    end
+
+    killvar '$TavernStateGirl'
+    killvar 'TavernStateStage'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Debug-меню статусов
+! ================================================
+
+#TavernEventStateDebugMenu
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: СОСТОЯНИЕ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    act 'Показать статус':
+        *clr
+        gs 'PrintTavernEventState'
+
+        act 'Назад':
+            gt 'TavernEventStateDebugMenu'
+        end
+    end
+
+    act 'Профиль: чистая таверна':
+        *clr
+        gs 'DebugSetTavernProfileClean'
+        *pl ' '
+        gs 'PrintTavernEventState'
+
+        act 'Назад':
+            gt 'TavernEventStateDebugMenu'
+        end
+    end
+
+    act 'Профиль: средняя скандальность':
+        *clr
+        gs 'DebugSetTavernProfileMiddle'
+        *pl ' '
+        gs 'PrintTavernEventState'
+
+        act 'Назад':
+            gt 'TavernEventStateDebugMenu'
+        end
+    end
+
+    act 'Профиль: грязная слава':
+        *clr
+        gs 'DebugSetTavernProfileDirty'
+        *pl ' '
+        gs 'PrintTavernEventState'
+
+        act 'Назад':
+            gt 'TavernEventStateDebugMenu'
+        end
+    end
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Нормализация ключа девушки
+! ================================================
+
+#TavernEventStateNormalizeGirl
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $TavernStateGirlKey = $GirlKey
+    else:
+        $TavernStateGirlKey = LCASE($ARGS[0])
+    end
+---

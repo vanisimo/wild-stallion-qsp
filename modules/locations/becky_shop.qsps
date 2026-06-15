@@ -1,0 +1,206 @@
+#BeckyShop
+    cls
+
+    ! ====================== ПРОВЕРКА РАБОЧЕГО ВРЕМЕНИ ======================
+    ! Версия: final current game fix v5
+    ! Проверка встроена прямо в лавку.
+    ! Больше НЕ зависит от #IsShopOpen / #IsBusinessOpen.
+    !
+    ! Новая система времени:
+    ! time = 1 утро
+    ! time = 2 полдень
+    ! time = 3 день
+    ! time = 4 вечер
+    ! time = 5 ночь
+
+    ShopOpen = 1
+    $ClosedReason = ''
+
+    if time = 5:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас ночь, лавки закрыты'
+    elseif week = 5 and time = 4:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас пятничный вечер, лавки закрыты, горожане идут на танцы'
+    elseif week = 7:
+        ShopOpen = 0
+
+        if time = 1:
+            $ClosedReason = 'сейчас воскресное утро, все ушли на службу в церковь'
+        elseif time = 2:
+            $ClosedReason = 'сейчас воскресный полдень, в церкви идут исповеди'
+        else:
+            $ClosedReason = 'сейчас воскресенье, лавки закрыты'
+        end
+    end
+
+    if ShopOpen < 1:
+        *clr
+        gs 'ShowImage', 'becky', 'shop', 'closed', 'normal'
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' 🛒 ЛАВКА БЛЭНКЕНШИП — ЗАКРЫТО 🛒'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        *p 'Лавка закрыта. Причина: ' + $ClosedReason + '.'
+
+        *pl ' '
+
+        act 'Вернуться на рынок':
+            gt 'Market'
+        end
+
+        exit
+    end
+
+    if debug = 1:
+        *pl '[DEBUG BECKY SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time)
+        *pl ' '
+    end
+    ! =====================================================================
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' 🛒 ЛАВКА ПРОДОВОЛЬСТВИЯ БЛЭНКЕНШИП 🛒'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    ! ====================== ОСНОВНОЙ ПРОДАВЕЦ ======================
+    if time = 1:
+        *pl 'За прилавком стоит **Ингеборга** (Инга).'
+        $CurrentSeller = 'inga'
+    elseif time = 2:
+        *pl 'За прилавком стоит **Эдди**.'
+        $CurrentSeller = 'eddie'
+    else:
+        *pl 'За прилавком стоит **Бекки Блэнкеншип**.'
+        $CurrentSeller = 'becky'
+    end
+
+    *pl ' '
+    *pl 'Текущие запасы таверны:'
+    *pl '📦 Продукты: <<productnum>> единиц'
+    *pl ' '
+
+    ! ====================== ПОКУПКА ======================
+    *pl '📦 **Продукты в ящиках** (4 монеты за единицу)'
+
+    ! Проверка отношений с Бекки
+    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
+        *p 'Бекки холодно смотрит на тебя: "После всего, что было, я не собираюсь тебе ничего продавать."'
+    else:
+        act 'Малый ящик (15 ед. — 60 монет)':
+            if money >= 60:
+                money -= 60
+                productnum += 15
+                *p 'Ты купил маленький ящик продуктов.'
+            else:
+                *p 'У тебя недостаточно денег.'
+            end
+            act 'Продолжить': gt 'BeckyShop'
+        end
+
+        act 'Средний ящик (40 ед. — 150 монет)':
+            if money >= 150:
+                money -= 150
+                productnum += 40
+                *p 'Ты купил средний ящик продуктов.'
+            else:
+                *p 'У тебя недостаточно денег.'
+            end
+            act 'Продолжить': gt 'BeckyShop'
+        end
+
+        act 'Большой ящик (80 ед. — 280 монет)':
+            if money >= 280:
+                money -= 280
+                productnum += 80
+                *p 'Ты купил большой ящик продуктов.'
+            else:
+                *p 'У тебя недостаточно денег.'
+            end
+            act 'Продолжить': gt 'BeckyShop'
+        end
+
+        act 'Огромный ящик (150 ед. — 500 монет)':
+            if money >= 500:
+                money -= 500
+                productnum += 150
+
+                *clr
+                gs 'ShowImage', $CurrentSeller, 'shop', 'happy', 'big_purchase'
+
+                *p 'Ты купил огромный ящик продуктов.'
+                *p 'Продавец очень доволен такой крупной покупкой!'
+
+                if $CurrentSeller = 'becky':
+                    Friends['becky'] += 5
+                elseif $CurrentSeller = 'inga':
+                    Friends['inga'] += 4
+                else:
+                    Friends['eddie'] += 3
+                end
+            else:
+                *p 'У тебя недостаточно денег.'
+            end
+            act 'Продолжить': gt 'BeckyShop'
+        end
+    end
+! ====================== ФЛИРТ С ИНГОЙ ======================
+    if $CurrentSeller = 'inga' and Friends['inga'] >= 25 and sluttiness['inga'] >= 40:
+        act 'Флиртовать с Ингой':
+            gt 'IngaFlirt'
+        end
+    end
+    ! ====================== ПОКУПКА У ДЕТЕЙ (если Бекки отказывает) ======================
+    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
+        *pl ' '
+        *pl 'Дети Бекки готовы помочь, если у тебя с ними хорошие отношения:'
+
+        if Friends['inga'] >= 18 and becky_children_bought_today = 0:
+            act 'Купить маленький ящик у Инги (15 ед. — 60 монет)':
+                if money >= 60:
+                    money -= 60
+                    productnum += 15
+                    becky_children_bought_today = 1
+                    *p 'Инга продала тебе маленький ящик продуктов.'
+                    Friends['inga'] += 2
+                else:
+                    *p 'У тебя недостаточно денег.'
+                end
+                act 'Продолжить': gt 'BeckyShop'
+            end
+        end
+        if Friends['eddie'] >= 18 and becky_children_bought_today = 0:
+            act 'Купить маленький ящик у Эдди (15 ед. — 60 монет)':
+                if money >= 60:
+                    money -= 60
+                    productnum += 15
+                    becky_children_bought_today = 1
+                    *p 'Эдди продал тебе маленький ящик продуктов.'
+                    Friends['eddie'] += 2
+                else:
+                    *p 'У тебя недостаточно денег.'
+                end
+                act 'Продолжить': gt 'BeckyShop'
+            end
+        end
+    end
+
+    *pl ' '
+
+    ! ====================== ОБЩЕНИЕ ======================
+    act 'Поговорить с продавцом':
+        if $CurrentSeller = 'becky':
+            gt 'TalkWithBecky'
+        elseif $CurrentSeller = 'inga':
+            gt 'TalkWithInga'
+        else:
+            gt 'TalkWithEddie'
+        end
+    end
+
+    act 'Вернуться на рынок':
+        gt 'Market'
+    end
+---

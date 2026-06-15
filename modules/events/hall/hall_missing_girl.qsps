@@ -1,0 +1,787 @@
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Пропажа девушки из зала с клиентом
+! Версия: v1.1 / policy talk hook
+! Назначение:
+! - поздняя скандальная система для всех девушек трактира
+! - девушка исчезает из зала с клиентом / у дальнего стола / в подсобке / на кухне
+! - у игрока только 3 понятных выбора: ничего не делать / подсмотреть / ворваться
+! - система картинок обязательна через ShowImage и debug-путь
+! - после события даёт живой разговор о правилах, если подключён GirlWorkPolicyTalk
+!
+! Тексты берутся из:
+! modules/events/hall/hall_missing_girl_text.qsps
+!
+! ВАЖНО:
+! Это НЕ замена hall_harassment.
+! hall_harassment = клиент грубо пристаёт, девушка против / терпит / отбивается.
+! hall_missing_girl = поздняя скандальная ветка, когда девушка уже может сама
+! использовать внимание клиентов ради чаевых и славы трактира.
+! ================================================
+
+#HallMissingGirlCanStart
+    HallMissingGirlCanStart = 0
+    $HallMissingGirlSelected = ''
+
+    if HallMissingGirlDisabled = 1:
+        exit
+    end
+
+    if time = 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    if HallMissingGirlLastGlobalDay = day and HallMissingGirlLastGlobalTime = time:
+        exit
+    end
+
+    if LOC('IsTavernOpen') = 1:
+        gs 'IsTavernOpen'
+
+        if TavernOpen = 0:
+            exit
+        end
+    end
+
+    gs 'HallMissingGirlPickCandidate'
+
+    if $HallMissingGirlSelected <> '':
+        HallMissingGirlCanStart = 1
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Попытка автозапуска
+! ARGS[0] — куда возвращаться после события
+! ================================================
+
+#HallMissingGirlTryAutoStart
+    $HallMissingReturnLoc = $ARGS[0]
+
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallMissingReturnLoc) = 0:
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    gs 'HallMissingGirlCanStart'
+
+    if HallMissingGirlCanStart = 1:
+        gt 'HallMissingGirlStart', $HallMissingGirlSelected, $HallMissingReturnLoc
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Подбор девушки-кандидата
+! ================================================
+
+#HallMissingGirlPickCandidate
+    $HallMissingGirlSelected = ''
+    HallMissingCandidateCount = 0
+
+    gs 'HallMissingGirlCheckCandidate', 'amanda'
+    gs 'HallMissingGirlCheckCandidate', 'melissa'
+    gs 'HallMissingGirlCheckCandidate', 'sandra'
+
+    if HallMissingCandidateCount <= 0:
+        exit
+    end
+
+    HallMissingPick = RAND(1, HallMissingCandidateCount)
+    $HallMissingGirlSelected = $HallMissingCandidate[HallMissingPick]
+
+    killvar 'HallMissingPick'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Проверка конкретной девушки
+! ================================================
+
+#HallMissingGirlCheckCandidate
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $HallMissingCheckGirl = $HallMissingGirlKey
+
+    if $HallMissingCheckGirl = '':
+        exit
+    end
+
+    if HallMissingGirlLastDay[$HallMissingCheckGirl] = day:
+        exit
+    end
+
+    gs 'HallMissingGirlGetStage', $HallMissingCheckGirl
+
+    if HallMissingGirlStage < 4:
+        exit
+    end
+
+    if TavernScandal < 25 and TavernLewdFame < 10 and GirlWorkPolicy[$HallMissingCheckGirl] <> 3:
+        exit
+    end
+
+    HallMissingCandidateChance = 12
+
+    if HallMissingGirlStage >= 4:
+        HallMissingCandidateChance = 28
+    end
+
+    if GirlWorkPolicy[$HallMissingCheckGirl] = 3:
+        HallMissingCandidateChance += 15
+    elseif GirlWorkPolicy[$HallMissingCheckGirl] = 1:
+        HallMissingCandidateChance -= 15
+    end
+
+    if GirlUniformLevel[$HallMissingCheckGirl] = 1:
+        HallMissingCandidateChance += 10
+    end
+
+    if HallMissingCandidateChance < 5:
+        HallMissingCandidateChance = 5
+    end
+
+    if HallMissingCandidateChance > 80:
+        HallMissingCandidateChance = 80
+    end
+
+    if RAND(1, 100) <= HallMissingCandidateChance:
+        HallMissingCandidateCount += 1
+        $HallMissingCandidate[HallMissingCandidateCount] = $HallMissingCheckGirl
+    end
+
+    killvar '$HallMissingCheckGirl'
+    killvar 'HallMissingCandidateChance'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Нормализация ключа девушки
+! ================================================
+
+#HallMissingGirlNormalizeKey
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $HallMissingGirlKey = $GirlKey
+    else:
+        $HallMissingGirlKey = LCASE($ARGS[0])
+    end
+
+    if $HallMissingGirlKey <> 'amanda' and $HallMissingGirlKey <> 'melissa' and $HallMissingGirlKey <> 'sandra':
+        $HallMissingGirlKey = ''
+    end
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Имя девушки
+! ================================================
+
+#HallMissingGirlEnsureName
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $HallMissingNameGirl = $HallMissingGirlKey
+
+    if $RealName[$HallMissingNameGirl] = '':
+        if $HallMissingNameGirl = 'amanda':
+            $RealName[$HallMissingNameGirl] = 'Аманда'
+        elseif $HallMissingNameGirl = 'melissa':
+            $RealName[$HallMissingNameGirl] = 'Мелисса'
+        elseif $HallMissingNameGirl = 'sandra':
+            $RealName[$HallMissingNameGirl] = 'Сандра'
+        else:
+            $RealName[$HallMissingNameGirl] = $HallMissingNameGirl
+        end
+    end
+
+    killvar '$HallMissingNameGirl'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Расчёт стадии скандального поведения девушки в зале
+! ================================================
+
+#HallMissingGirlGetStage
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $HallMissingStageGirl = $HallMissingGirlKey
+
+    HallMissingGirlStage = 0
+    HallMissingGirlScore = 0
+
+    if $HallMissingStageGirl = '':
+        exit
+    end
+
+    HallMissingGirlScore += TavernScandal
+    HallMissingGirlScore += TavernLewdFame
+    HallMissingGirlScore += TavernGirlsEasyRumor * 10
+    HallMissingGirlScore += TavernBackroomRumor * 15
+
+    HallMissingGirlScore += GirlHallLewdStage[$HallMissingStageGirl] * 20
+    HallMissingGirlScore += GirlPublicAttention[$HallMissingStageGirl]
+    HallMissingGirlScore += GirlNpcPath[$HallMissingStageGirl]
+    HallMissingGirlScore += GirlSecretiveness[$HallMissingStageGirl]
+    HallMissingGirlScore += GirlRebellion[$HallMissingStageGirl]
+
+    if GirlUniformLevel[$HallMissingStageGirl] > 1:
+        GirlUniformLevel[$HallMissingStageGirl] = 1
+    end
+
+    if GirlUniformLevel[$HallMissingStageGirl] < 0:
+        GirlUniformLevel[$HallMissingStageGirl] = 0
+    end
+
+    if GirlUniformLevel[$HallMissingStageGirl] = 1:
+        HallMissingGirlScore += 15
+    end
+
+    if GirlWorkPolicy[$HallMissingStageGirl] = 1:
+        HallMissingGirlScore -= 25
+    elseif GirlWorkPolicy[$HallMissingStageGirl] = 2:
+        HallMissingGirlScore += 5
+    elseif GirlWorkPolicy[$HallMissingStageGirl] = 3:
+        HallMissingGirlScore += 25
+    end
+
+    if $HallMissingStageGirl = 'amanda':
+        HallMissingGirlScore += AmandaScandalLevel
+        HallMissingGirlScore += AmandaPublicAttention
+        HallMissingGirlScore += AmandaNpcPath
+        HallMissingGirlScore += AmandaSecretiveness
+        HallMissingGirlScore += AmandaRebellion
+
+        if uniform_purchased['amanda'] = 1 or revealing_uniform_worn = 1:
+            GirlUniformLevel['amanda'] = 1
+        end
+    elseif $HallMissingStageGirl = 'melissa':
+        HallMissingGirlScore += MelissaScandalTolerance
+        HallMissingGirlScore += MelissaNpcPath
+        HallMissingGirlScore += MelissaJealousy
+        HallMissingGirlScore += MelissaControlNeed
+
+        if uniform_purchased['melissa'] = 1 or revealing_uniform_worn = 1:
+            GirlUniformLevel['melissa'] = 1
+        end
+    elseif $HallMissingStageGirl = 'sandra':
+        HallMissingGirlScore += SandraNpcPath
+        HallMissingGirlScore += SandraPragmatism
+        HallMissingGirlScore -= SandraMoralResistance
+        HallMissingGirlScore += SandraBitterness
+
+        if uniform_purchased['sandra'] = 1 or revealing_uniform_worn = 1:
+            GirlUniformLevel['sandra'] = 1
+        end
+    end
+
+    if HallMissingGirlScore < 0:
+        HallMissingGirlScore = 0
+    end
+
+    if HallMissingGirlScore < 45:
+        HallMissingGirlStage = 0
+    elseif HallMissingGirlScore < 75:
+        HallMissingGirlStage = 1
+    elseif HallMissingGirlScore < 105:
+        HallMissingGirlStage = 2
+    elseif HallMissingGirlScore < 140:
+        HallMissingGirlStage = 3
+    else:
+        HallMissingGirlStage = 4
+    end
+
+    GirlHallLewdStage[$HallMissingStageGirl] = HallMissingGirlStage
+
+    killvar '$HallMissingStageGirl'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Выбор места пропажи
+! ================================================
+
+#HallMissingGirlPickPlace
+    $HallMissingPlace = 'storage'
+    HallMissingPlaceRoll = RAND(1, 100)
+
+    if HallMissingGirlStage >= 4 and HallMissingPlaceRoll <= 25:
+        $HallMissingPlace = 'under_table'
+    elseif HallMissingPlaceRoll <= 55:
+        $HallMissingPlace = 'storage'
+    elseif HallMissingPlaceRoll <= 80:
+        $HallMissingPlace = 'kitchen'
+    else:
+        $HallMissingPlace = 'stairs'
+    end
+
+    killvar 'HallMissingPlaceRoll'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Выбор типа клиента
+! ================================================
+
+#HallMissingGirlPickClient
+    HallMissingClientRoll = RAND(1, 100)
+
+    if HallMissingClientRoll <= 35:
+        $HallMissingClient = 'drunk_guest'
+    elseif HallMissingClientRoll <= 65:
+        $HallMissingClient = 'rich_merchant'
+    elseif HallMissingClientRoll <= 85:
+        $HallMissingClient = 'craftsman'
+    else:
+        $HallMissingClient = 'traveler'
+    end
+
+    killvar 'HallMissingClientRoll'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Вход в событие
+! ================================================
+
+#HallMissingGirlStart
+    *clr
+    clr
+    cla
+
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $HallMissingGirl = $HallMissingGirlKey
+    $HallMissingReturnLoc = $ARGS[1]
+
+    if $HallMissingGirl = '' and LOC($ARGS[0]) = 1:
+        $HallMissingReturnLoc = $ARGS[0]
+    end
+
+    if $HallMissingGirl = '':
+        gs 'HallMissingGirlPickCandidate'
+        $HallMissingGirl = $HallMissingGirlSelected
+    end
+
+    if $HallMissingGirl = '':
+        gt 'TavernMain'
+    end
+
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallMissingReturnLoc) = 0:
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    gs 'HallMissingGirlEnsureName', $HallMissingGirl
+    gs 'HallMissingGirlGetStage', $HallMissingGirl
+    gs 'HallMissingGirlPickPlace'
+    gs 'HallMissingGirlPickClient'
+
+    HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
+
+    if HallMissingUniform > 1:
+        HallMissingUniform = 1
+    end
+
+    if HallMissingUniform < 0:
+        HallMissingUniform = 0
+    end
+
+    HallMissingGirlLastGlobalDay = day
+    HallMissingGirlLastGlobalTime = time
+    HallMissingGirlLastDay[$HallMissingGirl] = day
+    HallMissingGirlActive = 1
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallMissingGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ДЕВУШКА ПРОПАЛА ИЗ ЗАЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'HallMissingGirlPrintText', 'intro'
+
+    *pl ' '
+
+    gs 'HallMissingGirlPrintDecisionThoughts'
+
+    $HallPolicyReactionText = ''
+
+    if LOC('HallPolicyReaction') = 1:
+        gs 'HallPolicyReaction', $HallMissingGirl, 'hall_missing', $HallMissingReturnLoc
+
+        if $HallPolicyReactionText <> '':
+            *p $HallPolicyReactionText
+            *pl ' '
+        end
+    end
+
+    if LOC('GirlPolicySceneVariationPrint') = 1:
+        gs 'GirlPolicySceneVariationPrint', $HallMissingGirl, 'hall_missing', 'start'
+    end
+
+    *pl ' '
+
+    if LOC('HallChoiceConsequencePrint') = 1:
+        gs 'HallChoiceConsequencePrint', 'hall_missing', $HallMissingChoice, $HallMissingGirl
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG HALL MISSING] girl: ' + $HallMissingGirl
+        *pl '[DEBUG HALL MISSING] stage: ' + STR(HallMissingGirlStage)
+        *pl '[DEBUG HALL MISSING] score: ' + STR(HallMissingGirlScore)
+        *pl '[DEBUG HALL MISSING] place: ' + $HallMissingPlace
+        *pl '[DEBUG HALL MISSING] client: ' + $HallMissingClient
+        *pl '[DEBUG HALL MISSING] uniform: ' + STR(HallMissingUniform)
+        *pl '[DEBUG HALL MISSING] policy: ' + STR(GirlWorkPolicy[$HallMissingGirl])
+        *pl ' '
+    end
+
+    gs 'HallMissingGirlBuildMenu'
+
+    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''HallMissingGirlMenu''">Стефану</a>?'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Меню выбора
+! ================================================
+
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Мысли Стефана перед выбором
+! ================================================
+
+#HallMissingGirlPrintDecisionThoughts
+    gs 'HallEventChoiceThoughtsPrint', 'hall_missing'
+---
+
+#HallMissingGirlBuildMenu
+    gs 'Menu.Destroy', 'HallMissingGirlMenu'
+    gs 'Menu.Create', 'HallMissingGirlMenu'
+
+    gs 'Menu.Add', 'HallMissingGirlMenu', 'Не вмешиваться', ''
+    gs 'Menu.AddModule', 'HallMissingGirlMenu', {
+        gt 'HallMissingGirlResolve', 'ignore', $HallMissingReturnLoc
+    }
+
+    gs 'Menu.Add', 'HallMissingGirlMenu', 'Тихо подсмотреть', ''
+    gs 'Menu.AddModule', 'HallMissingGirlMenu', {
+        gt 'HallMissingGirlResolve', 'peek', $HallMissingReturnLoc
+    }
+
+    gs 'Menu.Add', 'HallMissingGirlMenu', 'Ворваться и прервать', ''
+    gs 'Menu.AddModule', 'HallMissingGirlMenu', {
+        gt 'HallMissingGirlResolve', 'interrupt', $HallMissingReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Разрешение события
+! ================================================
+
+#HallMissingGirlResolve
+    *clr
+    clr
+    cla
+
+    $HallMissingChoice = LCASE($ARGS[0])
+    $HallMissingReturnLoc = $ARGS[1]
+
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallMissingReturnLoc) = 0:
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    gs 'HallMissingGirlNormalizeKey', $HallMissingGirl
+    $HallMissingGirl = $HallMissingGirlKey
+
+    if $HallMissingGirl = '':
+        gs 'HallMissingGirlPickCandidate'
+        $HallMissingGirl = $HallMissingGirlSelected
+    end
+
+    if $HallMissingGirl = '':
+        gt $HallMissingReturnLoc
+    end
+
+    gs 'HallMissingGirlEnsureName', $HallMissingGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallMissingGirl
+    end
+
+    HallMissingGirlActive = 0
+    HallMissingGirlLastChoice[$HallMissingGirl] = 0
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ДЕВУШКА ПРОПАЛА ИЗ ЗАЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $HallMissingChoice = 'ignore':
+        HallMissingGirlLastChoice[$HallMissingGirl] = 1
+        gs 'HallMissingGirlApplyConsequences', 'ignore'
+        gs 'HallMissingGirlShowImage', 'after'
+        gs 'HallMissingGirlPrintText', 'ignore_after'
+
+    elseif $HallMissingChoice = 'peek':
+        HallMissingGirlLastChoice[$HallMissingGirl] = 2
+        gs 'HallMissingGirlApplyConsequences', 'peek'
+        gs 'HallMissingGirlShowImage', 'peek'
+        gs 'HallMissingGirlPrintText', 'peek_scene'
+        *pl ' '
+        gs 'HallMissingGirlPrintText', 'peek_meet'
+
+    elseif $HallMissingChoice = 'interrupt':
+        HallMissingGirlLastChoice[$HallMissingGirl] = 3
+        gs 'HallMissingGirlApplyConsequences', 'interrupt'
+        gs 'HallMissingGirlShowImage', 'interrupt'
+        gs 'HallMissingGirlPrintText', 'interrupt_scene'
+
+    else:
+        HallMissingGirlLastChoice[$HallMissingGirl] = 1
+        gs 'HallMissingGirlApplyConsequences', 'ignore'
+        gs 'HallMissingGirlPrintText', 'ignore_after'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG HALL MISSING] choice: ' + $HallMissingChoice
+        *pl '[DEBUG HALL MISSING] TavernScandal: ' + STR(TavernScandal)
+        *pl '[DEBUG HALL MISSING] TavernLewdFame: ' + STR(TavernLewdFame)
+        *pl '[DEBUG HALL MISSING] GirlNpcPath: ' + STR(GirlNpcPath[$HallMissingGirl])
+        *pl '[DEBUG HALL MISSING] GirlSecretiveness: ' + STR(GirlSecretiveness[$HallMissingGirl])
+        *pl '[DEBUG HALL MISSING] GirlPublicAttention: ' + STR(GirlPublicAttention[$HallMissingGirl])
+        *pl ' '
+    end
+
+    if LOC('GirlWorkPolicyTalkHall') = 1:
+        act 'Поговорить с ней о правилах':
+            gt 'GirlWorkPolicyTalkHall', $HallMissingGirl, $HallMissingReturnLoc
+        end
+    end
+
+    act 'Вернуться':
+        gt $HallMissingReturnLoc
+    end
+
+    killvar '$HallMissingChoice'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Последствия выбора
+! ================================================
+
+#HallMissingGirlApplyConsequences
+    $HallMissingApplyChoice = LCASE($ARGS[0])
+
+    if $HallMissingApplyChoice = 'ignore':
+        money += 10 + HallMissingGirlStage * 5
+        TavernScandal += 1
+
+        if HallMissingGirlStage >= 4:
+            TavernLewdFame += 1
+        end
+        GirlSecretiveness[$HallMissingGirl] += 2
+        GirlNpcPath[$HallMissingGirl] += 2
+        GirlPublicAttention[$HallMissingGirl] += 2
+        HallMissingGirlPrivateCount[$HallMissingGirl] += 1
+
+    elseif $HallMissingApplyChoice = 'peek':
+        money += 5 + HallMissingGirlStage * 3
+        TavernScandal += 1
+
+        if HallMissingGirlStage >= 4:
+            TavernLewdFame += 1
+        end
+        GirlNpcPath[$HallMissingGirl] += 1
+        GirlPublicAttention[$HallMissingGirl] += 1
+        GirlSeenByStefan[$HallMissingGirl] += 1
+        HallMissingGirlPeekCount[$HallMissingGirl] += 1
+
+        if GirlWorkPolicy[$HallMissingGirl] = 3:
+            GirlTrustStefan[$HallMissingGirl] += 1
+        else:
+            GirlSecretiveness[$HallMissingGirl] += 1
+        end
+
+    elseif $HallMissingApplyChoice = 'interrupt':
+        TavernScandal += 1
+        GirlPublicAttention[$HallMissingGirl] += 1
+        HallMissingGirlInterruptCount[$HallMissingGirl] += 1
+
+        if GirlWorkPolicy[$HallMissingGirl] = 3:
+            GirlRebellion[$HallMissingGirl] += 2
+            GirlTrustStefan[$HallMissingGirl] -= 1
+            TavernReputation -= 1
+        else:
+            GirlTrustStefan[$HallMissingGirl] += 1
+            GirlSecretiveness[$HallMissingGirl] -= 1
+        end
+    end
+
+    if GirlSecretiveness[$HallMissingGirl] < 0:
+        GirlSecretiveness[$HallMissingGirl] = 0
+    end
+
+    if GirlTrustStefan[$HallMissingGirl] < 0:
+        GirlTrustStefan[$HallMissingGirl] = 0
+    end
+
+    if TavernReputation < 0:
+        TavernReputation = 0
+    end
+
+    if $HallMissingGirl = 'amanda':
+        AmandaScandalLevel += TavernScandal
+        AmandaPublicAttention = GirlPublicAttention['amanda']
+        AmandaNpcPath = GirlNpcPath['amanda']
+        AmandaSecretiveness = GirlSecretiveness['amanda']
+        AmandaRebellion = GirlRebellion['amanda']
+    elseif $HallMissingGirl = 'melissa':
+        MelissaNpcPath = GirlNpcPath['melissa']
+        MelissaFamilyConcern += 1
+        MelissaScandalTolerance += 1
+    elseif $HallMissingGirl = 'sandra':
+        SandraNpcPath = GirlNpcPath['sandra']
+        SandraFamilyConcern += 1
+        SandraMoralResistance -= 1
+
+        if SandraMoralResistance < 0:
+            SandraMoralResistance = 0
+        end
+    end
+
+    if LOC('GirlMemoryOfStefanRegister') = 1:
+        gs 'GirlMemoryOfStefanRegister', $HallMissingGirl, 'hall_missing', $HallMissingApplyChoice
+    end
+
+killvar '$HallMissingApplyChoice'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Показ картинки
+! ================================================
+
+#HallMissingGirlShowImage
+    $HallMissingImageOutcome = LCASE($ARGS[0])
+
+    if $HallMissingImageOutcome = '':
+        $HallMissingImageOutcome = 'after'
+    end
+
+    if $HallMissingGirl = '':
+        exit
+    end
+
+    if $HallMissingPlace = '':
+        $HallMissingPlace = 'storage'
+    end
+
+    HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
+
+    if HallMissingUniform > 1:
+        HallMissingUniform = 1
+    end
+
+    if HallMissingUniform < 0:
+        HallMissingUniform = 0
+    end
+
+    $HallMissingImageAction = 'hall_missing/' + $HallMissingPlace
+    $HallMissingImagePose = 'uniform' + STR(HallMissingUniform) + '_' + $HallMissingImageOutcome
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'event', $HallMissingGirl, $HallMissingImageAction, $HallMissingImagePose, 'webp', 'large'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG HALL MISSING IMAGE] expected: images/events/' + $HallMissingGirl + '/hall_missing/' + $HallMissingPlace + '/uniform' + STR(HallMissingUniform) + '_' + $HallMissingImageOutcome + '.webp'
+        *pl ' '
+    end
+
+    killvar '$HallMissingImageOutcome'
+    killvar '$HallMissingImageAction'
+    killvar '$HallMissingImagePose'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Debug-старт для теста
+! ================================================
+
+#HallMissingGirlDebugStart
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $DebugHallMissingGirl = $HallMissingGirlKey
+
+    if $DebugHallMissingGirl = '':
+        $DebugHallMissingGirl = 'amanda'
+    end
+
+    TavernScandal = 50
+    TavernLewdFame = 30
+    TavernGirlsEasyRumor = 1
+
+    GirlUniformLevel[$DebugHallMissingGirl] = 1
+    GirlWorkPolicy[$DebugHallMissingGirl] = 3
+    GirlHallLewdStage[$DebugHallMissingGirl] = 4
+    GirlPublicAttention[$DebugHallMissingGirl] = 40
+    GirlNpcPath[$DebugHallMissingGirl] = 30
+    GirlSecretiveness[$DebugHallMissingGirl] = 15
+    GirlRebellion[$DebugHallMissingGirl] = 10
+
+    if $DebugHallMissingGirl = 'amanda':
+        AmandaScandalLevel = 50
+        AmandaPublicAttention = 40
+        AmandaNpcPath = 30
+        AmandaSecretiveness = 15
+        AmandaRebellion = 10
+    end
+
+    gt 'HallMissingGirlStart', $DebugHallMissingGirl, 'TavernMain'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
+! Debug-сброс
+! ================================================
+
+#HallMissingGirlDebugReset
+    HallMissingGirlDisabled = 0
+    HallMissingGirlCanStart = 0
+    HallMissingGirlActive = 0
+    HallMissingGirlLastGlobalDay = 0
+    HallMissingGirlLastGlobalTime = 0
+    TavernLewdFame = 0
+    TavernGirlsEasyRumor = 0
+    TavernBackroomRumor = 0
+
+    killvar '$HallMissingGirlSelected'
+    killvar '$HallMissingGirl'
+    killvar '$HallMissingPlace'
+    killvar '$HallMissingClient'
+---
+

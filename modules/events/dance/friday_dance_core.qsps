@@ -1,0 +1,340 @@
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! События пятничных танцев
+! Версия: schedule v4 / hard return fix
+! Назначение:
+! - речь мэра перед танцами
+! - наблюдение за площадью
+! - слухи и разговоры NPC
+! - продвижение раундов праздника
+!
+! Важно:
+! Все внутренние экраны танцев возвращаются напрямую в MarketDance.
+! Не используем gt $FridayDanceReturnLoc внутри act, потому что act выполняется позже.
+!
+! Тексты берутся из:
+! modules/events/dance/friday_dance_text.qsps
+! ================================================
+
+#FridayDanceInit
+    if FridayDanceDay <> day:
+        FridayDanceDay = day
+        FridayDancesCount = 0
+        FridayDanceMayorSpeechSeen = 0
+        FridayDanceRumorCount = 0
+        FridayDanceNpcTalkCount = 0
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Речь мэра перед танцами
+! Возврат напрямую в MarketDance
+! ================================================
+
+#FridayDanceMayorSpeech
+    *clr
+    clr
+    cla
+
+    gs 'FridayDanceMayorSpeechText'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВЫСТУПЛЕНИЕ МЭРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceText
+    *pl ' '
+
+    FridayDanceMayorSpeechSeen = 1
+    MayorSpeechSeenCount += 1
+    CityValue += 1
+
+    if debug = 1:
+        *pl '[DEBUG DANCE] CityValue: ' + STR(CityValue)
+        *pl '[DEBUG DANCE] MayorSpeechSeenCount: ' + STR(MayorSpeechSeenCount)
+        *pl '[DEBUG DANCE] return: MarketDance'
+        *pl ' '
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Наблюдение за танцами
+! Возврат напрямую в MarketDance
+! ================================================
+
+#FridayDanceObserve
+    *clr
+    clr
+    cla
+
+    gs 'FridayDanceObserveText'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЛОЩАДЬ И ТАНЦЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceText
+    *pl ' '
+
+    gs 'FridayDanceAdvanceRound'
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Слухи горожан
+! Возврат напрямую в MarketDance
+! ================================================
+
+#FridayDanceRumor
+    *clr
+    clr
+    cla
+
+    gs 'FridayDanceRumorText'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГОРОДСКИЕ СЛУХИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceText
+    *pl ' '
+
+    FridayDanceRumorCount += 1
+    CityRumorLevel += 1
+
+    if debug = 1:
+        *pl '[DEBUG DANCE] CityRumorLevel: ' + STR(CityRumorLevel)
+        *pl '[DEBUG DANCE] FridayDanceRumorCount: ' + STR(FridayDanceRumorCount)
+        *pl '[DEBUG DANCE] return: MarketDance'
+        *pl ' '
+    end
+
+    gs 'FridayDanceAdvanceRound'
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Меню знакомых NPC на танцах
+! Возврат напрямую в MarketDance
+! ================================================
+
+#FridayDanceNpcTalkMenu
+    *clr
+    clr
+    cla
+
+    gs 'UpdateGirlLocations'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗНАКОМЫЕ НА ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'Вы оглядываетесь, пытаясь понять, кто из знакомых пришёл сегодня на танцы.'
+    *pl ' '
+
+    if $GirlLocation['sandra'] = 'DanceHall':
+        act 'Подойти к Сандре':
+            gt 'FridayDanceNpcTalk', 'sandra'
+        end
+    end
+
+    if $GirlLocation['melissa'] = 'DanceHall':
+        act 'Подойти к Мелиссе':
+            gt 'FridayDanceNpcTalk', 'melissa'
+        end
+    end
+
+    if $GirlLocation['amanda'] = 'DanceHall':
+        act 'Подойти к Аманде':
+            gt 'FridayDanceNpcTalk', 'amanda'
+        end
+    end
+
+    if $GirlLocation['becky'] = 'DanceHall':
+        act 'Подойти к Бекки':
+            gt 'FridayDanceNpcTalk', 'becky'
+        end
+    end
+
+    if $GirlLocation['clarissa'] = 'DanceHall':
+        act 'Подойти к Клариссе':
+            gt 'FridayDanceNpcTalk', 'clarissa'
+        end
+    end
+
+    if $GirlLocation['legare'] = 'DanceHall':
+        act 'Понаблюдать за Легаре':
+            gt 'FridayDanceNpcTalk', 'legare'
+        end
+    end
+
+    if $GirlLocation['lizette'] = 'DanceHall':
+        act 'Заметить Лизетту':
+            gt 'FridayDanceNpcTalk', 'lizette'
+        end
+    end
+
+    if $GirlLocation['georgett'] = 'DanceHall':
+        act 'Поговорить с Жоржеттой':
+            gt 'FridayDanceNpcTalk', 'georgett'
+        end
+    end
+
+    if $GirlLocation['irma'] = 'DanceHall':
+        act 'Поговорить с Ирмой':
+            gt 'FridayDanceNpcTalk', 'irma'
+        end
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Короткая сцена с выбранным NPC на танцах
+! Возврат напрямую в MarketDance
+! ================================================
+
+#FridayDanceNpcTalk
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $DanceNpc = $GirlKey
+
+    if $DanceNpc = '':
+        msg 'Ошибка: FridayDanceNpcTalk вызван без NPC.'
+        gt 'MarketDance'
+    end
+
+    *clr
+    clr
+    cla
+
+    if $RealName[$DanceNpc] = '':
+        gs 'EnsureGirlData', $DanceNpc
+    end
+
+    gs 'FridayDanceNpcTalkText', $DanceNpc
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР НА ТАНЦАХ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceText
+    *pl ' '
+
+    FridayDanceNpcTalkCount += 1
+
+    if $DanceNpc = 'amanda':
+        AmandaPublicAttention += 1
+    elseif $DanceNpc = 'melissa':
+        MelissaFamilyConcern += 1
+    elseif $DanceNpc = 'sandra':
+        SandraFamilyConcern += 1
+    elseif $DanceNpc = 'clarissa':
+        ClarissaDanceSeen += 1
+    elseif $DanceNpc = 'legare':
+        LegareDanceSeen += 1
+    elseif $DanceNpc = 'lizette':
+        AmandaLizaInfluence += 1
+    elseif $DanceNpc = 'georgett':
+        GeorgettePublicSeen += 1
+    end
+
+    if debug = 1:
+        *pl '[DEBUG DANCE] NPC: ' + $DanceNpc
+        *pl '[DEBUG DANCE] FridayDanceNpcTalkCount: ' + STR(FridayDanceNpcTalkCount)
+        *pl '[DEBUG DANCE] return: MarketDance'
+        *pl ' '
+    end
+
+    gs 'FridayDanceAdvanceRound'
+
+    act 'Вернуться к знакомым':
+        gt 'FridayDanceNpcTalkMenu'
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$DanceNpc'
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Продвижение раунда праздника
+! ================================================
+
+#FridayDanceAdvanceRound
+    FridayDancesCount += 1
+
+    if FridayDancesCount > 5:
+        FridayDancesCount = 5
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Debug-меню пятничных танцев
+! Возврат напрямую в MarketDance
+! ================================================
+
+#FridayDanceDebugMenu
+    *clr
+    clr
+    cla
+
+    gs 'GetCitySchedulePhase'
+    gs 'UpdateGirlLocations'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ПЯТНИЧНЫЕ ТАНЦЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'week: ' + STR(week)
+    *pl 'time: ' + STR(time)
+    *pl 'phase: ' + $CitySchedulePhase
+    *pl 'FridayDanceDay: ' + STR(FridayDanceDay)
+    *pl 'FridayDancesCount: ' + STR(FridayDancesCount)
+    *pl 'MayorSpeechSeen: ' + STR(FridayDanceMayorSpeechSeen)
+    *pl ' '
+    *pl 'Аманда: ' + $GirlLocation['amanda']
+    *pl 'Мелисса: ' + $GirlLocation['melissa']
+    *pl 'Сандра: ' + $GirlLocation['sandra']
+    *pl 'Бекки: ' + $GirlLocation['becky']
+    *pl 'Кларисса: ' + $GirlLocation['clarissa']
+    *pl 'Легаре: ' + $GirlLocation['legare']
+    *pl 'Лизетта: ' + $GirlLocation['lizette']
+    *pl 'Жоржетта: ' + $GirlLocation['georgett']
+    *pl ' '
+
+    act 'Сбросить раунды праздника':
+        FridayDancesCount = 0
+        gt 'FridayDanceDebugMenu'
+    end
+
+    act 'Отметить речь мэра непрослушанной':
+        FridayDanceMayorSpeechSeen = 0
+        gt 'FridayDanceDebugMenu'
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+

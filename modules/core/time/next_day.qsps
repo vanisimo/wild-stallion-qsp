@@ -1,0 +1,245 @@
+! ================================================
+! FILE: modules/core/time/next_day.qsps
+! Переход на следующий день
+! Применяет рабочий день таверны, доход, расходы и запасы
+! Сбрасывает дневные счётчики и показывает итог дня
+! ================================================
+
+#NextDay
+    cls
+
+    ! ====================== РАБОТА ТАВЕРНЫ ЗА ПРОШЕДШИЙ ДЕНЬ ======================
+
+    gs 'ProcessTavernWorkDay'
+
+    ! ====================== СОХРАНЯЕМ ИТОГИ ДЛЯ ВЫВОДА ======================
+
+    LastDayProfit = tavern_expected_profit
+    LastDayFoodIncome = tavern_food_income
+    LastDayWineIncome = tavern_wine_income
+    LastDayBeerIncome = tavern_beer_income
+    LastDayExpenses = tavern_daily_expenses
+
+    LastDayFoodUsed = tavern_food_used
+    LastDayWineUsed = tavern_wine_used
+    LastDayBeerUsed = tavern_beer_used
+
+    LastDayWorkEfficiency = tavern_work_efficiency
+    LastDayOverloadPenalty = tavern_overload_penalty
+    LastDayStockPenalty = tavern_stock_penalty
+     $LastDayTavernEventText = $LastTavernEventText
+    LastDayEventProfitBonus = tavern_event_profit_bonus
+    LastDayEventReputationBonus = tavern_event_reputation_bonus
+
+    ! ====================== ПЕРЕХОД ДАТЫ ======================
+
+    day += 1
+    time = 1
+
+    week += 1
+
+    if week > 7:
+        week = 1
+    end
+
+    gs 'AdvanceMonthIfNeeded'
+
+    ! ====================== СБРОС ДНЕВНЫХ СЧЁТЧИКОВ ГГ ======================
+
+    daily_cum_count = 0
+    cametoday = 0
+    ChurchDonatedToday = 0
+
+    ! ====================== СБРОС ДНЕВНЫХ ФЛАГОВ ДЕВУШЕК ======================
+
+    gs 'GirlsResetDailyFlags'
+    gs 'ResetSexDailyFlags'
+
+    ! ====================== ОБНОВЛЕНИЕ ЛИМИТА ОРГАЗМОВ СТЕФАНА ======================
+
+    gs 'CanCumToday'
+
+    ! ====================== НОВЫЙ ДЕНЬ В ТАВЕРНЕ ======================
+
+    gs 'TavernDailyUpdate'
+    gs 'ResetTavernBarWorkDailyFlags'
+
+    ! ====================== ПАНЕЛЬ ПРЕДМЕТОВ И ОПИСАНИЕ ГГ ======================
+
+    gs 'AddGlobalButtons'
+
+    $PanelRestoreAfterRefresh = ''
+    PanelCustomActive = 0
+
+    gs 'PanelPlayerStatus'
+
+    ! ====================== ВЫВОД ИТОГА ======================
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' НАСТУПИЛ НОВЫЙ ДЕНЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GetDateTimeNames'
+
+    *pl 'Сегодня: ' + $WeekDay + ', ' + STR(day) + ' ' + $MonthName + ' ' + STR(year) + ' года.'
+    *pl 'Время суток: ' + $TimeOfDay
+    *pl ' '
+    if LOC('DailyAftermathPrintMorning') = 1:
+        gs 'DailyAftermathPrintMorning'
+    end
+
+
+     if $LastDayTavernEventText <> '':
+        *pl 'Событие дня:'
+        *pl $LastDayTavernEventText
+
+        if LastDayEventProfitBonus <> 0:
+            *pl 'Влияние на прибыль: ' + STR(LastDayEventProfitBonus) + ' мараведи'
+        end
+
+        if LastDayEventReputationBonus <> 0:
+            *pl 'Влияние на репутацию: ' + STR(LastDayEventReputationBonus)
+        end
+
+        *pl ' '
+    end
+    *pl 'Итоги работы таверны за прошедший день:'
+    *pl 'Еда: ' + STR(LastDayFoodIncome) + ' мараведи'
+    *pl 'Вино: ' + STR(LastDayWineIncome) + ' мараведи'
+    *pl 'Пиво: ' + STR(LastDayBeerIncome) + ' мараведи'
+    *pl 'Расходы: ' + STR(LastDayExpenses) + ' мараведи'
+    *pl 'Итоговая прибыль: ' + STR(LastDayProfit) + ' мараведи'
+    *pl ' '
+
+    *pl 'Израсходовано запасов:'
+    *pl 'Продукты: ' + STR(LastDayFoodUsed)
+    *pl 'Вино: ' + STR(LastDayWineUsed)
+    *pl 'Пиво: ' + STR(LastDayBeerUsed)
+    *pl ' '
+
+    *pl 'Остатки:'
+    *pl 'Продукты: ' + STR(productnum)
+    *pl 'Вино: ' + STR(winenum)
+    *pl 'Пиво: ' + STR(beernum)
+    *pl ' '
+
+    *pl 'Эффективность персонала: ' + STR(LastDayWorkEfficiency) + ' / 100'
+
+    if LastDayOverloadPenalty > 0:
+        *pl 'Штраф перегрузки: ' + STR(LastDayOverloadPenalty)
+    end
+
+    if LastDayStockPenalty > 0:
+        *pl 'Штраф запасов: ' + STR(LastDayStockPenalty) + '%'
+    end
+
+    *pl ' '
+
+    *pl 'Деньги: ' + STR(money) + ' мараведи'
+    *pl 'Репутация таверны: ' + STR(tavern_reputation) + ' / 100'
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/next_day.qsps
+! Проверка перехода месяца и года
+! Использует текущие month, day и year
+! ================================================
+
+#AdvanceMonthIfNeeded
+    gs 'GetMonthDays'
+
+    if day > MonthDays:
+        day = 1
+        month += 1
+
+        if month > 12:
+            month = 1
+            year += 1
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/next_day.qsps
+! Количество дней в текущем месяце
+! Упрощённый календарь без високосных лет
+! ================================================
+
+#GetMonthDays
+    if month = 1:
+        MonthDays = 31
+    elseif month = 2:
+        MonthDays = 28
+    elseif month = 3:
+        MonthDays = 31
+    elseif month = 4:
+        MonthDays = 30
+    elseif month = 5:
+        MonthDays = 31
+    elseif month = 6:
+        MonthDays = 30
+    elseif month = 7:
+        MonthDays = 31
+    elseif month = 8:
+        MonthDays = 31
+    elseif month = 9:
+        MonthDays = 30
+    elseif month = 10:
+        MonthDays = 31
+    elseif month = 11:
+        MonthDays = 30
+    else:
+        MonthDays = 31
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/next_day.qsps
+! Сброс ежедневных флагов девушек и событий
+! Безопасный локатор, чтобы NextDay не падал
+! ================================================
+
+#GirlsResetDailyFlags
+    HarassToday['amanda'] = 0
+    HarassToday['melissa'] = 0
+    HarassToday['sandra'] = 0
+
+    AmandaVar['askzalettoday'] = 0
+    MelissaVar['MomDressComplaint'] = 0
+    SandraVar['knowmolodost'] = 0
+
+    becky_children_bought_today = 0
+    clarissa_bought_today = 0
+
+    IngaDanceRefused = 0
+    IngaGuardIgnored = 0
+
+    if debug = 1:
+        *pl '[DEBUG] Ежедневные флаги девушек сброшены.'
+    end
+---
+
+! ================================================
+! FILE: modules/core/time/next_day.qsps
+! Ежедневное обновление таверны
+! Формирует новое количество посетителей на день
+! ================================================
+
+#TavernDailyUpdate
+    tavernvisitors = 35 + Rand(-10, 25)
+
+    if tavernvisitors < 5:
+        tavernvisitors = 5
+    end
+
+    if debug = 1:
+        *pl '[DEBUG] Посетителей на новый день: ' + STR(tavernvisitors)
+    end
+---
+
