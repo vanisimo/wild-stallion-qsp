@@ -26,10 +26,10 @@ More details:
 
 ## Build And Run
 
-Check the project before a build with:
+Check the project manually with:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\check.ps1
+powershell -ExecutionPolicy Bypass -File scripts\check.ps1 -Strict
 ```
 
 Build `game.qsp` with:
@@ -37,6 +37,8 @@ Build `game.qsp` with:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\build.ps1
 ```
+
+The build script runs the strict project check before converting sources. For a quick converter-only run, pass `-SkipCheck`.
 
 Run the compiled game with:
 

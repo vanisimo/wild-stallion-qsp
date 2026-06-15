@@ -1,14 +1,20 @@
 param(
+    [switch]$SkipCheck,
     [switch]$NoCopy
 )
 
 $ErrorActionPreference = 'Stop'
 
-$repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $buildDir = Join-Path $repoRoot '.build\qsp-cli'
 $outDir = Join-Path $buildDir 'out'
 $combined = Join-Path $buildDir 'game.qsps'
 $targetGame = Join-Path $repoRoot 'game.qsp'
+$checkScript = Join-Path $PSScriptRoot 'check.ps1'
+
+if (-not $SkipCheck) {
+    & $checkScript -Strict
+}
 
 $nodeDir = 'C:\Program Files\nodejs'
 $npmDir = Join-Path $env:APPDATA 'npm'
