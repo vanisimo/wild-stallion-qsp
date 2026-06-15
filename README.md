@@ -22,6 +22,7 @@ More details:
 - `docs/naming.md` - naming rules for files, locations, and variables.
 - `docs/state.md` - main global state notes.
 - `docs/runtime.md` - runtime/debug profile notes.
+- `docs/location-index.md` - generated index of active QSP locations.
 - `docs/checklist.md` - short pre-commit checklist.
 
 ## Build And Run
@@ -30,6 +31,12 @@ Check the project manually with:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\check.ps1 -Strict
+```
+
+Regenerate the location index with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\generate-location-index.ps1
 ```
 
 Build `game.qsp` with:

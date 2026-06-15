@@ -8,6 +8,7 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $repoRootPrefix = $repoRoot.TrimEnd('\') + '\'
 $projectPath = Join-Path $repoRoot 'qsp-project.json'
+$locationIndexScript = Join-Path $PSScriptRoot 'generate-location-index.ps1'
 
 if (-not (Test-Path $projectPath)) {
     throw "Project file not found: $projectPath"
@@ -158,6 +159,10 @@ if ($errors.Count -gt 0) {
 
 if ($Strict -and $warnings.Count -gt 0) {
     exit 1
+}
+
+if ($Strict -and (Test-Path $locationIndexScript)) {
+    & $locationIndexScript -Check
 }
 
 Write-Host "Project check passed."

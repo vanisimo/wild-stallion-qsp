@@ -4,6 +4,7 @@ Before committing a gameplay change:
 
 - `scripts\check.ps1 -Strict` passes.
 - `scripts\build.ps1` builds `game.qsp`.
+- `docs\location-index.md` is regenerated after adding, removing, or renaming locations.
 - The game starts from `TraKtir.qsps`.
 - The changed location or scene can be opened.
 - Runtime profile is intentionally set in `TraKtir.qsps`.
