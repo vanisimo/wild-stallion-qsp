@@ -48,6 +48,15 @@
 - `modules/core/knowledge` - event knowledge ids and knowledge tracking.
 - `modules/core/show_image` - image display and image debug helpers.
 
+## NPC Subfolders
+
+- `modules/npc/amanda` - Amanda-specific scenes and Amanda-related branches.
+- `modules/npc/family` - close family NPC initialization.
+- `modules/npc/shops` - shopkeeper families and shop-linked NPCs.
+- `modules/npc/port` - port-side NPCs and related families.
+- `modules/npc/legare` - Legare family NPC initialization.
+- `modules/npc/town` - town NPCs and supporting characters.
+
 ## Suggested Rule
 
 Use `core` for reusable mechanics, `events` for triggers and event flow, and `story` for long narrative branches.

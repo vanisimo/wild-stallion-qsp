@@ -9,7 +9,7 @@ QSP interactive fiction project. Entry point: `TraKtir.qsps`.
 - `modules/events` - event chains and reactions.
 - `modules/locations` - playable locations grouped into tavern, rooms, town, and shops.
 - `modules/menu` - panels, girl menus, NPC UI helpers, and global menu handlers.
-- `modules/npc` - NPC initialization and NPC-specific logic.
+- `modules/npc` - NPC initialization and NPC-specific logic grouped by family, shops, port, town, and story arcs.
 - `modules/debug` - debug panels and tools.
 - `modules/story` - reserved for larger story arcs.
 - `modules/system` - reserved for low-level technical helpers.
