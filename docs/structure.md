@@ -37,6 +37,17 @@
 - `modules/menu/npc` - NPC click handlers and description panels.
 - `modules/menu/system` - global buttons, status update hooks, and menu library helpers.
 
+## Core Subfolders
+
+- `modules/core/system` - startup, global helpers, debug helpers, and location refresh utilities.
+- `modules/core/girls` - shared girl data, jobs, location, key, and intimacy helpers.
+- `modules/core/init_npc` - NPC and girl initialization registry/data.
+- `modules/core/time` - calendar, time, schedules, day transitions.
+- `modules/core/tavern` - tavern state, income, reputation, and tavern event state.
+- `modules/core/economy` - supply economy and stock calculations.
+- `modules/core/knowledge` - event knowledge ids and knowledge tracking.
+- `modules/core/show_image` - image display and image debug helpers.
+
 ## Suggested Rule
 
 Use `core` for reusable mechanics, `events` for triggers and event flow, and `story` for long narrative branches.
