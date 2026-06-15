@@ -1,33 +1,40 @@
 # TraKtir
 
-QSP-проект интерактивной игры. Главный файл запуска: `TraKtir.qsps`.
+QSP interactive fiction project. Entry point: `TraKtir.qsps`.
 
-## Структура
+## Structure
 
-- `modules/actions` - действия игрока, диалоги, интимные и тавернные действия.
-- `modules/core` - базовые системы: инициализация, время, экономика, изображения, данные персонажей.
-- `modules/events` - событийные цепочки и реакции.
-- `modules/locations` - игровые локации.
-- `modules/menu` - панели, меню и элементы интерфейса.
-- `modules/npc` - инициализация и логика NPC.
-- `modules/debug` - отладочные панели и инструменты.
-- `images` - изображения локаций и портреты.
+- `modules/actions` - player actions, dialogs, intimacy scenes, tavern actions.
+- `modules/core` - base systems: initialization, time, economy, images, character data.
+- `modules/events` - event chains and reactions.
+- `modules/locations` - playable locations.
+- `modules/menu` - panels, menus, and interface helpers.
+- `modules/npc` - NPC initialization and NPC-specific logic.
+- `modules/debug` - debug panels and tools.
+- `images` - location images and portraits.
 
-## Сборка и запуск
+More details:
 
-Проект собирается через `qsp-project.json` в `game.qsp`.
+- `docs/structure.md` - project folder map.
+- `docs/naming.md` - naming rules for files, locations, and variables.
+- `docs/state.md` - main global state notes.
+- `docs/checklist.md` - short pre-commit checklist.
 
-Для запуска собранной игры можно использовать:
+## Build And Run
+
+The project is built through `qsp-project.json` into `game.qsp`.
+
+Run the compiled game with:
 
 ```bat
 run_game.bat
 ```
 
-Скрипт ищет `qspgui.exe` в `PATH`, затем в стандартных локальных путях. Если QSP установлен в другом месте, добавь папку с `qspgui.exe` в `PATH` или поправь список путей в `run_game.bat`.
+The script looks for `qspgui.exe` in `PATH`, then in common local install paths. If QSP is installed elsewhere, add the folder with `qspgui.exe` to `PATH` or update `run_game.bat`.
 
-## Правила проекта
+## Project Rules
 
-- Исходники хранятся в `.qsps`; `game.qsp` и `game.txt` считаются результатами сборки.
-- Текстовые сцены по возможности держатся в отдельных `*_text.qsps`.
-- Новые крупные системы лучше класть в отдельную подпапку внутри подходящего раздела `modules`.
-- Рабочие файлы редактора и временные файлы не должны попадать в Git.
+- Source files live in `.qsps`; `game.qsp` and `game.txt` are generated build outputs.
+- Long scene text should use a paired `*_text.qsps` file when practical.
+- Large new systems should get their own subfolder inside the appropriate `modules` section.
+- Editor workspace files and temporary files should not be committed.
