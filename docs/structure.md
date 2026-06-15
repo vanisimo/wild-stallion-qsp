@@ -23,6 +23,13 @@
 - `modules/events/quests` - quest-oriented event modules.
 - `modules/events/tavern` - tavern-wide event flow and tavern pressure scenes.
 
+## Location Subfolders
+
+- `modules/locations/tavern` - tavern interior and tavern management locations.
+- `modules/locations/rooms` - private rooms.
+- `modules/locations/town` - city and outdoor locations.
+- `modules/locations/shops` - shop locations and shop-specific scenes.
+
 ## Suggested Rule
 
 Use `core` for reusable mechanics, `events` for triggers and event flow, and `story` for long narrative branches.

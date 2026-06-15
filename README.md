@@ -7,7 +7,7 @@ QSP interactive fiction project. Entry point: `TraKtir.qsps`.
 - `modules/actions` - player actions, dialogs, intimacy scenes, tavern actions.
 - `modules/core` - base systems: initialization, time, economy, images, character data.
 - `modules/events` - event chains and reactions.
-- `modules/locations` - playable locations.
+- `modules/locations` - playable locations grouped into tavern, rooms, town, and shops.
 - `modules/menu` - panels, menus, and interface helpers.
 - `modules/npc` - NPC initialization and NPC-specific logic.
 - `modules/debug` - debug panels and tools.
