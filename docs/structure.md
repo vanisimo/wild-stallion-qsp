@@ -30,6 +30,13 @@
 - `modules/locations/town` - city and outdoor locations.
 - `modules/locations/shops` - shop locations and shop-specific scenes.
 
+## Menu Subfolders
+
+- `modules/menu/panels` - status panels and dashboard-like UI blocks.
+- `modules/menu/girls` - girl overview, actions, conditions, and sidebars.
+- `modules/menu/npc` - NPC click handlers and description panels.
+- `modules/menu/system` - global buttons, status update hooks, and menu library helpers.
+
 ## Suggested Rule
 
 Use `core` for reusable mechanics, `events` for triggers and event flow, and `story` for long narrative branches.
