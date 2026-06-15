@@ -9,6 +9,7 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $repoRootPrefix = $repoRoot.TrimEnd('\') + '\'
 $projectPath = Join-Path $repoRoot 'qsp-project.json'
 $locationIndexScript = Join-Path $PSScriptRoot 'generate-location-index.ps1'
+$locationAnalysisScript = Join-Path $PSScriptRoot 'analyze-locations.ps1'
 
 if (-not (Test-Path $projectPath)) {
     throw "Project file not found: $projectPath"
@@ -163,6 +164,10 @@ if ($Strict -and $warnings.Count -gt 0) {
 
 if ($Strict -and (Test-Path $locationIndexScript)) {
     & $locationIndexScript -Check
+}
+
+if ($Strict -and (Test-Path $locationAnalysisScript)) {
+    & $locationAnalysisScript -Check
 }
 
 Write-Host "Project check passed."

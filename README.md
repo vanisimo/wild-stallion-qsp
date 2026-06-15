@@ -23,6 +23,7 @@ More details:
 - `docs/state.md` - main global state notes.
 - `docs/runtime.md` - runtime/debug profile notes.
 - `docs/location-index.md` - generated index of active QSP locations.
+- `docs/location-analysis.md` - generated report of direct incoming location calls.
 - `docs/checklist.md` - short pre-commit checklist.
 
 ## Build And Run
@@ -37,6 +38,12 @@ Regenerate the location index with:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\generate-location-index.ps1
+```
+
+Regenerate the location analysis with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\analyze-locations.ps1
 ```
 
 Build `game.qsp` with:
