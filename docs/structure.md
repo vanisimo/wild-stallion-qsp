@@ -48,6 +48,13 @@
 - `modules/core/knowledge` - event knowledge ids and knowledge tracking.
 - `modules/core/show_image` - image display and image debug helpers.
 
+## Action Subfolders
+
+- `modules/actions/dialogs` - direct dialog entry points and conversation actions.
+- `modules/actions/flirts` - flirting actions.
+- `modules/actions/sex` - intimacy scene actions and registration helpers.
+- `modules/actions/tavern` - tavern work, uniform, and work policy actions.
+
 ## NPC Subfolders
 
 - `modules/npc/amanda` - Amanda-specific scenes and Amanda-related branches.
