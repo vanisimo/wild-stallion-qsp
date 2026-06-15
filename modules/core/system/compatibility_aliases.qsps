@@ -1,0 +1,271 @@
+! Compatibility aliases for old location names kept by active scenes.
+
+#KnowledgeRegisterFact
+    gs 'EventKnowledgeRegisterFact', $ARGS[0]
+---
+
+#KnowledgeRegisterPlayerKnows
+    gs 'EventKnowledgePlayerKnows', $ARGS[0], $ARGS[1]
+---
+
+#KnowledgeRegisterRumor
+    gs 'EventKnowledgeAddRumor', $ARGS[0], ARGS[1]
+---
+
+#KnowledgeRegisterWitness
+    gs 'EventKnowledgeAddWitness', $ARGS[0], $ARGS[1]
+---
+
+#KnowledgeRegisterSuspect
+    gs 'EventKnowledgeNpcSuspects', $ARGS[0], $ARGS[1]
+---
+
+#KnowledgeRegisterNpcSuspects
+    gs 'EventKnowledgeNpcSuspects', $ARGS[0], $ARGS[1]
+---
+
+#HallChoiceMemorySave
+    gs 'HallChoiceMemoryRegister', $ARGS[0], $ARGS[2], $ARGS[1]
+---
+
+#HallFamilyStateApplyChoice
+    gs 'HallFamilyStateApply', $ARGS[0], $ARGS[1], $ARGS[2]
+---
+
+#HallFamilyStatePrintLastText
+    gs 'HallFamilyStatePrintText', 'after_choice'
+---
+
+#HallChoiceConsequencesText
+    gs 'HallChoiceConsequenceText', $ARGS[0], $ARGS[1], $ARGS[2]
+---
+
+#HallChoiceConsequencePrint
+    gs 'HallChoiceConsequencesApply', $ARGS[2], $ARGS[0], $ARGS[1], 'hall'
+---
+
+#GirlPolicyResponseEvaluate
+    gs 'GirlPolicyResponseCalc', $ARGS[0], $ARGS[1], ARGS[2]
+---
+
+#DailyAftermathPrintMorning
+    if DailyAftermathPending = 0 or DailyAftermathShownToday = 1:
+        exit
+    end
+
+    if $DailyAftermathReasonGirl = '' and $LastHallMemoryGirl <> '':
+        $DailyAftermathReasonGirl = $LastHallMemoryGirl
+        $DailyAftermathReasonEvent = $LastHallMemoryEvent
+        $DailyAftermathReasonChoice = $LastHallMemoryChoice
+    end
+
+    gs 'DailyAftermathSelect'
+
+    if $DailyAftermathSelected = '':
+        exit
+    end
+
+    DailyAftermathPending = 0
+    DailyAftermathShownToday = 1
+
+    *pl ' '
+    gs 'DailyAftermathPrintText', $DailyAftermathSelected
+    *pl ' '
+---
+
+#HallRecentTalkCanDiscuss
+    gs 'HallRecentTalkCanShow', $ARGS[0]
+    HallRecentTalkAvailable = HallRecentTalkCanShow
+---
+
+#HallFamilyReactionCanDiscuss
+    gs 'HallFamilyReactionCanShow', $ARGS[0]
+---
+
+#HallFamilyStateStageName
+    if FamilyCorruptionStage <= 0:
+        $HallFamilyStateStageName = 'stable'
+    elseif FamilyCorruptionStage = 1:
+        $HallFamilyStateStageName = 'strained'
+    elseif FamilyCorruptionStage = 2:
+        $HallFamilyStateStageName = 'shifting'
+    elseif FamilyCorruptionStage = 3:
+        $HallFamilyStateStageName = 'compromised'
+    elseif FamilyCorruptionStage = 4:
+        $HallFamilyStateStageName = 'corrupt'
+    else:
+        $HallFamilyStateStageName = 'broken'
+    end
+    $Result = $HallFamilyStateStageName
+---
+
+#AdvanceTimePart
+    gs 'NextTime'
+---
+
+#NextTimePart
+    gs 'NextTime'
+---
+
+#NextTime
+    time += 1
+
+    if time > 4:
+        time = 1
+        if LOC('NextDay') = 1:
+            gt 'NextDay'
+        else:
+            day += 1
+        end
+    end
+---
+
+#ProcessNewDay
+    if LOC('NextDay') = 1:
+        gt 'NextDay'
+    else:
+        day += 1
+        time = 1
+    end
+---
+
+#TimeControl
+    gt 'OLD_TimeControl'
+---
+
+#GirlDailyEvent
+    $DailyEventGirl = LCASE($ARGS[0])
+    if $DailyEventGirl <> '':
+        GirlDailyEventSeen[$DailyEventGirl] += 1
+    end
+    killvar '$DailyEventGirl'
+---
+
+#AmandaLegareOutsideAftermathCanTalk
+    AmandaLegareOutsideAftermathCanTalk = 0
+---
+
+#AmandaLegareOutsideAftermath
+    gt 'TavernMain'
+---
+
+#MelissaTalkAboutAmandaLegareOutside
+    gt 'TavernMain'
+---
+
+#ClarissaTalkAboutAmandaLegareOutside
+    gt 'TavernMain'
+---
+
+#AmandaOtkroven45
+    gt 'OtkrovenMilestoneStub', 'amanda'
+---
+
+#AmandaOtkroven35
+    gt 'OtkrovenMilestoneStub', 'amanda'
+---
+
+#AmandaOtkroven25
+    gt 'OtkrovenMilestoneStub', 'amanda'
+---
+
+#AmandaOtkroven15
+    gt 'OtkrovenMilestoneStub', 'amanda'
+---
+
+#MelissaOtkroven45
+    gt 'OtkrovenMilestoneStub', 'melissa'
+---
+
+#MelissaOtkroven35
+    gt 'OtkrovenMilestoneStub', 'melissa'
+---
+
+#MelissaOtkroven25
+    gt 'OtkrovenMilestoneStub', 'melissa'
+---
+
+#SandraOtkroven45
+    gt 'OtkrovenMilestoneStub', 'sandra'
+---
+
+#SandraOtkroven35
+    gt 'OtkrovenMilestoneStub', 'sandra'
+---
+
+#SandraOtkroven25
+    gt 'OtkrovenMilestoneStub', 'sandra'
+---
+
+#IngaOtkroven40
+    gt 'OtkrovenMilestoneStub', 'inga'
+---
+
+#IngaOtkroven30
+    gt 'OtkrovenMilestoneStub', 'inga'
+---
+
+#ClarissaOtkroven40
+    gt 'OtkrovenMilestoneStub', 'clarissa'
+---
+
+#OtkrovenMilestoneStub
+    $OtkrovenMilestoneGirl = LCASE($ARGS[0])
+
+    cls
+    *pl $RealName[$OtkrovenMilestoneGirl]
+    *pl ' '
+    *p 'This character milestone is reserved for a future scene.'
+    *pl ' '
+
+    act 'Back':
+        gt 'TavernMain'
+    end
+---
+
+#RegisterGroupSex
+    gs 'RegisterGroup', $ARGS[0], ARGS[1]
+---
+
+#TalkWithEddie
+    gt 'TalkWithNpcStub', 'eddie', 'BeckyShop'
+---
+
+#TalkWithClarissa
+    gt 'TalkWithNpcStub', 'clarissa', 'WineShop'
+---
+
+#TalkWithAlber
+    gt 'TalkWithNpcStub', 'alber', 'WineShop'
+---
+
+#TalkWithGerhard
+    gt 'TalkWithNpcStub', 'gerhard', 'Church'
+---
+
+#TalkWithNpcStub
+    $NpcTalkKey = LCASE($ARGS[0])
+    $NpcTalkReturnLoc = $ARGS[1]
+
+    if $NpcTalkReturnLoc = '' or LOC($NpcTalkReturnLoc) = 0:
+        $NpcTalkReturnLoc = 'TavernMain'
+    end
+
+    cls
+    *pl $RealName[$NpcTalkKey]
+    *pl ' '
+
+    if $guytextdesc[$NpcTalkKey] <> '':
+        *p $guytextdesc[$NpcTalkKey]
+    elseif $girltextdesc[$NpcTalkKey] <> '':
+        *p $girltextdesc[$NpcTalkKey]
+    else:
+        *p 'There is no dedicated dialogue for this character yet.'
+    end
+
+    *pl ' '
+
+    act 'Back':
+        gt $NpcTalkReturnLoc
+    end
+---

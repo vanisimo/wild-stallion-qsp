@@ -59,6 +59,7 @@ $locations = @{}
 $callPattern = "(?i)\b(?:gs|gt|xgt)\s*'([^']+)'"
 $imagePattern = "images/[A-Za-z0-9_./-]+\.(?:png|jpg|jpeg|webp|gif)"
 $literalCalls = New-Object System.Collections.Generic.List[object]
+$externalLocationPrefixes = @('Table.')
 
 foreach ($file in $files) {
     $relative = $file
@@ -84,6 +85,22 @@ foreach ($file in $files) {
             foreach ($match in [regex]::Matches($line, $callPattern)) {
                 $target = $match.Groups[1].Value
                 if ($target -match '[<$"+]') {
+                    continue
+                }
+
+                $afterCall = $line.Substring($match.Index + $match.Length).TrimStart()
+                if ($afterCall.StartsWith('+')) {
+                    continue
+                }
+
+                $isExternalLocation = $false
+                foreach ($prefix in $externalLocationPrefixes) {
+                    if ($target.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+                        $isExternalLocation = $true
+                    }
+                }
+
+                if ($isExternalLocation) {
                     continue
                 }
 
