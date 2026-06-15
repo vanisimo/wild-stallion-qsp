@@ -26,7 +26,17 @@ More details:
 
 ## Build And Run
 
-The project is built through `qsp-project.json` into `game.qsp`.
+Check the project before a build with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\check.ps1
+```
+
+Build `game.qsp` with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build.ps1
+```
 
 Run the compiled game with:
 
@@ -34,7 +44,7 @@ Run the compiled game with:
 run_game.bat
 ```
 
-The script looks for `qspgui.exe` in `PATH`, then in common local install paths. If QSP is installed elsewhere, add the folder with `qspgui.exe` to `PATH` or update `run_game.bat`.
+`run_game.bat` looks for `qspgui.exe` in `PATH`, then in common local install paths. If QSP is installed elsewhere, add the folder with `qspgui.exe` to `PATH` or update `run_game.bat`.
 
 ## Project Rules
 

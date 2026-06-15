@@ -2,6 +2,7 @@
 
 Before committing a gameplay change:
 
+- `scripts\check.ps1` passes.
 - The project still builds into `game.qsp`.
 - The game starts from `TraKtir.qsps`.
 - The changed location or scene can be opened.
