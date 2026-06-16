@@ -85,8 +85,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 | `entry/helper` |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 | `entry/helper` |
-| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 775 | `entry/helper` |
-| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 772 | `entry/helper` |
+| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 769 | `entry/helper` |
+| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 766 | `entry/helper` |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 | `entry/helper` |
 | `HallRecentMemoryClear` | `modules/events/hall/hall_recent_memory.qsps` | 58 | `entry/helper` |
 | `HallRecentMemoryMarkDiscussed` | `modules/events/hall/hall_recent_memory.qsps` | 68 | `entry/helper` |
@@ -209,8 +209,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.Add` | 222 |
 | `Menu.AddModule` | 222 |
+| `Menu.Add` | 222 |
 | `NormalizeGirlKey` | 90 |
 | `EnsureGirlData` | 83 |
 | `TavernMain` | 71 |
@@ -219,8 +219,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ClampGirlSocialStats` | 44 |
 | `RegisterSex` | 41 |
 | `CorruptionProgress` | 38 |
-| `Menu.Create` | 37 |
 | `ShowImage` | 37 |
+| `Menu.Create` | 37 |
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
@@ -233,7 +233,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowGirlInLocation` | 15 |
 | `AmandaLizettePrintText` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
-| `OtkrovenMilestoneStub` | 13 |
+| `IrmaUniformOrders` | 13 |
 
 ## Dynamic Call Sites
 
