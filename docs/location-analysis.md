@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 966
-- Locations with direct incoming calls: 784
+- Locations: 968
+- Locations with direct incoming calls: 786
 - Locations without direct incoming calls: 182
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 182
@@ -86,7 +86,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 | `entry/helper` |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 | `entry/helper` |
-| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 778 | `entry/helper` |
+| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 788 | `entry/helper` |
 | `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 829 | `entry/helper` |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 | `entry/helper` |
 | `HallRecentMemoryClear` | `modules/events/hall/hall_recent_memory.qsps` | 58 | `entry/helper` |

@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 966
+- Locations: 968
 
 ## modules/actions
 
@@ -606,26 +606,28 @@ Generated from active project files in `qsp-project.json`.
 | `HallKnowledgeMaybeRumor` | `modules/events/hall/hall_knowledge_hooks.qsps` | 76 |
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 |
-| `HallLewdApplyConsequences` | `modules/events/hall/hall_lewd_behavior.qsps` | 605 |
+| `HallLewdApplyConsequences` | `modules/events/hall/hall_lewd_behavior.qsps` | 615 |
 | `HallLewdBehaviorCanStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 17 |
-| `HallLewdBehaviorStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 388 |
+| `HallLewdBehaviorStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 398 |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 |
-| `HallLewdBuildMenu` | `modules/events/hall/hall_lewd_behavior.qsps` | 492 |
+| `HallLewdBuildMenu` | `modules/events/hall/hall_lewd_behavior.qsps` | 502 |
 | `HallLewdCheckCandidate` | `modules/events/hall/hall_lewd_behavior.qsps` | 108 |
-| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 778 |
-| `HallLewdDebugStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 743 |
+| `HallLewdConflictMoodText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 106 |
+| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 788 |
+| `HallLewdDebugStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 753 |
 | `HallLewdEnsureName` | `modules/events/hall/hall_lewd_behavior.qsps` | 183 |
 | `HallLewdGetStage` | `modules/events/hall/hall_lewd_behavior.qsps` | 207 |
-| `HallLewdGirlReaction` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 101 |
+| `HallLewdGirlReaction` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 153 |
 | `HallLewdNormalizeKey` | `modules/events/hall/hall_lewd_behavior.qsps` | 169 |
 | `HallLewdPickCandidate` | `modules/events/hall/hall_lewd_behavior.qsps` | 85 |
-| `HallLewdPickClient` | `modules/events/hall/hall_lewd_behavior.qsps` | 367 |
+| `HallLewdPickClient` | `modules/events/hall/hall_lewd_behavior.qsps` | 377 |
 | `HallLewdPickScene` | `modules/events/hall/hall_lewd_behavior.qsps` | 305 |
-| `HallLewdPrintDecisionThoughts` | `modules/events/hall/hall_lewd_behavior.qsps` | 488 |
+| `HallLewdPrintDecisionThoughts` | `modules/events/hall/hall_lewd_behavior.qsps` | 498 |
 | `HallLewdPrintText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 14 |
-| `HallLewdResolve` | `modules/events/hall/hall_lewd_behavior.qsps` | 517 |
-| `HallLewdShowImage` | `modules/events/hall/hall_lewd_behavior.qsps` | 691 |
-| `HallLewdText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 277 |
+| `HallLewdResolve` | `modules/events/hall/hall_lewd_behavior.qsps` | 527 |
+| `HallLewdShowImage` | `modules/events/hall/hall_lewd_behavior.qsps` | 701 |
+| `HallLewdText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 329 |
+| `HallMissingConflictMoodText` | `modules/events/hall/hall_missing_girl_text.qsps` | 61 |
 | `HallMissingGirlApplyConsequences` | `modules/events/hall/hall_missing_girl.qsps` | 649 |
 | `HallMissingGirlBuildMenu` | `modules/events/hall/hall_missing_girl.qsps` | 523 |
 | `HallMissingGirlCanStart` | `modules/events/hall/hall_missing_girl.qsps` | 21 |
@@ -641,12 +643,12 @@ Generated from active project files in `qsp-project.json`.
 | `HallMissingGirlPickPrivateAct` | `modules/events/hall/hall_missing_girl.qsps` | 367 |
 | `HallMissingGirlPrintDecisionThoughts` | `modules/events/hall/hall_missing_girl.qsps` | 519 |
 | `HallMissingGirlPrintText` | `modules/events/hall/hall_missing_girl_text.qsps` | 12 |
-| `HallMissingGirlPrivateActText` | `modules/events/hall/hall_missing_girl_text.qsps` | 55 |
-| `HallMissingGirlReaction` | `modules/events/hall/hall_missing_girl_text.qsps` | 107 |
+| `HallMissingGirlPrivateActText` | `modules/events/hall/hall_missing_girl_text.qsps` | 107 |
+| `HallMissingGirlReaction` | `modules/events/hall/hall_missing_girl_text.qsps` | 159 |
 | `HallMissingGirlResolve` | `modules/events/hall/hall_missing_girl.qsps` | 548 |
 | `HallMissingGirlShowImage` | `modules/events/hall/hall_missing_girl.qsps` | 746 |
 | `HallMissingGirlStart` | `modules/events/hall/hall_missing_girl.qsps` | 421 |
-| `HallMissingGirlText` | `modules/events/hall/hall_missing_girl_text.qsps` | 190 |
+| `HallMissingGirlText` | `modules/events/hall/hall_missing_girl_text.qsps` | 242 |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 |
 | `HallPolicyAftermath` | `modules/events/hall/hall_policy_aftermath.qsps` | 11 |
 | `HallPolicyAftermathText` | `modules/events/hall/hall_policy_aftermath_text.qsps` | 8 |

@@ -44,7 +44,59 @@
         *p $HallMissingGirlReactionText
     end
 
+    gs 'HallMissingConflictMoodText', $HallMissingPrintTextId
+
+    if $HallMissingConflictMoodText <> '':
+        *p $HallMissingConflictMoodText
+    end
+
     killvar '$HallMissingPrintTextId'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl_text.qsps
+! Настроение после конфликта
+! ================================================
+
+#HallMissingConflictMoodText
+    $HallMissingConflictMoodText = ''
+    $HallMissingConflictMoodId = LCASE($ARGS[0])
+
+    if GirlConflictUntilDay[$HallMissingGirl] < day:
+        exit
+    end
+
+    if $HallMissingConflictMoodId <> 'intro' and $HallMissingConflictMoodId <> 'peek_scene' and $HallMissingConflictMoodId <> 'peek_meet' and $HallMissingConflictMoodId <> 'interrupt_scene' and $HallMissingConflictMoodId <> 'ignore_after':
+        exit
+    end
+
+    if $HallMissingGirl = 'amanda':
+        if $HallMissingConflictMoodId = 'intro':
+            $HallMissingConflictMoodText = 'После вашей ссоры Аманда почти не ищет вашего взгляда. В этом исчезновении есть не только страх перед клиентом, но и обиженное желание самой решить, что ей можно.'
+        elseif $HallMissingConflictMoodId = 'interrupt_scene':
+            $HallMissingConflictMoodText = 'Ваше вмешательство бьёт по ней сильнее, чем чужая наглость. Аманда смотрит так, будто вы снова вытащили её на середину зала и заставили краснеть за правило, которое сами же сделали мутным.'
+        else:
+            $HallMissingConflictMoodText = 'Она держится тише обычного, но эта тишина не покорная. Аманда словно прячет от вас не только случившееся, но и маленькое право злиться.'
+        end
+    elseif $HallMissingGirl = 'melissa':
+        if $HallMissingConflictMoodId = 'intro':
+            $HallMissingConflictMoodText = 'Мелисса пропадает не растерянно, а почти демонстративно. После ссоры она явно не собирается докладывать каждый шаг хозяину, который сам путается в собственных приказах.'
+        elseif $HallMissingConflictMoodId = 'interrupt_scene':
+            $HallMissingConflictMoodText = 'Мелисса встречает ваше вмешательство ледяным взглядом. Ей не нравится клиент, но ещё меньше ей нравится, что вы врываетесь только тогда, когда контроль уже не у вас.'
+        else:
+            $HallMissingConflictMoodText = 'В её спокойствии есть острый край. Она будто специально оставляет вам неприятную догадку: если вы не умеете держать слово, она научится держать ситуацию без вас.'
+        end
+    elseif $HallMissingGirl = 'sandra':
+        if $HallMissingConflictMoodId = 'intro':
+            $HallMissingConflictMoodText = 'Сандра исчезает из зала без суеты. После конфликта она больше не ждёт, что Стефан поймёт её с полувзгляда: теперь она сама выбирает, где терпеть, где давить, а где ставить точку.'
+        elseif $HallMissingConflictMoodId = 'interrupt_scene':
+            $HallMissingConflictMoodText = 'Когда вы вмешиваетесь, Сандра не выглядит спасённой. Она выглядит женщиной, которой снова не дали самой решить, насколько далеко зашёл клиент и насколько далеко зашёл сам Стефан.'
+        else:
+            $HallMissingConflictMoodText = 'Сандра держит лицо, но в этой выдержке уже не семейное доверие, а усталое упрямство. Она не обязана каждый раз доказывать, что умеет защитить себя.'
+        end
+    end
+
+    killvar '$HallMissingConflictMoodId'
 ---
 
 ! ================================================
