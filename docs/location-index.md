@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 953
+- Locations: 956
 
 ## modules/actions
 
@@ -625,7 +625,7 @@ Generated from active project files in `qsp-project.json`.
 | `HallLewdPrintText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 14 |
 | `HallLewdResolve` | `modules/events/hall/hall_lewd_behavior.qsps` | 517 |
 | `HallLewdShowImage` | `modules/events/hall/hall_lewd_behavior.qsps` | 683 |
-| `HallLewdText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 223 |
+| `HallLewdText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 277 |
 | `HallMissingGirlApplyConsequences` | `modules/events/hall/hall_missing_girl.qsps` | 578 |
 | `HallMissingGirlBuildMenu` | `modules/events/hall/hall_missing_girl.qsps` | 452 |
 | `HallMissingGirlCanStart` | `modules/events/hall/hall_missing_girl.qsps` | 21 |
@@ -751,7 +751,7 @@ Generated from active project files in `qsp-project.json`.
 | `PortGiftBuy` | `modules/events/port/port_capital_ship.qsps` | 205 |
 | `PortGiftShop` | `modules/events/port/port_capital_ship.qsps` | 150 |
 | `ResetHallRumorDaily` | `modules/events/hall/hall_rumors.qsps` | 123 |
-| `SaveLastHallEvent` | `modules/events/hall/tavern_hall_events.qsps` | 102 |
+| `SaveLastHallEvent` | `modules/events/hall/tavern_hall_events.qsps` | 106 |
 | `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 135 |
 | `SundayVisitBeckySandra` | `modules/events/visits/sunday_shop_visits.qsps` | 13 |
 | `SundayVisitBeckySandraText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 9 |
@@ -759,16 +759,19 @@ Generated from active project files in `qsp-project.json`.
 | `SundayVisitClarissaMelissaText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 27 |
 | `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 54 |
 | `TavernEventDispatcherTry` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 11 |
-| `TavernHallEventCalm` | `modules/events/hall/tavern_hall_events.qsps` | 122 |
-| `TavernHallEventDirtyTable` | `modules/events/hall/tavern_hall_events.qsps` | 197 |
+| `TavernHallEventCalm` | `modules/events/hall/tavern_hall_events.qsps` | 323 |
+| `TavernHallEventCleaningAttention` | `modules/events/hall/tavern_hall_events.qsps` | 251 |
+| `TavernHallEventDirtyTable` | `modules/events/hall/tavern_hall_events.qsps` | 398 |
 | `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 188 |
-| `TavernHallEventQuarrel` | `modules/events/hall/tavern_hall_events.qsps` | 284 |
-| `TavernHallEventQuarrelCalm` | `modules/events/hall/tavern_hall_events.qsps` | 317 |
-| `TavernHallEventQuarrelHard` | `modules/events/hall/tavern_hall_events.qsps` | 386 |
-| `TavernHallEventQuarrelIgnore` | `modules/events/hall/tavern_hall_events.qsps` | 455 |
-| `TavernHallEventSlowService` | `modules/events/hall/tavern_hall_events.qsps` | 241 |
+| `TavernHallEventPickWorker` | `modules/events/hall/tavern_hall_events.qsps` | 126 |
+| `TavernHallEventQuarrel` | `modules/events/hall/tavern_hall_events.qsps` | 485 |
+| `TavernHallEventQuarrelCalm` | `modules/events/hall/tavern_hall_events.qsps` | 518 |
+| `TavernHallEventQuarrelHard` | `modules/events/hall/tavern_hall_events.qsps` | 587 |
+| `TavernHallEventQuarrelIgnore` | `modules/events/hall/tavern_hall_events.qsps` | 656 |
+| `TavernHallEventSlowService` | `modules/events/hall/tavern_hall_events.qsps` | 442 |
 | `TavernHallEventStart` | `modules/events/hall/tavern_hall_events.qsps` | 8 |
-| `TavernHallEventTips` | `modules/events/hall/tavern_hall_events.qsps` | 150 |
+| `TavernHallEventTips` | `modules/events/hall/tavern_hall_events.qsps` | 351 |
+| `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 179 |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 184 |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 7 |
 | `TavernSupplyEmergencyActionText` | `modules/events/tavern/tavern_supply_status_text.qsps` | 40 |

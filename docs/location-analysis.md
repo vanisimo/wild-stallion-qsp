@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 953
-- Locations with direct incoming calls: 771
+- Locations: 956
+- Locations with direct incoming calls: 774
 - Locations without direct incoming calls: 182
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 182
@@ -210,11 +210,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.Add` | 222 |
 | `Menu.AddModule` | 222 |
+| `Menu.Add` | 222 |
 | `NormalizeGirlKey` | 91 |
-| `EnsureGirlData` | 84 |
-| `TavernMain` | 71 |
+| `EnsureGirlData` | 86 |
+| `TavernMain` | 73 |
 | `ShowGirlSidebar` | 64 |
 | `ClampGirlSocialStats` | 44 |
 | `UpdateGirlLocations` | 44 |
@@ -226,13 +226,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
 | `ShowLocationImage` | 21 |
-| `MarketDance` | 21 |
+| `ClampTavernEventState` | 21 |
 | `Menu.AddCondition` | 21 |
+| `MarketDance` | 21 |
+| `SaveLastHallEvent` | 21 |
 | `GetDateTimeNames` | 20 |
-| `ClampTavernEventState` | 19 |
-| `SaveLastHallEvent` | 15 |
-| `ShowGirlInLocation` | 15 |
 | `AmandaLizettePrintText` | 15 |
+| `ShowGirlInLocation` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
 | `OtkrovenMilestoneStub` | 13 |
 

@@ -78,15 +78,19 @@
         *pl ' '
     end
 
-    if TavernHallEventRoll <= 20:
+    if TavernHallEventRoll <= 15:
         gt 'TavernHallEventTips'
-    elseif TavernHallEventRoll <= 38:
+    elseif TavernHallEventRoll <= 30:
         gt 'TavernHallEventDirtyTable'
-    elseif TavernHallEventRoll <= 56:
+    elseif TavernHallEventRoll <= 45:
         gt 'TavernHallEventSlowService'
-    elseif TavernHallEventRoll <= 74:
+    elseif TavernHallEventRoll <= 60:
         gt 'TavernHallEventQuarrel'
-    elseif TavernHallEventRoll <= 88:
+    elseif TavernHallEventRoll <= 72:
+        gt 'TavernHallEventWaitressAttention'
+    elseif TavernHallEventRoll <= 84:
+        gt 'TavernHallEventCleaningAttention'
+    elseif TavernHallEventRoll <= 94:
         gt 'HallHarassment'
     else:
         gt 'TavernHallEventCalm'
@@ -112,6 +116,203 @@
     if $LastHallEventGirl <> '':
         gs 'EnsureGirlData', $LastHallEventGirl
     end
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Подбор работницы для событий зала
+! ================================================
+
+#TavernHallEventPickWorker
+    $TavernHallEventWorkerJob = LCASE($ARGS[0])
+    $TavernHallEventWorker = ''
+    TavernHallEventWorkerCount = 0
+
+    if $TavernHallEventWorkerJob = 'cleaning':
+        if jobcleaning['amanda'] = 1:
+            TavernHallEventWorkerCount += 1
+            $TavernHallEventWorkerCandidate[TavernHallEventWorkerCount] = 'amanda'
+        end
+
+        if jobcleaning['melissa'] = 1:
+            TavernHallEventWorkerCount += 1
+            $TavernHallEventWorkerCandidate[TavernHallEventWorkerCount] = 'melissa'
+        end
+
+        if jobcleaning['sandra'] = 1:
+            TavernHallEventWorkerCount += 1
+            $TavernHallEventWorkerCandidate[TavernHallEventWorkerCount] = 'sandra'
+        end
+    else:
+        if jobwaitress['amanda'] = 1:
+            TavernHallEventWorkerCount += 1
+            $TavernHallEventWorkerCandidate[TavernHallEventWorkerCount] = 'amanda'
+        end
+
+        if jobwaitress['melissa'] = 1:
+            TavernHallEventWorkerCount += 1
+            $TavernHallEventWorkerCandidate[TavernHallEventWorkerCount] = 'melissa'
+        end
+
+        if jobwaitress['sandra'] = 1:
+            TavernHallEventWorkerCount += 1
+            $TavernHallEventWorkerCandidate[TavernHallEventWorkerCount] = 'sandra'
+        end
+    end
+
+    if TavernHallEventWorkerCount > 0:
+        TavernHallEventWorkerRoll = RAND(1, TavernHallEventWorkerCount)
+        $TavernHallEventWorker = $TavernHallEventWorkerCandidate[TavernHallEventWorkerRoll]
+    end
+
+    killvar '$TavernHallEventWorkerJob'
+    killvar 'TavernHallEventWorkerCount'
+    killvar 'TavernHallEventWorkerRoll'
+    killvar '$TavernHallEventWorkerCandidate'
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Официантка привлекла слишком много внимания
+! ================================================
+
+#TavernHallEventWaitressAttention
+    *clr
+    clr
+    cla
+
+    gs 'TavernHallEventPickWorker', 'waitress'
+
+    if $TavernHallEventWorker = '':
+        gt 'TavernHallEventCalm'
+    end
+
+    gs 'EnsureGirlData', $TavernHallEventWorker
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: ЛИШНЕЕ ВНИМАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if sluttiness[$TavernHallEventWorker] >= 45 or GirlNpcPath[$TavernHallEventWorker] >= 45:
+        *p $RealName[$TavernHallEventWorker] + ' задерживается у шумного стола дольше обычного. Клиент зовёт её присесть на край лавки, она смеётся, берёт монету и позволяет его руке задержаться на талии ровно настолько, чтобы соседние столы всё поняли.'
+        *p 'Стефан видит: это ещё не бордельная сцена, но зал уже учится платить не только за пиво.'
+
+        money += 5
+        TavernScandal += 1
+        TavernLewdFame += 1
+
+        *pl ' '
+        *pl 'Получено лишних чаевых: 5 мараведи.'
+
+        gs 'SaveLastHallEvent', 'waitress_attention', $TavernHallEventWorker, 'Официантка удержала внимание клиента и получила лишние чаевые.', 'lewd_good'
+    elseif sluttiness[$TavernHallEventWorker] >= 20 or GirlNpcPath[$TavernHallEventWorker] >= 20:
+        *p $RealName[$TavernHallEventWorker] + ' принимает заказ у дальнего стола, когда старый хрен зовёт её ближе и кивает на свободное место рядом. Она не садится, но и не отходит сразу: улыбается криво, забирает монету и ловко переводит разговор обратно к вину.'
+        *p 'Зал ухмыляется. Слухов будет немного, но они будут липкими.'
+
+        money += 3
+        TavernScandal += 1
+
+        *pl ' '
+        *pl 'Получено лишних чаевых: 3 мараведи.'
+
+        gs 'SaveLastHallEvent', 'waitress_attention', $TavernHallEventWorker, 'Официантка удержала границу, но дала залу повод для шёпота.', 'lewd_neutral'
+    else:
+        *p $RealName[$TavernHallEventWorker] + ' подходит к столу с заказом, и клиент слишком нагло хлопает ладонью по лавке рядом с собой. "Садись, красавица, не убежит твоё пиво".'
+        *p 'Она резко отступает, прижимая поднос к груди. Сцена выходит неловкой, зато всем ясно: сегодня эту границу купить не удалось.'
+
+        tavern_reputation += 1
+
+        if tavern_reputation > 100:
+            tavern_reputation = 100
+        end
+
+        gs 'SaveLastHallEvent', 'waitress_attention', $TavernHallEventWorker, 'Официантка отказалась от слишком вольного внимания клиента.', 'decent'
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+
+    killvar '$TavernHallEventWorker'
+---
+
+! ================================================
+! FILE: modules/events/tavern_hall_events.qsps
+! Уборщица попала под грязные взгляды
+! ================================================
+
+#TavernHallEventCleaningAttention
+    *clr
+    clr
+    cla
+
+    gs 'TavernHallEventPickWorker', 'cleaning'
+
+    if $TavernHallEventWorker = '':
+        gt 'TavernHallEventCalm'
+    end
+
+    gs 'EnsureGirlData', $TavernHallEventWorker
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ГЛАВНЫЙ ЗАЛ: УБОРКА ПОД ВЗГЛЯДАМИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if sluttiness[$TavernHallEventWorker] >= 45 or GirlNpcPath[$TavernHallEventWorker] >= 45:
+        *p $RealName[$TavernHallEventWorker] + ' моет пол у дальнего стола. Юбка натягивается на бёдрах, клиент за спиной шлёпает её по попе, и она не вскакивает сразу. Только поворачивает голову, смотрит на монету и говорит: "За такую наглость мало".'
+        *p 'Стол смеётся, монета всё-таки падает рядом с тряпкой. Слух о такой уборке переживёт саму грязь на полу.'
+
+        money += 4
+        TavernScandal += 2
+        TavernLewdFame += 1
+
+        *pl ' '
+        *pl 'Получено лишних чаевых: 4 мараведи.'
+
+        gs 'SaveLastHallEvent', 'cleaning_attention', $TavernHallEventWorker, 'Уборщица обернула грязную вольность клиента в чаевые и слухи.', 'lewd_good'
+    elseif sluttiness[$TavernHallEventWorker] >= 20 or GirlNpcPath[$TavernHallEventWorker] >= 20:
+        *p $RealName[$TavernHallEventWorker] + ' вытирает пыль, стоя на лестнице. Клиент под ней якобы придерживает ступени, но смотрит совсем не туда. Она замечает взгляд, краснеет, но вместо крика сухо требует монету за "опасную работу".'
+        *p 'Получается грубо, но действенно: клиент платит и отступает, а зал получает новую тему для шёпота.'
+
+        money += 2
+        TavernScandal += 1
+
+        *pl ' '
+        *pl 'Получено лишних чаевых: 2 мараведи.'
+
+        gs 'SaveLastHallEvent', 'cleaning_attention', $TavernHallEventWorker, 'Уборщица поставила клиента на место, но не без грязных слухов.', 'lewd_neutral'
+    else:
+        *p $RealName[$TavernHallEventWorker] + ' поскальзывается на мокром полу и едва не падает на сидящего гостя. Тот ловит её слишком уверенно, ладонь задерживается на бедре, и она тут же вскакивает, красная от стыда и злости.'
+        *p 'Гость пытается смеяться, но под вашим взглядом быстро замолкает.'
+
+        tavern_reputation += 1
+
+        if tavern_reputation > 100:
+            tavern_reputation = 100
+        end
+
+        gs 'SaveLastHallEvent', 'cleaning_attention', $TavernHallEventWorker, 'Уборщица резко пресекла слишком вольную помощь клиента.', 'decent'
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+
+    killvar '$TavernHallEventWorker'
 ---
 
 ! ================================================
