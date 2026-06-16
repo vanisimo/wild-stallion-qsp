@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 228
-- Locations: 945
+- Source files: 229
+- Locations: 946
 
 ## modules/actions
 
@@ -606,14 +606,14 @@ Generated from active project files in `qsp-project.json`.
 | `HallKnowledgeMaybeRumor` | `modules/events/hall/hall_knowledge_hooks.qsps` | 76 |
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 |
-| `HallLewdApplyConsequences` | `modules/events/hall/hall_lewd_behavior.qsps` | 592 |
+| `HallLewdApplyConsequences` | `modules/events/hall/hall_lewd_behavior.qsps` | 583 |
 | `HallLewdBehaviorCanStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 17 |
 | `HallLewdBehaviorStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 369 |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 |
-| `HallLewdBuildMenu` | `modules/events/hall/hall_lewd_behavior.qsps` | 479 |
+| `HallLewdBuildMenu` | `modules/events/hall/hall_lewd_behavior.qsps` | 470 |
 | `HallLewdCheckCandidate` | `modules/events/hall/hall_lewd_behavior.qsps` | 108 |
-| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 757 |
-| `HallLewdDebugStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 722 |
+| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 748 |
+| `HallLewdDebugStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 713 |
 | `HallLewdEnsureName` | `modules/events/hall/hall_lewd_behavior.qsps` | 183 |
 | `HallLewdGetStage` | `modules/events/hall/hall_lewd_behavior.qsps` | 207 |
 | `HallLewdGirlReaction` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 101 |
@@ -621,28 +621,28 @@ Generated from active project files in `qsp-project.json`.
 | `HallLewdPickCandidate` | `modules/events/hall/hall_lewd_behavior.qsps` | 85 |
 | `HallLewdPickClient` | `modules/events/hall/hall_lewd_behavior.qsps` | 348 |
 | `HallLewdPickScene` | `modules/events/hall/hall_lewd_behavior.qsps` | 305 |
-| `HallLewdPrintDecisionThoughts` | `modules/events/hall/hall_lewd_behavior.qsps` | 475 |
+| `HallLewdPrintDecisionThoughts` | `modules/events/hall/hall_lewd_behavior.qsps` | 466 |
 | `HallLewdPrintText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 14 |
-| `HallLewdResolve` | `modules/events/hall/hall_lewd_behavior.qsps` | 504 |
-| `HallLewdShowImage` | `modules/events/hall/hall_lewd_behavior.qsps` | 670 |
+| `HallLewdResolve` | `modules/events/hall/hall_lewd_behavior.qsps` | 495 |
+| `HallLewdShowImage` | `modules/events/hall/hall_lewd_behavior.qsps` | 661 |
 | `HallLewdText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 223 |
-| `HallMissingGirlApplyConsequences` | `modules/events/hall/hall_missing_girl.qsps` | 584 |
-| `HallMissingGirlBuildMenu` | `modules/events/hall/hall_missing_girl.qsps` | 458 |
+| `HallMissingGirlApplyConsequences` | `modules/events/hall/hall_missing_girl.qsps` | 575 |
+| `HallMissingGirlBuildMenu` | `modules/events/hall/hall_missing_girl.qsps` | 449 |
 | `HallMissingGirlCanStart` | `modules/events/hall/hall_missing_girl.qsps` | 21 |
 | `HallMissingGirlCheckCandidate` | `modules/events/hall/hall_missing_girl.qsps` | 112 |
-| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 755 |
-| `HallMissingGirlDebugStart` | `modules/events/hall/hall_missing_girl.qsps` | 719 |
+| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 746 |
+| `HallMissingGirlDebugStart` | `modules/events/hall/hall_missing_girl.qsps` | 710 |
 | `HallMissingGirlEnsureName` | `modules/events/hall/hall_missing_girl.qsps` | 190 |
 | `HallMissingGirlGetStage` | `modules/events/hall/hall_missing_girl.qsps` | 214 |
 | `HallMissingGirlNormalizeKey` | `modules/events/hall/hall_missing_girl.qsps` | 172 |
 | `HallMissingGirlPickCandidate` | `modules/events/hall/hall_missing_girl.qsps` | 89 |
 | `HallMissingGirlPickClient` | `modules/events/hall/hall_missing_girl.qsps` | 334 |
 | `HallMissingGirlPickPlace` | `modules/events/hall/hall_missing_girl.qsps` | 312 |
-| `HallMissingGirlPrintDecisionThoughts` | `modules/events/hall/hall_missing_girl.qsps` | 454 |
+| `HallMissingGirlPrintDecisionThoughts` | `modules/events/hall/hall_missing_girl.qsps` | 445 |
 | `HallMissingGirlPrintText` | `modules/events/hall/hall_missing_girl_text.qsps` | 12 |
 | `HallMissingGirlReaction` | `modules/events/hall/hall_missing_girl_text.qsps` | 49 |
-| `HallMissingGirlResolve` | `modules/events/hall/hall_missing_girl.qsps` | 483 |
-| `HallMissingGirlShowImage` | `modules/events/hall/hall_missing_girl.qsps` | 672 |
+| `HallMissingGirlResolve` | `modules/events/hall/hall_missing_girl.qsps` | 474 |
+| `HallMissingGirlShowImage` | `modules/events/hall/hall_missing_girl.qsps` | 663 |
 | `HallMissingGirlStart` | `modules/events/hall/hall_missing_girl.qsps` | 355 |
 | `HallMissingGirlText` | `modules/events/hall/hall_missing_girl_text.qsps` | 132 |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 |
@@ -665,12 +665,12 @@ Generated from active project files in `qsp-project.json`.
 | `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 6 |
 | `IngaGuardSaturday` | `modules/events/quests/inga_guard_quest.qsps` | 7 |
 | `IngaSexEncounter` | `modules/events/quests/inga_guard_quest.qsps` | 96 |
-| `KitchenCustomerApplyConsequences` | `modules/events/kitchen/kitchen_customer_event.qsps` | 667 |
-| `KitchenCustomerBuildMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 500 |
-| `KitchenCustomerCanUseClientChoice` | `modules/events/kitchen/kitchen_customer_event.qsps` | 529 |
+| `KitchenCustomerApplyConsequences` | `modules/events/kitchen/kitchen_customer_event.qsps` | 658 |
+| `KitchenCustomerBuildMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 491 |
+| `KitchenCustomerCanUseClientChoice` | `modules/events/kitchen/kitchen_customer_event.qsps` | 520 |
 | `KitchenCustomerCheckCandidate` | `modules/events/kitchen/kitchen_customer_event.qsps` | 71 |
-| `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 842 |
-| `KitchenCustomerDebugStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 806 |
+| `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 833 |
+| `KitchenCustomerDebugStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 797 |
 | `KitchenCustomerEnsureName` | `modules/events/kitchen/kitchen_customer_event.qsps` | 157 |
 | `KitchenCustomerEventCanStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 30 |
 | `KitchenCustomerEventStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 381 |
@@ -680,10 +680,10 @@ Generated from active project files in `qsp-project.json`.
 | `KitchenCustomerPickCandidate` | `modules/events/kitchen/kitchen_customer_event.qsps` | 48 |
 | `KitchenCustomerPickClient` | `modules/events/kitchen/kitchen_customer_event.qsps` | 360 |
 | `KitchenCustomerPickScene` | `modules/events/kitchen/kitchen_customer_event.qsps` | 309 |
-| `KitchenCustomerPrintDecisionThoughts` | `modules/events/kitchen/kitchen_customer_event.qsps` | 490 |
+| `KitchenCustomerPrintDecisionThoughts` | `modules/events/kitchen/kitchen_customer_event.qsps` | 481 |
 | `KitchenCustomerPrintText` | `modules/events/kitchen/kitchen_customer_event_text.qsps` | 14 |
-| `KitchenCustomerResolve` | `modules/events/kitchen/kitchen_customer_event.qsps` | 575 |
-| `KitchenCustomerShowImage` | `modules/events/kitchen/kitchen_customer_event.qsps` | 754 |
+| `KitchenCustomerResolve` | `modules/events/kitchen/kitchen_customer_event.qsps` | 566 |
+| `KitchenCustomerShowImage` | `modules/events/kitchen/kitchen_customer_event.qsps` | 745 |
 | `KitchenCustomerText` | `modules/events/kitchen/kitchen_customer_event_text.qsps` | 22 |
 | `KitchenPolicyReaction` | `modules/events/kitchen/kitchen_policy_reaction.qsps` | 15 |
 | `LegareClarissaSuspicionAction` | `modules/events/tavern/legare_clarissa_suspicion.qsps` | 139 |
@@ -732,6 +732,7 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaTalkAboutLegareSuspicionText` | `modules/events/tavern/legare_clarissa_suspicion_text.qsps` | 65 |
 | `MelissaTalkAboutLegareThoughts` | `modules/events/dance/amanda_legare_talk_text.qsps` | 77 |
 | `PolicyEventChoiceConsequencePrint` | `modules/events/hall/hall_choice_consequences.qsps` | 51 |
+| `PolicyEventDebugPrintStart` | `modules/events/hall/policy_event_debug.qsps` | 6 |
 | `PolicyEventReactionPrint` | `modules/events/hall/hall_policy_reaction.qsps` | 79 |
 | `PolicyEventSceneVariationPrint` | `modules/events/hall/girl_policy_scene_variations.qsps` | 56 |
 | `PortAmandaLizetteChoice` | `modules/events/port/port_amanda_lizette.qsps` | 92 |

@@ -63,4 +63,5 @@ Choice names should be reused consistently by result handlers, `PolicyEventChoic
 
 - Normalize choice names across hall and kitchen events.
 - Reduce duplicate result-handler structure in `hall_lewd`, `hall_missing`, and `kitchen`.
+- Keep shared debug output in `PolicyEventDebugPrintStart` when start screens need the same fields.
 - Keep compatibility aliases in `modules/core/system/compatibility_aliases.qsps` until old call sites are gone.
