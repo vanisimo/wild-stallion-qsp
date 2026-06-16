@@ -172,22 +172,9 @@
 
         *p 'Вы отдаёте ' + $RealName[$GiftGirl] + ' ' + $GiftName + '.'
 
-        if GiftValue >= 3:
-            *p 'Она не прощает вас сразу, но подарок попал точно. В её взгляде становится меньше холода.'
-            Friends[$GiftGirl] += 2
-            love[$GiftGirl] += 1
-            GirlConflictUntilDay[$GiftGirl] = 0
-        elseif GiftValue = 2:
-            *p 'Она принимает подарок сдержанно. Ссора ещё не забыта, но теперь с ней хотя бы можно будет говорить позже.'
-            Friends[$GiftGirl] += 1
-
-            if GirlConflictUntilDay[$GiftGirl] > day:
-                GirlConflictUntilDay[$GiftGirl] = day
-            end
-        else:
-            *p 'Она берёт подарок без особой радости. Вышло не хуже, но и не лучше: не всякую обиду можно закрыть первой попавшейся вещью.'
-            Friends[$GiftGirl] += 1
-        end
+        gs 'MenuGirlGiftReactionText', $GiftGirl, $GiftId, GiftValue
+        *p $GiftReactionText
+        gs 'MenuGirlGiftApplyReaction', $GiftGirl, GiftValue
 
         if hate[$GiftGirl] > 0:
             hate[$GiftGirl] -= GiftValue
@@ -211,8 +198,94 @@
 
     killvar '$GiftId'
     killvar '$GiftName'
+    killvar '$GiftReactionText'
     killvar 'GiftValue'
     killvar 'GiftInviteIntim'
+---
+
+#MenuGirlGiftReactionText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftReactionGirl = $GirlKey
+    $GiftReactionId = LCASE($ARGS[1])
+    GiftReactionValue = ARGS[2]
+    $GiftReactionText = ''
+
+    if $GiftReactionGirl = 'amanda':
+        if GiftReactionValue >= 3:
+            if GirlConflictUntilDay[$GiftReactionGirl] >= day:
+                $GiftReactionText = 'Аманда берёт подарок осторожно, будто боится слишком быстро показать, что он ей понравился. Сердитая складка между бровями держится ещё пару секунд, потом исчезает. "Стефан... старый ты хрен. Думаешь, красивой вещью всё исправишь?" Но пальцы уже прижимают подарок к груди.'
+            else:
+                $GiftReactionText = 'Аманда улыбается раньше, чем успевает спрятать улыбку. Подарок ей явно нравится: она вертит его в руках, краснеет и смотрит на вас так, будто между вами снова появилась та самая тёплая, опасная близость.'
+            end
+        elseif GiftReactionValue = 2:
+            $GiftReactionText = 'Аманда принимает подарок с неловкой благодарностью. Он не попал прямо в сердце, но всё же смягчил её: "Ладно... я вижу, что ты хотя бы пытался".'
+        else:
+            $GiftReactionText = 'Аманда берёт подарок, но радости почти не видно. Она благодарит тихо, из вежливости, и по её лицу ясно: настоящая обида так просто не уходит.'
+        end
+    elseif $GiftReactionGirl = 'melissa':
+        if GiftReactionValue >= 3:
+            if GirlConflictUntilDay[$GiftReactionGirl] >= day:
+                $GiftReactionText = 'Мелисса долго смотрит не на подарок, а на вас. "Хочешь купить прощение?" — спрашивает она сухо. Но вещь выбрана слишком точно, и это раздражает её почти сильнее самой ссоры. В конце концов она выдыхает и прячет подарок, уже без прежнего льда в голосе.'
+            else:
+                $GiftReactionText = 'Мелисса принимает подарок с видом женщины, которую трудно удивить. Потом всё-таки проводит пальцем по красивой вещи и чуть щурится: "Вот это уже похоже на внимание, а не на попытку отделаться".'
+            end
+        elseif GiftReactionValue = 2:
+            $GiftReactionText = 'Мелисса принимает подарок, но смотрит строго. "Неплохо. Только не думай, что теперь можно снова делать глупости и приносить красивые тряпки".'
+        else:
+            $GiftReactionText = 'Мелисса берёт подарок без особого восторга. "Спасибо", — говорит она так ровно, что становится понятно: оценку вы получили среднюю.'
+        end
+    elseif $GiftReactionGirl = 'sandra':
+        if GiftReactionValue >= 3:
+            if GirlConflictUntilDay[$GiftReactionGirl] >= day:
+                $GiftReactionText = 'Сандра принимает подарок молча. Она не из тех, кто тает от красивой вещи, но выбор слишком разумный, слишком внимательный. "Хорошо, Стефан. Я вижу, что ты думал не только о себе. Но дальше смотри по поступкам".'
+            else:
+                $GiftReactionText = 'Сандра внимательно рассматривает подарок и кивает. В её благодарности нет девичьей суеты, зато есть уважение: вы выбрали то, что действительно может пригодиться, а не просто блестит в руках.'
+            end
+        elseif GiftReactionValue = 2:
+            $GiftReactionText = 'Сандра благодарит спокойно. Подарок принят, но её взгляд напоминает: для неё важнее порядок в доме и честное слово, чем красивые жесты.'
+        else:
+            $GiftReactionText = 'Сандра принимает подарок вежливо, но без тепла. "Спасибо", — говорит она, и по тону ясно: лучше бы вы сначала исправили причину ссоры.'
+        end
+    else:
+        if GiftReactionValue >= 3:
+            $GiftReactionText = $RealName[$GiftReactionGirl] + ' принимает подарок, и в её взгляде становится меньше холода.'
+        elseif GiftReactionValue = 2:
+            $GiftReactionText = $RealName[$GiftReactionGirl] + ' принимает подарок сдержанно. Ссора ещё не забыта, но теперь с ней хотя бы можно будет говорить позже.'
+        else:
+            $GiftReactionText = $RealName[$GiftReactionGirl] + ' берёт подарок без особой радости. Не всякую обиду можно закрыть первой попавшейся вещью.'
+        end
+    end
+
+    killvar '$GiftReactionGirl'
+    killvar '$GiftReactionId'
+    killvar 'GiftReactionValue'
+---
+
+#MenuGirlGiftApplyReaction
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftApplyGirl = $GirlKey
+    GiftApplyValue = ARGS[1]
+
+    if $GiftApplyGirl = '':
+        exit
+    end
+
+    if GiftApplyValue >= 3:
+        Friends[$GiftApplyGirl] += 2
+        love[$GiftApplyGirl] += 1
+        GirlConflictUntilDay[$GiftApplyGirl] = 0
+    elseif GiftApplyValue = 2:
+        Friends[$GiftApplyGirl] += 1
+
+        if GirlConflictUntilDay[$GiftApplyGirl] > day:
+            GirlConflictUntilDay[$GiftApplyGirl] = day
+        end
+    else:
+        Friends[$GiftApplyGirl] += 1
+    end
+
+    killvar '$GiftApplyGirl'
+    killvar 'GiftApplyValue'
 ---
 
 #MenuGirlGiftName
