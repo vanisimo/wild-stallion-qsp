@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 965
+- Locations: 966
 
 ## modules/actions
 
@@ -868,21 +868,22 @@ Generated from active project files in `qsp-project.json`.
 | `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 337 |
 | `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 347 |
 | `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 357 |
-| `MenuGirlFlirt` | `modules/menu/girls/menu_girl_actions.qsps` | 385 |
+| `MenuGirlFlirt` | `modules/menu/girls/menu_girl_actions.qsps` | 417 |
 | `MenuGirlGift` | `modules/menu/girls/menu_girl_actions.qsps` | 45 |
 | `MenuGirlGiftApplyReaction` | `modules/menu/girls/menu_girl_actions.qsps` | 264 |
 | `MenuGirlGiftCanInvite` | `modules/menu/girls/menu_girl_actions.qsps` | 343 |
 | `MenuGirlGiftGive` | `modules/menu/girls/menu_girl_actions.qsps` | 138 |
+| `MenuGirlGiftInviteText` | `modules/menu/girls/menu_girl_actions.qsps` | 380 |
 | `MenuGirlGiftName` | `modules/menu/girls/menu_girl_actions.qsps` | 291 |
 | `MenuGirlGiftReactionText` | `modules/menu/girls/menu_girl_actions.qsps` | 206 |
 | `MenuGirlGiftValue` | `modules/menu/girls/menu_girl_actions.qsps` | 313 |
 | `MenuGirlInspect` | `modules/menu/girls/menu_girl_overview.qsps` | 98 |
-| `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 427 |
+| `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 459 |
 | `MenuGirlOverview` | `modules/menu/girls/menu_girl_overview.qsps` | 10 |
-| `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 459 |
-| `MenuGirlSpecialAmanda` | `modules/menu/girls/menu_girl_actions.qsps` | 505 |
-| `MenuGirlSpecialMelissa` | `modules/menu/girls/menu_girl_actions.qsps` | 533 |
-| `MenuGirlSpecialSandra` | `modules/menu/girls/menu_girl_actions.qsps` | 561 |
+| `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 491 |
+| `MenuGirlSpecialAmanda` | `modules/menu/girls/menu_girl_actions.qsps` | 537 |
+| `MenuGirlSpecialMelissa` | `modules/menu/girls/menu_girl_actions.qsps` | 565 |
+| `MenuGirlSpecialSandra` | `modules/menu/girls/menu_girl_actions.qsps` | 593 |
 | `MenuGirlTalk` | `modules/menu/girls/menu_girl_actions.qsps` | 7 |
 | `NPC_Click` | `modules/menu/npc/npc_click.qsps` | 8 |
 | `NpcClickableLink` | `modules/menu/npc/npc_clickable_link.qsps` | 3 |

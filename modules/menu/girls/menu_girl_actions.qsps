@@ -366,13 +366,45 @@
     gs 'MenuGirlCalcConditions', $GiftInviteGirl, $GiftInviteReturnLoc
 
     if MenuCanIntim = 1:
-        *p 'Она задерживает вашу руку чуть дольше обычного. Между вами уже не нужно много слов: хороший подарок, правильный момент и прежняя близость делают молчание достаточно понятным.'
+        gs 'MenuGirlGiftInviteText', $GiftInviteGirl
+        *p $GiftInviteText
         GiftInviteIntim = 1
     end
 
     killvar '$GiftInviteGirl'
     killvar '$GiftInviteReturnLoc'
     killvar 'GiftInviteValue'
+    killvar '$GiftInviteText'
+---
+
+#MenuGirlGiftInviteText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftInviteTextGirl = $GirlKey
+    $GiftInviteText = ''
+
+    if $GiftInviteTextGirl = 'amanda':
+        if GirlConflictUntilDay[$GiftInviteTextGirl] >= day:
+            $GiftInviteText = 'Аманда всё ещё пытается держаться обиженно, но пальцы задерживаются на вашей ладони. Она смотрит снизу вверх, краснеет и тихо говорит: "Не думай, что всё так просто, Стефан". Только сама не отпускает.'
+        else:
+            $GiftInviteText = 'Аманда улыбается мягче, чем собиралась. Подарок остаётся у неё в руках, а взгляд уже уходит к двери, где можно спрятаться от зала и поговорить без слов.'
+        end
+    elseif $GiftInviteTextGirl = 'melissa':
+        if GirlConflictUntilDay[$GiftInviteTextGirl] >= day:
+            $GiftInviteText = 'Мелисса всё ещё смотрит строго, но прежняя злость уже треснула. "Один хороший подарок не делает тебя умнее", — говорит она. Потом чуть тише добавляет: "Но сегодня я готова проверить, понял ли ты хоть что-нибудь".'
+        else:
+            $GiftInviteText = 'Мелисса убирает подарок и смотрит на вас уже не как на хозяина трактира. "Раз уж ты умеешь выбирать правильные вещи, Стефан, посмотрим, умеешь ли ты правильно вести себя дальше".'
+        end
+    elseif $GiftInviteTextGirl = 'sandra':
+        if GirlConflictUntilDay[$GiftInviteTextGirl] >= day:
+            $GiftInviteText = 'Сандра не смягчается сразу. Она слишком хорошо знает цену словам и подаркам. Но когда её рука ложится поверх вашей, в этом жесте уже есть разрешение: не прощение целиком, но шанс доказать его ближе.'
+        else:
+            $GiftInviteText = 'Сандра благодарит без лишней игры, но не отстраняется. Между вами давно есть то, что не требует громких обещаний: если вы сейчас останетесь рядом, она поймёт это правильно.'
+        end
+    else:
+        $GiftInviteText = $RealName[$GiftInviteTextGirl] + ' задерживает вашу руку чуть дольше обычного. Хороший подарок, правильный момент и прежняя близость делают молчание достаточно понятным.'
+    end
+
+    killvar '$GiftInviteTextGirl'
 ---
 
 ! ================================================
