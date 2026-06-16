@@ -87,7 +87,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 | `entry/helper` |
 | `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 770 | `entry/helper` |
-| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 749 | `entry/helper` |
+| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 767 | `entry/helper` |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 | `entry/helper` |
 | `HallRecentMemoryClear` | `modules/events/hall/hall_recent_memory.qsps` | 58 | `entry/helper` |
 | `HallRecentMemoryMarkDiscussed` | `modules/events/hall/hall_recent_memory.qsps` | 68 | `entry/helper` |
