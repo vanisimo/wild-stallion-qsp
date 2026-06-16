@@ -67,11 +67,6 @@
         $RealName[$GirlActionName] = UCASE(MID($GirlActionName, 1, 1)) + LCASE(MID($GirlActionName, 2))
     end
 
-    if MenuGirlConflictActive = 1:
-        msg $RealName[$GirlActionName] + ' сейчас злится и не хочет особых разговоров.'
-        gt $GirlReturnLoc
-    end
-
     cls
 
     gs 'ShowGirlSidebar', $GirlActionName
@@ -145,6 +140,7 @@
     $GiftGirl = $GirlKey
     $GirlReturnLoc = $ARGS[1]
     $GiftId = LCASE($ARGS[2])
+    GiftInviteIntim = 0
 
     if $GiftGirl = '':
         msg 'Ошибка: MenuGirlGiftGive вызван без имени девушки.'
@@ -198,18 +194,25 @@
         end
 
         gs 'ClampGirlSocialStats', $GiftGirl
+        gs 'MenuGirlGiftCanInvite', $GiftGirl, $GirlReturnLoc, GiftValue
     end
 
     *pl ' '
+
+    if GiftInviteIntim = 1:
+        act 'Остаться с ней':
+            gt 'MenuGirlIntim', $GiftGirl, $GirlReturnLoc
+        end
+    end
 
     act 'Вернуться':
         gt $GirlReturnLoc
     end
 
-    killvar '$GiftGirl'
     killvar '$GiftId'
     killvar '$GiftName'
     killvar 'GiftValue'
+    killvar 'GiftInviteIntim'
 ---
 
 #MenuGirlGiftName
@@ -262,6 +265,41 @@
 
     killvar '$GiftValueGirl'
     killvar '$GiftValueId'
+---
+
+#MenuGirlGiftCanInvite
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftInviteGirl = $GirlKey
+    $GiftInviteReturnLoc = $ARGS[1]
+    GiftInviteValue = ARGS[2]
+    GiftInviteIntim = 0
+
+    if $GiftInviteGirl = '':
+        exit
+    end
+
+    if GiftInviteValue < 3:
+        exit
+    end
+
+    if HadSex[$GiftInviteGirl] <= 0:
+        exit
+    end
+
+    if love[$GiftInviteGirl] < 15 and sluttiness[$GiftInviteGirl] < 35 and otkroven[$GiftInviteGirl] < 20:
+        exit
+    end
+
+    gs 'MenuGirlCalcConditions', $GiftInviteGirl, $GiftInviteReturnLoc
+
+    if MenuCanIntim = 1:
+        *p 'Она задерживает вашу руку чуть дольше обычного. Между вами уже не нужно много слов: хороший подарок, правильный момент и прежняя близость делают молчание достаточно понятным.'
+        GiftInviteIntim = 1
+    end
+
+    killvar '$GiftInviteGirl'
+    killvar '$GiftInviteReturnLoc'
+    killvar 'GiftInviteValue'
 ---
 
 ! ================================================
