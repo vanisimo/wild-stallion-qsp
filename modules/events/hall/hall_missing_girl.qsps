@@ -361,6 +361,60 @@
 
 ! ================================================
 ! FILE: modules/events/hall/hall_missing_girl.qsps
+! Выбор приватного действия
+! ================================================
+
+#HallMissingGirlPickPrivateAct
+    $HallMissingPrivateAct = 'talk'
+    HallMissingPrivateActRoll = RAND(1, 100)
+
+    if HallMissingGirlStage < 4:
+        $HallMissingPrivateAct = 'talk'
+    elseif $HallMissingPlace = 'under_table':
+        if HallMissingPrivateActRoll <= 55:
+            $HallMissingPrivateAct = 'hand'
+        else:
+            $HallMissingPrivateAct = 'tease'
+        end
+    elseif $HallMissingPlace = 'kitchen':
+        if HallMissingPrivateActRoll <= 45:
+            $HallMissingPrivateAct = 'mouth'
+        elseif HallMissingPrivateActRoll <= 75:
+            $HallMissingPrivateAct = 'hand'
+        else:
+            $HallMissingPrivateAct = 'tease'
+        end
+    elseif $HallMissingPlace = 'stairs':
+        if HallMissingPrivateActRoll <= 50:
+            $HallMissingPrivateAct = 'client_mouth'
+        else:
+            $HallMissingPrivateAct = 'touch'
+        end
+    elseif $HallMissingPlace = 'second_floor':
+        if HallMissingPrivateActRoll <= 35:
+            $HallMissingPrivateAct = 'room_invite'
+        elseif HallMissingPrivateActRoll <= 65:
+            $HallMissingPrivateAct = 'mouth'
+        elseif HallMissingPrivateActRoll <= 85:
+            $HallMissingPrivateAct = 'client_mouth'
+        else:
+            $HallMissingPrivateAct = 'hand'
+        end
+    else:
+        if HallMissingPrivateActRoll <= 45:
+            $HallMissingPrivateAct = 'hand'
+        elseif HallMissingPrivateActRoll <= 75:
+            $HallMissingPrivateAct = 'mouth'
+        else:
+            $HallMissingPrivateAct = 'touch'
+        end
+    end
+
+    killvar 'HallMissingPrivateActRoll'
+---
+
+! ================================================
+! FILE: modules/events/hall/hall_missing_girl.qsps
 ! Вход в событие
 ! ================================================
 
@@ -398,6 +452,7 @@
     gs 'HallMissingGirlGetStage', $HallMissingGirl
     gs 'HallMissingGirlPickPlace'
     gs 'HallMissingGirlPickClient'
+    gs 'HallMissingGirlPickPrivateAct'
 
     HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
 
@@ -440,6 +495,10 @@
     *pl ' '
 
     gs 'PolicyEventDebugPrintStart', 'HALL MISSING', $HallMissingGirl, HallMissingGirlStage, HallMissingGirlScore, 'place', $HallMissingPlace, $HallMissingClient, HallMissingUniform, GirlWorkPolicy[$HallMissingGirl]
+
+    if debug = 1:
+        *pl '[DEBUG HALL MISSING] act: ' + $HallMissingPrivateAct
+    end
 
     gs 'HallMissingGirlBuildMenu'
 
@@ -778,5 +837,6 @@ killvar '$HallMissingApplyChoice'
     killvar '$HallMissingGirl'
     killvar '$HallMissingPlace'
     killvar '$HallMissingClient'
+    killvar '$HallMissingPrivateAct'
 ---
 

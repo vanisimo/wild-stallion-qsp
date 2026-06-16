@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 956
-- Locations with direct incoming calls: 774
+- Locations: 958
+- Locations with direct incoming calls: 776
 - Locations without direct incoming calls: 182
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 182
@@ -87,7 +87,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 | `entry/helper` |
 | `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 770 | `entry/helper` |
-| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 767 | `entry/helper` |
+| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 826 | `entry/helper` |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 | `entry/helper` |
 | `HallRecentMemoryClear` | `modules/events/hall/hall_recent_memory.qsps` | 58 | `entry/helper` |
 | `HallRecentMemoryMarkDiscussed` | `modules/events/hall/hall_recent_memory.qsps` | 68 | `entry/helper` |
@@ -210,8 +210,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.AddModule` | 222 |
 | `Menu.Add` | 222 |
+| `Menu.AddModule` | 222 |
 | `NormalizeGirlKey` | 91 |
 | `EnsureGirlData` | 86 |
 | `TavernMain` | 73 |
@@ -220,21 +220,21 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
 | `CorruptionProgress` | 38 |
-| `Menu.Create` | 37 |
 | `ShowImage` | 37 |
+| `Menu.Create` | 37 |
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `ShowLocationImage` | 21 |
-| `ClampTavernEventState` | 21 |
-| `Menu.AddCondition` | 21 |
 | `MarketDance` | 21 |
 | `SaveLastHallEvent` | 21 |
+| `ClampTavernEventState` | 21 |
+| `Menu.AddCondition` | 21 |
+| `ShowLocationImage` | 21 |
 | `GetDateTimeNames` | 20 |
-| `AmandaLizettePrintText` | 15 |
 | `ShowGirlInLocation` | 15 |
+| `AmandaLizettePrintText` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
-| `OtkrovenMilestoneStub` | 13 |
+| `IsTavernOpen` | 13 |
 
 ## Dynamic Call Sites
 
