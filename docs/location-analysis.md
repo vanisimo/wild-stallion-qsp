@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 228
-- Locations: 944
-- Locations with direct incoming calls: 763
+- Locations: 945
+- Locations with direct incoming calls: 764
 - Locations without direct incoming calls: 181
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 181
@@ -80,13 +80,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 105 | `entry/helper` |
 | `HallFamilyStateDebugPanel` | `modules/events/hall/hall_family_state.qsps` | 228 | `entry/helper` |
 | `HallHarassmentTalkPrintText` | `modules/events/hall/hall_harassment_text.qsps` | 170 | `entry/helper` |
-| `HallHarassmentTry` | `modules/events/hall/hall_harassment.qsps` | 225 | `entry/helper` |
-| `HallHarassmentTryFromBar` | `modules/events/hall/hall_harassment.qsps` | 200 | `entry/helper` |
+| `HallHarassmentTry` | `modules/events/hall/hall_harassment.qsps` | 217 | `entry/helper` |
+| `HallHarassmentTryFromBar` | `modules/events/hall/hall_harassment.qsps` | 192 | `entry/helper` |
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 | `entry/helper` |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 | `entry/helper` |
-| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 766 | `entry/helper` |
-| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 763 | `entry/helper` |
+| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 758 | `entry/helper` |
+| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 755 | `entry/helper` |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 | `entry/helper` |
 | `HallRecentMemoryClear` | `modules/events/hall/hall_recent_memory.qsps` | 58 | `entry/helper` |
 | `HallRecentMemoryMarkDiscussed` | `modules/events/hall/hall_recent_memory.qsps` | 68 | `entry/helper` |
@@ -113,7 +113,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 337 | `entry/helper` |
 | `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 278 | `entry/helper` |
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 50 | `entry/helper` |
-| `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 848 | `entry/helper` |
+| `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 842 | `entry/helper` |
 | `KitchenCustomerEventTryAutoStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 7 | `entry/helper` |
 | `KnowledgeEventIdByHallEvent` | `modules/core/knowledge/event_knowledge_ids.qsps` | 70 | `entry/helper` |
 | `KnowledgeEventIdsInit` | `modules/core/knowledge/event_knowledge_ids.qsps` | 11 | `entry/helper` |
@@ -195,9 +195,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 270 | `entry/helper` |
 | `TavernEventDispatcherDebugMenu` | `modules/debug/debug_tavern_event_dispatcher.qsps` | 11 | `entry/helper` |
 | `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 54 | `entry/helper` |
-| `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 196 | `entry/helper` |
+| `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 188 | `entry/helper` |
 | `TavernHallEventStart` | `modules/events/hall/tavern_hall_events.qsps` | 8 | `entry/helper` |
-| `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 192 | `entry/helper` |
+| `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 184 | `entry/helper` |
 | `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 294 | `entry/helper` |
 | `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 173 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 7 | `entry/helper` |
@@ -224,14 +224,14 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `Menu.AddCondition` | 21 |
 | `MarketDance` | 21 |
+| `Menu.AddCondition` | 21 |
 | `ShowLocationImage` | 21 |
 | `GetDateTimeNames` | 20 |
 | `ClampTavernEventState` | 19 |
 | `ShowGirlInLocation` | 15 |
-| `SaveLastHallEvent` | 15 |
 | `AmandaLizettePrintText` | 15 |
+| `SaveLastHallEvent` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
 | `IrmaUniformOrders` | 13 |
 
