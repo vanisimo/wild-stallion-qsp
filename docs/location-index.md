@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 229
-- Locations: 947
+- Locations: 948
 
 ## modules/actions
 
@@ -876,7 +876,7 @@ Generated from active project files in `qsp-project.json`.
 | `PanelClearGirlJobs` | `modules/menu/panels/panel_tavern_info.qsps` | 285 |
 | `PanelDebugTools` | `modules/menu/panels/panel_debug_tools.qsps` | 12 |
 | `PanelDebugToolsBack` | `modules/menu/panels/panel_debug_tools.qsps` | 36 |
-| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 265 |
+| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 318 |
 | `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 95 |
 | `PanelDebugToolsGirlLine` | `modules/menu/panels/panel_debug_tools.qsps` | 74 |
 | `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 62 |
@@ -884,12 +884,13 @@ Generated from active project files in `qsp-project.json`.
 | `PanelDebugToolsHeader` | `modules/menu/panels/panel_debug_tools.qsps` | 26 |
 | `PanelDebugToolsMain` | `modules/menu/panels/panel_debug_tools.qsps` | 42 |
 | `PanelDebugToolsMemory` | `modules/menu/panels/panel_debug_tools.qsps` | 212 |
-| `PanelDebugToolsMemoryGirl` | `modules/menu/panels/panel_debug_tools.qsps` | 226 |
+| `PanelDebugToolsMemoryGirl` | `modules/menu/panels/panel_debug_tools.qsps` | 279 |
+| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 229 |
 | `PanelDebugToolsOpen` | `modules/menu/panels/panel_debug_tools.qsps` | 22 |
 | `PanelDebugToolsPolicy` | `modules/menu/panels/panel_debug_tools.qsps` | 141 |
 | `PanelDebugToolsPolicyGirl` | `modules/menu/panels/panel_debug_tools.qsps` | 190 |
 | `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 160 |
-| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 250 |
+| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 303 |
 | `PanelFamilyGirlLine` | `modules/menu/panels/panel_family_info.qsps` | 36 |
 | `PanelFamilyInfo` | `modules/menu/panels/panel_family_info.qsps` | 9 |
 | `PanelFamilyMenu` | `modules/menu/panels/panel_family_menu.qsps` | 9 |
