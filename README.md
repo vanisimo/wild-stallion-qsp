@@ -22,6 +22,7 @@ More details:
 - `docs/naming.md` - naming rules for files, locations, and variables.
 - `docs/state.md` - main global state notes.
 - `docs/runtime.md` - runtime/debug profile notes.
+- `docs/policy-flow.md` - expected flow for policy-driven tavern events.
 - `docs/location-index.md` - generated index of active QSP locations.
 - `docs/location-analysis.md` - generated report of direct incoming location calls.
 - `docs/checklist.md` - short pre-commit checklist.
