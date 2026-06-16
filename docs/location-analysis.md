@@ -4,10 +4,10 @@ Generated from active project files in `qsp-project.json`.
 
 - Source files: 229
 - Locations: 948
-- Locations with direct incoming calls: 767
-- Locations without direct incoming calls: 181
+- Locations with direct incoming calls: 766
+- Locations without direct incoming calls: 182
 - Review candidates without direct incoming calls: 0
-- Classified entry/helper locations without direct incoming calls: 181
+- Classified entry/helper locations without direct incoming calls: 182
 - Dynamic call sites: 3
 
 ## Review Candidates
@@ -52,6 +52,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `CalculateDailyProfit` | `modules/core/tavern/tavern_income.qsps` | 389 | `entry/helper` |
 | `CalculateGirlAvailability` | `modules/core/tavern/tavern_reputation.qsps` | 18 | `entry/helper` |
 | `CheckAmandaEvents` | `modules/events/amanda/amanda_events.qsps` | 6 | `entry/helper` |
+| `CityScheduleDebug` | `modules/core/time/city_schedule_debug.qsps` | 7 | `entry/helper` |
 | `Clamp` | `modules/core/system/functions.qsps` | 12 | `entry/helper` |
 | `ConfirmSkipDays` | `modules/core/time/skip_days.qsps` | 7 | `entry/helper` |
 | `DailyAftermathCanRun` | `modules/events/family/daily_aftermath.qsps` | 12 | `entry/helper` |
@@ -143,14 +144,14 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `onstatusupdate` | `modules/menu/system/onstatusupdate.qsps` | 7 | `entry/helper` |
 | `otd_lib_menu` | `modules/menu/system/otd_lib_menu.qsps` | 10 | `entry/helper` |
 | `PanelClearGirlJobs` | `modules/menu/panels/panel_tavern_info.qsps` | 285 | `entry/helper` |
-| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 318 | `entry/helper` |
+| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 325 | `entry/helper` |
 | `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 95 | `entry/helper` |
 | `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 62 | `entry/helper` |
 | `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 115 | `entry/helper` |
-| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 229 | `entry/helper` |
+| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 236 | `entry/helper` |
 | `PanelDebugToolsOpen` | `modules/menu/panels/panel_debug_tools.qsps` | 22 | `entry/helper` |
-| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 160 | `entry/helper` |
-| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 303 | `entry/helper` |
+| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 167 | `entry/helper` |
+| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 310 | `entry/helper` |
 | `PanelFamilyInfo` | `modules/menu/panels/panel_family_info.qsps` | 9 | `entry/helper` |
 | `PanelGirlClick` | `modules/menu/panels/panel_family_info.qsps` | 69 | `entry/helper` |
 | `PanelSetTime` | `modules/menu/panels/panel_time_info.qsps` | 148 | `entry/helper` |
@@ -198,8 +199,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 188 | `entry/helper` |
 | `TavernHallEventStart` | `modules/events/hall/tavern_hall_events.qsps` | 8 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 184 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 294 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 173 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 276 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 155 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 7 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 301 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -209,8 +210,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.Add` | 222 |
 | `Menu.AddModule` | 222 |
+| `Menu.Add` | 222 |
 | `NormalizeGirlKey` | 90 |
 | `EnsureGirlData` | 83 |
 | `TavernMain` | 71 |
@@ -219,21 +220,21 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
 | `CorruptionProgress` | 38 |
-| `ShowImage` | 37 |
 | `Menu.Create` | 37 |
+| `ShowImage` | 37 |
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
+| `Menu.AddCondition` | 21 |
 | `ShowLocationImage` | 21 |
 | `MarketDance` | 21 |
-| `Menu.AddCondition` | 21 |
 | `GetDateTimeNames` | 20 |
 | `ClampTavernEventState` | 19 |
-| `ShowGirlInLocation` | 15 |
 | `AmandaLizettePrintText` | 15 |
+| `ShowGirlInLocation` | 15 |
 | `SaveLastHallEvent` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
-| `OtkrovenMilestoneStub` | 13 |
+| `IrmaUniformOrders` | 13 |
 
 ## Dynamic Call Sites
 
