@@ -11,7 +11,7 @@ Keep event modules aligned with this flow before refactoring shared helpers.
 4. Print policy-based scene variation.
 5. Build the player choice menu.
 6. Apply the selected choice consequences.
-7. Print choice consequences through `HallChoiceConsequencePrint`.
+7. Print choice consequences through `PolicyEventChoiceConsequencePrint`.
 8. Save shared choice memory through `HallChoiceConsequencesApply`.
 9. Offer follow-up policy talk.
 10. Return to the original location.
@@ -20,10 +20,10 @@ Keep event modules aligned with this flow before refactoring shared helpers.
 
 | Event | Start reaction | Scene variation | Choice consequences | Memory write |
 | --- | --- | --- | --- | --- |
-| `harassment` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `HallChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `hall_lewd` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `HallChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `hall_missing` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `HallChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `kitchen` | `KitchenPolicyReaction` | `GirlPolicySceneVariationPrint` | `HallChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `harassment` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `hall_lewd` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `hall_missing` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `kitchen` | `KitchenPolicyReaction` | `GirlPolicySceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
 
 ## Choice Vocabulary
 
@@ -44,14 +44,15 @@ Keep event modules aligned with this flow before refactoring shared helpers.
 | `kitchen` | `let_her` | Let the girl handle the kitchen situation herself. |
 | `kitchen` | `client` | Keep the customer pleased for money or advantage. |
 
-Choice names should be reused consistently by result handlers, `HallChoiceConsequencePrint`, `HallChoiceMemoryClassify`, and `GirlMemoryOfStefanClassifyChoice`.
+Choice names should be reused consistently by result handlers, `PolicyEventChoiceConsequencePrint`, `HallChoiceMemoryClassify`, and `GirlMemoryOfStefanClassifyChoice`.
 
 ## Ownership Rules
 
 - Event-specific `ApplyConsequences` locations change immediate scene stats only.
-- `HallChoiceConsequencePrint` is the public compatibility entry for post-choice feedback.
+- `PolicyEventChoiceConsequencePrint` is the owner entry for post-choice feedback.
+- `HallChoiceConsequencePrint` is the compatibility entry behind that owner helper.
 - `HallChoiceConsequencesApply` owns shared memory and family-state updates.
-- `GirlMemoryOfStefanRegister` should not be called directly from event-specific result handlers when `HallChoiceConsequencePrint` is used.
+- `GirlMemoryOfStefanRegister` should not be called directly from event-specific result handlers when `PolicyEventChoiceConsequencePrint` is used.
 - `GirlPolicySceneVariationPrint` belongs before the player choice, never inside a debug-only block.
 
 ## Next Refactor Targets
