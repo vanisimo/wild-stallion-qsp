@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 229
-- Locations: 948
-- Locations with direct incoming calls: 766
+- Source files: 230
+- Locations: 953
+- Locations with direct incoming calls: 771
 - Locations without direct incoming calls: 182
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 182
@@ -86,8 +86,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 | `entry/helper` |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 | `entry/helper` |
-| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 748 | `entry/helper` |
-| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 746 | `entry/helper` |
+| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 751 | `entry/helper` |
+| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 749 | `entry/helper` |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 | `entry/helper` |
 | `HallRecentMemoryClear` | `modules/events/hall/hall_recent_memory.qsps` | 58 | `entry/helper` |
 | `HallRecentMemoryMarkDiscussed` | `modules/events/hall/hall_recent_memory.qsps` | 68 | `entry/helper` |
@@ -114,7 +114,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 337 | `entry/helper` |
 | `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 278 | `entry/helper` |
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 50 | `entry/helper` |
-| `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 833 | `entry/helper` |
+| `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 836 | `entry/helper` |
 | `KitchenCustomerEventTryAutoStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 7 | `entry/helper` |
 | `KnowledgeEventIdByHallEvent` | `modules/core/knowledge/event_knowledge_ids.qsps` | 70 | `entry/helper` |
 | `KnowledgeEventIdsInit` | `modules/core/knowledge/event_knowledge_ids.qsps` | 11 | `entry/helper` |
@@ -210,10 +210,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.AddModule` | 222 |
 | `Menu.Add` | 222 |
-| `NormalizeGirlKey` | 90 |
-| `EnsureGirlData` | 83 |
+| `Menu.AddModule` | 222 |
+| `NormalizeGirlKey` | 91 |
+| `EnsureGirlData` | 84 |
 | `TavernMain` | 71 |
 | `ShowGirlSidebar` | 64 |
 | `ClampGirlSocialStats` | 44 |
@@ -225,16 +225,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `Menu.AddCondition` | 21 |
 | `ShowLocationImage` | 21 |
 | `MarketDance` | 21 |
+| `Menu.AddCondition` | 21 |
 | `GetDateTimeNames` | 20 |
 | `ClampTavernEventState` | 19 |
-| `AmandaLizettePrintText` | 15 |
-| `ShowGirlInLocation` | 15 |
 | `SaveLastHallEvent` | 15 |
+| `ShowGirlInLocation` | 15 |
+| `AmandaLizettePrintText` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
-| `IrmaUniformOrders` | 13 |
+| `OtkrovenMilestoneStub` | 13 |
 
 ## Dynamic Call Sites
 

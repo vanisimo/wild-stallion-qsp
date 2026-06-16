@@ -1,0 +1,103 @@
+! ================================================
+! FILE: modules/events/hall/policy_event_context.qsps
+! MODULE: events/hall
+! Контекстные строки для событий правил поведения
+! ================================================
+
+#PolicyEventContextPrint
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $PolicyContextGirl = $GirlKey
+    $PolicyContextEvent = LCASE($ARGS[1])
+
+    if $PolicyContextGirl = '':
+        exit
+    end
+
+    if $PolicyContextEvent = '':
+        $PolicyContextEvent = 'hall'
+    end
+
+    if $RealName[$PolicyContextGirl] = '':
+        if LOC('EnsureGirlData') = 1:
+            gs 'EnsureGirlData', $PolicyContextGirl
+        end
+    end
+
+    gs 'PolicyEventContextTextFamily'
+
+    if $PolicyContextFamilyText <> '':
+        *p $PolicyContextFamilyText
+    end
+
+    gs 'PolicyEventContextTextGirl'
+
+    if $PolicyContextGirlText <> '':
+        *p $PolicyContextGirlText
+    end
+
+    gs 'PolicyEventContextTextTavern'
+
+    if $PolicyContextTavernText <> '':
+        *p $PolicyContextTavernText
+    end
+
+    killvar '$PolicyContextGirl'
+    killvar '$PolicyContextEvent'
+---
+
+#PolicyEventContextTextFamily
+    $PolicyContextFamilyText = ''
+
+    if FamilyCorruptionStage >= 4:
+        $PolicyContextFamilyText = 'В семье такие сцены уже не звучат как гром среди ясного неба. Границы давно потёрлись, и от этого происходящее кажется не случайностью, а продолжением того, что копилось дома.'
+    elseif FamilyCorruptionStage >= 2:
+        $PolicyContextFamilyText = 'Семейное напряжение делает сцену тяжелее. Стефан слишком хорошо чувствует: любой его выбор потом вернётся не только слухами в зале, но и взглядами за семейным столом.'
+    elseif FamilyTension > FamilyTrust + 15:
+        $PolicyContextFamilyText = 'Дома и так неспокойно. Теперь даже обычный трактирный шум кажется частью одной длинной ссоры, которую никто ещё не решился назвать вслух.'
+    elseif FamilyTrust > FamilyTension + 20:
+        $PolicyContextFamilyText = 'Пока в семье ещё есть запас доверия. Это не делает сцену приятной, но Стефан хотя бы понимает: если он поступит честно, ему поверят не только на словах.'
+    end
+---
+
+#PolicyEventContextTextGirl
+    $PolicyContextGirlText = ''
+
+    if sluttiness[$PolicyContextGirl] >= 55 or GirlNpcPath[$PolicyContextGirl] >= 55:
+        if $PolicyContextEvent = 'kitchen':
+            $PolicyContextGirlText = $RealName[$PolicyContextGirl] + ' уже не выглядит случайной жертвой чужой наглости. Она понимает цену взгляда, паузы и слишком мягкого голоса, даже если кухня всё ещё пахнет супом, мукой и тяжёлой работой.'
+        else:
+            $PolicyContextGirlText = $RealName[$PolicyContextGirl] + ' уже привыкла к мужскому вниманию сильнее, чем раньше. В её движениях есть опыт: она может отступить, может подыграть, а может заставить клиента думать, что это он всё придумал.'
+        end
+    elseif sluttiness[$PolicyContextGirl] >= 30 or GirlNpcPath[$PolicyContextGirl] >= 30:
+        $PolicyContextGirlText = $RealName[$PolicyContextGirl] + ' уже не такая растерянная, как в первые дни. Смущение ещё видно, но рядом с ним появилась осторожная привычка оценивать, где опасность, где выгода, а где просто грязная трактирная игра.'
+    elseif sluttiness[$PolicyContextGirl] <= 10 and GirlNpcPath[$PolicyContextGirl] <= 10:
+        $PolicyContextGirlText = $RealName[$PolicyContextGirl] + ' держится напряжённо. Для неё это ещё не привычная часть работы, а неприятная черта, за которую клиент пытается перешагнуть первым.'
+    end
+---
+
+#PolicyEventContextTextTavern
+    $PolicyContextTavernText = ''
+    PolicyContextReputation = TavernReputation
+
+    if PolicyContextReputation <= 0:
+        PolicyContextReputation = tavern_reputation
+    end
+
+    if TavernScandal >= 65 or TavernLewdFame >= 45:
+        $PolicyContextTavernText = 'Зал реагирует почти мгновенно. "Дикий Жеребец" уже успел заработать такую славу, что каждый грубый смешок кажется не нарушением порядка, а проверкой: насколько далеко здесь теперь позволяют зайти.'
+    elseif TavernScandal >= 35:
+        $PolicyContextTavernText = 'Слухи о трактире уже ходят по городу. Кто-то смотрит с осуждением, кто-то с интересом, но равнодушных в зале становится всё меньше.'
+    elseif PolicyContextReputation > 0 and PolicyContextReputation < 25:
+        $PolicyContextTavernText = 'Репутация трактира хромает, и каждый конфликт цепляется за неё, как грязь за мокрые сапоги. Даже маленькая сцена легко превращается в новый повод шептаться.'
+    elseif PolicyContextReputation >= 60 and TavernScandal < 20:
+        $PolicyContextTavernText = 'У трактира ещё держится приличное имя. Именно поэтому сцена режет глаз сильнее: здесь пока ждут порядка, а не дешёвого балагана.'
+    end
+
+    killvar 'PolicyContextReputation'
+---
+
+#PolicyEventContextPrintStart
+    if LOC('PolicyEventContextPrint') = 1:
+        gs 'PolicyEventContextPrint', $ARGS[0], $ARGS[1]
+    end
+---
