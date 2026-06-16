@@ -31,6 +31,9 @@
     LastHallChoiceDay = day
     LastHallChoiceTime = time
 
+    gs 'HallChoiceMemoryChoiceType', $HallChoiceMemoryEvent, $HallChoiceMemoryChoice
+    $LastHallChoiceType = $HallChoiceMemoryType
+
     HallChoiceTotal += 1
     HallChoiceByEvent[$HallChoiceMemoryEvent] += 1
 
@@ -38,6 +41,7 @@
         HallChoiceByGirl[$HallChoiceMemoryGirl] += 1
         $LastGirlChoiceEvent[$HallChoiceMemoryGirl] = $HallChoiceMemoryEvent
         $LastGirlChoiceChoice[$HallChoiceMemoryGirl] = $HallChoiceMemoryChoice
+        $LastGirlChoiceType[$HallChoiceMemoryGirl] = $HallChoiceMemoryType
         LastGirlChoiceDay[$HallChoiceMemoryGirl] = day
         LastGirlChoiceTime[$HallChoiceMemoryGirl] = time
     end
@@ -76,6 +80,7 @@
     killvar '$HallChoiceMemoryEvent'
     killvar '$HallChoiceMemoryChoice'
     killvar '$HallChoiceMemoryGirl'
+    killvar '$HallChoiceMemoryType'
     killvar 'HallChoiceMemoryKind'
 ---
 
@@ -84,13 +89,13 @@
     $HallChoiceMemoryClassChoice = LCASE($ARGS[1])
     HallChoiceMemoryKind = 0
 
-    if $HallChoiceMemoryClassChoice = 'hard' or $HallChoiceMemoryClassChoice = 'stop' or $HallChoiceMemoryClassChoice = 'interrupt':
+    if $HallChoiceMemoryClassChoice = 'hard' or $HallChoiceMemoryClassChoice = 'protect' or $HallChoiceMemoryClassChoice = 'protect_hard' or $HallChoiceMemoryClassChoice = 'warn_client' or $HallChoiceMemoryClassChoice = 'stop' or $HallChoiceMemoryClassChoice = 'interrupt':
         HallChoiceMemoryKind = 1
-    elseif $HallChoiceMemoryClassChoice = 'calm' or $HallChoiceMemoryClassChoice = 'self' or $HallChoiceMemoryClassChoice = 'let_her':
+    elseif $HallChoiceMemoryClassChoice = 'calm' or $HallChoiceMemoryClassChoice = 'warn' or $HallChoiceMemoryClassChoice = 'self' or $HallChoiceMemoryClassChoice = 'self_handle' or $HallChoiceMemoryClassChoice = 'let_her':
         HallChoiceMemoryKind = 2
     elseif $HallChoiceMemoryClassChoice = 'watch' or $HallChoiceMemoryClassChoice = 'ignore' or $HallChoiceMemoryClassChoice = 'peek':
         HallChoiceMemoryKind = 4
-    elseif $HallChoiceMemoryClassChoice = 'encourage' or $HallChoiceMemoryClassChoice = 'client' or $HallChoiceMemoryClassChoice = 'ignore_after':
+    elseif $HallChoiceMemoryClassChoice = 'encourage' or $HallChoiceMemoryClassChoice = 'client' or $HallChoiceMemoryClassChoice = 'profit' or $HallChoiceMemoryClassChoice = 'ignore_after':
         HallChoiceMemoryKind = 3
     end
 
@@ -102,6 +107,33 @@
     killvar '$HallChoiceMemoryClassChoice'
 ---
 
+#HallChoiceMemoryChoiceType
+    $HallChoiceMemoryTypeEvent = LCASE($ARGS[0])
+    $HallChoiceMemoryTypeChoice = LCASE($ARGS[1])
+    $HallChoiceMemoryType = ''
+
+    if $HallChoiceMemoryTypeChoice = 'hard' or $HallChoiceMemoryTypeChoice = 'protect' or $HallChoiceMemoryTypeChoice = 'protect_hard' or $HallChoiceMemoryTypeChoice = 'stop' or $HallChoiceMemoryTypeChoice = 'interrupt' or $HallChoiceMemoryTypeChoice = 'interrupt_scene':
+        $HallChoiceMemoryType = 'protect'
+    elseif $HallChoiceMemoryTypeChoice = 'calm' or $HallChoiceMemoryTypeChoice = 'warn' or $HallChoiceMemoryTypeChoice = 'warn_client' or $HallChoiceMemoryTypeChoice = 'calm_stop':
+        $HallChoiceMemoryType = 'calm'
+    elseif $HallChoiceMemoryTypeChoice = 'self' or $HallChoiceMemoryTypeChoice = 'self_handle' or $HallChoiceMemoryTypeChoice = 'let_her':
+        $HallChoiceMemoryType = 'own_choice'
+    elseif $HallChoiceMemoryTypeChoice = 'watch' or $HallChoiceMemoryTypeChoice = 'peek' or $HallChoiceMemoryTypeChoice = 'peek_scene' or $HallChoiceMemoryTypeChoice = 'peek_meet':
+        $HallChoiceMemoryType = 'watch'
+    elseif $HallChoiceMemoryTypeChoice = 'encourage' or $HallChoiceMemoryTypeChoice = 'profit' or $HallChoiceMemoryTypeChoice = 'let_client':
+        $HallChoiceMemoryType = 'encourage'
+    elseif $HallChoiceMemoryTypeChoice = 'client':
+        $HallChoiceMemoryType = 'client'
+    elseif $HallChoiceMemoryTypeChoice = 'ignore' or $HallChoiceMemoryTypeChoice = 'ignore_after' or $HallChoiceMemoryTypeChoice = 'do_nothing':
+        $HallChoiceMemoryType = 'ignore'
+    else:
+        $HallChoiceMemoryType = $HallChoiceMemoryTypeChoice
+    end
+
+    killvar '$HallChoiceMemoryTypeEvent'
+    killvar '$HallChoiceMemoryTypeChoice'
+---
+
 #HallChoiceMemoryDebugPanel
     *pl ' '
     *pl '══════════════════════════════════════════════'
@@ -110,6 +142,7 @@
     *pl ' '
     *pl 'Последнее событие: ' + $LastHallChoiceEvent
     *pl 'Последний выбор: ' + $LastHallChoiceChoice
+    *pl 'Последний тип: ' + $LastHallChoiceType
     *pl 'Девушка: ' + $LastHallChoiceGirl
     *pl 'День / время: ' + STR(LastHallChoiceDay) + ' / ' + STR(LastHallChoiceTime)
     *pl ' '

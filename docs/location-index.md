@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 972
+- Locations: 973
 
 ## modules/actions
 
@@ -564,8 +564,9 @@ Generated from active project files in `qsp-project.json`.
 | `HallChoiceFamilyTalkPrintText` | `modules/events/hall/hall_choice_family_talk_text.qsps` | 11 |
 | `HallChoiceFamilyTalkStart` | `modules/events/hall/hall_choice_family_talk.qsps` | 37 |
 | `HallChoiceFamilyTalkText` | `modules/events/hall/hall_choice_family_talk_text.qsps` | 19 |
-| `HallChoiceMemoryClassify` | `modules/events/hall/hall_choice_memory.qsps` | 82 |
-| `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 105 |
+| `HallChoiceMemoryChoiceType` | `modules/events/hall/hall_choice_memory.qsps` | 110 |
+| `HallChoiceMemoryClassify` | `modules/events/hall/hall_choice_memory.qsps` | 87 |
+| `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 137 |
 | `HallChoiceMemoryRegister` | `modules/events/hall/hall_choice_memory.qsps` | 12 |
 | `HallEventChoiceThoughtsPrint` | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | 11 |
 | `HallEventChoiceThoughtsText` | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | 21 |

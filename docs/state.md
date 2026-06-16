@@ -199,6 +199,7 @@ Choice memory owner: `modules/events/hall/hall_choice_memory.qsps`.
 
 - `$LastHallChoiceEvent`
 - `$LastHallChoiceChoice`
+- `$LastHallChoiceType`
 - `$LastHallChoiceGirl`
 - `LastHallChoiceDay`
 - `LastHallChoiceTime`
@@ -207,6 +208,7 @@ Choice memory owner: `modules/events/hall/hall_choice_memory.qsps`.
 - `HallChoiceByGirl[girl]`
 - `$LastGirlChoiceEvent[girl]`
 - `$LastGirlChoiceChoice[girl]`
+- `$LastGirlChoiceType[girl]`
 - `LastGirlChoiceDay[girl]`
 - `LastGirlChoiceTime[girl]`
 - `HallChoiceProtectTotal`, `HallChoiceNeutralTotal`, `HallChoiceDirtyTotal`, `HallChoiceControlTotal`

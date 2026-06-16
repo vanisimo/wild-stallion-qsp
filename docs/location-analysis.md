@@ -3,11 +3,11 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 972
+- Locations: 973
 - Locations with direct incoming calls: 790
-- Locations without direct incoming calls: 182
+- Locations without direct incoming calls: 183
 - Review candidates without direct incoming calls: 0
-- Classified entry/helper locations without direct incoming calls: 182
+- Classified entry/helper locations without direct incoming calls: 183
 - Dynamic call sites: 3
 
 ## Review Candidates
@@ -78,7 +78,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlsQuickOverview` | `modules/menu/girls/girls_quick_overview.qsps` | 6 | `entry/helper` |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 320 | `entry/helper` |
 | `GroupSexMenu` | `modules/actions/sex/group_sex.qsps` | 6 | `entry/helper` |
-| `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 105 | `entry/helper` |
+| `HallChoiceConsequencesText` | `modules/core/system/compatibility_aliases.qsps` | 43 | `entry/helper` |
+| `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 137 | `entry/helper` |
 | `HallFamilyStateDebugPanel` | `modules/events/hall/hall_family_state.qsps` | 228 | `entry/helper` |
 | `HallHarassmentTalkPrintText` | `modules/events/hall/hall_harassment_text.qsps` | 170 | `entry/helper` |
 | `HallHarassmentTry` | `modules/events/hall/hall_harassment.qsps` | 217 | `entry/helper` |
@@ -210,8 +211,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.AddModule` | 223 |
 | `Menu.Add` | 223 |
+| `Menu.AddModule` | 223 |
 | `NormalizeGirlKey` | 102 |
 | `EnsureGirlData` | 90 |
 | `TavernMain` | 73 |
@@ -220,16 +221,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
 | `CorruptionProgress` | 38 |
-| `Menu.Create` | 37 |
 | `ShowImage` | 37 |
+| `Menu.Create` | 37 |
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
 | `ClampTavernEventState` | 21 |
-| `Menu.AddCondition` | 21 |
-| `MarketDance` | 21 |
-| `SaveLastHallEvent` | 21 |
 | `ShowLocationImage` | 21 |
+| `Menu.AddCondition` | 21 |
+| `SaveLastHallEvent` | 21 |
+| `MarketDance` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
 | `ShowGirlInLocation` | 15 |
