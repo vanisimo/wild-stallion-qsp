@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 230
-- Locations: 973
+- Source files: 231
+- Locations: 976
 
 ## modules/actions
 
@@ -150,13 +150,13 @@ Generated from active project files in `qsp-project.json`.
 | `AdvanceMonthIfNeeded` | `modules/core/time/next_day.qsps` | 154 |
 | `AdvanceOneDaySilent` | `modules/core/time/skip_days.qsps` | 154 |
 | `AdvanceTimeFromPanel` | `modules/core/system/refresh_location.qsps` | 55 |
-| `AdvanceTimePart` | `modules/core/system/compatibility_aliases.qsps` | 108 |
-| `AmandaLegareOutsideAftermath` | `modules/core/system/compatibility_aliases.qsps` | 155 |
-| `AmandaLegareOutsideAftermathCanTalk` | `modules/core/system/compatibility_aliases.qsps` | 151 |
-| `AmandaOtkroven15` | `modules/core/system/compatibility_aliases.qsps` | 180 |
-| `AmandaOtkroven25` | `modules/core/system/compatibility_aliases.qsps` | 176 |
-| `AmandaOtkroven35` | `modules/core/system/compatibility_aliases.qsps` | 172 |
-| `AmandaOtkroven45` | `modules/core/system/compatibility_aliases.qsps` | 168 |
+| `AdvanceTimePart` | `modules/core/system/compatibility_aliases.qsps` | 115 |
+| `AmandaLegareOutsideAftermath` | `modules/core/system/compatibility_aliases.qsps` | 162 |
+| `AmandaLegareOutsideAftermathCanTalk` | `modules/core/system/compatibility_aliases.qsps` | 158 |
+| `AmandaOtkroven15` | `modules/core/system/compatibility_aliases.qsps` | 187 |
+| `AmandaOtkroven25` | `modules/core/system/compatibility_aliases.qsps` | 183 |
+| `AmandaOtkroven35` | `modules/core/system/compatibility_aliases.qsps` | 179 |
+| `AmandaOtkroven45` | `modules/core/system/compatibility_aliases.qsps` | 175 |
 | `ApplyTavernReputationChange` | `modules/core/tavern/tavern_income.qsps` | 308 |
 | `ApplyTavernSupplyEconomyModifiers` | `modules/core/economy/tavern_supply_economy.qsps` | 45 |
 | `ApplyTavernWorkDay` | `modules/core/tavern/tavern_income.qsps` | 400 |
@@ -174,13 +174,13 @@ Generated from active project files in `qsp-project.json`.
 | `Clamp` | `modules/core/system/functions.qsps` | 12 |
 | `ClampGirlTavernEventState` | `modules/core/tavern/tavern_event_state_core.qsps` | 177 |
 | `ClampTavernEventState` | `modules/core/tavern/tavern_event_state_core.qsps` | 130 |
-| `ClarissaOtkroven40` | `modules/core/system/compatibility_aliases.qsps` | 216 |
-| `ClarissaTalkAboutAmandaLegareOutside` | `modules/core/system/compatibility_aliases.qsps` | 163 |
+| `ClarissaOtkroven40` | `modules/core/system/compatibility_aliases.qsps` | 223 |
+| `ClarissaTalkAboutAmandaLegareOutside` | `modules/core/system/compatibility_aliases.qsps` | 170 |
 | `ClearGirlLocation` | `modules/core/girls/girl_location.qsps` | 61 |
 | `ConfirmSkipDays` | `modules/core/time/skip_days.qsps` | 7 |
 | `ConsumeTavernStock` | `modules/core/tavern/tavern_income.qsps` | 258 |
 | `CorruptionProgress` | `modules/core/system/corruption_system.qsps` | 7 |
-| `DailyAftermathPrintMorning` | `modules/core/system/compatibility_aliases.qsps` | 55 |
+| `DailyAftermathPrintMorning` | `modules/core/system/compatibility_aliases.qsps` | 62 |
 | `DebugCheckLoc` | `modules/core/system/debug.qsps` | 12 |
 | `DebugEnter` | `modules/core/system/debug.qsps` | 6 |
 | `DebugPrint` | `modules/core/system/debug.qsps` | 24 |
@@ -214,9 +214,9 @@ Generated from active project files in `qsp-project.json`.
 | `GetStefanAmandaTalk` | `modules/core/system/functions.qsps` | 75 |
 | `GetTavernReputationName` | `modules/core/tavern/tavern_reputation.qsps` | 52 |
 | `GetWineShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 263 |
-| `GirlDailyEvent` | `modules/core/system/compatibility_aliases.qsps` | 142 |
+| `GirlDailyEvent` | `modules/core/system/compatibility_aliases.qsps` | 149 |
 | `GirlInitBase` | `modules/core/init_npc/girl_init_base.qsps` | 6 |
-| `GirlPolicyResponseEvaluate` | `modules/core/system/compatibility_aliases.qsps` | 51 |
+| `GirlPolicyResponseEvaluate` | `modules/core/system/compatibility_aliases.qsps` | 58 |
 | `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 6 |
 | `GirlsInitAll` | `modules/core/init_npc/girls_init_all.qsps` | 21 |
 | `GirlsResetDailyFlags` | `modules/core/time/next_day.qsps` | 208 |
@@ -225,15 +225,15 @@ Generated from active project files in `qsp-project.json`.
 | `HallChoiceConsequencePrint` | `modules/core/system/compatibility_aliases.qsps` | 47 |
 | `HallChoiceConsequencesText` | `modules/core/system/compatibility_aliases.qsps` | 43 |
 | `HallChoiceMemorySave` | `modules/core/system/compatibility_aliases.qsps` | 31 |
-| `HallFamilyReactionCanDiscuss` | `modules/core/system/compatibility_aliases.qsps` | 86 |
+| `HallFamilyReactionCanDiscuss` | `modules/core/system/compatibility_aliases.qsps` | 93 |
 | `HallFamilyStateApplyChoice` | `modules/core/system/compatibility_aliases.qsps` | 35 |
 | `HallFamilyStatePrintLastText` | `modules/core/system/compatibility_aliases.qsps` | 39 |
-| `HallFamilyStateStageName` | `modules/core/system/compatibility_aliases.qsps` | 90 |
-| `HallRecentTalkCanDiscuss` | `modules/core/system/compatibility_aliases.qsps` | 81 |
+| `HallFamilyStateStageName` | `modules/core/system/compatibility_aliases.qsps` | 97 |
+| `HallRecentTalkCanDiscuss` | `modules/core/system/compatibility_aliases.qsps` | 88 |
 | `ImageSettingsDebugPanel` | `modules/core/show_image/image_debug_random.qsps` | 522 |
 | `ImageTimeKey` | `modules/core/show_image/image_debug_random.qsps` | 78 |
-| `IngaOtkroven30` | `modules/core/system/compatibility_aliases.qsps` | 212 |
-| `IngaOtkroven40` | `modules/core/system/compatibility_aliases.qsps` | 208 |
+| `IngaOtkroven30` | `modules/core/system/compatibility_aliases.qsps` | 219 |
+| `IngaOtkroven40` | `modules/core/system/compatibility_aliases.qsps` | 215 |
 | `InitBusinessSchedule` | `modules/core/time/business_schedule.qsps` | 13 |
 | `InitGirlsRegistry` | `modules/core/init_npc/girls_registry.qsps` | 6 |
 | `InitGirlTavernEventState` | `modules/core/tavern/tavern_event_state_core.qsps` | 66 |
@@ -261,29 +261,29 @@ Generated from active project files in `qsp-project.json`.
 | `KnowledgeRegisterSuspect` | `modules/core/system/compatibility_aliases.qsps` | 22 |
 | `KnowledgeRegisterWitness` | `modules/core/system/compatibility_aliases.qsps` | 18 |
 | `LOC` | `modules/core/system/loc.qsps` | 9 |
-| `MelissaOtkroven25` | `modules/core/system/compatibility_aliases.qsps` | 192 |
-| `MelissaOtkroven35` | `modules/core/system/compatibility_aliases.qsps` | 188 |
-| `MelissaOtkroven45` | `modules/core/system/compatibility_aliases.qsps` | 184 |
-| `MelissaTalkAboutAmandaLegareOutside` | `modules/core/system/compatibility_aliases.qsps` | 159 |
+| `MelissaOtkroven25` | `modules/core/system/compatibility_aliases.qsps` | 199 |
+| `MelissaOtkroven35` | `modules/core/system/compatibility_aliases.qsps` | 195 |
+| `MelissaOtkroven45` | `modules/core/system/compatibility_aliases.qsps` | 191 |
+| `MelissaTalkAboutAmandaLegareOutside` | `modules/core/system/compatibility_aliases.qsps` | 166 |
 | `NextDay` | `modules/core/time/next_day.qsps` | 8 |
-| `NextTime` | `modules/core/system/compatibility_aliases.qsps` | 116 |
-| `NextTimePart` | `modules/core/system/compatibility_aliases.qsps` | 112 |
+| `NextTime` | `modules/core/system/compatibility_aliases.qsps` | 123 |
+| `NextTimePart` | `modules/core/system/compatibility_aliases.qsps` | 119 |
 | `NormalizeGirlKey` | `modules/core/girls/girl_key_helpers.qsps` | 8 |
 | `OLD_TimeControl` | `modules/core/time/time_control.qsps` | 3 |
 | `OLD_WeekControl` | `modules/core/time/week_control.qsps` | 3 |
-| `OtkrovenMilestoneStub` | `modules/core/system/compatibility_aliases.qsps` | 220 |
+| `OtkrovenMilestoneStub` | `modules/core/system/compatibility_aliases.qsps` | 227 |
 | `PrintCityScheduleHint` | `modules/core/time/business_schedule.qsps` | 420 |
 | `PrintGirlTavernEventState` | `modules/core/tavern/tavern_event_state_core.qsps` | 285 |
 | `PrintTavernEventState` | `modules/core/tavern/tavern_event_state_core.qsps` | 247 |
-| `ProcessNewDay` | `modules/core/system/compatibility_aliases.qsps` | 129 |
+| `ProcessNewDay` | `modules/core/system/compatibility_aliases.qsps` | 136 |
 | `ProcessTavernWorkDay` | `modules/core/tavern/tavern_income.qsps` | 353 |
 | `RandomBool` | `modules/core/system/functions.qsps` | 7 |
 | `RefreshCurrentLocation` | `modules/core/system/refresh_location.qsps` | 8 |
-| `RegisterGroupSex` | `modules/core/system/compatibility_aliases.qsps` | 235 |
+| `RegisterGroupSex` | `modules/core/system/compatibility_aliases.qsps` | 242 |
 | `ResetNpcTalkDailyFlags` | `modules/core/time/npc_talk_limits.qsps` | 179 |
-| `SandraOtkroven25` | `modules/core/system/compatibility_aliases.qsps` | 204 |
-| `SandraOtkroven35` | `modules/core/system/compatibility_aliases.qsps` | 200 |
-| `SandraOtkroven45` | `modules/core/system/compatibility_aliases.qsps` | 196 |
+| `SandraOtkroven25` | `modules/core/system/compatibility_aliases.qsps` | 211 |
+| `SandraOtkroven35` | `modules/core/system/compatibility_aliases.qsps` | 207 |
+| `SandraOtkroven45` | `modules/core/system/compatibility_aliases.qsps` | 203 |
 | `SetGirlHomeLocation` | `modules/core/girls/girl_location.qsps` | 11 |
 | `SetGirlJob` | `modules/core/girls/girl_job.qsps` | 8 |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 |
@@ -315,11 +315,11 @@ Generated from active project files in `qsp-project.json`.
 | `SkipDaysFromPanel` | `modules/core/time/skip_days.qsps` | 49 |
 | `SmallTalkNpc` | `modules/core/time/npc_talk_limits.qsps` | 140 |
 | `StartIntimMenu` | `modules/core/girls/girl_intim_menu.qsps` | 10 |
-| `TalkWithAlber` | `modules/core/system/compatibility_aliases.qsps` | 247 |
-| `TalkWithClarissa` | `modules/core/system/compatibility_aliases.qsps` | 243 |
-| `TalkWithEddie` | `modules/core/system/compatibility_aliases.qsps` | 239 |
-| `TalkWithGerhard` | `modules/core/system/compatibility_aliases.qsps` | 251 |
-| `TalkWithNpcStub` | `modules/core/system/compatibility_aliases.qsps` | 255 |
+| `TalkWithAlber` | `modules/core/system/compatibility_aliases.qsps` | 254 |
+| `TalkWithClarissa` | `modules/core/system/compatibility_aliases.qsps` | 250 |
+| `TalkWithEddie` | `modules/core/system/compatibility_aliases.qsps` | 246 |
+| `TalkWithGerhard` | `modules/core/system/compatibility_aliases.qsps` | 258 |
+| `TalkWithNpcStub` | `modules/core/system/compatibility_aliases.qsps` | 262 |
 | `TavernDailyUpdate` | `modules/core/time/next_day.qsps` | 234 |
 | `TavernEventStateDebugMenu` | `modules/core/tavern/tavern_event_state_core.qsps` | 491 |
 | `TavernEventStateNormalizeGirl` | `modules/core/tavern/tavern_event_state_core.qsps` | 553 |
@@ -328,7 +328,7 @@ Generated from active project files in `qsp-project.json`.
 | `TavernSupplyEmergencyAction` | `modules/core/economy/tavern_supply_economy.qsps` | 213 |
 | `TavernSupplyStatus` | `modules/core/economy/tavern_supply_economy.qsps` | 136 |
 | `TavernSupplyStatusBuildMenu` | `modules/core/economy/tavern_supply_economy.qsps` | 177 |
-| `TimeControl` | `modules/core/system/compatibility_aliases.qsps` | 138 |
+| `TimeControl` | `modules/core/system/compatibility_aliases.qsps` | 145 |
 | `UpdateCityNpcLocations` | `modules/core/time/npc_city_schedule.qsps` | 97 |
 | `UpdateGirlLocations` | `modules/core/time/npc_city_schedule.qsps` | 11 |
 | `UsefulTalkCheck` | `modules/core/time/npc_talk_limits.qsps` | 34 |
@@ -345,6 +345,9 @@ Generated from active project files in `qsp-project.json`.
 | `DebugKnowledgePanel` | `modules/debug/debug_knowledge_panel.qsps` | 11 |
 | `DebugKnowledgePrintLine` | `modules/debug/debug_knowledge_panel.qsps` | 50 |
 | `DebugKnowledgeSeedHall` | `modules/debug/debug_knowledge_panel.qsps` | 67 |
+| `DebugPolicyFlowResetChoiceMemory` | `modules/debug/debug_policy_flow_smoke.qsps` | 71 |
+| `DebugPolicyFlowRunCase` | `modules/debug/debug_policy_flow_smoke.qsps` | 44 |
+| `DebugPolicyFlowSmokeTest` | `modules/debug/debug_policy_flow_smoke.qsps` | 7 |
 | `TavernEventDispatcherDebugMenu` | `modules/debug/debug_tavern_event_dispatcher.qsps` | 11 |
 
 ## modules/events
@@ -553,7 +556,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlPolicySceneVariationText` | `modules/events/hall/girl_policy_scene_variations_text.qsps` | 8 |
 | `GuardBribeStart` | `modules/events/quests/guard_bribe_quest.qsps` | 34 |
 | `HallChoiceConsequencesApply` | `modules/events/hall/hall_choice_consequences.qsps` | 7 |
-| `HallChoiceConsequencesPrintText` | `modules/events/hall/hall_choice_consequences.qsps` | 57 |
+| `HallChoiceConsequencesPrintText` | `modules/events/hall/hall_choice_consequences.qsps` | 71 |
 | `HallChoiceConsequenceText` | `modules/events/hall/hall_choice_consequences_text.qsps` | 14 |
 | `HallChoiceConsequenceTextHallLewd` | `modules/events/hall/hall_choice_consequences_text.qsps` | 57 |
 | `HallChoiceConsequenceTextHallMissing` | `modules/events/hall/hall_choice_consequences_text.qsps` | 67 |
@@ -564,9 +567,9 @@ Generated from active project files in `qsp-project.json`.
 | `HallChoiceFamilyTalkPrintText` | `modules/events/hall/hall_choice_family_talk_text.qsps` | 11 |
 | `HallChoiceFamilyTalkStart` | `modules/events/hall/hall_choice_family_talk.qsps` | 37 |
 | `HallChoiceFamilyTalkText` | `modules/events/hall/hall_choice_family_talk_text.qsps` | 19 |
-| `HallChoiceMemoryChoiceType` | `modules/events/hall/hall_choice_memory.qsps` | 110 |
-| `HallChoiceMemoryClassify` | `modules/events/hall/hall_choice_memory.qsps` | 87 |
-| `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 137 |
+| `HallChoiceMemoryChoiceType` | `modules/events/hall/hall_choice_memory.qsps` | 118 |
+| `HallChoiceMemoryClassify` | `modules/events/hall/hall_choice_memory.qsps` | 95 |
+| `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 145 |
 | `HallChoiceMemoryRegister` | `modules/events/hall/hall_choice_memory.qsps` | 12 |
 | `HallEventChoiceThoughtsPrint` | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | 11 |
 | `HallEventChoiceThoughtsText` | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | 21 |
@@ -901,21 +904,21 @@ Generated from active project files in `qsp-project.json`.
 | `PanelClearGirlJobs` | `modules/menu/panels/panel_tavern_info.qsps` | 285 |
 | `PanelDebugTools` | `modules/menu/panels/panel_debug_tools.qsps` | 12 |
 | `PanelDebugToolsBack` | `modules/menu/panels/panel_debug_tools.qsps` | 36 |
-| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 325 |
-| `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 95 |
-| `PanelDebugToolsGirlLine` | `modules/menu/panels/panel_debug_tools.qsps` | 74 |
-| `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 62 |
-| `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 115 |
+| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 332 |
+| `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 99 |
+| `PanelDebugToolsGirlLine` | `modules/menu/panels/panel_debug_tools.qsps` | 78 |
+| `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 66 |
+| `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 122 |
 | `PanelDebugToolsHeader` | `modules/menu/panels/panel_debug_tools.qsps` | 26 |
 | `PanelDebugToolsMain` | `modules/menu/panels/panel_debug_tools.qsps` | 42 |
-| `PanelDebugToolsMemory` | `modules/menu/panels/panel_debug_tools.qsps` | 219 |
-| `PanelDebugToolsMemoryGirl` | `modules/menu/panels/panel_debug_tools.qsps` | 286 |
-| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 236 |
+| `PanelDebugToolsMemory` | `modules/menu/panels/panel_debug_tools.qsps` | 226 |
+| `PanelDebugToolsMemoryGirl` | `modules/menu/panels/panel_debug_tools.qsps` | 293 |
+| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 243 |
 | `PanelDebugToolsOpen` | `modules/menu/panels/panel_debug_tools.qsps` | 22 |
-| `PanelDebugToolsPolicy` | `modules/menu/panels/panel_debug_tools.qsps` | 148 |
-| `PanelDebugToolsPolicyGirl` | `modules/menu/panels/panel_debug_tools.qsps` | 197 |
-| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 167 |
-| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 310 |
+| `PanelDebugToolsPolicy` | `modules/menu/panels/panel_debug_tools.qsps` | 155 |
+| `PanelDebugToolsPolicyGirl` | `modules/menu/panels/panel_debug_tools.qsps` | 204 |
+| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 174 |
+| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 317 |
 | `PanelFamilyGirlLine` | `modules/menu/panels/panel_family_info.qsps` | 36 |
 | `PanelFamilyInfo` | `modules/menu/panels/panel_family_info.qsps` | 9 |
 | `PanelFamilyMenu` | `modules/menu/panels/panel_family_menu.qsps` | 9 |

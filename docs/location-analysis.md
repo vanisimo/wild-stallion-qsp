@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 230
-- Locations: 973
-- Locations with direct incoming calls: 790
-- Locations without direct incoming calls: 183
+- Source files: 231
+- Locations: 976
+- Locations with direct incoming calls: 791
+- Locations without direct incoming calls: 185
 - Review candidates without direct incoming calls: 0
-- Classified entry/helper locations without direct incoming calls: 183
+- Classified entry/helper locations without direct incoming calls: 185
 - Dynamic call sites: 3
 
 ## Review Candidates
@@ -62,6 +62,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `DebugCheckLoc` | `modules/core/system/debug.qsps` | 12 | `entry/helper` |
 | `DebugKnowledgePanel` | `modules/debug/debug_knowledge_panel.qsps` | 11 | `entry/helper` |
 | `DebugKnowledgeSeedHall` | `modules/debug/debug_knowledge_panel.qsps` | 67 | `entry/helper` |
+| `DebugPolicyFlowSmokeTest` | `modules/debug/debug_policy_flow_smoke.qsps` | 7 | `entry/helper` |
 | `DebugPrint` | `modules/core/system/debug.qsps` | 24 | `entry/helper` |
 | `EventKnowledgeDebugPrint` | `modules/core/knowledge/event_knowledge_system.qsps` | 227 | `entry/helper` |
 | `EventKnowledgeDoesNpcKnow` | `modules/core/knowledge/event_knowledge_system.qsps` | 206 | `entry/helper` |
@@ -78,8 +79,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlsQuickOverview` | `modules/menu/girls/girls_quick_overview.qsps` | 6 | `entry/helper` |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 320 | `entry/helper` |
 | `GroupSexMenu` | `modules/actions/sex/group_sex.qsps` | 6 | `entry/helper` |
+| `HallChoiceConsequencePrint` | `modules/core/system/compatibility_aliases.qsps` | 47 | `entry/helper` |
 | `HallChoiceConsequencesText` | `modules/core/system/compatibility_aliases.qsps` | 43 | `entry/helper` |
-| `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 137 | `entry/helper` |
+| `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 145 | `entry/helper` |
 | `HallFamilyStateDebugPanel` | `modules/events/hall/hall_family_state.qsps` | 228 | `entry/helper` |
 | `HallHarassmentTalkPrintText` | `modules/events/hall/hall_harassment_text.qsps` | 170 | `entry/helper` |
 | `HallHarassmentTry` | `modules/events/hall/hall_harassment.qsps` | 217 | `entry/helper` |
@@ -145,14 +147,14 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `onstatusupdate` | `modules/menu/system/onstatusupdate.qsps` | 7 | `entry/helper` |
 | `otd_lib_menu` | `modules/menu/system/otd_lib_menu.qsps` | 10 | `entry/helper` |
 | `PanelClearGirlJobs` | `modules/menu/panels/panel_tavern_info.qsps` | 285 | `entry/helper` |
-| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 325 | `entry/helper` |
-| `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 95 | `entry/helper` |
-| `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 62 | `entry/helper` |
-| `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 115 | `entry/helper` |
-| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 236 | `entry/helper` |
+| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 332 | `entry/helper` |
+| `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 99 | `entry/helper` |
+| `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 66 | `entry/helper` |
+| `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 122 | `entry/helper` |
+| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 243 | `entry/helper` |
 | `PanelDebugToolsOpen` | `modules/menu/panels/panel_debug_tools.qsps` | 22 | `entry/helper` |
-| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 167 | `entry/helper` |
-| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 310 | `entry/helper` |
+| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 174 | `entry/helper` |
+| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 317 | `entry/helper` |
 | `PanelFamilyInfo` | `modules/menu/panels/panel_family_info.qsps` | 9 | `entry/helper` |
 | `PanelGirlClick` | `modules/menu/panels/panel_family_info.qsps` | 69 | `entry/helper` |
 | `PanelSetTime` | `modules/menu/panels/panel_time_info.qsps` | 148 | `entry/helper` |
@@ -215,7 +217,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.AddModule` | 223 |
 | `NormalizeGirlKey` | 102 |
 | `EnsureGirlData` | 90 |
-| `TavernMain` | 73 |
+| `TavernMain` | 74 |
 | `ShowGirlSidebar` | 70 |
 | `ClampGirlSocialStats` | 46 |
 | `UpdateGirlLocations` | 44 |
@@ -226,15 +228,15 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `ClampTavernEventState` | 21 |
-| `ShowLocationImage` | 21 |
 | `Menu.AddCondition` | 21 |
-| `SaveLastHallEvent` | 21 |
+| `ShowLocationImage` | 21 |
 | `MarketDance` | 21 |
+| `SaveLastHallEvent` | 21 |
+| `ClampTavernEventState` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
-| `ShowGirlInLocation` | 15 |
 | `AmandaLizettePrintText` | 15 |
+| `ShowGirlInLocation` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
 
 ## Dynamic Call Sites

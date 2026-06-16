@@ -1,0 +1,99 @@
+! ================================================
+! FILE: modules/debug/debug_policy_flow_smoke.qsps
+! MODULE: debug
+! Быстрая проверка памяти policy-flow событий
+! ================================================
+
+#DebugPolicyFlowSmokeTest
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: POLICY FLOW SMOKE TEST'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'DebugPolicyFlowResetChoiceMemory'
+
+    gs 'DebugPolicyFlowRunCase', 'harassment', 'protect_hard', 'amanda', 'hall', 'protect'
+    gs 'DebugPolicyFlowRunCase', 'hall_lewd', 'encourage', 'melissa', 'hall', 'encourage'
+    gs 'DebugPolicyFlowRunCase', 'hall_missing', 'peek', 'sandra', 'hall', 'watch'
+    gs 'DebugPolicyFlowRunCase', 'kitchen', 'client', 'amanda', 'kitchen', 'client'
+
+    *pl ' '
+    *pl '<b>Итог последнего выбора:</b>'
+    *pl 'event: ' + $LastHallChoiceEvent
+    *pl 'choice: ' + $LastHallChoiceChoice
+    *pl 'type: ' + $LastHallChoiceType
+    *pl 'girl: ' + $LastHallChoiceGirl
+    *pl 'area: ' + $LastHallChoiceArea
+    *pl ' '
+    *pl 'total: ' + STR(HallChoiceTotal)
+    *pl 'protect: ' + STR(HallChoiceProtectTotal)
+    *pl 'neutral: ' + STR(HallChoiceNeutralTotal)
+    *pl 'dirty: ' + STR(HallChoiceDirtyTotal)
+    *pl 'control: ' + STR(HallChoiceControlTotal)
+    *pl ' '
+
+    act 'Вернуться в трактир':
+        gt 'TavernMain'
+    end
+---
+
+#DebugPolicyFlowRunCase
+    $DebugPolicyFlowEvent = LCASE($ARGS[0])
+    $DebugPolicyFlowChoice = LCASE($ARGS[1])
+    $DebugPolicyFlowGirl = LCASE($ARGS[2])
+    $DebugPolicyFlowArea = LCASE($ARGS[3])
+    $DebugPolicyFlowExpectedType = LCASE($ARGS[4])
+
+    gs 'HallChoiceConsequencesApply', $DebugPolicyFlowGirl, $DebugPolicyFlowEvent, $DebugPolicyFlowChoice, $DebugPolicyFlowArea
+
+    *pl '<b>' + $DebugPolicyFlowEvent + ' / ' + $DebugPolicyFlowChoice + '</b>'
+    *pl 'girl: ' + $LastHallChoiceGirl + ', area: ' + $LastHallChoiceArea + ', type: ' + $LastHallChoiceType + ', expected: ' + $DebugPolicyFlowExpectedType
+
+    if $LastHallChoiceType = $DebugPolicyFlowExpectedType and $LastHallChoiceArea = $DebugPolicyFlowArea:
+        *pl '<font color="#008000">OK</font>'
+    else:
+        *pl '<font color="#c00000">MISMATCH</font>'
+    end
+
+    *pl ' '
+
+    killvar '$DebugPolicyFlowEvent'
+    killvar '$DebugPolicyFlowChoice'
+    killvar '$DebugPolicyFlowGirl'
+    killvar '$DebugPolicyFlowArea'
+    killvar '$DebugPolicyFlowExpectedType'
+---
+
+#DebugPolicyFlowResetChoiceMemory
+    HallChoiceTotal = 0
+    HallChoiceProtectTotal = 0
+    HallChoiceNeutralTotal = 0
+    HallChoiceDirtyTotal = 0
+    HallChoiceControlTotal = 0
+
+    killvar 'HallChoiceByEvent'
+    killvar 'HallChoiceByGirl'
+    killvar 'HallChoiceProtectByGirl'
+    killvar 'HallChoiceNeutralByGirl'
+    killvar 'HallChoiceDirtyByGirl'
+    killvar 'HallChoiceControlByGirl'
+
+    $LastHallChoiceEvent = ''
+    $LastHallChoiceChoice = ''
+    $LastHallChoiceType = ''
+    $LastHallChoiceGirl = ''
+    $LastHallChoiceArea = ''
+    LastHallChoiceDay = 0
+    LastHallChoiceTime = 0
+
+    killvar '$LastGirlChoiceEvent'
+    killvar '$LastGirlChoiceChoice'
+    killvar '$LastGirlChoiceType'
+    killvar '$LastGirlChoiceArea'
+    killvar 'LastGirlChoiceDay'
+    killvar 'LastGirlChoiceTime'
+---

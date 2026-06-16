@@ -49,9 +49,23 @@
 ---
 
 #PolicyEventChoiceConsequencePrint
-    if LOC('HallChoiceConsequencePrint') = 1:
-        gs 'HallChoiceConsequencePrint', $ARGS[0], $ARGS[1], $ARGS[2]
+    $PolicyChoiceEvent = LCASE($ARGS[0])
+    $PolicyChoiceChoice = LCASE($ARGS[1])
+    $PolicyChoiceGirl = $ARGS[2]
+    $PolicyChoiceArea = 'hall'
+
+    if $PolicyChoiceEvent = 'kitchen':
+        $PolicyChoiceArea = 'kitchen'
     end
+
+    if LOC('HallChoiceConsequencesApply') = 1:
+        gs 'HallChoiceConsequencesApply', $PolicyChoiceGirl, $PolicyChoiceEvent, $PolicyChoiceChoice, $PolicyChoiceArea
+    end
+
+    killvar '$PolicyChoiceEvent'
+    killvar '$PolicyChoiceChoice'
+    killvar '$PolicyChoiceGirl'
+    killvar '$PolicyChoiceArea'
 ---
 
 #HallChoiceConsequencesPrintText

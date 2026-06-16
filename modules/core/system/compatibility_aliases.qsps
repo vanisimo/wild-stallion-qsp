@@ -29,7 +29,7 @@
 
 ! Active policy/memory bridges used by current hall and kitchen events.
 #HallChoiceMemorySave
-    gs 'HallChoiceMemoryRegister', $ARGS[0], $ARGS[2], $ARGS[1]
+    gs 'HallChoiceMemoryRegister', $ARGS[0], $ARGS[2], $ARGS[1], $ARGS[3]
 ---
 
 #HallFamilyStateApplyChoice
@@ -45,7 +45,14 @@
 ---
 
 #HallChoiceConsequencePrint
-    gs 'HallChoiceConsequencesApply', $ARGS[2], $ARGS[0], $ARGS[1], 'hall'
+    $HallChoiceConsequenceArea = 'hall'
+
+    if LCASE($ARGS[0]) = 'kitchen':
+        $HallChoiceConsequenceArea = 'kitchen'
+    end
+
+    gs 'HallChoiceConsequencesApply', $ARGS[2], $ARGS[0], $ARGS[1], $HallChoiceConsequenceArea
+    killvar '$HallChoiceConsequenceArea'
 ---
 
 #GirlPolicyResponseEvaluate
