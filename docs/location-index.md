@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 958
+- Locations: 962
 
 ## modules/actions
 
@@ -12,7 +12,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 |
 | `CanStartIntimScene` | `modules/actions/sex/intim_scene.qsps` | 97 |
 | `CanStartSexScene` | `modules/actions/sex/sex_scene_core.qsps` | 82 |
-| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 508 |
+| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 559 |
 | `ClampIntimSceneValues` | `modules/actions/sex/intim_scene.qsps` | 529 |
 | `GirlFirstAnal` | `modules/actions/sex/first_sex.qsps` | 142 |
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 197 |
@@ -25,8 +25,8 @@ Generated from active project files in `qsp-project.json`.
 | `GirlFlirtSuccessText` | `modules/actions/flirts/girl_flirt.qsps` | 278 |
 | `GirlTalk` | `modules/actions/dialogs/girl_talk.qsps` | 10 |
 | `GirlTalkHallEventReaction` | `modules/actions/tavern/girl_talk_hall_event_reaction_compat.qsps` | 11 |
-| `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 268 |
-| `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 308 |
+| `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 293 |
+| `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 333 |
 | `GirlUniformTalkBlocked` | `modules/actions/tavern/girl_uniform_talk.qsps` | 257 |
 | `GirlUniformTalkBuildMenu` | `modules/actions/tavern/girl_uniform_talk.qsps` | 82 |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 320 |
@@ -612,8 +612,8 @@ Generated from active project files in `qsp-project.json`.
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 |
 | `HallLewdBuildMenu` | `modules/events/hall/hall_lewd_behavior.qsps` | 492 |
 | `HallLewdCheckCandidate` | `modules/events/hall/hall_lewd_behavior.qsps` | 108 |
-| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 770 |
-| `HallLewdDebugStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 735 |
+| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 778 |
+| `HallLewdDebugStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 743 |
 | `HallLewdEnsureName` | `modules/events/hall/hall_lewd_behavior.qsps` | 183 |
 | `HallLewdGetStage` | `modules/events/hall/hall_lewd_behavior.qsps` | 207 |
 | `HallLewdGirlReaction` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 101 |
@@ -624,14 +624,14 @@ Generated from active project files in `qsp-project.json`.
 | `HallLewdPrintDecisionThoughts` | `modules/events/hall/hall_lewd_behavior.qsps` | 488 |
 | `HallLewdPrintText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 14 |
 | `HallLewdResolve` | `modules/events/hall/hall_lewd_behavior.qsps` | 517 |
-| `HallLewdShowImage` | `modules/events/hall/hall_lewd_behavior.qsps` | 683 |
+| `HallLewdShowImage` | `modules/events/hall/hall_lewd_behavior.qsps` | 691 |
 | `HallLewdText` | `modules/events/hall/hall_lewd_behavior_text.qsps` | 277 |
 | `HallMissingGirlApplyConsequences` | `modules/events/hall/hall_missing_girl.qsps` | 649 |
 | `HallMissingGirlBuildMenu` | `modules/events/hall/hall_missing_girl.qsps` | 523 |
 | `HallMissingGirlCanStart` | `modules/events/hall/hall_missing_girl.qsps` | 21 |
 | `HallMissingGirlCheckCandidate` | `modules/events/hall/hall_missing_girl.qsps` | 112 |
-| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 826 |
-| `HallMissingGirlDebugStart` | `modules/events/hall/hall_missing_girl.qsps` | 790 |
+| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 829 |
+| `HallMissingGirlDebugStart` | `modules/events/hall/hall_missing_girl.qsps` | 793 |
 | `HallMissingGirlEnsureName` | `modules/events/hall/hall_missing_girl.qsps` | 190 |
 | `HallMissingGirlGetStage` | `modules/events/hall/hall_missing_girl.qsps` | 214 |
 | `HallMissingGirlNormalizeKey` | `modules/events/hall/hall_missing_girl.qsps` | 172 |
@@ -644,7 +644,7 @@ Generated from active project files in `qsp-project.json`.
 | `HallMissingGirlPrivateActText` | `modules/events/hall/hall_missing_girl_text.qsps` | 55 |
 | `HallMissingGirlReaction` | `modules/events/hall/hall_missing_girl_text.qsps` | 107 |
 | `HallMissingGirlResolve` | `modules/events/hall/hall_missing_girl.qsps` | 548 |
-| `HallMissingGirlShowImage` | `modules/events/hall/hall_missing_girl.qsps` | 743 |
+| `HallMissingGirlShowImage` | `modules/events/hall/hall_missing_girl.qsps` | 746 |
 | `HallMissingGirlStart` | `modules/events/hall/hall_missing_girl.qsps` | 421 |
 | `HallMissingGirlText` | `modules/events/hall/hall_missing_girl_text.qsps` | 190 |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 66 |
@@ -848,7 +848,7 @@ Generated from active project files in `qsp-project.json`.
 | --- | --- | --- |
 | `AddGlobalButtons` | `modules/menu/system/add_global_buttons.qsps` | 8 |
 | `Amanda_ShowInfo` | `modules/menu/girls/amanda_show_info.qsps` | 4 |
-| `DebugMenuGirlConditions` | `modules/menu/girls/menu_girl_overview.qsps` | 187 |
+| `DebugMenuGirlConditions` | `modules/menu/girls/menu_girl_overview.qsps` | 117 |
 | `GetNextTimeName` | `modules/menu/panels/panel_time_info.qsps` | 128 |
 | `GirlsQuickOverview` | `modules/menu/girls/girls_quick_overview.qsps` | 6 |
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 50 |
@@ -864,18 +864,22 @@ Generated from active project files in `qsp-project.json`.
 | `Menu.Show` | `modules/menu/system/otd_lib_menu.qsps` | 73 |
 | `Menu.Time` | `modules/menu/system/otd_lib_menu.qsps` | 156 |
 | `MenuGirlCalcConditions` | `modules/menu/girls/menu_girl_conditions.qsps` | 8 |
-| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 289 |
-| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 299 |
-| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 309 |
-| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 319 |
-| `MenuGirlFlirt` | `modules/menu/girls/menu_girl_actions.qsps` | 36 |
-| `MenuGirlInspect` | `modules/menu/girls/menu_girl_overview.qsps` | 168 |
-| `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 78 |
+| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 314 |
+| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 324 |
+| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 334 |
+| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 344 |
+| `MenuGirlFlirt` | `modules/menu/girls/menu_girl_actions.qsps` | 274 |
+| `MenuGirlGift` | `modules/menu/girls/menu_girl_actions.qsps` | 45 |
+| `MenuGirlGiftGive` | `modules/menu/girls/menu_girl_actions.qsps` | 143 |
+| `MenuGirlGiftName` | `modules/menu/girls/menu_girl_actions.qsps` | 215 |
+| `MenuGirlGiftValue` | `modules/menu/girls/menu_girl_actions.qsps` | 237 |
+| `MenuGirlInspect` | `modules/menu/girls/menu_girl_overview.qsps` | 98 |
+| `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 316 |
 | `MenuGirlOverview` | `modules/menu/girls/menu_girl_overview.qsps` | 10 |
-| `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 110 |
-| `MenuGirlSpecialAmanda` | `modules/menu/girls/menu_girl_actions.qsps` | 156 |
-| `MenuGirlSpecialMelissa` | `modules/menu/girls/menu_girl_actions.qsps` | 184 |
-| `MenuGirlSpecialSandra` | `modules/menu/girls/menu_girl_actions.qsps` | 212 |
+| `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 348 |
+| `MenuGirlSpecialAmanda` | `modules/menu/girls/menu_girl_actions.qsps` | 394 |
+| `MenuGirlSpecialMelissa` | `modules/menu/girls/menu_girl_actions.qsps` | 422 |
+| `MenuGirlSpecialSandra` | `modules/menu/girls/menu_girl_actions.qsps` | 450 |
 | `MenuGirlTalk` | `modules/menu/girls/menu_girl_actions.qsps` | 7 |
 | `NPC_Click` | `modules/menu/npc/npc_click.qsps` | 8 |
 | `NpcClickableLink` | `modules/menu/npc/npc_clickable_link.qsps` | 3 |

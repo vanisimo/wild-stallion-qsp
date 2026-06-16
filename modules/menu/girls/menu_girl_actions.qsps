@@ -18,12 +18,250 @@
         $GirlReturnLoc = 'TavernMain'
     end
 
+    gs 'MenuGirlCalcConditions', $GirlActionName, $GirlReturnLoc
+
+    if $RealName[$GirlActionName] = '':
+        $RealName[$GirlActionName] = UCASE(MID($GirlActionName, 1, 1)) + LCASE(MID($GirlActionName, 2))
+    end
+
+    if MenuCanTalk = 0:
+        msg $RealName[$GirlActionName] + ' сейчас не хочет разговаривать. Лучше дать ей время или попробовать подарок.'
+        gt $GirlReturnLoc
+    end
+
     if LOC('GirlTalk') = 1:
         gt 'GirlTalk', $GirlActionName, $GirlReturnLoc
     else:
         msg 'Ошибка: локация GirlTalk не найдена.'
         gt $GirlReturnLoc
     end
+---
+
+! ================================================
+! FILE: modules/menu/menu_girl_actions.qsps
+! Подарок девушке
+! ================================================
+
+#MenuGirlGift
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlActionName = $GirlKey
+    $GirlReturnLoc = $ARGS[1]
+
+    if $GirlActionName = '':
+        msg 'Ошибка: MenuGirlGift вызван без имени девушки.'
+        exit
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = $CURLOC
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $GirlActionName
+    gs 'MenuGirlCalcConditions', $GirlActionName, $GirlReturnLoc
+
+    if $RealName[$GirlActionName] = '':
+        $RealName[$GirlActionName] = UCASE(MID($GirlActionName, 1, 1)) + LCASE(MID($GirlActionName, 2))
+    end
+
+    if MenuGirlConflictActive = 1:
+        msg $RealName[$GirlActionName] + ' сейчас злится и не хочет особых разговоров.'
+        gt $GirlReturnLoc
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $GirlActionName
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДАРОК: ' + $RealName[$GirlActionName]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if GirlConflictUntilDay[$GirlActionName] >= day:
+        *p $RealName[$GirlActionName] + ' всё ещё сердится и не настроена на обычный разговор. Подарок сейчас звучит не как ухаживание, а как попытка признать вину.'
+    else:
+        *p 'Вы выбираете, что подарить ' + $RealName[$GirlActionName] + '.'
+    end
+
+    *pl ' '
+
+    if GiftInventory['capital_hair_ribbon'] > 0:
+        gs 'MenuGirlGiftName', 'capital_hair_ribbon'
+        act $GiftName + ' (' + STR(GiftInventory['capital_hair_ribbon']) + ')':
+            gt 'MenuGirlGiftGive', $GirlActionName, $GirlReturnLoc, 'capital_hair_ribbon'
+        end
+    end
+
+    if GiftInventory['island_glass_beads'] > 0:
+        gs 'MenuGirlGiftName', 'island_glass_beads'
+        act $GiftName + ' (' + STR(GiftInventory['island_glass_beads']) + ')':
+            gt 'MenuGirlGiftGive', $GirlActionName, $GirlReturnLoc, 'island_glass_beads'
+        end
+    end
+
+    if GiftInventory['foreign_scarf'] > 0:
+        gs 'MenuGirlGiftName', 'foreign_scarf'
+        act $GiftName + ' (' + STR(GiftInventory['foreign_scarf']) + ')':
+            gt 'MenuGirlGiftGive', $GirlActionName, $GirlReturnLoc, 'foreign_scarf'
+        end
+    end
+
+    if GiftInventory['mammoth_ivory_box'] > 0:
+        gs 'MenuGirlGiftName', 'mammoth_ivory_box'
+        act $GiftName + ' (' + STR(GiftInventory['mammoth_ivory_box']) + ')':
+            gt 'MenuGirlGiftGive', $GirlActionName, $GirlReturnLoc, 'mammoth_ivory_box'
+        end
+    end
+
+    if GiftInventory['southern_spices'] > 0:
+        gs 'MenuGirlGiftName', 'southern_spices'
+        act $GiftName + ' (' + STR(GiftInventory['southern_spices']) + ')':
+            gt 'MenuGirlGiftGive', $GirlActionName, $GirlReturnLoc, 'southern_spices'
+        end
+    end
+
+    if GiftInventory['spiced_oil'] > 0:
+        gs 'MenuGirlGiftName', 'spiced_oil'
+        act $GiftName + ' (' + STR(GiftInventory['spiced_oil']) + ')':
+            gt 'MenuGirlGiftGive', $GirlActionName, $GirlReturnLoc, 'spiced_oil'
+        end
+    end
+
+    if GiftInventory['capital_hair_ribbon'] <= 0 and GiftInventory['island_glass_beads'] <= 0 and GiftInventory['foreign_scarf'] <= 0 and GiftInventory['mammoth_ivory_box'] <= 0 and GiftInventory['southern_spices'] <= 0 and GiftInventory['spiced_oil'] <= 0:
+        *p 'У вас нет подарков. Нужные вещи иногда привозят корабли из столицы.'
+    end
+
+    act 'Вернуться':
+        gt $GirlReturnLoc
+    end
+---
+
+#MenuGirlGiftGive
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftGirl = $GirlKey
+    $GirlReturnLoc = $ARGS[1]
+    $GiftId = LCASE($ARGS[2])
+
+    if $GiftGirl = '':
+        msg 'Ошибка: MenuGirlGiftGive вызван без имени девушки.'
+        exit
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $GiftGirl
+    gs 'MenuGirlGiftName', $GiftId
+    gs 'MenuGirlGiftValue', $GiftGirl, $GiftId
+
+    cls
+
+    gs 'ShowGirlSidebar', $GiftGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДАРОК: ' + $RealName[$GiftGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $GiftId = '' or GiftInventory[$GiftId] <= 0:
+        *p 'Такого подарка у вас сейчас нет.'
+    else:
+        GiftInventory[$GiftId] -= 1
+        GirlGiftCount[$GiftGirl] += 1
+
+        *p 'Вы отдаёте ' + $RealName[$GiftGirl] + ' ' + $GiftName + '.'
+
+        if GiftValue >= 3:
+            *p 'Она не прощает вас сразу, но подарок попал точно. В её взгляде становится меньше холода.'
+            Friends[$GiftGirl] += 2
+            love[$GiftGirl] += 1
+            GirlConflictUntilDay[$GiftGirl] = 0
+        elseif GiftValue = 2:
+            *p 'Она принимает подарок сдержанно. Ссора ещё не забыта, но теперь с ней хотя бы можно будет говорить позже.'
+            Friends[$GiftGirl] += 1
+
+            if GirlConflictUntilDay[$GiftGirl] > day:
+                GirlConflictUntilDay[$GiftGirl] = day
+            end
+        else:
+            *p 'Она берёт подарок без особой радости. Вышло не хуже, но и не лучше: не всякую обиду можно закрыть первой попавшейся вещью.'
+            Friends[$GiftGirl] += 1
+        end
+
+        if hate[$GiftGirl] > 0:
+            hate[$GiftGirl] -= GiftValue
+        end
+
+        gs 'ClampGirlSocialStats', $GiftGirl
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $GirlReturnLoc
+    end
+
+    killvar '$GiftGirl'
+    killvar '$GiftId'
+    killvar '$GiftName'
+    killvar 'GiftValue'
+---
+
+#MenuGirlGiftName
+    $GiftNameId = LCASE($ARGS[0])
+
+    if $GiftNameId = 'capital_hair_ribbon':
+        $GiftName = 'столичную ленту для волос'
+    elseif $GiftNameId = 'island_glass_beads':
+        $GiftName = 'стеклянные бусы с южных островов'
+    elseif $GiftNameId = 'foreign_scarf':
+        $GiftName = 'тонкий заморский платок'
+    elseif $GiftNameId = 'mammoth_ivory_box':
+        $GiftName = 'шкатулку из северной мамонтовой кости'
+    elseif $GiftNameId = 'southern_spices':
+        $GiftName = 'южные специи'
+    elseif $GiftNameId = 'spiced_oil':
+        $GiftName = 'масло с пряным запахом'
+    else:
+        $GiftName = 'неизвестный подарок'
+    end
+
+    killvar '$GiftNameId'
+---
+
+#MenuGirlGiftValue
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftValueGirl = $GirlKey
+    $GiftValueId = LCASE($ARGS[1])
+    GiftValue = 1
+
+    if $GiftValueGirl = 'amanda':
+        if $GiftValueId = 'capital_hair_ribbon' or $GiftValueId = 'island_glass_beads' or $GiftValueId = 'foreign_scarf':
+            GiftValue = 3
+        elseif $GiftValueId = 'spiced_oil' or $GiftValueId = 'mammoth_ivory_box':
+            GiftValue = 2
+        end
+    elseif $GiftValueGirl = 'melissa':
+        if $GiftValueId = 'mammoth_ivory_box' or $GiftValueId = 'southern_spices' or $GiftValueId = 'foreign_scarf':
+            GiftValue = 3
+        elseif $GiftValueId = 'island_glass_beads':
+            GiftValue = 2
+        end
+    elseif $GiftValueGirl = 'sandra':
+        if $GiftValueId = 'southern_spices' or $GiftValueId = 'mammoth_ivory_box':
+            GiftValue = 3
+        elseif $GiftValueId = 'foreign_scarf' or $GiftValueId = 'capital_hair_ribbon':
+            GiftValue = 2
+        end
+    end
+
+    killvar '$GiftValueGirl'
+    killvar '$GiftValueId'
 ---
 
 ! ================================================
