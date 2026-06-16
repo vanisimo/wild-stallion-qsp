@@ -8,7 +8,7 @@ Keep event modules aligned with this flow before refactoring shared helpers.
 1. Pick or receive the event girl and return location.
 2. Print the intro scene.
 3. Apply and print current policy reaction.
-4. Print policy-based scene variation.
+4. Print policy-based scene variation through `PolicyEventSceneVariationPrint`.
 5. Build the player choice menu.
 6. Apply the selected choice consequences.
 7. Print choice consequences through `PolicyEventChoiceConsequencePrint`.
@@ -20,10 +20,10 @@ Keep event modules aligned with this flow before refactoring shared helpers.
 
 | Event | Start reaction | Scene variation | Choice consequences | Memory write |
 | --- | --- | --- | --- | --- |
-| `harassment` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `hall_lewd` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `hall_missing` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `kitchen` | `KitchenPolicyReaction` | `GirlPolicySceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `harassment` | `HallPolicyReaction` | `PolicyEventSceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `hall_lewd` | `HallPolicyReaction` | `PolicyEventSceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `hall_missing` | `HallPolicyReaction` | `PolicyEventSceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `kitchen` | `KitchenPolicyReaction` | `PolicyEventSceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
 
 ## Choice Vocabulary
 
@@ -51,9 +51,11 @@ Choice names should be reused consistently by result handlers, `PolicyEventChoic
 - Event-specific `ApplyConsequences` locations change immediate scene stats only.
 - `PolicyEventChoiceConsequencePrint` is the owner entry for post-choice feedback.
 - `HallChoiceConsequencePrint` is the compatibility entry behind that owner helper.
+- `PolicyEventSceneVariationPrint` is the owner entry for pre-choice policy scene variation.
+- `GirlPolicySceneVariationPrint` is the compatibility entry behind that owner helper.
 - `HallChoiceConsequencesApply` owns shared memory and family-state updates.
 - `GirlMemoryOfStefanRegister` should not be called directly from event-specific result handlers when `PolicyEventChoiceConsequencePrint` is used.
-- `GirlPolicySceneVariationPrint` belongs before the player choice, never inside a debug-only block.
+- `PolicyEventSceneVariationPrint` belongs before the player choice, never inside a debug-only block.
 
 ## Next Refactor Targets
 
