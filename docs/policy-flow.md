@@ -25,6 +25,27 @@ Keep event modules aligned with this flow before refactoring shared helpers.
 | `hall_missing` | `HallPolicyReaction` | `GirlPolicySceneVariationPrint` | `HallChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
 | `kitchen` | `KitchenPolicyReaction` | `GirlPolicySceneVariationPrint` | `HallChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
 
+## Choice Vocabulary
+
+| Event | Choice | Meaning |
+| --- | --- | --- |
+| `harassment` | `protect_hard` | Direct protection by force or sharp intervention. |
+| `harassment` | `warn_client` | Calm warning that sets a boundary. |
+| `harassment` | `self_handle` | Let the girl handle the client herself. |
+| `harassment` | `profit` | Let the situation continue for money or advantage. |
+| `harassment` | `ignore` | Do not intervene. |
+| `hall_lewd` | `stop` | Stop the scene. |
+| `hall_lewd` | `watch` | Watch without intervening. |
+| `hall_lewd` | `encourage` | Encourage the scene for attention or money. |
+| `hall_missing` | `ignore` | Do not look for the girl. |
+| `hall_missing` | `peek` | Quietly check what is happening. |
+| `hall_missing` | `interrupt` | Interrupt the private scene. |
+| `kitchen` | `stop` | Stop the customer conflict. |
+| `kitchen` | `let_her` | Let the girl handle the kitchen situation herself. |
+| `kitchen` | `client` | Keep the customer pleased for money or advantage. |
+
+Choice names should be reused consistently by result handlers, `HallChoiceConsequencePrint`, `HallChoiceMemoryClassify`, and `GirlMemoryOfStefanClassifyChoice`.
+
 ## Ownership Rules
 
 - Event-specific `ApplyConsequences` locations change immediate scene stats only.
