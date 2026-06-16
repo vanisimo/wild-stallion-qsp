@@ -289,12 +289,26 @@ Owner: `modules/core/system/compatibility_aliases.qsps`.
 
 This file keeps old location names callable while active scenes are being migrated to newer systems. Prefer new owner APIs in new code.
 
-Examples:
+Active compatibility bridges still used by current systems:
 
 - `KnowledgeRegisterFact` redirects to `EventKnowledgeRegisterFact`.
 - `HallChoiceMemorySave` redirects to `HallChoiceMemoryRegister`.
+- `HallChoiceConsequencePrint` redirects to `HallChoiceConsequencesApply`.
 - `GirlPolicyResponseEvaluate` redirects to `GirlPolicyResponseCalc`.
+- `DailyAftermathPrintMorning` is called from `NextDay`.
+
+Legacy bridges and placeholders:
+
 - `AdvanceTimePart`, `NextTimePart`, and `ProcessNewDay` bridge old time calls.
+- openness milestone locations such as `AmandaOtkroven45` route to `OtkrovenMilestoneStub`;
+- missing NPC talks such as `TalkWithEddie` route to `TalkWithNpcStub`.
+
+Compatibility cleanup rule:
+
+- Do not delete an alias while it has active callers.
+- New code should prefer the owner location directly.
+- If an alias becomes a public bridge, document it here and group it in `compatibility_aliases.qsps`.
+- If an alias is only a placeholder, keep it grouped as legacy until the real scene exists.
 
 ## Maintenance Rule
 
