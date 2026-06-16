@@ -106,6 +106,12 @@
         end
     end
 
+    if GirlConflictLevel[$TalkGirl] > 0 and GirlConflictUntilDay[$TalkGirl] < day and GirlConflictAfterTalkDone[$TalkGirl] = 0:
+        act 'Поговорить о недавней ссоре':
+            gt 'GirlConflictAfterTalk', $TalkGirl, $TalkReturnLoc
+        end
+    end
+
     ! ====================== АМАНДА / ЛЕГАРЕ: ПОСЛЕДСТВИЯ ТАНЦЕВ ======================
 
     if $TalkGirl = 'amanda' and AmandaLegareTalkReady = 1 and LOC('AmandaTalkAboutLegare') = 1:
@@ -456,30 +462,6 @@
             love[$TalkGirl] += 1
         end
 
-    elseif $TalkTopic = 'joke':
-        *p 'Вы пытаетесь разрядить обстановку шуткой.'
-
-        TalkRoll = RAND(1, 100)
-        TalkChance = 45 + Friends[$TalkGirl] + charisma
-
-        if TalkChance > 90:
-            TalkChance = 90
-        end
-
-        if TalkRoll <= TalkChance:
-            *p $RealName[$TalkGirl] + ' улыбается. Шутка оказалась удачной.'
-
-            Friends[$TalkGirl] += 2
-        else:
-            *p $RealName[$TalkGirl] + ' смотрит на вас с сомнением. Шутка вышла не очень удачной.'
-
-            Friends[$TalkGirl] -= 1
-
-            if Friends[$TalkGirl] < 0:
-                Friends[$TalkGirl] = 0
-            end
-        end
-
     elseif $TalkTopic = 'personal':
         *p 'Вы осторожно переводите разговор на более личные темы.'
         *p $RealName[$TalkGirl] + ' не сразу отвечает, но всё же поддерживает разговор.'
@@ -547,6 +529,208 @@
     killvar 'TalkRoll'
     killvar 'TalkChance'
     killvar 'TalkTopicUseful'
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Разговор после недавней ссоры
+! ================================================
+
+#GirlConflictAfterTalk
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $ConflictTalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $ConflictTalkGirl = '':
+        msg 'Ошибка: GirlConflictAfterTalk вызван без имени девушки.'
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($TalkReturnLoc) = 0:
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $ConflictTalkGirl
+
+    if $RealName[$ConflictTalkGirl] = '':
+        $RealName[$ConflictTalkGirl] = UCASE(MID($ConflictTalkGirl, 1, 1)) + LCASE(MID($ConflictTalkGirl, 2))
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $ConflictTalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ССОРЫ: ' + $RealName[$ConflictTalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlConflictAfterTalkIntroText', $ConflictTalkGirl
+
+    *pl ' '
+
+    act 'Признать, что был неправ':
+        gt 'GirlConflictAfterTalkResult', $ConflictTalkGirl, $TalkReturnLoc, 'apology'
+    end
+
+    act 'Объяснить, что защищал её':
+        gt 'GirlConflictAfterTalkResult', $ConflictTalkGirl, $TalkReturnLoc, 'protect'
+    end
+
+    if GirlWorkPolicy[$ConflictTalkGirl] = 3 or GirlConflictLevel[$ConflictTalkGirl] >= 2:
+        act 'Сказать, что в трактире нужны правила':
+            gt 'GirlConflictAfterTalkResult', $ConflictTalkGirl, $TalkReturnLoc, 'rules'
+        end
+    end
+
+    act 'Вернуться':
+        gt $TalkReturnLoc
+    end
+---
+
+#GirlConflictAfterTalkIntroText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $ConflictTalkGirl = $GirlKey
+
+    if $ConflictTalkGirl = 'amanda':
+        *p 'Аманда слушает вас настороженно. Она уже не отводит глаза, но в пальцах всё ещё живёт нервное движение, будто она готова в любой момент снова закрыться.'
+        *p '— Я не хочу каждый раз гадать, Стефан, — говорит она тише обычного. — Ты злишься, когда я слушаюсь, и злишься, когда не слушаюсь.'
+    elseif $ConflictTalkGirl = 'melissa':
+        *p 'Мелисса стоит спокойно, почти слишком спокойно. Это не примирение, а проверка: она ждёт, получится ли у вас сказать что-то умнее приказа.'
+        *p '— Давай без красивых слов, — говорит она. — Мне надо понимать, ты хозяин, который держит слово, или мужчина, который меняет правила, когда ему неприятно смотреть.'
+    elseif $ConflictTalkGirl = 'sandra':
+        *p 'Сандра не делает вид, что всё забыто. Она даёт вам говорить, но её тяжёлый взгляд сразу ставит границу: оправдания здесь не пройдут.'
+        *p '— Семью держат не приказами, Стефан, — говорит она. — И не подарками. Если ты хочешь, чтобы тебе верили, начни с ясных слов.'
+    else:
+        *p $RealName[$ConflictTalkGirl] + ' слушает вас осторожно. Недавняя ссора ещё не ушла совсем, но разговор уже возможен.'
+    end
+
+    killvar '$ConflictTalkGirl'
+---
+
+#GirlConflictAfterTalkResult
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $ConflictTalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+    $ConflictTalkChoice = LCASE($ARGS[2])
+
+    if $ConflictTalkGirl = '':
+        msg 'Ошибка: GirlConflictAfterTalkResult вызван без имени девушки.'
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $ConflictTalkGirl
+    cls
+    gs 'ShowGirlSidebar', $ConflictTalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ССОРЫ: ' + $RealName[$ConflictTalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlConflictAfterTalkResultText', $ConflictTalkGirl, $ConflictTalkChoice
+
+    GirlConflictAfterTalkDone[$ConflictTalkGirl] = 1
+
+    if $ConflictTalkChoice = 'apology':
+        Friends[$ConflictTalkGirl] += 2
+        love[$ConflictTalkGirl] += 1
+        hate[$ConflictTalkGirl] -= 2
+        GirlTrustStefan[$ConflictTalkGirl] += 1
+    elseif $ConflictTalkChoice = 'protect':
+        Friends[$ConflictTalkGirl] += 1
+        hate[$ConflictTalkGirl] -= 1
+
+        if GirlWorkPolicy[$ConflictTalkGirl] = 1:
+            GirlTrustStefan[$ConflictTalkGirl] += 1
+        else:
+            GirlRebellion[$ConflictTalkGirl] += 1
+        end
+    elseif $ConflictTalkChoice = 'rules':
+        GirlWorkPolicy[$ConflictTalkGirl] = 2
+        Friends[$ConflictTalkGirl] += 1
+        GirlTrustStefan[$ConflictTalkGirl] += 1
+        GirlRebellion[$ConflictTalkGirl] -= 1
+    end
+
+    if GirlRebellion[$ConflictTalkGirl] < 0:
+        GirlRebellion[$ConflictTalkGirl] = 0
+    end
+
+    if GirlTrustStefan[$ConflictTalkGirl] < 0:
+        GirlTrustStefan[$ConflictTalkGirl] = 0
+    end
+
+    if $ConflictTalkGirl = 'amanda':
+        AmandaTrustStefan = GirlTrustStefan['amanda']
+        AmandaRebellion = GirlRebellion['amanda']
+    elseif $ConflictTalkGirl = 'melissa':
+        MelissaTrustStefan = GirlTrustStefan['melissa']
+    elseif $ConflictTalkGirl = 'sandra':
+        SandraTrust = GirlTrustStefan['sandra']
+    end
+
+    gs 'ClampGirlSocialStats', $ConflictTalkGirl
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $TalkReturnLoc
+    end
+
+    killvar '$ConflictTalkGirl'
+    killvar '$ConflictTalkChoice'
+---
+
+#GirlConflictAfterTalkResultText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $ConflictTalkGirl = $GirlKey
+    $ConflictTalkChoice = LCASE($ARGS[1])
+
+    if $ConflictTalkChoice = 'apology':
+        if $ConflictTalkGirl = 'amanda':
+            *p 'Вы говорите прямо, что перегнули. Аманда молчит, потом выдыхает так, будто всё это время держала воздух в груди. — Я не хочу быть виноватой за твои же приказы, — говорит она. — Но... спасибо, что сказал это.'
+        elseif $ConflictTalkGirl = 'melissa':
+            *p 'Вы признаёте ошибку без торговли и оправданий. Мелисса внимательно смотрит вам в лицо, потом кивает. — Вот это уже похоже на взрослый разговор. Запомни его, Стефан.'
+        elseif $ConflictTalkGirl = 'sandra':
+            *p 'Вы признаёте, что были неправы. Сандра принимает это без улыбки, но её голос становится мягче. — Хорошо. Ошибаться можно. Хуже, когда мужчина начинает называть ошибку порядком.'
+        else:
+            *p 'Вы признаёте, что были неправы. Разговор становится тише и честнее.'
+        end
+    elseif $ConflictTalkChoice = 'protect':
+        if $ConflictTalkGirl = 'amanda':
+            *p 'Вы говорите, что хотели защитить её. Аманда кусает губу. — Тогда защищай меня раньше, а не когда уже сам разозлился, — отвечает она, но голос уже не такой острый.'
+        elseif $ConflictTalkGirl = 'melissa':
+            *p 'Вы объясняете, что пытались защитить её. Мелисса усмехается. — Защита без доверия быстро становится поводком. Подумай об этом.'
+        elseif $ConflictTalkGirl = 'sandra':
+            *p 'Вы говорите о защите. Сандра слушает внимательно. — Защищать можно, — отвечает она. — Только не путай это с привычкой решать за меня.'
+        else:
+            *p 'Вы объясняете, что хотели защитить её. Она принимает это не сразу, но слушает.'
+        end
+    elseif $ConflictTalkChoice = 'rules':
+        if $ConflictTalkGirl = 'amanda':
+            *p 'Вы говорите, что правила должны быть ясными. Аманда кивает неуверенно. — Тогда говори ясно сразу, — просит она. — А не после того, как я уже всё испорчу.'
+        elseif $ConflictTalkGirl = 'melissa':
+            *p 'Вы предлагаете вернуться к ясным правилам. Мелисса одобряет это не улыбкой, а коротким кивком. — Наконец-то. Правило может быть неприятным, но хуже всего — правило, которое меняется у тебя в голове.'
+        elseif $ConflictTalkGirl = 'sandra':
+            *p 'Вы говорите о правилах и границах. Сандра смотрит строго, но уже без прежней злости. — Если правило честное, его можно уважать. Если удобное только тебе — нет.'
+        else:
+            *p 'Вы предлагаете договориться о ясных правилах. Это звучит лучше, чем прежние взаимные обиды.'
+        end
+    else:
+        *p 'Разговор получается неровным, но нужным.'
+    end
+
+    killvar '$ConflictTalkGirl'
+    killvar '$ConflictTalkChoice'
 ---
 
 

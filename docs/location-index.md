@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 230
-- Locations: 968
+- Locations: 972
 
 ## modules/actions
 
@@ -12,8 +12,12 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 |
 | `CanStartIntimScene` | `modules/actions/sex/intim_scene.qsps` | 97 |
 | `CanStartSexScene` | `modules/actions/sex/sex_scene_core.qsps` | 82 |
-| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 559 |
+| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 743 |
 | `ClampIntimSceneValues` | `modules/actions/sex/intim_scene.qsps` | 529 |
+| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 539 |
+| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 595 |
+| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 615 |
+| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 693 |
 | `GirlFirstAnal` | `modules/actions/sex/first_sex.qsps` | 142 |
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 197 |
 | `GirlFirstSex` | `modules/actions/sex/first_sex.qsps` | 8 |
@@ -25,8 +29,8 @@ Generated from active project files in `qsp-project.json`.
 | `GirlFlirtSuccessText` | `modules/actions/flirts/girl_flirt.qsps` | 278 |
 | `GirlTalk` | `modules/actions/dialogs/girl_talk.qsps` | 10 |
 | `GirlTalkHallEventReaction` | `modules/actions/tavern/girl_talk_hall_event_reaction_compat.qsps` | 11 |
-| `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 293 |
-| `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 333 |
+| `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 299 |
+| `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 339 |
 | `GirlUniformTalkBlocked` | `modules/actions/tavern/girl_uniform_talk.qsps` | 257 |
 | `GirlUniformTalkBuildMenu` | `modules/actions/tavern/girl_uniform_talk.qsps` | 82 |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 320 |
