@@ -31,6 +31,11 @@
     TavernDayEventGuardPassed = 0
     TavernDayEventProfitBonus = 0
     TavernDayEventReputationBonus = 0
+    TavernRepairNeeded = 0
+    TavernRepairOrdered = 0
+    TavernRepairEveningShown = 0
+    TavernDayRepairCost = 0
+    $TavernRepairSource = ''
     $TavernDayEventId = ''
     TavernDayEventActive = 0
 
@@ -407,60 +412,246 @@
     killvar '$TavernDayBusyGirl'
 ---
 
+#TavernDayEventCalcRepairCost
+    if TavernDayRepairCost > 0:
+        exit
+    end
+
+    if $TavernRepairSource = 'brawl':
+        TavernDayRepairCost = RAND(100, 165)
+    elseif $TavernRepairSource = 'broken':
+        TavernDayRepairCost = RAND(70, 125)
+    else:
+        TavernDayRepairCost = RAND(80, 140)
+    end
+---
+
+#TavernDayEventCarpenterRepairVisitTextId
+    $TavernDayEventCarpenterVisitTextId = 'carpenter_visit_rats'
+
+    if $TavernRepairSource = 'brawl':
+        $TavernDayEventCarpenterVisitTextId = 'carpenter_visit_brawl'
+    elseif $TavernRepairSource = 'broken':
+        $TavernDayEventCarpenterVisitTextId = 'carpenter_visit_broken'
+    end
+---
+
+#TavernDayEventCarpenterRepairEveningTextId
+    $TavernDayEventCarpenterEveningTextId = 'carpenter_evening_rats'
+
+    if $TavernRepairSource = 'brawl':
+        $TavernDayEventCarpenterEveningTextId = 'carpenter_evening_brawl'
+    elseif $TavernRepairSource = 'broken':
+        $TavernDayEventCarpenterEveningTextId = 'carpenter_evening_broken'
+    end
+---
+
 #TavernDayEventCarpenterRepair
     if TavernRepairNeeded = 0:
         gt 'CraftsmenQuarter'
         exit
     end
 
+    if TavernRepairOrdered = 1:
+        gt 'TavernDayEventCarpenterRepairAlreadyOrdered'
+        exit
+    end
+
     cls
 
     gs 'TavernDayEventShowImage', 'carpenter_repair'
-    gs 'TavernDayEventText', 'carpenter_repair'
+    gs 'TavernDayEventCarpenterRepairVisitTextId'
+    gs 'TavernDayEventText', $TavernDayEventCarpenterVisitTextId
+    gs 'TavernDayEventCalcRepairCost'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' РЕМОНТ У СТОЛЯРА'
+    *pl ' СТОЛЯР ДРАУПНИР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $TavernDayEventText
+    *pl ' '
+    *p 'Драупнир называет цену: <b>' + STR(TavernDayRepairCost) + ' мараведи</b>. Работу обещает закончить к вечеру прямо в трактире.'
+
+    killvar '$TavernDayEventCarpenterVisitTextId'
+    killvar '$TavernDayEventText'
+
+    if money < TavernDayRepairCost:
+        *pl ' '
+
+        act 'У меня не хватает денег':
+            gt 'TavernDayEventCarpenterRepairNoMoney'
+        end
+    else:
+        act 'Заплатить и заказать ремонт':
+            gt 'TavernDayEventCarpenterRepairPay'
+        end
+    end
+
+    act 'Отложить ремонт':
+        gt 'TavernDayEventCarpenterRepairRefuse'
+    end
+
+    act 'Вернуться в квартал':
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#TavernDayEventCarpenterRepairAlreadyOrdered
+    cls
+
+    gs 'TavernDayEventShowImage', 'carpenter_repair'
+    gs 'TavernDayEventText', 'carpenter_already_ordered'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СТОЛЯР ДРАУПНИР'
     *pl '══════════════════════════════════════════════'
     *pl ' '
     *p $TavernDayEventText
 
-    TavernDayRepairCost = RAND(80, 140)
-
-    if money < TavernDayRepairCost:
+    if TavernDayRepairCost > 0:
         *pl ' '
-        *p 'У вас не хватает денег на ремонт. Нужно ' + STR(TavernDayRepairCost) + ' мараведи.'
-        *pl ' '
-
-        act 'Вернуться в квартал ремесленников':
-            gt 'CraftsmenQuarter'
-        end
-
-        killvar '$TavernDayEventText'
-        killvar 'TavernDayRepairCost'
-        exit
-    end
-
-    *pl ' '
-    *p 'Стоимость работ: ' + STR(TavernDayRepairCost) + ' мараведи.'
-
-    act 'Заплатить и заказать ремонт':
-        money -= TavernDayRepairCost
-        TavernRepairNeeded = 0
-        TavernRepairOrdered = 1
-
-        if TavernDayEventReputationBonus < 0:
-            TavernDayEventReputationBonus += 1
-        end
-
-        gt 'CraftsmenQuarter'
-    end
-
-    act 'Вернуться':
-        gt 'CraftsmenQuarter'
+        *p 'Оплачено: ' + STR(TavernDayRepairCost) + ' мараведи. Столяр придёт в трактир к вечеру.'
     end
 
     killvar '$TavernDayEventText'
-    killvar 'TavernDayRepairCost'
+    *pl ' '
+
+    act 'Вернуться в квартал':
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#TavernDayEventCarpenterRepairNoMoney
+    cls
+
+    gs 'TavernDayEventShowImage', 'carpenter_repair'
+    gs 'TavernDayEventText', 'carpenter_no_money'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СТОЛЯР ДРАУПНИР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $TavernDayEventText
+    *pl ' '
+    *p 'Нужно ещё <b>' + STR(TavernDayRepairCost - money) + ' мараведи</b>. Сейчас у вас ' + STR(money) + '.'
+
+    killvar '$TavernDayEventText'
+    *pl ' '
+
+    act 'Вернуться — заработаю и приду снова':
+        gt 'CraftsmenQuarter'
+    end
+
+    act 'Пока не буду чинить':
+        gt 'TavernDayEventCarpenterRepairRefuse'
+    end
+---
+
+#TavernDayEventCarpenterRepairRefuse
+    cls
+
+    gs 'TavernDayEventShowImage', 'carpenter_repair'
+    gs 'TavernDayEventText', 'carpenter_refuse'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СТОЛЯР ДРАУПНИР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $TavernDayEventText
+
+    killvar '$TavernDayEventText'
+    *pl ' '
+
+    act 'Вернуться в квартал':
+        gt 'CraftsmenQuarter'
+    end
+
+    act 'На главную улицу':
+        gt 'Street'
+    end
+---
+
+#TavernDayEventCarpenterRepairPay
+    if TavernRepairNeeded = 0 or TavernRepairOrdered = 1:
+        gt 'CraftsmenQuarter'
+        exit
+    end
+
+    gs 'TavernDayEventCalcRepairCost'
+
+    if money < TavernDayRepairCost:
+        gt 'TavernDayEventCarpenterRepairNoMoney'
+        exit
+    end
+
+    money -= TavernDayRepairCost
+    TavernRepairOrdered = 1
+
+    if TavernDayEventReputationBonus < 0:
+        TavernDayEventReputationBonus += 1
+    end
+
+    gt 'TavernDayEventCarpenterRepairConfirm'
+---
+
+#TavernDayEventCarpenterRepairConfirm
+    cls
+
+    gs 'TavernDayEventShowImage', 'carpenter_repair'
+    gs 'TavernDayEventText', 'carpenter_order_confirm'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РЕМОНТ ЗАКАЗАН'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $TavernDayEventText
+    *pl ' '
+    *p 'Списано <b>' + STR(TavernDayRepairCost) + ' мараведи</b>. К вечеру загляните в главный зал — Драупнир закончит работу там.'
+
+    killvar '$TavernDayEventText'
+    *pl ' '
+
+    act 'Вернуться в квартал ремесленников':
+        gt 'CraftsmenQuarter'
+    end
+
+    act 'Пойти в трактир':
+        gt 'TavernMain'
+    end
+---
+
+#TavernDayEventPrintCarpenterEveningRepair
+    if time <> 4:
+        exit
+    end
+
+    if TavernRepairOrdered = 0:
+        exit
+    end
+
+    if TavernRepairEveningShown = 1:
+        exit
+    end
+
+    TavernRepairEveningShown = 1
+    TavernRepairNeeded = 0
+
+    gs 'TavernDayEventShowImage', 'carpenter_repair'
+    gs 'TavernDayEventCarpenterRepairEveningTextId'
+    gs 'TavernDayEventText', $TavernDayEventCarpenterEveningTextId
+
+    *pl ' '
+    *pl '──────────────────────────────────────────────'
+    *pl ' РЕМОНТ В ЗАЛЕ'
+    *pl '──────────────────────────────────────────────'
+    *pl ' '
+    *p $TavernDayEventText
+    *pl ' '
+    *p 'Работа оплачена заранее: <b>' + STR(TavernDayRepairCost) + ' мараведи</b>.'
+
+    killvar '$TavernDayEventCarpenterEveningTextId'
+    killvar '$TavernDayEventText'
+    *pl ' '
 ---
 
 #TavernDayEventTalkBlockedScreen
@@ -503,6 +694,8 @@
     TavernDayEventGuardPassed = 0
     TavernRepairNeeded = 0
     TavernRepairOrdered = 0
+    TavernRepairEveningShown = 0
+    TavernDayRepairCost = 0
     TavernStaffBusyDay = 0
     TavernStaffTiredEvening = 0
     TavernDayEventActive = 0

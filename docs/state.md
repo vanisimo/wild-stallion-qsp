@@ -324,13 +324,20 @@ Current events:
 - `broken` — beer/wine stock loss, repair needed.
 - `thief` — food/wine stock loss, profit-, reputation-.
 
-Repair: `CraftsmenQuarter` → `TavernDayEventCarpenterRepair` when `TavernRepairNeeded = 1`.
+Repair: `CraftsmenQuarter` → `TavernDayEventCarpenterRepair` when `TavernRepairNeeded = 1` and `TavernRepairOrdered = 0`.
+
+Repair flow:
+
+1. Daytime at Draupnir: quote (`TavernDayEventCalcRepairCost`), pay or refuse / no-money branch.
+2. After payment: `TavernRepairOrdered = 1`, damage stays until evening (`TavernRepairNeeded` still `1`).
+3. Evening in `TavernMain`: `TavernDayEventPrintCarpenterEveningRepair` shows completion and paid cost.
+4. If repair is skipped: hall hint stays, rats may trigger evening brawl, end-day text uses `*_end_unrepaired`.
 
 Key state:
 
 - `$TavernDayEventId`, `TavernDayEventActive`
 - `TavernStaffBusyDay`, `TavernStaffTiredEvening` (caravan only)
-- `TavernRepairNeeded`, `TavernRepairOrdered`, `$TavernRepairSource` (`rats` / `brawl` / `broken`)
+- `TavernRepairNeeded`, `TavernRepairOrdered`, `TavernRepairEveningShown`, `TavernDayRepairCost`, `$TavernRepairSource` (`rats` / `brawl` / `broken`)
 - `TavernDayEventGuardPassed`
 - `TavernDayEventProfitBonus`, `TavernDayEventReputationBonus`
 - `TavernDayBrawlHappened` (rats evening only)
