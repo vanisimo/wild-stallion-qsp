@@ -52,51 +52,47 @@
 
     gs 'TavernDayEventCanRoll'
 
-    if TavernDayEventCanRoll = 0:
-        killvar 'TavernDayEventCanRoll'
-        exit
-    end
+    if TavernDayEventCanRoll = 1:
+        TavernDayEventRoll = RAND(1, 100)
 
-    TavernDayEventRoll = RAND(1, 100)
+        if TavernDayEventRoll <= 25:
+            TavernDayEventPick = RAND(1, 100)
 
-    if TavernDayEventRoll > 25:
+            if TavernDayEventPick <= 14:
+                gs 'TavernDayEventStartCaravan'
+            elseif TavernDayEventPick <= 26:
+                gs 'TavernDayEventStartRats'
+            elseif TavernDayEventPick <= 36:
+                gs 'TavernDayEventStartBrawl'
+            elseif TavernDayEventPick <= 46:
+                gs 'TavernDayEventStartGuard'
+            elseif TavernDayEventPick <= 58:
+                gs 'TavernDayEventStartHarvest'
+            elseif TavernDayEventPick <= 68:
+                gs 'TavernDayEventStartMinstrels'
+            elseif TavernDayEventPick <= 76:
+                gs 'TavernDayEventStartStorm'
+            elseif TavernDayEventPick <= 84:
+                gs 'TavernDayEventStartPilgrims'
+            elseif TavernDayEventPick <= 92:
+                gs 'TavernDayEventStartBroken'
+            else:
+                gs 'TavernDayEventStartThief'
+            end
+
+            killvar 'TavernDayEventPick'
+        end
+
         killvar 'TavernDayEventRoll'
-        killvar 'TavernDayEventCanRoll'
-        exit
-    end
-
-    TavernDayEventPick = RAND(1, 100)
-
-    if TavernDayEventPick <= 14:
-        gs 'TavernDayEventStartCaravan'
-    elseif TavernDayEventPick <= 26:
-        gs 'TavernDayEventStartRats'
-    elseif TavernDayEventPick <= 36:
-        gs 'TavernDayEventStartBrawl'
-    elseif TavernDayEventPick <= 46:
-        gs 'TavernDayEventStartGuard'
-    elseif TavernDayEventPick <= 58:
-        gs 'TavernDayEventStartHarvest'
-    elseif TavernDayEventPick <= 68:
-        gs 'TavernDayEventStartMinstrels'
-    elseif TavernDayEventPick <= 76:
-        gs 'TavernDayEventStartStorm'
-    elseif TavernDayEventPick <= 84:
-        gs 'TavernDayEventStartPilgrims'
-    elseif TavernDayEventPick <= 92:
-        gs 'TavernDayEventStartBroken'
-    else:
-        gs 'TavernDayEventStartThief'
     end
 
     gs 'TavernDayEventRestoreCarryOverRepair'
 
     if debug = 1:
         *pl '[DEBUG TAVERN DAY] rolled event: ' + $TavernDayEventId
+        *pl '[DEBUG TAVERN DAY] repair carry restore, needed=' + STR(TavernRepairNeeded) + ', source=' + $TavernRepairSource
     end
 
-    killvar 'TavernDayEventRoll'
-    killvar 'TavernDayEventPick'
     killvar 'TavernDayEventCanRoll'
     killvar '$TavernRepairCarryRestoreSource'
     killvar 'TavernRepairCarryRestore'
