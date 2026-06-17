@@ -79,7 +79,7 @@
 
     gs 'GirlTalkBuildMainMenu'
 
-    *p 'О чём <a href="exec:gs ''Menu.Show'', ''GirlTalkMainMenu''">поговорить</a>?'
+    *p $RealName[$TalkGirl] + ': <a href="exec:gs ''Menu.Show'', ''GirlTalkMainMenu''">выбрать тему разговора</a>.'
     *pl ' '
 
     if GirlConflictLevel[$TalkGirl] > 0 and GirlConflictUntilDay[$TalkGirl] < day and GirlConflictAfterTalkLevel[$TalkGirl] < GirlConflictLevel[$TalkGirl]:
@@ -251,7 +251,8 @@
     if GirlTalkHallTopicsAvailable = 1:
         gs 'Menu.Add', 'GirlTalkMainMenu', 'О событиях в зале', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkHallTopics', $TalkGirl, $TalkReturnLoc
+            gs 'GirlTalkBuildHallTopicsMenu'
+            gs 'Menu.Show', 'GirlTalkHallTopicsMenu'
         }
     end
 
@@ -321,7 +322,7 @@
 
 ! ================================================
 ! FILE: modules/actions/girl_talk.qsps
-! Меню тем по событиям в зале
+! Старый экран тем по событиям в зале
 ! ================================================
 
 #GirlTalkHallTopics
@@ -378,6 +379,7 @@
     *pl ' '
 
     gs 'GirlTalkBuildHallTopicsMenu'
+    gs 'Menu.Show', 'GirlTalkHallTopicsMenu'
 
     act 'Вернуться к выбору тем':
         gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
