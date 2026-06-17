@@ -237,7 +237,15 @@ Hiring flow (`modules/events/family/sandra_staff_hire.qsps`):
 - Daily salary uses existing `TavernHired*Cost` in `tavern_daily_expenses`.
 - Panel staff: read-only after `SandraStaffHired = 1` (no hire/fire buttons).
 - `SandraStaffTalkDone = 1` when player finishes after at least one hire.
-- `SandraStaffGirlsReactionPending = 1` — hook for point 4 girl reactions (**TODO**).
+- `SandraStaffGirlsReactionPending = 1` — set when hire talk finishes; processed next morning.
+
+Girl reactions (`modules/events/family/sandra_staff_girls_reaction.qsps`):
+
+- `ProcessSandraStaffGirlsReaction` in `next_day` — morning notices via `GirlTalkPendingNotice`, `FamilyTrust += 1`.
+- `SandraStaffGirlsReactionDone = 1` after first morning processing.
+- `GirlTalkTavernUseStaffRelief` — tavern talk uses relief/praise text instead of overload complaints when `tavern_overload_penalty >= 10`.
+- Optional talk «После помощниц матери» in girl menus; once per girl via `GirlStaffPraiseTalkDone[girl]`.
+- Panel tavern: softer overload warning when hired staff is active.
 
 Until unlock, hire buttons are hidden.
 

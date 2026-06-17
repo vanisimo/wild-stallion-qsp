@@ -1,0 +1,109 @@
+! ================================================
+! FILE: modules/events/family/sandra_staff_girls_reaction.qsps
+! MODULE: events/family
+! Реакции Аманды, Мелиссы и Сандры на найм работниц
+! ================================================
+
+#GirlTalkTavernUseStaffRelief
+    GirlTalkTavernUseStaffRelief = 0
+
+    if SandraStaffGirlsReactionDone = 0:
+        exit
+    end
+
+    if SandraStaffHired = 0:
+        exit
+    end
+
+    GirlTalkTavernUseStaffRelief = 1
+---
+
+#ProcessSandraStaffGirlsReaction
+    if SandraStaffGirlsReactionPending = 0:
+        exit
+    end
+
+    if SandraStaffHired = 0:
+        SandraStaffGirlsReactionPending = 0
+        exit
+    end
+
+    gs 'SandraStaffGirlsNoticeAmanda'
+    gs 'SandraStaffGirlsNoticeMelissa'
+    gs 'SandraStaffGirlsNoticeSandra'
+
+    SandraStaffGirlsReactionPending = 0
+    SandraStaffGirlsReactionDone = 1
+    SandraStaffGirlsMorningShown = 1
+
+    FamilyTrust += 1
+
+    if FamilyTrust > 100:
+        FamilyTrust = 100
+    end
+---
+
+#SandraStaffGirlsReactionCanTalk
+    $SandraStaffReactionGirl = LCASE($ARGS[0])
+
+    SandraStaffGirlsReactionCanTalk = 0
+
+    if SandraStaffGirlsReactionDone = 0:
+        killvar '$SandraStaffReactionGirl'
+        exit
+    end
+
+    if $SandraStaffReactionGirl = '':
+        killvar '$SandraStaffReactionGirl'
+        exit
+    end
+
+    if GirlStaffPraiseTalkDone[$SandraStaffReactionGirl] = 1:
+        killvar '$SandraStaffReactionGirl'
+        exit
+    end
+
+    SandraStaffGirlsReactionCanTalk = 1
+    killvar '$SandraStaffReactionGirl'
+---
+
+#SandraStaffGirlsReactionTalk
+    $SandraStaffReactionGirl = LCASE($ARGS[0])
+    $SandraStaffReactionReturnLoc = $ARGS[1]
+
+    if $SandraStaffReactionReturnLoc = '':
+        $SandraStaffReactionReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'SandraStaffGirlsReactionCanTalk', $SandraStaffReactionGirl
+
+    if SandraStaffGirlsReactionCanTalk = 0:
+        gt $SandraStaffReactionReturnLoc
+        exit
+    end
+
+    if $SandraStaffReactionGirl = 'amanda':
+        gs 'SandraStaffGirlsTalkTextAmanda'
+    elseif $SandraStaffReactionGirl = 'melissa':
+        gs 'SandraStaffGirlsTalkTextMelissa'
+    elseif $SandraStaffReactionGirl = 'sandra':
+        gs 'SandraStaffGirlsTalkTextSandra'
+    else:
+        gt $SandraStaffReactionReturnLoc
+        exit
+    end
+
+    GirlStaffPraiseTalkDone[$SandraStaffReactionGirl] = 1
+    Friends[$SandraStaffReactionGirl] += 1
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $SandraStaffReactionReturnLoc
+    end
+
+    killvar '$SandraStaffReactionGirl'
+    killvar '$SandraStaffReactionReturnLoc'
+---
