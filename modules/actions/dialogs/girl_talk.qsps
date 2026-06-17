@@ -609,7 +609,49 @@
         *p $RealName[$ConflictTalkGirl] + ' слушает вас осторожно. Недавняя ссора ещё не ушла совсем, но разговор уже возможен.'
     end
 
+    gs 'GirlConflictAfterTalkMemoryText', $ConflictTalkGirl
+
     killvar '$ConflictTalkGirl'
+---
+
+#GirlConflictAfterTalkMemoryText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $ConflictMemoryGirl = $GirlKey
+    $ConflictMemoryType = $LastGirlChoiceType[$ConflictMemoryGirl]
+    $ConflictMemoryArea = $LastGirlChoiceArea[$ConflictMemoryGirl]
+
+    if $ConflictMemoryGirl = '':
+        exit
+    end
+
+    if $ConflictMemoryType = '':
+        exit
+    end
+
+    if $ConflictMemoryArea = 'kitchen':
+        $ConflictMemoryPlace = 'на кухне'
+    else:
+        $ConflictMemoryPlace = 'в зале'
+    end
+
+    if $ConflictMemoryType = 'protect':
+        *p 'Последнее, что она помнит ' + $ConflictMemoryPlace + ', — вы вмешались резко и решили всё за неё. Даже если это было защитой, после ссоры она слышит в этом не заботу, а приказ.'
+    elseif $ConflictMemoryType = 'watch':
+        *p 'Она помнит, как вы смотрели и не вмешивались. Для Стефана это могло быть осторожностью, но для неё выглядело так, будто её оставили самой разбираться с чужими руками и грязными шутками.'
+    elseif $ConflictMemoryType = 'encourage' or $ConflictMemoryType = 'client':
+        *p 'Она помнит, как вы фактически дали клиенту больше свободы ради выгоды. После такого обычные слова о заботе звучат слабее, чем звон монет.'
+    elseif $ConflictMemoryType = 'ignore':
+        *p 'Она помнит, что вы сделали вид, будто ничего не происходит. Иногда молчание тоже приказ, только трусливый.'
+    elseif $ConflictMemoryType = 'own_choice':
+        *p 'Она помнит, что вы вроде бы дали ей решать самой. Но теперь ей важно понять, это было доверие или удобный способ потом снять с себя ответственность.'
+    elseif $ConflictMemoryType = 'calm':
+        *p 'Она помнит, что вы пытались говорить спокойнее. Именно поэтому сейчас ждёт от вас не крика, а ясности: если уж Стефан умеет не ломать всё сразу, пусть докажет это словами.'
+    end
+
+    killvar '$ConflictMemoryGirl'
+    killvar '$ConflictMemoryType'
+    killvar '$ConflictMemoryArea'
+    killvar '$ConflictMemoryPlace'
 ---
 
 #GirlConflictAfterTalkResult
