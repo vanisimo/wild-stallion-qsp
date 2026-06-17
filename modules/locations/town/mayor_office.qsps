@@ -56,11 +56,29 @@
         end
     end
 
-    if MayorFirstTalkDone = 0:
-        act 'Просить приём у мэра':
-            gt 'MayorOfficeAudienceGate'
+    if MayorBribePaid = 1 and MayorAudienceRefused = 1 and MayorClerkAdviceGiven = 0:
+        act 'Требовать вернуть деньги за приём':
+            gt 'MayorOfficeClerkRefundTalk'
         end
-    else:
+    end
+
+    if MayorClerkAdviceGiven = 1:
+        act 'Спросить клерка, как добиться приёма у мэра':
+            gt 'MayorOfficeClerkAdviceReplay'
+        end
+    end
+
+    if MayorFirstTalkDone = 0 and MayorBribePaid = 0:
+        if BirthCertificateRead = 1:
+            act 'Просить приём у мэра':
+                gt 'MayorOfficeAudienceGate'
+            end
+        end
+    elseif MayorFirstTalkDone = 0 and MayorBribePaid = 1 and MayorAudienceRefused = 0:
+        act 'Ждать ответа о приёме':
+            gt 'MayorOfficeMayorRefused'
+        end
+    elseif MayorFirstTalkDone = 1:
         act 'Поговорить с мэром':
             gt 'MayorOfficeMayorTalk'
         end
@@ -130,8 +148,20 @@
         exit
     end
 
-    if MayorBribePaid = 1 or MayorFirstTalkDone = 1:
+    if MayorFirstTalkDone = 1:
         gs 'MayorOfficeAudienceAlreadyDoneText'
+
+        *pl ' '
+
+        act 'Вернуться в мэрию':
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    if MayorBribePaid = 1 and MayorAudienceRefused = 1:
+        gs 'MayorOfficeAudienceRefusedDoneText'
 
         *pl ' '
 
@@ -184,7 +214,83 @@
     money -= MayorAudienceBribe
     MayorBribePaid = 1
 
-    gt 'MayorOfficeFirstTalk'
+    gt 'MayorOfficeMayorRefused'
+---
+
+#MayorOfficeMayorRefused
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeMayorRefusedText'
+
+    MayorAudienceRefused = 1
+
+    *pl ' '
+
+    act 'Требовать деньги назад у клерка':
+        gt 'MayorOfficeClerkRefundTalk'
+    end
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeClerkRefundTalk
+    cls
+
+    gs 'MayorOfficeInit'
+
+    if MayorClerkAdviceGiven = 1:
+        gt 'MayorOfficeClerkAdviceReplay'
+        exit
+    end
+
+    gs 'MayorOfficeClerkRefundOpenText'
+
+    *pl ' '
+
+    act 'Слушать дальше':
+        gt 'MayorOfficeClerkAdviceTalk'
+    end
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeClerkAdviceTalk
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeClerkAdviceText'
+
+    MayorClerkAdviceGiven = 1
+    TavernCarpenterUpgradesUnlocked = 1
+    MayorClerkMentionedStaff = 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_MayorClerkAdvice_1'
+    end
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeClerkAdviceReplay
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeClerkAdviceReplayText'
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
 ---
 
 #MayorOfficeFirstTalk

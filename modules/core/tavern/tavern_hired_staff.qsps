@@ -51,7 +51,7 @@
 ! ================================================
 ! FILE: modules/core/tavern/tavern_hired_staff.qsps
 ! Проверка доступности наёмного персонала
-! Игрок должен сходить в мэрию и попросить приём у мэра
+! Открывается после разговора с матерью (пункт 3 основной арки)
 ! ================================================
 
 #CheckTavernHiredStaffUnlocked
@@ -59,7 +59,7 @@
 
     TavernHiredStaffUnlocked = 0
 
-    if MayorAudienceAttempted = 1:
+    if MelissaStaffHired = 1:
         TavernHiredStaffUnlocked = 1
     end
 ---
@@ -222,8 +222,15 @@
 
     if TavernHiredStaffUnlocked = 0:
         pl 'Пока недоступно.'
-        pl 'Сходите в мэрию на улице и нажмите «Просить приём у мэра».'
-        pl 'Клерк подскажет, где искать подсобных работников.'
+
+        if MayorClerkAdviceGiven = 0:
+            pl 'Сначала добейтесь совета клерка в мэрии после попытки приёма у мэра.'
+        elseif MayorClerkMentionedStaff = 1:
+            pl 'Клерк сказал нанимать через мать. Поговорите с Сандрой о работницах.'
+        else:
+            pl 'Персонал откроется позже по сюжету.'
+        end
+
         pl ' '
         exit
     end

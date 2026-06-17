@@ -200,19 +200,24 @@ Owners:
 
 Schedule: Wednesday and Thursday, noon or day (`time = 2 or 3`).
 
-Flow:
+Flow (stage 1 main arc):
 
-1. Pay tavern tax until `TavernCityTaxTotal >= MayorCityTaxGate` (default `600`).
-2. Request audience at `MayorOffice` → pay `MayorAudienceBribe` (default `180`).
-3. First talk sets `MayorFirstTalkDone = 1`.
-4. Magistrate submit (`MayorOfficeMagistrateSubmit`) is blocked until `MayorFirstTalkDone = 1` when birth-certificate arc is connected.
+1. `BirthCertificateRead = 1` — свидетельство найдено.
+2. Pay tavern tax until `TavernCityTaxTotal >= MayorCityTaxGate` (default `600`).
+3. `MayorOffice` → «Просить приём у мэра» → pay `MayorAudienceBribe` (default `180`). Money is **not** refunded.
+4. Mayor refuses (`MayorAudienceRefused = 1`, `MayorFirstTalkDone` stays `0`).
+5. Player demands refund → clerk helps (`MayorOfficeClerkRefundTalk` → `MayorOfficeClerkAdviceTalk`): narrative advice, not a UI checklist.
+6. Advice sets `MayorClerkAdviceGiven = 1`, `TavernCarpenterUpgradesUnlocked = 1`, `MayorClerkMentionedStaff = 1`.
+7. Later (when work is done): mayor accepts — `MayorFirstTalkDone = 1` (**TODO** completion gate).
+8. Magistrate submit blocked until `MayorFirstTalkDone = 1`.
 
 Key state:
 
 - `MayorCityTaxGate`, `MayorAudienceBribe`
-- `MayorBribePaid`, `MayorFirstTalkDone`
+- `MayorBribePaid`, `MayorAudienceRefused`, `MayorClerkAdviceGiven`, `MayorClerkMentionedStaff`
+- `MayorFirstTalkDone` — only after future acceptance, not after bribe
 
-Knowledge id: `Stefan_MayorFirstTalk_1`.
+Knowledge ids: `Stefan_MayorClerkAdvice_1`, later `Stefan_MayorFirstTalk_1`.
 
 Debug: `DebugMayorArcPanel` (debug panel).
 
@@ -222,7 +227,7 @@ Owner: `modules/core/tavern/tavern_hired_staff.qsps`.
 
 Unlock (`CheckTavernHiredStaffUnlocked`):
 
-- `MayorAudienceAttempted = 1` — set when the player enters `MayorOfficeAudienceGate` (clicks «Просить приём у мэра» in the mayor office). Payment and the first audience are not required.
+- `MelissaStaffHired = 1` — after mother hires staff (main arc point 3, **TODO**). Clerk only mentions this in advice until then.
 
 Until unlock, hire buttons are hidden. If unlock is lost before hire (should not happen in normal play), active hires are cleared in `ApplyTavernHiredStaffEffects`.
 
