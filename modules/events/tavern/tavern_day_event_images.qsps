@@ -1,0 +1,105 @@
+! ================================================
+! FILE: modules/events/tavern/tavern_day_event_images.qsps
+! MODULE: events/tavern
+! Картинки дневных событий таверны + debug-брифы для генерации
+! ================================================
+
+#TavernDayEventShowImage
+    $TavernDayEventImageKey = LCASE($ARGS[0])
+    TavernDayEventImageVariants = 2
+
+    if $TavernDayEventImageKey = '':
+        exit
+    end
+
+    if $TavernDayEventImageKey = 'caravan_morning':
+        TavernDayEventImageVariants = 2
+    elseif $TavernDayEventImageKey = 'rats_storage':
+        TavernDayEventImageVariants = 2
+    elseif $TavernDayEventImageKey = 'rats_brawl':
+        TavernDayEventImageVariants = 2
+    elseif $TavernDayEventImageKey = 'carpenter_repair':
+        TavernDayEventImageVariants = 1
+    end
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/day', $TavernDayEventImageKey, TavernDayEventImageVariants, 'webp', 'event'
+    elseif LOC('ShowImage') = 1:
+        gs 'ShowImage', 'event', 'tavern', 'day/' + $TavernDayEventImageKey, '1', 'webp', 'large'
+    end
+
+    gs 'TavernDayEventImageDebugBrief', $TavernDayEventImageKey
+
+    killvar '$TavernDayEventImageKey'
+    killvar 'TavernDayEventImageVariants'
+---
+
+#TavernDayEventImageDebugBrief
+    $TavernDayEventBriefKey = LCASE($ARGS[0])
+    $TavernDayEventBriefPath = 'images/events/tavern/day/' + $TavernDayEventBriefKey + '_1.webp'
+    $TavernDayEventBriefText = ''
+
+    if $TavernDayEventBriefKey = 'caravan_morning':
+        $TavernDayEventBriefText = 'Средневековая таверна, вид с улицы или из зала: у ворот стоят груженые повозки каравана, возчики, мешки и ящики. Внутри шумно и многолюдно, официантки с подносами, столы заняты торговцами. Тёплый дневной свет, атмосфера суеты и прибыли. Без откровенного контента.'
+
+    elseif $TavernDayEventBriefKey = 'rats_storage':
+        $TavernDayEventBriefText = 'Тёмный кладовый подвал таверны: мешки с мукой и зерном, бочки, полки. Крысы среди порванных мешков, рассыпанная мука, испорченные продукты. Тревожная, мрачноватая сцена, средневековый быт, без крови и без хоррора на уровне ужасов.'
+
+    elseif $TavernDayEventBriefKey = 'rats_brawl':
+        $TavernDayEventBriefText = 'Вечерний зал таверны: пьяная драка между посетителями, опрокинутый стол, разлитое пиво, напряжённая суета. Стефан или персонал в стороне. Динамичная сцена, средневековая одежда, без фатальных ранений в кадре.'
+
+    elseif $TavernDayEventBriefKey = 'carpenter_repair':
+        $TavernDayEventBriefText = 'Гном-столяр Драупнир в таверне или в мастерской: чинит полку, дверь или повреждённый пол после крыс или драки. Инструменты, стружка, коренастый гном с седой бородой. Рабочая бытовая сцена, без эротики.'
+
+    else:
+        $TavernDayEventBriefText = 'Нейтральное событие таверны, средневековый антураж.'
+    end
+
+    if debug = 1 or debug_images = 1:
+        *pl ' '
+        *pl '[DEBUG TAVERN DAY IMAGE] key: ' + $TavernDayEventBriefKey
+        *pl '[DEBUG TAVERN DAY IMAGE] path: ' + $TavernDayEventBriefPath
+        *pl '[DEBUG TAVERN DAY IMAGE] brief: ' + $TavernDayEventBriefText
+        *pl ' '
+    end
+
+    killvar '$TavernDayEventBriefKey'
+    killvar '$TavernDayEventBriefPath'
+    killvar '$TavernDayEventBriefText'
+---
+
+#TavernDayEventImageDebugPanel
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: КАРТИНКИ ДНЕВНЫХ СОБЫТИЙ ТАВЕРНЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'TavernDayEventImageDebugBrief', 'caravan_morning'
+    gs 'TavernDayEventImageDebugBrief', 'rats_storage'
+    gs 'TavernDayEventImageDebugBrief', 'rats_brawl'
+    gs 'TavernDayEventImageDebugBrief', 'carpenter_repair'
+
+    *pl 'Папка: images/events/tavern/day/'
+    *pl 'Шаблон имени: {ключ}_1.webp, {ключ}_2.webp'
+    *pl ' '
+
+    act 'Показать: караван':
+        gs 'TavernDayEventShowImage', 'caravan_morning'
+    end
+
+    act 'Показать: крысы на складе':
+        gs 'TavernDayEventShowImage', 'rats_storage'
+    end
+
+    act 'Показать: драка вечером':
+        gs 'TavernDayEventShowImage', 'rats_brawl'
+    end
+
+    act 'Показать: ремонт столяра':
+        gs 'TavernDayEventShowImage', 'carpenter_repair'
+    end
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+---

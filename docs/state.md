@@ -287,6 +287,34 @@ Unlock sources:
 
 Each chosen story counts as one useful `personal` talk through `npc_talk_limits.qsps`.
 
+## Tavern Day Events (neutral)
+
+Owner: `modules/events/tavern/tavern_day_events.qsps`.
+
+Macro events roll in `TavernDailyUpdate` after `NextDay` (not on Friday/Sunday). Replaces legacy `daily_tavern_events.qsps` girl rolls.
+
+Current events:
+
+- `caravan` — profit bonus, more visitors, staff busy all day (no talks/flirt/intim/gifts for amanda/melissa/sandra), tired in evening.
+- `rats` — stock loss, `TavernRepairNeeded`, optional evening brawl if repair not ordered; visit `CraftsmenQuarter` → `TavernDayEventCarpenterRepair`.
+
+Key state:
+
+- `$TavernDayEventId` — `caravan` / `rats` / empty
+- `TavernDayEventActive`
+- `TavernStaffBusyDay`, `TavernStaffTiredEvening`
+- `TavernRepairNeeded`, `TavernRepairOrdered`
+- `TavernDayEventProfitBonus`, `TavernDayEventReputationBonus`
+- `TavernDayBrawlHappened`, `TavernDayEventMorningShown`, `TavernDayEventEveningShown`
+
+Images: `modules/events/tavern/tavern_day_event_images.qsps`
+
+- folder `images/events/tavern/day/`
+- keys: `caravan_morning`, `rats_storage`, `rats_brawl`, `carpenter_repair`
+- debug briefs print when `debug = 1` or `debug_images = 1`
+
+Hall girl scenes stay in `tavern_event_dispatcher.qsps`.
+
 ## Knowledge And Rumors
 
 Owner: `modules/core/knowledge/event_knowledge_system.qsps`.

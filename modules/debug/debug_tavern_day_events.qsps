@@ -1,0 +1,53 @@
+! ================================================
+! FILE: modules/debug/debug_tavern_day_events.qsps
+! MODULE: debug
+! Тест дневных нейтральных событий таверны
+! ================================================
+
+#TavernDayEventDebugMenu
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ДНЕВНЫЕ СОБЫТИЯ ТАВЕРНЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Активное событие: ' + $TavernDayEventId + ' / active=' + STR(TavernDayEventActive)
+    *pl 'Персонал занят: ' + STR(TavernStaffBusyDay) + ', усталость вечером: ' + STR(TavernStaffTiredEvening)
+    *pl 'Ремонт: needed=' + STR(TavernRepairNeeded) + ', ordered=' + STR(TavernRepairOrdered)
+    *pl ' '
+
+    act 'Форсировать: караван':
+        gs 'TavernDayEventDebugForce', 'caravan'
+        gt 'TavernDayEventDebugMenu'
+    end
+
+    act 'Форсировать: крысы':
+        gs 'TavernDayEventDebugForce', 'rats'
+        gt 'TavernDayEventDebugMenu'
+    end
+
+    act 'Сбросить событие дня':
+        TavernDayEventActive = 0
+        $TavernDayEventId = ''
+        TavernStaffBusyDay = 0
+        TavernStaffTiredEvening = 0
+        TavernRepairNeeded = 0
+        TavernRepairOrdered = 0
+        gt 'TavernDayEventDebugMenu'
+    end
+
+    act 'Картинки и брифы для генерации':
+        gt 'TavernDayEventImageDebugPanel'
+    end
+
+    act 'Тест: экран ремонта столяра':
+        TavernRepairNeeded = 1
+        gt 'TavernDayEventCarpenterRepair'
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+---

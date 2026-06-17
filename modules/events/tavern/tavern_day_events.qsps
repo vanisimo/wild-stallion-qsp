@@ -1,0 +1,382 @@
+! ================================================
+! FILE: modules/events/tavern/tavern_day_events.qsps
+! MODULE: events/tavern
+! Нейтральные дневные события таверны (караван, крысы, ремонт)
+! Не заменяет tavern_event_dispatcher (сцены с девушками в зале)
+! ================================================
+
+#TavernDayEventCanRoll
+    TavernDayEventCanRoll = 0
+
+    if week = 5 or week = 7:
+        exit
+    end
+
+    gs 'IsTavernOpen'
+
+    if Result = 0:
+        exit
+    end
+
+    TavernDayEventCanRoll = 1
+---
+
+#TavernDayEventRoll
+    TavernDayEventMorningShown = 0
+    TavernDayEventEveningShown = 0
+    $TavernDayEventEveningText = ''
+    TavernStaffBusyDay = 0
+    TavernStaffTiredEvening = 0
+    TavernDayBrawlHappened = 0
+    TavernDayEventProfitBonus = 0
+    TavernDayEventReputationBonus = 0
+    $TavernDayEventId = ''
+    TavernDayEventActive = 0
+
+    gs 'TavernDayEventCanRoll'
+
+    if TavernDayEventCanRoll = 0:
+        killvar 'TavernDayEventCanRoll'
+        exit
+    end
+
+    TavernDayEventRoll = RAND(1, 100)
+
+    if TavernDayEventRoll > 22:
+        killvar 'TavernDayEventRoll'
+        killvar 'TavernDayEventCanRoll'
+        exit
+    end
+
+    if RAND(1, 100) <= 55:
+        gs 'TavernDayEventStartCaravan'
+    else:
+        gs 'TavernDayEventStartRats'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG TAVERN DAY] rolled event: ' + $TavernDayEventId
+    end
+
+    killvar 'TavernDayEventRoll'
+    killvar 'TavernDayEventCanRoll'
+---
+
+#TavernDayEventStartCaravan
+    $TavernDayEventId = 'caravan'
+    TavernDayEventActive = 1
+    TavernStaffBusyDay = 1
+    TavernStaffTiredEvening = 1
+
+    tavernvisitors += RAND(12, 22)
+
+    if tavernvisitors > 80:
+        tavernvisitors = 80
+    end
+
+    TavernDayEventProfitBonus = RAND(45, 85)
+    TavernDayEventReputationBonus = 1
+---
+
+#TavernDayEventStartRats
+    $TavernDayEventId = 'rats'
+    TavernDayEventActive = 1
+    TavernRepairNeeded = 1
+    TavernRepairOrdered = 0
+
+    productnum -= RAND(25, 55)
+
+    if productnum < 0:
+        productnum = 0
+    end
+
+    if winenum > 0:
+        winenum -= RAND(4, 12)
+
+        if winenum < 0:
+            winenum = 0
+        end
+    end
+
+    if beernum > 0:
+        beernum -= RAND(4, 12)
+
+        if beernum < 0:
+            beernum = 0
+        end
+    end
+
+    TavernDayEventProfitBonus = -RAND(15, 35)
+    TavernDayEventReputationBonus = -2
+---
+
+#TavernDayEventApplyWorkDaySummary
+    if TavernDayEventActive = 0 or $TavernDayEventId = '':
+        exit
+    end
+
+    tavern_event_profit_bonus += TavernDayEventProfitBonus
+    tavern_event_reputation_bonus += TavernDayEventReputationBonus
+
+    if $TavernDayEventId = 'caravan':
+        gs 'TavernDayEventText', 'caravan_end'
+        $LastTavernEventText = $TavernDayEventText
+
+    elseif $TavernDayEventId = 'rats':
+        if TavernRepairOrdered = 1:
+            gs 'TavernDayEventText', 'rats_end_repaired'
+        else:
+            gs 'TavernDayEventText', 'rats_end_unrepaired'
+        end
+
+        $LastTavernEventText = $TavernDayEventText
+    end
+
+    killvar '$TavernDayEventText'
+---
+
+#TavernDayEventPrintMorningInNextDay
+    if TavernDayEventActive = 0 or $TavernDayEventId = '':
+        exit
+    end
+
+    *pl ' '
+    *pl 'Событие сегодняшнего дня:'
+
+    if $TavernDayEventId = 'caravan':
+        gs 'TavernDayEventText', 'caravan_morning'
+    elseif $TavernDayEventId = 'rats':
+        gs 'TavernDayEventText', 'rats_morning'
+    end
+
+    *p $TavernDayEventText
+    killvar '$TavernDayEventText'
+    *pl ' '
+---
+
+#TavernDayEventShowAtTavern
+    if TavernDayEventActive = 0 or $TavernDayEventId = '':
+        exit
+    end
+
+    if TavernDayEventMorningShown = 1:
+        exit
+    end
+
+    TavernDayEventMorningShown = 1
+
+    if $TavernDayEventId = 'caravan':
+        gs 'TavernDayEventShowImage', 'caravan_morning'
+        gs 'TavernDayEventText', 'caravan_morning'
+        *p '<b>Караван у трактира.</b> ' + $TavernDayEventText
+
+    elseif $TavernDayEventId = 'rats':
+        gs 'TavernDayEventShowImage', 'rats_storage'
+        gs 'TavernDayEventText', 'rats_morning'
+        *p '<b>Крысы на складе.</b> ' + $TavernDayEventText
+        *pl ' '
+        gs 'TavernDayEventText', 'rats_repair_hint'
+        *p $TavernDayEventText
+    end
+
+    killvar '$TavernDayEventText'
+    *pl ' '
+---
+
+#TavernDayEventOnEvening
+    if TavernDayEventActive = 0 or $TavernDayEventId = '':
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if $TavernDayEventId = 'caravan' and TavernStaffTiredEvening = 1:
+        gs 'TavernDayEventText', 'caravan_evening'
+
+        if $TavernDayEventEveningText = '':
+            $TavernDayEventEveningText = $TavernDayEventText
+        end
+
+        killvar '$TavernDayEventText'
+        exit
+    end
+
+    if $TavernDayEventId = 'rats' and TavernRepairNeeded = 1 and TavernRepairOrdered = 0 and TavernDayBrawlHappened = 0:
+        if RAND(1, 100) <= 60:
+            TavernDayBrawlHappened = 1
+            TavernDayEventProfitBonus -= RAND(20, 45)
+            TavernDayEventReputationBonus -= 1
+
+            gs 'TavernDayEventText', 'rats_brawl'
+            $TavernDayEventEveningText = $TavernDayEventText
+            killvar '$TavernDayEventText'
+        end
+    end
+---
+
+#TavernDayEventShowEveningNotice
+    if $TavernDayEventEveningText = '':
+        exit
+    end
+
+    if TavernDayEventEveningShown = 1:
+        exit
+    end
+
+    TavernDayEventEveningShown = 1
+
+    if TavernDayBrawlHappened = 1:
+        gs 'TavernDayEventShowImage', 'rats_brawl'
+    elseif $TavernDayEventId = 'caravan':
+        gs 'TavernDayEventShowImage', 'caravan_morning'
+    end
+
+    *p $TavernDayEventEveningText
+    *pl ' '
+
+    killvar '$TavernDayEventEveningText'
+---
+
+#TavernDayEventStaffBlocksGirl
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TavernDayBusyGirl = $GirlKey
+
+    TavernDayEventStaffBlocksGirl = 0
+
+    if $TavernDayBusyGirl = '':
+        killvar '$TavernDayBusyGirl'
+        exit
+    end
+
+    if $TavernDayBusyGirl <> 'amanda' and $TavernDayBusyGirl <> 'melissa' and $TavernDayBusyGirl <> 'sandra':
+        killvar '$TavernDayBusyGirl'
+        exit
+    end
+
+    if TavernStaffBusyDay = 1:
+        TavernDayEventStaffBlocksGirl = 1
+    end
+
+    if TavernStaffTiredEvening = 1 and time = 4:
+        TavernDayEventStaffBlocksGirl = 1
+    end
+
+    killvar '$TavernDayBusyGirl'
+---
+
+#TavernDayEventCarpenterRepair
+    if TavernRepairNeeded = 0:
+        gt 'CraftsmenQuarter'
+        exit
+    end
+
+    cls
+
+    gs 'TavernDayEventShowImage', 'carpenter_repair'
+    gs 'TavernDayEventText', 'carpenter_repair'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РЕМОНТ У СТОЛЯРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $TavernDayEventText
+
+    TavernDayRepairCost = RAND(80, 140)
+
+    if money < TavernDayRepairCost:
+        *pl ' '
+        *p 'У вас не хватает денег на ремонт. Нужно ' + STR(TavernDayRepairCost) + ' мараведи.'
+        *pl ' '
+
+        act 'Вернуться в квартал ремесленников':
+            gt 'CraftsmenQuarter'
+        end
+
+        killvar '$TavernDayEventText'
+        killvar 'TavernDayRepairCost'
+        exit
+    end
+
+    *pl ' '
+    *p 'Стоимость работ: ' + STR(TavernDayRepairCost) + ' мараведи.'
+
+    act 'Заплатить и заказать ремонт':
+        money -= TavernDayRepairCost
+        TavernRepairNeeded = 0
+        TavernRepairOrdered = 1
+        tavern_event_reputation_bonus += 1
+
+        if TavernDayEventReputationBonus < -1:
+            TavernDayEventReputationBonus += 1
+        end
+
+        gt 'CraftsmenQuarter'
+    end
+
+    act 'Вернуться':
+        gt 'CraftsmenQuarter'
+    end
+
+    killvar '$TavernDayEventText'
+    killvar 'TavernDayRepairCost'
+---
+
+#TavernDayEventTalkBlockedScreen
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TavernDayTalkGirl = $GirlKey
+    $TavernDayTalkReturnLoc = $ARGS[1]
+
+    if $TavernDayTalkReturnLoc = '':
+        $TavernDayTalkReturnLoc = 'TavernMain'
+    end
+
+    cls
+    gs 'ShowGirlSidebar', $TavernDayTalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР: ' + $RealName[$TavernDayTalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'TavernDayEventText', 'staff_busy_talk'
+    *p $TavernDayEventText
+    killvar '$TavernDayEventText'
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $TavernDayTalkReturnLoc
+    end
+
+    killvar '$TavernDayTalkGirl'
+    killvar '$TavernDayTalkReturnLoc'
+---
+
+#TavernDayEventDebugForce
+    $TavernDayEventDebugForceId = LCASE($ARGS[0])
+
+    TavernDayEventMorningShown = 0
+    TavernDayEventEveningShown = 0
+    TavernDayBrawlHappened = 0
+    TavernRepairNeeded = 0
+    TavernRepairOrdered = 0
+    TavernStaffBusyDay = 0
+    TavernStaffTiredEvening = 0
+    TavernDayEventActive = 0
+    $TavernDayEventId = ''
+    TavernDayEventProfitBonus = 0
+    TavernDayEventReputationBonus = 0
+
+    if $TavernDayEventDebugForceId = 'caravan':
+        gs 'TavernDayEventStartCaravan'
+    elseif $TavernDayEventDebugForceId = 'rats':
+        gs 'TavernDayEventStartRats'
+    else:
+        killvar '$TavernDayEventDebugForceId'
+        exit
+    end
+
+    killvar '$TavernDayEventDebugForceId'
+---
