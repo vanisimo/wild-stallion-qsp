@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 231
-- Locations: 977
+- Locations: 980
 
 ## modules/actions
 
@@ -549,12 +549,15 @@ Generated from active project files in `qsp-project.json`.
 | `GirlPolicyResponseTalkStart` | `modules/events/hall/girl_policy_response_talk.qsps` | 28 |
 | `GirlPolicyResponseTalkText` | `modules/events/hall/girl_policy_response_talk_text.qsps` | 15 |
 | `GirlPolicyResponseText` | `modules/events/hall/girl_policy_response_text.qsps` | 8 |
-| `GirlPolicyResponseTextDecent` | `modules/events/hall/girl_policy_response_text.qsps` | 66 |
+| `GirlPolicyResponseTextDecent` | `modules/events/hall/girl_policy_response_text.qsps` | 56 |
 | `GirlPolicyResponseTextKeepClient` | `modules/events/hall/girl_policy_response_text.qsps` | 22 |
-| `GirlPolicyResponseTextNoRule` | `modules/events/hall/girl_policy_response_text.qsps` | 154 |
-| `GirlPolicyResponseTextOwnChoice` | `modules/events/hall/girl_policy_response_text.qsps` | 110 |
+| `GirlPolicyResponseTextNoRule` | `modules/events/hall/girl_policy_response_text.qsps` | 124 |
+| `GirlPolicyResponseTextOwnChoice` | `modules/events/hall/girl_policy_response_text.qsps` | 90 |
 | `GirlPolicySceneVariationPrint` | `modules/events/hall/girl_policy_scene_variations.qsps` | 11 |
 | `GirlPolicySceneVariationText` | `modules/events/hall/girl_policy_scene_variations_text.qsps` | 8 |
+| `GirlPolicySceneVariationTextFollow` | `modules/events/hall/girl_policy_scene_variations_text.qsps` | 36 |
+| `GirlPolicySceneVariationTextOverstep` | `modules/events/hall/girl_policy_scene_variations_text.qsps` | 48 |
+| `GirlPolicySceneVariationTextResist` | `modules/events/hall/girl_policy_scene_variations_text.qsps` | 20 |
 | `GuardBribeStart` | `modules/events/quests/guard_bribe_quest.qsps` | 34 |
 | `HallChoiceConsequencesApply` | `modules/events/hall/hall_choice_consequences.qsps` | 7 |
 | `HallChoiceConsequencesPrintText` | `modules/events/hall/hall_choice_consequences.qsps` | 71 |

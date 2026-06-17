@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 231
-- Locations: 977
-- Locations with direct incoming calls: 792
+- Locations: 980
+- Locations with direct incoming calls: 795
 - Locations without direct incoming calls: 185
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 185
@@ -213,8 +213,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.AddModule` | 220 |
 | `Menu.Add` | 220 |
+| `Menu.AddModule` | 220 |
 | `NormalizeGirlKey` | 103 |
 | `EnsureGirlData` | 90 |
 | `TavernMain` | 74 |
@@ -223,16 +223,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
 | `CorruptionProgress` | 38 |
-| `ShowImage` | 37 |
 | `Menu.Create` | 37 |
+| `ShowImage` | 37 |
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `MarketDance` | 21 |
-| `ShowLocationImage` | 21 |
-| `Menu.AddCondition` | 21 |
-| `SaveLastHallEvent` | 21 |
 | `ClampTavernEventState` | 21 |
+| `MarketDance` | 21 |
+| `SaveLastHallEvent` | 21 |
+| `Menu.AddCondition` | 21 |
+| `ShowLocationImage` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
 | `ShowGirlInLocation` | 15 |
