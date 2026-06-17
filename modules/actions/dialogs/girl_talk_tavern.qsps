@@ -19,6 +19,7 @@
 
     GirlTalkTavernHallHookReady = 0
     GirlTalkTavernDayHookReady = 0
+    GirlTalkTavernRepairHookReady = 0
 
     gs 'GirlTalkTavernHasHallHook', $GirlTalkTavernGirl
 
@@ -35,6 +36,15 @@
             $GirlTalkTavernDayHookKey = $GirlTalkTavernGirl + '_' + STR(day)
             GirlTalkTavernDayHookDiscussed[$GirlTalkTavernDayHookKey] = 1
             killvar '$GirlTalkTavernDayHookKey'
+        else:
+            gs 'GirlTalkTavernHasRepairHook', $GirlTalkTavernGirl
+
+            if GirlTalkTavernRepairHookReady = 1:
+                gs 'GirlTalkTavernPrintText', 'repair_hook'
+                $GirlTalkTavernRepairHookKey = $GirlTalkTavernGirl + '_' + STR(day)
+                GirlTalkTavernRepairHookDiscussed[$GirlTalkTavernRepairHookKey] = 1
+                killvar '$GirlTalkTavernRepairHookKey'
+            end
         end
     end
 
@@ -44,6 +54,7 @@
     killvar '$GirlTalkTavernGirl'
     killvar 'GirlTalkTavernHallHookReady'
     killvar 'GirlTalkTavernDayHookReady'
+    killvar 'GirlTalkTavernRepairHookReady'
 ---
 
 #GirlTalkTavernHasHallHook
@@ -111,6 +122,40 @@
 
     killvar '$GirlTalkTavernHookGirl'
     killvar '$GirlTalkTavernDayHookKey'
+---
+
+#GirlTalkTavernHasRepairHook
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkTavernHookGirl = $GirlKey
+
+    GirlTalkTavernRepairHookReady = 0
+
+    if $GirlTalkTavernHookGirl = '':
+        exit
+    end
+
+    if TavernRepairNeeded = 0 or TavernRepairOrdered = 1:
+        killvar '$GirlTalkTavernHookGirl'
+        exit
+    end
+
+    if $TavernRepairSource <> 'rats' and $TavernRepairSource <> 'brawl' and $TavernRepairSource <> 'broken':
+        killvar '$GirlTalkTavernHookGirl'
+        exit
+    end
+
+    $GirlTalkTavernRepairHookKey = $GirlTalkTavernHookGirl + '_' + STR(day)
+
+    if GirlTalkTavernRepairHookDiscussed[$GirlTalkTavernRepairHookKey] = 1:
+        killvar '$GirlTalkTavernHookGirl'
+        killvar '$GirlTalkTavernRepairHookKey'
+        exit
+    end
+
+    GirlTalkTavernRepairHookReady = 1
+
+    killvar '$GirlTalkTavernHookGirl'
+    killvar '$GirlTalkTavernRepairHookKey'
 ---
 
 #GirlTalkTavernPrintText

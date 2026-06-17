@@ -246,6 +246,7 @@ Hook flags are keyed by `girl + '_' + day`:
 - `GirlTalkFamilyHallHookDiscussed[key]` - family talk already referenced today's hall choice.
 - `GirlTalkTavernHallHookDiscussed[key]` - tavern talk already referenced today's hall choice.
 - `GirlTalkTavernDayHookDiscussed[key]` - tavern talk already referenced today's active tavern day event (`TavernDayEventActive`, `$TavernDayEventId`).
+- `GirlTalkTavernRepairHookDiscussed[key]` - tavern talk already nudged the player about unpaid repair (`TavernRepairNeeded`, `$TavernRepairSource`).
 
 Day-event hook texts live in `GirlTalkTavernBuildDayEventText` (`girl_talk_tavern_text.qsps`): one personal paragraph per girl per event id (`caravan`, `rats`, `brawl`, `guard`, `harvest`, `minstrels`, `storm`, `pilgrims`, `broken`, `thief`).
 
@@ -284,7 +285,7 @@ Story keys and per-story `otkroven` minimums:
 
 - `amanda_legare` - 14
 - `amanda_boys` - 18
-- `melissa_musician` - 16
+- `melissa_musician` - 16; unlocks when `TavernDayEventId = 'minstrels'` or `FactHappened['melissa_musiciannotice_1']`
 - `sandra_carpenter` - 18
 - `sandra_priest` - 20
 

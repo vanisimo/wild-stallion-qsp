@@ -139,6 +139,9 @@
 
     elseif $GirlTalkTavernTextId = 'day_event':
         gs 'GirlTalkTavernBuildDayEventText', $GirlTalkTavernGirl
+
+    elseif $GirlTalkTavernTextId = 'repair_hook':
+        gs 'GirlTalkTavernBuildRepairHookText', $GirlTalkTavernGirl
     end
 
     killvar '$GirlTalkTavernTextId'
@@ -263,6 +266,51 @@
         $GirlTalkTavernText = '— Сегодня в трактире было непросто, — говорит ' + $RealName[$GirlTalkTavernTextGirl] + '. — ' + $TavernDayEventText
         killvar '$TavernDayEventHallTextId'
         killvar '$TavernDayEventText'
+    end
+
+    killvar '$GirlTalkTavernTextGirl'
+---
+
+#GirlTalkTavernBuildRepairHookText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkTavernTextGirl = $GirlKey
+    $GirlTalkTavernText = ''
+
+    if $GirlTalkTavernTextGirl = '' or TavernRepairNeeded = 0 or TavernRepairOrdered = 1:
+        killvar '$GirlTalkTavernTextGirl'
+        exit
+    end
+
+    if $TavernRepairSource = 'rats':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Пока Драупнир не подлатает кладовую, — говорит Аманда, — я всё равно боюсь заглядывать в углы. Гости чувствуют это. Надо сходить к столяру, пока не стало ещё хуже.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Каждый день без ремонта после крыс — это минус в репутации, — отрезает Мелисса. — Драупнир в ремесленном квартале возьмётся за дело, но тянуть нельзя.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Кладовую так и не починили, — говорит Сандра строго. — Полки шатаются, запах стоит. Иди к Драупниру, Стефан, пока гости не начали ворчать вслух.'
+        end
+
+    elseif $TavernRepairSource = 'brawl':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Зал всё ещё выглядит после драки, — говорит Аманда. — Стойка скрипит, гости пялятся. Столяр мог бы это быстро исправить, если мы наконец заплатим.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Потрёпанный зал — плохая реклама, — говорит Мелисса. — Драупнир недалеко. Лучше потратить деньги сейчас, чем кормить слухи ещё неделю.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— После драки так и не вызвали столяра, — вздыхает Сандра. — Стулья кривые, стойка держится на честном слове. Пора это закончить.'
+        end
+
+    elseif $TavernRepairSource = 'broken':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Подвал всё ещё пахнет пивом после бочки, — говорит Аманда. — Я стараюсь улыбаться в зале, но сама знаю: без Драупнира тут ненадёжно.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Авария в подвале не исчезнет сама, — говорит Мелисса. — Ремонт стоит денег, но каждый день промедления дороже.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Полки в подвале всё ещё пошатнулись, — говорит Сандра. — Пока не позовём Драупнира, я не спокойна за запасы. Сходи к нему.'
+        end
+    end
+
+    if $GirlTalkTavernText <> '' and TavernRepairCarryDays >= 1:
+        $GirlTalkTavernText = $GirlTalkTavernText + ' Это уже тянется не первый день.'
     end
 
     killvar '$GirlTalkTavernTextGirl'
