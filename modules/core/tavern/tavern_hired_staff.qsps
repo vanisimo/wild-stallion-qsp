@@ -46,21 +46,12 @@
     if TavernHiredOverloadRelief <= 0:
         TavernHiredOverloadRelief = 5
     end
-
-    if TavernHiredStaffUnlockRep <= 0:
-        TavernHiredStaffUnlockRep = 35
-    end
-
-    if TavernHiredStaffUnlockTax <= 0:
-        TavernHiredStaffUnlockTax = 120
-    end
 ---
 
 ! ================================================
 ! FILE: modules/core/tavern/tavern_hired_staff.qsps
 ! Проверка доступности наёмного персонала
-! Путь 1: репутация + уплаченный городской налог
-! Путь 2: первый приём у мэра
+! Игрок должен сходить в мэрию и попросить приём у мэра
 ! ================================================
 
 #CheckTavernHiredStaffUnlocked
@@ -68,12 +59,7 @@
 
     TavernHiredStaffUnlocked = 0
 
-    if MayorFirstTalkDone = 1:
-        TavernHiredStaffUnlocked = 1
-        exit
-    end
-
-    if tavern_reputation >= TavernHiredStaffUnlockRep and TavernCityTaxTotal >= TavernHiredStaffUnlockTax:
+    if MayorAudienceAttempted = 1:
         TavernHiredStaffUnlocked = 1
     end
 ---
@@ -235,10 +221,9 @@
     pl ' '
 
     if TavernHiredStaffUnlocked = 0:
-        pl 'Пока недоступно. Нужен один из путей:'
-        pl '• Репутация ' + STR(TavernHiredStaffUnlockRep) + '+ (сейчас ' + STR(tavern_reputation) + ')'
-        pl '  и налог в казне ' + STR(TavernHiredStaffUnlockTax) + '+ (сейчас ' + STR(TavernCityTaxTotal) + ')'
-        pl '• Или первый приём у мэра'
+        pl 'Пока недоступно.'
+        pl 'Сходите в мэрию на улице и нажмите «Просить приём у мэра».'
+        pl 'Клерк подскажет, где искать подсобных работников.'
         pl ' '
         exit
     end

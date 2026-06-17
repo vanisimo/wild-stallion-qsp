@@ -130,8 +130,7 @@ Owner: `modules/core/tavern/tavern_hired_staff.qsps`.
 
 Unlock (`CheckTavernHiredStaffUnlocked`):
 
-- path A: `tavern_reputation >= TavernHiredStaffUnlockRep` (default `35`) **and** `TavernCityTaxTotal >= TavernHiredStaffUnlockTax` (default `120`);
-- path B: `MayorFirstTalkDone = 1`.
+- `MayorAudienceAttempted = 1` — set when the player enters `MayorOfficeAudienceGate` (clicks «Просить приём у мэра» in the mayor office). Payment and the first audience are not required.
 
 Until unlock, hire buttons are hidden. If unlock is lost before hire (should not happen in normal play), active hires are cleared in `ApplyTavernHiredStaffEffects`.
 
