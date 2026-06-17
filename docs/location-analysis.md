@@ -213,8 +213,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.AddModule` | 221 |
-| `Menu.Add` | 221 |
+| `Menu.AddModule` | 220 |
+| `Menu.Add` | 220 |
 | `NormalizeGirlKey` | 103 |
 | `EnsureGirlData` | 90 |
 | `TavernMain` | 74 |
