@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 231
-- Locations: 986
+- Locations: 988
 
 ## modules/actions
 
@@ -12,13 +12,13 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 |
 | `CanStartIntimScene` | `modules/actions/sex/intim_scene.qsps` | 97 |
 | `CanStartSexScene` | `modules/actions/sex/sex_scene_core.qsps` | 82 |
-| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 966 |
+| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 1025 |
 | `ClampIntimSceneValues` | `modules/actions/sex/intim_scene.qsps` | 529 |
-| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 725 |
-| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 781 |
-| `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 803 |
-| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 837 |
-| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 916 |
+| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 784 |
+| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 840 |
+| `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 862 |
+| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 896 |
+| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 975 |
 | `GirlFirstAnal` | `modules/actions/sex/first_sex.qsps` | 142 |
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 197 |
 | `GirlFirstSex` | `modules/actions/sex/first_sex.qsps` | 8 |
@@ -29,14 +29,16 @@ Generated from active project files in `qsp-project.json`.
 | `GirlFlirtResult` | `modules/actions/flirts/girl_flirt.qsps` | 135 |
 | `GirlFlirtSuccessText` | `modules/actions/flirts/girl_flirt.qsps` | 278 |
 | `GirlTalk` | `modules/actions/dialogs/girl_talk.qsps` | 10 |
-| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 388 |
-| `GirlTalkBuildMainMenu` | `modules/actions/dialogs/girl_talk.qsps` | 230 |
+| `GirlTalkBlockedUsefulTopic` | `modules/actions/dialogs/girl_talk.qsps` | 507 |
+| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 353 |
+| `GirlTalkBuildMainMenu` | `modules/actions/dialogs/girl_talk.qsps` | 209 |
+| `GirlTalkClosedScreen` | `modules/actions/dialogs/girl_talk.qsps` | 565 |
 | `GirlTalkHallEventReaction` | `modules/actions/tavern/girl_talk_hall_event_reaction_compat.qsps` | 11 |
-| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 328 |
-| `GirlTalkHallTopicStart` | `modules/actions/dialogs/girl_talk.qsps` | 458 |
-| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 284 |
-| `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 505 |
-| `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 545 |
+| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 307 |
+| `GirlTalkHallTopicStart` | `modules/actions/dialogs/girl_talk.qsps` | 423 |
+| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 263 |
+| `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 470 |
+| `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 624 |
 | `GirlUniformTalkBlocked` | `modules/actions/tavern/girl_uniform_talk.qsps` | 257 |
 | `GirlUniformTalkBuildMenu` | `modules/actions/tavern/girl_uniform_talk.qsps` | 82 |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 320 |
@@ -884,10 +886,10 @@ Generated from active project files in `qsp-project.json`.
 | `Menu.Show` | `modules/menu/system/otd_lib_menu.qsps` | 73 |
 | `Menu.Time` | `modules/menu/system/otd_lib_menu.qsps` | 156 |
 | `MenuGirlCalcConditions` | `modules/menu/girls/menu_girl_conditions.qsps` | 8 |
-| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 327 |
-| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 337 |
-| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 347 |
-| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 357 |
+| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 335 |
+| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 345 |
+| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 355 |
+| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 365 |
 | `MenuGirlFlirt` | `modules/menu/girls/menu_girl_actions.qsps` | 417 |
 | `MenuGirlGift` | `modules/menu/girls/menu_girl_actions.qsps` | 45 |
 | `MenuGirlGiftApplyReaction` | `modules/menu/girls/menu_girl_actions.qsps` | 264 |

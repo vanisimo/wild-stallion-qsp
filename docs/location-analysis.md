@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 231
-- Locations: 986
-- Locations with direct incoming calls: 800
+- Locations: 988
+- Locations with direct incoming calls: 802
 - Locations without direct incoming calls: 186
 - Review candidates without direct incoming calls: 1
 - Classified entry/helper locations without direct incoming calls: 185
@@ -16,7 +16,7 @@ These locations have no direct literal incoming calls and are not classified as 
 
 | Location | File | Line | Group |
 | --- | --- | --- | --- |
-| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 328 | `modules/actions` |
+| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 307 | `modules/actions` |
 
 ## Classified Entry Or Helper Locations
 
@@ -138,9 +138,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Chosen` | `modules/menu/system/otd_lib_menu.qsps` | 150 | `entry/helper` |
 | `Menu.Info` | `modules/menu/system/otd_lib_menu.qsps` | 13 | `entry/helper` |
 | `Menu.Time` | `modules/menu/system/otd_lib_menu.qsps` | 156 | `entry/helper` |
-| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 337 | `entry/helper` |
-| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 347 | `entry/helper` |
-| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 357 | `entry/helper` |
+| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 345 | `entry/helper` |
+| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 355 | `entry/helper` |
+| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 365 | `entry/helper` |
 | `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 459 | `entry/helper` |
 | `NPC_Click` | `modules/menu/npc/npc_click.qsps` | 8 | `entry/helper` |
 | `NpcShowDescription` | `modules/menu/npc/npc_show_description.qsps` | 6 | `entry/helper` |
@@ -216,11 +216,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | --- | --- |
 | `Menu.Add` | 233 |
 | `Menu.AddModule` | 233 |
-| `NormalizeGirlKey` | 105 |
-| `EnsureGirlData` | 92 |
+| `NormalizeGirlKey` | 107 |
+| `EnsureGirlData` | 94 |
 | `TavernMain` | 74 |
-| `ShowGirlSidebar` | 70 |
-| `ClampGirlSocialStats` | 46 |
+| `ShowGirlSidebar` | 69 |
+| `ClampGirlSocialStats` | 47 |
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
 | `ShowImage` | 41 |
@@ -229,15 +229,15 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 33 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `ShowLocationImage` | 21 |
 | `Menu.AddCondition` | 21 |
+| `ClampTavernEventState` | 21 |
+| `ShowLocationImage` | 21 |
 | `MarketDance` | 21 |
 | `SaveLastHallEvent` | 21 |
-| `ClampTavernEventState` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
-| `AmandaLizettePrintText` | 15 |
 | `ShowGirlInLocation` | 15 |
+| `AmandaLizettePrintText` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
 
 ## Dynamic Call Sites

@@ -33,28 +33,7 @@
     end
 
     if MenuCanTalk = 0:
-        cls
-
-        gs 'ShowGirlSidebar', $TalkGirl
-
-        *pl '══════════════════════════════════════════════'
-        *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
-        *pl '══════════════════════════════════════════════'
-        *pl ' '
-        *p $RealName[$TalkGirl] + ' не даёт начать разговор. После последнего конфликта она держится холодно: смотрит мимо, отвечает коротко и явно ждёт не слов, а поступка.'
-        *p 'Сейчас можно попробовать подарок или дать ей время остыть.'
-        *pl ' '
-
-        if LOC('MenuGirlGift') = 1:
-            act 'Подарить подарок':
-                gt 'MenuGirlGift', $TalkGirl, $TalkReturnLoc
-            end
-        end
-
-        act 'Вернуться':
-            gt $TalkReturnLoc
-        end
-
+        gs 'GirlTalkClosedScreen', $TalkGirl, $TalkReturnLoc
         exit
     end
 
@@ -356,21 +335,7 @@
     gs 'UsefulTalkCheck', $TalkGirl, 'hall_recent'
 
     if UsefulTalkResult = 0:
-        *p $UsefulTalkReason
-        *pl ' '
-
-        act 'Поболтать ни о чём':
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
-        end
-
-        act 'Вернуться к выбору тем':
-            gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
-        end
-
-        act 'Вернуться':
-            gt $TalkReturnLoc
-        end
-
+        gs 'GirlTalkBlockedUsefulTopic', $TalkGirl
         exit
     end
 
@@ -475,7 +440,7 @@
     gs 'UsefulTalkCheck', $TalkGirl, $GirlTalkHallTopic
 
     if UsefulTalkResult = 0:
-        msg $UsefulTalkReason
+        gs 'GirlTalkBlockedUsefulTopic', $TalkGirl
         exit
     end
 
@@ -536,6 +501,120 @@
 
 ! ================================================
 ! FILE: modules/actions/girl_talk.qsps
+! Реакция на назойливые попытки говорить сверх лимита
+! ================================================
+
+#GirlTalkBlockedUsefulTopic
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkBlockedGirl = $GirlKey
+
+    if $TalkBlockedGirl = '':
+        exit
+    end
+
+    if $RealName[$TalkBlockedGirl] = '':
+        gs 'EnsureGirlData', $TalkBlockedGirl
+    end
+
+    $TalkBlockedKey = $TalkBlockedGirl + '_' + STR(day)
+    GirlTalkBlockedUsefulCount[$TalkBlockedKey] += 1
+
+    if GirlTalkBlockedUsefulCount[$TalkBlockedKey] >= 5:
+        *pl ' '
+        *p '— Всё, хватит, Стефан, — резко говорит ' + $RealName[$TalkBlockedGirl] + '. — Я тебе не служанка для бесконечной болтовни. На сегодня разговор окончен.'
+
+        GirlTalkIrritatedUntilDay[$TalkBlockedGirl] = day
+        GirlConflictLevel[$TalkBlockedGirl] += 1
+        GirlConflictUntilDay[$TalkBlockedGirl] = day
+        Friends[$TalkBlockedGirl] -= 1
+
+        if love[$TalkBlockedGirl] > 0:
+            love[$TalkBlockedGirl] -= 1
+        end
+
+        hate[$TalkBlockedGirl] += 1
+
+        if Friends[$TalkBlockedGirl] < 0:
+            Friends[$TalkBlockedGirl] = 0
+        end
+
+        if love[$TalkBlockedGirl] < 0:
+            love[$TalkBlockedGirl] = 0
+        end
+
+        if LOC('ClampGirlSocialStats') = 1:
+            gs 'ClampGirlSocialStats', $TalkBlockedGirl
+        end
+    elseif GirlTalkBlockedUsefulCount[$TalkBlockedKey] >= 3:
+        *pl ' '
+        *p '— Стефан, ты меня слышишь? — ' + $RealName[$TalkBlockedGirl] + ' уже смотрит раздражённо. — Я сказала: серьёзные разговоры потом.'
+    else:
+        *pl ' '
+        *p '— Стефан, хватит болтать, — говорит ' + $RealName[$TalkBlockedGirl] + '. — У меня нет столько времени. Если хочешь просто перекинуться парой слов — ладно, но серьёзное оставь на потом.'
+    end
+
+    killvar '$TalkBlockedGirl'
+    killvar '$TalkBlockedKey'
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Экран закрытого разговора
+! ================================================
+
+#GirlTalkClosedScreen
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkClosedGirl = $GirlKey
+    $TalkClosedReturnLoc = $ARGS[1]
+
+    if $TalkClosedGirl = '':
+        exit
+    end
+
+    if $TalkClosedReturnLoc = '':
+        $TalkClosedReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkClosedGirl
+
+    cls
+    gs 'ShowGirlSidebar', $TalkClosedGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР: ' + $RealName[$TalkClosedGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ShowGirlTalkContextImage') = 1:
+        gs 'ShowGirlTalkContextImage', $TalkClosedGirl, 'large'
+    end
+
+    if GirlTalkIrritatedUntilDay[$TalkClosedGirl] >= day:
+        *p $RealName[$TalkClosedGirl] + ' даже не пытается поддержать разговор.'
+        *p '— На сегодня хватит, Стефан. Я сказала.'
+    else:
+        *p $RealName[$TalkClosedGirl] + ' не даёт начать разговор. После последнего конфликта она держится холодно: смотрит мимо, отвечает коротко и явно ждёт не слов, а поступка.'
+        *p 'Сейчас можно попробовать подарок или дать ей время остыть.'
+
+        if LOC('MenuGirlGift') = 1:
+            act 'Подарить подарок':
+                gt 'MenuGirlGift', $TalkClosedGirl, $TalkClosedReturnLoc
+            end
+        end
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $TalkClosedReturnLoc
+    end
+
+    killvar '$TalkClosedGirl'
+    killvar '$TalkClosedReturnLoc'
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
 ! Результат выбранной темы разговора
 ! Использует лимит полезных разговоров:
 ! modules/core/time/npc_talk_limits.qsps
@@ -570,27 +649,7 @@
     end
 
     if MenuCanTalk = 0:
-        cls
-
-        gs 'ShowGirlSidebar', $TalkGirl
-
-        *pl '══════════════════════════════════════════════'
-        *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
-        *pl '══════════════════════════════════════════════'
-        *pl ' '
-        *p $RealName[$TalkGirl] + ' не поддерживает разговор. Сейчас она слишком зла, чтобы слушать объяснения.'
-        *pl ' '
-
-        if LOC('MenuGirlGift') = 1:
-            act 'Подарить подарок':
-                gt 'MenuGirlGift', $TalkGirl, $TalkReturnLoc
-            end
-        end
-
-        act 'Вернуться':
-            gt $TalkReturnLoc
-        end
-
+        gs 'GirlTalkClosedScreen', $TalkGirl, $TalkReturnLoc
         exit
     end
 
@@ -602,7 +661,7 @@
         gs 'UsefulTalkCheck', $TalkGirl, $TalkTopic
 
         if UsefulTalkResult = 0:
-            msg $UsefulTalkReason
+            gs 'GirlTalkBlockedUsefulTopic', $TalkGirl
             exit
         end
     end
