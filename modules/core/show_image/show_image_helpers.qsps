@@ -24,26 +24,38 @@ gs 'ShowImage', 'portrait', $girl, '', '', $size
 
 #ShowGirlTalkContextImage
 $TalkImageGirl = LCASE($ARGS[0])
-$TalkImageLoc = $GirlLocation[$TalkImageGirl]
 $TalkImageSize = $ARGS[1]
+$TalkImageTopic = LCASE($ARGS[2])
 
 if $TalkImageSize = '':
     $TalkImageSize = 'large'
 end
 
-if $TalkImageLoc = 'Kitchen':
-    gs 'ShowImage', 'location', 'tavern_day', '', '', 'png', $TalkImageSize
-elseif $TalkImageLoc = 'AmandaRoom' or $TalkImageLoc = 'MelissaRoom' or $TalkImageLoc = 'SandraRoom':
-    gs 'ShowImage', 'location', 'player_room', '', '', 'png', $TalkImageSize
-elseif $TalkImageLoc = 'TavernMain':
-    gs 'ShowImage', 'location', 'tavern_main', '', '', 'png', $TalkImageSize
+if $TalkImageTopic = '':
+    $TalkImageTopic = LCASE($TalkTopic)
+end
+
+if LOC('GirlTalkShowMoodImage') = 1:
+    gs 'GirlTalkShowMoodImage', $TalkImageGirl, $TalkImageSize, $TalkImageTopic
 else:
-    gs 'ShowImage', 'location', 'tavern_main', '', '', 'png', $TalkImageSize
+    $TalkImageLoc = $GirlLocation[$TalkImageGirl]
+
+    if $TalkImageLoc = 'Kitchen':
+        gs 'ShowImage', 'location', 'tavern_day', '', '', 'png', $TalkImageSize
+    elseif $TalkImageLoc = 'AmandaRoom' or $TalkImageLoc = 'MelissaRoom' or $TalkImageLoc = 'SandraRoom':
+        gs 'ShowImage', 'location', 'player_room', '', '', 'png', $TalkImageSize
+    elseif $TalkImageLoc = 'TavernMain':
+        gs 'ShowImage', 'location', 'tavern_main', '', '', 'png', $TalkImageSize
+    else:
+        gs 'ShowImage', 'location', 'tavern_main', '', '', 'png', $TalkImageSize
+    end
+
+    killvar '$TalkImageLoc'
 end
 
 killvar '$TalkImageGirl'
-killvar '$TalkImageLoc'
 killvar '$TalkImageSize'
+killvar '$TalkImageTopic'
 ---
 
 #ShowScene

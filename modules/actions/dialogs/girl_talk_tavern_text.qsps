@@ -138,18 +138,132 @@
         end
 
     elseif $GirlTalkTavernTextId = 'day_event':
-        if $GirlTalkTavernGirl = 'amanda':
-            $GirlTalkTavernText = '— Кстати, вчера в зале... — Аманда вспоминает: — ' + $LastDayTavernEventText
-        elseif $GirlTalkTavernGirl = 'melissa':
-            $GirlTalkTavernText = '— Если смотреть на вчерашний день, — говорит Мелисса, — то вот что бросилось в глаза: ' + $LastDayTavernEventText
-        elseif $GirlTalkTavernGirl = 'sandra':
-            $GirlTalkTavernText = '— Вчера после смены все ещё обсуждали одно, — говорит Сандра. — ' + $LastDayTavernEventText
-        else:
-            $GirlTalkTavernText = 'Вчера в трактире произошло вот что: ' + $LastDayTavernEventText
-        end
+        gs 'GirlTalkTavernBuildDayEventText', $GirlTalkTavernGirl
     end
 
     killvar '$GirlTalkTavernTextId'
     killvar '$GirlTalkTavernChoiceType'
     killvar 'GirlTalkTavernReputation'
+---
+
+#GirlTalkTavernBuildDayEventText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkTavernTextGirl = $GirlKey
+    $GirlTalkTavernText = ''
+
+    if $GirlTalkTavernTextGirl = '' or TavernDayEventActive = 0 or $TavernDayEventId = '':
+        killvar '$GirlTalkTavernTextGirl'
+        exit
+    end
+
+    if $TavernDayEventId = 'caravan':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Этот караван отнял у меня все силы, — признаётся Аманда, потирая запястье. — Я бегала между кухней и залом, пока ноги не сводило. Зато гости ушли сытые.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Караван принёс монеты, но и работы втрое, — говорит Мелисса. — Считать выручку приятно, а вот ещё один такой день — и мы начнём ошибаться в заказах.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Когда караван, кухня не отдыхает, — говорит Сандра. — Я весь день гоняла дочерей, а сама только к вечеру добралась до остатков муки. Сил почти не осталось.'
+        end
+
+    elseif $TavernDayEventId = 'rats':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Ты видел этих крыс? — Аманда невольно вздрагивает. — Я так испугалась, когда Сандра крикнула из кладовой. Мешки грызены, а мне потом ещё и в зале с улыбкой подавать.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Крысы в кладовой — это не просто «неприятно», — режет Мелисса. — Это деньги в мусор. И ещё запах, от которого гости косятся.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Крысы добрались до муки, — говорит Сандра с сжатыми губами. — Я пересчитала потери дважды и всё равно злюсь. Так нельзя держать кладовую.'
+        end
+
+    elseif $TavernDayEventId = 'brawl':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— После той драки в зале у меня до сих пор дрожат руки, — говорит Аманда. — Столы летели, пиво лилось — а нам потом убирать и делать вид, что всё нормально.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Драка — худший вид рекламы, — говорит Мелисса. — Один вечер перепилых наёмников, и половина зала шепчется о нас как о плохом месте.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Когда в зале дерутся, страдает всё, — отрезает Сандра. — Посуда, стулья, нервы. Я не собираюсь каждый раз выгребать после чужого пьяного ума.'
+        end
+
+    elseif $TavernDayEventId = 'guard':
+        if TavernDayEventGuardPassed = 1:
+            if $GirlTalkTavernTextGirl = 'amanda':
+                $GirlTalkTavernText = '— Стража сегодня прошла мимо, — выдыхает Аманда. — Я всё утро боялась, что нас оштрафуют. Наверное, зал был достаточно чистым.'
+            elseif $GirlTalkTavernTextGirl = 'melissa':
+                $GirlTalkTavernText = '— Инспекция без штрафа — редкая удача, — говорит Мелисса. — Значит, цифры и порядок совпали. Так и надо держать.'
+            elseif $GirlTalkTavernTextGirl = 'sandra':
+                $GirlTalkTavernText = '— Когда стража уходит без бумаг, — говорит Сандра, — можно выдохнуть. Но это не повод расслабляться: в следующий раз проверят строже.'
+            end
+        else:
+            if $GirlTalkTavernTextGirl = 'amanda':
+                $GirlTalkTavernText = '— Стража сегодня устроила нам разнос, — шепчет Аманда. — Я стояла как на иголках, а они смотрели на каждую крошку в углу.'
+            elseif $GirlTalkTavernTextGirl = 'melissa':
+                $GirlTalkTavernText = '— Штраф — это не «мелочь», — холодно говорит Мелисса. — Это сигнал, что трактир выглядит хуже, чем мы думаем.'
+            elseif $GirlTalkTavernTextGirl = 'sandra':
+                $GirlTalkTavernText = '— Инспектор сегодня оставил шрам на репутации, — говорит Сандра. — Чистота — не украшение, а необходимость. Нас предупредили.'
+            end
+        end
+
+    elseif $TavernDayEventId = 'harvest':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Праздник урожая сегодня утомил, но по-хорошему, — улыбается Аманда. — Зал полон, смех громкий — иногда приятно, когда трактир живёт.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Урожайный день — редкий подарок, — говорит Мелисса. — Много гостей, хорошая выручка. Если повторится, нужно быть готовыми, а не радоваться вслепую.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Когда в городе праздник, кухня не отдыхает, — говорит Сандра, но голос мягче. — Зато видно, что о нас помнят. Хороший день для трактира.'
+        end
+
+    elseif $TavernDayEventId = 'minstrels':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Музыканты сегодня разогрели зал, — говорит Аманда. — Легче работать, когда гости смеются, а не ругаются. Только из-за песен я пару раз перепутала заказ.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Музыканты — хороший ход для кассы, — замечает Мелисса с лёгкой улыбкой. — Гости пьют больше, когда в зале играют. Надо чаще приглашать таких, но не бесплатно.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Музыка в зале — не моя стихия, — говорит Сандра. — Но сегодня гости были спокойнее. Пусть играют, только пусть не мешают кухне.'
+        end
+
+    elseif $TavernDayEventId = 'storm':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Из-за дождя сегодня в зале тихо, — говорит Аманда. — Меньше суеты, но и монет меньше. Хотя успела передохнуть между заказами.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Ливень держит людей дома, — констатирует Мелисса. — День слабый по выручке, зато можно заняться учётом, а не бегать с подносом.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Когда льёт, гости задерживаются у печи, — говорит Сандра. — Кухня работает медленнее, зато никто не орёт и не толкается.'
+        end
+
+    elseif $TavernDayEventId = 'pilgrims':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Сегодня в углу сидели паломники, — говорит Аманда. — Смотрели строго, словно мы их судим. Мне было неловко даже наливать пиво рядом.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Паломники мало платят, но много смотрят, — говорит Мелисса. — Такие гости не разорят нас, зато могут рассказать о трактире дальше по дороге.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Паломники — непростые гости, — говорит Сандра. — Скромные, тихие, но от их взгляда и нашим пьяницам неловко. Зато совесть трактира сегодня на виду.'
+        end
+
+    elseif $TavernDayEventId = 'broken':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Ночью лопнула бочка, — устало говорит Аманда. — Утром в подвале лужа, запах пива везде. Мы полдня вытирали пол, а гости всё равно косились.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Авария в подвале — чистые потери, — говорит Мелисса. — Бочка, напитки, время на уборку. Ещё один такой сюрприз — и запасы съедят прибыль недели.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Лопнувшая бочка — моя головная боль, — говорит Сандра сердито. — Пиво на полу, полки пошатнулись. Кто-то должен был проверить крепления раньше.'
+        end
+
+    elseif $TavernDayEventId = 'thief':
+        if $GirlTalkTavernTextGirl = 'amanda':
+            $GirlTalkTavernText = '— Кто-то ночью вынес из кладовой муку и вино, — шепчет Аманда. — Я теперь проверяю дверь дважды. Не люблю, когда в наш дом лезут чужие.'
+        elseif $GirlTalkTavernTextGirl = 'melissa':
+            $GirlTalkTavernText = '— Кража — это дыра в учёте, — говорит Мелисса. — Не видно, кто взял, зато видно, чего не хватает. Замок на кладовую нужен был давно.'
+        elseif $GirlTalkTavernTextGirl = 'sandra':
+            $GirlTalkTavernText = '— Вор пробрался ночью, — говорит Сандра. — Я пересчитала всё с утра и чуть не крикнула на первого же гостя. Так бесит, когда труд уходит в чужие руки.'
+        end
+    end
+
+    if $GirlTalkTavernText = '':
+        gs 'TavernDayEventHallTextId'
+        gs 'TavernDayEventText', $TavernDayEventHallTextId
+        $GirlTalkTavernText = '— Сегодня в трактире было непросто, — говорит ' + $RealName[$GirlTalkTavernTextGirl] + '. — ' + $TavernDayEventText
+        killvar '$TavernDayEventHallTextId'
+        killvar '$TavernDayEventText'
+    end
+
+    killvar '$GirlTalkTavernTextGirl'
 ---

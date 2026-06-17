@@ -245,7 +245,23 @@ Hook flags are keyed by `girl + '_' + day`:
 
 - `GirlTalkFamilyHallHookDiscussed[key]` - family talk already referenced today's hall choice.
 - `GirlTalkTavernHallHookDiscussed[key]` - tavern talk already referenced today's hall choice.
-- `GirlTalkTavernDayHookDiscussed[key]` - tavern talk already referenced `$LastDayTavernEventText`.
+- `GirlTalkTavernDayHookDiscussed[key]` - tavern talk already referenced today's active tavern day event (`TavernDayEventActive`, `$TavernDayEventId`).
+
+Day-event hook texts live in `GirlTalkTavernBuildDayEventText` (`girl_talk_tavern_text.qsps`): one personal paragraph per girl per event id (`caravan`, `rats`, `brawl`, `guard`, `harvest`, `minstrels`, `storm`, `pilgrims`, `broken`, `thief`).
+
+## Girl Talk Mood Portraits
+
+Owner: `modules/actions/dialogs/girl_talk_images.qsps`.
+
+`ShowGirlTalkContextImage` calls `GirlTalkShowMoodImage` when that locator is loaded.
+
+Folder: `images/events/girl_talk/{girl}/`
+
+Moods: `calm`, `happy`, `tired`, `angry` — file pattern `{mood}_1.webp`.
+
+`GirlTalkResolveMood` picks mood from talk topic, conflict/irritation, staff fatigue, tavern day event, family tension, compliments, and social stats.
+
+Debug: `GirlTalkImageDebugPanel` (linked from debug panel → Girls); briefs print when `debug = 1` or `debug_images = 1`.
 
 These flags do not replace the dedicated hall-topic menu. Full follow-up scenes such as `HallChoiceFamilyTalk` and `HallRecentTalk` keep their own `*Discussed` flags.
 

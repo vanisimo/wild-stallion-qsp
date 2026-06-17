@@ -1,0 +1,206 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_images.qsps
+! MODULE: actions/dialogs
+! Портреты девушек в разговоре по настроению темы
+! images/events/girl_talk/{girl}/{mood}_1.webp
+! ================================================
+
+#GirlTalkResolveMood
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkMoodGirl = $GirlKey
+    $GirlTalkMoodTopic = LCASE($ARGS[1])
+
+    if $GirlTalkMoodTopic = '':
+        $GirlTalkMoodTopic = LCASE($TalkTopic)
+    end
+
+    $GirlTalkMood = 'calm'
+
+    if $GirlTalkMoodGirl = '':
+        killvar '$GirlTalkMoodGirl'
+        killvar '$GirlTalkMoodTopic'
+        exit
+    end
+
+    if GirlConflictUntilDay[$GirlTalkMoodGirl] >= day or GirlTalkIrritatedUntilDay[$GirlTalkMoodGirl] >= day:
+        $GirlTalkMood = 'angry'
+    elseif TavernStaffBusyDay = 1 or (TavernStaffTiredEvening = 1 and time = 4):
+        $GirlTalkMood = 'tired'
+    elseif $GirlTalkMoodTopic = 'tavern' and TavernDayEventActive = 1:
+        gs 'GirlTalkMoodForTavernDayEvent', $GirlTalkMoodGirl
+    elseif $GirlTalkMoodTopic = 'compliment' or $GirlTalkMoodTopic = 'joke':
+        if love[$GirlTalkMoodGirl] >= 8 or Friends[$GirlTalkMoodGirl] >= 15:
+            $GirlTalkMood = 'happy'
+        end
+    elseif $GirlTalkMoodTopic = 'family':
+        if FamilyTension > FamilyTrust + 15:
+            $GirlTalkMood = 'angry'
+        elseif FamilyTrust > FamilyTension + 20:
+            $GirlTalkMood = 'happy'
+        end
+    elseif $GirlTalkMoodTopic = 'personal':
+        if otkroven[$GirlTalkMoodGirl] >= 25:
+            $GirlTalkMood = 'happy'
+        else:
+            $GirlTalkMood = 'calm'
+        end
+    elseif hate[$GirlTalkMoodGirl] >= 10:
+        $GirlTalkMood = 'angry'
+    elseif love[$GirlTalkMoodGirl] >= 12 and sluttiness[$GirlTalkMoodGirl] < 30:
+        $GirlTalkMood = 'happy'
+    end
+
+    killvar '$GirlTalkMoodGirl'
+    killvar '$GirlTalkMoodTopic'
+---
+
+#GirlTalkMoodForTavernDayEvent
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkMoodGirl = $GirlKey
+
+    $GirlTalkMood = 'calm'
+
+    if $TavernDayEventId = 'caravan':
+        $GirlTalkMood = 'tired'
+    elseif $TavernDayEventId = 'rats':
+        if $GirlTalkMoodGirl = 'sandra':
+            $GirlTalkMood = 'angry'
+        else:
+            $GirlTalkMood = 'tired'
+        end
+    elseif $TavernDayEventId = 'brawl':
+        $GirlTalkMood = 'angry'
+    elseif $TavernDayEventId = 'guard':
+        if TavernDayEventGuardPassed = 1:
+            $GirlTalkMood = 'calm'
+        else:
+            $GirlTalkMood = 'angry'
+        end
+    elseif $TavernDayEventId = 'harvest':
+        $GirlTalkMood = 'happy'
+    elseif $TavernDayEventId = 'minstrels':
+        if $GirlTalkMoodGirl = 'melissa':
+            $GirlTalkMood = 'happy'
+        else:
+            $GirlTalkMood = 'calm'
+        end
+    elseif $TavernDayEventId = 'storm':
+        $GirlTalkMood = 'calm'
+    elseif $TavernDayEventId = 'pilgrims':
+        $GirlTalkMood = 'calm'
+    elseif $TavernDayEventId = 'broken':
+        if $GirlTalkMoodGirl = 'sandra':
+            $GirlTalkMood = 'angry'
+        else:
+            $GirlTalkMood = 'tired'
+        end
+    elseif $TavernDayEventId = 'thief':
+        $GirlTalkMood = 'angry'
+    end
+
+    killvar '$GirlTalkMoodGirl'
+---
+
+#GirlTalkShowMoodImage
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkImageGirl = $GirlKey
+    $GirlTalkImageSize = $ARGS[1]
+    $GirlTalkImageTopic = LCASE($ARGS[2])
+
+    if $GirlTalkImageGirl = '':
+        killvar '$GirlTalkImageGirl'
+        killvar '$GirlTalkImageSize'
+        killvar '$GirlTalkImageTopic'
+        exit
+    end
+
+    if $GirlTalkImageSize = '':
+        $GirlTalkImageSize = 'large'
+    end
+
+    gs 'GirlTalkResolveMood', $GirlTalkImageGirl, $GirlTalkImageTopic
+
+    $GirlTalkImageFolder = 'images/events/girl_talk/' + $GirlTalkImageGirl
+    GirlTalkImageVariants = 2
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', $GirlTalkImageFolder, $GirlTalkMood, GirlTalkImageVariants, 'webp', 'portrait'
+    elseif LOC('ShowImage') = 1:
+        gs 'ShowImage', 'portrait', $GirlTalkImageGirl, 'talk_' + $GirlTalkMood, '', 'webp', $GirlTalkImageSize
+    end
+
+    gs 'GirlTalkImageDebugBrief', $GirlTalkImageGirl, $GirlTalkMood
+
+    killvar '$GirlTalkImageGirl'
+    killvar '$GirlTalkImageSize'
+    killvar '$GirlTalkImageTopic'
+    killvar '$GirlTalkMood'
+    killvar '$GirlTalkImageFolder'
+    killvar 'GirlTalkImageVariants'
+---
+
+#GirlTalkImageDebugBrief
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkBriefGirl = $GirlKey
+    $GirlTalkBriefMood = LCASE($ARGS[1])
+
+    $GirlTalkBriefPath = 'images/events/girl_talk/' + $GirlTalkBriefGirl + '/' + $GirlTalkBriefMood + '_1.webp'
+    $GirlTalkBriefText = ''
+
+    if $GirlTalkBriefMood = 'calm':
+        $GirlTalkBriefText = 'Портрет ' + $RealName[$GirlTalkBriefGirl] + ' в спокойном настроении во время разговора в трактире. Нейтральная мягкая улыбка или собранное лицо, рабочая одежда официантки/кухни, фон зала слегка размыт. Без откровенного контента.'
+    elseif $GirlTalkBriefMood = 'happy':
+        $GirlTalkBriefText = 'Портрет ' + $RealName[$GirlTalkBriefGirl] + ' в радостном настроении: живая улыбка, чуть приподнятый подбородок, тёплый взгляд. Трактирный антураж, рабочий наряд, ощущение удачного дня.'
+    elseif $GirlTalkBriefMood = 'tired':
+        $GirlTalkBriefText = 'Портрет ' + $RealName[$GirlTalkBriefGirl] + ' уставшая после тяжёлой смены: тёмные круги или напряжение в плечах, взгляд в сторону, слабая улыбка или без неё. Рабочая одежда помята, фон трактира.'
+    elseif $GirlTalkBriefMood = 'angry':
+        $GirlTalkBriefText = 'Портрет ' + $RealName[$GirlTalkBriefGirl] + ' в раздражённом или злом настроении: сжатые губы, холодный или резкий взгляд, скрещённые руки или руки на бёдрах. Трактир, рабочий наряд, без агрессии в сторону зрителя.'
+    else:
+        $GirlTalkBriefText = 'Портрет девушки в разговоре, средневековый трактир.'
+    end
+
+    if debug = 1 or debug_images = 1:
+        *pl ' '
+        *pl '[DEBUG GIRL TALK IMAGE] girl: ' + $GirlTalkBriefGirl + ', mood: ' + $GirlTalkBriefMood
+        *pl '[DEBUG GIRL TALK IMAGE] path: ' + $GirlTalkBriefPath
+        *pl '[DEBUG GIRL TALK IMAGE] brief: ' + $GirlTalkBriefText
+        *pl ' '
+    end
+
+    killvar '$GirlTalkBriefGirl'
+    killvar '$GirlTalkBriefMood'
+    killvar '$GirlTalkBriefPath'
+    killvar '$GirlTalkBriefText'
+---
+
+#GirlTalkImageDebugPanel
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: ПОРТРЕТЫ РАЗГОВОРА С ДЕВУШКАМИ'
+    *pl '══════════════════════════════════════════════'
+    *pl 'Папка: images/events/girl_talk/{girl}/'
+    *pl 'Настроения: calm, happy, tired, angry'
+    *pl ' '
+
+    act 'Аманда / уставшая':
+        $TalkGirl = 'amanda'
+        TavernDayEventActive = 1
+        $TavernDayEventId = 'caravan'
+        TavernStaffBusyDay = 1
+        gs 'GirlTalkShowMoodImage', 'amanda', 'large', 'tavern'
+    end
+
+    act 'Мелисса / радостная':
+        gs 'GirlTalkShowMoodImage', 'melissa', 'large', 'compliment'
+    end
+
+    act 'Сандра / злая':
+        $TalkGirl = 'sandra'
+        TavernDayEventActive = 1
+        $TavernDayEventId = 'rats'
+        gs 'GirlTalkShowMoodImage', 'sandra', 'large', 'tavern'
+    end
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+---
