@@ -42,14 +42,6 @@
     *pl 'День недели: ' + $WeekDay
     *pl ' '
 
-    if LOC('TavernDayEventShowAtTavern') = 1:
-        gs 'TavernDayEventShowAtTavern'
-    end
-
-    if time = 4 and LOC('TavernDayEventShowEveningNotice') = 1:
-        gs 'TavernDayEventShowEveningNotice'
-    end
-
     *pl 'Деньги: ' + STR(money) + ' мараведи'
     *pl 'Посетителей сегодня: ' + STR(tavernvisitors)
     *pl ' '
@@ -70,8 +62,18 @@
     ! ====================== ОПИСАНИЕ ГЛАВНОГО ЗАЛА ======================
 
     if TavernMainOpen = 1:
-        *p 'Главный зал полон жизни. За грубыми деревянными столами сидят посетители, в воздухе смешиваются запахи горячей еды, дыма и пролитого пива.'
-        *p 'У стойки слышны разговоры, а с кухни доносится рабочая суета.'
+        TavernDayEventHallDescPrinted = 0
+
+        if LOC('TavernDayEventPrintHallDescription') = 1:
+            gs 'TavernDayEventPrintHallDescription'
+        end
+
+        if TavernDayEventHallDescPrinted = 0:
+            *p 'Главный зал полон жизни. За грубыми деревянными столами сидят посетители, в воздухе смешиваются запахи горячей еды, дыма и пролитого пива.'
+            *p 'У стойки слышны разговоры, а с кухни доносится рабочая суета.'
+        end
+
+        killvar 'TavernDayEventHallDescPrinted'
     else:
         *p 'Главный зал сейчас почти пуст. Столы убраны, огонь в очаге тлеет, а рабочая суета временно стихла.'
     end

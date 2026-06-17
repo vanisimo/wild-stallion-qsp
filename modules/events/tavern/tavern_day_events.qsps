@@ -22,8 +22,8 @@
 ---
 
 #TavernDayEventRoll
-    TavernDayEventMorningShown = 0
-    TavernDayEventEveningShown = 0
+    TavernDayEventImageShown = 0
+    TavernDayEventHallDescPrinted = 0
     $TavernDayEventEveningText = ''
     TavernStaffBusyDay = 0
     TavernStaffTiredEvening = 0
@@ -154,29 +154,52 @@
     *pl ' '
 ---
 
-#TavernDayEventShowAtTavern
+#TavernDayEventPrintHallDescription
+    TavernDayEventHallDescPrinted = 0
+
     if TavernDayEventActive = 0 or $TavernDayEventId = '':
         exit
     end
 
-    if TavernDayEventMorningShown = 1:
-        exit
+    TavernDayEventHallDescPrinted = 1
+
+    if TavernDayEventImageShown = 0:
+        TavernDayEventImageShown = 1
+
+        if $TavernDayEventId = 'caravan':
+            gs 'TavernDayEventShowImage', 'caravan_morning'
+        elseif $TavernDayEventId = 'rats':
+            if TavernDayBrawlHappened = 1 and time = 4:
+                gs 'TavernDayEventShowImage', 'rats_brawl'
+            else:
+                gs 'TavernDayEventShowImage', 'rats_storage'
+            end
+        end
     end
 
-    TavernDayEventMorningShown = 1
-
     if $TavernDayEventId = 'caravan':
-        gs 'TavernDayEventShowImage', 'caravan_morning'
-        gs 'TavernDayEventText', 'caravan_morning'
-        *p '<b>Караван у трактира.</b> ' + $TavernDayEventText
+        if time = 4 and TavernStaffTiredEvening = 1:
+            gs 'TavernDayEventText', 'caravan_evening'
+            *p $TavernDayEventText
+        else:
+            gs 'TavernDayEventText', 'caravan_hall'
+            *p $TavernDayEventText
+        end
 
     elseif $TavernDayEventId = 'rats':
-        gs 'TavernDayEventShowImage', 'rats_storage'
-        gs 'TavernDayEventText', 'rats_morning'
-        *p '<b>Крысы на складе.</b> ' + $TavernDayEventText
-        *pl ' '
-        gs 'TavernDayEventText', 'rats_repair_hint'
-        *p $TavernDayEventText
+        if TavernDayBrawlHappened = 1 and time = 4:
+            gs 'TavernDayEventText', 'rats_brawl'
+            *p $TavernDayEventText
+        elseif TavernRepairOrdered = 1:
+            gs 'TavernDayEventText', 'rats_hall_repaired'
+            *p $TavernDayEventText
+        else:
+            gs 'TavernDayEventText', 'rats_hall'
+            *p $TavernDayEventText
+            *pl ' '
+            gs 'TavernDayEventText', 'rats_repair_hint'
+            *p $TavernDayEventText
+        end
     end
 
     killvar '$TavernDayEventText'
@@ -206,6 +229,7 @@
     if $TavernDayEventId = 'rats' and TavernRepairNeeded = 1 and TavernRepairOrdered = 0 and TavernDayBrawlHappened = 0:
         if RAND(1, 100) <= 60:
             TavernDayBrawlHappened = 1
+            TavernDayEventImageShown = 0
             TavernDayEventProfitBonus -= RAND(20, 45)
             TavernDayEventReputationBonus -= 1
 
@@ -214,29 +238,6 @@
             killvar '$TavernDayEventText'
         end
     end
----
-
-#TavernDayEventShowEveningNotice
-    if $TavernDayEventEveningText = '':
-        exit
-    end
-
-    if TavernDayEventEveningShown = 1:
-        exit
-    end
-
-    TavernDayEventEveningShown = 1
-
-    if TavernDayBrawlHappened = 1:
-        gs 'TavernDayEventShowImage', 'rats_brawl'
-    elseif $TavernDayEventId = 'caravan':
-        gs 'TavernDayEventShowImage', 'caravan_morning'
-    end
-
-    *p $TavernDayEventEveningText
-    *pl ' '
-
-    killvar '$TavernDayEventEveningText'
 ---
 
 #TavernDayEventStaffBlocksGirl
@@ -357,8 +358,8 @@
 #TavernDayEventDebugForce
     $TavernDayEventDebugForceId = LCASE($ARGS[0])
 
-    TavernDayEventMorningShown = 0
-    TavernDayEventEveningShown = 0
+    TavernDayEventImageShown = 0
+    TavernDayEventHallDescPrinted = 0
     TavernDayBrawlHappened = 0
     TavernRepairNeeded = 0
     TavernRepairOrdered = 0
