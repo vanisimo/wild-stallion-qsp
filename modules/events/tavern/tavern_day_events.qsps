@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/events/tavern/tavern_day_events.qsps
 ! MODULE: events/tavern
-! Нейтральные дневные события таверны (караван, крысы, ремонт)
+! Нейтральные дневные события таверны
 ! Не заменяет tavern_event_dispatcher (сцены с девушками в зале)
 ! ================================================
 
@@ -28,6 +28,7 @@
     TavernStaffBusyDay = 0
     TavernStaffTiredEvening = 0
     TavernDayBrawlHappened = 0
+    TavernDayEventGuardPassed = 0
     TavernDayEventProfitBonus = 0
     TavernDayEventReputationBonus = 0
     $TavernDayEventId = ''
@@ -42,16 +43,34 @@
 
     TavernDayEventRoll = RAND(1, 100)
 
-    if TavernDayEventRoll > 22:
+    if TavernDayEventRoll > 25:
         killvar 'TavernDayEventRoll'
         killvar 'TavernDayEventCanRoll'
         exit
     end
 
-    if RAND(1, 100) <= 55:
+    TavernDayEventPick = RAND(1, 100)
+
+    if TavernDayEventPick <= 14:
         gs 'TavernDayEventStartCaravan'
-    else:
+    elseif TavernDayEventPick <= 26:
         gs 'TavernDayEventStartRats'
+    elseif TavernDayEventPick <= 36:
+        gs 'TavernDayEventStartBrawl'
+    elseif TavernDayEventPick <= 46:
+        gs 'TavernDayEventStartGuard'
+    elseif TavernDayEventPick <= 58:
+        gs 'TavernDayEventStartHarvest'
+    elseif TavernDayEventPick <= 68:
+        gs 'TavernDayEventStartMinstrels'
+    elseif TavernDayEventPick <= 76:
+        gs 'TavernDayEventStartStorm'
+    elseif TavernDayEventPick <= 84:
+        gs 'TavernDayEventStartPilgrims'
+    elseif TavernDayEventPick <= 92:
+        gs 'TavernDayEventStartBroken'
+    else:
+        gs 'TavernDayEventStartThief'
     end
 
     if debug = 1:
@@ -59,6 +78,7 @@
     end
 
     killvar 'TavernDayEventRoll'
+    killvar 'TavernDayEventPick'
     killvar 'TavernDayEventCanRoll'
 ---
 
@@ -83,6 +103,7 @@
     TavernDayEventActive = 1
     TavernRepairNeeded = 1
     TavernRepairOrdered = 0
+    $TavernRepairSource = 'rats'
 
     productnum -= RAND(25, 55)
 
@@ -110,6 +131,136 @@
     TavernDayEventReputationBonus = -2
 ---
 
+#TavernDayEventStartBrawl
+    $TavernDayEventId = 'brawl'
+    TavernDayEventActive = 1
+    TavernRepairNeeded = 1
+    TavernRepairOrdered = 0
+    $TavernRepairSource = 'brawl'
+
+    TavernDayEventProfitBonus = -RAND(35, 70)
+    TavernDayEventReputationBonus = -2
+---
+
+#TavernDayEventStartGuard
+    $TavernDayEventId = 'guard'
+    TavernDayEventActive = 1
+
+    if tavern_reputation >= 55 and tavern_cleaning_power >= 35:
+        TavernDayEventGuardPassed = 1
+        TavernDayEventProfitBonus = RAND(5, 15)
+        TavernDayEventReputationBonus = 2
+    else:
+        TavernDayEventGuardPassed = 0
+        TavernDayEventProfitBonus = -RAND(100, 200)
+        TavernDayEventReputationBonus = -3
+    end
+---
+
+#TavernDayEventStartHarvest
+    $TavernDayEventId = 'harvest'
+    TavernDayEventActive = 1
+
+    tavernvisitors += RAND(14, 24)
+
+    if tavernvisitors > 85:
+        tavernvisitors = 85
+    end
+
+    TavernDayEventProfitBonus = RAND(40, 75)
+    TavernDayEventReputationBonus = 2
+---
+
+#TavernDayEventStartMinstrels
+    $TavernDayEventId = 'minstrels'
+    TavernDayEventActive = 1
+
+    tavernvisitors += RAND(6, 14)
+
+    if tavernvisitors > 80:
+        tavernvisitors = 80
+    end
+
+    TavernDayEventProfitBonus = RAND(20, 45)
+    TavernDayEventReputationBonus = 1
+---
+
+#TavernDayEventStartStorm
+    $TavernDayEventId = 'storm'
+    TavernDayEventActive = 1
+
+    tavernvisitors -= RAND(8, 16)
+
+    if tavernvisitors < 8:
+        tavernvisitors = 8
+    end
+
+    if tavern_reputation >= 50:
+        TavernDayEventProfitBonus = RAND(5, 20)
+        TavernDayEventReputationBonus = 1
+    else:
+        TavernDayEventProfitBonus = -RAND(5, 15)
+        TavernDayEventReputationBonus = 0
+    end
+---
+
+#TavernDayEventStartPilgrims
+    $TavernDayEventId = 'pilgrims'
+    TavernDayEventActive = 1
+
+    TavernDayEventProfitBonus = -RAND(10, 25)
+    TavernDayEventReputationBonus = 2
+---
+
+#TavernDayEventStartBroken
+    $TavernDayEventId = 'broken'
+    TavernDayEventActive = 1
+    TavernRepairNeeded = 1
+    TavernRepairOrdered = 0
+    $TavernRepairSource = 'broken'
+
+    if beernum > 0:
+        beernum -= RAND(10, 25)
+
+        if beernum < 0:
+            beernum = 0
+        end
+    end
+
+    if winenum > 0:
+        winenum -= RAND(3, 8)
+
+        if winenum < 0:
+            winenum = 0
+        end
+    end
+
+    TavernDayEventProfitBonus = -RAND(20, 40)
+    TavernDayEventReputationBonus = -1
+---
+
+#TavernDayEventStartThief
+    $TavernDayEventId = 'thief'
+    TavernDayEventActive = 1
+
+    productnum -= RAND(8, 20)
+
+    if productnum < 0:
+        productnum = 0
+    end
+
+    if winenum > 0:
+        winenum -= RAND(2, 6)
+
+        if winenum < 0:
+            winenum = 0
+        end
+    end
+
+    TavernDayEventProfitBonus = -RAND(15, 30)
+    TavernDayEventReputationBonus = -1
+---
+
 #TavernDayEventApplyWorkDaySummary
     if TavernDayEventActive = 0 or $TavernDayEventId = '':
         exit
@@ -118,20 +269,11 @@
     tavern_event_profit_bonus += TavernDayEventProfitBonus
     tavern_event_reputation_bonus += TavernDayEventReputationBonus
 
-    if $TavernDayEventId = 'caravan':
-        gs 'TavernDayEventText', 'caravan_end'
-        $LastTavernEventText = $TavernDayEventText
+    gs 'TavernDayEventEndTextId'
+    gs 'TavernDayEventText', $TavernDayEventEndTextId
+    $LastTavernEventText = $TavernDayEventText
 
-    elseif $TavernDayEventId = 'rats':
-        if TavernRepairOrdered = 1:
-            gs 'TavernDayEventText', 'rats_end_repaired'
-        else:
-            gs 'TavernDayEventText', 'rats_end_unrepaired'
-        end
-
-        $LastTavernEventText = $TavernDayEventText
-    end
-
+    killvar '$TavernDayEventEndTextId'
     killvar '$TavernDayEventText'
 ---
 
@@ -143,15 +285,33 @@
     *pl ' '
     *pl 'Событие сегодняшнего дня:'
 
-    if $TavernDayEventId = 'caravan':
-        gs 'TavernDayEventText', 'caravan_morning'
-    elseif $TavernDayEventId = 'rats':
-        gs 'TavernDayEventText', 'rats_morning'
-    end
-
+    gs 'TavernDayEventMorningTextId'
+    gs 'TavernDayEventText', $TavernDayEventMorningTextId
     *p $TavernDayEventText
+
+    killvar '$TavernDayEventMorningTextId'
     killvar '$TavernDayEventText'
     *pl ' '
+---
+
+#TavernDayEventPrintRepairHint
+    if TavernRepairNeeded = 0 or TavernRepairOrdered = 1:
+        exit
+    end
+
+    if $TavernDayEventId = 'rats':
+        gs 'TavernDayEventText', 'rats_repair_hint'
+    elseif $TavernDayEventId = 'brawl':
+        gs 'TavernDayEventText', 'brawl_repair_hint'
+    elseif $TavernDayEventId = 'broken':
+        gs 'TavernDayEventText', 'broken_repair_hint'
+    else:
+        exit
+    end
+
+    *pl ' '
+    *p $TavernDayEventText
+    killvar '$TavernDayEventText'
 ---
 
 #TavernDayEventPrintHallDescription
@@ -165,44 +325,24 @@
 
     if TavernDayEventImageShown = 0:
         TavernDayEventImageShown = 1
+        gs 'TavernDayEventImageKeyForEvent'
 
-        if $TavernDayEventId = 'caravan':
-            gs 'TavernDayEventShowImage', 'caravan_morning'
-        elseif $TavernDayEventId = 'rats':
-            if TavernDayBrawlHappened = 1 and time = 4:
-                gs 'TavernDayEventShowImage', 'rats_brawl'
-            else:
-                gs 'TavernDayEventShowImage', 'rats_storage'
-            end
+        if $TavernDayEventImageKey <> '':
+            gs 'TavernDayEventShowImage', $TavernDayEventImageKey
         end
+
+        killvar '$TavernDayEventImageKey'
     end
 
-    if $TavernDayEventId = 'caravan':
-        if time = 4 and TavernStaffTiredEvening = 1:
-            gs 'TavernDayEventText', 'caravan_evening'
-            *p $TavernDayEventText
-        else:
-            gs 'TavernDayEventText', 'caravan_hall'
-            *p $TavernDayEventText
-        end
+    gs 'TavernDayEventHallTextId'
+    gs 'TavernDayEventText', $TavernDayEventHallTextId
+    *p $TavernDayEventText
 
-    elseif $TavernDayEventId = 'rats':
-        if TavernDayBrawlHappened = 1 and time = 4:
-            gs 'TavernDayEventText', 'rats_brawl'
-            *p $TavernDayEventText
-        elseif TavernRepairOrdered = 1:
-            gs 'TavernDayEventText', 'rats_hall_repaired'
-            *p $TavernDayEventText
-        else:
-            gs 'TavernDayEventText', 'rats_hall'
-            *p $TavernDayEventText
-            *pl ' '
-            gs 'TavernDayEventText', 'rats_repair_hint'
-            *p $TavernDayEventText
-        end
-    end
-
+    killvar '$TavernDayEventHallTextId'
     killvar '$TavernDayEventText'
+
+    gs 'TavernDayEventPrintRepairHint'
+
     *pl ' '
 ---
 
@@ -307,9 +447,8 @@
         money -= TavernDayRepairCost
         TavernRepairNeeded = 0
         TavernRepairOrdered = 1
-        tavern_event_reputation_bonus += 1
 
-        if TavernDayEventReputationBonus < -1:
+        if TavernDayEventReputationBonus < 0:
             TavernDayEventReputationBonus += 1
         end
 
@@ -361,12 +500,14 @@
     TavernDayEventImageShown = 0
     TavernDayEventHallDescPrinted = 0
     TavernDayBrawlHappened = 0
+    TavernDayEventGuardPassed = 0
     TavernRepairNeeded = 0
     TavernRepairOrdered = 0
     TavernStaffBusyDay = 0
     TavernStaffTiredEvening = 0
     TavernDayEventActive = 0
     $TavernDayEventId = ''
+    $TavernRepairSource = ''
     TavernDayEventProfitBonus = 0
     TavernDayEventReputationBonus = 0
 
@@ -374,6 +515,27 @@
         gs 'TavernDayEventStartCaravan'
     elseif $TavernDayEventDebugForceId = 'rats':
         gs 'TavernDayEventStartRats'
+    elseif $TavernDayEventDebugForceId = 'brawl':
+        gs 'TavernDayEventStartBrawl'
+    elseif $TavernDayEventDebugForceId = 'guard':
+        gs 'TavernDayEventStartGuard'
+    elseif $TavernDayEventDebugForceId = 'guard_fine':
+        gs 'TavernDayEventStartGuard'
+        TavernDayEventGuardPassed = 0
+        TavernDayEventProfitBonus = -150
+        TavernDayEventReputationBonus = -3
+    elseif $TavernDayEventDebugForceId = 'harvest':
+        gs 'TavernDayEventStartHarvest'
+    elseif $TavernDayEventDebugForceId = 'minstrels':
+        gs 'TavernDayEventStartMinstrels'
+    elseif $TavernDayEventDebugForceId = 'storm':
+        gs 'TavernDayEventStartStorm'
+    elseif $TavernDayEventDebugForceId = 'pilgrims':
+        gs 'TavernDayEventStartPilgrims'
+    elseif $TavernDayEventDebugForceId = 'broken':
+        gs 'TavernDayEventStartBroken'
+    elseif $TavernDayEventDebugForceId = 'thief':
+        gs 'TavernDayEventStartThief'
     else:
         killvar '$TavernDayEventDebugForceId'
         exit
