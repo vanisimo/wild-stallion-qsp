@@ -227,9 +227,19 @@ Owner: `modules/core/tavern/tavern_hired_staff.qsps`.
 
 Unlock (`CheckTavernHiredStaffUnlocked`):
 
-- `MelissaStaffHired = 1` — after mother hires staff (main arc point 3, **TODO**). Clerk only mentions this in advice until then.
+- `SandraStaffHired = 1` — mother hired at least one role via `SandraStaffHireTalk`.
+- Gate: `MayorClerkMentionedStaff = 1` from mayor clerk advice.
 
-Until unlock, hire buttons are hidden. If unlock is lost before hire (should not happen in normal play), active hires are cleared in `ApplyTavernHiredStaffEffects`.
+Hiring flow (`modules/events/family/sandra_staff_hire.qsps`):
+
+- Talk topic in Sandra menu: «О работницах для трактира».
+- Mother hires; Stefan pays **moving costs** once: kitchen `30`, waitress `30`, cleaning `25`.
+- Daily salary uses existing `TavernHired*Cost` in `tavern_daily_expenses`.
+- Panel staff: read-only after `SandraStaffHired = 1` (no hire/fire buttons).
+- `SandraStaffTalkDone = 1` when player finishes after at least one hire.
+- `SandraStaffGirlsReactionPending = 1` — hook for point 4 girl reactions (**TODO**).
+
+Until unlock, hire buttons are hidden.
 
 Flags:
 

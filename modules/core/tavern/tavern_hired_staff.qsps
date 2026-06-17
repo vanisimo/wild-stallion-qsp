@@ -59,7 +59,7 @@
 
     TavernHiredStaffUnlocked = 0
 
-    if MelissaStaffHired = 1:
+    if SandraStaffHired = 1:
         TavernHiredStaffUnlocked = 1
     end
 ---
@@ -166,6 +166,10 @@
         exit
     end
 
+    if SandraStaffHired = 1:
+        exit
+    end
+
     gs 'InitTavernHiredStaff'
     gs 'CheckTavernHiredStaffUnlocked'
 
@@ -235,7 +239,7 @@
         exit
     end
 
-    pl 'Найм открыт.'
+    pl 'Персонал нанят матерью. Увольнение — только через неё.'
     pl ' '
 
     gs 'PanelHiredStaffLine', 'kitchen'
@@ -291,8 +295,20 @@
 
     if PanelHiredJobActive = 1:
         $PanelHiredStatus = 'нанят'
-        $PanelHiredToggleText = 'Уволить'
-        $PanelHiredCanToggle = 1
+
+        if SandraStaffHired = 1:
+            $PanelHiredToggleText = ''
+            $PanelHiredCanToggle = 0
+        else:
+            $PanelHiredToggleText = 'Уволить'
+            $PanelHiredCanToggle = 1
+        end
+
+    elseif SandraStaffHired = 1:
+        $PanelHiredStatus = 'нет'
+        $PanelHiredToggleText = ''
+        $PanelHiredCanToggle = 0
+
     elseif TavernHiredStaffUnlocked = 1:
         $PanelHiredStatus = 'нет'
         $PanelHiredToggleText = 'Нанять'

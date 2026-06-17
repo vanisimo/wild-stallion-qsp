@@ -1,0 +1,225 @@
+! ================================================
+! FILE: modules/events/family/sandra_staff_hire.qsps
+! MODULE: events/family
+! Мать нанимает подсобный персонал трактира
+! Подъёмные сразу, зарплата ежедневно через tavern_hired_staff
+! ================================================
+
+#InitSandraStaffHire
+    if TavernHiredKitchenMovingCost <= 0:
+        TavernHiredKitchenMovingCost = 30
+    end
+
+    if TavernHiredWaitressMovingCost <= 0:
+        TavernHiredWaitressMovingCost = 30
+    end
+
+    if TavernHiredCleaningMovingCost <= 0:
+        TavernHiredCleaningMovingCost = 25
+    end
+---
+
+#SandraStaffHireCanTalk
+    gs 'InitSandraStaffHire'
+
+    SandraStaffHireCanTalk = 0
+
+    if MayorClerkMentionedStaff = 0:
+        exit
+    end
+
+    if SandraStaffTalkDone = 1:
+        exit
+    end
+
+    SandraStaffHireCanTalk = 1
+---
+
+#SandraStaffHireTalk
+    $SandraStaffReturnLoc = $ARGS[0]
+
+    if $SandraStaffReturnLoc = '':
+        $SandraStaffReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'SandraStaffHireCanTalk'
+
+    if SandraStaffHireCanTalk = 0:
+        gt $SandraStaffReturnLoc
+        exit
+    end
+
+    if SandraStaffTalkStarted = 0:
+        gs 'SandraStaffHireIntroText'
+        SandraStaffTalkStarted = 1
+    else:
+        gs 'SandraStaffHireReplayText'
+    end
+
+    *pl ' '
+    *pl 'У вас: ' + STR(money) + ' мараведи'
+    *pl 'Подъёмные: кухня ' + STR(TavernHiredKitchenMovingCost) + ', зал ' + STR(TavernHiredWaitressMovingCost) + ', уборка ' + STR(TavernHiredCleaningMovingCost)
+    *pl 'Зарплата в день: ' + STR(TavernHiredKitchenCost) + ' / ' + STR(TavernHiredWaitressCost) + ' / ' + STR(TavernHiredCleaningCost)
+    *pl ' '
+
+    if TavernHiredKitchen = 0:
+        act 'Дать подъёмные: работница на кухню (' + STR(TavernHiredKitchenMovingCost) + ' м)':
+            gt 'SandraStaffHireTryRole', 'kitchen', $SandraStaffReturnLoc
+        end
+    end
+
+    if TavernHiredWaitress = 0:
+        act 'Дать подъёмные: работница в зале (' + STR(TavernHiredWaitressMovingCost) + ' м)':
+            gt 'SandraStaffHireTryRole', 'waitress', $SandraStaffReturnLoc
+        end
+    end
+
+    if TavernHiredCleaning = 0:
+        act 'Дать подъёмные: уборщица (' + STR(TavernHiredCleaningMovingCost) + ' м)':
+            gt 'SandraStaffHireTryRole', 'cleaning', $SandraStaffReturnLoc
+        end
+    end
+
+    if SandraStaffHired = 1:
+        act 'Пока хватит':
+            gt 'SandraStaffHireFinish', $SandraStaffReturnLoc
+        end
+    else:
+        act 'Пока хватит':
+            gt 'SandraStaffHireNeedOne', $SandraStaffReturnLoc
+        end
+    end
+
+    act 'Вернуться':
+        gt $SandraStaffReturnLoc
+    end
+---
+
+#SandraStaffHireTryRole
+    $SandraStaffHireRole = LCASE($ARGS[0])
+    $SandraStaffReturnLoc = $ARGS[1]
+
+    gs 'InitSandraStaffHire'
+    gs 'InitTavernHiredStaff'
+
+    SandraStaffHireMovingCost = 0
+    $SandraStaffHireRoleTitle = ''
+
+    if $SandraStaffHireRole = 'kitchen':
+        SandraStaffHireMovingCost = TavernHiredKitchenMovingCost
+        $SandraStaffHireRoleTitle = 'кухню'
+
+        if TavernHiredKitchen = 1:
+            gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
+            exit
+        end
+
+    elseif $SandraStaffHireRole = 'waitress':
+        SandraStaffHireMovingCost = TavernHiredWaitressMovingCost
+        $SandraStaffHireRoleTitle = 'зал'
+
+        if TavernHiredWaitress = 1:
+            gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
+            exit
+        end
+
+    elseif $SandraStaffHireRole = 'cleaning':
+        SandraStaffHireMovingCost = TavernHiredCleaningMovingCost
+        $SandraStaffHireRoleTitle = 'уборку'
+
+        if TavernHiredCleaning = 1:
+            gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
+            exit
+        end
+    else:
+        gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
+        exit
+    end
+
+    if money < SandraStaffHireMovingCost:
+        cls
+        gs 'SandraStaffHireNoMoneyText'
+        *pl ' '
+        *pl 'Нужно: ' + STR(SandraStaffHireMovingCost) + ' мараведи'
+
+        act 'Вернуться к разговору':
+            gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
+        end
+
+        killvar '$SandraStaffHireRole'
+        killvar '$SandraStaffReturnLoc'
+        killvar '$SandraStaffHireRoleTitle'
+        killvar 'SandraStaffHireMovingCost'
+        exit
+    end
+
+    money -= SandraStaffHireMovingCost
+
+    if $SandraStaffHireRole = 'kitchen':
+        TavernHiredKitchen = 1
+    elseif $SandraStaffHireRole = 'waitress':
+        TavernHiredWaitress = 1
+    elseif $SandraStaffHireRole = 'cleaning':
+        TavernHiredCleaning = 1
+    end
+
+    SandraStaffHired = 1
+
+    gs 'CalculateTavernStaffEfficiency'
+    gs 'UpdateGirlLocations'
+
+    cls
+    gs 'SandraStaffHireRoleHiredText'
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
+    end
+
+    killvar '$SandraStaffHireRole'
+    killvar '$SandraStaffReturnLoc'
+    killvar '$SandraStaffHireRoleTitle'
+    killvar 'SandraStaffHireMovingCost'
+---
+
+#SandraStaffHireNeedOne
+    cls
+    gs 'SandraStaffHireNeedOneText'
+    *pl ' '
+
+    act 'Вернуться к разговору':
+        gt 'SandraStaffHireTalk', $ARGS[0]
+    end
+---
+
+#SandraStaffHireFinish
+    cls
+
+    gs 'SandraStaffHireDoneText'
+
+    SandraStaffTalkDone = 1
+    Friends['sandra'] += 1
+    FamilyTrust += 2
+
+    if FamilyTrust > 100:
+        FamilyTrust = 100
+    end
+
+    if SandraFamilyConcern > 0:
+        SandraFamilyConcern -= 1
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Sandra_StaffHired_1'
+    end
+
+    SandraStaffGirlsReactionPending = 1
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $ARGS[0]
+    end
+---
