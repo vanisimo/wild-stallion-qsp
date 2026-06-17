@@ -226,6 +226,23 @@ Knowledge ids: `Stefan_MayorClerkAdvice_1`, later `Stefan_MayorFirstTalk_1`.
 
 Debug: `DebugMayorArcPanel` (debug panel).
 
+## Mayor / seal / family corruption (stage 2 — design only)
+
+**Not implemented in QSP yet.** Full story draft:
+
+- `docs/design-mayor-seal-corruption-arc.md`
+
+Session handoff for playtest + next steps:
+
+- `docs/session-notes-2026-06-18.md`
+
+Summary:
+
+- First audience (after workoff) to be extended: respectable suit gate, mayor states **honest path conditions** (~21 days, taxes, reputation) and **second path** (return if reputation not crystal-clear); noble suit at **Irma** (520); Stefan **thoughts** only, no fork buttons.
+- **Irma** = mayor's mistress; rumor **public early**.
+- Optional corruption arc: mayor **desire** (not force); sisters' price = global `PlayerCantForbidGirlMeetings` + `AmandaFutureFavorOwed` / `MelissaFutureFavorOwed`; jewelry gifts; Sandra needs `PlayerKnows_SandraDraupnirAffair` + support talk (Draupnir foreshadow, chest item, Sunday grocery eavesdrop).
+- Strong blackmail TBD: port / weapons shipments.
+
 ## Hired Staff (stage 1 / PR2)
 
 Owner: `modules/core/tavern/tavern_hired_staff.qsps`.
