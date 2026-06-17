@@ -340,6 +340,7 @@ Key state:
 - `TavernStaffBusyDay`, `TavernStaffTiredEvening` (caravan only)
 - `TavernRepairNeeded`, `TavernRepairOrdered`, `TavernRepairEveningShown`, `TavernDayRepairCost`, `$TavernRepairSource` (`rats` / `brawl` / `broken`)
 - `TavernRepairCarryPending`, `$TavernRepairCarrySource`, `TavernRepairCarryDays` — unrepaired damage waiting for next day
+- `LastDayRepairCost`, `$LastDayRepairSource` — repair payment shown in next-morning tavern summary (`NextDay`)
 - `TavernDayEventGuardPassed`
 - `TavernDayEventProfitBonus`, `TavernDayEventReputationBonus`
 - `TavernDayBrawlHappened` (rats evening only)

@@ -46,6 +46,8 @@
     TavernRepairOrdered = 0
     TavernRepairEveningShown = 0
     TavernDayRepairCost = 0
+    LastDayRepairCost = 0
+    $LastDayRepairSource = ''
     $TavernRepairSource = ''
     $TavernDayEventId = ''
     TavernDayEventActive = 0
@@ -159,6 +161,18 @@
     if TavernRepairCarryDays >= 1:
         tavern_event_reputation_bonus -= 1
         tavern_event_profit_bonus -= RAND(5, 12)
+    end
+---
+
+#TavernDayEventRepairSummaryText
+    $TavernDayEventRepairSummaryText = ''
+
+    if $LastDayRepairSource = 'brawl':
+        $TavernDayEventRepairSummaryText = 'Закрепление стойки и мебели после драки в зале.'
+    elseif $LastDayRepairSource = 'broken':
+        $TavernDayEventRepairSummaryText = 'Укрепление подвала и полок после аварии с бочкой.'
+    else:
+        $TavernDayEventRepairSummaryText = 'Ремонт кладовой и полок после погони за крысами.'
     end
 ---
 
@@ -742,6 +756,8 @@
 
     money -= TavernDayRepairCost
     TavernRepairOrdered = 1
+    LastDayRepairCost = TavernDayRepairCost
+    $LastDayRepairSource = $TavernRepairSource
 
     if TavernDayEventReputationBonus < 0:
         TavernDayEventReputationBonus += 1
@@ -854,6 +870,8 @@
     TavernRepairCarryPending = 0
     TavernRepairCarryDays = 0
     TavernDayRepairCost = 0
+    LastDayRepairCost = 0
+    $LastDayRepairSource = ''
     $TavernRepairCarrySource = ''
     TavernStaffBusyDay = 0
     TavernStaffTiredEvening = 0
