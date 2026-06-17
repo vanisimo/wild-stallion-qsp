@@ -214,26 +214,26 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.AddModule` | 233 |
 | `Menu.Add` | 233 |
+| `Menu.AddModule` | 233 |
 | `NormalizeGirlKey` | 105 |
 | `EnsureGirlData` | 92 |
 | `TavernMain` | 74 |
 | `ShowGirlSidebar` | 70 |
 | `ClampGirlSocialStats` | 46 |
 | `UpdateGirlLocations` | 44 |
-| `ShowImage` | 41 |
 | `RegisterSex` | 41 |
+| `ShowImage` | 41 |
 | `Menu.Create` | 39 |
 | `CorruptionProgress` | 38 |
 | `Menu.Destroy` | 33 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `SaveLastHallEvent` | 21 |
-| `MarketDance` | 21 |
-| `Menu.AddCondition` | 21 |
-| `ClampTavernEventState` | 21 |
 | `ShowLocationImage` | 21 |
+| `Menu.AddCondition` | 21 |
+| `MarketDance` | 21 |
+| `SaveLastHallEvent` | 21 |
+| `ClampTavernEventState` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
 | `AmandaLizettePrintText` | 15 |
