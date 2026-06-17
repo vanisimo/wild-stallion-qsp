@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 231
-- Locations: 984
-- Locations with direct incoming calls: 799
+- Locations: 985
+- Locations with direct incoming calls: 800
 - Locations without direct incoming calls: 185
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 185
@@ -179,7 +179,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `RegisterTittyFuck` | `modules/actions/sex/sex_register.qsps` | 133 | `entry/helper` |
 | `RegisterVaginal` | `modules/actions/sex/sex_register.qsps` | 113 | `entry/helper` |
 | `ResetHallRumorDaily` | `modules/events/hall/hall_rumors.qsps` | 123 | `entry/helper` |
-| `ResetNpcTalkDailyFlags` | `modules/core/time/npc_talk_limits.qsps` | 179 | `entry/helper` |
+| `ResetNpcTalkDailyFlags` | `modules/core/time/npc_talk_limits.qsps` | 187 | `entry/helper` |
 | `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 40 | `entry/helper` |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 | `entry/helper` |
 | `SexSceneText` | `modules/actions/sex/sex_scene_text.qsps` | 9 | `entry/helper` |
@@ -215,10 +215,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | --- | --- |
 | `Menu.Add` | 233 |
 | `Menu.AddModule` | 233 |
-| `NormalizeGirlKey` | 104 |
-| `EnsureGirlData` | 91 |
+| `NormalizeGirlKey` | 105 |
+| `EnsureGirlData` | 92 |
 | `TavernMain` | 74 |
-| `ShowGirlSidebar` | 71 |
+| `ShowGirlSidebar` | 72 |
 | `ClampGirlSocialStats` | 46 |
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
@@ -228,16 +228,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 33 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `ShowLocationImage` | 21 |
+| `ClampTavernEventState` | 21 |
 | `MarketDance` | 21 |
 | `SaveLastHallEvent` | 21 |
-| `ClampTavernEventState` | 21 |
+| `ShowLocationImage` | 21 |
 | `Menu.AddCondition` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
 | `AmandaLizettePrintText` | 15 |
 | `ShowGirlInLocation` | 15 |
-| `CalculateTavernStaffEfficiency` | 14 |
+| `GirlTalk` | 14 |
 
 ## Dynamic Call Sites
 

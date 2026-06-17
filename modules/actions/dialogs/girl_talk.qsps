@@ -343,7 +343,30 @@
     *pl ' РАЗГОВОР О ЗАЛЕ: ' + $RealName[$TalkGirl]
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p 'Что именно обсудить <a href="exec:gs ''Menu.Show'', ''GirlTalkHallTopicsMenu''">с ней</a>?'
+
+    gs 'UsefulTalkCheck', $TalkGirl, 'hall_recent'
+
+    if UsefulTalkResult = 0:
+        *p $UsefulTalkReason
+        *p 'Сейчас разговор больше ничего нового не даст. Лучше дать ей время или просто поболтать о мелочах.'
+        *pl ' '
+
+        act 'Поболтать ни о чём':
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+        end
+
+        act 'Вернуться к выбору тем':
+            gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+        end
+
+        act 'Вернуться':
+            gt $TalkReturnLoc
+        end
+
+        exit
+    end
+
+    *p 'Сейчас лучше обсудить самое важное.'
     *pl ' '
 
     gs 'GirlTalkBuildHallTopicsMenu'
@@ -356,51 +379,57 @@
 #GirlTalkBuildHallTopicsMenu
     gs 'Menu.Destroy', 'GirlTalkHallTopicsMenu'
     gs 'Menu.Create', 'GirlTalkHallTopicsMenu'
+    GirlTalkHallTopicAdded = 0
 
-    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
+    if GirlTalkHallTopicAdded = 0 and $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
         gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Что случилось в зале', ''
         gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'hall_event'
+            gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_event'
         }
+        GirlTalkHallTopicAdded = 1
     end
 
-    if LOC('HallRecentTalkCanDiscuss') = 1:
-        gs 'HallRecentTalkCanDiscuss', $TalkGirl
-        if HallRecentTalkAvailable = 1:
-            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Недавний случай в зале', ''
-            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-                gt 'HallRecentTalkStart', $TalkGirl, $TalkReturnLoc
-            }
-        end
-    end
-
-    if LOC('HallFamilyReactionCanDiscuss') = 1:
-        gs 'HallFamilyReactionCanDiscuss', $TalkGirl
-        if HallFamilyReactionAvailable = 1:
-            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Реакция семьи', ''
-            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-                gt 'HallFamilyReactionStart', $TalkGirl, $TalkReturnLoc
-            }
-        end
-    end
-
-    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
-        gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
-        if HallChoiceFamilyTalkAvailable = 1:
-            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Моё решение в зале', ''
-            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-                gt 'HallChoiceFamilyTalkStart', $TalkGirl, $TalkReturnLoc
-            }
-        end
-    end
-
-    if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
+    if GirlTalkHallTopicAdded = 0 and LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
         gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
         if GirlPolicyResponseTalkAvailable = 1:
             gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Как она выполнила правило', ''
             gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-                gt 'GirlPolicyResponseTalkStart', $TalkGirl, $TalkReturnLoc
+                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_policy'
             }
+            GirlTalkHallTopicAdded = 1
+        end
+    end
+
+    if GirlTalkHallTopicAdded = 0 and LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
+        gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
+        if HallChoiceFamilyTalkAvailable = 1:
+            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Моё решение в зале', ''
+            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_choice'
+            }
+            GirlTalkHallTopicAdded = 1
+        end
+    end
+
+    if GirlTalkHallTopicAdded = 0 and LOC('HallFamilyReactionCanDiscuss') = 1:
+        gs 'HallFamilyReactionCanDiscuss', $TalkGirl
+        if HallFamilyReactionAvailable = 1:
+            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Реакция семьи', ''
+            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_family'
+            }
+            GirlTalkHallTopicAdded = 1
+        end
+    end
+
+    if GirlTalkHallTopicAdded = 0 and LOC('HallRecentTalkCanDiscuss') = 1:
+        gs 'HallRecentTalkCanDiscuss', $TalkGirl
+        if HallRecentTalkAvailable = 1:
+            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Недавний случай в зале', ''
+            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_recent'
+            }
+            GirlTalkHallTopicAdded = 1
         end
     end
 
@@ -408,6 +437,76 @@
     gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
         gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
     }
+
+    killvar 'GirlTalkHallTopicAdded'
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Единый вход в содержательные разговоры о зале
+! ================================================
+
+#GirlTalkHallTopicStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+    $GirlTalkHallTopic = LCASE($ARGS[2])
+
+    if $TalkGirl = '':
+        msg 'Ошибка: GirlTalkHallTopicStart вызван без имени девушки.'
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+
+    gs 'UsefulTalkCheck', $TalkGirl, $GirlTalkHallTopic
+
+    if UsefulTalkResult = 0:
+        cls
+        gs 'ShowGirlSidebar', $TalkGirl
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        *p $UsefulTalkReason
+        *p 'Сейчас этот разговор больше ничего нового не даст.'
+        *pl ' '
+
+        act 'Поболтать ни о чём':
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+        end
+
+        act 'Вернуться к выбору тем':
+            gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+        end
+
+        act 'Вернуться':
+            gt $TalkReturnLoc
+        end
+
+        exit
+    end
+
+    gs 'UsefulTalkRegister', $TalkGirl, $GirlTalkHallTopic
+
+    if $GirlTalkHallTopic = 'hall_event':
+        gt 'GirlTalkHallEventReaction', $TalkGirl, $TalkReturnLoc
+    elseif $GirlTalkHallTopic = 'hall_policy':
+        gt 'GirlPolicyResponseTalkStart', $TalkGirl, $TalkReturnLoc
+    elseif $GirlTalkHallTopic = 'hall_choice':
+        gt 'HallChoiceFamilyTalkStart', $TalkGirl, $TalkReturnLoc
+    elseif $GirlTalkHallTopic = 'hall_family':
+        gt 'HallFamilyReactionStart', $TalkGirl, $TalkReturnLoc
+    elseif $GirlTalkHallTopic = 'hall_recent':
+        gt 'HallRecentTalkStart', $TalkGirl, $TalkReturnLoc
+    else:
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
 ---
 
 ! ================================================
