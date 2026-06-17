@@ -1,0 +1,103 @@
+! ================================================
+! FILE: modules/locations/rooms/player_room_chest.qsps
+! MODULE: locations/rooms
+! Сундук Стефана и тайное отделение
+! ================================================
+
+#PlayerRoomChest
+    cls
+
+    gs 'ShowLocationImage', 'player_room', 'full', 'png'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СУНДУК СТЕФАНА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы открываете сундук и перебираете свои вещи.'
+    *p 'Простая одежда, несколько личных мелочей и немного свободного места для будущих находок.'
+
+    if PlayerChestSecretKnown = 1 and BirthCertificateFound = 0:
+        *pl ' '
+        *p 'Вы вспоминаете слова матери о двойном дне под старым кожаным ремнём.'
+    end
+
+    *pl ' '
+
+    if PlayerChestSecretKnown = 1 and BirthCertificateFound = 0:
+        act 'Осмотреть тайное отделение':
+            gt 'PlayerRoomChestSecret'
+        end
+    end
+
+    if BirthCertificateFound = 1:
+        act 'Перечитать свидетельство о рождении':
+            gt 'PlayerRoomBirthCertificateRead'
+        end
+    end
+
+    act 'Вернуться в комнату':
+        gt 'PlayerRoom'
+    end
+---
+
+#PlayerRoomChestSecret
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАЙНОЕ ОТДЕЛЕНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы отстёгиваете старый кожаный ремень и приподнимаете двойное дно. Под ним — узкий отсек, пахнущий сухой травой и воском.'
+    *p 'Там лежит сложенный пергамент в потемневшей кожаной обложке.'
+
+    BirthCertificateFound = 1
+    BirthCertificateFatherSealOnly = 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_BirthCertificateFound_1'
+    end
+
+    Fact_StefanBirthCertificateFound = 1
+
+    *pl ' '
+
+    act 'Прочитать свидетельство':
+        gt 'PlayerRoomBirthCertificateRead'
+    end
+
+    act 'Вернуться к сундуку':
+        gt 'PlayerRoomChest'
+    end
+---
+
+#PlayerRoomBirthCertificateRead
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СВИДЕТЕЛЬСТВО О РОЖДЕНИИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'На пергаменте аккуратным почерком записано имя: Стефан. Фамилия дворянского рода — та, что в зале произнесли с презрением.'
+    *p 'Указана мать — Сандра Лонгкок. Отец назван полным титулом, но без присутствия при записи.'
+    *p 'Внизу стоит личная печать отца. Магистратской печати нет — только пометка клерка: «требуется подтверждение в мэрии».'
+
+    if BirthCertificateMagistrateConfirmed = 1:
+        *pl ' '
+        *p 'Рядом с отцовской печатью теперь стоит магистратский штамп — документ признан законом.'
+    elseif BirthCertificateMagistratePending = 1:
+        *pl ' '
+        *p 'Документ уже подан в мэрию. Окончательного ответа ещё нет.'
+    elseif BirthCertificateMagistrateSubmitted = 0:
+        *pl ' '
+        *p 'Чтобы документ имел силу, его нужно подтвердить у магистрата в мэрии — по средам и четвергам, в полдень или днём.'
+    end
+
+    *pl ' '
+
+    act 'Убрать документ':
+        gt 'PlayerRoomChest'
+    end
+---

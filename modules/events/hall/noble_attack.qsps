@@ -1,0 +1,204 @@
+! ================================================
+! FILE: modules/events/hall/noble_attack.qsps
+! MODULE: events/hall
+! Конфликт с дворянином в главном зале
+! Открывает арку Сандры и главный сюжет о происхождении Стефана
+! ================================================
+
+#NobleAttackCanStart
+    NobleAttackCanStart = 0
+
+    if NobleAttackStage > 0:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    gs 'IsTavernOpen'
+
+    if TavernOpen = 0:
+        exit
+    end
+
+    if day < 8:
+        exit
+    end
+
+    if tavernvisitors < 12:
+        exit
+    end
+
+    NobleAttackCanStart = 1
+---
+
+#NobleAttackStart
+    *clr
+    clr
+    cla
+
+    $NobleAttackReturnLoc = $ARGS[0]
+
+    if $NobleAttackReturnLoc = '':
+        $NobleAttackReturnLoc = 'TavernMain'
+    end
+
+    if LOC($NobleAttackReturnLoc) = 0:
+        $NobleAttackReturnLoc = 'TavernMain'
+    end
+
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    NobleAttackStage = 1
+    NobleAttackDay = day
+    NobleAttackTime = time
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ДВОРЯНИН В ЗАЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'NobleAttackIntroText'
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG NOBLE ATTACK] day: ' + STR(day) + ', time: ' + STR(time)
+        *pl '[DEBUG NOBLE ATTACK] FamilyTrust: ' + STR(FamilyTrust)
+        *pl ' '
+    end
+
+    gs 'NobleAttackBuildMenu'
+
+    *p 'Как <a href="exec:gs ''Menu.Show'', ''NobleAttackMenu''">реагировать</a>?'
+---
+
+#NobleAttackBuildMenu
+    gs 'Menu.Destroy', 'NobleAttackMenu'
+    gs 'Menu.Create', 'NobleAttackMenu'
+
+    gs 'Menu.Add', 'NobleAttackMenu', 'Не отступать', ''
+    gs 'Menu.AddModule', 'NobleAttackMenu', {
+        gt 'NobleAttackAction', 'stand_firm', $NobleAttackReturnLoc
+    }
+
+    gs 'Menu.Add', 'NobleAttackMenu', 'Успокоить зал и отвести конфликт', ''
+    gs 'Menu.AddModule', 'NobleAttackMenu', {
+        gt 'NobleAttackAction', 'calm_hall', $NobleAttackReturnLoc
+    }
+
+    if $GirlLocation['sandra'] = 'TavernMain' or $GirlLocation['sandra'] = 'Kitchen':
+        gs 'Menu.Add', 'NobleAttackMenu', 'Встать рядом с матерью', ''
+        gs 'Menu.AddModule', 'NobleAttackMenu', {
+            gt 'NobleAttackAction', 'sandra_shield', $NobleAttackReturnLoc
+        }
+    end
+
+    gs 'Menu.Add', 'NobleAttackMenu', 'Согнуться, чтобы избежать крови', ''
+    gs 'Menu.AddModule', 'NobleAttackMenu', {
+        gt 'NobleAttackAction', 'yield', $NobleAttackReturnLoc
+    }
+---
+
+#NobleAttackAction
+    *clr
+    clr
+    cla
+
+    $NobleAttackChoice = LCASE($ARGS[0])
+    $NobleAttackReturnLoc = $ARGS[1]
+
+    if $NobleAttackReturnLoc = '':
+        $NobleAttackReturnLoc = 'TavernMain'
+    end
+
+    if LOC($NobleAttackReturnLoc) = 0:
+        $NobleAttackReturnLoc = 'TavernMain'
+    end
+
+    gs 'NobleAttackChoiceText', $NobleAttackChoice
+
+    *pl ' '
+
+    if $NobleAttackChoice = 'stand_firm':
+        tavern_reputation += 2
+        FamilyTrust += 1
+        FamilyTension += 2
+        SandraFamilyConcern += 2
+        TavernScandal += 2
+
+    elseif $NobleAttackChoice = 'calm_hall':
+        tavern_reputation += 1
+        FamilyTrust += 1
+        FamilyTension += 1
+        management += 1
+
+    elseif $NobleAttackChoice = 'sandra_shield':
+        tavern_reputation += 1
+        FamilyTrust += 2
+        FamilyTension += 3
+        SandraFamilyConcern += 1
+        GirlTrustStefan['sandra'] += 2
+        SandraTrustStefan += 1
+        Friends['sandra'] += 1
+
+    elseif $NobleAttackChoice = 'yield':
+        tavern_reputation -= 3
+        FamilyTension += 4
+        FamilyTrust -= 1
+        TavernScandal += 3
+
+        if FamilyTrust < 0:
+            FamilyTrust = 0
+        end
+    end
+
+    if tavern_reputation < 0:
+        tavern_reputation = 0
+    end
+
+    if tavern_reputation > 100:
+        tavern_reputation = 100
+    end
+
+    gs 'NobleAttackAftermathText'
+
+    SandraBirthRevealTalkReady = 1
+    $LastHallEventType = 'noble_attack'
+    $LastHallEventGirl = 'sandra'
+    $LastHallEventText = 'В зале чуть не убили Стефана из-за слов о его происхождении. Дворянин ушёл, оставив зал в шоке.'
+    $LastHallEventReaction = $NobleAttackChoice
+
+    LastHallEventDay = day
+    LastHallEventTime = time
+    LastHallEventWeek = week
+    $LastHallChoiceType = $NobleAttackChoice
+    $LastHallChoiceGirl = 'sandra'
+    $LastHallChoiceEvent = 'noble_attack'
+    LastGirlChoiceDay['sandra'] = day
+    $LastGirlChoiceType['sandra'] = $NobleAttackChoice
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_NobleAttack_1'
+    end
+
+    Fact_StefanNobleAttack = 1
+
+    *pl ' '
+
+    act 'Вернуться в зал':
+        gt $NobleAttackReturnLoc
+    end
+
+    killvar '$NobleAttackChoice'
+---

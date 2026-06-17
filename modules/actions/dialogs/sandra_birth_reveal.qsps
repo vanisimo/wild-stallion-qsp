@@ -1,0 +1,113 @@
+! ================================================
+! FILE: modules/actions/dialogs/sandra_birth_reveal.qsps
+! MODULE: actions/dialogs
+! Разговор Сандры о происхождении Стефана после нападения дворянина
+! ================================================
+
+#SandraBirthRevealCanTalk
+    SandraBirthRevealCanTalk = 0
+
+    if SandraBirthRevealTalkReady <> 1:
+        exit
+    end
+
+    if SandraBirthRevealTalkDone = 1:
+        exit
+    end
+
+    if Friends['sandra'] < 16 and otkroven['sandra'] < 20:
+        exit
+    end
+
+    if FamilyTrust < 35:
+        exit
+    end
+
+    SandraBirthRevealCanTalk = 1
+---
+
+#SandraTalkAboutBirthSecret
+    *clr
+    clr
+    cla
+
+    $SandraBirthRevealReturnLoc = $ARGS[0]
+
+    if $SandraBirthRevealReturnLoc = '':
+        $SandraBirthRevealReturnLoc = 'TavernMain'
+    end
+
+    if LOC($SandraBirthRevealReturnLoc) = 0:
+        $SandraBirthRevealReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'sandra'
+    gs 'MenuGirlCalcConditions', 'sandra', $SandraBirthRevealReturnLoc
+
+    if MenuCanTalk = 0:
+        gs 'GirlTalkClosedScreen', 'sandra', $SandraBirthRevealReturnLoc
+        exit
+    end
+
+    gs 'SandraBirthRevealCanTalk'
+
+    if SandraBirthRevealCanTalk = 0:
+        gt 'GirlTalk', 'sandra', $SandraBirthRevealReturnLoc
+        exit
+    end
+
+    gs 'UsefulTalkCheck', 'sandra', 'family'
+
+    if UsefulTalkResult = 0:
+        gt 'GirlTalkBlockedUsefulTopic', 'sandra', $SandraBirthRevealReturnLoc
+        exit
+    end
+
+    gs 'ShowGirlSidebar', 'sandra'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' САНДРА О ТВОЁМ ПРОШЛОМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ShowGirlTalkContextImage') = 1:
+        gs 'ShowGirlTalkContextImage', 'sandra', 'large'
+    end
+
+    gs 'SandraBirthRevealIntroText'
+    *pl ' '
+    gs 'SandraBirthRevealStoryText'
+    *pl ' '
+    gs 'SandraBirthRevealClosingText'
+
+    SandraBirthRevealTalkDone = 1
+    SandraBirthRevealTalkReady = 0
+    PlayerChestSecretKnown = 1
+
+    Friends['sandra'] += 2
+    otkroven['sandra'] += 2
+    FamilyTrust += 2
+    GirlTrustStefan['sandra'] += 2
+    SandraTrustStefan += 1
+    SandraFamilyConcern += 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Sandra_BirthSecretRevealed_1'
+    end
+
+    Fact_SandraBirthSecretRevealed = 1
+    PlayerKnowsIllegitimateNoble = 1
+
+    gs 'UsefulTalkRegister', 'sandra', 'family'
+    gs 'ClampGirlSocialStats', 'sandra'
+
+    *pl ' '
+
+    act 'Поговорить ещё':
+        gt 'GirlTalk', 'sandra', $SandraBirthRevealReturnLoc
+    end
+
+    act 'Вернуться':
+        gt $SandraBirthRevealReturnLoc
+    end
+---

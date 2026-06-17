@@ -1,0 +1,80 @@
+! ================================================
+! FILE: modules/debug/debug_sandra_noble_arc.qsps
+! MODULE: debug
+! Быстрый тест арки Сандры и главного сюжета
+! ================================================
+
+#DebugSandraNobleArcPanel
+    if debug = 0:
+        *pl 'DEBUG отключён.'
+        exit
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: АРКА САНДРЫ / ДВОРЯНСТВО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'NobleAttackStage: ' + STR(NobleAttackStage)
+    *pl 'SandraBirthRevealTalkReady: ' + STR(SandraBirthRevealTalkReady)
+    *pl 'SandraBirthRevealTalkDone: ' + STR(SandraBirthRevealTalkDone)
+    *pl 'PlayerChestSecretKnown: ' + STR(PlayerChestSecretKnown)
+    *pl 'BirthCertificateFound: ' + STR(BirthCertificateFound)
+    *pl 'BirthCertificateMagistrateConfirmed: ' + STR(BirthCertificateMagistrateConfirmed)
+    *pl 'StefanNobleLineUnlocked: ' + STR(StefanNobleLineUnlocked)
+    *pl 'FamilyTrust: ' + STR(FamilyTrust)
+    *pl 'Friends[sandra]: ' + STR(Friends['sandra'])
+    *pl 'otkroven[sandra]: ' + STR(otkroven['sandra'])
+    *pl ' '
+
+    act '1. Запустить ивент дворянина':
+        NobleAttackStage = 0
+        gt 'NobleAttackStart', 'TavernMain'
+    end
+
+    act '2. Подготовить разговор с Сандрой':
+        NobleAttackStage = 1
+        SandraBirthRevealTalkReady = 1
+        SandraBirthRevealTalkDone = 0
+        FamilyTrust = 45
+        Friends['sandra'] = 20
+        otkroven['sandra'] = 22
+        gt 'GirlTalk', 'sandra', 'TavernMain'
+    end
+
+    act '3. Открыть тайный сундук':
+        PlayerChestSecretKnown = 1
+        SandraBirthRevealTalkDone = 1
+        gt 'PlayerRoomChest'
+    end
+
+    act '4. Мэрия / магистрат':
+        BirthCertificateFound = 1
+        BirthCertificateFatherSealOnly = 1
+        money += 200
+        gt 'MayorOffice'
+    end
+
+    act 'Сброс арки':
+        NobleAttackStage = 0
+        SandraBirthRevealTalkReady = 0
+        SandraBirthRevealTalkDone = 0
+        PlayerChestSecretKnown = 0
+        BirthCertificateFound = 0
+        BirthCertificateFatherSealOnly = 0
+        BirthCertificateMagistrateSubmitted = 0
+        BirthCertificateMagistratePending = 0
+        BirthCertificateMagistrateConfirmed = 0
+        StefanNobleLineUnlocked = 0
+        PlayerKnowsIllegitimateNoble = 0
+        Fact_StefanNobleAttack = 0
+        Fact_SandraBirthSecretRevealed = 0
+        Fact_StefanBirthCertificateFound = 0
+        gt 'DebugSandraNobleArcPanel'
+    end
+
+    act 'Назад в debug-панель':
+        gs 'PanelDebugToolsMain'
+    end
+---

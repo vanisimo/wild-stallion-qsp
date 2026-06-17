@@ -355,6 +355,38 @@ Images: `modules/events/tavern/tavern_day_event_images.qsps`
 
 Hall girl scenes stay in `tavern_event_dispatcher.qsps`.
 
+## Sandra Noble Arc (main plot gate)
+
+Owners:
+
+- `modules/events/hall/noble_attack.qsps` — tavern conflict with a nobleman.
+- `modules/actions/dialogs/sandra_birth_reveal.qsps` — Sandra reveals Stefan's origin.
+- `modules/locations/rooms/player_room_chest.qsps` — secret chest compartment and birth certificate.
+- `modules/locations/town/mayor_office.qsps` — magistrate confirmation.
+
+Flow:
+
+1. `NobleAttackCanStart` → `NobleAttackStart` from `TavernHallActivityTryStoryEvents` (priority story event).
+2. After the attack: `SandraBirthRevealTalkReady = 1`.
+3. Sandra talk (`SandraTalkAboutBirthSecret`) when `Friends['sandra'] >= 16` or `otkroven['sandra'] >= 20`, and `FamilyTrust >= 35`.
+4. After talk: `PlayerChestSecretKnown = 1` → secret compartment in `PlayerRoomChest`.
+5. `BirthCertificateFound = 1`, `BirthCertificateFatherSealOnly = 1` → submit at `MayorOffice` (Wed/Thu, noon or day).
+6. Success: `BirthCertificateMagistrateConfirmed = 1`, `StefanNobleLineUnlocked = 1`.
+
+Key state:
+
+- `NobleAttackStage` — `0` not happened, `1` happened.
+- `SandraBirthRevealTalkReady`, `SandraBirthRevealTalkDone`
+- `PlayerChestSecretKnown`, `PlayerKnowsIllegitimateNoble`
+- `BirthCertificateFound`, `BirthCertificateFatherSealOnly`
+- `BirthCertificateMagistrateFee`, `BirthCertificateMagistrateSubmitted`, `BirthCertificateMagistrateSubmitDay`
+- `BirthCertificateMagistratePending`, `BirthCertificateMagistrateConfirmed`
+- `StefanNobleLineUnlocked` — main nobility plot branch unlocked.
+
+Knowledge ids: `Stefan_NobleAttack_1`, `Sandra_BirthSecretRevealed_1`, `Stefan_BirthCertificateFound_1`, `Stefan_BirthCertificatePending_1`, `Stefan_BirthCertificateConfirmed_1`.
+
+Debug: `DebugSandraNobleArcPanel` (debug panel → Family).
+
 ## Knowledge And Rumors
 
 Owner: `modules/core/knowledge/event_knowledge_system.qsps`.

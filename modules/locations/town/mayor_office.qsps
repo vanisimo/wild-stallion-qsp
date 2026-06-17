@@ -1,0 +1,197 @@
+! ================================================
+! FILE: modules/locations/town/mayor_office.qsps
+! MODULE: locations/town
+! Мэрия и магистратское подтверждение свидетельства о рождении
+! ================================================
+
+#MayorOffice
+    cls
+
+    gs 'IsBusinessOpen', 'mayor'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЭРИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if BusinessOpen = 0:
+        gs 'MayorOfficeClosedText'
+
+        *pl ' '
+
+        act 'Вернуться на улицу':
+            gt 'Street'
+        end
+
+        exit
+    end
+
+    gs 'MayorOfficeIntroText'
+
+    *pl ' '
+
+    if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0:
+        act 'Подать свидетельство на подтверждение магистрату':
+            gt 'MayorOfficeMagistrateSubmit'
+        end
+    end
+
+    if BirthCertificateMagistrateConfirmed = 1:
+        *p 'Магистрат уже подтвердил ваше свидетельство. Клерки больше не задают лишних вопросов.'
+        *pl ' '
+    end
+
+    if BirthCertificateMagistratePending = 1 and BirthCertificateMagistrateConfirmed = 0:
+        *p 'Ваше дело всё ещё на проверке. Магистрат ждёт ответ из столицы.'
+        *pl ' '
+
+        act 'Узнать о ходе дела':
+            gt 'MayorOfficeMagistratePendingScreen'
+        end
+    end
+
+    act 'Поговорить с клерком о налогах':
+        *p 'Клерк бормочет о десятине и сроках подачи отчётов. Пока для вас это только напоминание: дворяне платят иначе, чем трактирщики.'
+        act 'Продолжить':
+            gt 'MayorOffice'
+        end
+    end
+
+    act 'Вернуться на улицу':
+        gt 'Street'
+    end
+---
+
+#MayorOfficeMagistrateSubmit
+    cls
+
+    gs 'IsBusinessOpen', 'mayor'
+
+    if BusinessOpen = 0:
+        gt 'MayorOffice'
+        exit
+    end
+
+    if BirthCertificateFound = 0:
+        gt 'MayorOffice'
+        exit
+    end
+
+    BirthCertificateMagistrateFee = 100
+
+    if BirthCertificateFatherSealOnly = 1:
+        BirthCertificateMagistrateFee += 25
+    end
+
+    if charisma < 30:
+        BirthCertificateMagistrateFee += 20
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МАГИСТРАТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MayorOfficeMagistrateSubmitText'
+
+    *pl ' '
+    *pl 'У вас: ' + STR(money) + ' мараведи'
+    *pl 'Госпошлина: ' + STR(BirthCertificateMagistrateFee) + ' мараведи'
+    *pl ' '
+
+    if money < BirthCertificateMagistrateFee:
+        gs 'MayorOfficeMagistrateNoMoneyText'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    act 'Оплатить госпошлину и подать документ':
+        money -= BirthCertificateMagistrateFee
+        BirthCertificateMagistrateSubmitted = 1
+        BirthCertificateMagistrateSubmitDay = day
+
+        gs 'MayorOfficeMagistrateResolve'
+
+        if BirthCertificateMagistrateConfirmed = 1:
+            gs 'MayorOfficeMagistrateSuccessText'
+        else:
+            gs 'MayorOfficeMagistrateWeakCaseText'
+        end
+
+        if LOC('KnowledgeRegisterFact') = 1:
+            if BirthCertificateMagistrateConfirmed = 1:
+                gs 'KnowledgeRegisterFact', 'Stefan_BirthCertificateConfirmed_1'
+            else:
+                gs 'KnowledgeRegisterFact', 'Stefan_BirthCertificatePending_1'
+            end
+        end
+
+        *pl ' '
+
+        act 'Вернуться в мэрию':
+            gt 'MayorOffice'
+        end
+    end
+
+    act 'Подумать и вернуться позже':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeMagistrateResolve
+    BirthCertificateMagistrateConfirmed = 0
+    BirthCertificateMagistratePending = 0
+
+    if charisma >= 38 or management >= 32:
+        BirthCertificateMagistrateConfirmed = 1
+        BirthCertificateMagistratePending = 0
+        StefanNobleLineUnlocked = 1
+        exit
+    end
+
+    if charisma >= 28 or management >= 24 or tavern_reputation >= 45:
+        if RAND(1, 100) <= 55:
+            BirthCertificateMagistrateConfirmed = 1
+            StefanNobleLineUnlocked = 1
+            exit
+        end
+    end
+
+    BirthCertificateMagistratePending = 1
+---
+
+#MayorOfficeMagistratePendingScreen
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МАГИСТРАТ: ОЖИДАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Клерк листает толстую книгу и качает головой.'
+    *p '— Ответ из столицы ещё не пришёл. Приходите через несколько дней.'
+
+    if day >= BirthCertificateMagistrateSubmitDay + 5:
+        BirthCertificateMagistratePending = 0
+        BirthCertificateMagistrateConfirmed = 1
+        StefanNobleLineUnlocked = 1
+
+        gs 'MayorOfficeMagistrateSuccessText'
+
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'Stefan_BirthCertificateConfirmed_1'
+        end
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'MayorOffice'
+    end
+---
