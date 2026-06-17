@@ -117,7 +117,7 @@ Player action: `SandraRoom` → «Осмотреть сундук внимате
 
 Content:
 
-- Father in the record: `$BirthCertificateFatherName` (default `Эдмунд Вейл`), `$BirthCertificateFatherTitle` (default `дворянин`).
+- Father in the record: `$BirthCertificateFatherName` (default `Томас Лермонт`), `$BirthCertificateFatherTitle` (default `дворянин`).
 - Not Longcock; registration seal field is empty.
 
 After read:
