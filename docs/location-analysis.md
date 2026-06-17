@@ -84,8 +84,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 145 | `entry/helper` |
 | `HallFamilyStateDebugPanel` | `modules/events/hall/hall_family_state.qsps` | 228 | `entry/helper` |
 | `HallHarassmentTalkPrintText` | `modules/events/hall/hall_harassment_text.qsps` | 170 | `entry/helper` |
-| `HallHarassmentTry` | `modules/events/hall/hall_harassment.qsps` | 217 | `entry/helper` |
-| `HallHarassmentTryFromBar` | `modules/events/hall/hall_harassment.qsps` | 192 | `entry/helper` |
+| `HallHarassmentTry` | `modules/events/hall/hall_harassment.qsps` | 207 | `entry/helper` |
+| `HallHarassmentTryFromBar` | `modules/events/hall/hall_harassment.qsps` | 182 | `entry/helper` |
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 | `entry/helper` |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 62 | `entry/helper` |
@@ -199,9 +199,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 270 | `entry/helper` |
 | `TavernEventDispatcherDebugMenu` | `modules/debug/debug_tavern_event_dispatcher.qsps` | 11 | `entry/helper` |
 | `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 54 | `entry/helper` |
-| `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 188 | `entry/helper` |
+| `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 178 | `entry/helper` |
 | `TavernHallEventStart` | `modules/events/hall/tavern_hall_events.qsps` | 8 | `entry/helper` |
-| `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 184 | `entry/helper` |
+| `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 174 | `entry/helper` |
 | `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 276 | `entry/helper` |
 | `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 155 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 7 | `entry/helper` |
@@ -213,8 +213,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.AddModule` | 223 |
-| `Menu.Add` | 223 |
+| `Menu.AddModule` | 221 |
+| `Menu.Add` | 221 |
 | `NormalizeGirlKey` | 103 |
 | `EnsureGirlData` | 90 |
 | `TavernMain` | 74 |
@@ -223,16 +223,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
 | `CorruptionProgress` | 38 |
-| `Menu.Create` | 37 |
 | `ShowImage` | 37 |
+| `Menu.Create` | 37 |
 | `Menu.Destroy` | 31 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `ClampTavernEventState` | 21 |
-| `SaveLastHallEvent` | 21 |
+| `MarketDance` | 21 |
 | `ShowLocationImage` | 21 |
 | `Menu.AddCondition` | 21 |
-| `MarketDance` | 21 |
+| `SaveLastHallEvent` | 21 |
+| `ClampTavernEventState` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
 | `ShowGirlInLocation` | 15 |
