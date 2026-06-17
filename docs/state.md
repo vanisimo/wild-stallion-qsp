@@ -97,6 +97,33 @@ City tax flow:
 
 Mayor gate target for stage 1: `TavernCityTaxTotal >= 600`.
 
+## Mayor Office Gate (stage 1)
+
+Owners:
+
+- `modules/locations/town/mayor_office.qsps`
+- `modules/locations/town/mayor_office_text.qsps`
+- `modules/locations/town/street.qsps` — link to `MayorOffice`
+- `modules/core/time/business_schedule.qsps` — `IsMayorOfficeOpen`
+
+Schedule: Wednesday and Thursday, noon or day (`time = 2 or 3`).
+
+Flow:
+
+1. Pay tavern tax until `TavernCityTaxTotal >= MayorCityTaxGate` (default `600`).
+2. Request audience at `MayorOffice` → pay `MayorAudienceBribe` (default `180`).
+3. First talk sets `MayorFirstTalkDone = 1`.
+4. Magistrate submit (`MayorOfficeMagistrateSubmit`) is blocked until `MayorFirstTalkDone = 1` when birth-certificate arc is connected.
+
+Key state:
+
+- `MayorCityTaxGate`, `MayorAudienceBribe`
+- `MayorBribePaid`, `MayorFirstTalkDone`
+
+Knowledge id: `Stefan_MayorFirstTalk_1`.
+
+Debug: `DebugMayorArcPanel` (debug panel).
+
 ## Last Day Summary
 
 Owner: `modules/core/time/next_day.qsps`.
