@@ -67,9 +67,12 @@ Core values:
 Daily calculation values:
 
 - `tavern_food_income`, `tavern_wine_income`, `tavern_beer_income` - income parts.
-- `tavern_gross_income` - gross income before daily expenses.
+- `tavern_gross_income` - gross income before daily expenses and city tax.
 - `tavern_daily_expenses` - staff/work expenses.
-- `tavern_expected_profit` - final expected daily profit.
+- `tavern_city_tax_today` - city tax for the current calculation (`tavern_gross_income * TaxPercent / 100`).
+- `TavernCityTaxTotal` - cumulative city tax paid across the whole game.
+- `TaxPercent` - city tax rate on tavern gross income; default `10`, owner `InitBusinessSchedule`.
+- `tavern_expected_profit` - final expected daily profit after expenses and city tax.
 - `tavern_stock_penalty` - low stock penalty.
 - `tavern_food_used`, `tavern_wine_used`, `tavern_beer_used` - stock consumed by the previous work day.
 - `tavern_can_serve_food`, `tavern_can_serve_drinks` - service availability flags.
@@ -83,7 +86,16 @@ Work capacity values are calculated by tavern/girl job helpers:
 - `tavern_work_efficiency`
 - `tavern_overload_penalty`
 
-`ProcessTavernWorkDay` is the normal daily application path. It updates money, stock, reputation, and event bonuses.
+`ProcessTavernWorkDay` is the normal daily application path. It updates money, stock, reputation, event bonuses, and accumulates `TavernCityTaxTotal`.
+
+City tax flow:
+
+1. `CalculateTavernIncomePreview` computes gross income and staff expenses.
+2. `ApplyTavernCityTaxToProfit` subtracts `tavern_city_tax_today` from `tavern_expected_profit`.
+3. `TavernWorkDayEvent` and supply modifiers may change profit further.
+4. `AccumulateTavernCityTax` adds `tavern_city_tax_today` to `TavernCityTaxTotal` before money is updated.
+
+Mayor gate target for stage 1: `TavernCityTaxTotal >= 600`.
 
 ## Last Day Summary
 
@@ -92,10 +104,12 @@ Owner: `modules/core/time/next_day.qsps`.
 These values mirror the previous work day for the morning summary:
 
 - `LastDayProfit`
+- `LastDayGrossIncome`
 - `LastDayFoodIncome`
 - `LastDayWineIncome`
 - `LastDayBeerIncome`
 - `LastDayExpenses`
+- `LastDayCityTax`
 - `LastDayFoodUsed`
 - `LastDayWineUsed`
 - `LastDayBeerUsed`
