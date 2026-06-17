@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 231
-- Locations: 985
-- Locations with direct incoming calls: 800
+- Locations: 986
+- Locations with direct incoming calls: 801
 - Locations without direct incoming calls: 185
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 185
@@ -183,12 +183,12 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 40 | `entry/helper` |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 | `entry/helper` |
 | `SexSceneText` | `modules/actions/sex/sex_scene_text.qsps` | 9 | `entry/helper` |
-| `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 49 | `entry/helper` |
+| `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 73 | `entry/helper` |
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 418 | `entry/helper` |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 16 | `entry/helper` |
 | `ShowGirlPortraitImage` | `modules/core/show_image/image_debug_random.qsps` | 491 | `entry/helper` |
-| `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 25 | `entry/helper` |
-| `ShowSex` | `modules/core/show_image/show_image_helpers.qsps` | 36 | `entry/helper` |
+| `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 49 | `entry/helper` |
+| `ShowSex` | `modules/core/show_image/show_image_helpers.qsps` | 60 | `entry/helper` |
 | `ShowSexImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 478 | `entry/helper` |
 | `ShowSizedImage` | `modules/core/show_image/image_debug_random.qsps` | 171 | `entry/helper` |
 | `ShowTavernKitchenImage` | `modules/core/show_image/image_debug_random.qsps` | 372 | `entry/helper` |
@@ -213,8 +213,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.Add` | 233 |
 | `Menu.AddModule` | 233 |
+| `Menu.Add` | 233 |
 | `NormalizeGirlKey` | 105 |
 | `EnsureGirlData` | 92 |
 | `TavernMain` | 74 |
@@ -222,21 +222,21 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ClampGirlSocialStats` | 46 |
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
+| `ShowImage` | 41 |
 | `Menu.Create` | 39 |
 | `CorruptionProgress` | 38 |
-| `ShowImage` | 37 |
 | `Menu.Destroy` | 33 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `ClampTavernEventState` | 21 |
-| `MarketDance` | 21 |
+| `Menu.AddCondition` | 21 |
 | `SaveLastHallEvent` | 21 |
 | `ShowLocationImage` | 21 |
-| `Menu.AddCondition` | 21 |
+| `ClampTavernEventState` | 21 |
+| `MarketDance` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
-| `AmandaLizettePrintText` | 15 |
 | `ShowGirlInLocation` | 15 |
+| `AmandaLizettePrintText` | 15 |
 | `GirlTalk` | 14 |
 
 ## Dynamic Call Sites
