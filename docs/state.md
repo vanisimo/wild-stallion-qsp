@@ -97,6 +97,42 @@ City tax flow:
 
 Mayor gate target for stage 1: `TavernCityTaxTotal >= 600`.
 
+## Birth Certificate Arc (stage 1 / point 1)
+
+Owners:
+
+- `modules/events/family/birth_certificate_core.qsps`
+- `modules/events/family/birth_certificate_text.qsps`
+- `modules/locations/rooms/sandra_room.qsps` — chest search
+- `modules/locations/town/mayor_office.qsps` — clerk talk
+
+Discovery:
+
+1. `day >= BirthCertificateSearchMinDay` (default `7`).
+2. Sandra is not in `SandraRoom`.
+3. Not night (`time <> 5`).
+4. `BirthCertificateFound = 0`.
+
+Player action: `SandraRoom` → «Осмотреть сундук внимательнее».
+
+Content:
+
+- Father in the record: `$BirthCertificateFatherName` (default `Эдмунд Вейл`), `$BirthCertificateFatherTitle` (default `дворянин`).
+- Not Longcock; registration seal field is empty.
+
+After read:
+
+- `BirthCertificateFound = 1`, `BirthCertificateRead = 1`.
+- Knowledge id: `Stefan_BirthCertificateFound_1`.
+- `FamilyTension += 2`.
+
+Mayor hook:
+
+- `MayorOffice` → «Показать клерку свидетельство о рождении».
+- Clerk explains: magistrate will reject without seal; need mayor audience first.
+
+Debug: `DebugBirthCertificateArcPanel`.
+
 ## Mayor Office Gate (stage 1)
 
 Owners:
