@@ -150,7 +150,7 @@ Rules:
 - Pay immediately; work completes after N days via `TavernUpgradeAdvanceDay` in `NextDay`.
 - No tavern closure or power penalty while work is pending.
 - **Sign first** (`TavernUpgradeSignDone`); other Draupnir upgrades require sign done, any order after that.
-- **Music stage** only after `MelissaMusicStageOfferDone = 1` (Melissa talk, not in clerk checklist).
+- **Music stage** only after Melissa musician branch (below) sets `MelissaMusicStageOfferDone = 1`. Not in clerk checklist.
 
 | Upgrade | Cost | Days | Effect when done |
 |---------|------|------|------------------|
@@ -166,6 +166,28 @@ Rules:
 Emergency repair (`TavernRepairNeeded`) stays separate from permanent upgrades.
 
 Debug: `DebugTavernUpgradesPanel`.
+
+## Melissa Musician Branch (planned / scaffold)
+
+Owners:
+
+- `modules/events/family/melissa_musician_arc.qsps` — flags and gates
+- `modules/events/family/melissa_musician_arc_text.qsps` — texts (stage talk only so far)
+- `modules/events/family/melissa_music_stage.qsps` — stage talk scene
+
+Order (all required before stage talk):
+
+1. `MelissaDanceDressReady` — dance dress ready (Irma / family; **TODO**).
+2. `MelissaFridayDanceAttended` — Melissa at Friday dances in dress (**TODO**).
+3. `MelissaMinstrelMet` — meet travelling minstrel (**TODO**).
+4. `MelissaMinstrelKissDone` — kiss after dance (**TODO**).
+5. `MelissaMusicStageOfferDone` — talk about tavern stage (`MelissaMusicStageTalk`).
+6. Order stage at Draupnir (`TavernUpgradeStageDone`).
+7. `MelissaMinstrelAffairStage` — minstrel continues with Melissa (**TODO**, separate events).
+
+`MelissaMusicStageCanOffer` uses `MelissaMusicianArcCanOfferStageTalk` — no early unlock by friendship alone.
+
+Personal story `melissa_musician` in `girl_talk_personal` is a later confession, not the stage gate.
 
 ## Mayor Office Gate (stage 1)
 

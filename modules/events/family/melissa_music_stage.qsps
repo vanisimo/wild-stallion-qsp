@@ -1,30 +1,12 @@
 ! ================================================
 ! FILE: modules/events/family/melissa_music_stage.qsps
 ! MODULE: events/family
-! Мелисса предлагает сцену для музыкантов
-! Заказ сцены только после этого разговора
+! Разговор Мелиссы о сцене — только после ветки с менестрелем
+! Заказ у Драупнира — после MelissaMusicStageOfferDone
 ! ================================================
 
 #MelissaMusicStageCanOffer
-    MelissaMusicStageCanOffer = 0
-
-    if MelissaMusicStageOfferDone = 1:
-        exit
-    end
-
-    if TavernCarpenterUpgradesUnlocked = 0:
-        exit
-    end
-
-    if TavernUpgradeSignDone = 0:
-        exit
-    end
-
-    if Friends['melissa'] < 12:
-        exit
-    end
-
-    MelissaMusicStageCanOffer = 1
+    gs 'MelissaMusicianArcCanOfferStageTalk'
 ---
 
 #MelissaMusicStageTalk
@@ -33,11 +15,7 @@
     gs 'MelissaMusicStageCanOffer'
 
     if MelissaMusicStageCanOffer = 0:
-        if LOC('MelissaMusicStageTalkBlockedText') = 1:
-            gs 'MelissaMusicStageTalkBlockedText'
-        else:
-            *p 'Сейчас не время для этого разговора.'
-        end
+        gs 'MelissaMusicianArcStageTalkBlockedText'
 
         *pl ' '
 
@@ -52,6 +30,7 @@
         end
 
         killvar '$MelissaStageReturnLoc'
+        killvar '$MelissaMusicianArcBlockReason'
         exit
     end
 
@@ -77,4 +56,5 @@
     end
 
     killvar '$MelissaStageReturnLoc'
+    killvar '$MelissaMusicianArcBlockReason'
 ---
