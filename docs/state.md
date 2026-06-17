@@ -247,6 +247,24 @@ Girl reactions (`modules/events/family/sandra_staff_girls_reaction.qsps`):
 - Optional talk «После помощниц матери» in girl menus; once per girl via `GirlStaffPraiseTalkDone[girl]`.
 - Panel tavern: softer overload warning when hired staff is active.
 
+## Amanda cleaning relief (point 5)
+
+Owner: `modules/events/family/amanda_cleaning_relief.qsps`.
+
+Gates (`AmandaCleaningReliefCanTalk`):
+
+- `SandraStaffGirlsReactionDone = 1`
+- `TavernHiredCleaning = 1`
+- `jobcleaning['amanda'] = 1`
+- `GirlTrustStefan['amanda'] >= 40` or `Friends['amanda'] >= 14`
+- `AmandaCleaningReliefDone = 0`
+
+Flow:
+
+- Talk topic «Руки портятся от воды» in Amanda menu; special action «Поговорить об уборке и руках».
+- Agree → `jobcleaning['amanda'] = 0`, cleaning stays on hired worker, `AmandaCleaningReliefDone = 1`.
+- Decline → topic remains available.
+
 Until unlock, hire buttons are hidden.
 
 Flags:
