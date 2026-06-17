@@ -12,13 +12,13 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 |
 | `CanStartIntimScene` | `modules/actions/sex/intim_scene.qsps` | 97 |
 | `CanStartSexScene` | `modules/actions/sex/sex_scene_core.qsps` | 82 |
-| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 786 |
+| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 780 |
 | `ClampIntimSceneValues` | `modules/actions/sex/intim_scene.qsps` | 529 |
 | `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 539 |
 | `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 595 |
 | `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 617 |
-| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 657 |
-| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 736 |
+| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 651 |
+| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 730 |
 | `GirlFirstAnal` | `modules/actions/sex/first_sex.qsps` | 142 |
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 197 |
 | `GirlFirstSex` | `modules/actions/sex/first_sex.qsps` | 8 |
