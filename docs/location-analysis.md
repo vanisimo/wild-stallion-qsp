@@ -219,7 +219,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `NormalizeGirlKey` | 105 |
 | `EnsureGirlData` | 92 |
 | `TavernMain` | 74 |
-| `ShowGirlSidebar` | 72 |
+| `ShowGirlSidebar` | 70 |
 | `ClampGirlSocialStats` | 46 |
 | `UpdateGirlLocations` | 44 |
 | `ShowImage` | 41 |
@@ -229,8 +229,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 33 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `MarketDance` | 21 |
 | `SaveLastHallEvent` | 21 |
+| `MarketDance` | 21 |
 | `Menu.AddCondition` | 21 |
 | `ClampTavernEventState` | 21 |
 | `ShowLocationImage` | 21 |
@@ -238,7 +238,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MenuGirlCalcConditions` | 17 |
 | `AmandaLizettePrintText` | 15 |
 | `ShowGirlInLocation` | 15 |
-| `GirlTalk` | 14 |
+| `CalculateTavernStaffEfficiency` | 14 |
 
 ## Dynamic Call Sites
 
