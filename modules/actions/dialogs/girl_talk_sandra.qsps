@@ -1,0 +1,88 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_sandra.qsps
+! MODULE: actions/dialogs
+! Меню и разговоры Сандры как матери семьи
+! ================================================
+
+#GirlTalkBuildSandraMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    if $GirlLocation['sandra'] = 'Kitchen':
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'О кухне и трактире', ''
+    else:
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'О работе трактира', ''
+    end
+
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'tavern'
+    }
+
+    gs 'Menu.Add', 'GirlTalkMainMenu', 'О доме', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'family'
+    }
+
+    gs 'Menu.Add', 'GirlTalkMainMenu', 'О дочерях', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'daughters'
+    }
+
+    gs 'Menu.Add', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if GirlTalkHallTopicsAvailable = 1:
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'О событиях в зале', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gs 'GirlTalkBuildHallTopicsMenu'
+            gs 'Menu.Show', 'GirlTalkHallTopicsMenu'
+        }
+    end
+
+    if GirlTalkPersonalAvailable = 1:
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'Личный разговор', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gs 'GirlTalkPersonalBuildMenu'
+            gs 'Menu.Show', 'GirlTalkPersonalMenu'
+        }
+    end
+
+    if Friends['sandra'] >= 18 or otkroven['sandra'] >= 18 or love['sandra'] >= 12:
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    gs 'Menu.Add', 'GirlTalkMainMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt $TalkReturnLoc
+    }
+---
+
+#GirlTalkDaughtersRun
+    gs 'GirlTalkDaughtersPrintText', 'intro'
+    gs 'GirlTalkDaughtersPrintText', 'context'
+
+    Friends['sandra'] += 1
+
+    if SandraFamilyConcern > 0:
+        SandraFamilyConcern -= 1
+
+        if SandraFamilyConcern < 0:
+            SandraFamilyConcern = 0
+        end
+    end
+---
+
+#GirlTalkDaughtersPrintText
+    gs 'GirlTalkDaughtersText', $ARGS[0]
+
+    if $GirlTalkDaughtersText <> '':
+        *p $GirlTalkDaughtersText
+    end
+
+    killvar '$GirlTalkDaughtersText'
+---

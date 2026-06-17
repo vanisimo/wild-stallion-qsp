@@ -1,0 +1,380 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_personal.qsps
+! MODULE: actions/dialogs
+! Личные разговоры: приключения девушек вне дома
+! Пункт меню виден только при достаточном otkroven и наличии нерассказанной истории
+! ================================================
+
+#GirlTalkPersonalCheckAvailable
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkPersonalGirl = $GirlKey
+
+    GirlTalkPersonalAvailable = 0
+    GirlTalkPersonalStoryCount = 0
+    GirlTalkPersonalMinOtkroven = 20
+
+    if $GirlTalkPersonalGirl = '':
+        killvar '$GirlTalkPersonalGirl'
+        exit
+    end
+
+    if $GirlTalkPersonalGirl = 'amanda':
+        GirlTalkPersonalMinOtkroven = 14
+    elseif $GirlTalkPersonalGirl = 'melissa':
+        GirlTalkPersonalMinOtkroven = 16
+    elseif $GirlTalkPersonalGirl = 'sandra':
+        GirlTalkPersonalMinOtkroven = 18
+    end
+
+    if otkroven[$GirlTalkPersonalGirl] < GirlTalkPersonalMinOtkroven:
+        killvar '$GirlTalkPersonalGirl'
+        exit
+    end
+
+    if $GirlTalkPersonalGirl = 'amanda':
+        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
+        if GirlTalkPersonalStoryReady = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_boys'
+        if GirlTalkPersonalStoryReady = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+    elseif $GirlTalkPersonalGirl = 'melissa':
+        gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
+        if GirlTalkPersonalStoryReady = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+    elseif $GirlTalkPersonalGirl = 'sandra':
+        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_carpenter'
+        if GirlTalkPersonalStoryReady = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_priest'
+        if GirlTalkPersonalStoryReady = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+    end
+
+    if GirlTalkPersonalStoryCount > 0:
+        GirlTalkPersonalAvailable = 1
+    end
+
+    killvar '$GirlTalkPersonalGirl'
+    killvar 'GirlTalkPersonalStoryCount'
+    killvar 'GirlTalkPersonalMinOtkroven'
+---
+
+#GirlTalkPersonalStoryUnlocked
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkPersonalUnlockGirl = $GirlKey
+    $GirlTalkPersonalStoryId = LCASE($ARGS[1])
+
+    GirlTalkPersonalStoryUnlocked = 0
+
+    if $GirlTalkPersonalUnlockGirl = '' or $GirlTalkPersonalStoryId = '':
+        killvar '$GirlTalkPersonalUnlockGirl'
+        killvar '$GirlTalkPersonalStoryId'
+        exit
+    end
+
+    if $GirlTalkPersonalStoryId = 'amanda_legare':
+        if Fact_AmandaLegareOutsideMeet = 1 or Fact_AmandaLegareMajorRisk = 1 or Fact_AmandaLegarePrivateTalk = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        elseif AmandaNpcPath >= 12 or GirlNpcPath['amanda'] >= 12:
+            GirlTalkPersonalStoryUnlocked = 1
+        elseif FactHappened['amanda_dancewithlegare_1'] = 1 or FactHappened['amanda_waswithlegare'] = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        end
+
+    elseif $GirlTalkPersonalStoryId = 'amanda_boys':
+        if HallMissingGirlPrivateCount['amanda'] >= 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        elseif sluttiness['amanda'] >= 22 or GirlNpcPath['amanda'] >= 22:
+            GirlTalkPersonalStoryUnlocked = 1
+        elseif GirlPublicAttention['amanda'] >= 25 and sluttiness['amanda'] >= 15:
+            GirlTalkPersonalStoryUnlocked = 1
+        end
+
+    elseif $GirlTalkPersonalStoryId = 'melissa_musician':
+        if GirlPersonalStoryUnlock['melissa_musician'] = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        elseif FactHappened['melissa_musiciannotice_1'] = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        end
+
+    elseif $GirlTalkPersonalStoryId = 'sandra_carpenter':
+        if GirlPersonalStoryUnlock['sandra_carpenter'] = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        elseif FactHappened['sandra_carpentersecret_1'] = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        end
+
+    elseif $GirlTalkPersonalStoryId = 'sandra_priest':
+        if GirlPersonalStoryUnlock['sandra_priest'] = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        elseif FactHappened['sandra_churchcomplaint_1'] = 1 or FactHappened['church_sandracomplaint'] = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        end
+    end
+
+    killvar '$GirlTalkPersonalUnlockGirl'
+    killvar '$GirlTalkPersonalStoryId'
+---
+
+#GirlTalkPersonalStoryMinOtkroven
+    $GirlTalkPersonalMinStoryId = LCASE($ARGS[0])
+    GirlTalkPersonalStoryMinOtkroven = 20
+
+    if $GirlTalkPersonalMinStoryId = 'amanda_legare':
+        GirlTalkPersonalStoryMinOtkroven = 14
+    elseif $GirlTalkPersonalMinStoryId = 'amanda_boys':
+        GirlTalkPersonalStoryMinOtkroven = 18
+    elseif $GirlTalkPersonalMinStoryId = 'melissa_musician':
+        GirlTalkPersonalStoryMinOtkroven = 16
+    elseif $GirlTalkPersonalMinStoryId = 'sandra_carpenter':
+        GirlTalkPersonalStoryMinOtkroven = 18
+    elseif $GirlTalkPersonalMinStoryId = 'sandra_priest':
+        GirlTalkPersonalStoryMinOtkroven = 20
+    end
+
+    killvar '$GirlTalkPersonalMinStoryId'
+---
+
+#GirlTalkPersonalStoryAvailable
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkPersonalAvailGirl = $GirlKey
+    $GirlTalkPersonalAvailStory = LCASE($ARGS[1])
+
+    GirlTalkPersonalStoryReady = 0
+
+    if $GirlTalkPersonalAvailGirl = '' or $GirlTalkPersonalAvailStory = '':
+        killvar '$GirlTalkPersonalAvailGirl'
+        killvar '$GirlTalkPersonalAvailStory'
+        exit
+    end
+
+    if GirlPersonalStoryDiscussed[$GirlTalkPersonalAvailStory] = 1:
+        killvar '$GirlTalkPersonalAvailGirl'
+        killvar '$GirlTalkPersonalAvailStory'
+        exit
+    end
+
+    gs 'GirlTalkPersonalStoryUnlocked', $GirlTalkPersonalAvailGirl, $GirlTalkPersonalAvailStory
+
+    if GirlTalkPersonalStoryUnlocked = 0:
+        killvar '$GirlTalkPersonalAvailGirl'
+        killvar '$GirlTalkPersonalAvailStory'
+        killvar 'GirlTalkPersonalStoryUnlocked'
+        exit
+    end
+
+    gs 'GirlTalkPersonalStoryMinOtkroven', $GirlTalkPersonalAvailStory
+
+    if otkroven[$GirlTalkPersonalAvailGirl] >= GirlTalkPersonalStoryMinOtkroven:
+        GirlTalkPersonalStoryReady = 1
+    end
+
+    killvar '$GirlTalkPersonalAvailGirl'
+    killvar '$GirlTalkPersonalAvailStory'
+    killvar 'GirlTalkPersonalStoryUnlocked'
+    killvar 'GirlTalkPersonalStoryMinOtkroven'
+---
+
+#GirlTalkPersonalBuildMenu
+    gs 'Menu.Destroy', 'GirlTalkPersonalMenu'
+    gs 'Menu.Create', 'GirlTalkPersonalMenu'
+    GirlTalkPersonalMenuAdded = 0
+
+    if $TalkGirl = 'amanda':
+        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О Легаре', ''
+            gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'amanda_legare'
+            }
+            GirlTalkPersonalMenuAdded += 1
+        end
+
+        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_boys'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О парнях в городе', ''
+            gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'amanda_boys'
+            }
+            GirlTalkPersonalMenuAdded += 1
+        end
+
+    elseif $TalkGirl = 'melissa':
+        gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О музыканте', ''
+            gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'melissa_musician'
+            }
+            GirlTalkPersonalMenuAdded += 1
+        end
+
+    elseif $TalkGirl = 'sandra':
+        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_carpenter'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О столяре', ''
+            gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'sandra_carpenter'
+            }
+            GirlTalkPersonalMenuAdded += 1
+        end
+
+        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_priest'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О священнике', ''
+            gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'sandra_priest'
+            }
+            GirlTalkPersonalMenuAdded += 1
+        end
+    end
+
+    gs 'Menu.Add', 'GirlTalkPersonalMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    }
+
+    killvar 'GirlTalkPersonalMenuAdded'
+---
+
+#GirlTalkPersonalStoryStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+    $GirlTalkPersonalStoryId = LCASE($ARGS[2])
+
+    if $TalkGirl = '' or $GirlTalkPersonalStoryId = '':
+        msg 'Ошибка: GirlTalkPersonalStoryStart вызван без параметров.'
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'MenuGirlCalcConditions', $TalkGirl, $TalkReturnLoc
+
+    if MenuCanTalk = 0:
+        gs 'GirlTalkClosedScreen', $TalkGirl, $TalkReturnLoc
+        exit
+    end
+
+    gs 'GirlTalkPersonalStoryAvailable', $TalkGirl, $GirlTalkPersonalStoryId
+
+    if GirlTalkPersonalStoryReady = 0:
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+        exit
+    end
+
+    gs 'UsefulTalkCheck', $TalkGirl, 'personal'
+
+    if UsefulTalkResult = 0:
+        gt 'GirlTalkBlockedUsefulTopic', $TalkGirl, $TalkReturnLoc
+        exit
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $TalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛИЧНЫЙ РАЗГОВОР: ' + $RealName[$TalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ShowGirlTalkContextImage') = 1:
+        gs 'ShowGirlTalkContextImage', $TalkGirl, 'large'
+    end
+
+    gs 'GirlTalkPersonalPrintText', 'intro'
+    gs 'GirlTalkPersonalPrintText', 'story'
+
+    GirlPersonalStoryDiscussed[$GirlTalkPersonalStoryId] = 1
+
+    Friends[$TalkGirl] += 1
+    otkroven[$TalkGirl] += 1
+
+    if love[$TalkGirl] >= 5:
+        love[$TalkGirl] += 1
+    end
+
+    if $TalkGirl = 'amanda' and $GirlTalkPersonalStoryId = 'amanda_legare':
+        GirlSecretiveness['amanda'] -= 1
+
+        if GirlSecretiveness['amanda'] < 0:
+            GirlSecretiveness['amanda'] = 0
+        end
+
+        if Fact_AmandaLegareMajorRisk = 1 and otkroven['amanda'] >= 28:
+            AmandaNpcPath += 1
+        end
+
+    elseif $TalkGirl = 'amanda' and $GirlTalkPersonalStoryId = 'amanda_boys':
+        GirlSecretiveness['amanda'] -= 1
+
+        if GirlSecretiveness['amanda'] < 0:
+            GirlSecretiveness['amanda'] = 0
+        end
+
+        if sluttiness['amanda'] >= 25:
+            sluttiness['amanda'] += 1
+        end
+
+    elseif $TalkGirl = 'sandra' and $GirlTalkPersonalStoryId = 'sandra_priest':
+        if SandraMoralResistance > 0:
+            SandraMoralResistance -= 1
+        end
+    end
+
+    gs 'UsefulTalkRegister', $TalkGirl, 'personal'
+    gs 'ClampGirlSocialStats', $TalkGirl
+
+    *pl ' '
+
+    act 'Поговорить ещё':
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
+
+    gs 'MenuGirlCalcConditions', $TalkGirl, $TalkReturnLoc
+
+    if MenuCanFlirt = 1:
+        act 'Флиртовать':
+            gt 'MenuGirlFlirt', $TalkGirl, $TalkReturnLoc
+        end
+    end
+
+    act 'Вернуться':
+        gt $TalkReturnLoc
+    end
+
+    killvar '$GirlTalkPersonalStoryId'
+---
+
+#GirlTalkPersonalPrintText
+    if $GirlTalkPersonalGirl = '':
+        $GirlTalkPersonalGirl = $TalkGirl
+    end
+
+    if $GirlTalkPersonalStoryId = '':
+        $GirlTalkPersonalStoryId = $ARGS[1]
+    end
+
+    gs 'GirlTalkPersonalText', $ARGS[0]
+
+    if $GirlTalkPersonalText <> '':
+        *p $GirlTalkPersonalText
+    end
+
+    killvar '$GirlTalkPersonalText'
+---

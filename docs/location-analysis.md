@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 231
-- Locations: 988
-- Locations with direct incoming calls: 802
+- Source files: 235
+- Locations: 997
+- Locations with direct incoming calls: 811
 - Locations without direct incoming calls: 186
 - Review candidates without direct incoming calls: 1
 - Classified entry/helper locations without direct incoming calls: 185
@@ -216,8 +216,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | --- | --- |
 | `Menu.Add` | 233 |
 | `Menu.AddModule` | 233 |
-| `NormalizeGirlKey` | 107 |
-| `EnsureGirlData` | 94 |
+| `NormalizeGirlKey` | 112 |
+| `EnsureGirlData` | 96 |
 | `TavernMain` | 74 |
 | `ShowGirlSidebar` | 69 |
 | `ClampGirlSocialStats` | 47 |

@@ -232,6 +232,61 @@ Family state owner: `modules/events/hall/hall_family_state.qsps`.
 
 Use `HallFamilyStateApply` for new hall/kitchen consequences instead of changing family state directly.
 
+## Context Girl Talk Hooks
+
+Owners:
+
+- `modules/actions/dialogs/girl_talk_family.qsps`
+- `modules/actions/dialogs/girl_talk_tavern.qsps`
+
+These topics add short context paragraphs to the main `family` and `tavern` talk options in `GirlTalkResult`.
+
+Hook flags are keyed by `girl + '_' + day`:
+
+- `GirlTalkFamilyHallHookDiscussed[key]` - family talk already referenced today's hall choice.
+- `GirlTalkTavernHallHookDiscussed[key]` - tavern talk already referenced today's hall choice.
+- `GirlTalkTavernDayHookDiscussed[key]` - tavern talk already referenced `$LastDayTavernEventText`.
+
+These flags do not replace the dedicated hall-topic menu. Full follow-up scenes such as `HallChoiceFamilyTalk` and `HallRecentTalk` keep their own `*Discussed` flags.
+
+## Personal Girl Talk
+
+Owner: `modules/actions/dialogs/girl_talk_personal.qsps`.
+
+The `Личный разговор` menu item appears only when:
+
+- `otkroven[girl]` is high enough for that girl;
+- at least one personal story is unlocked and not yet discussed.
+
+Menu visibility thresholds:
+
+- `amanda` - `otkroven >= 14`
+- `melissa` - `otkroven >= 16`
+- `sandra` - `otkroven >= 18`
+
+Story keys and per-story `otkroven` minimums:
+
+- `amanda_legare` - 14
+- `amanda_boys` - 18
+- `melissa_musician` - 16
+- `sandra_carpenter` - 18
+- `sandra_priest` - 20
+
+State:
+
+- `GirlPersonalStoryDiscussed[story_key]` - girl already told this confession to Stefan.
+- `GirlPersonalStoryUnlock[story_key]` - future-event hook for stories not yet wired into gameplay.
+
+Unlock sources:
+
+- Amanda / Legare: `Fact_AmandaLegareOutsideMeet`, `Fact_AmandaLegareMajorRisk`, `Fact_AmandaLegarePrivateTalk`, `AmandaNpcPath >= 12`, or matching `FactHappened` ids.
+- Amanda / boys: `HallMissingGirlPrivateCount['amanda'] >= 1`, `sluttiness['amanda'] >= 22`, or `GirlNpcPath['amanda'] >= 22`.
+- Melissa / musician: `GirlPersonalStoryUnlock['melissa_musician']` or `FactHappened['melissa_musiciannotice_1']`.
+- Sandra / carpenter: `GirlPersonalStoryUnlock['sandra_carpenter']` or `FactHappened['sandra_carpentersecret_1']`.
+- Sandra / priest: `GirlPersonalStoryUnlock['sandra_priest']` or church complaint facts.
+
+Each chosen story counts as one useful `personal` talk through `npc_talk_limits.qsps`.
+
 ## Knowledge And Rumors
 
 Owner: `modules/core/knowledge/event_knowledge_system.qsps`.

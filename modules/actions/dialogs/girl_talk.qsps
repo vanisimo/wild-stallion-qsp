@@ -61,6 +61,7 @@
 
     *pl ' '
     gs 'GirlTalkHasHallTopics', $TalkGirl
+    gs 'GirlTalkPersonalCheckAvailable', $TalkGirl
 
     gs 'GirlTalkBuildMainMenu'
 
@@ -213,6 +214,11 @@
 ! ================================================
 
 #GirlTalkBuildMainMenu
+    if $TalkGirl = 'sandra' and LOC('GirlTalkBuildSandraMainMenu') = 1:
+        gs 'GirlTalkBuildSandraMainMenu'
+        exit
+    end
+
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
@@ -241,10 +247,11 @@
         }
     end
 
-    if Friends[$TalkGirl] >= 8 or love[$TalkGirl] >= 5 or otkroven[$TalkGirl] >= 8:
+    if GirlTalkPersonalAvailable = 1:
         gs 'Menu.Add', 'GirlTalkMainMenu', 'Личный разговор', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'personal'
+            gs 'GirlTalkPersonalBuildMenu'
+            gs 'Menu.Show', 'GirlTalkPersonalMenu'
         }
     end
 
@@ -480,7 +487,15 @@
         exit
     end
 
-    if $GirlLocation[$TalkIntroGirl] = 'TavernMain':
+    if $TalkIntroGirl = 'sandra':
+        if $GirlLocation[$TalkIntroGirl] = 'Kitchen':
+            *p 'Сандра отрывается от кухонных дел, вытирает руки и смотрит на вас как на сына, которому доверяют дом, но которого всё ещё проверяют.'
+        elseif $GirlLocation[$TalkIntroGirl] = 'SandraRoom':
+            *p 'Сандра принимает вас у себя в комнате без лишней суеты. Здесь она говорит не как служанка трактира, а как хозяйка семьи.'
+        else:
+            *p 'Сандра отвлекается от дел и смотрит на вас внимательно — с материнской теплотой и той самой требовательностью, что всегда отличала её от дочерей.'
+        end
+    elseif $GirlLocation[$TalkIntroGirl] = 'TavernMain':
         *p $RealName[$TalkIntroGirl] + ' отвлекается от работы в зале и смотрит на вас.'
     elseif $GirlLocation[$TalkIntroGirl] = 'Kitchen':
         *p $RealName[$TalkIntroGirl] + ' отрывается от кухонных дел и вытирает руки.'
@@ -490,7 +505,15 @@
         *p $RealName[$TalkIntroGirl] + ' готова вас выслушать.'
     end
 
-    if Friends[$TalkIntroGirl] >= 20:
+    if $TalkIntroGirl = 'sandra':
+        if hate[$TalkIntroGirl] >= 10:
+            *p 'В её взгляде сейчас больше материнского раздражения, чем тепла.'
+        elseif Friends[$TalkIntroGirl] >= 10:
+            *p 'Она говорит с вами спокойно и прямо, как с сыном, которому можно доверять, но нельзя потакать.'
+        else:
+            *p 'Разговор начинается сдержанно: мать ждёт, что хозяин трактира будет говорить по делу.'
+        end
+    elseif Friends[$TalkIntroGirl] >= 20:
         *p 'Она относится к вам тепло и спокойно.'
     elseif Friends[$TalkIntroGirl] >= 10:
         *p 'Она разговаривает с вами достаточно дружелюбно.'
@@ -676,6 +699,12 @@
         exit
     end
 
+    if $TalkTopic = 'personal':
+        gs 'GirlTalkPersonalBuildMenu'
+        gs 'Menu.Show', 'GirlTalkPersonalMenu'
+        exit
+    end
+
     ! ====================== ПРОВЕРКА ЛИМИТА ПОЛЕЗНЫХ РАЗГОВОРОВ ======================
 
     gs 'GirlTalkTopicIsUseful', $TalkTopic
@@ -714,32 +743,13 @@
         gs 'SmallTalkNpc', $TalkGirl
 
     elseif $TalkTopic = 'tavern':
-        *p 'Вы говорите с ' + $RealName[$TalkGirl] + ' о делах трактира, посетителях, запасах и работе.'
-        *p 'Разговор получается простым, но полезным.'
-
-        Friends[$TalkGirl] += 1
-        management_skill += 1
+        gs 'GirlTalkTavernRun', $TalkGirl
 
     elseif $TalkTopic = 'family':
-        *p 'Вы заводите разговор о семье и доме.'
-        *p $RealName[$TalkGirl] + ' слушает вас внимательнее, чем обычно.'
+        gs 'GirlTalkFamilyRun', $TalkGirl
 
-        Friends[$TalkGirl] += 1
-
-        if love[$TalkGirl] > 0:
-            love[$TalkGirl] += 1
-        end
-
-    elseif $TalkTopic = 'personal':
-        *p 'Вы осторожно переводите разговор на более личные темы.'
-        *p $RealName[$TalkGirl] + ' не сразу отвечает, но всё же поддерживает разговор.'
-
-        Friends[$TalkGirl] += 1
-        otkroven[$TalkGirl] += 1
-
-        if love[$TalkGirl] >= 5:
-            love[$TalkGirl] += 1
-        end
+    elseif $TalkTopic = 'daughters':
+        gs 'GirlTalkDaughtersRun', $TalkGirl
 
     elseif $TalkTopic = 'compliment':
         *p 'Вы делаете ' + $RealName[$TalkGirl] + ' осторожный комплимент.'
@@ -776,14 +786,14 @@
     gs 'ClampGirlSocialStats', $TalkGirl
 
     *pl ' '
-    gs 'GirlTalkHasHallTopics', $TalkGirl
-    gs 'GirlTalkBuildMainMenu'
-    *p $RealName[$TalkGirl] + ': <a href="exec:gs ''Menu.Show'', ''GirlTalkMainMenu''">выбрать тему разговора</a>.'
-    *pl ' '
 
-    gs 'MenuGirlCanFlirt', $TalkGirl, $TalkReturnLoc
+    act 'Поговорить ещё':
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
 
-    if Result = 1:
+    gs 'MenuGirlCalcConditions', $TalkGirl, $TalkReturnLoc
+
+    if MenuCanFlirt = 1:
         act 'Флиртовать':
             gt 'MenuGirlFlirt', $TalkGirl, $TalkReturnLoc
         end

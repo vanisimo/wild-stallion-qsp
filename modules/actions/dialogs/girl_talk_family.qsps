@@ -1,0 +1,102 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_family.qsps
+! MODULE: actions/dialogs
+! Контекстный разговор о семье
+! ================================================
+
+#GirlTalkFamilyRun
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkFamilyGirl = $GirlKey
+
+    if $GirlTalkFamilyGirl = '':
+        exit
+    end
+
+    gs 'EnsureGirlData', $GirlTalkFamilyGirl
+
+    gs 'GirlTalkFamilyPrintText', 'intro'
+    gs 'GirlTalkFamilyPrintText', 'context'
+
+    GirlTalkFamilyHallHookReady = 0
+    gs 'GirlTalkFamilyHasHallHook', $GirlTalkFamilyGirl
+
+    if GirlTalkFamilyHallHookReady = 1:
+        gs 'GirlTalkFamilyPrintText', 'hall_hook'
+        $GirlTalkFamilyHallHookKey = $GirlTalkFamilyGirl + '_' + STR(day)
+        GirlTalkFamilyHallHookDiscussed[$GirlTalkFamilyHallHookKey] = 1
+        killvar '$GirlTalkFamilyHallHookKey'
+    end
+
+    Friends[$GirlTalkFamilyGirl] += 1
+
+    if love[$GirlTalkFamilyGirl] > 0:
+        love[$GirlTalkFamilyGirl] += 1
+    end
+
+    if FamilyTrust >= 55 and GirlTalkFamilyHallHookReady = 1 and ($LastHallChoiceType = 'protect' or $LastGirlChoiceType[$GirlTalkFamilyGirl] = 'protect'):
+        GirlTrustStefan[$GirlTalkFamilyGirl] += 1
+    end
+
+    if $GirlTalkFamilyGirl = 'amanda':
+        AmandaTrustStefan = GirlTrustStefan['amanda']
+    elseif $GirlTalkFamilyGirl = 'melissa':
+        MelissaTrustStefan = GirlTrustStefan['melissa']
+    elseif $GirlTalkFamilyGirl = 'sandra':
+        SandraTrust = GirlTrustStefan['sandra']
+    end
+
+    killvar '$GirlTalkFamilyGirl'
+    killvar 'GirlTalkFamilyHallHookReady'
+---
+
+#GirlTalkFamilyHasHallHook
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkFamilyHookGirl = $GirlKey
+
+    GirlTalkFamilyHallHookReady = 0
+
+    if $GirlTalkFamilyHookGirl = '':
+        exit
+    end
+
+    if $LastHallChoiceGirl <> $GirlTalkFamilyHookGirl:
+        exit
+    end
+
+    if LastGirlChoiceDay[$GirlTalkFamilyHookGirl] <> day:
+        exit
+    end
+
+    $GirlTalkFamilyHallHookKey = $GirlTalkFamilyHookGirl + '_' + STR(day)
+
+    if GirlTalkFamilyHallHookDiscussed[$GirlTalkFamilyHallHookKey] = 1:
+        killvar '$GirlTalkFamilyHookGirl'
+        killvar '$GirlTalkFamilyHallHookKey'
+        exit
+    end
+
+    if $LastHallChoiceType = '' and $LastGirlChoiceType[$GirlTalkFamilyHookGirl] = '':
+        killvar '$GirlTalkFamilyHookGirl'
+        killvar '$GirlTalkFamilyHallHookKey'
+        exit
+    end
+
+    GirlTalkFamilyHallHookReady = 1
+
+    killvar '$GirlTalkFamilyHookGirl'
+    killvar '$GirlTalkFamilyHallHookKey'
+---
+
+#GirlTalkFamilyPrintText
+    if $GirlTalkFamilyGirl = '':
+        $GirlTalkFamilyGirl = $TalkGirl
+    end
+
+    gs 'GirlTalkFamilyText', $ARGS[0]
+
+    if $GirlTalkFamilyText <> '':
+        *p $GirlTalkFamilyText
+    end
+
+    killvar '$GirlTalkFamilyText'
+---

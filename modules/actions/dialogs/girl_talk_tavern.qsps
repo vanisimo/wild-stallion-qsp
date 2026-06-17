@@ -1,0 +1,128 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_tavern.qsps
+! MODULE: actions/dialogs
+! Контекстный разговор о делах трактира
+! ================================================
+
+#GirlTalkTavernRun
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkTavernGirl = $GirlKey
+
+    if $GirlTalkTavernGirl = '':
+        exit
+    end
+
+    gs 'EnsureGirlData', $GirlTalkTavernGirl
+
+    gs 'GirlTalkTavernPrintText', 'intro'
+    gs 'GirlTalkTavernPrintText', 'context'
+
+    GirlTalkTavernHallHookReady = 0
+    GirlTalkTavernDayHookReady = 0
+
+    gs 'GirlTalkTavernHasHallHook', $GirlTalkTavernGirl
+
+    if GirlTalkTavernHallHookReady = 1:
+        gs 'GirlTalkTavernPrintText', 'hall_hook'
+        $GirlTalkTavernHallHookKey = $GirlTalkTavernGirl + '_' + STR(day)
+        GirlTalkTavernHallHookDiscussed[$GirlTalkTavernHallHookKey] = 1
+        killvar '$GirlTalkTavernHallHookKey'
+    else:
+        gs 'GirlTalkTavernHasDayEventHook', $GirlTalkTavernGirl
+
+        if GirlTalkTavernDayHookReady = 1:
+            gs 'GirlTalkTavernPrintText', 'day_event'
+            $GirlTalkTavernDayHookKey = $GirlTalkTavernGirl + '_' + STR(day)
+            GirlTalkTavernDayHookDiscussed[$GirlTalkTavernDayHookKey] = 1
+            killvar '$GirlTalkTavernDayHookKey'
+        end
+    end
+
+    Friends[$GirlTalkTavernGirl] += 1
+    management_skill += 1
+
+    killvar '$GirlTalkTavernGirl'
+    killvar 'GirlTalkTavernHallHookReady'
+    killvar 'GirlTalkTavernDayHookReady'
+---
+
+#GirlTalkTavernHasHallHook
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkTavernHookGirl = $GirlKey
+
+    GirlTalkTavernHallHookReady = 0
+
+    if $GirlTalkTavernHookGirl = '':
+        exit
+    end
+
+    if $LastHallChoiceGirl <> $GirlTalkTavernHookGirl:
+        exit
+    end
+
+    if LastGirlChoiceDay[$GirlTalkTavernHookGirl] <> day:
+        exit
+    end
+
+    $GirlTalkTavernHallHookKey = $GirlTalkTavernHookGirl + '_' + STR(day)
+
+    if GirlTalkTavernHallHookDiscussed[$GirlTalkTavernHallHookKey] = 1:
+        killvar '$GirlTalkTavernHookGirl'
+        killvar '$GirlTalkTavernHallHookKey'
+        exit
+    end
+
+    if $LastHallChoiceType = '' and $LastGirlChoiceType[$GirlTalkTavernHookGirl] = '':
+        killvar '$GirlTalkTavernHookGirl'
+        killvar '$GirlTalkTavernHallHookKey'
+        exit
+    end
+
+    GirlTalkTavernHallHookReady = 1
+
+    killvar '$GirlTalkTavernHookGirl'
+    killvar '$GirlTalkTavernHallHookKey'
+---
+
+#GirlTalkTavernHasDayEventHook
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkTavernHookGirl = $GirlKey
+
+    GirlTalkTavernDayHookReady = 0
+
+    if $GirlTalkTavernHookGirl = '':
+        exit
+    end
+
+    if $LastDayTavernEventText = '':
+        killvar '$GirlTalkTavernHookGirl'
+        exit
+    end
+
+    $GirlTalkTavernDayHookKey = $GirlTalkTavernHookGirl + '_' + STR(day)
+
+    if GirlTalkTavernDayHookDiscussed[$GirlTalkTavernDayHookKey] = 1:
+        killvar '$GirlTalkTavernHookGirl'
+        killvar '$GirlTalkTavernDayHookKey'
+        exit
+    end
+
+    GirlTalkTavernDayHookReady = 1
+
+    killvar '$GirlTalkTavernHookGirl'
+    killvar '$GirlTalkTavernDayHookKey'
+---
+
+#GirlTalkTavernPrintText
+    if $GirlTalkTavernGirl = '':
+        $GirlTalkTavernGirl = $TalkGirl
+    end
+
+    gs 'GirlTalkTavernText', $ARGS[0]
+
+    if $GirlTalkTavernText <> '':
+        *p $GirlTalkTavernText
+    end
+
+    killvar '$GirlTalkTavernText'
+---
