@@ -16,7 +16,7 @@ These locations have no direct literal incoming calls and are not classified as 
 
 | Location | File | Line | Group |
 | --- | --- | --- | --- |
-| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 307 | `modules/actions` |
+| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 313 | `modules/actions` |
 
 ## Classified Entry Or Helper Locations
 
@@ -222,22 +222,22 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowGirlSidebar` | 69 |
 | `ClampGirlSocialStats` | 47 |
 | `UpdateGirlLocations` | 44 |
-| `RegisterSex` | 41 |
 | `ShowImage` | 41 |
+| `RegisterSex` | 41 |
 | `Menu.Create` | 39 |
 | `CorruptionProgress` | 38 |
 | `Menu.Destroy` | 33 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `Menu.AddCondition` | 21 |
 | `ClampTavernEventState` | 21 |
 | `ShowLocationImage` | 21 |
+| `Menu.AddCondition` | 21 |
 | `MarketDance` | 21 |
 | `SaveLastHallEvent` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
-| `ShowGirlInLocation` | 15 |
 | `AmandaLizettePrintText` | 15 |
+| `ShowGirlInLocation` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
 
 ## Dynamic Call Sites

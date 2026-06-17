@@ -53,6 +53,12 @@
     gs 'GirlTalkIntroText', $TalkGirl
     gs 'UsefulTalkDebugPanel', $TalkGirl
 
+    if $GirlTalkPendingNotice[$TalkGirl] <> '':
+        *pl ' '
+        *p $GirlTalkPendingNotice[$TalkGirl]
+        $GirlTalkPendingNotice[$TalkGirl] = ''
+    end
+
     *pl ' '
     gs 'GirlTalkHasHallTopics', $TalkGirl
 
@@ -335,7 +341,7 @@
     gs 'UsefulTalkCheck', $TalkGirl, 'hall_recent'
 
     if UsefulTalkResult = 0:
-        gs 'GirlTalkBlockedUsefulTopic', $TalkGirl
+        gt 'GirlTalkBlockedUsefulTopic', $TalkGirl, $TalkReturnLoc
         exit
     end
 
@@ -440,7 +446,7 @@
     gs 'UsefulTalkCheck', $TalkGirl, $GirlTalkHallTopic
 
     if UsefulTalkResult = 0:
-        gs 'GirlTalkBlockedUsefulTopic', $TalkGirl
+        gt 'GirlTalkBlockedUsefulTopic', $TalkGirl, $TalkReturnLoc
         exit
     end
 
@@ -507,9 +513,18 @@
 #GirlTalkBlockedUsefulTopic
     gs 'NormalizeGirlKey', $ARGS[0]
     $TalkBlockedGirl = $GirlKey
+    $TalkBlockedReturnLoc = $ARGS[1]
 
     if $TalkBlockedGirl = '':
         exit
+    end
+
+    if $TalkBlockedReturnLoc = '':
+        $TalkBlockedReturnLoc = 'TavernMain'
+    end
+
+    if LOC($TalkBlockedReturnLoc) = 0:
+        $TalkBlockedReturnLoc = 'TavernMain'
     end
 
     if $RealName[$TalkBlockedGirl] = '':
@@ -520,8 +535,7 @@
     GirlTalkBlockedUsefulCount[$TalkBlockedKey] += 1
 
     if GirlTalkBlockedUsefulCount[$TalkBlockedKey] >= 5:
-        *pl ' '
-        *p '— Всё, хватит, Стефан, — резко говорит ' + $RealName[$TalkBlockedGirl] + '. — Я тебе не служанка для бесконечной болтовни. На сегодня разговор окончен.'
+        $GirlTalkPendingNotice[$TalkBlockedGirl] = '— Всё, хватит, Стефан, — резко говорит ' + $RealName[$TalkBlockedGirl] + '. — Я тебе не служанка для бесконечной болтовни. На сегодня разговор окончен.'
 
         GirlTalkIrritatedUntilDay[$TalkBlockedGirl] = day
         GirlConflictLevel[$TalkBlockedGirl] += 1
@@ -545,15 +559,18 @@
         if LOC('ClampGirlSocialStats') = 1:
             gs 'ClampGirlSocialStats', $TalkBlockedGirl
         end
+
+        gt 'GirlTalkClosedScreen', $TalkBlockedGirl, $TalkBlockedReturnLoc
     elseif GirlTalkBlockedUsefulCount[$TalkBlockedKey] >= 3:
-        *pl ' '
-        *p '— Стефан, ты меня слышишь? — ' + $RealName[$TalkBlockedGirl] + ' уже смотрит раздражённо. — Я сказала: серьёзные разговоры потом.'
+        $GirlTalkPendingNotice[$TalkBlockedGirl] = '— Стефан, ты меня слышишь? — ' + $RealName[$TalkBlockedGirl] + ' уже смотрит раздражённо. — Я сказала: серьёзные разговоры потом.'
+        gt 'GirlTalk', $TalkBlockedGirl, $TalkBlockedReturnLoc
     else:
-        *pl ' '
-        *p '— Стефан, хватит болтать, — говорит ' + $RealName[$TalkBlockedGirl] + '. — У меня нет столько времени. Если хочешь просто перекинуться парой слов — ладно, но серьёзное оставь на потом.'
+        $GirlTalkPendingNotice[$TalkBlockedGirl] = '— Стефан, хватит болтать, — говорит ' + $RealName[$TalkBlockedGirl] + '. — У меня нет столько времени. Если хочешь просто перекинуться парой слов — ладно, но серьёзное оставь на потом.'
+        gt 'GirlTalk', $TalkBlockedGirl, $TalkBlockedReturnLoc
     end
 
     killvar '$TalkBlockedGirl'
+    killvar '$TalkBlockedReturnLoc'
     killvar '$TalkBlockedKey'
 ---
 
@@ -590,8 +607,13 @@
     end
 
     if GirlTalkIrritatedUntilDay[$TalkClosedGirl] >= day:
-        *p $RealName[$TalkClosedGirl] + ' даже не пытается поддержать разговор.'
-        *p '— На сегодня хватит, Стефан. Я сказала.'
+        if $GirlTalkPendingNotice[$TalkClosedGirl] <> '':
+            *p $GirlTalkPendingNotice[$TalkClosedGirl]
+            $GirlTalkPendingNotice[$TalkClosedGirl] = ''
+        else:
+            *p $RealName[$TalkClosedGirl] + ' даже не пытается поддержать разговор.'
+            *p '— На сегодня хватит, Стефан. Я сказала.'
+        end
     else:
         *p $RealName[$TalkClosedGirl] + ' не даёт начать разговор. После последнего конфликта она держится холодно: смотрит мимо, отвечает коротко и явно ждёт не слов, а поступка.'
         *p 'Сейчас можно попробовать подарок или дать ей время остыть.'
@@ -661,7 +683,7 @@
         gs 'UsefulTalkCheck', $TalkGirl, $TalkTopic
 
         if UsefulTalkResult = 0:
-            gs 'GirlTalkBlockedUsefulTopic', $TalkGirl
+            gt 'GirlTalkBlockedUsefulTopic', $TalkGirl, $TalkReturnLoc
             exit
         end
     end
