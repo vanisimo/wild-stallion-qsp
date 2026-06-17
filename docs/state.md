@@ -133,6 +133,40 @@ Mayor hook:
 
 Debug: `DebugBirthCertificateArcPanel`.
 
+## Tavern Upgrades / Draupnir (stage 1 / PR3)
+
+Owners:
+
+- `modules/core/tavern/tavern_upgrades.qsps`
+- `modules/locations/shops/draupnir_upgrades.qsps`
+- `modules/locations/shops/draupnir_upgrades_text.qsps`
+- `modules/events/family/melissa_music_stage.qsps`
+- `modules/locations/town/craftsmen_quarter.qsps`
+
+Unlock: `TavernCarpenterUpgradesUnlocked = 1` (from mayor clerk workoff in PR4b; debug can force).
+
+Rules:
+
+- Pay immediately; work completes after N days via `TavernUpgradeAdvanceDay` in `NextDay`.
+- No tavern closure or power penalty while work is pending.
+- **Sign first** (`TavernUpgradeSignDone`); other Draupnir upgrades require sign done, any order after that.
+- **Music stage** only after `MelissaMusicStageOfferDone = 1` (Melissa talk, not in clerk checklist).
+
+| Upgrade | Cost | Days | Effect when done |
+|---------|------|------|------------------|
+| sign | 120 | 1 | rep +3, visitors +2 |
+| exterior | 200 | 2 | rep +5, softer bad day-events |
+| kitchen | 180 | 2 | kitchen power +8 |
+| bar | 150 | 1 | waitress power +5, drink income +5% |
+| cellar | 100 | 1 | rat food loss −30% |
+| doors | 90 | 1 | 35% brawl without repair flag |
+| lamp | 70 | 1 | evening visitors +1 |
+| stage | 250 | 3 | Friday beer +10%, minstrels event bonus, `MelissaMusicianInterest +2` |
+
+Emergency repair (`TavernRepairNeeded`) stays separate from permanent upgrades.
+
+Debug: `DebugTavernUpgradesPanel`.
+
 ## Mayor Office Gate (stage 1)
 
 Owners:

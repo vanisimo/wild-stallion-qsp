@@ -105,11 +105,19 @@
     TavernRepairOrdered = 0
     $TavernRepairSource = 'rats'
 
-    productnum -= RAND(25, 55)
+    TavernDayRatsLoss = RAND(25, 55)
+
+    if TavernUpgradeCellarDone = 1:
+        TavernDayRatsLoss = (TavernDayRatsLoss * 70) / 100
+    end
+
+    productnum -= TavernDayRatsLoss
 
     if productnum < 0:
         productnum = 0
     end
+
+    killvar 'TavernDayRatsLoss'
 
     if winenum > 0:
         winenum -= RAND(4, 12)
@@ -128,7 +136,13 @@
     end
 
     TavernDayEventProfitBonus = -RAND(15, 35)
-    TavernDayEventReputationBonus = -2
+
+    if TavernUpgradeExteriorDone = 1:
+        TavernDayEventProfitBonus = (TavernDayEventProfitBonus * 90) / 100
+        TavernDayEventReputationBonus = -1
+    else:
+        TavernDayEventReputationBonus = -2
+    end
 ---
 
 #TavernDayEventStartBrawl
@@ -138,8 +152,23 @@
     TavernRepairOrdered = 0
     $TavernRepairSource = 'brawl'
 
+    if TavernUpgradeDoorsDone = 1 and RAND(1, 100) <= 35:
+        TavernRepairNeeded = 0
+        TavernRepairOrdered = 0
+        $TavernRepairSource = ''
+    end
+
     TavernDayEventProfitBonus = -RAND(35, 70)
+
+    if TavernUpgradeExteriorDone = 1:
+        TavernDayEventProfitBonus = (TavernDayEventProfitBonus * 90) / 100
+    end
+
     TavernDayEventReputationBonus = -2
+
+    if TavernUpgradeExteriorDone = 1:
+        TavernDayEventReputationBonus += 1
+    end
 ---
 
 #TavernDayEventStartGuard
@@ -177,11 +206,20 @@
 
     tavernvisitors += RAND(6, 14)
 
+    if TavernUpgradeStageDone = 1:
+        tavernvisitors += RAND(2, 6)
+    end
+
     if tavernvisitors > 80:
         tavernvisitors = 80
     end
 
     TavernDayEventProfitBonus = RAND(20, 45)
+
+    if TavernUpgradeStageDone = 1:
+        TavernDayEventProfitBonus += RAND(15, 30)
+    end
+
     TavernDayEventReputationBonus = 1
 ---
 

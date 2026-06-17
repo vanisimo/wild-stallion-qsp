@@ -1,0 +1,80 @@
+! ================================================
+! FILE: modules/events/family/melissa_music_stage.qsps
+! MODULE: events/family
+! Мелисса предлагает сцену для музыкантов
+! Заказ сцены только после этого разговора
+! ================================================
+
+#MelissaMusicStageCanOffer
+    MelissaMusicStageCanOffer = 0
+
+    if MelissaMusicStageOfferDone = 1:
+        exit
+    end
+
+    if TavernCarpenterUpgradesUnlocked = 0:
+        exit
+    end
+
+    if TavernUpgradeSignDone = 0:
+        exit
+    end
+
+    if Friends['melissa'] < 12:
+        exit
+    end
+
+    MelissaMusicStageCanOffer = 1
+---
+
+#MelissaMusicStageTalk
+    cls
+
+    gs 'MelissaMusicStageCanOffer'
+
+    if MelissaMusicStageCanOffer = 0:
+        if LOC('MelissaMusicStageTalkBlockedText') = 1:
+            gs 'MelissaMusicStageTalkBlockedText'
+        else:
+            *p 'Сейчас не время для этого разговора.'
+        end
+
+        *pl ' '
+
+        $MelissaStageReturnLoc = $CURLOC
+
+        if $MelissaStageReturnLoc = '':
+            $MelissaStageReturnLoc = 'TavernMain'
+        end
+
+        act 'Вернуться':
+            gt $MelissaStageReturnLoc
+        end
+
+        killvar '$MelissaStageReturnLoc'
+        exit
+    end
+
+    gs 'MelissaMusicStageTalkText'
+
+    MelissaMusicStageOfferDone = 1
+    Friends['melissa'] += 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Melissa_MusicStageOffer_1'
+    end
+
+    *pl ' '
+
+    $MelissaStageReturnLoc = $CURLOC
+
+    if $MelissaStageReturnLoc = '':
+        $MelissaStageReturnLoc = 'TavernMain'
+    end
+
+    act 'Вернуться':
+        gt $MelissaStageReturnLoc
+    end
+
+    killvar '$MelissaStageReturnLoc'
+---
