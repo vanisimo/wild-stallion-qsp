@@ -46,6 +46,36 @@
     if TavernHiredOverloadRelief <= 0:
         TavernHiredOverloadRelief = 5
     end
+
+    if TavernHiredStaffUnlockRep <= 0:
+        TavernHiredStaffUnlockRep = 35
+    end
+
+    if TavernHiredStaffUnlockTax <= 0:
+        TavernHiredStaffUnlockTax = 120
+    end
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_hired_staff.qsps
+! Проверка доступности наёмного персонала
+! Путь 1: репутация + уплаченный городской налог
+! Путь 2: первый приём у мэра
+! ================================================
+
+#CheckTavernHiredStaffUnlocked
+    gs 'InitTavernHiredStaff'
+
+    TavernHiredStaffUnlocked = 0
+
+    if MayorFirstTalkDone = 1:
+        TavernHiredStaffUnlocked = 1
+        exit
+    end
+
+    if tavern_reputation >= TavernHiredStaffUnlockRep and TavernCityTaxTotal >= TavernHiredStaffUnlockTax:
+        TavernHiredStaffUnlocked = 1
+    end
 ---
 
 ! ================================================
@@ -56,9 +86,17 @@
 
 #ApplyTavernHiredStaffEffects
     gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
 
     tavern_hired_staff_count = 0
     tavern_hired_staff_daily_cost = 0
+
+    if TavernHiredStaffUnlocked = 0:
+        TavernHiredKitchen = 0
+        TavernHiredWaitress = 0
+        TavernHiredCleaning = 0
+        exit
+    end
 
     if TavernHiredKitchen = 1:
         tavern_kitchen_power += TavernHiredKitchenPower
@@ -106,8 +144,13 @@
 
 #AddTavernHiredStaffExpenses
     gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
 
     tavern_hired_staff_daily_cost = 0
+
+    if TavernHiredStaffUnlocked = 0:
+        exit
+    end
 
     if TavernHiredKitchen = 1:
         tavern_hired_staff_daily_cost += TavernHiredKitchenCost
@@ -138,25 +181,26 @@
     end
 
     gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
 
     if $PanelHiredJob = 'kitchen':
         if TavernHiredKitchen = 1:
             TavernHiredKitchen = 0
-        else
+        elseif TavernHiredStaffUnlocked = 1:
             TavernHiredKitchen = 1
         end
 
     elseif $PanelHiredJob = 'waitress':
         if TavernHiredWaitress = 1:
             TavernHiredWaitress = 0
-        else
+        elseif TavernHiredStaffUnlocked = 1:
             TavernHiredWaitress = 1
         end
 
     elseif $PanelHiredJob = 'cleaning':
         if TavernHiredCleaning = 1:
             TavernHiredCleaning = 0
-        else
+        elseif TavernHiredStaffUnlocked = 1:
             TavernHiredCleaning = 1
         end
     end
@@ -184,10 +228,22 @@
 
 #PanelHiredStaffBlock
     gs 'InitTavernHiredStaff'
-    gs 'CalculateTavernStaffEfficiency'
+    gs 'CheckTavernHiredStaffUnlocked'
 
     pl 'Наёмный персонал:'
     pl 'Дешёвые работники без имени. Снимают часть перегрузки с семьи.'
+    pl ' '
+
+    if TavernHiredStaffUnlocked = 0:
+        pl 'Пока недоступно. Нужен один из путей:'
+        pl '• Репутация ' + STR(TavernHiredStaffUnlockRep) + '+ (сейчас ' + STR(tavern_reputation) + ')'
+        pl '  и налог в казне ' + STR(TavernHiredStaffUnlockTax) + '+ (сейчас ' + STR(TavernCityTaxTotal) + ')'
+        pl '• Или первый приём у мэра'
+        pl ' '
+        exit
+    end
+
+    pl 'Найм открыт.'
     pl ' '
 
     gs 'PanelHiredStaffLine', 'kitchen'
@@ -209,6 +265,7 @@
     end
 
     gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
 
     $PanelHiredJobTitle = ''
     PanelHiredJobActive = 0
@@ -243,16 +300,26 @@
     if PanelHiredJobActive = 1:
         $PanelHiredStatus = 'нанят'
         $PanelHiredToggleText = 'Уволить'
-    else:
+        $PanelHiredCanToggle = 1
+    elseif TavernHiredStaffUnlocked = 1:
         $PanelHiredStatus = 'нет'
         $PanelHiredToggleText = 'Нанять'
+        $PanelHiredCanToggle = 1
+    else:
+        $PanelHiredStatus = 'закрыто'
+        $PanelHiredToggleText = ''
+        $PanelHiredCanToggle = 0
     end
 
     pl $PanelHiredJobTitle + ': ' + $PanelHiredStatus + ' | сила +' + STR(PanelHiredJobPower) + ' | ' + STR(PanelHiredJobCost) + ' м/день'
-    pl '<a href="exec:gs ''PanelHiredStaffToggle'', ''' + $PanelHiredJob + '''">' + $PanelHiredToggleText + '</a>'
+
+    if $PanelHiredCanToggle = 1:
+        pl '<a href="exec:gs ''PanelHiredStaffToggle'', ''' + $PanelHiredJob + '''">' + $PanelHiredToggleText + '</a>'
+    end
 
     killvar '$PanelHiredJob'
     killvar '$PanelHiredJobTitle'
     killvar '$PanelHiredStatus'
     killvar '$PanelHiredToggleText'
+    killvar '$PanelHiredCanToggle'
 ---

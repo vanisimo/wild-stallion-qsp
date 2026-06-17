@@ -128,6 +128,13 @@ Debug: `DebugMayorArcPanel` (debug panel).
 
 Owner: `modules/core/tavern/tavern_hired_staff.qsps`.
 
+Unlock (`CheckTavernHiredStaffUnlocked`):
+
+- path A: `tavern_reputation >= TavernHiredStaffUnlockRep` (default `35`) **and** `TavernCityTaxTotal >= TavernHiredStaffUnlockTax` (default `120`);
+- path B: `MayorFirstTalkDone = 1`.
+
+Until unlock, hire buttons are hidden. If unlock is lost before hire (should not happen in normal play), active hires are cleared in `ApplyTavernHiredStaffEffects`.
+
 Flags:
 
 - `TavernHiredKitchen`, `TavernHiredWaitress`, `TavernHiredCleaning` — `0/1` per role.
