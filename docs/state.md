@@ -124,6 +124,26 @@ Knowledge id: `Stefan_MayorFirstTalk_1`.
 
 Debug: `DebugMayorArcPanel` (debug panel).
 
+## Hired Staff (stage 1 / PR2)
+
+Owner: `modules/core/tavern/tavern_hired_staff.qsps`.
+
+Flags:
+
+- `TavernHiredKitchen`, `TavernHiredWaitress`, `TavernHiredCleaning` — `0/1` per role.
+
+Power added to daily staff calculation:
+
+- kitchen `28`, waitress `25`, cleaning `22`.
+
+Daily cost (included in `tavern_daily_expenses`):
+
+- kitchen `12`, waitress `12`, cleaning `10`.
+
+Overload relief: `-5` penalty per active hired worker.
+
+UI: `PanelStaffInfo` → block `PanelHiredStaffBlock`, toggle via `PanelHiredStaffToggle`.
+
 ## Last Day Summary
 
 Owner: `modules/core/time/next_day.qsps`.
@@ -137,6 +157,7 @@ These values mirror the previous work day for the morning summary:
 - `LastDayBeerIncome`
 - `LastDayExpenses`
 - `LastDayCityTax`
+- `LastDayHiredStaffCost`
 - `LastDayFoodUsed`
 - `LastDayWineUsed`
 - `LastDayBeerUsed`
