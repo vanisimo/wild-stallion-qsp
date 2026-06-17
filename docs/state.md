@@ -331,13 +331,15 @@ Repair flow:
 1. Daytime at Draupnir: quote (`TavernDayEventCalcRepairCost`), pay or refuse / no-money branch.
 2. After payment: `TavernRepairOrdered = 1`, damage stays until evening (`TavernRepairNeeded` still `1`).
 3. Evening in `TavernMain`: `TavernDayEventPrintCarpenterEveningRepair` shows completion and paid cost.
-4. If repair is skipped: hall hint stays, rats may trigger evening brawl, end-day text uses `*_end_unrepaired`.
+4. If repair is skipped: hall hint stays, rats may trigger evening brawl, end-day text uses `*_end_unrepaired`, extra profit/reputation penalty at day end.
+5. Unrepaired damage **carries over** to the next day (`TavernRepairCarryPending` → restored as `TavernRepairNeeded`) until the player orders repair at Draupnir. Morning/hall texts use `carryover_*`. If a new repair event rolls next day, old ignored damage is dropped with extra reputation `-2`.
 
 Key state:
 
 - `$TavernDayEventId`, `TavernDayEventActive`
 - `TavernStaffBusyDay`, `TavernStaffTiredEvening` (caravan only)
 - `TavernRepairNeeded`, `TavernRepairOrdered`, `TavernRepairEveningShown`, `TavernDayRepairCost`, `$TavernRepairSource` (`rats` / `brawl` / `broken`)
+- `TavernRepairCarryPending`, `$TavernRepairCarrySource`, `TavernRepairCarryDays` — unrepaired damage waiting for next day
 - `TavernDayEventGuardPassed`
 - `TavernDayEventProfitBonus`, `TavernDayEventReputationBonus`
 - `TavernDayBrawlHappened` (rats evening only)

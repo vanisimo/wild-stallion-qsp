@@ -22,6 +22,17 @@
 ---
 
 #TavernDayEventRoll
+    $TavernRepairCarryRestoreSource = ''
+    TavernRepairCarryRestore = 0
+
+    if TavernRepairCarryPending = 1:
+        TavernRepairCarryRestore = 1
+        $TavernRepairCarryRestoreSource = $TavernRepairCarrySource
+    end
+
+    TavernRepairCarryPending = 0
+    $TavernRepairCarrySource = ''
+
     TavernDayEventImageShown = 0
     TavernDayEventHallDescPrinted = 0
     $TavernDayEventEveningText = ''
@@ -78,6 +89,8 @@
         gs 'TavernDayEventStartThief'
     end
 
+    gs 'TavernDayEventRestoreCarryOverRepair'
+
     if debug = 1:
         *pl '[DEBUG TAVERN DAY] rolled event: ' + $TavernDayEventId
     end
@@ -85,6 +98,87 @@
     killvar 'TavernDayEventRoll'
     killvar 'TavernDayEventPick'
     killvar 'TavernDayEventCanRoll'
+    killvar '$TavernRepairCarryRestoreSource'
+    killvar 'TavernRepairCarryRestore'
+---
+
+#TavernDayEventRestoreCarryOverRepair
+    TavernDayEventNewRepairToday = 0
+
+    if $TavernDayEventId = 'rats' or $TavernDayEventId = 'brawl' or $TavernDayEventId = 'broken':
+        TavernDayEventNewRepairToday = 1
+    end
+
+    if TavernRepairCarryRestore = 0:
+        killvar 'TavernDayEventNewRepairToday'
+        exit
+    end
+
+    if TavernDayEventNewRepairToday = 0:
+        TavernRepairNeeded = 1
+        $TavernRepairSource = $TavernRepairCarryRestoreSource
+        TavernRepairCarryDays += 1
+    else:
+        tavern_reputation -= 2
+
+        if tavern_reputation < 0:
+            tavern_reputation = 0
+        end
+
+        TavernRepairCarryDays = 0
+    end
+
+    killvar 'TavernDayEventNewRepairToday'
+---
+
+#TavernDayEventFinalizeRepairAtDayEnd
+    if TavernRepairNeeded = 0:
+        exit
+    end
+
+    if TavernRepairOrdered = 1:
+        TavernRepairNeeded = 0
+
+        if TavernRepairEveningShown = 0:
+            TavernRepairEveningShown = 1
+        end
+
+        exit
+    end
+
+    TavernRepairCarryPending = 1
+    $TavernRepairCarrySource = $TavernRepairSource
+
+    gs 'TavernDayEventApplyUnrepairedPenalty'
+---
+
+#TavernDayEventApplyUnrepairedPenalty
+    if TavernRepairNeeded = 0 or TavernRepairOrdered = 1:
+        exit
+    end
+
+    tavern_event_profit_bonus -= RAND(8, 20)
+    tavern_event_reputation_bonus -= 1
+
+    if TavernRepairCarryDays >= 1:
+        tavern_event_reputation_bonus -= 1
+        tavern_event_profit_bonus -= RAND(5, 12)
+    end
+---
+
+#TavernDayEventCarryOverEndText
+    gs 'TavernDayEventCarryOverTextId'
+
+    if $TavernDayEventCarryOverTextId = '':
+        killvar '$TavernDayEventCarryOverTextId'
+        exit
+    end
+
+    gs 'TavernDayEventText', $TavernDayEventCarryOverTextId + '_end'
+    $LastTavernEventText = $TavernDayEventText
+
+    killvar '$TavernDayEventCarryOverTextId'
+    killvar '$TavernDayEventText'
 ---
 
 #TavernDayEventStartCaravan
@@ -304,11 +398,11 @@
         exit
     end
 
-    if $TavernDayEventId = 'rats':
+    if $TavernRepairSource = 'rats':
         gs 'TavernDayEventText', 'rats_repair_hint'
-    elseif $TavernDayEventId = 'brawl':
+    elseif $TavernRepairSource = 'brawl':
         gs 'TavernDayEventText', 'brawl_repair_hint'
-    elseif $TavernDayEventId = 'broken':
+    elseif $TavernRepairSource = 'broken':
         gs 'TavernDayEventText', 'broken_repair_hint'
     else:
         exit
@@ -317,6 +411,72 @@
     *pl ' '
     *p $TavernDayEventText
     killvar '$TavernDayEventText'
+---
+
+#TavernDayEventCarryOverTextId
+    $TavernDayEventCarryOverTextId = ''
+
+    if $TavernRepairSource = 'rats':
+        $TavernDayEventCarryOverTextId = 'carryover_rats'
+    elseif $TavernRepairSource = 'brawl':
+        $TavernDayEventCarryOverTextId = 'carryover_brawl'
+    elseif $TavernRepairSource = 'broken':
+        $TavernDayEventCarryOverTextId = 'carryover_broken'
+    end
+---
+
+#TavernDayEventPrintCarryOverMorning
+    if TavernRepairNeeded = 0 or TavernRepairOrdered = 1:
+        exit
+    end
+
+    if TavernDayEventActive = 1:
+        exit
+    end
+
+    gs 'TavernDayEventCarryOverTextId'
+
+    if $TavernDayEventCarryOverTextId = '':
+        killvar '$TavernDayEventCarryOverTextId'
+        exit
+    end
+
+    gs 'TavernDayEventText', $TavernDayEventCarryOverTextId + '_morning'
+    *pl ' '
+    *pl 'Незаконченный ремонт:'
+    *p $TavernDayEventText
+
+    killvar '$TavernDayEventCarryOverTextId'
+    killvar '$TavernDayEventText'
+    *pl ' '
+---
+
+#TavernDayEventPrintCarryOverHall
+    if TavernRepairNeeded = 0 or TavernRepairOrdered = 1:
+        exit
+    end
+
+    if TavernDayEventActive = 1:
+        exit
+    end
+
+    gs 'TavernDayEventCarryOverTextId'
+
+    if $TavernDayEventCarryOverTextId = '':
+        killvar '$TavernDayEventCarryOverTextId'
+        exit
+    end
+
+    TavernDayEventHallDescPrinted = 1
+
+    gs 'TavernDayEventText', $TavernDayEventCarryOverTextId + '_hall'
+    *p $TavernDayEventText
+
+    killvar '$TavernDayEventCarryOverTextId'
+    killvar '$TavernDayEventText'
+
+    gs 'TavernDayEventPrintRepairHint'
+    *pl ' '
 ---
 
 #TavernDayEventPrintHallDescription
@@ -695,7 +855,10 @@
     TavernRepairNeeded = 0
     TavernRepairOrdered = 0
     TavernRepairEveningShown = 0
+    TavernRepairCarryPending = 0
+    TavernRepairCarryDays = 0
     TavernDayRepairCost = 0
+    $TavernRepairCarrySource = ''
     TavernStaffBusyDay = 0
     TavernStaffTiredEvening = 0
     TavernDayEventActive = 0
