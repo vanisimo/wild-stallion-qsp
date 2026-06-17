@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 231
-- Locations: 980
-- Locations with direct incoming calls: 795
+- Locations: 984
+- Locations with direct incoming calls: 799
 - Locations without direct incoming calls: 185
 - Review candidates without direct incoming calls: 0
 - Classified entry/helper locations without direct incoming calls: 185
@@ -213,30 +213,30 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `Menu.Add` | 220 |
-| `Menu.AddModule` | 220 |
-| `NormalizeGirlKey` | 103 |
-| `EnsureGirlData` | 90 |
+| `Menu.Add` | 233 |
+| `Menu.AddModule` | 233 |
+| `NormalizeGirlKey` | 104 |
+| `EnsureGirlData` | 91 |
 | `TavernMain` | 74 |
-| `ShowGirlSidebar` | 70 |
+| `ShowGirlSidebar` | 71 |
 | `ClampGirlSocialStats` | 46 |
 | `UpdateGirlLocations` | 44 |
 | `RegisterSex` | 41 |
+| `Menu.Create` | 39 |
 | `CorruptionProgress` | 38 |
-| `Menu.Create` | 37 |
 | `ShowImage` | 37 |
-| `Menu.Destroy` | 31 |
+| `Menu.Destroy` | 33 |
 | `HallHarassmentPrintText` | 29 |
 | `BeckyShop` | 23 |
-| `ClampTavernEventState` | 21 |
+| `ShowLocationImage` | 21 |
 | `MarketDance` | 21 |
 | `SaveLastHallEvent` | 21 |
+| `ClampTavernEventState` | 21 |
 | `Menu.AddCondition` | 21 |
-| `ShowLocationImage` | 21 |
 | `GetDateTimeNames` | 20 |
 | `MenuGirlCalcConditions` | 17 |
-| `ShowGirlInLocation` | 15 |
 | `AmandaLizettePrintText` | 15 |
+| `ShowGirlInLocation` | 15 |
 | `CalculateTavernStaffEfficiency` | 14 |
 
 ## Dynamic Call Sites

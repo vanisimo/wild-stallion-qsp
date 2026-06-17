@@ -71,40 +71,12 @@
     gs 'UsefulTalkDebugPanel', $TalkGirl
 
     *pl ' '
-    *pl 'О чём поговорить?'
+    gs 'GirlTalkHasHallTopics', $TalkGirl
+
+    gs 'GirlTalkBuildMainMenu'
+
+    *p 'О чём <a href="exec:gs ''Menu.Show'', ''GirlTalkMainMenu''">поговорить</a>?'
     *pl ' '
-
-    act 'О делах трактира':
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'tavern'
-    end
-
-    if Friends[$TalkGirl] >= 3 or love[$TalkGirl] >= 2 or $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
-        act 'О семье':
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'family'
-        end
-    end
-
-    act 'Поболтать ни о чём':
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
-    end
-
-    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
-        act 'Поговорить о случившемся в зале':
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'hall_event'
-        end
-    end
-
-    if Friends[$TalkGirl] >= 8 or love[$TalkGirl] >= 5 or otkroven[$TalkGirl] >= 8:
-        act 'Личный разговор':
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'personal'
-        end
-    end
-
-    if Friends[$TalkGirl] >= 12 or love[$TalkGirl] >= 10 or otkroven[$TalkGirl] >= 12:
-        act 'Сделать комплимент':
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
-        end
-    end
 
     if GirlConflictLevel[$TalkGirl] > 0 and GirlConflictUntilDay[$TalkGirl] < day and GirlConflictAfterTalkLevel[$TalkGirl] < GirlConflictLevel[$TalkGirl]:
         act 'Поговорить о недавней ссоре':
@@ -240,54 +212,202 @@
         end
     end
 
-        ! ====================== НЕДАВНЕЕ СОБЫТИЕ В ЗАЛЕ ======================
-
-    if LOC('HallRecentTalkCanDiscuss') = 1:
-        gs 'HallRecentTalkCanDiscuss', $TalkGirl
-
-        if HallRecentTalkAvailable = 1:
-            act 'Поговорить о том, что было в зале':
-                gt 'HallRecentTalkStart', $TalkGirl, $TalkReturnLoc
-            end
-        end
-    end
-
-        ! ====================== СЕМЕЙНАЯ РЕАКЦИЯ НА СОБЫТИЕ В ЗАЛЕ ======================
-
-    if LOC('HallFamilyReactionCanDiscuss') = 1:
-        gs 'HallFamilyReactionCanDiscuss', $TalkGirl
-
-        if HallFamilyReactionAvailable = 1:
-            act 'Обсудить реакцию семьи на случившееся':
-                gt 'HallFamilyReactionStart', $TalkGirl, $TalkReturnLoc
-            end
-        end
-    end
-    
-    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
-        gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
-
-        if HallChoiceFamilyTalkAvailable = 1:
-            act 'Поговорить о моём решении в зале':
-                gt 'HallChoiceFamilyTalkStart', $TalkGirl, $TalkReturnLoc
-            end
-        end
-    end
-
-        if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
-        gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
-
-        if GirlPolicyResponseTalkAvailable = 1:
-            act 'Поговорить о том, как она выполнила правило':
-                gt 'GirlPolicyResponseTalkStart', $TalkGirl, $TalkReturnLoc
-            end
-        end
-    end
-
     act 'Вернуться':
         gt $TalkReturnLoc
     end
 
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Основное меню тем разговора
+! ================================================
+
+#GirlTalkBuildMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    gs 'Menu.Add', 'GirlTalkMainMenu', 'О делах трактира', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'tavern'
+    }
+
+    if Friends[$TalkGirl] >= 3 or love[$TalkGirl] >= 2 or $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'О семье', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'family'
+        }
+    end
+
+    gs 'Menu.Add', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if GirlTalkHallTopicsAvailable = 1:
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'О событиях в зале', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkHallTopics', $TalkGirl, $TalkReturnLoc
+        }
+    end
+
+    if Friends[$TalkGirl] >= 8 or love[$TalkGirl] >= 5 or otkroven[$TalkGirl] >= 8:
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'Личный разговор', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'personal'
+        }
+    end
+
+    if Friends[$TalkGirl] >= 12 or love[$TalkGirl] >= 10 or otkroven[$TalkGirl] >= 12:
+        gs 'Menu.Add', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    gs 'Menu.Add', 'GirlTalkMainMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt $TalkReturnLoc
+    }
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Проверка доступных тем зала
+! ================================================
+
+#GirlTalkHasHallTopics
+    $GirlTalkHallGirl = LCASE($ARGS[0])
+    GirlTalkHallTopicsAvailable = 0
+
+    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $GirlTalkHallGirl and HallEventDiscussed[$GirlTalkHallGirl] = 0:
+        GirlTalkHallTopicsAvailable = 1
+    end
+
+    if LOC('HallRecentTalkCanDiscuss') = 1:
+        gs 'HallRecentTalkCanDiscuss', $GirlTalkHallGirl
+        if HallRecentTalkAvailable = 1:
+            GirlTalkHallTopicsAvailable = 1
+        end
+    end
+
+    if LOC('HallFamilyReactionCanDiscuss') = 1:
+        gs 'HallFamilyReactionCanDiscuss', $GirlTalkHallGirl
+        if HallFamilyReactionAvailable = 1:
+            GirlTalkHallTopicsAvailable = 1
+        end
+    end
+
+    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
+        gs 'HallChoiceFamilyTalkCanDiscuss', $GirlTalkHallGirl
+        if HallChoiceFamilyTalkAvailable = 1:
+            GirlTalkHallTopicsAvailable = 1
+        end
+    end
+
+    if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
+        gs 'GirlPolicyResponseTalkCanDiscuss', $GirlTalkHallGirl
+        if GirlPolicyResponseTalkAvailable = 1:
+            GirlTalkHallTopicsAvailable = 1
+        end
+    end
+
+    killvar '$GirlTalkHallGirl'
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Меню тем по событиям в зале
+! ================================================
+
+#GirlTalkHallTopics
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkGirl = '':
+        msg 'Ошибка: GirlTalkHallTopics вызван без имени девушки.'
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+
+    cls
+    gs 'ShowGirlSidebar', $TalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР О ЗАЛЕ: ' + $RealName[$TalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'Что именно обсудить <a href="exec:gs ''Menu.Show'', ''GirlTalkHallTopicsMenu''">с ней</a>?'
+    *pl ' '
+
+    gs 'GirlTalkBuildHallTopicsMenu'
+
+    act 'Вернуться к выбору тем':
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
+---
+
+#GirlTalkBuildHallTopicsMenu
+    gs 'Menu.Destroy', 'GirlTalkHallTopicsMenu'
+    gs 'Menu.Create', 'GirlTalkHallTopicsMenu'
+
+    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
+        gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Что случилось в зале', ''
+        gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'hall_event'
+        }
+    end
+
+    if LOC('HallRecentTalkCanDiscuss') = 1:
+        gs 'HallRecentTalkCanDiscuss', $TalkGirl
+        if HallRecentTalkAvailable = 1:
+            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Недавний случай в зале', ''
+            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+                gt 'HallRecentTalkStart', $TalkGirl, $TalkReturnLoc
+            }
+        end
+    end
+
+    if LOC('HallFamilyReactionCanDiscuss') = 1:
+        gs 'HallFamilyReactionCanDiscuss', $TalkGirl
+        if HallFamilyReactionAvailable = 1:
+            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Реакция семьи', ''
+            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+                gt 'HallFamilyReactionStart', $TalkGirl, $TalkReturnLoc
+            }
+        end
+    end
+
+    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
+        gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
+        if HallChoiceFamilyTalkAvailable = 1:
+            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Моё решение в зале', ''
+            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+                gt 'HallChoiceFamilyTalkStart', $TalkGirl, $TalkReturnLoc
+            }
+        end
+    end
+
+    if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
+        gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
+        if GirlPolicyResponseTalkAvailable = 1:
+            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Как она выполнила правило', ''
+            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+                gt 'GirlPolicyResponseTalkStart', $TalkGirl, $TalkReturnLoc
+            }
+        end
+    end
+
+    gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    }
 ---
 
 ! ================================================
