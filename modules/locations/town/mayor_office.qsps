@@ -62,6 +62,12 @@
         end
     end
 
+    if MayorClerkAdviceGiven = 1 and MayorFirstTalkDone = 0:
+        act 'Доложить клерку о делах трактира':
+            gt 'MayorOfficeWorkoffGate'
+        end
+    end
+
     if MayorClerkAdviceGiven = 1:
         act 'Спросить клерка, как добиться приёма у мэра':
             gt 'MayorOfficeClerkAdviceReplay'
@@ -293,12 +299,89 @@
     end
 ---
 
+#MayorClerkWorkoffEvaluate
+    MayorWorkoffReady = 0
+    MayorWorkoffSignOk = 0
+    MayorWorkoffStaffOk = 0
+    MayorWorkoffProfitOk = 0
+
+    if TavernUpgradeSignDone = 1:
+        MayorWorkoffSignOk = 1
+    end
+
+    if SandraStaffHired = 1:
+        MayorWorkoffStaffOk = 1
+    end
+
+    if MayorWorkoffProfitDays >= 2:
+        MayorWorkoffProfitOk = 1
+    elseif tavern_reputation >= 45:
+        MayorWorkoffProfitOk = 1
+    end
+
+    if MayorWorkoffSignOk = 1 and MayorWorkoffStaffOk = 1 and MayorWorkoffProfitOk = 1:
+        MayorWorkoffReady = 1
+    end
+---
+
+#MayorOfficeWorkoffGate
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorClerkWorkoffEvaluate'
+
+    gs 'MayorOfficeWorkoffReportIntroText'
+
+    if MayorWorkoffReady = 0:
+        if MayorWorkoffSignOk = 0:
+            gs 'MayorOfficeWorkoffNeedSignText'
+        end
+
+        if MayorWorkoffStaffOk = 0:
+            gs 'MayorOfficeWorkoffNeedStaffText'
+        end
+
+        if MayorWorkoffProfitOk = 0:
+            gs 'MayorOfficeWorkoffNeedProfitText'
+        end
+
+        *pl ' '
+
+        act 'Вернуться в мэрию':
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    gs 'MayorOfficeWorkoffReadyText'
+
+    *pl ' '
+
+    act 'Войти в кабинет мэра':
+        gt 'MayorOfficeFirstTalk'
+    end
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
 #MayorOfficeFirstTalk
     cls
 
+    gs 'MayorOfficeInit'
     gs 'MayorOfficeFirstTalkText'
 
     MayorFirstTalkDone = 1
+
+    if tavern_reputation < 100:
+        tavern_reputation += 3
+
+        if tavern_reputation > 100:
+            tavern_reputation = 100
+        end
+    end
 
     if LOC('KnowledgeRegisterFact') = 1:
         gs 'KnowledgeRegisterFact', 'Stefan_MayorFirstTalk_1'

@@ -208,8 +208,13 @@ Flow (stage 1 main arc):
 4. Mayor refuses (`MayorAudienceRefused = 1`, `MayorFirstTalkDone` stays `0`).
 5. Player demands refund → clerk helps (`MayorOfficeClerkRefundTalk` → `MayorOfficeClerkAdviceTalk`): narrative advice, not a UI checklist.
 6. Advice sets `MayorClerkAdviceGiven = 1`, `TavernCarpenterUpgradesUnlocked = 1`, `MayorClerkMentionedStaff = 1`.
-7. Later (when work is done): mayor accepts — `MayorFirstTalkDone = 1` (**TODO** completion gate).
-8. Magistrate submit blocked until `MayorFirstTalkDone = 1`.
+7. Report to clerk (`MayorOfficeWorkoffGate` → «Доложить клерку о делах трактира») when workoff complete.
+8. Workoff (`MayorClerkWorkoffEvaluate`):
+   - `TavernUpgradeSignDone = 1`
+   - `SandraStaffHired = 1`
+   - `MayorWorkoffProfitDays >= 2` (days with `LastDayProfit >= 50` after advice) **or** `tavern_reputation >= 45`
+9. Mayor accepts — `MayorOfficeFirstTalk`, `MayorFirstTalkDone = 1`.
+10. Magistrate submit blocked until `MayorFirstTalkDone = 1`.
 
 Key state:
 
