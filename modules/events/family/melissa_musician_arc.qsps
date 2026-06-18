@@ -1,25 +1,27 @@
 ! ================================================
 ! FILE: modules/events/family/melissa_musician_arc.qsps
 ! MODULE: events/family
-! Ветка Мелиссы: платье → танцы → менестрель → сцена в трактире
-! Сцены 1–4 и продолжение романа — TODO, здесь флаги и проверки
+! Ветка Мелиссы: платье → танцы → менестрель → сцена → роман
 ! ================================================
 
 #InitMelissaMusicianArc
     if MelissaMinstrelAffairStage < 0:
         MelissaMinstrelAffairStage = 0
     end
+
+    if $MelissaMinstrelName = '':
+        $MelissaMinstrelName = 'Элрик'
+    end
 ---
 
-! ================================================
 ! Порядок ветки:
-! 1 MelissaDanceDressReady — платье для пятничных танцев
-! 2 MelissaFridayDanceAttended — была на танцах
-! 3 MelissaMinstrelMet — знакомство с менестрелем
-! 4 MelissaMinstrelKissDone — поцелуй
-! 5 MelissaMusicStageOfferDone — разговор о сцене в трактире
-! 6 MelissaMinstrelAffairStage — менестрель идёт дальше с Мелиссой (отдельные ивенты)
-! ================================================
+! 1 MelissaDanceDressReady
+! 2 MelissaFridayDanceAttended
+! 3 MelissaMinstrelMet
+! 4 MelissaMinstrelKissDone
+! 5 MelissaMusicStageOfferDone + заказ сцены у Драупнира
+! 6 TavernUpgradeStageDone
+! 7 MelissaMinstrelAffairStage
 
 #MelissaMusicianArcCanOfferStageTalk
     gs 'InitMelissaMusicianArc'
@@ -60,4 +62,663 @@
     else:
         *p 'Сейчас не время говорить с Мелиссой об этом.'
     end
+---
+
+#MelissaMinstrelMeetCanStart
+    MelissaMinstrelMeetCanStart = 0
+
+    gs 'InitMelissaMusicianArc'
+
+    if MelissaMinstrelMet = 1:
+        exit
+    end
+
+    if MelissaFridayDanceAttended = 0:
+        exit
+    end
+
+    if MelissaDanceDressReady = 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if MelissaMinstrelMeetStage > 0:
+        exit
+    end
+
+    MelissaMinstrelMeetCanStart = 1
+---
+
+#MelissaMinstrelMeetTryStart
+    if LOC('MelissaMinstrelMeetCanStart') = 1:
+        gs 'MelissaMinstrelMeetCanStart'
+
+        if MelissaMinstrelMeetCanStart = 1:
+            gt 'MelissaMinstrelMeetStart'
+        end
+    end
+---
+
+#MelissaMinstrelMeetStart
+    *clr
+    clr
+    cla
+
+    MelissaMinstrelMeetStage = 1
+
+    gs 'EnsureGirlData', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕНЕСТРЕЛЬ И МЕЛИССА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelMeetIntroText') = 1:
+        gs 'MelissaMinstrelMeetIntroText'
+    else:
+        *p 'Проезжий менестрель ' + $MelissaMinstrelName + ' заканчивает мелодию и смотрит на Мелиссу слишком внимательно.'
+    end
+
+    *pl ' '
+
+    gs 'MelissaMinstrelMeetBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaMinstrelMeetMenu''">делать</a>?'
+---
+
+#MelissaMinstrelMeetBuildMenu
+    gs 'Menu.Destroy', 'MelissaMinstrelMeetMenu'
+    gs 'Menu.Create', 'MelissaMinstrelMeetMenu'
+
+    gs 'Menu.Add', 'MelissaMinstrelMeetMenu', 'Подойти к Мелиссе', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelMeetMenu', {
+        gt 'MelissaMinstrelMeetAction', 'approach'
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelMeetMenu', 'Предупредить менестреля', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelMeetMenu', {
+        gt 'MelissaMinstrelMeetAction', 'warn'
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelMeetMenu', 'Наблюдать', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelMeetMenu', {
+        gt 'MelissaMinstrelMeetAction', 'watch'
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelMeetMenu', 'Не вмешиваться', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelMeetMenu', {
+        gt 'MelissaMinstrelMeetAction', 'ignore'
+    }
+---
+
+#MelissaMinstrelMeetAction
+    *clr
+    clr
+    cla
+
+    $MinstrelMeetChoice = LCASE($ARGS[0])
+
+    MelissaMinstrelMet = 1
+    MelissaMusicianInterest += 1
+
+    if $MinstrelMeetChoice = 'approach':
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaPlayerPath += 1
+        Friends['melissa'] += 1
+        MelissaMusicianInterest -= 1
+
+        if MelissaMusicianInterest < 0:
+            MelissaMusicianInterest = 0
+        end
+
+    elseif $MinstrelMeetChoice = 'warn':
+        MelissaTrustStefan += 1
+        MelissaControlNeed += 1
+        MelissaJealousy += 1
+        MelissaMusicianInterest -= 2
+
+        if MelissaMusicianInterest < 0:
+            MelissaMusicianInterest = 0
+        end
+
+    elseif $MinstrelMeetChoice = 'watch':
+        MelissaMusicianInterest += 2
+        MelissaNpcPath += 1
+        MelissaSecretiveness += 1
+
+    elseif $MinstrelMeetChoice = 'ignore':
+        MelissaMusicianInterest += 3
+        MelissaNpcPath += 2
+        MelissaFamilyConcern += 1
+    end
+
+    if MelissaMusicianInterest > 100:
+        MelissaMusicianInterest = 100
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Melissa_MusicianNotice_1'
+    end
+
+    GirlPersonalStoryUnlock['melissa_musician'] = 1
+    FactHappened['melissa_musiciannotice_1'] = 1
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ЗНАКОМСТВА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelMeetActionText') = 1:
+        gs 'MelissaMinstrelMeetActionText', $MinstrelMeetChoice
+    end
+
+    *pl ' '
+
+    MelissaMinstrelKissReady = 1
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$MinstrelMeetChoice'
+---
+
+#MelissaMinstrelKissCanStart
+    MelissaMinstrelKissCanStart = 0
+
+    if MelissaMinstrelKissDone = 1:
+        exit
+    end
+
+    if MelissaMinstrelMet = 0:
+        exit
+    end
+
+    if MelissaMinstrelKissReady <> 1:
+        exit
+    end
+
+    if MelissaMinstrelKissStage > 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if MelissaMusicianInterest < 15:
+        exit
+    end
+
+    MelissaMinstrelKissCanStart = 1
+---
+
+#MelissaMinstrelKissTryStart
+    if LOC('MelissaMinstrelKissCanStart') = 1:
+        gs 'MelissaMinstrelKissCanStart'
+
+        if MelissaMinstrelKissCanStart = 1:
+            gt 'MelissaMinstrelKissStart'
+        end
+    end
+---
+
+#MelissaMinstrelKissStart
+    *clr
+    clr
+    cla
+
+    MelissaMinstrelKissStage = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОЦЕЛУЙ ПОСЛЕ ТАНЦА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelKissIntroText') = 1:
+        gs 'MelissaMinstrelKissIntroText'
+    end
+
+    *pl ' '
+
+    gs 'MelissaMinstrelKissBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaMinstrelKissMenu''">делать</a>?'
+---
+
+#MelissaMinstrelKissBuildMenu
+    gs 'Menu.Destroy', 'MelissaMinstrelKissMenu'
+    gs 'Menu.Create', 'MelissaMinstrelKissMenu'
+
+    gs 'Menu.Add', 'MelissaMinstrelKissMenu', 'Прервать и подойти', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelKissMenu', {
+        gt 'MelissaMinstrelKissAction', 'interrupt'
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelKissMenu', 'Смотреть молча', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelKissMenu', {
+        gt 'MelissaMinstrelKissAction', 'watch'
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelKissMenu', 'Уйти — пусть сама', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelKissMenu', {
+        gt 'MelissaMinstrelKissAction', 'leave'
+    }
+---
+
+#MelissaMinstrelKissAction
+    *clr
+    clr
+    cla
+
+    $MinstrelKissChoice = LCASE($ARGS[0])
+
+    if $MinstrelKissChoice = 'interrupt':
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaPlayerPath += 1
+        MelissaMusicianInterest += 1
+        MelissaMinstrelKissDone = 0
+
+    elseif $MinstrelKissChoice = 'watch':
+        MelissaMinstrelKissDone = 1
+        MelissaNpcPath += 2
+        MelissaMusicianInterest += 3
+        MelissaSecretiveness += 1
+        MelissaJealousy += 1
+        TavernScandal += 1
+
+    elseif $MinstrelKissChoice = 'leave':
+        MelissaMinstrelKissDone = 1
+        MelissaNpcPath += 3
+        MelissaMusicianInterest += 4
+        MelissaSecretiveness += 2
+        MelissaFamilyConcern += 1
+        TavernScandal += 1
+    end
+
+    if MelissaMinstrelKissDone = 1:
+        MelissaMinstrelKissReady = 0
+        MelissaFirstPathChoiceReady = 1
+
+        if LOC('MelissaFirstPathChoiceTryStart') = 1:
+            gs 'MelissaFirstPathChoiceTryStart', 'MarketDance'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛОДИЯ ОБОРВАЛАСЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelKissActionText') = 1:
+        gs 'MelissaMinstrelKissActionText', $MinstrelKissChoice
+    end
+
+    *pl ' '
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$MinstrelKissChoice'
+---
+
+#MelissaMinstrelAffairAdvance
+    if MelissaMinstrelKissDone = 0:
+        exit
+    end
+
+    if TavernUpgradeStageDone = 0:
+        exit
+    end
+
+    if MelissaMinstrelAffairStage >= 3:
+        exit
+    end
+
+    MelissaMinstrelAffairStage += 1
+---
+
+#MelissaMinstrelHallMissingCanStart
+    MelissaMinstrelHallMissingCanStart = 0
+
+    if MelissaMinstrelHallMissingDone = 1 and MelissaMinstrelHallMissingLastWeek = week:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if MelissaMinstrelKissDone = 0:
+        exit
+    end
+
+    if MelissaMusicStageOfferDone = 0:
+        exit
+    end
+
+    if TavernUpgradeStageDone = 0:
+        exit
+    end
+
+    if MelissaProhibitMinstrel = 1:
+        exit
+    end
+
+    MelissaMinstrelHallMissingCanStart = 1
+---
+
+#MelissaMinstrelHallMissingTryStart
+    $MelissaHallMissingReturnLoc = $ARGS[0]
+
+    if $MelissaHallMissingReturnLoc = '':
+        $MelissaHallMissingReturnLoc = 'TavernMain'
+    end
+
+    if LOC($MelissaHallMissingReturnLoc) = 0:
+        $MelissaHallMissingReturnLoc = 'TavernMain'
+    end
+
+    if LOC('MelissaMinstrelHallMissingCanStart') = 1:
+        gs 'MelissaMinstrelHallMissingCanStart'
+
+        if MelissaMinstrelHallMissingCanStart = 1:
+            gt 'MelissaMinstrelHallMissingStart', $MelissaHallMissingReturnLoc
+        end
+    end
+---
+
+#MelissaMinstrelHallMissingStart
+    *clr
+    clr
+    cla
+
+    $MelissaHallMissingReturnLoc = $ARGS[0]
+
+    if $MelissaHallMissingReturnLoc = '':
+        $MelissaHallMissingReturnLoc = 'TavernMain'
+    end
+
+    MelissaMinstrelHallMissingDone = 1
+    MelissaMinstrelHallMissingLastWeek = week
+
+    gs 'EnsureGirlData', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА ИСЧЕЗЛА ИЗ ЗАЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelHallMissingIntroText') = 1:
+        gs 'MelissaMinstrelHallMissingIntroText'
+    end
+
+    *pl ' '
+
+    gs 'MelissaMinstrelHallMissingBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaMinstrelHallMissingMenu''">делать</a>?'
+---
+
+#MelissaMinstrelHallMissingBuildMenu
+    gs 'Menu.Destroy', 'MelissaMinstrelHallMissingMenu'
+    gs 'Menu.Create', 'MelissaMinstrelHallMissingMenu'
+
+    gs 'Menu.Add', 'MelissaMinstrelHallMissingMenu', 'Искать в зале', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelHallMissingMenu', {
+        gt 'MelissaMinstrelHallMissingAction', 'search', $MelissaHallMissingReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelHallMissingMenu', 'Подслушать у сцены', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelHallMissingMenu', {
+        gt 'MelissaMinstrelHallMissingAction', 'spy', $MelissaHallMissingReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelHallMissingMenu', 'Подождать в зале', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelHallMissingMenu', {
+        gt 'MelissaMinstrelHallMissingAction', 'wait', $MelissaHallMissingReturnLoc
+    }
+---
+
+#MelissaMinstrelHallMissingAction
+    *clr
+    clr
+    cla
+
+    $MelissaHallChoice = LCASE($ARGS[0])
+    $MelissaHallMissingReturnLoc = $ARGS[1]
+
+    if $MelissaHallMissingReturnLoc = '':
+        $MelissaHallMissingReturnLoc = 'TavernMain'
+    end
+
+    MelissaMinstrelHallMissingResult = 0
+
+    if $MelissaHallChoice = 'search':
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaPlayerPath += 1
+        MelissaMinstrelHallMissingResult = 1
+        MelissaMusicianInterest -= 1
+
+        if MelissaMusicianInterest < 0:
+            MelissaMusicianInterest = 0
+        end
+
+    elseif $MelissaHallChoice = 'spy':
+        MelissaMinstrelHallMissingResult = 2
+        MelissaNpcPath += 2
+        MelissaSecretiveness += 1
+        MelissaMusicianInterest += 2
+        TavernScandal += 1
+        gs 'MelissaMinstrelAffairAdvance'
+
+    elseif $MelissaHallChoice = 'wait':
+        MelissaMinstrelHallMissingResult = 3
+        MelissaNpcPath += 3
+        MelissaSecretiveness += 2
+        MelissaMusicianInterest += 3
+        MelissaFamilyConcern += 1
+        TavernScandal += 1
+        gs 'MelissaMinstrelAffairAdvance'
+    end
+
+    if MelissaMinstrelAffairStage >= 1:
+        FactHappened['melissa_minstreldisappear_1'] = 1
+    end
+
+    if MelissaFirstPathChoiceDone = 0:
+        MelissaFirstPathChoiceReady = 1
+
+        if LOC('MelissaFirstPathChoiceTryStart') = 1:
+            gs 'MelissaFirstPathChoiceTryStart', $MelissaHallMissingReturnLoc
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ПРОПАЖИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelHallMissingActionText') = 1:
+        gs 'MelissaMinstrelHallMissingActionText', $MelissaHallChoice
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt $MelissaHallMissingReturnLoc
+    end
+
+    killvar '$MelissaHallChoice'
+---
+
+#MelissaFirstPathChoiceCanStart
+    MelissaFirstPathChoiceCanStart = 0
+
+    if MelissaFirstPathChoiceDone = 1:
+        exit
+    end
+
+    if MelissaFirstPathChoiceReady = 0:
+        if MelissaMinstrelKissDone = 0:
+            exit
+        end
+    end
+
+    MelissaFirstPathChoiceCanStart = 1
+---
+
+#MelissaFirstPathChoiceTryStart
+    $MelissaPathReturnLoc = $ARGS[0]
+
+    if $MelissaPathReturnLoc = '':
+        $MelissaPathReturnLoc = 'TavernMain'
+    end
+
+    if LOC('MelissaFirstPathChoiceCanStart') = 1:
+        gs 'MelissaFirstPathChoiceCanStart'
+
+        if MelissaFirstPathChoiceCanStart = 1:
+            gt 'MelissaFirstPathChoiceStart', $MelissaPathReturnLoc
+        end
+    end
+---
+
+#MelissaFirstPathChoiceStart
+    *clr
+    clr
+    cla
+
+    $MelissaPathReturnLoc = $ARGS[0]
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА И МЕНЕСТРЕЛЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaFirstPathChoiceIntroText') = 1:
+        gs 'MelissaFirstPathChoiceIntroText'
+    end
+
+    *pl ' '
+
+    gs 'MelissaFirstPathChoiceBuildMenu'
+
+    *p 'Как вы <a href="exec:gs ''Menu.Show'', ''MelissaFirstPathChoiceMenu''">поступите</a>?'
+---
+
+#MelissaFirstPathChoiceBuildMenu
+    gs 'Menu.Destroy', 'MelissaFirstPathChoiceMenu'
+    gs 'Menu.Create', 'MelissaFirstPathChoiceMenu'
+
+    gs 'Menu.Add', 'MelissaFirstPathChoiceMenu', 'Добиваться Мелиссы самому', ''
+    gs 'Menu.AddModule', 'MelissaFirstPathChoiceMenu', {
+        gt 'MelissaFirstPathChoiceAction', 'pursue', $MelissaPathReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaFirstPathChoiceMenu', 'Запретить встречи с менестрелем', ''
+    gs 'Menu.AddModule', 'MelissaFirstPathChoiceMenu', {
+        gt 'MelissaFirstPathChoiceAction', 'prohibit', $MelissaPathReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaFirstPathChoiceMenu', 'Не мешать, но следить', ''
+    gs 'Menu.AddModule', 'MelissaFirstPathChoiceMenu', {
+        gt 'MelissaFirstPathChoiceAction', 'watch', $MelissaPathReturnLoc
+    }
+---
+
+#MelissaFirstPathChoiceAction
+    *clr
+    clr
+    cla
+
+    $MelissaPathKey = LCASE($ARGS[0])
+    $MelissaPathReturnLoc = $ARGS[1]
+
+    MelissaFirstPathChoiceDone = 1
+    MelissaFirstPathChoiceReady = 0
+
+    if $MelissaPathKey = 'pursue':
+        MelissaFirstPathChoice = 1
+        MelissaPlayerPath += 3
+        MelissaTrustStefan += 2
+        Friends['melissa'] += 2
+
+    elseif $MelissaPathKey = 'prohibit':
+        MelissaFirstPathChoice = 2
+        MelissaProhibitMinstrel = 1
+        MelissaControlNeed += 2
+        MelissaTrustStefan += 1
+        MelissaNpcPath -= 1
+
+        if MelissaNpcPath < 0:
+            MelissaNpcPath = 0
+        end
+
+    elseif $MelissaPathKey = 'watch':
+        MelissaFirstPathChoice = 3
+        MelissaWatchMinstrel = 1
+        MelissaNpcPath += 1
+        MelissaSecretiveness += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    if LOC('MelissaFirstPathChoiceActionText') = 1:
+        gs 'MelissaFirstPathChoiceActionText', $MelissaPathKey
+    end
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt $MelissaPathReturnLoc
+    end
+
+    killvar '$MelissaPathKey'
+---
+
+#MelissaMusicianArcDebugReset
+    MelissaMinstrelMeetStage = 0
+    MelissaMinstrelMeetCanStart = 0
+    MelissaMinstrelKissReady = 0
+    MelissaMinstrelKissStage = 0
+    MelissaMinstrelKissCanStart = 0
+    MelissaMinstrelHallMissingDone = 0
+    MelissaMinstrelHallMissingLastWeek = 0
+    MelissaMinstrelHallMissingResult = 0
+    MelissaFirstPathChoiceReady = 0
+    MelissaFirstPathChoiceDone = 0
+    MelissaFirstPathChoice = 0
+    MelissaProhibitMinstrel = 0
+    MelissaWatchMinstrel = 0
+    $MelissaMinstrelName = 'Элрик'
 ---

@@ -1,0 +1,488 @@
+! ================================================
+! FILE: modules/events/legare/clarissa_intim_arc.qsps
+! MODULE: events/legare
+! Intimacy-арка Клариссы: лестница, анал, группы
+! ================================================
+
+#PlayerCheckAnalExperience
+    PlayerHadAnalExperience = 0
+
+    if hadanal['becky'] = 1 or hadanal['sandra'] = 1 or hadanal['amanda'] = 1:
+        PlayerHadAnalExperience = 1
+        exit
+    end
+
+    if hadanal['melissa'] = 1 or hadanal['inga'] = 1 or hadanal['clarissa'] = 1:
+        PlayerHadAnalExperience = 1
+        exit
+    end
+
+    if analacts['becky'] >= 1 or analacts['sandra'] >= 1 or analacts['amanda'] >= 1:
+        PlayerHadAnalExperience = 1
+    end
+---
+
+#ClarissaIntimUnlockTry
+    if ClarissaIntimUnlocked = 1:
+        exit
+    end
+
+    if Friends['clarissa'] < 10:
+        exit
+    end
+
+    if AmandaLegareFirstSexDone = 1 or Fact_AmandaLegareFridayAlley = 1:
+        if ClarissaJealousy >= 2 or ClarissaPrivateTalkReady = 1 or ClarissaRouteHint = 1:
+            ClarissaIntimUnlocked = 1
+            $ClarissaIntimUnlockReason = 'jealousy'
+            exit
+        end
+    end
+
+    if MelissaHomeSex = 1 and PlayerKnows_MelissaClarissaBrotherGossip = 1:
+        if Friends['clarissa'] >= 10:
+            ClarissaIntimUnlocked = 1
+            $ClarissaIntimUnlockReason = 'melissa'
+            exit
+        end
+    end
+
+    if ClarissaBulkWinePurchases >= 2 and Friends['clarissa'] >= 12:
+        ClarissaIntimUnlocked = 1
+        $ClarissaIntimUnlockReason = 'wine'
+    end
+---
+
+#ClarissaWineBulkPurchase
+    ClarissaWineBulkUnits = $ARGS[0]
+
+    if ClarissaWineBulkUnits < 60:
+        exit
+    end
+
+    ClarissaBulkWinePurchases += 1
+    Friends['clarissa'] += 2
+    ClarissaTrustStefan += 1
+
+    gs 'ClampGirlSocialStats', 'clarissa'
+    gs 'ClarissaIntimUnlockTry'
+---
+
+#ClarissaIntimCanAdvance
+    ClarissaIntimCanAdvance = 0
+
+    if ClarissaIntimUnlocked = 0:
+        exit
+    end
+
+    if ClarissaIntimSex = 1:
+        exit
+    end
+
+    if ClarissaIntimStepToday = 1:
+        exit
+    end
+
+    if time < 2 or time > 4:
+        exit
+    end
+
+    if ClarissaIntimStage >= 3:
+        exit
+    end
+
+    if Friends['clarissa'] < 12 + ClarissaIntimStage:
+        exit
+    end
+
+    ClarissaIntimCanAdvance = 1
+---
+
+#ClarissaIntimStep
+    gs 'ClarissaIntimCanAdvance'
+
+    if ClarissaIntimCanAdvance = 0:
+        gt 'WineShop'
+    end
+
+    if ClarissaIntimStage = 0:
+        $ClarissaIntimStepKey = 'kiss'
+    elseif ClarissaIntimStage = 1:
+        $ClarissaIntimStepKey = 'petting'
+    elseif ClarissaIntimStage = 2:
+        $ClarissaIntimStepKey = 'blowjob'
+    else:
+        gt 'WineShop'
+    end
+
+    gs 'ClarissaIntimStepText', $ClarissaIntimStepKey
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛАВКА ЛЕГАРЕ — БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $ClarissaIntimText
+    *pl ' '
+
+    ClarissaIntimStage += 1
+    ClarissaIntimStepToday = 1
+    ClarissaPlayerPath += 1
+
+    if $ClarissaIntimStepKey = 'kiss':
+        KissCount['clarissa'] += 1
+        love['clarissa'] += 1
+        otkroven['clarissa'] += 1
+    elseif $ClarissaIntimStepKey = 'petting':
+        CaressCount['clarissa'] += 1
+        otkroven['clarissa'] += 1
+    elseif $ClarissaIntimStepKey = 'blowjob':
+        BlowjobCount['clarissa'] += 1
+        OralCount['clarissa'] += 1
+        sluttiness['clarissa'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'clarissa'
+    killvar '$ClarissaIntimStepKey'
+
+    act 'Вернуться в лавку':
+        gt 'WineShop'
+    end
+---
+
+#ClarissaIntimFirstSexLaunch
+    if ClarissaIntimUnlocked = 0 or ClarissaIntimStage < 3:
+        gt 'WineShop'
+    end
+
+    if ClarissaIntimSex = 1:
+        gt 'WineShop'
+    end
+
+    gs 'ClarissaIntimStepText', 'presex'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $ClarissaIntimText
+    *pl ' '
+
+    ClarissaIntimFirstSexActive = 1
+    ClarissaIntimStepToday = 1
+
+    if IntimStage['clarissa'] < 4:
+        IntimStage['clarissa'] = 4
+    end
+
+    if otkroven['clarissa'] < 22:
+        otkroven['clarissa'] = 22
+    end
+
+    gt 'SexSceneStart', 'clarissa', 'ClarissaIntimAfterSex', 'clarissa_first'
+---
+
+#ClarissaIntimAfterSex
+    gs 'ClarissaIntimAfterSexText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $ClarissaIntimText
+    *pl ' '
+
+    act 'Вернуться на рынок':
+        gt 'Market'
+    end
+
+    act 'Остаться в лавке':
+        gt 'WineShop'
+    end
+---
+
+#ClarissaShopTalk
+    $ClarissaTalkReturnLoc = $ARGS[0]
+
+    if $ClarissaTalkReturnLoc = '':
+        $ClarissaTalkReturnLoc = 'WineShop'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'InitClarissa'
+    gs 'ClarissaIntimUnlockTry'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С КЛАРИССОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ClarissaShopTalkIntroText'
+
+    *p $ClarissaTalkText
+    *pl ' '
+
+    Friends['clarissa'] += 1
+
+    if ClarissaIntimUnlocked = 0:
+        gs 'ClarissaIntimUnlockTry'
+    end
+
+    act 'Вернуться':
+        gt $ClarissaTalkReturnLoc
+    end
+
+    killvar '$ClarissaTalkReturnLoc'
+---
+
+#ClarissaAnalCanStart
+    ClarissaAnalCanStart = 0
+
+    if ClarissaIntimSex = 0:
+        exit
+    end
+
+    if ClarissaAnalDone = 1:
+        exit
+    end
+
+    if analvirgin['clarissa'] = 0:
+        exit
+    end
+
+    if ClarissaVaginalSexCount < 5:
+        exit
+    end
+
+    gs 'PlayerCheckAnalExperience'
+
+    if PlayerHadAnalExperience = 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    ClarissaAnalCanStart = 1
+---
+
+#ClarissaAnalSceneStart
+    gs 'ClarissaAnalCanStart'
+
+    if ClarissaAnalCanStart = 0:
+        gt 'WineShop'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Сегодня вы слишком устали для такого шага.'
+        act 'Вернуться':
+            gt 'WineShop'
+        end
+        exit
+    end
+
+    gs 'ClarissaAnalSceneText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА — АНАЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $ClarissaIntimText
+    *pl ' '
+
+    analvirgin['clarissa'] = 0
+    ClarissaAnalDone = 1
+    sluttiness['clarissa'] += 2
+    otkroven['clarissa'] += 2
+
+    gs 'RegisterSex', 'clarissa', 'anal', 1, 1
+    gs 'RegisterPlayerCum'
+    gs 'ClampGirlSocialStats', 'clarissa'
+
+    act 'Вернуться в лавку':
+        gt 'WineShop'
+    end
+---
+
+#ClarissaLegareReconcileCanStart
+    ClarissaLegareReconcileCanStart = 0
+
+    if ClarissaLegareReconcileDone = 1:
+        exit
+    end
+
+    if ClarissaAnalDone = 0:
+        exit
+    end
+
+    if ClarissaIntimSex = 0:
+        exit
+    end
+
+    if LegareConflictStage > 3:
+        exit
+    end
+
+    if Friends['alber'] < 12:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    ClarissaLegareReconcileCanStart = 1
+---
+
+#ClarissaLegareReconcileStart
+    gs 'ClarissaLegareReconcileCanStart'
+
+    if ClarissaLegareReconcileCanStart = 0:
+        gt 'WineShop'
+    end
+
+    gs 'ClarissaLegareReconcileText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРИМИРЕНИЕ В ЛАВКЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $ClarissaGroupText
+    *pl ' '
+
+    ClarissaLegareReconcileDone = 1
+    ClarissaForgaveLegare = 1
+    LegareConflictStage -= 1
+
+    if LegareConflictStage < 0:
+        LegareConflictStage = 0
+    end
+
+    Friends['alber'] += 2
+
+    act 'Продолжить':
+        gt 'GroupSexClarissaLegareMmfStart'
+    end
+
+    act 'Вернуться позже':
+        gt 'WineShop'
+    end
+---
+
+#ClarissaGroupMmfLegareCanStart
+    ClarissaGroupMmfLegareCanStart = 0
+
+    if ClarissaMmfLegareDone = 1:
+        exit
+    end
+
+    if ClarissaLegareReconcileDone = 0:
+        exit
+    end
+
+    if ClarissaAnalDone = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    ClarissaGroupMmfLegareCanStart = 1
+---
+
+#ClarissaGroupMmfMelissaCanStart
+    ClarissaGroupMmfMelissaCanStart = 0
+
+    if ClarissaMmfMelissaDone = 1:
+        exit
+    end
+
+    if ClarissaIntimSex = 0 or MelissaHomeSex = 0:
+        exit
+    end
+
+    if MelissaClarissaBond < 15:
+        exit
+    end
+
+    if Friends['clarissa'] < 14 or Friends['melissa'] < 14:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    ClarissaGroupMmfMelissaCanStart = 1
+---
+
+#ClarissaGroupFfmAmandaCanStart
+    ClarissaGroupFfmAmandaCanStart = 0
+
+    if ClarissaFfmAmandaDone = 1:
+        exit
+    end
+
+    if ClarissaMmfLegareDone = 0:
+        exit
+    end
+
+    if ClarissaForgaveLegare = 0:
+        exit
+    end
+
+    if AmandaHomeSex = 0 and AmandaLegareFirstSexDone = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 4:
+        exit
+    end
+
+    ClarissaGroupFfmAmandaCanStart = 1
+---
+
+#ClarissaIntimDebugReset
+    ClarissaIntimUnlocked = 0
+    ClarissaIntimStage = 0
+    ClarissaIntimSex = 0
+    ClarissaIntimFirstSexActive = 0
+    ClarissaIntimStepToday = 0
+    ClarissaVaginalSexCount = 0
+    ClarissaBulkWinePurchases = 0
+    ClarissaAnalDone = 0
+    ClarissaPlayerPath = 0
+    PlayerKnows_MelissaClarissaBrotherGossip = 0
+    ClarissaLegareReconcileDone = 0
+    ClarissaForgaveLegare = 0
+    ClarissaMmfLegareDone = 0
+    ClarissaMmfMelissaDone = 0
+    ClarissaFfmAmandaDone = 0
+    $ClarissaIntimUnlockReason = ''
+---

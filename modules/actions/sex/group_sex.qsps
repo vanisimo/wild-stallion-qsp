@@ -82,3 +82,623 @@ gs 'Menu.AddModule','GroupMenu',{
 gs 'Menu.Show','GroupMenu'
 ---
 
+! ================================================
+! FILE: modules/actions/sex/group_sex.qsps
+! ЖЖМ Сандра + Бекки + ГГ (PR-I13)
+! ================================================
+
+#GroupSexSandraBeckyStefanStart
+    gs 'SandraBeckyThreesomeCanStart'
+
+    if SandraBeckyThreesomeCanStart = 0:
+        gt 'TavernMain'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *clr
+        clr
+        cla
+
+        *p 'Сегодня вы слишком вымотаны для такой ночи. Сандра и Бекки перенесут разговор — или не перенесут.'
+
+        act 'Вернуться':
+            gt 'TavernMain'
+        end
+
+        exit
+    end
+
+    gt 'GroupSexSandraBeckyStefanScene'
+---
+
+#GroupSexSandraBeckyStefanScene
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' САНДРА, БЕККИ И ВЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'SandraBeckyThreesomeIntroText'
+
+    *p $SandraBeckyThreesomeText
+    *pl ' '
+
+    gs 'SandraBeckyThreesomeStepText', 'kiss'
+
+    *p $SandraBeckyThreesomeText
+    *pl ' '
+
+    gs 'SandraBeckyThreesomeStepText', 'undress'
+
+    *p $SandraBeckyThreesomeText
+    *pl ' '
+
+    gs 'SandraBeckyThreesomeStepText', 'together'
+
+    *p $SandraBeckyThreesomeText
+    *pl ' '
+
+    gs 'SandraBeckyThreesomeStepText', 'finish'
+
+    *p $SandraBeckyThreesomeText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'SandraBeckyThreesomeApplyAftermath'
+
+    gs 'SandraBeckyThreesomeAfterText'
+
+    *p $SandraBeckyThreesomeText
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SANDRA+BECKY] ReconcileDone: ' + STR(SandraBeckyReconcileDone)
+        *pl '[DEBUG SANDRA+BECKY] FamilyCorruptionStage: ' + STR(FamilyCorruptionStage)
+        *pl ' '
+    end
+
+    act 'Выйти из дома Бекки':
+        gt 'Market'
+    end
+
+    act 'Вернуться в трактир':
+        gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/actions/sex/group_sex.qsps
+! Кларисса: ММЖ с Легаре, ММЖ с Мелиссой, ЖЖМ с Амандой (PR-I14)
+! ================================================
+
+#GroupSexClarissaLegareMmfStart
+    gs 'ClarissaGroupMmfLegareCanStart'
+
+    if ClarissaGroupMmfLegareCanStart = 0:
+        gt 'WineShop'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Сегодня вы не выдержите такую ночь.'
+        act 'Вернуться':
+            gt 'WineShop'
+        end
+        exit
+    end
+
+    gt 'GroupSexClarissaLegareMmfScene'
+---
+
+#GroupSexClarissaLegareMmfScene
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ММЖ — КЛАРИССА, АЛЬБЕР И ВЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ClarissaGroupMmfLegareIntroText'
+
+    *p $ClarissaGroupText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'RegisterSex', 'clarissa', 'group', 0, 1
+
+    ClarissaMmfLegareDone = 1
+    ClarissaPlayerPath += 2
+    sluttiness['clarissa'] += 2
+
+    if FamilyCorruptionStage < 5:
+        FamilyCorruptionStage += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'clarissa'
+
+    act 'Вернуться в лавку':
+        gt 'WineShop'
+    end
+---
+
+#GroupSexClarissaMelissaMmfStart
+    gs 'ClarissaGroupMmfMelissaCanStart'
+
+    if ClarissaGroupMmfMelissaCanStart = 0:
+        gt 'WineShop'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        act 'Вернуться':
+            gt 'WineShop'
+        end
+        exit
+    end
+
+    gt 'GroupSexClarissaMelissaMmfScene'
+---
+
+#GroupSexClarissaMelissaMmfScene
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ММЖ — КЛАРИССА, МЕЛИССА И ВЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ClarissaGroupMmfMelissaIntroText'
+
+    *p $ClarissaGroupText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'RegisterSex', 'clarissa', 'group', 0, 1
+    gs 'RegisterSex', 'melissa', 'group', 0, 1
+
+    ClarissaMmfMelissaDone = 1
+    MelissaClarissaBond += 3
+    ClarissaPlayerPath += 1
+    MelissaPlayerPath += 1
+
+    gs 'ClampGirlSocialStats', 'clarissa'
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    act 'Вернуться на рынок':
+        gt 'Market'
+    end
+---
+
+#GroupSexClarissaAmandaLegareFfmStart
+    gs 'ClarissaGroupFfmAmandaCanStart'
+
+    if ClarissaGroupFfmAmandaCanStart = 0:
+        gt 'WineShop'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        act 'Вернуться':
+            gt 'WineShop'
+        end
+        exit
+    end
+
+    gt 'GroupSexClarissaAmandaLegareFfmScene'
+---
+
+#GroupSexClarissaAmandaLegareFfmScene
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЖЖМ — АМАНДА, КЛАРИССА, ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ClarissaGroupFfmAmandaIntroText'
+
+    *p $ClarissaGroupText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'RegisterSex', 'clarissa', 'group', 0, 1
+    gs 'RegisterSex', 'amanda', 'group', 0, 1
+
+    ClarissaFfmAmandaDone = 1
+    ClarissaPlayerPath += 2
+
+    if FamilyCorruptionStage < 5:
+        FamilyCorruptionStage += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'clarissa'
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    act 'Вернуться в лавку':
+        gt 'WineShop'
+    end
+---
+
+! ================================================
+! FILE: modules/actions/sex/group_sex.qsps
+! PR-I15: сводный групповой пакет
+! ================================================
+
+#GroupSexAmandaMelissaStefanStart
+    gs 'AmandaMelissaThreesomeCanStart'
+
+    if AmandaMelissaThreesomeCanStart = 0:
+        gt 'AmandaRoom'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Сегодня вы слишком вымотаны. Сёстры перенесут этот разговор — или не перенесут.'
+
+        act 'Вернуться':
+            gt 'AmandaRoom'
+        end
+
+        exit
+    end
+
+    gt 'GroupSexAmandaMelissaStefanScene'
+---
+
+#GroupSexAmandaMelissaStefanScene
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЖЖМ — АМАНДА, МЕЛИССА И ВЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaMelissaThreesomeIntroText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'AmandaMelissaThreesomeStepText', 'kiss'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'AmandaMelissaThreesomeStepText', 'undress'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'AmandaMelissaThreesomeStepText', 'together'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'AmandaMelissaThreesomeStepText', 'finish'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'AmandaMelissaThreesomeApplyAftermath'
+
+    gs 'AmandaMelissaThreesomeAfterText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    act 'Выйти в коридор':
+        gt 'TavernSecondFloor'
+    end
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+---
+
+#GroupSexAmandaLegareStefanStart
+    gs 'AmandaLegareMmfCanStart'
+
+    if AmandaLegareMmfCanStart = 0:
+        gt 'WineShop'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Сегодня вы не выдержите такую ночь.'
+
+        act 'Вернуться':
+            gt 'WineShop'
+        end
+
+        exit
+    end
+
+    gt 'GroupSexAmandaLegareStefanScene'
+---
+
+#GroupSexAmandaLegareStefanScene
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ММЖ — АМАНДА, ЛЕГАРЕ И ВЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareMmfIntroText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'AmandaLegareMmfStepText', 'start'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'AmandaLegareMmfStepText', 'middle'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'AmandaLegareMmfStepText', 'finish'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'AmandaLegareMmfApplyAftermath'
+
+    gs 'AmandaLegareMmfAfterText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    act 'Вернуться в лавку':
+        gt 'WineShop'
+    end
+
+    act 'На рынок':
+        gt 'Market'
+    end
+---
+
+#GroupSexMelissaMinstrelStefanStart
+    gs 'MelissaMinstrelThreesomeCanOffer'
+
+    if MelissaMinstrelThreesomeCanOffer = 0:
+        gt 'TavernMain'
+    end
+
+    if MelissaMinstrelThreesomeDone = 1:
+        gt 'TavernMain'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Сегодня вы слишком устали для закулисья.'
+
+        act 'Вернуться в зал':
+            gt 'TavernMain'
+        end
+
+        exit
+    end
+
+    gt 'GroupSexMelissaMinstrelStefanScene'
+---
+
+#GroupSexMelissaMinstrelStefanScene
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ММЖ — МЕЛИССА, МЕНЕСТРЕЛЬ И ВЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelThreesomeIntroText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'MelissaMinstrelThreesomeStepText', 'invite'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'MelissaMinstrelThreesomeStepText', 'oral'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'MelissaMinstrelThreesomeStepText', 'sex'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'MelissaMinstrelThreesomeStepText', 'finish'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'MelissaMinstrelThreesomeApplyAftermath'
+
+    gs 'MelissaMinstrelThreesomeAfterText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    act 'Вернуться в зал':
+        gt 'TavernMain'
+    end
+---
+
+#GroupSexBeckyIngaStefanStart
+    gs 'BeckyIngaThreesomeCanStart'
+
+    if BeckyIngaThreesomeCanStart = 0:
+        gt 'BeckyShop'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Сегодня не время для такого примирения.'
+
+        act 'Вернуться':
+            gt 'BeckyShop'
+        end
+
+        exit
+    end
+
+    gt 'GroupSexBeckyIngaStefanScene'
+---
+
+#GroupSexBeckyIngaStefanScene
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЖЖМ — БЕККИ, ИНГА И ВЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'BeckyIngaThreesomeIntroText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'BeckyIngaThreesomeStepText', 'kiss'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'BeckyIngaThreesomeStepText', 'undress'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'BeckyIngaThreesomeStepText', 'together'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'BeckyIngaThreesomeStepText', 'finish'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'BeckyIngaThreesomeApplyAftermath'
+
+    gs 'BeckyIngaThreesomeAfterText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    act 'Спуститься в лавку':
+        gt 'BeckyShop'
+    end
+
+    act 'На рынок':
+        gt 'Market'
+    end
+---
+
+#GroupSexIngaLucasDpStart
+    gs 'IngaLucasThreesomeDpCanStart'
+
+    if IngaLucasThreesomeDpCanStart = 0:
+        gt 'IngaRoom'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Инга мягко отказывает: "Сегодня — нет. Я устала."'
+
+        act 'Вернуться':
+            gt 'IngaRoom'
+        end
+
+        exit
+    end
+
+    gt 'GroupSexIngaLucasDpScene'
+---
+
+#GroupSexIngaLucasDpScene
+    *clr
+    clr
+    cla
+
+    if IngaLucasThreesomeCount < 3:
+        IngaLucasThreesomeCount = 3
+    end
+
+    IngaLucasDpUnlocked = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' В ДВА СТВОЛА — ИНГА, ЛУКАС И ВЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IngaLucasDpIntroText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'IngaLucasDpStepText', 'prep'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'IngaLucasDpStepText', 'dp'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'IngaLucasDpStepText', 'finish'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
+    gs 'IngaLucasDpApplyAftermath'
+
+    gs 'IngaLucasDpAfterText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    act 'Вернуться в комнату':
+        gt 'IngaRoom'
+    end
+---
+

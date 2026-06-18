@@ -1,0 +1,225 @@
+Название локации: IntBeckyDance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	$GirlNameIBD='becky'
+	DanceMaxIBD=6
+	
+	GS 'Menu.Create','MenuBeckyDance'
+	GS 'Menu.Add','MenuBeckyDance','Осмотреть',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+		gs 'GirlsDesc',$GirlNameIBD	
+		}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep<10,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyDance','Поболтать',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+		'Вы подошли к веселой вдовушке и начали сыпать шутками и прибаутками, веселя ее. За разговором незаметно пролетело время.'
+	
+		if Friends[$GirlNameIBD]>=7:
+			'Вы подумали что зря тратите время. Ничего нового вы не узнали, а Бекки и так знает, что вы шутник хоть куда.'
+		else
+			if Rand(1,3)=1:
+				'Вы очень развеселили Бекки своими шутками!'
+				Friends[$GirlNameIBD]+=1
+			end
+		end
+	
+		!FridayDancesCount+=1
+		DanceStep=DanceMaxIBD
+		}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep=1,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyDance','Пригласить потанцевать',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+		'Вы подошли к вдове Блэнкеншип и пригласили ее потанцевать.'
+		$HandsDance=''
+		KissDance=0
+		TitsDance=0
+	    if Friends[$GirlNameIBD]>=7 and sluttiness[$GirlNameIBD]>18:
+			'Она с радостью согласилась, вы взяли ее под руку и вскоре вы закружились в танце.'
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'invite'
+	    elseif Friends[$GirlNameIBD]>=5 and sluttiness[$GirlNameIBD]>=8:
+			'Она сказала: "Стефан, Стефан, неужели ты действительно хочешь танцевать с такой практически старухой как я? Я же старше твоей мамы. Ну ладно, если ты так настаиваешь", и она взяла вашу руку и вскоре вы закружились в танце.'
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'invite'
+	    else
+			'"Стефан, если ты хочешь танцевать со старой тетей, то пригласи свою маму" ответила вам вдова. Расстроенный отказом, вы отправились восвояси.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIBD
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'wait'		
+		end
+		DanceStep+=1	
+		if DanceStep=DanceMaxIBD: 'Танец закончился и вы вернулись к колоннаде.' 	
+		}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep=1,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyDance','Продолжить танцевать',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+	
+		*p 'Вы продолжили кружится в танце с Бекки.'
+		if $HandsDance='waist': *p ' Ваши руки нежно обнимают талию вдовушки.'
+		if $HandsDance='ass': *p ' Ваши руки покоятся на все еще упругой попке вдовы.'
+		if $HandsDance='ass2': *p ' Ваши руки нежно сжимают попу Бекки через платье.'
+		if KissDance=1: *p ' Вы нежно целуете Бекки во время танца.'
+		if KissDance=2: *p ' Вы страстно, переплетаясь языками, целуете Бекки, прилагая все усилия чтобы не сбиться с ритма.'
+		if TitsDance>0: *p ' Бекки трется своей огромной грудью о вас, потихоньку возбуждаясь.'
+		
+		''
+		DanceStep+=1	
+		gs 'BeckyInviteHome', 'Becky'
+		if DanceStep=DanceMaxIBD: 'Танец закончился и вы вернулись к колоннаде.' 	
+		}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIBD,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyDance','Положить руки на талию',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+		'Вы положили руки на талию Бекки.'
+	
+		if Friends[$GirlNameIBD]>=7 and sluttiness[$GirlNameIBD]>10:
+			'Она нежно улыбнулась и придвинулась к вам поближе, продолжая танец.'
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 8, 5, 1, 14, 5, 1
+			$HandsDance='waist'
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'smile'
+	    elseif Friends[$GirlNameIBD]>=5 and sluttiness[$GirlNameIBD]>=6:
+			'Вдова удивденно приподняла бровь, но возражать не стала.'
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 8, 5, 1, 14, 5, 1
+			$HandsDance='waist'
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'smile'
+	    else
+			'"Стефан, негодник, что это ты такое делаешь?" спросила Бекки "Я согласилась просто танцевать с тобой, а ты нарушил наш уговор". Вы попробовали объяснить, что так обычно танцуют, но обнаружили что разговариваете с пустотой, Бекки ушла.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIBD
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 2, 2, -1, 0, 0, 0
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'angry'
+		end	
+	
+		DanceStep+=1	
+		gs 'BeckyInviteHome', 'Becky'
+		if DanceStep=DanceMaxIBD: 'Танец закончился и вы вернулись к колоннаде.' 	
+		}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIBD and $HandsDance<>'waist',-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyDance','Положить руки на попу',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+	
+		if $HandsDance='waist': 
+			'Вы опустили руки с талии на попу Бекки.'
+		else
+			'Вы положили руки на попу вдовушки.'
+		end
+	    if Friends[$GirlNameIBD]>=7 and sluttiness[$GirlNameIBD]>18:
+			'Бекки улыбнулась и придвинулась к вам поближе, продолжая танец.'
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 9, 3, 1, 18, 3, 1
+			$HandsDance='ass'
+	 		gs 'ShowImage', $GirlNameIBD, 'dance', 'buttsmile'
+	   elseif Friends[$GirlNameIBD]>=6 and sluttiness[$GirlNameIBD]>=12:
+			'"Стефан, негодник, что ты делаешь?!" прошептала Бекки, улыбаясь. "Впрочем, продолжай, добавила она."'
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 9, 3, 1, 18, 3, 1
+			$HandsDance='ass'
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'buttsmile'
+	    elseif Friends[$GirlNameIBD]>=5 and sluttiness[$GirlNameIBD]>=9:
+			'"Стефан, ай-ай-ай!" сказала вдовушка и передвинула ваши руки с попы на талию. '
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 9, 4, 1, 14, 4, 1
+			$HandsDance='waist'
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'butt'
+	    else
+			'"Стефан, негодник, что это ты такое делаешь?" спросила Бекки "Я тебе в матери гожусь, а ты что себе позволяешь?!" Вы попробовали объяснить, что вы так случайно поступили, но обнаружили что разговариваете с пустотой, Бекки ушла.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIBD
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 0, 1, -1, 0, 1, -1
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'buttangry'
+		end	
+	
+		DanceStep+=1	
+		gs 'BeckyInviteHome', 'Becky'
+		if DanceStep=DanceMaxIBD: 'Танец закончился и вы вернулись к колоннаде.' 	
+	}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIBD and strcomp($HandsDance,'^ass')=0,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyDance','Сжать попу вдовы',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+		'Ваши беспокойные ручки начали гладить и сжимать попку вдовушки.'
+	
+		if Friends[$GirlNameIBD]>=10 and sluttiness[$GirlNameIBD]>20:
+			'Бекки это пришлось по вкусу, она улыбнулась и прижалась вплотную к вам, начав приятно тереться своими дыньками о вашу грудь.'
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 11, 4, 1, 22, 3, 1
+			$HandsDance='ass2'
+			TitsDance=1
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'buttsmile'
+	    elseif Friends[$GirlNameIBD]>=8 and sluttiness[$GirlNameIBD]>=16:
+			'"Стефанчик, ах наглец, ах шалун!" прошептала Бекки с напускным гневом, но не сделала ничего, чтобы остановить вас.'
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 11, 4, 1, 22, 3, 1
+			$HandsDance='ass2'
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'butt'
+	    elseif Friends[$GirlNameIBD]>=7 and sluttiness[$GirlNameIBD]>=13:
+			'"Стефан, ай-ай-ай!" сказала вдовушка и передвинула ваши руки с попы на талию. '
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 9, 4, 1, 16, 4, 1
+			$HandsDance='waist'
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'buttangry'
+	    else
+			'"Стефан, негодник, что это ты такое делаешь?" спросила Бекки "Я тебе в матери гожусь, а ты что себе позволяешь?!" Вы попробовали объяснить, что вы так случайно поступили, но обнаружили что разговариваете с пустотой, Бекки ушла.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIBD
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 0, 1, -1, 0, 1, -1
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'buttangry'
+		end	
+	
+		DanceStep+=1	
+		gs 'BeckyInviteHome', 'Becky'
+		if DanceStep=DanceMaxIBD: 'Танец закончился и вы вернулись к колоннаде.' 	
+	}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIBD and $HandsDance='ass',-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyDance','Поцеловать Бекки',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+		'Продолжая танцевать, вы вдруг наклонились к вдове Блэнкеншип и впились в ее губы своими.'
+	
+		if Friends[$GirlNameIBD]>=10 and sluttiness[$GirlNameIBD]>21:
+			'Опытная вдовушка с готовностью и умением ответила на ваш поцелуй, страстно переплетаясь с вами языками.'
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 11, 4, 1, 24, 3, 1
+			KissDance=2
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'kiss'
+	    elseif Friends[$GirlNameIBD]>=8 and sluttiness[$GirlNameIBD]>=16:
+			'Преодолев секундное замешательство, Бекки откликнулась на ваш поцелуй, хотя и, как вам показалось, была несколько шокированна вашей прямотой.'
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 11, 4, 1, 24, 3, 1
+			KissDance=1
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'kiss'
+	    elseif Friends[$GirlNameIBD]>=7 and sluttiness[$GirlNameIBD]>=13:
+			'"Стефанчик, шалунишка, я же тебе в матери гожусь, а ты целоваться. И не стыдно?" прошептала Бекки и отстранилась от вас. '
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 9, 6, 1, 16, 6, 1
+			KissDance=0
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'angry'
+	    else
+			'"Стефан, негодник, что это ты такое делаешь?" спросила Бекки "Я тебе в матери гожусь, а ты что себе позволяешь?!" Вы не нашлись с подходящим объяснением ну да впрочем это было и неважно, Бекки ушла.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIBD
+			gs 'SlutFriendsIncrease', $GirlNameIBD, 0, 1, -1, 0, 1, -1
+			gs 'ShowImage', $GirlNameIBD, 'dance', 'angry'
+		end	
+	
+		DanceStep+=1
+		gs 'BeckyInviteHome', 'Becky'
+		if DanceStep=DanceMaxIBD: 'Танец закончился и вы вернулись к колоннаде.' 	
+	}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIBD and KissDance=0,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyDance','Принять предложение вдовы',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+		FridayDancesCount=5
+		gt 'BeckyHomeFront', 'FromDances'
+	}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(BeckyVar['danceinvitehome'],-1,0)"
+	
+	
+	GS 'Menu.Add','MenuBeckyDance','Отойти',''
+	GS 'Menu.AddModule','MenuBeckyDance',{
+		CounterToClean=MaxCounterToClean
+		gs 'CleanScreenOverflow'
+		DanceStep=0
+		dynamic $CurrentActions
+		gs 'ShowImage', $GirlNameIBD, 'dance', 'wait'	
+		dynamic $FridayDanceCounterShow
+	}
+	gs 'Menu.AddCondition','MenuBeckyDance', "Result=IIF(DanceStep>=DanceMaxIBD or DanceStep=1,-1,0)"
+
+------------ Конец локации: IntBeckyDance ------------

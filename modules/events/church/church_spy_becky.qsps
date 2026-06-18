@@ -1,0 +1,147 @@
+! ================================================
+! FILE: modules/events/church/church_spy_becky.qsps
+! MODULE: events/church
+! Ongoing: подслушивание Бекки + отец Герхард (воскресенье, полдень)
+! ================================================
+
+#ChurchSpyBeckyCheckAvailable
+    BeckyPriestSpyReady = 0
+
+    if BeckyPriestArcOpen = 0:
+        exit
+    end
+
+    if week <> 7:
+        exit
+    end
+
+    if time < 2:
+        exit
+    end
+
+    if BeckyPriestSpyToday = 1:
+        exit
+    end
+
+    if BeckyPriestSpyBoost = 0:
+        if BeckyPriestSpyNextDay > 0 and day < BeckyPriestSpyNextDay:
+            exit
+        end
+    end
+
+    BeckyPriestSpyReady = 1
+---
+
+#ChurchSpyBeckyScheduleOpen
+    if BeckyPriestArcOpen = 0:
+        exit
+    end
+
+    if BeckyPriestSpyNextDay = 0:
+        BeckyPriestSpyNextDay = day
+    end
+---
+
+#ChurchSpyBeckyDonationBoost
+    if BeckyPriestArcOpen = 0:
+        *p 'Сейчас особых исповедей вдовы не ожидается.'
+        act 'Вернуться': gt 'Church'
+        exit
+    end
+
+    if BeckyPriestSpyBoost = 1:
+        *p 'Вы уже пожертвовали на ближайшую исповедь Бекки.'
+        act 'Вернуться': gt 'Church'
+        exit
+    end
+
+    if money < 15:
+        *p 'Нужно 15 мараведи для пожертвования.'
+        act 'Вернуться': gt 'Church'
+        exit
+    end
+
+    money -= 15
+    BeckyPriestSpyBoost = 1
+    ChurchDonatedToday += 1
+    tavern_reputation += 1
+
+    *p 'Вы кладёте 15 мараведи в ящик пожертвований. Отец Герхард кивает: вдове Блэнкеншип на следующей исповеди уделят больше внимания.'
+
+    act 'Вернуться': gt 'Church'
+---
+
+#ChurchSpyBeckyStart
+    if BeckyPriestArcOpen = 0:
+        gt 'Church'
+    end
+
+    gs 'ChurchSpyBeckyCheckAvailable'
+
+    if BeckyPriestSpyReady = 0:
+        gt 'Church'
+    end
+
+    BeckyPriestSpyStep = 1
+    gt 'ChurchSpyBeckyStep'
+---
+
+#ChurchSpyBeckyStep
+    gs 'ChurchSpyBeckyPickStepText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ БЕККИ — ПОДСЛУШИВАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if BeckyPriestSpyCount = 0:
+        *p 'Вы замечаете, что в исповедальню зашла Бекки. Через щель видно, как отец Герхард принимает её не совсем так, как остальных прихожан.'
+    else:
+        *p 'Бекки снова пришла на исповедь в воскресный полдень. Вы знаете, чем это обычно заканчивается.'
+    end
+
+    *pl ' '
+    *p $ChurchSpyText
+    *pl ' '
+
+    if BeckyPriestSpyStep < 3:
+        act 'Смотреть дальше':
+            BeckyPriestSpyStep += 1
+            gt 'ChurchSpyBeckyStep'
+        end
+
+        act 'Уйти, не досматривая':
+            gs 'ChurchSpyBeckyPartialExit'
+            gt 'Church'
+        end
+    else
+        act 'Вернуться в церковь':
+            gs 'ChurchSpyBeckyFinish'
+            gt 'Church'
+        end
+    end
+---
+
+#ChurchSpyBeckyPartialExit
+    BeckyPriestSpyToday = 1
+    sluttiness['becky'] += 1
+---
+
+#ChurchSpyBeckyFinish
+    BeckyPriestSpyCount += 1
+    BeckyPriestSpyLastDay = day
+    BeckyPriestSpyToday = 1
+    BeckyPriestSpyBoost = 0
+    BeckyPriestSpyNextDay = day + RAND(7, 14)
+
+    sluttiness['becky'] += 1
+    otkroven['becky'] += 1
+
+    if Friends['becky'] < 60:
+        Friends['becky'] += 1
+    end
+---

@@ -1,0 +1,270 @@
+! ================================================
+! FILE: modules/events/family/melissa_minstrel_alley_race.qsps
+! MODULE: events/family
+! 6-я пятница: менестрель может опередить ГГ в подворотне
+! ================================================
+
+#MelissaFridayDanceAdvance
+    if week <> 5:
+        exit
+    end
+
+    if MelissaFridayDanceCountDay = day:
+        exit
+    end
+
+    MelissaFridayDanceCountDay = day
+    MelissaFridayDanceCount += 1
+---
+
+#MelissaMinstrelRaceWindowOpen
+    MelissaMinstrelRaceWindowOpen = 0
+
+    if MelissaFridayDanceCount >= 6:
+        MelissaMinstrelRaceWindowOpen = 1
+    elseif day >= 40 and week = 5:
+        MelissaMinstrelRaceWindowOpen = 1
+    end
+---
+
+#MelissaMinstrelFridayRaceCanStart
+    MelissaMinstrelFridayRaceCanStart = 0
+
+    if MelissaMinstrelFridayRaceDone = 1:
+        exit
+    end
+
+    if MelissaMinstrelFirstSexDone = 1:
+        exit
+    end
+
+    if MelissaHomeSex = 1:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if MelissaDanceDressReady = 0:
+        exit
+    end
+
+    if LOC('MelissaMinstrelRaceWindowOpen') = 1:
+        gs 'MelissaMinstrelRaceWindowOpen'
+    end
+
+    if MelissaMinstrelRaceWindowOpen = 0:
+        exit
+    end
+
+    if MelissaMinstrelMet = 0:
+        exit
+    end
+
+    if MelissaProhibitMinstrel = 1:
+        exit
+    end
+
+    MelissaMinstrelFridayRaceCanStart = 1
+---
+
+#MelissaMinstrelFridayRaceTryStart
+    if LOC('MelissaMinstrelFridayRaceCanStart') = 1:
+        gs 'MelissaMinstrelFridayRaceCanStart'
+
+        if MelissaMinstrelFridayRaceCanStart = 1:
+            gt 'MelissaMinstrelFridayRaceStart'
+        end
+    end
+---
+
+#MelissaMinstrelFridayRaceStart
+    *clr
+    clr
+    cla
+
+    MelissaMinstrelFridayRaceDone = 1
+
+    gs 'EnsureGirlData', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ШЕСТАЯ ПЯТНИЦА — МЕНЕСТРЕЛЬ И МЕЛИССА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelFridayRaceIntroText') = 1:
+        gs 'MelissaMinstrelFridayRaceIntroText'
+    else:
+        *p 'Шестая пятница. ' + $MelissaMinstrelName + ' заканчивает мелодию и смотрит на Мелиссу слишком открыто.'
+        *p 'Он жестом указывает на тёмный проход у края площади. Она колеблется — и смотрит на вас.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MELISSA RACE] FridayCount: ' + STR(MelissaFridayDanceCount)
+        *pl '[DEBUG MELISSA RACE] Day: ' + STR(day)
+        *pl '[DEBUG MELISSA RACE] HomeSex: ' + STR(MelissaHomeSex)
+        *pl ' '
+    end
+
+    gs 'MelissaMinstrelFridayRaceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaMinstrelRaceMenu''">делать</a>?'
+---
+
+#MelissaMinstrelFridayRaceBuildMenu
+    gs 'Menu.Destroy', 'MelissaMinstrelRaceMenu'
+    gs 'Menu.Create', 'MelissaMinstrelRaceMenu'
+
+    gs 'Menu.Add', 'MelissaMinstrelRaceMenu', 'Остановить менестреля', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelRaceMenu', {
+        gt 'MelissaMinstrelFridayRaceAction', 'stop'
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelRaceMenu', 'Увести Мелиссу домой', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelRaceMenu', {
+        gt 'MelissaMinstrelFridayRaceAction', 'claim'
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelRaceMenu', 'Наблюдать издалека', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelRaceMenu', {
+        gt 'MelissaMinstrelFridayRaceAction', 'watch'
+    }
+
+    gs 'Menu.Add', 'MelissaMinstrelRaceMenu', 'Отойти — пусть решает сама', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelRaceMenu', {
+        gt 'MelissaMinstrelFridayRaceAction', 'step_aside'
+    }
+---
+
+#MelissaMinstrelFridayRaceAction
+    *clr
+    clr
+    cla
+
+    $MelissaRaceChoice = LCASE($ARGS[0])
+
+    gs 'EnsureGirlData', 'melissa'
+
+    if $MelissaRaceChoice = 'stop':
+        MelissaTrustStefan += 1
+        Friends['melissa'] += 1
+        MelissaPlayerPath += 1
+        MelissaMusicianInterest -= 2
+
+        if MelissaMusicianInterest < 0:
+            MelissaMusicianInterest = 0
+        end
+
+        MelissaMinstrelFridayRaceResult = 0
+        PlayerKnows_MelissaMinstrelFridayRace = 1
+
+    elseif $MelissaRaceChoice = 'claim':
+        MelissaTrustStefan += 2
+        Friends['melissa'] += 2
+        MelissaPlayerPath += 2
+        MelissaHomeUnlocked = 1
+        MelissaMinstrelFridayRaceResult = 1
+        PlayerKnows_MelissaMinstrelFridayRace = 1
+
+    elseif $MelissaRaceChoice = 'watch':
+        MelissaMinstrelFridayRaceResult = 2
+        PlayerKnows_MelissaMinstrelFridayRace = 1
+        MelissaSecretiveness += 1
+        MelissaNpcPath += 1
+        GirlNpcPath['melissa'] += 1
+        MelissaMusicianInterest += 2
+        TavernScandal += 1
+
+        MinstrelRaceRoll = RAND(1, 100)
+        MinstrelRaceChance = 35 + sluttiness['melissa'] / 2 + MelissaMusicianInterest * 2
+
+        if MinstrelRaceChance > 75:
+            MinstrelRaceChance = 75
+        end
+
+        if MinstrelRaceRoll <= MinstrelRaceChance:
+            MelissaMinstrelFirstSexDone = 1
+            MelissaNpcPath += 3
+            GirlNpcPath['melissa'] += 3
+            MelissaFirstPathChoiceReady = 1
+            Fact_MelissaMinstrelFridayAlley = 1
+            gs 'MelissaMinstrelAffairAdvance'
+        end
+
+        killvar 'MinstrelRaceRoll'
+        killvar 'MinstrelRaceChance'
+
+    elseif $MelissaRaceChoice = 'step_aside':
+        MelissaMinstrelFridayRaceResult = 3
+        PlayerKnows_MelissaMinstrelFridayRace = 0
+        MelissaSecretiveness += 2
+        MelissaNpcPath += 2
+        GirlNpcPath['melissa'] += 2
+        MelissaMusicianInterest += 3
+        TavernScandal += 1
+
+        MinstrelRaceRoll = RAND(1, 100)
+        MinstrelRaceChance = 50 + sluttiness['melissa'] / 2 + MelissaMusicianInterest * 2 + MelissaControlNeed / 5
+
+        if MinstrelRaceChance > 85:
+            MinstrelRaceChance = 85
+        end
+
+        if MinstrelRaceRoll <= MinstrelRaceChance:
+            MelissaMinstrelFirstSexDone = 1
+            MelissaNpcPath += 4
+            GirlNpcPath['melissa'] += 4
+            MelissaFirstPathChoiceReady = 1
+            Fact_MelissaMinstrelFridayAlley = 1
+            gs 'MelissaMinstrelAffairAdvance'
+        end
+
+        killvar 'MinstrelRaceRoll'
+        killvar 'MinstrelRaceChance'
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelFridayRaceActionText') = 1:
+        gs 'MelissaMinstrelFridayRaceActionText', $MelissaRaceChoice
+    else:
+        *p 'Вечер делает свой вывод — и вы тоже.'
+    end
+
+    *pl ' '
+
+    if MelissaMinstrelFirstSexDone = 1 and MelissaFirstPathChoiceReady = 1:
+        if LOC('MelissaFirstPathChoiceTryStart') = 1:
+            gs 'MelissaFirstPathChoiceTryStart', 'MarketDance'
+        end
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$MelissaRaceChoice'
+---
+
+#MelissaMinstrelFridayRaceDebugReset
+    MelissaMinstrelFridayRaceDone = 0
+    MelissaMinstrelFridayRaceResult = 0
+    PlayerKnows_MelissaMinstrelFridayRace = 0
+    Fact_MelissaMinstrelFridayAlley = 0
+    MelissaMinstrelFridayRaceCanStart = 0
+    MelissaFridayDanceCount = 0
+    MelissaFridayDanceCountDay = 0
+    MelissaMinstrelRaceWindowOpen = 0
+---

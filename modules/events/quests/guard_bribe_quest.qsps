@@ -1,95 +1,217 @@
 ! ================================================
 ! FILE: modules/events/quests/guard_bribe_quest.qsps
-! Мини-квест: Подкуп стражника (сюжетная линия Инги)
+! MODULE: events/quests
+! Квест стражника Грюна: жалобы в лавке, 180+180, ветки А/Б/В
 ! ================================================
 
-#IngaGuardProblem
+#IngaGuardHarassmentTryActivate
+    if IngaGuardProblem = 1:
+        exit
+    end
+
+    if GuardBribed = 1:
+        exit
+    end
+
+    if BeckyHomeSex = 0 and day < 29:
+        exit
+    end
+
+    IngaGuardProblem = 1
+    IngaServingGuard = 1
+
+    if IngaGuardComplaintPending = 0:
+        IngaGuardComplaintPending = 1
+    end
+---
+
+#IngaGuardComplaintCanStart
+    IngaGuardComplaintCanStart = 0
+
+    if GuardBribed = 1:
+        exit
+    end
+
+    if IngaGuardProblem = 0:
+        exit
+    end
+
+    if IngaGuardComplaintPending = 1 and IngaGuardFirstRefused = 0:
+        if BeckyHomeSex = 1 or day >= 29:
+            IngaGuardComplaintCanStart = 1
+        end
+    elseif IngaGuardComplaintPending = 2 and IngaGuardSecondRefused = 0:
+        IngaGuardComplaintCanStart = 1
+    end
+---
+
+#IngaGuardComplaintStart
     cls
+
+    gs 'EnsureGirlData', 'inga'
+
     *pl '══════════════════════════════════════════════'
-    *pl ' ПРОБЛЕМА В ЛАВКЕ'
+
+    if IngaGuardComplaintPending = 2:
+        *pl ' ВТОРАЯ ПРОСЬБА — ИНГА'
+        IngaGuardComplaintStage = 2
+    else:
+        *pl ' ПРОБЛЕМА В ЛАВКЕ'
+        IngaGuardComplaintStage = 1
+    end
+
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    gs 'ShowImage', 'inga', 'shop', 'stress', 'normal'
-
-    *p 'Инга выглядит очень расстроенной.'
-
-    *p '"Стефан… опять этот стражник пришёл. Уже третий раз на этой неделе. Перерыл весь товар, разбил два ящика… Лукас пытался заступиться… а его просто ударили и прогнали…"'
-
-    *p 'Она смотрит на тебя с отчаянием и надеждой.'
-
-    act 'Предложить помочь':
-        *p 'Ты тихо говоришь: "Я могу решить этот вопрос… но никому не говори, даже Лукасу и матери."'
-        IngaTrust += 1
-        act 'Продолжить разговор': gt 'GuardBribeStart'
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'inga', 'shop', 'stress', 'normal'
     end
 
-    act 'Сказать, что это не твоё дело':
-        *p 'Инга грустно кивает и отводит взгляд.'
-        Friends['inga'] -= 2
+    if IngaGuardComplaintPending = 2:
+        if LOC('IngaGuardComplaintSecondIntroText') = 1:
+            gs 'IngaGuardComplaintSecondIntroText'
+        end
+    else:
+        if LOC('IngaGuardComplaintIntroText') = 1:
+            gs 'IngaGuardComplaintIntroText'
+        end
+    end
+
+    *pl ' '
+
+    act 'Предложить помочь':
+        IngaGuardComplaintAccepted = 1
+        Friends['inga'] += 1
+
+        if IngaGuardComplaintPending = 1:
+            IngaGuardHelpIntent = 1
+        else:
+            IngaGuardHelpIntent = 2
+        end
+
+        *p 'Вы тихо говорите: "Я разберусь со стражником. Никому ни слова — даже Лукасу."'
+        gt 'GuardBribeStart'
+    end
+
+    act 'Сказать, что это не ваше дело':
+        if IngaGuardComplaintPending = 1:
+            IngaGuardFirstRefused = 1
+            IngaGuardComplaintPending = 2
+            IngaGuardComplaintStage = 1
+            Friends['inga'] -= 2
+            *p 'Инга грустно кивает и отводит взгляд.'
+        else:
+            IngaGuardSecondRefused = 1
+            IngaGuardHelpStage = -1
+            IngaPlayerRouteOpen = 0
+            IngaGuardWeeklyActive = 1
+            IngaServingGuard = 1
+            Friends['inga'] -= 3
+            *p 'Инга смотрит на вас холодно: "Понятно. Сама придумаю, без вас никчёмников."'
+        end
+
         act 'Продолжить': gt 'BeckyShop'
     end
 ---
 
+#IngaGuardProblem
+    gt 'IngaGuardComplaintStart'
+---
+
 #GuardBribeStart
     cls
+
     *pl '══════════════════════════════════════════════'
     *pl ' РЕШЕНИЕ ПРОБЛЕМЫ СО СТРАЖНИКОМ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    *p 'Ты решаешь разобраться со стражником, который терроризирует лавку Бекки.'
+    *p 'Нужно найти сержанта Грюна — на посту стражи или у рынка.'
 
-    act 'Пойти искать стражника':
+    act 'Пойти к посту стражников':
         gt 'MeetGuard'
     end
 
     act 'Отказаться от этой затеи':
-        *p 'Ты решаешь не вмешиваться.'
+        if IngaGuardHelpIntent = 1:
+            IngaGuardFirstRefused = 1
+            IngaGuardComplaintPending = 2
+            IngaGuardHelpIntent = 0
+        elseif IngaGuardHelpIntent = 2:
+            IngaGuardSecondRefused = 1
+            IngaGuardHelpStage = -1
+            IngaPlayerRouteOpen = 0
+            IngaGuardWeeklyActive = 1
+            IngaGuardHelpIntent = 0
+        end
+
+        *p 'Вы решаете не вмешиваться.'
         act 'Вернуться': gt 'BeckyShop'
     end
 ---
 
 #MeetGuard
     cls
+
     *pl '══════════════════════════════════════════════'
-    *pl ' ВСТРЕЧА СО СТРАЖНИКОМ'
+    *pl ' ВСТРЕЧА СО СТРАЖНИКОМ ГРЮНОМ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    gs 'ShowImage', 'guard', 'street', 'normal'
-
-    *p 'Ты находишь сержанта Грюна недалеко от рынка. Он крупный, грубый мужчина средних лет.'
-
-    *p 'Грюн узнаёт тебя: "А, хозяин «Дикого Жеребца»… Что тебе нужно?"'
-
-    act 'Предложить взятку (300 монет)':
-        if money >= 300:
-            money -= 300
-            GuardBribed = 1
-            IngaServingGuard = 0
-            *p 'Ты тихо передаёшь ему деньги.'
-            *p 'Грюн ухмыляется: "Хорошо… я больше не буду беспокоить лавку Блэнкеншип. Но если кто-то узнает — я ничего не знаю."'
-            Friends['inga'] += 8
-            IngaTrust += 3
-            act 'Вернуться в лавку': gt 'BeckyShop'
-        else:
-            *p 'У тебя недостаточно денег.'
-            act 'Продолжить': gt 'MeetGuard'
-        end
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'guard', 'street', 'normal'
     end
 
-    act 'Угрожать':
-        if tavern_reputation >= 60:
-            *p 'Ты напоминаешь ему, что ты хозяин популярного трактира и у тебя есть связи.'
-            *p 'Грюн хмурится, но соглашается: "Ладно… я больше не буду приходить в их лавку."'
-            GuardBribed = 1
-            IngaServingGuard = 0
-            IngaTrust += 2
-            act 'Вернуться в лавку': gt 'BeckyShop'
-        else:
-            *p 'Стражник смеётся тебе в лицо и угрожает в ответ.'
-            Friends['inga'] -= 3
+    if LOC('GuardBribeMeetIntroText') = 1:
+        gs 'GuardBribeMeetIntroText'
+    else:
+        *p 'Грюн узнаёт вас: "А, хозяин трактира… Что тебе нужно?"'
+    end
+
+    *pl ' '
+
+    if IngaGuardBribeStep = 0:
+        act 'Предложить взятку (' + STR(IngaGuardBribeCost) + ' мараведи)':
+            if money >= IngaGuardBribeCost:
+                money -= IngaGuardBribeCost
+                IngaGuardBribeStep = 1
+
+                if LOC('GuardBribeFirstPaidText') = 1:
+                    gs 'GuardBribeFirstPaidText'
+                else:
+                    *p 'Грюн пересчитывает монеты и требует ещё столько же.'
+                end
+
+                act 'Продолжить': gt 'MeetGuard'
+            else:
+                *p 'У вас недостаточно денег.'
+                act 'Продолжить': gt 'MeetGuard'
+            end
+        end
+
+        act 'Угрожать репутацией трактира':
+            if tavern_reputation >= 60:
+                gs 'GuardBribeResolve', 'reputation'
+            else:
+                *p 'Стражник смеётся вам в лицо и угрожает в ответ.'
+                Friends['inga'] -= 2
+                act 'Вернуться': gt 'BeckyShop'
+            end
+        end
+    else:
+        act 'Заплатить ещё ' + STR(IngaGuardBribeCost) + ' мараведи':
+            if money >= IngaGuardBribeCost:
+                money -= IngaGuardBribeCost
+                gs 'GuardBribeResolve', 'bribe'
+            else:
+                *p 'У вас недостаточно денег для второго платежа.'
+                act 'Продолжить': gt 'MeetGuard'
+            end
+        end
+
+        act 'Отказаться платить второй раз':
+            IngaGuardBribeStep = 0
+            *p 'Грюн ухмыляется: "Жалко? Тогда увидимся в лавке."'
             act 'Вернуться': gt 'BeckyShop'
         end
     end
@@ -99,3 +221,103 @@
     end
 ---
 
+#GuardBribeResolve
+    $GuardBribeResolveMode = LCASE($ARGS[0])
+    $GuardHelpFrom = IngaGuardHelpIntent
+
+    GuardBribed = 1
+    IngaServingGuard = 0
+    IngaGuardProblem = 0
+    IngaGuardComplaintPending = 0
+    IngaGuardBribeStep = 0
+    IngaGuardHelpIntent = 0
+
+    if $GuardHelpFrom = 2 or IngaGuardFirstRefused = 1:
+        IngaGuardHelpStage = 2
+
+        if FamilyCorruptionStage >= 3:
+            IngaGuardWeeklyActive = 1
+        end
+    else:
+        IngaGuardHelpStage = 1
+        IngaGuardWeeklyActive = 0
+    end
+
+    killvar '$GuardHelpFrom'
+
+    IngaPlayerRouteOpen = 1
+    IngaGuardThanksDay = day + 1
+
+    Friends['inga'] += 6
+
+    if $GuardBribeResolveMode = 'reputation':
+        if LOC('GuardBribeRepThreatText') = 1:
+            gs 'GuardBribeRepThreatText'
+        end
+    else:
+        if LOC('GuardBribeResolvedText') = 1:
+            gs 'GuardBribeResolvedText'
+        end
+    end
+
+    *pl ' '
+
+    act 'Вернуться в лавку':
+        gt 'BeckyShop'
+    end
+
+    killvar '$GuardBribeResolveMode'
+---
+
+#IngaGuardThanksCanStart
+    IngaGuardThanksCanStart = 0
+
+    if IngaPlayerRouteOpen = 0:
+        exit
+    end
+
+    if IngaGuardThanksDone = 1:
+        exit
+    end
+
+    if IngaGuardThanksDay = 0:
+        exit
+    end
+
+    if day < IngaGuardThanksDay:
+        exit
+    end
+
+    IngaGuardThanksCanStart = 1
+---
+
+#IngaGuardThanks
+    cls
+
+    IngaGuardThanksDone = 1
+    IngaGuardThanksDay = 0
+
+    gs 'EnsureGirlData', 'inga'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЛАГОДАРНОСТЬ ИНГИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('IngaGuardThanksText') = 1:
+        gs 'IngaGuardThanksText'
+    end
+
+    Friends['inga'] += 2
+    love['inga'] += 1
+
+    if LOC('IngaRomanceTryUnlock') = 1:
+        gs 'IngaRomanceTryUnlock'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'BeckyShop'
+    end
+---

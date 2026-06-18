@@ -1,0 +1,87 @@
+Название локации: IntBeckyTalkSherwood
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	GS 'Menu.Add','MenuBeckyTalk','Насчет твоего предложения, в чем там все-таки дело?',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Ага передумал," радостно воскликнула вдова. "Так я и знала, что жадность твою лень пересилит! Рада, что в тебе не ошиблась."'
+		$BeckyVar['TradeOfferText']
+		
+		BeckyVar['TradeOffer']=1
+		Talked[$GirlName]+=1
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(Talked[$GirlName]<2 and BeckyVar['TradeOffer']=2,-1,0)"
+	
+	
+	
+	GS 'Menu.Add','MenuBeckyTalk','А чего ты сама с эльфами не торгуешь?',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Так я торговала," отозвалась вдовушка. "Но вот лошадь наша недавно издохла, а на новую у меня сейчас денег нет. Вот и решила, чтоб не дать подработать хорошему человеку."'
+		if dyneval($GetSexNum,'becky','you','inside')>=15:
+			'"Да и не чужой ты мне, ведь сколько твоего семени у меня в середке плещется," со пошлым смешком добавила Бекки.'
+		end
+		BeckyVar['AskTradeElf']=1
+		Talked[$GirlName]+=1
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(Talked[$GirlName]<2 and BeckyVar['TradeOffer']=1 and BeckyVar['AskTradeElf']=0,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyTalk','А твое предложеньице с фингалом у твоего сынка не связанно, случаем?',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Ээ, ну нет, в общем-то нет," быстро отозвалась Ребекка, слегка покраснев.'
+		BeckyVar['SherwoodSuspect']+=1
+		BeckyVar['FingalClarify']=1
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['TradeOffer']=1 and EddieVar['FingalTalk']>0 and BeckyVar['FingalClarify']=0 and BeckyVar['AdmitSherwood']=0,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyTalk','О какой-такой загвоздке ты говорила?',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Да, ничего особенного, все нормально будет," с наигранной беспечностью отозвалась Ребекка.'
+		BeckyVar['SherwoodSuspect']+=1
+		BeckyVar['SherwoodWarn']=2
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['TradeOffer']=1 and BeckyVar['SherwoodWarn']=1 and BeckyVar['AdmitSherwood']=0,-1,0)"
+	
+	
+	GS 'Menu.Add','MenuBeckyTalk','Насчет дороги в Куниделл',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Дорожка в Куниделл, случаем не через Шервудский лес проходит?" невинно осведомились вы.<br>"Через него, это верно. Только какой там лес, от него и не осталось почти ничего," заметно нервничая ответила вам Ребекка.<br>"А там никто, случаем, не пошаливает? Грабеж, все такое?" еще более невинно спросили вы.<br>"Ну как тебе сказать," смутилась Бекки. "Дело в том, что да, ты прав, в Куниделл надо ехать через Шервудский лес. Ну, вернее уже не лес, но это не важно."<br>"И что?"<br>"Ну вот, собственно, и все. Там уже давно как эти засели, как их там, обездоленные. Говорят, что мол наша добрая герцогиня в их несчастьях и горькой судьбинушке виновата. Раньше от них вреда особого не было, так, собирали по паре десятков мараведи на пропитание. А недавно разухабились, сыночка моего ненаглядного побили, товар отобрали, лошадь отобрали. Так я и решила, ты паренек смышленный, что-нибудь придумаешь. И мне выгода, и тебе прибыток."'
+		BeckyVar['SherwoodSuspect']+=10
+		BeckyVar['AdmitSherwood']=1
+		Talked[$GirlName]+=1
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(Talked[$GirlName]<2 and BeckyVar['TradeOffer']=1 and BeckyVar['AdmitSherwood']=0 and BeckyVar['KnowSherwood']=1,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyTalk','Так что же ты меня дурила-то?',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Так я ж не нарочно. Ну, вернее, думала что ты и так справишься, ты ж смышленный, что тебя раньше времени пугать?"'
+		BeckyVar['AdmitSherwood']=2
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['TradeOffer']=1 and BeckyVar['AdmitSherwood']=1,-1,0)"
+	
+	
+	GS 'Menu.Add','MenuBeckyTalk','Меня ограбили!!!',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Ой беда-то какая!" заохала вдова. "Это тебя Робин ограбил? Я уж думала он не шалит больше, а оно вот как обернулось. Он, Сирик этакий, сыночка моего ведь тоже ограбил. Даже избил. А тебе вишь, повезло, он тебя и не тронул. Так что можно считать легко отделался."'
+		BeckyVar['AdmitSherwood']=Max(BeckyVar['AdmitSherwood'],2)
+		BeckyVar['RobbedByRobin']+=1
+		Talked[$GirlName]+=1
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(Talked[$GirlName]<2 and BeckyVar['RobbedByRobin']=1,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyTalk','Так как мне в Куниделл попасть-то?',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Ох, значит Робин этот окаянный там еще. Может ты чего придумаешь? Как бы с ним договориться, больно хорошие деньги эльфы за огурцы платят. А эта их, леди Минетуэль, мне даже сказала как-то, что мол без твоих огурцов я и не знаю, чтобы делала. Все мужики кругом, мол, - эльфы, только огурцы и выручают. До сих пор голову ломаю, что это она в виду имела."'
+		BeckyVar['ConsoleRobbery']+=1
+		Talked[$GirlName]+=1
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(Talked[$GirlName]<2 and BeckyVar['ConsoleRobbery']=0 and BeckyVar['RobbedByRobin']>=2,-1,0)"
+	
+	GS 'Menu.Add','MenuBeckyTalk','Так что ж ты меня не предупредила-то?',''
+	GS 'Menu.AddModule','MenuBeckyTalk',{
+		'<br>"Так не виноватая я. Ты и не спрашивал-то особо. А я думала что ты и так справишься, ты ж смышленный, что тебя раньше времени расстраивать? А может энтово Робина там и нет уже? Может он ушел кудайсь? Могло же такое быть? Могло. Вот я и решила тебя не пугать. Ты уж прости меня, дуру."'
+		BeckyVar['RobbedByRobin']+=1
+	}
+	gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['RobbedByRobin']=2 and BeckyVar['AdmitSherwood']=0,-1,0)"
+	
+
+------------ Конец локации: IntBeckyTalkSherwood ------------

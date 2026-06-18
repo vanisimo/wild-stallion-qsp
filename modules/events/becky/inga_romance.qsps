@@ -1,0 +1,194 @@
+! ================================================
+! FILE: modules/events/becky/inga_romance.qsps
+! MODULE: events/becky
+! Роман Инги: лестница в подсобке → первый секс → танцы
+! ================================================
+
+#IngaRomanceTryUnlock
+    if IngaRomanceUnlocked = 1:
+        exit
+    end
+
+    if IngaPlayerRouteOpen = 0:
+        exit
+    end
+
+    if IngaGuardThanksDone = 0:
+        if GuardBribed = 0:
+            exit
+        end
+    end
+
+    IngaRomanceUnlocked = 1
+---
+
+#IngaRomanceCanAdvance
+    IngaRomanceCanAdvance = 0
+
+    if IngaRomanceUnlocked = 0:
+        exit
+    end
+
+    if IngaBackroomSex = 1:
+        exit
+    end
+
+    if IngaBackroomStepToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if IngaRomanceStage >= 3:
+        exit
+    end
+
+    if Friends['inga'] < 14 + IngaRomanceStage * 2:
+        exit
+    end
+
+    IngaRomanceCanAdvance = 1
+---
+
+#IngaRomanceStep
+    gs 'IngaRomanceCanAdvance'
+
+    if IngaRomanceCanAdvance = 0:
+        gt 'BeckyShop'
+    end
+
+    if IngaRomanceStage = 0:
+        $IngaRomanceStepKey = 'handjob'
+    elseif IngaRomanceStage = 1:
+        $IngaRomanceStepKey = 'cuni'
+    elseif IngaRomanceStage = 2:
+        $IngaRomanceStepKey = 'blowjob'
+    else:
+        gt 'BeckyShop'
+    end
+
+    gs 'IngaRomanceStepText', $IngaRomanceStepKey
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДСОБКА ЛАВКИ — ИНГА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IngaRomanceText
+    *pl ' '
+
+    IngaRomanceStage += 1
+    IngaBackroomStepToday = 1
+    IngaPlayerPath += 1
+
+    if $IngaRomanceStepKey = 'handjob':
+        CaressCount['inga'] += 1
+        sluttiness['inga'] += 1
+        otkroven['inga'] += 1
+    elseif $IngaRomanceStepKey = 'cuni':
+        CuniCount['inga'] += 1
+        OralCount['inga'] += 1
+        otkroven['inga'] += 1
+    elseif $IngaRomanceStepKey = 'blowjob':
+        BlowjobCount['inga'] += 1
+        OralCount['inga'] += 1
+        sluttiness['inga'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'inga'
+    killvar '$IngaRomanceStepKey'
+
+    act 'Вернуться в лавку':
+        gt 'BeckyShop'
+    end
+---
+
+#IngaBackroomFirstSexLaunch
+    if IngaRomanceUnlocked = 0 or IngaRomanceStage < 3:
+        gt 'BeckyShop'
+    end
+
+    if IngaBackroomSex = 1:
+        gt 'BeckyShop'
+    end
+
+    gs 'IngaRomanceStepText', 'presex'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IngaRomanceText
+    *pl ' '
+
+    IngaBackroomFirstSexActive = 1
+    IngaBackroomStepToday = 1
+
+    if IntimStage['inga'] < 5:
+        IntimStage['inga'] = 5
+    end
+
+    if otkroven['inga'] < 15:
+        otkroven['inga'] = 15
+    end
+
+    gt 'SexSceneStart', 'inga', 'IngaBackroomAfterSex', 'inga_backroom_first'
+---
+
+#IngaBackroomAfterSex
+    gs 'IngaRomanceAfterSexText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IngaRomanceText
+    *pl ' '
+
+    act 'Вернуться в лавку':
+        gt 'BeckyShop'
+    end
+---
+
+#IngaBackroomCanOffer
+    IngaBackroomCanOffer = 0
+
+    if IngaRomanceUnlocked = 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if IngaBackroomSex = 1:
+        if LOC('SexSceneStart') = 1:
+            IngaBackroomCanOffer = 1
+        end
+        exit
+    end
+
+    gs 'IngaRomanceCanAdvance'
+
+    if IngaRomanceCanAdvance = 1:
+        IngaBackroomCanOffer = 1
+        exit
+    end
+
+    if IngaRomanceStage >= 3 and IngaBackroomStepToday = 0:
+        IngaBackroomCanOffer = 1
+    end
+---

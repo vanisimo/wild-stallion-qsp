@@ -147,16 +147,69 @@
         end
     end
 ! ====================== ФЛИРТ С ИНГОЙ ======================
-    if $CurrentSeller = 'inga' and Friends['inga'] >= 25 and sluttiness['inga'] >= 40:
+    if $CurrentSeller = 'inga' and IngaRomanceUnlocked = 1 and Friends['inga'] >= 18:
         act 'Флиртовать с Ингой':
             gt 'IngaFlirt'
         end
     end
 
-    if $CurrentSeller = 'inga' and GuardBribed = 0 and LOC('IngaGuardProblem') = 1:
-        act 'Спросить Ингу о проблеме со стражником':
-            IngaGuardProblem = 1
-            gt 'IngaGuardProblem'
+    if $CurrentSeller = 'inga' and LOC('IngaRomanceTryUnlock') = 1:
+        gs 'IngaRomanceTryUnlock'
+    end
+
+    if $CurrentSeller = 'inga' and LOC('IngaBackroomCanOffer') = 1:
+        gs 'IngaBackroomCanOffer'
+
+        if IngaBackroomCanOffer = 1:
+            if IngaBackroomSex = 0 and IngaRomanceStage < 3:
+                act 'Зайти в подсобку с Ингой':
+                    gt 'IngaRomanceStep'
+                end
+            elseif IngaBackroomSex = 0 and IngaRomanceStage >= 3:
+                act 'Продолжить в подсобке':
+                    gt 'IngaBackroomFirstSexLaunch'
+                end
+            elseif IngaBackroomSex = 1:
+                act 'Провести время в подсобке':
+                    gt 'SexSceneStart', 'inga', 'IngaBackroomAfterSex', 'inga_repeat'
+                end
+            end
+        end
+    end
+
+    if $CurrentSeller = 'inga' and IngaLucasThreesomeCount >= 1 and IngaLucasCucumberReady = 0 and LOC('IngaLucasCucumberShop') = 1:
+        act 'Заметить, как Инга выбирает овощи':
+            gt 'IngaLucasCucumberShop'
+        end
+    end
+
+    if IngaRoomUnlocked = 1 and time >= 3:
+        act 'Подняться в комнату Инги':
+            gt 'IngaRoom'
+        end
+    end
+
+    if $CurrentSeller = 'inga' and LOC('IngaGuardHarassmentTryActivate') = 1:
+        gs 'IngaGuardHarassmentTryActivate'
+    end
+
+    if $CurrentSeller = 'inga' and LOC('IngaGuardComplaintCanStart') = 1:
+        gs 'IngaGuardComplaintCanStart'
+
+        if IngaGuardComplaintCanStart = 1:
+            act 'Спросить Ингу о проблеме со стражником':
+                gt 'IngaGuardComplaintStart'
+            end
+        end
+    end
+
+    if $CurrentSeller = 'inga' and LOC('IngaGuardThanksCanStart') = 1:
+        gs 'IngaGuardThanksCanStart'
+
+        if IngaGuardThanksCanStart = 1:
+            act 'Поговорить с Ингой':
+                gt 'IngaGuardThanks'
+            end
         end
     end
     ! ====================== ПОКУПКА У ДЕТЕЙ (если Бекки отказывает) ======================
@@ -195,6 +248,22 @@
     end
 
     *pl ' '
+
+    if BeckyHomeStage >= 3 and time = 4 and LOC('BeckyHomeGuestArrival') = 1:
+        act 'Постучать в дверь дома Бекки':
+            gt 'BeckyHomeGuestArrival'
+        end
+    end
+
+    if $CurrentSeller = 'becky' and LOC('BeckyIngaThreesomeCanStart') = 1:
+        gs 'BeckyIngaThreesomeCanStart'
+
+        if BeckyIngaThreesomeCanStart = 1:
+            act 'Встретиться с Бекки и Ингой втроём':
+                gt 'GroupSexBeckyIngaStefanStart'
+            end
+        end
+    end
 
     ! ====================== ОБЩЕНИЕ ======================
     act 'Поговорить с продавцом':

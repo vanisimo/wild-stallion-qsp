@@ -1,0 +1,373 @@
+! ================================================
+! FILE: modules/events/becky/becky_dance.qsps
+! MODULE: events/becky
+! Пятничный танец с Бекки (цепочка 6 шагов)
+! ================================================
+
+#BeckyDance
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'becky'
+    gs 'BeckyFridayContactRegister'
+
+    if BeckyDanceDay <> day:
+        gs 'BeckyDanceReset'
+    end
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'becky', 'dance', 'dance', 'normal'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЕЦ С БЕККИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('BeckyDanceMainText') = 1:
+        gs 'BeckyDanceMainText'
+    end
+
+    if $BeckyDanceLastText <> '':
+        *p $BeckyDanceLastText
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG BECKY DANCE] Stage: ' + STR(BeckyDanceStage) + ' Step: ' + STR(BeckyDanceStep)
+        *pl '[DEBUG BECKY DANCE] Hands: ' + $BeckyDanceHands + ' Kiss: ' + STR(BeckyDanceKiss)
+        *pl '[DEBUG BECKY DANCE] InviteHome: ' + STR(BeckyDanceInviteHome)
+        *pl ' '
+    end
+
+    if BeckyDanceEnded = 1:
+        act 'Вернуться к танцам':
+            gt 'MarketDance'
+        end
+        exit
+    end
+
+    gs 'BeckyDanceBuildMenu'
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''BeckyDanceMenu''">делать</a>?'
+---
+
+#BeckyDanceReset
+    BeckyDanceDay = day
+    BeckyDanceStage = 0
+    BeckyDanceStep = 1
+    BeckyDanceEnded = 0
+    BeckyDanceInviteHome = 0
+    BeckyDanceMaxStep = 6
+    $BeckyDanceHands = ''
+    BeckyDanceKiss = 0
+    BeckyDanceTits = 0
+    $BeckyDanceLastText = ''
+---
+
+#BeckyFridayContactRegister
+    if BeckyFridayContactToday = 0:
+        BeckyFridayContactToday = 1
+        BeckyFridayContacts += 1
+
+        if BeckyFridayContacts >= 4 and BeckyHomeStage < 2:
+            BeckyHomeStage = 2
+        end
+    end
+---
+
+#BeckyDanceBuildMenu
+    gs 'Menu.Destroy', 'BeckyDanceMenu'
+    gs 'Menu.Create', 'BeckyDanceMenu'
+
+    if BeckyDanceInviteHome = 1:
+        gs 'Menu.Add', 'BeckyDanceMenu', 'Принять предложение вдовы', ''
+        gs 'Menu.AddModule', 'BeckyDanceMenu', {
+            gt 'BeckyDanceInviteAccept'
+        }
+    end
+
+    if BeckyDanceStage = 0:
+        gs 'Menu.Add', 'BeckyDanceMenu', 'Поболтать', ''
+        gs 'Menu.AddModule', 'BeckyDanceMenu', {
+            gt 'BeckyDanceAction', 'talk'
+        }
+
+        gs 'Menu.Add', 'BeckyDanceMenu', 'Пригласить потанцевать', ''
+        gs 'Menu.AddModule', 'BeckyDanceMenu', {
+            gt 'BeckyDanceAction', 'invite'
+        }
+    else:
+        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep:
+            gs 'Menu.Add', 'BeckyDanceMenu', 'Продолжить танцевать', ''
+            gs 'Menu.AddModule', 'BeckyDanceMenu', {
+                gt 'BeckyDanceAction', 'continue'
+            }
+        end
+
+        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands <> 'waist' and $BeckyDanceHands <> 'ass' and $BeckyDanceHands <> 'ass2':
+            gs 'Menu.Add', 'BeckyDanceMenu', 'Положить руки на талию', ''
+            gs 'Menu.AddModule', 'BeckyDanceMenu', {
+                gt 'BeckyDanceAction', 'waist'
+            }
+        end
+
+        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands <> 'ass' and $BeckyDanceHands <> 'ass2':
+            gs 'Menu.Add', 'BeckyDanceMenu', 'Положить руки на попу', ''
+            gs 'Menu.AddModule', 'BeckyDanceMenu', {
+                gt 'BeckyDanceAction', 'ass'
+            }
+        end
+
+        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands = 'ass':
+            gs 'Menu.Add', 'BeckyDanceMenu', 'Сжать попу вдовы', ''
+            gs 'Menu.AddModule', 'BeckyDanceMenu', {
+                gt 'BeckyDanceAction', 'squeeze'
+            }
+        end
+
+        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and BeckyDanceKiss = 0:
+            gs 'Menu.Add', 'BeckyDanceMenu', 'Поцеловать Бекки', ''
+            gs 'Menu.AddModule', 'BeckyDanceMenu', {
+                gt 'BeckyDanceAction', 'kiss'
+            }
+        end
+    end
+
+    gs 'Menu.Add', 'BeckyDanceMenu', 'Отойти', ''
+    gs 'Menu.AddModule', 'BeckyDanceMenu', {
+        BeckyDanceEnded = 1
+        gt 'MarketDance'
+    }
+---
+
+#BeckyDanceAction
+    $BeckyDanceAction = LCASE($ARGS[0])
+
+    gs 'EnsureGirlData', 'becky'
+
+    if $BeckyDanceAction = 'talk':
+        gs 'BeckyDanceActionText', 'talk'
+
+        if Friends['becky'] < 7:
+            if RAND(1, 3) = 1:
+                Friends['becky'] += 1
+            end
+        end
+
+        BeckyDanceEnded = 1
+        gs 'FridayDanceAdvanceRound'
+
+    elseif $BeckyDanceAction = 'invite':
+        if Friends['becky'] >= 7 and sluttiness['becky'] > 18:
+            gs 'BeckyDanceActionText', 'invite_eager'
+            BeckyDanceStage = 1
+            BeckyDanceStep = 2
+            Friends['becky'] += 1
+            sluttiness['becky'] += 1
+        elseif Friends['becky'] >= 5 and sluttiness['becky'] >= 8:
+            gs 'BeckyDanceActionText', 'invite_ok'
+            BeckyDanceStage = 1
+            BeckyDanceStep = 2
+            Friends['becky'] += 1
+        else:
+            gs 'BeckyDanceActionText', 'invite_fail'
+            BeckyDanceEnded = 1
+            gs 'FridayDanceAdvanceRound'
+        end
+
+    elseif $BeckyDanceAction = 'continue':
+        gs 'BeckyDanceActionText', 'continue'
+        BeckyDanceStep += 1
+        gs 'BeckyInviteHomeTry'
+
+        if BeckyDanceStep >= BeckyDanceMaxStep:
+            $BeckyDanceLastText += ' Танец закончился, и вы вернулись к колоннаде.'
+            BeckyDanceEnded = 1
+            gs 'FridayDanceAdvanceRound'
+        end
+
+    elseif $BeckyDanceAction = 'waist':
+        if Friends['becky'] >= 7 and sluttiness['becky'] > 10:
+            gs 'BeckyDanceActionText', 'waist_ok'
+            Friends['becky'] += 1
+            sluttiness['becky'] += 1
+            $BeckyDanceHands = 'waist'
+        elseif Friends['becky'] >= 5 and sluttiness['becky'] >= 6:
+            gs 'BeckyDanceActionText', 'waist_warn'
+            Friends['becky'] += 1
+            $BeckyDanceHands = 'waist'
+        else:
+            gs 'BeckyDanceActionText', 'waist_fail'
+            Friends['becky'] -= 1
+            if Friends['becky'] < 0:
+                Friends['becky'] = 0
+            end
+            BeckyDanceEnded = 1
+            gs 'FridayDanceAdvanceRound'
+        end
+
+        if BeckyDanceEnded = 0:
+            BeckyDanceStep += 1
+            gs 'BeckyInviteHomeTry'
+        end
+
+    elseif $BeckyDanceAction = 'ass':
+        if Friends['becky'] >= 7 and sluttiness['becky'] > 18:
+            gs 'BeckyDanceActionText', 'ass_ok'
+            Friends['becky'] += 1
+            sluttiness['becky'] += 1
+            $BeckyDanceHands = 'ass'
+        elseif Friends['becky'] >= 6 and sluttiness['becky'] >= 12:
+            gs 'BeckyDanceActionText', 'ass_tease'
+            Friends['becky'] += 1
+            sluttiness['becky'] += 1
+            $BeckyDanceHands = 'ass'
+        elseif Friends['becky'] >= 5 and sluttiness['becky'] >= 9:
+            gs 'BeckyDanceActionText', 'ass_warn'
+            $BeckyDanceHands = 'waist'
+        else:
+            gs 'BeckyDanceActionText', 'ass_fail'
+            Friends['becky'] -= 1
+            BeckyDanceEnded = 1
+            gs 'FridayDanceAdvanceRound'
+        end
+
+        if BeckyDanceEnded = 0:
+            BeckyDanceStep += 1
+            gs 'BeckyInviteHomeTry'
+        end
+
+    elseif $BeckyDanceAction = 'squeeze':
+        if Friends['becky'] >= 10 and sluttiness['becky'] > 20:
+            gs 'BeckyDanceActionText', 'squeeze_ok'
+            Friends['becky'] += 1
+            sluttiness['becky'] += 1
+            otkroven['becky'] += 1
+            $BeckyDanceHands = 'ass2'
+            BeckyDanceTits = 1
+        elseif Friends['becky'] >= 8 and sluttiness['becky'] >= 16:
+            gs 'BeckyDanceActionText', 'squeeze_tease'
+            Friends['becky'] += 1
+            sluttiness['becky'] += 1
+            $BeckyDanceHands = 'ass2'
+        elseif Friends['becky'] >= 7 and sluttiness['becky'] >= 13:
+            gs 'BeckyDanceActionText', 'squeeze_warn'
+            $BeckyDanceHands = 'waist'
+        else:
+            gs 'BeckyDanceActionText', 'squeeze_fail'
+            Friends['becky'] -= 1
+            BeckyDanceEnded = 1
+            gs 'FridayDanceAdvanceRound'
+        end
+
+        if BeckyDanceEnded = 0:
+            BeckyDanceStep += 1
+            gs 'BeckyInviteHomeTry'
+        end
+
+    elseif $BeckyDanceAction = 'kiss':
+        if Friends['becky'] >= 10 and sluttiness['becky'] > 21:
+            gs 'BeckyDanceActionText', 'kiss_passion'
+            Friends['becky'] += 1
+            sluttiness['becky'] += 1
+            otkroven['becky'] += 1
+            BeckyDanceKiss = 2
+        elseif Friends['becky'] >= 8 and sluttiness['becky'] >= 16:
+            gs 'BeckyDanceActionText', 'kiss_soft'
+            Friends['becky'] += 1
+            sluttiness['becky'] += 1
+            BeckyDanceKiss = 1
+        elseif Friends['becky'] >= 7 and sluttiness['becky'] >= 13:
+            gs 'BeckyDanceActionText', 'kiss_warn'
+            otkroven['becky'] += 1
+        else:
+            gs 'BeckyDanceActionText', 'kiss_fail'
+            Friends['becky'] -= 1
+            BeckyDanceEnded = 1
+            gs 'FridayDanceAdvanceRound'
+        end
+
+        if BeckyDanceEnded = 0:
+            BeckyDanceStep += 1
+            gs 'BeckyInviteHomeTry'
+        end
+    end
+
+    killvar '$BeckyDanceAction'
+    gt 'BeckyDance'
+---
+
+#BeckyInviteHomeTry
+    if BeckyDanceInviteHome = 1:
+        exit
+    end
+
+    if Friends['becky'] < 10:
+        exit
+    end
+
+    if sluttiness['becky'] <= 20:
+        exit
+    end
+
+    if BeckyDanceStep < 3:
+        exit
+    end
+
+    if BeckyDanceStep >= BeckyDanceMaxStep:
+        exit
+    end
+
+    if RAND(1, 5) <> 1:
+        exit
+    end
+
+    BeckyDanceInviteHome = 1
+
+    if LOC('BeckyDanceInviteHomeText') = 1:
+        gs 'BeckyDanceInviteHomeText'
+        $BeckyDanceLastText = $BeckyDanceInviteText
+        killvar '$BeckyDanceInviteText'
+    end
+---
+
+#BeckyDanceInviteAccept
+    *clr
+    clr
+    cla
+
+    BeckyDanceEnded = 1
+    BeckyDanceInviteHome = 0
+    FridayDancesCount = 5
+
+    if BeckyHomeStage < 1:
+        BeckyHomeStage = 1
+    end
+
+    $BeckyArriveMode = 'FromDances'
+
+    if LOC('BeckyDanceInviteAcceptText') = 1:
+        gs 'BeckyDanceInviteAcceptText'
+    else:
+        $BeckyDanceLastText = 'Бекки ведёт вас с площади к дому.'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРИГЛАШЕНИЕ БЕККИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $BeckyDanceLastText
+    *pl ' '
+
+    if LOC('BeckyHomeFront') = 1:
+        act 'Пойти с Бекки':
+            gt 'BeckyHomeFront', 'FromDances'
+        end
+    end
+
+    act 'Вернуться на площадь':
+        gt 'MarketDance'
+    end
+---

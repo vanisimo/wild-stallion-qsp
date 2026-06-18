@@ -1,0 +1,122 @@
+! ================================================
+! FILE: modules/locations/shops/becky_house.qsps
+! MODULE: locations
+! Точки входа в дом Бекки (обёртки над becky_home_chain)
+! ================================================
+
+#BeckyHouse
+    gt 'BeckyHomeFront', 'guest'
+---
+
+#IngaRoom
+    cls
+
+    gs 'ShowGirlInLocation', 'inga', 'IngaRoom'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА ИНГИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('IngaRoomIntroText') = 1:
+        gs 'IngaRoomIntroText'
+    else:
+        *p 'Небольшая комната над лавкой. Здесь Инга прячется от матери и Лукаса — когда выбирает вас.'
+    end
+
+    *pl ' '
+
+    LocationGirlShown = 0
+    gs 'ShowGirlInLocation', 'inga', 'IngaRoom'
+
+    if LocationGirlShown = 0:
+        *p 'Инги сейчас нет в комнате.'
+    else:
+        if IngaBackroomSex = 1 and LOC('SexSceneStart') = 1 and time >= 3:
+            act 'Провести вечер с Ингой':
+                gt 'SexSceneStart', 'inga', 'IngaRoomAfterSex', 'inga_repeat'
+            end
+        end
+
+        if LOC('IngaLucasWindowCanOffer') = 1:
+            gs 'IngaLucasWindowCanOffer'
+
+            if IngaLucasWindowCanOffer = 1:
+                act 'Заглянуть в окно':
+                    gt 'IngaLucasWindowEvent'
+                end
+            end
+        end
+
+        if LOC('IngaLucasThreesomeCanStart') = 1:
+            gs 'IngaLucasThreesomeCanStart'
+
+            if IngaLucasThreesomeCanStart = 1:
+                if IngaLucasThreesomeCount = 0:
+                    act 'Продолжить с Лукасом':
+                        gt 'IngaLucasThreesome1Start'
+                    end
+                elseif IngaLucasThreesomeCount = 1:
+                    act 'Снова втроём':
+                        gt 'IngaLucasThreesome2Start'
+                    end
+                end
+            end
+        end
+
+        if LOC('IngaLucasAnalCanStart') = 1:
+            gs 'IngaLucasAnalCanStart'
+
+            if IngaLucasAnalCanStart = 1:
+                act 'Предложить анальную близость':
+                    gt 'IngaLucasAnalSceneStart'
+                end
+            end
+        end
+
+        if LOC('IngaLucasThreesomeDpCanStart') = 1:
+            gs 'IngaLucasThreesomeDpCanStart'
+
+            if IngaLucasThreesomeDpCanStart = 1:
+                if IngaLucasDpDone = 0:
+                    act 'Предложить в два ствола':
+                        gt 'GroupSexIngaLucasDpStart'
+                    end
+                else:
+                    act 'Снова в два ствола':
+                        gt 'GroupSexIngaLucasDpStart'
+                    end
+                end
+            end
+        end
+    end
+
+    killvar 'LocationGirlShown'
+
+    *pl ' '
+
+    act 'Спуститься в лавку':
+        gt 'BeckyShop'
+    end
+
+    act 'Выйти на рынок':
+        gt 'Market'
+    end
+---
+
+#IngaRoomAfterSex
+    *p 'Инга поправляет одежду и смотрит на вас с тихой улыбкой.'
+    *pl ' '
+
+    if LOC('BeckyCatchIngaLucasCanStart') = 1:
+        gs 'BeckyCatchIngaLucasCanStart'
+
+        if BeckyCatchIngaLucasCanStart = 1 and IngaLucasThreesomeCount >= 1:
+            gt 'BeckyCatchIngaLucasStart'
+        end
+    end
+
+    act 'Остаться':
+        gt 'IngaRoom'
+    end
+---

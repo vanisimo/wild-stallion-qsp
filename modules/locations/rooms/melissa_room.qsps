@@ -39,6 +39,38 @@
 
     if LocationGirlShown = 0:
         *p 'Мелиссы сейчас нет в комнате.'
+    else:
+        if MelissaHomeUnlocked = 1 and LOC('MelissaHomeStep') = 1:
+            gs 'MelissaHomeCanAdvance'
+
+            if MelissaHomeCanAdvance = 1 and MelissaHomeStage < 6:
+                act 'Провести время наедине с Мелиссой':
+                    gt 'MelissaHomeStep'
+                end
+            end
+
+            if MelissaHomeStage >= 6 and MelissaHomeSex = 0 and MelissaHomeStepToday = 0 and time >= 3:
+                act 'Продолжить близость':
+                    gt 'MelissaHomeFirstSexLaunch'
+                end
+            end
+
+            if MelissaHomeSex = 1 and LOC('SexSceneStart') = 1 and time >= 3:
+                act 'Провести вечер с Мелиссой':
+                    gt 'SexSceneStart', 'melissa', 'MelissaHomeAfterSex', 'melissa_repeat'
+                end
+            end
+
+            if AmandaHomeSex = 1 and LOC('AmandaMelissaThreesomeCanStart') = 1:
+                gs 'AmandaMelissaThreesomeCanStart'
+
+                if AmandaMelissaThreesomeCanStart = 1:
+                    act 'Вечер с Мелиссой и Амандой':
+                        gt 'GroupSexAmandaMelissaStefanStart'
+                    end
+                end
+            end
+        end
     end
 
     killvar 'LocationGirlShown'

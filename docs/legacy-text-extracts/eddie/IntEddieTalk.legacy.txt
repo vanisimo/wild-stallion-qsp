@@ -1,0 +1,133 @@
+Название локации: IntEddieTalk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	GS 'Menu.Create','MenuEddieTalk'
+	GS 'Menu.Add','MenuEddieTalk','Поболтать с Эдди о разной фигне.',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		'Вы некоторое время болтаете с Эдди о несущественных вещах.'
+		dynamic {
+		if Talked['Eddie']<=2 and Rand(1,2)=1 and Friends['Eddie']<=5:
+			'Вы немного сдружились с Эдди.'
+			Friends['Eddie']=Friends['Eddie']+1
+		end
+		if Talked['Eddie']>2: 'Ничего нового из разговора вы не узнали.'
+		}
+		Talked['Eddie']+=1
+	}
+	
+	GS 'Menu.Add','MenuEddieTalk','Поболтать с Эдди о личных вещах.',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		'Вы некоторое время болтаете с Эдди о том, кто сколько выпил и о том, какие девушки кому нравятся.'
+		dynamic 'if Talked[''Eddie'']<=2 and Rand(1,2)=1 and Friends[''Eddie'']<=10:
+			''Вы немного сдружились с Эдди.''
+			Friends[''Eddie'']=Friends[''Eddie'']+1
+		end
+		if Talked[''Eddie'']>2: ''Ничего нового из разговора вы не узнали.'''
+		Talked['Eddie']=Talked['Eddie']+1
+	}
+	gs 'Menu.AddCondition','MenuEddieTalk', "Result=IIF(Friends['Eddie']>=5,-1,0)"
+	
+	GS 'Menu.Add','MenuEddieTalk','Рассказать Эдди о том, что у вас теперь работают девочки',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		'Вы как бы между делом замечаете, что у вас теперь работают девочки не самого тяжелого поведения. Глаза рыжего Эдди загораются, хотя на словах он никак не показывает своей заинтересованности. Вернее, он старательно показывает что ему пофигу.'
+		Friends['Eddie']=Friends['Eddie']+1
+		EddieVar['TalkedAboutWhores']=1
+		Talked['Eddie']+=1
+	}
+	gs 'Menu.AddCondition','MenuEddieTalk', "Result=IIF(Friends['Eddie']>=5 and $CurrentLoc['georgett']='TavernMain' and EddieVar['TalkedAboutWhores']=0 and Talked['Eddie']<2,-1,0)"
+		
+	GS 'Menu.Add','MenuEddieTalk','Поинтересоваться у Эдди как ему ваши девочки',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		'Ведя общий разговор вы неожиданно спрашиваете Эдди, как ему Жоржетта. Эдди густо краснеет, запинается, но все таки отмечает, что она очень даже ничего. При этом парень вас внимательно изучает, как бы пытаясь понять что вам известно. Вы делаете безразличный вид и переводите разговор на другую тему.'
+		gs 'ShowImage', 'eddie', 'portraits', 'surprised'
+		Friends['Eddie']=Friends['Eddie']+1
+		EddieVar['TalkedAboutGeorgett']=1
+		Talked['Eddie']=Talked['Eddie']+1
+	}
+	gs 'Menu.AddCondition','MenuEddieTalk', "Result=IIF(Friends['Eddie']>=5 and $CurrentLoc['georgett']='TavernMain' and EddieVar['SawWithGeorgett']>0 and EddieVar['TalkedAboutGeorgett']=0 and Talked['Eddie']<2,-1,0)"
+	
+	
+	GS 'Menu.Add','MenuEddieTalk','Предложить помочь подкатится к его мамаше',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		if BeckyVar['EddieTryToFuck']=0:
+			'"Эй, Эдди, я прекрасно знаю чего тебе хочется," сказали вы юному бакалейщику. <br>"Думаешь я не видел, какие ты взгляды на мамочку свою кидаешь? Или не знаю в какие ты игры с Жоржеттой играешься?"'
+			if Friends['Eddie']<9:
+				'"Не понимаю, мастер Стефан, о чем это вы," ответил вам Эдди слегка покраснев. Все ваши дальнейшие попытки разговорить его упирались в стену молчания. Судя по всему он вас плохо знает и не доверяет.'
+			else
+				'"Это мое дело", буркнул парень, "и тебя оно не касается."<br>"Зря ты так," вы отнюдь не обиделись на данный им отпор, "я же помочь тебе хочу. Слушай, когда я в следующий раз после ужина пойду с твоей мамочкой в спальню, я оставлю дверь открытой. Ты подожди пару минут и заходи. Твоя мать сама тебя хочет, только решиться не может."<br>"Правда что ли?" глаза Эдди стали как плошки.<br>"Точно тебе говорю," заверили наивного юношу вы.<br>"Ну спасибо тебе, не ожидал."'
+				BeckyVar['EddieTryToFuck']=1
+			end
+			gs 'ShowImage', 'eddie', 'portraits', 'surprised'
+		elseif BeckyVar['EddieTryToFuck']=2 or BeckyVar['EddieTryToFuck']=3:
+			'"Эй Эдди, насчет прошлого раза," начали вы свою речь.'
+			if Friends['Eddie']<10:
+				'"Да пошел ты," ответил вам Эдди, с ненавистью глядя на вас, "куда подальше. Не поддамся я еще раз на твое издевательство."<br>С этими словами бакалейщик отвернулся и на дальнейшие попытки завязать разговор не реагировал.'
+			elseif BeckyVar['EddieFailures']>2:
+				'"Да пошел ты," ответил вам Эдди, с ненавистью глядя на вас, "куда подальше. Со своими подколками. Несколько раз тебе я верил, но теперь все, в очередной раз ты меня больше не надуешь."<br>С этими словами бакалейщик отвернулся и на дальнейшие попытки завязать разговор не реагировал.'	
+			else
+				'"Это ты поиздеваться решил надо мной, да?" ответил вам Эдди смерив вас тяжелым недобрым взглядом.'
+				if BeckyVar['EddieTryToFuck']=3:
+					'"Я сделал все так, как ты сказал, а дверь была заперта."'
+					'"Эээ, извини, я просто забыл засов отодвинуть, в следующий раз обязательно открою, это я не специально." заверили вы своего нового друга.'
+				else
+					'<br>"Ты говорил, что она сама хочет, а она меня выкинула из комнаты, обозвала подонком и извращенцем и весь день со мной не разговаривала."<br>"Эээ, даже не знаю, что на нее нашло, но я все уладил, все обговорил. Попробуй еще раз зайти, все будет классно, не дрейфь!" заверили вы своего нового друга.'
+				end
+				'"Правда что ли?"<br>"Точно тебе говорю"<br>"Ну ладно, а я уж подумал было..."'
+				BeckyVar['EddieTryToFuck']=1
+			end
+			gs 'ShowImage', 'eddie', 'portraits', 'surprised'
+		elseif BeckyVar['EddieTryToFuck']>=4 and BeckyVar['visitedhome']<7:
+			'"И как тебе ночка с мамкой?" подмигнули вы Эдди, делая рукой неприличный жест.<br>"Ух, классно, спасибо тебе Стефан, ты настоящий друг. Мамочка сказала, что теперь я каждый день могу ее трахать, и даже спать с ней иногда," сказал Эдди с блаженной улобкой на лице, <br>"Но и ты, конечно, всегда будешь желанным гостем в нашем доме," быстро поправился он.'
+		else
+			'"И как у тебя идут дела с твоей сисястой родительнецей?" цинично поинтересовались вы у Эдди.<br>"Благодаря тебе, Стефан, более чем хорошо," довольно ответил тот.'
+		end
+		Talked['Eddie']+=1	
+	}
+	gs 'Menu.AddCondition','MenuEddieTalk', "Result=IIF(Friends['Eddie']>=3 and BeckyVar['HomeSex']>0 and EddieVar['SawMomSex']>0 and EddieVar['SawWithGeorgett']>0 and BeckyVar['EddieTryToFuck']<>1 and Talked['Eddie']<2,-1,0)"
+	
+	
+	
+	
+	GS 'Menu.Add','MenuEddieTalk','Спросить о синяке',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		'<br>"Слышь, а где это тебя отоварили?" спросили вы Эдди.<br>"Да этого, того в общем не с теми связался."<br>"С кем это, не с теми?" решили уточнить вы.<br>"Ну не с теми значит не с теми. Мое дело. И вообще, мамка не велела говорить," отбрехался ваш знакомый.'
+		BeckyVar['SherwoodSuspect']+=1
+		EddieVar['FingalTalk']=1
+		Talked['Eddie']+=1	
+	}
+	gs 'Menu.AddCondition','MenuEddieTalk', "Result=IIF(Friends['Eddie']>=3 and Talked['Eddie']<2 and BeckyVar['EddieRobbedDay']>0 and BeckyVar['EddieRobbedDay']+12>=dayspassed and EddieVar['FingalTalk']=0,-1,0)"
+	
+	GS 'Menu.Add','MenuEddieTalk','А все таки расскажи, кто это тебе так вмазал?',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		if BeckyVar['visitedhome']>=7 and Friends['Eddie']>=9:
+			'<br>"Знаешь, ты мне удружил, и мою мамку мы с тобой классно оттрахали. Врядли бы она мне дала, если бы не ты. Так что скажу, хоть она и не велела. Только ты меня не запали, хорошо? В общем меня уроды эти, из Шервудского леса, отмудохали. Обычно нормально можно было проехать, дашь им пару десятков монет и едешь себе. А надысь еду - только их встретил так мне сразу в табло засветили. Хоть бы объяснили, за что. Деньги отобрали, лошадь забрали. Вот пидорасы!"<br>После такого заявления, вы удивленно посмотрели на Эдди, вроде как его походка не поменялась.<br>Заметив ваш взгляд, Эдди быстро поправился: "Я имел ввиду в плохом смысле."'
+			BeckyVar['SherwoodSuspect']+=10
+			EddieVar['FingalTalk']=2
+			BeckyVar['KnowSherwood']=1
+		else
+			'"Я тебе уже все что хотел сказал. Мало того, что огреб, так еще ты тут с распросами дурацкими. Кто ты такой, что мне вопросы задавать?" отбрил вас Эдди.'
+			if Friends['Eddie']>=5: Friends['Eddie']-=Rand(0,1)
+		end
+		Talked['Eddie']+=1	
+	}
+	gs 'Menu.AddCondition','MenuEddieTalk', "Result=IIF(Friends['Eddie']>=7 and Talked['Eddie']<2 and BeckyVar['EddieRobbedDay']>0 and BeckyVar['EddieRobbedDay']+12>=dayspassed and EddieVar['FingalTalk']=1,-1,0)"
+	
+	GS 'Menu.Add','MenuEddieTalk','А куда это ты ездил?',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		'<br>"По делам. Я и так уже слишком много тебе рассказал."'
+		EddieVar['FingalTalkDestination']=1
+		Talked['Eddie']+=1	
+	}
+	gs 'Menu.AddCondition','MenuEddieTalk', "Result=IIF(Friends['Eddie']>=7 and Talked['Eddie']<2 and BeckyVar['EddieRobbedDay']>0 and BeckyVar['EddieRobbedDay']+12>=dayspassed and EddieVar['FingalTalk']=2 and EddieVar['FingalTalkDestination']=0,-1,0)"
+	
+	GS 'Menu.Add','MenuEddieTalk','Страже жаловался?',''
+	GS 'Menu.AddModule','MenuEddieTalk',{
+		'<br>"Ну ты шутник," развеселился Эдди. "Я чего, дурак? Денег они слупят, типа за хлопоты, но вряд ли будут связываться. Тем более, что сам Циммерман раньше трепался, что мол ентот лес ничейный, и никого они там ловить не обязанны."'
+		EddieVar['FingalTalkComplain']=1
+		Talked['Eddie']+=1	
+	}
+	gs 'Menu.AddCondition','MenuEddieTalk', "Result=IIF(Friends['Eddie']>=7 and Talked['Eddie']<2 and BeckyVar['EddieRobbedDay']>0 and BeckyVar['EddieRobbedDay']+12>=dayspassed and EddieVar['FingalTalk']=2 and EddieVar['FingalTalkComplain']=0,-1,0)"
+	
+
+------------ Конец локации: IntEddieTalk ------------

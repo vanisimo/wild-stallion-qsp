@@ -1,0 +1,190 @@
+! ================================================
+! FILE: modules/events/becky/inga_dance.qsps
+! MODULE: events/becky
+! Танцы с Ингой: знакомство → приглашение → комната
+! ================================================
+
+#IngaDanceMeetCanStart
+    IngaDanceMeetCanStart = 0
+
+    if IngaDanceUnlocked = 1:
+        exit
+    end
+
+    if IngaFridayMet = 1:
+        exit
+    end
+
+    if IngaPlayerRouteOpen = 0:
+        if BeckyHomeSex = 0:
+            exit
+        end
+    end
+
+    IngaDanceMeetCanStart = 1
+---
+
+#IngaDanceMeet
+    *clr
+    clr
+    cla
+
+    IngaFridayMet = 1
+
+    gs 'EnsureGirlData', 'inga'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИНГА НА ТАНЦАХ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if IngaPlayerRouteOpen = 1:
+        if LOC('IngaDanceMeetAfterGuardText') = 1:
+            gs 'IngaDanceMeetAfterGuardText'
+        end
+    else:
+        if LOC('IngaDanceMeetMainText') = 1:
+            gs 'IngaDanceMeetMainText'
+        end
+    end
+
+    *pl ' '
+
+    if IngaPlayerRouteOpen = 0:
+        *p 'Вы злитесь на себя: «Надо разобраться со стражником» — мысль не даёт покоя.'
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+#IngaDance
+    *clr
+    clr
+    cla
+
+    if IngaDanceDay <> day:
+        IngaDanceStage = 0
+        IngaDanceEnded = 0
+        IngaDanceKiss = 0
+        IngaDanceWaist = 0
+        IngaDanceDay = day
+        $IngaDanceLastText = ''
+    end
+
+    gs 'EnsureGirlData', 'inga'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЕЦ С ИНГОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('IngaDanceMainText') = 1:
+        gs 'IngaDanceMainText'
+    elseif $IngaDanceLastText <> '':
+        *p $IngaDanceLastText
+    end
+
+    *pl ' '
+
+    if IngaDanceEnded = 1:
+        *p 'Танец с Ингой на сегодня закончен.'
+        act 'Вернуться к танцам': gt 'MarketDance'
+        exit
+    end
+
+    gs 'IngaDanceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''IngaDanceMenu''">делать</a>?'
+---
+
+#IngaDanceBuildMenu
+    gs 'Menu.Destroy', 'IngaDanceMenu'
+    gs 'Menu.Create', 'IngaDanceMenu'
+
+    if IngaDanceStage = 0:
+        gs 'Menu.Add', 'IngaDanceMenu', 'Танец', ''
+        gs 'Menu.AddModule', 'IngaDanceMenu', {
+            gt 'IngaDanceAction', 'dance'
+        }
+    else:
+        gs 'Menu.Add', 'IngaDanceMenu', 'Танец', ''
+        gs 'Menu.AddModule', 'IngaDanceMenu', {
+            gt 'IngaDanceAction', 'continue'
+        }
+    end
+
+    if IngaDanceStage >= 1 and IngaDanceWaist = 0:
+        gs 'Menu.Add', 'IngaDanceMenu', 'Талия', ''
+        gs 'Menu.AddModule', 'IngaDanceMenu', {
+            gt 'IngaDanceAction', 'waist'
+        }
+    end
+
+    if IngaDanceWaist = 1 and IngaDanceKiss = 0:
+        gs 'Menu.Add', 'IngaDanceMenu', 'Поцелуй', ''
+        gs 'Menu.AddModule', 'IngaDanceMenu', {
+            gt 'IngaDanceAction', 'kiss'
+        }
+    end
+
+    if IngaDanceKiss = 1:
+        gs 'Menu.Add', 'IngaDanceMenu', 'Уйти с площади в комнату', ''
+        gs 'Menu.AddModule', 'IngaDanceMenu', {
+            gt 'IngaDanceAction', 'leave'
+        }
+    end
+
+    gs 'Menu.Add', 'IngaDanceMenu', 'Закончить танец', ''
+    gs 'Menu.AddModule', 'IngaDanceMenu', {
+        IngaDanceEnded = 1
+        gt 'MarketDance'
+    }
+---
+
+#IngaDanceAction
+    $IngaDanceAction = LCASE($ARGS[0])
+
+    if $IngaDanceAction = 'dance':
+        IngaDanceStage = 1
+        Friends['inga'] += 1
+    elseif $IngaDanceAction = 'continue':
+        Friends['inga'] += 1
+    elseif $IngaDanceAction = 'waist':
+        IngaDanceStage = 2
+        IngaDanceWaist = 1
+        otkroven['inga'] += 1
+    elseif $IngaDanceAction = 'kiss':
+        IngaDanceStage = 3
+        IngaDanceKiss = 1
+        KissCount['inga'] += 1
+        love['inga'] += 1
+        IngaPlayerPath += 1
+    elseif $IngaDanceAction = 'leave':
+        IngaDanceEnded = 1
+        IngaRoomUnlocked = 1
+        gs 'ClampGirlSocialStats', 'inga'
+
+        if LOC('IngaDanceActionText') = 1:
+            gs 'IngaDanceActionText', 'leave'
+        end
+
+        gt 'IngaRoom'
+    else:
+        IngaDanceStage += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'inga'
+
+    if $IngaDanceAction <> 'leave':
+        if LOC('IngaDanceActionText') = 1:
+            gs 'IngaDanceActionText', $IngaDanceAction
+        end
+
+        killvar '$IngaDanceAction'
+        gt 'IngaDance'
+    end
+
+    killvar '$IngaDanceAction'
+---

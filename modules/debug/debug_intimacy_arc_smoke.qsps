@@ -1,0 +1,91 @@
+! ================================================
+! FILE: modules/debug/debug_intimacy_arc_smoke.qsps
+! MODULE: debug
+! Smoke-test intimacy-арок акт 1 (PR-I16)
+! ================================================
+
+#DebugIntimacyArcSmokeTest
+    if debug = 0:
+        gt 'TavernMain'
+    end
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' INTIMACY SMOKE TEST (АКТ 1)'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    DebugIntimacySmokeFailCount = 0
+    DebugIntimacySmokePassCount = 0
+
+    gs 'DebugIntimacyArcSmokeCheck', 'AmandaHomeStep'
+    gs 'DebugIntimacyArcSmokeCheck', 'MelissaHomeStep'
+    gs 'DebugIntimacyArcSmokeCheck', 'SandraHomeStep'
+    gs 'DebugIntimacyArcSmokeCheck', 'BeckyHomeGuestArrival'
+    gs 'DebugIntimacyArcSmokeCheck', 'AmandaPathChoiceStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'MelissaMinstrelBackroomStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'IngaRomanceStep'
+    gs 'DebugIntimacyArcSmokeCheck', 'IngaLucasAnalSceneStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'ClarissaIntimStep'
+    gs 'DebugIntimacyArcSmokeCheck', 'ClarissaAnalSceneStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'SandraBeckyCrisisStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexAmandaMelissaStefanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexAmandaLegareStefanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexMelissaMinstrelStefanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexBeckyIngaStefanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexIngaLucasDpStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexSandraBeckyStefanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexClarissaLegareMmfStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexClarissaMelissaMmfStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'GroupSexClarissaAmandaLegareFfmStart'
+
+    gs 'DebugIntimacyArcSmokeCheck', 'AmandaMelissaThreesomeCanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'AmandaLegareMmfCanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'MelissaMinstrelThreesomeCanOffer'
+    gs 'DebugIntimacyArcSmokeCheck', 'BeckyIngaThreesomeCanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'IngaLucasAnalCanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'IngaLucasThreesomeDpCanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'SandraBeckyThreesomeCanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'ClarissaGroupMmfLegareCanStart'
+    gs 'DebugIntimacyArcSmokeCheck', 'CanCumToday'
+    gs 'DebugIntimacyArcSmokeCheck', 'RegisterPlayerCum'
+
+    *pl ' '
+    *pl '<b>Итог:</b> OK=' + STR(DebugIntimacySmokePassCount) + ', FAIL=' + STR(DebugIntimacySmokeFailCount)
+
+    if DebugIntimacySmokeFailCount = 0:
+        *pl '<font color="#008000">Все проверенные локации на месте.</font>'
+    else:
+        *pl '<font color="#c00000">Есть пропуски — проверьте сборку и qsp-project.json.</font>'
+    end
+
+    *pl ' '
+
+    act 'Intimacy debug-панель':
+        gs 'DebugIntimacyArcPanel'
+    end
+
+    act 'Вернуться в трактир':
+        gt 'TavernMain'
+    end
+
+    killvar 'DebugIntimacySmokeFailCount'
+    killvar 'DebugIntimacySmokePassCount'
+---
+
+#DebugIntimacyArcSmokeCheck
+    $DebugIntimacySmokeLoc = $ARGS[0]
+
+    if LOC($DebugIntimacySmokeLoc) = 1:
+        DebugIntimacySmokePassCount += 1
+        *pl '<font color="#008000">OK</font>  ' + $DebugIntimacySmokeLoc
+    else:
+        DebugIntimacySmokeFailCount += 1
+        *pl '<font color="#c00000">MISS</font> ' + $DebugIntimacySmokeLoc
+    end
+
+    killvar '$DebugIntimacySmokeLoc'
+---

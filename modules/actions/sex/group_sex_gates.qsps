@@ -1,0 +1,239 @@
+! ================================================
+! FILE: modules/actions/sex/group_sex_gates.qsps
+! MODULE: actions/sex
+! Гейты и последствия групповых сцен PR-I15
+! ================================================
+
+#AmandaMelissaThreesomeCanStart
+    AmandaMelissaThreesomeCanStart = 0
+
+    if AmandaMelissaThreesomeDone = 1:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    if AmandaHomeSex = 0 or MelissaHomeSex = 0:
+        exit
+    end
+
+    if Friends['amanda'] < 12 or Friends['melissa'] < 12:
+        exit
+    end
+
+    if love['amanda'] < 10 or love['melissa'] < 10:
+        exit
+    end
+
+    gs 'SexSceneEnsureIntimStage', 'amanda'
+    gs 'SexSceneEnsureIntimStage', 'melissa'
+
+    if IntimStage['amanda'] < 2 or IntimStage['melissa'] < 2:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    AmandaMelissaThreesomeCanStart = 1
+    AmandaMelissaThreesomeReady = 1
+---
+
+#AmandaMelissaThreesomeApplyAftermath
+    AmandaMelissaThreesomeDone = 1
+    AmandaMelissaThreesomeReady = 0
+
+    gs 'RegisterSex', 'amanda', 'lesbian', 0, 1
+    gs 'RegisterSex', 'melissa', 'lesbian', 0, 1
+    gs 'RegisterSex', 'amanda', 'group', 0, 1
+    gs 'RegisterSex', 'melissa', 'group', 0, 1
+
+    sluttiness['amanda'] += 2
+    sluttiness['melissa'] += 2
+    otkroven['amanda'] += 1
+    otkroven['melissa'] += 1
+    AmandaPlayerPath += 1
+    MelissaPlayerPath += 1
+    FamilyTension += 1
+
+    if FamilyCorruptionStage < 5:
+        FamilyCorruptionStage += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+    gs 'ClampGirlSocialStats', 'melissa'
+---
+
+#AmandaLegareMmfCanStart
+    AmandaLegareMmfCanStart = 0
+
+    if AmandaLegareMmfDone = 1:
+        exit
+    end
+
+    if LegareFirstConflictStage = 0:
+        exit
+    end
+
+    if LegareConflictStage > 5:
+        exit
+    end
+
+    if AmandaPathChoiceDone = 0:
+        exit
+    end
+
+    if AmandaProhibitGuys = 1:
+        exit
+    end
+
+    if AmandaHomeSex = 0 and AmandaLegareFirstSexDone = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    if sluttiness['amanda'] < 25:
+        exit
+    end
+
+    if time < 3 or time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    AmandaLegareMmfCanStart = 1
+---
+
+#AmandaLegareMmfApplyAftermath
+    AmandaLegareMmfDone = 1
+
+    gs 'RegisterSex', 'amanda', 'group', 0, 1
+
+    sluttiness['amanda'] += 2
+    AmandaNpcPath += 1
+    AmandaPlayerPath += 1
+    LegareAmandaInterest += 1
+    Friends['alber'] += 1
+    TavernScandal += 1
+
+    if FamilyCorruptionStage < 5:
+        FamilyCorruptionStage += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+---
+
+#MelissaMinstrelThreesomeApplyAftermath
+    MelissaMinstrelThreesomeDone = 1
+    MelissaMinstrelThreesomeReady = 0
+
+    gs 'RegisterSex', 'melissa', 'group', 0, 1
+
+    sluttiness['melissa'] += 2
+    MelissaNpcPath += 1
+    MelissaPlayerPath += 1
+    MelissaMusicianInterest += 2
+    TavernScandal += 2
+
+    if FamilyCorruptionStage < 5:
+        FamilyCorruptionStage += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+---
+
+#BeckyIngaThreesomeCanStart
+    BeckyIngaThreesomeCanStart = 0
+
+    if BeckyIngaThreesomeDone = 1:
+        exit
+    end
+
+    if BeckyCatchIngaLucasDone = 0:
+        exit
+    end
+
+    if BeckyHomeSex = 0 or IngaBackroomSex = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 2:
+        exit
+    end
+
+    if sluttiness['becky'] < 30 or sluttiness['inga'] < 25:
+        exit
+    end
+
+    if Friends['becky'] < 10 or Friends['inga'] < 10:
+        exit
+    end
+
+    if time < 3 or time >= 5:
+        exit
+    end
+
+    BeckyIngaThreesomeCanStart = 1
+    BeckyIngaThreesomeReady = 1
+---
+
+#BeckyIngaThreesomeApplyAftermath
+    BeckyIngaThreesomeDone = 1
+    BeckyIngaThreesomeReady = 0
+    BeckyCatchIngaLucasReady = 0
+
+    gs 'RegisterSex', 'becky', 'lesbian', 0, 1
+    gs 'RegisterSex', 'inga', 'lesbian', 0, 1
+    gs 'RegisterSex', 'becky', 'group', 0, 1
+    gs 'RegisterSex', 'inga', 'group', 0, 1
+
+    sluttiness['becky'] += 1
+    sluttiness['inga'] += 2
+    otkroven['becky'] += 1
+    otkroven['inga'] += 1
+    TavernScandal += 1
+
+    if FamilyCorruptionStage < 5:
+        FamilyCorruptionStage += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'becky'
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#IngaLucasDpApplyAftermath
+    if IngaLucasDpDone = 0:
+        IngaLucasDpDone = 1
+        sluttiness['inga'] += 2
+        IngaNpcPath += 1
+        IngaPlayerPath += 1
+        TavernScandal += 2
+    end
+
+    gs 'RegisterSex', 'inga', 'double_vaginal', 0, 1
+    gs 'RegisterSex', 'inga', 'group', 0, 1
+
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GroupSexGatesDebugReset
+    AmandaMelissaThreesomeDone = 0
+    AmandaMelissaThreesomeReady = 0
+    AmandaMelissaThreesomeCanStart = 0
+    AmandaLegareMmfDone = 0
+    AmandaLegareMmfCanStart = 0
+    MelissaMinstrelThreesomeDone = 0
+    BeckyIngaThreesomeDone = 0
+    BeckyIngaThreesomeReady = 0
+    BeckyIngaThreesomeCanStart = 0
+    IngaLucasDpDone = 0
+---

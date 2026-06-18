@@ -1,0 +1,319 @@
+! ================================================
+! FILE: modules/events/family/melissa_dance.qsps
+! MODULE: events/family
+! Пятничный танец с Мелиссой (player-path)
+! Цепочка: танец → талия → поцелуй → шея → подворотня (гейт дома — PR-I9)
+! ================================================
+
+#MelissaDance
+    *clr
+    clr
+    cla
+
+    $MelissaDanceGirl = 'melissa'
+
+    gs 'EnsureGirlData', $MelissaDanceGirl
+
+    if $RealName[$MelissaDanceGirl] = '':
+        $RealName[$MelissaDanceGirl] = 'Мелисса'
+    end
+
+    if MelissaDanceDay <> day:
+        gs 'MelissaDanceReset'
+    end
+
+    if MelissaDanceDressReady = 0:
+        gt 'FridayDanceSisterLimited', 'melissa'
+    end
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'melissa', 'dance', 'dance', 'normal'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЕЦ С МЕЛИССОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaDanceMainText') = 1:
+        gs 'MelissaDanceMainText'
+    else:
+        if $MelissaDanceLastText <> '':
+            *p $MelissaDanceLastText
+        elseif MelissaDanceStage = 0:
+            *p 'Мелисса стоит у края площади в новом платье. Она держится строже Аманды, но взгляд всё равно тянется к музыке.'
+        else:
+            *p 'Вы танцуете с Мелиссой на рыночной площади.'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MELISSA DANCE] Stage: ' + STR(MelissaDanceStage)
+        *pl '[DEBUG MELISSA DANCE] Waist: ' + STR(MelissaDanceWaist)
+        *pl '[DEBUG MELISSA DANCE] Kiss: ' + STR(MelissaDanceKiss)
+        *pl '[DEBUG MELISSA DANCE] Neck: ' + STR(MelissaDanceNeck)
+        *pl '[DEBUG MELISSA DANCE] Alley: ' + STR(MelissaDanceAlley)
+        *pl ' '
+    end
+
+    if MelissaDanceEnded = 1:
+        *p 'Танец с Мелиссой на сегодня уже закончен.'
+        *pl ' '
+
+        act 'Вернуться к танцам':
+            gt 'MarketDance'
+        end
+
+        exit
+    end
+
+    gs 'MelissaDanceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaDanceMenu''">делать</a>?'
+---
+
+#MelissaDanceReset
+    MelissaDanceDay = day
+    MelissaDanceStage = 0
+    MelissaDanceStep = 0
+    MelissaDanceEnded = 0
+    MelissaDanceWaist = 0
+    MelissaDanceKiss = 0
+    MelissaDanceNeck = 0
+    MelissaDanceAlley = 0
+    MelissaDancePublicRisk = 0
+    MelissaDanceMaxStep = 5
+    $MelissaDanceLastText = ''
+---
+
+#MelissaDanceBuildMenu
+    gs 'Menu.Destroy', 'MelissaDanceMenu'
+    gs 'Menu.Create', 'MelissaDanceMenu'
+
+    if MelissaDanceStage = 0:
+        gs 'Menu.Add', 'MelissaDanceMenu', 'Танец', ''
+        gs 'Menu.AddModule', 'MelissaDanceMenu', {
+            gt 'MelissaDanceAction', 'dance'
+        }
+    else:
+        gs 'Menu.Add', 'MelissaDanceMenu', 'Танец', ''
+        gs 'Menu.AddModule', 'MelissaDanceMenu', {
+            gt 'MelissaDanceAction', 'continue'
+        }
+    end
+
+    if MelissaDanceStage >= 1 and MelissaDanceWaist = 0 and Friends['melissa'] >= 6:
+        gs 'Menu.Add', 'MelissaDanceMenu', 'Талия', ''
+        gs 'Menu.AddModule', 'MelissaDanceMenu', {
+            gt 'MelissaDanceAction', 'waist'
+        }
+    end
+
+    if MelissaDanceWaist = 1 and MelissaDanceKiss = 0 and Friends['melissa'] >= 8:
+        gs 'Menu.Add', 'MelissaDanceMenu', 'Поцелуй', ''
+        gs 'Menu.AddModule', 'MelissaDanceMenu', {
+            gt 'MelissaDanceAction', 'kiss'
+        }
+    end
+
+    if MelissaDanceKiss = 1 and MelissaDanceNeck = 0:
+        gs 'Menu.Add', 'MelissaDanceMenu', 'Поцелуй в шею', ''
+        gs 'Menu.AddModule', 'MelissaDanceMenu', {
+            gt 'MelissaDanceAction', 'neck'
+        }
+    end
+
+    if MelissaDanceNeck = 1 and MelissaDanceAlley = 0:
+        gs 'Menu.Add', 'MelissaDanceMenu', 'Подворотня', ''
+        gs 'Menu.AddModule', 'MelissaDanceMenu', {
+            gt 'MelissaDanceAction', 'alley'
+        }
+    end
+
+    if MelissaDanceKiss = 1 and MelissaHomeUnlocked = 0 and LOC('MelissaDanceLeaveHome') = 1:
+        gs 'Menu.Add', 'MelissaDanceMenu', 'Уйти с Мелиссой в трактир', ''
+        gs 'Menu.AddModule', 'MelissaDanceMenu', {
+            gt 'MelissaDanceLeaveHome'
+        }
+    end
+
+    gs 'Menu.Add', 'MelissaDanceMenu', 'Закончить танец', ''
+    gs 'Menu.AddModule', 'MelissaDanceMenu', {
+        MelissaDanceEnded = 1
+        gt 'MarketDance'
+    }
+---
+
+#MelissaDanceAction
+    $MelissaDanceAction = LCASE($ARGS[0])
+    $MelissaDanceGirl = 'melissa'
+
+    gs 'EnsureGirlData', $MelissaDanceGirl
+
+    if $MelissaDanceAction = 'dance':
+        MelissaDanceStage = 1
+        MelissaDanceStep = 1
+        MelissaFridayDanceAttended = 1
+
+        Friends[$MelissaDanceGirl] += 1
+        MelissaControlNeed += 1
+
+    elseif $MelissaDanceAction = 'continue':
+        MelissaDanceStep += 1
+
+        if MelissaDanceStep > MelissaDanceMaxStep:
+            MelissaDanceStep = MelissaDanceMaxStep
+        end
+
+    elseif $MelissaDanceAction = 'waist':
+        MelissaDanceStage = 2
+        MelissaDanceStep = 2
+        MelissaDanceWaist = 1
+
+        Friends[$MelissaDanceGirl] += 1
+        otkroven[$MelissaDanceGirl] += 1
+        MelissaDancePublicRisk += 1
+
+    elseif $MelissaDanceAction = 'kiss':
+        MelissaDanceStage = 3
+        MelissaDanceStep = 3
+        MelissaDanceKiss = 1
+
+        love[$MelissaDanceGirl] += 1
+        otkroven[$MelissaDanceGirl] += 1
+        MelissaPlayerPath += 1
+        MelissaDancePublicRisk += 1
+        MelissaJealousy += 1
+
+    elseif $MelissaDanceAction = 'neck':
+        MelissaDanceStage = 4
+        MelissaDanceStep = 4
+        MelissaDanceNeck = 1
+
+        love[$MelissaDanceGirl] += 1
+        otkroven[$MelissaDanceGirl] += 1
+        sluttiness[$MelissaDanceGirl] += 1
+        MelissaDancePublicRisk += 2
+        MelissaFamilyConcern += 1
+
+    elseif $MelissaDanceAction = 'alley':
+        MelissaDanceStage = 5
+        MelissaDanceStep = 5
+        MelissaDanceAlley = 1
+        MelissaDanceEnded = 1
+        MelissaPlayerPath += 1
+
+        gs 'ClampGirlSocialStats', $MelissaDanceGirl
+
+        if MelissaHomeSex = 1 and LOC('MelissaDanceAlleyEvent') = 1:
+            gt 'MelissaDanceAlleyEvent'
+        else:
+            gt 'MelissaDanceAlleyIntro'
+        end
+
+    else:
+        MelissaDanceStep += 1
+    end
+
+    gs 'ClampGirlSocialStats', $MelissaDanceGirl
+
+    if LOC('MelissaDanceActionText') = 1:
+        gs 'MelissaDanceActionText', $MelissaDanceAction
+    end
+
+    killvar '$MelissaDanceAction'
+
+    gt 'MelissaDance'
+---
+
+#MelissaDanceAlleyIntro
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaDanceAlleyIntroText') = 1:
+        gs 'MelissaDanceAlleyIntroText'
+    else:
+        *p 'Мелисса останавливается у входа в тёмный проход и качает головой.'
+        *p '«Здесь — нет. Сначала дома, Стефан. Я не Аманда», — шепчет она.'
+    end
+
+    *pl ' '
+
+    if MelissaHomeSex = 1 and LOC('MelissaDanceAlleyEvent') = 1:
+        act 'Продолжить в подворотне':
+            gt 'MelissaDanceAlleyEvent'
+        end
+    end
+
+    act 'Вернуться на площадь':
+        gt 'MarketDance'
+    end
+---
+
+#IrmaBuyMelissaDanceDress
+    if MelissaDanceDressReady = 1:
+        *p 'Платье для танцев Мелиссы уже готово.'
+        act 'Вернуться': gt 'IrmaShop'
+        exit
+    end
+
+    if Friends['melissa'] <= 8:
+        *p 'Ирма советует сначала поговорить с Мелиссой о платье — сестра должна сама захотеть наряд для площади.'
+        act 'Вернуться': gt 'IrmaShop'
+        exit
+    end
+
+    gs 'IrmaMelissaDanceDressBuyText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЛАТЬЕ ДЛЯ ТАНЦЕВ — МЕЛИССА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IrmaDressText
+    *pl ' '
+
+    act 'Купить (70 мараведи)':
+        if money >= 70:
+            money -= 70
+            MelissaDanceDressReady = 1
+            MelissaDanceDressPlayerBought = 1
+            gs 'IrmaMelissaDanceDressBoughtText'
+            *p $IrmaDressText
+            Friends['melissa'] += 2
+            Friends['irma'] += 1
+            act 'Вернуться в лавку': gt 'IrmaShop'
+        else:
+            *p 'У вас недостаточно денег.'
+            act 'Вернуться': gt 'IrmaBuyMelissaDanceDress'
+        end
+    end
+
+    act 'Отказаться':
+        gt 'IrmaShop'
+    end
+---
+
+#MelissaDanceDebugReset
+    MelissaDanceDay = 0
+    MelissaDanceStage = 0
+    MelissaDanceStep = 0
+    MelissaDanceEnded = 0
+    MelissaDanceWaist = 0
+    MelissaDanceKiss = 0
+    MelissaDanceNeck = 0
+    MelissaDanceAlley = 0
+    MelissaDancePublicRisk = 0
+    $MelissaDanceLastText = ''
+---

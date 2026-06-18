@@ -1,18 +1,20 @@
 ! ================================================
-! MODULE: events/amanda_events.qsps
+! FILE: modules/events/amanda/amanda_events.qsps
+! MODULE: events/amanda
 ! Специальные события и ивенты для Аманды
 ! ================================================
 
 #CheckAmandaEvents
-    ! Вызывается из HallHarassment, TalkWithAmanda, StartIntimMenu и т.д.
-    ! $CurrentGirl должен быть 'amanda' или проверяется внутри
+    if $CurrentGirl <> 'amanda':
+        exit
+    end
 
-    if $CurrentGirl <> 'amanda': exit 
-
+    if LOC('AmandaNeighborBoysTryStart') = 1:
+        gs 'AmandaNeighborBoysTryStart'
+    end
 
     tmp = Rand(1, 100)
 
-    ! ====================== СОБЫТИЕ 1: Аманда и Лиза ======================
     if tmp <= 25 and AmandaVar['lizafriends'] >= 1 and otkroven['amanda'] >= 20 and AmandaVar['liza_event_shown'] = 0:
         AmandaVar['liza_event_shown'] = 1
         *pl '=== ОСОБОЕ СОБЫТИЕ ==='
@@ -25,7 +27,6 @@
         act 'Продолжить': exit
     end
 
-    ! ====================== СОБЫТИЕ 2: Аманда начинает проявлять инициативу ======================
     if tmp <= 40 and otkroven['amanda'] >= 30 and sluttiness['amanda'] >= 25 and AmandaVar['amanda_initiative'] = 0:
         AmandaVar['amanda_initiative'] = 1
         *pl '=== ОСОБОЕ СОБЫТИЕ ==='
@@ -38,7 +39,6 @@
         act 'Продолжить': exit
     end
 
-    ! ====================== СОБЫТИЕ 3: Сильное приставание в зале ======================
     if tmp <= 55 and (jobwaitress['amanda'] = 1 or jobwhore['amanda'] = 1) and sluttiness['amanda'] < 40:
         *pl '=== ОСОБОЕ СОБЫТИЕ ==='
         *p 'Пьяный посетитель слишком нагло прижал Аманду к стене и пытается засунуть руку ей под юбку.'
@@ -55,7 +55,6 @@
         end
     end
 
-    ! ====================== СОБЫТИЕ 4: Аманда делится секретом ======================
     if tmp <= 70 and otkroven['amanda'] >= 35 and AmandaVar['secret_shared'] = 0:
         AmandaVar['secret_shared'] = 1
         *pl '=== ОСОБОЕ СОБЫТИЕ ==='
@@ -68,7 +67,6 @@
         act 'Продолжить': exit
     end
 
-    ! ====================== СОБЫТИЕ 5: Аманда начинает флиртовать сама ======================
     if tmp <= 85 and otkroven['amanda'] >= 40 and sluttiness['amanda'] >= 35:
         *pl '=== ОСОБОЕ СОБЫТИЕ ==='
         *p 'Аманда сама подходит к тебе ближе, чем обычно, и тихо говорит:'
@@ -79,8 +77,213 @@
         act 'Продолжить': exit
     end
 
-
     exit
 ---
 
+#AmandaNeighborBoysCanStart
+    AmandaNeighborBoysCanStart = 0
 
+    if AmandaLegareFirstSexDone = 0:
+        exit
+    end
+
+    if AmandaNeighborBoysStage >= 3:
+        exit
+    end
+
+    if AmandaProhibitGuys = 1:
+        exit
+    end
+
+    if AmandaNeighborBoysToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if sluttiness['amanda'] < 15 and AmandaNpcPath < 12:
+        exit
+    end
+
+    AmandaNeighborBoysCanStart = 1
+---
+
+#AmandaNeighborBoysTryStart
+    AmandaNeighborBoysStarted = 0
+
+    if LOC('AmandaNeighborBoysCanStart') = 1:
+        gs 'AmandaNeighborBoysCanStart'
+
+        if AmandaNeighborBoysCanStart = 1:
+            NeighborBoysRoll = RAND(1, 100)
+
+            if NeighborBoysRoll <= 28:
+                AmandaNeighborBoysStarted = 1
+                gt 'AmandaNeighborBoysEvent'
+            end
+
+            killvar 'NeighborBoysRoll'
+        end
+    end
+---
+
+#AmandaNeighborBoysEvent
+    *clr
+    clr
+    cla
+
+    $CurrentGirl = 'amanda'
+    AmandaNeighborBoysToday = 1
+    AmandaNeighborBoysStage += 1
+
+    gs 'EnsureGirlData', 'amanda'
+
+    NeighborBoyRoll = RAND(1, 3)
+
+    if NeighborBoyRoll = 1:
+        $AmandaNeighborBoyName = 'Ханс'
+    elseif NeighborBoyRoll = 2:
+        $AmandaNeighborBoyName = 'Курт'
+    else:
+        $AmandaNeighborBoyName = 'Феликс'
+    end
+
+    killvar 'NeighborBoyRoll'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СОСЕДСКИЕ ПАРНИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaNeighborBoysEventText') = 1:
+        gs 'AmandaNeighborBoysEventText', AmandaNeighborBoysStage
+    else:
+        *p 'Вы натыкаетесь на Аманду у заднего прохода трактира. Рядом — ' + $AmandaNeighborBoyName + ', соседский парень, слишком близко стоящий к ней.'
+        *p 'Она явно не ожидала, что вас увидят.'
+    end
+
+    *pl ' '
+
+    gs 'AmandaNeighborBoysBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaNeighborBoysMenu''">делать</a>?'
+---
+
+#AmandaNeighborBoysBuildMenu
+    gs 'Menu.Destroy', 'AmandaNeighborBoysMenu'
+    gs 'Menu.Create', 'AmandaNeighborBoysMenu'
+
+    gs 'Menu.Add', 'AmandaNeighborBoysMenu', 'Прогнать парня', ''
+    gs 'Menu.AddModule', 'AmandaNeighborBoysMenu', {
+        gt 'AmandaNeighborBoysAction', 'send_away'
+    }
+
+    gs 'Menu.Add', 'AmandaNeighborBoysMenu', 'Спросить Аманду прямо', ''
+    gs 'Menu.AddModule', 'AmandaNeighborBoysMenu', {
+        gt 'AmandaNeighborBoysAction', 'ask'
+    }
+
+    if AmandaWatchNpcPath = 1 or FamilyCorruptionStage >= 2:
+        gs 'Menu.Add', 'AmandaNeighborBoysMenu', 'Наблюдать издалека', ''
+        gs 'Menu.AddModule', 'AmandaNeighborBoysMenu', {
+            gt 'AmandaNeighborBoysAction', 'watch'
+        }
+    end
+
+    if FamilyCorruptionStage >= 3 and sluttiness['amanda'] >= 30:
+        gs 'Menu.Add', 'AmandaNeighborBoysMenu', 'Присоединиться', ''
+        gs 'Menu.AddModule', 'AmandaNeighborBoysMenu', {
+            gt 'AmandaNeighborBoysAction', 'join'
+        }
+    end
+
+    gs 'Menu.Add', 'AmandaNeighborBoysMenu', 'Сделать вид, что не заметили', ''
+    gs 'Menu.AddModule', 'AmandaNeighborBoysMenu', {
+        gt 'AmandaNeighborBoysAction', 'ignore'
+    }
+---
+
+#AmandaNeighborBoysAction
+    *clr
+    clr
+    cla
+
+    $NeighborBoysChoice = LCASE($ARGS[0])
+
+    if $NeighborBoysChoice = 'send_away':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaPlayerPath += 1
+        AmandaRebellion += 1
+        TavernScandal += 1
+
+    elseif $NeighborBoysChoice = 'ask':
+        AmandaTrustStefan += 1
+        AmandaSecretiveness += 1
+        AmandaNpcPath += 1
+
+    elseif $NeighborBoysChoice = 'watch':
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 2
+        AmandaSecretiveness += 1
+        TavernScandal += 1
+        AmandaScandalLevel += 1
+
+    elseif $NeighborBoysChoice = 'join':
+        AmandaNpcPath += 3
+        sluttiness['amanda'] += 2
+        otkroven['amanda'] += 2
+        TavernScandal += 2
+        AmandaScandalLevel += 2
+        FamilyCorruptionStage += 1
+
+        if FamilyCorruptionStage > 5:
+            FamilyCorruptionStage = 5
+        end
+
+    elseif $NeighborBoysChoice = 'ignore':
+        AmandaNpcPath += 2
+        AmandaSecretiveness += 2
+        AmandaRebellion += 1
+        MelissaFamilyConcern += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ВСТРЕЧИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaNeighborBoysActionText') = 1:
+        gs 'AmandaNeighborBoysActionText', $NeighborBoysChoice
+    else:
+        *p 'Соседский парень исчезает в переулке. Аманда остаётся рядом — слишком тихая.'
+    end
+
+    *pl ' '
+
+    if AmandaPathChoiceDone = 0 and AmandaNeighborBoysStage >= 1:
+        AmandaPathChoiceReady = 1
+
+        if LOC('AmandaPathChoiceTryAutoStart') = 1:
+            gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
+        end
+    end
+
+    act 'Вернуться':
+        gt 'TavernMain'
+    end
+
+    killvar '$NeighborBoysChoice'
+---
+
+#AmandaNeighborBoysDebugReset
+    AmandaNeighborBoysStage = 0
+    AmandaNeighborBoysToday = 0
+    AmandaNeighborBoysCanStart = 0
+    AmandaNeighborBoysStarted = 0
+    $AmandaNeighborBoyName = ''
+---

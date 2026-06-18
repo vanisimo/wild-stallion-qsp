@@ -1,0 +1,119 @@
+Название локации: AmandaLegareDanceSequence
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	!Создаем танцы для Аманды
+	DanceCreated=0
+	AmandaVar['EscapeUnnoticed']=0
+	if week=5:
+		!gs 'Table.Destroy', 'GirlDance'
+		gs 'Table.DeleteLines', 'GirlDance'
+	!Если запретили, дружба с ним медленно падает, если она высока, то может не послушаться вас. За один танец шанс поднять дружбу 0.5
+		if AmandaVar['alberprohibit']=1: AmandaVar['alberfriends']=Max(0,AmandaVar['alberfriends']-1)
+		if AmandaVar['alberprohibit']=1 and AmandaVar['alberfriends']>=12:
+			DanceCreated=Rand(1,2)
+		elseif AmandaVar['alberprohibit']=1 and AmandaVar['alberfriends']>=8:	
+			DanceCreated=1
+		elseif AmandaVar['alberprohibit']=1 and AmandaVar['alberfriends']>=4:
+			if Rand(1,2)=1:DanceCreated=1
+		elseif AmandaVar['alberprohibit']=1: 
+			if Rand(1,4)=1:DanceCreated=1
+		elseif AmandaVar['alberfriends']>=8: 
+			DanceCreated=Rand(2,4)
+		else
+			DanceCreated=Rand(1,3)
+		end
+		
+		AmandaVar['LegareGo']=0
+		$GoPhrase=''
+		if (AmandaVar['alberfriends']>=11 and sluttiness['amanda']>=16) or (AmandaVar['alberfriends']>=5 and sluttiness['amanda']>=30) or (sluttiness['amanda']>=50): 
+			AmandaVar['LegareGo']=1
+			if sluttiness['amanda']<20:
+				$GoPhrase='Тут месье Легаре что-то шепнул на ушко вашей сестре. Она замялась, и, потупив глаза, покачала головой. Альбер пожал плечами и снова закружился с ней в танце.'
+				AmandaVar['LegareGo']=2
+			elseif sluttiness['amanda']<35:
+				$GoPhrase='Тут месье Легаре что-то шепнул на ушко вашей сестре. Она замялась, но, после небольшого раздумья, кивнула. Альбер взял Аманду под ручку и они поспешили прочь с площади.'
+			else
+				if Rand(1,2)=1:
+					$GoPhrase='Тут месье Легаре что-то шепнул на ушко вашей сестре. Даже не дослушав его, она обрадованно кивнула, поцеловала месье в губы и потянула прочь с площади. Тот последовал за ней.'
+				else
+					$GoPhrase='Тут Аманда вдруг засмеялась, сказала что-то Альберу и потянула его за руку прочь. Тот несколько смутился от напора вашей сестренки, но обрадованно последовал за ней.'
+				end
+			end	
+		end	
+	
+		i=0
+		j=0
+		:loopCreateAmandaDance
+			if Rand(1,Max(1,5-i))<=DanceCreated-j:
+			!'i='+i
+				j+=1
+				if AmandaVar['LegareGo']>0 and ((j>DanceCreated-1 and Rand(1,2)=1) or j=DanceCreated):
+					gs 'Table.NewLine', 'GirlDance','amanda','legare', i+1,AmandaVar['LegareGo'],$GoPhrase	
+					AmandaVar['LegareGo']=0		
+					!No more dances after they left
+					j=DanceCreated 
+				else
+					gs 'Table.NewLine', 'GirlDance','amanda','legare', i+1, 0,''
+				end
+			end
+			i+=1
+		if i<5: jump 'loopCreateAmandaDance'
+	end
+	
+	$LegareAmandaLetGoCode={
+		if args[0]=1:
+			tmpLegareSexType=args[1]
+		else
+			tmpLegareSexType=dyneval($AmandaLegareSetSexType)
+			if tmpLegareSexType=2 and Rand(1,6)<=5:tmpLegareSexType=1
+		end
+		if tmpLegareSexType<=1:
+			AmandaVar['sucklegare']=1
+			AmandaVar['alberfriends']+=1
+			gs 'SlutFriendsIncrease', 'amanda', 0, 0, 0, 40, 1, 1
+			gs 'PregnancyCheck', 'amanda', 'mouth', 1, 'legare'
+		elseif tmpLegareSexType=2:
+			AmandaVar['fucklegare']=1
+			virginity['amanda']=0
+			AmandaVar['deflowerlegare']=1
+			AmandaVar['alberfriends']+=2
+			gs 'SlutFriendsIncrease', 'amanda', 0, 0, 0, 50, 1, 4
+			If Rand(1,3)<=2:
+				AmandaVar['alberfriends']+=1
+				gs 'PregnancyCheck', 'amanda', 'inside', 1, 'legare'
+			else
+				AmandaVar['alberfriends']+=2
+				gs 'PregnancyCheck', 'amanda', 'outside', 1, 'legare'		
+			end	
+		else
+			AmandaVar['fucklegare']=1
+			gs 'SlutFriendsIncrease', 'amanda', 0, 0, 0, 50, 1, 2
+			If Rand(1,3)<=2:
+				AmandaVar['alberfriends']+=1
+				gs 'PregnancyCheck', 'amanda', 'inside', 1, 'legare'
+			else
+				AmandaVar['alberfriends']+=2
+				gs 'PregnancyCheck', 'amanda', 'outside', 1, 'legare'		
+			end	
+		end
+	}
+	$LegareAmandaGoCode={
+		cls
+		AmandaVar['leftdances']=1
+		act 'Проследить за ними':
+			gt 'AfterDanceSexLegare'
+		end
+		act 'Продолжить танцевать':
+			gt 'FridayDance', 'Решив не вмешиваться в личную жизнь вашей сестры вы проводили парочку взглядом и остались танцевать.'
+			dynamic $LegareAmandaLetGoCode
+		end
+		
+		act 'Остановить их и отправить Аманду домой':
+			gs 'AfterDanceLegare', 'Prohibit'
+		end
+	}
+	
+	!gs 'Table.Show', 'GirlDance'
+
+------------ Конец локации: AmandaLegareDanceSequence ------------

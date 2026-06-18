@@ -58,6 +58,11 @@
         *pl '[DEBUG WINE SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time)
         *pl ' '
     end
+
+    if LOC('ClarissaIntimUnlockTry') = 1:
+        gs 'ClarissaIntimUnlockTry'
+    end
+
     ! =====================================================================
 
     *pl '══════════════════════════════════════════════'
@@ -101,6 +106,10 @@
                 money -= 510
                 winenum += 60
                 *p 'Ты купил средний бочёнок вина (60 единиц).'
+
+                if $CurrentSeller = 'clarissa' and LOC('ClarissaWineBulkPurchase') = 1:
+                    gs 'ClarissaWineBulkPurchase', 60
+                end
             else:
                 *p 'У тебя недостаточно денег.'
             end
@@ -132,6 +141,10 @@
                 if $CurrentSeller = 'clarissa':
                     *p 'Кларисса радостно улыбается: "Ого! Большой заказ!"'
                     Friends['clarissa'] += 5
+
+                    if LOC('ClarissaWineBulkPurchase') = 1:
+                        gs 'ClarissaWineBulkPurchase', 200
+                    end
                 else:
                     *p 'Мессир Легаре довольно кивает: "Хороший заказ."'
                     Friends['alber'] += 4
@@ -193,6 +206,88 @@
             gt 'TalkWithClarissa'
         else:
             gt 'TalkWithAlber'
+        end
+    end
+
+    if $CurrentSeller = 'clarissa' and ClarissaIntimUnlocked = 1 and LOC('ClarissaIntimStep') = 1:
+        gs 'ClarissaIntimCanAdvance'
+
+        if ClarissaIntimCanAdvance = 1 and ClarissaIntimStage < 3:
+            act 'Провести время с Клариссой в подсобке':
+                gt 'ClarissaIntimStep'
+            end
+        end
+
+        if ClarissaIntimStage >= 3 and ClarissaIntimSex = 0 and ClarissaIntimStepToday = 0:
+            act 'Продолжить близость с Клариссой':
+                gt 'ClarissaIntimFirstSexLaunch'
+            end
+        end
+
+        if ClarissaIntimSex = 1 and LOC('SexSceneStart') = 1 and ClarissaIntimStepToday = 0:
+            act 'Встретиться с Клариссой снова':
+                gt 'SexSceneStart', 'clarissa', 'ClarissaIntimAfterSex', 'clarissa_repeat'
+            end
+        end
+    end
+
+    if LOC('ClarissaAnalCanStart') = 1:
+        gs 'ClarissaAnalCanStart'
+
+        if ClarissaAnalCanStart = 1:
+            act 'Предложить Клариссе особую близость':
+                gt 'ClarissaAnalSceneStart'
+            end
+        end
+    end
+
+    if LOC('ClarissaLegareReconcileCanStart') = 1:
+        gs 'ClarissaLegareReconcileCanStart'
+
+        if ClarissaLegareReconcileCanStart = 1:
+            act 'Поговорить о примирении с Альбером':
+                gt 'ClarissaLegareReconcileStart'
+            end
+        end
+    end
+
+    if LOC('ClarissaGroupMmfLegareCanStart') = 1:
+        gs 'ClarissaGroupMmfLegareCanStart'
+
+        if ClarissaGroupMmfLegareCanStart = 1:
+            act 'Встреча втроём с Клариссой и Альбером':
+                gt 'GroupSexClarissaLegareMmfStart'
+            end
+        end
+    end
+
+    if LOC('ClarissaGroupMmfMelissaCanStart') = 1:
+        gs 'ClarissaGroupMmfMelissaCanStart'
+
+        if ClarissaGroupMmfMelissaCanStart = 1:
+            act 'Встреча с Клариссой и Мелиссой':
+                gt 'GroupSexClarissaMelissaMmfStart'
+            end
+        end
+    end
+
+    if LOC('ClarissaGroupFfmAmandaCanStart') = 1:
+        gs 'ClarissaGroupFfmAmandaCanStart'
+
+        if ClarissaGroupFfmAmandaCanStart = 1:
+            act 'Вечер с Клариссой, Амандой и Альбером':
+                gt 'GroupSexClarissaAmandaLegareFfmStart'
+            end
+        end
+    end
+
+    if LOC('AmandaLegareMmfCanStart') = 1:
+        gs 'AmandaLegareMmfCanStart'
+
+        if AmandaLegareMmfCanStart = 1:
+            act 'Встреча в подсобке — Аманда и Альбер':
+                gt 'GroupSexAmandaLegareStefanStart'
+            end
         end
     end
 

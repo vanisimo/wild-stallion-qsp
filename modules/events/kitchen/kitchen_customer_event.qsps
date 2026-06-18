@@ -313,6 +313,29 @@
 #KitchenCustomerPickScene
     $KitchenCustomerScene = 'bad_food'
 
+    if $KitchenCustomerGirl = 'sandra' and KitchenCustomerStage >= 1:
+        KitchenCustomerSatisfiedRoll = RAND(1, 100)
+        KitchenCustomerSatisfiedChance = 8 + KitchenCustomerStage * 4
+
+        if SandraNpcPath >= 15:
+            KitchenCustomerSatisfiedChance += 6
+        end
+
+        if KitchenCustomerSatisfiedChance > 35:
+            KitchenCustomerSatisfiedChance = 35
+        end
+
+        if KitchenCustomerSatisfiedRoll <= KitchenCustomerSatisfiedChance:
+            $KitchenCustomerScene = 'satisfied_slap'
+            killvar 'KitchenCustomerSatisfiedRoll'
+            killvar 'KitchenCustomerSatisfiedChance'
+            exit
+        end
+
+        killvar 'KitchenCustomerSatisfiedRoll'
+        killvar 'KitchenCustomerSatisfiedChance'
+    end
+
     KitchenCustomerSceneRoll = RAND(1, 100)
 
     if KitchenCustomerStage <= 1:
@@ -676,7 +699,9 @@
         GirlSecretiveness[$KitchenCustomerGirl] -= 1
         GirlTrustStefan[$KitchenCustomerGirl] += 1
 
-        if $KitchenCustomerScene = 'bad_food' or $KitchenCustomerScene = 'wrong_order':
+        if $KitchenCustomerScene = 'satisfied_slap':
+            GirlTrustStefan[$KitchenCustomerGirl] += 1
+        elseif $KitchenCustomerScene = 'bad_food' or $KitchenCustomerScene = 'wrong_order':
             money -= 5
         end
 
@@ -685,7 +710,12 @@
         GirlPublicAttention[$KitchenCustomerGirl] += 1
         GirlNpcPath[$KitchenCustomerGirl] += 1
 
-        if KitchenCustomerStage >= 2:
+        if $KitchenCustomerScene = 'satisfied_slap':
+            money += 8
+            TavernScandal += 1
+            GirlPublicAttention[$KitchenCustomerGirl] += 1
+            sluttiness[$KitchenCustomerGirl] += 1
+        elseif KitchenCustomerStage >= 2:
             money += 10
             TavernScandal += 1
         else:

@@ -1,0 +1,310 @@
+! ================================================
+! FILE: modules/events/family/sandra_becky_reconcile.qsps
+! MODULE: events/family
+! Воскресный скандал → кризис → ЖЖМ Сандра + Бекки + ГГ
+! ================================================
+
+#SandraBeckySundayScandalCanHear
+    SandraBeckySundayScandalCanHear = 0
+
+    if SandraBeckySundayScandalHeard = 1:
+        exit
+    end
+
+    if BeckyEddieDone = 0:
+        exit
+    end
+
+    if BeckyHomeSex = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 2:
+        exit
+    end
+
+    if sluttiness['becky'] < 35:
+        exit
+    end
+
+    if SandraBeckyBond < 12:
+        exit
+    end
+
+    SandraBeckySundayScandalCanHear = 1
+---
+
+#SandraBeckyCrisisCanTalk
+    SandraBeckyCrisisCanTalk = 0
+
+    if SandraBeckyCrisisReady = 0:
+        exit
+    end
+
+    if SandraBeckyCrisisDone = 1:
+        exit
+    end
+
+    if SandraBeckyReconcileDone = 1:
+        exit
+    end
+
+    SandraBeckyCrisisCanTalk = 1
+---
+
+#SandraBeckyThreesomeCanStart
+    SandraBeckyThreesomeCanStart = 0
+
+    if SandraBeckyReconcileDone = 1:
+        exit
+    end
+
+    if SandraBeckyCrisisDone = 0:
+        exit
+    end
+
+    if SandraBeckyCrisisResult <> 1:
+        exit
+    end
+
+    if BeckyEddieDone = 0:
+        exit
+    end
+
+    if BeckyHomeSex = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 2:
+        exit
+    end
+
+    if sluttiness['becky'] < 40:
+        exit
+    end
+
+    if otkroven['sandra'] < 15:
+        exit
+    end
+
+    if Friends['sandra'] < 12:
+        exit
+    end
+
+    if Friends['becky'] < 12:
+        exit
+    end
+
+    SandraBeckyThreesomeCanStart = 1
+---
+
+#SandraBeckyCrisisStart
+    gs 'SandraBeckyCrisisCanTalk'
+
+    if SandraBeckyCrisisCanTalk = 0:
+        gt $TalkReturnLoc
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'sandra'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С САНДРОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'SandraBeckyCrisisIntroText'
+
+    *p $SandraBeckyCrisisText
+    *pl ' '
+
+    gs 'SandraBeckyCrisisBuildMenu'
+
+    *p 'Что ответить <a href="exec:gs ''Menu.Show'', ''SandraBeckyCrisisMenu''">Стефану</a>?'
+---
+
+#SandraBeckyCrisisBuildMenu
+    gs 'Menu.Destroy', 'SandraBeckyCrisisMenu'
+    gs 'Menu.Create', 'SandraBeckyCrisisMenu'
+
+    gs 'Menu.Add', 'SandraBeckyCrisisMenu', 'Признаться и попросить прощения', ''
+    gs 'Menu.AddModule', 'SandraBeckyCrisisMenu', {
+        gt 'SandraBeckyCrisisAction', 'confess'
+    }
+
+    gs 'Menu.Add', 'SandraBeckyCrisisMenu', 'Отрицать', ''
+    gs 'Menu.AddModule', 'SandraBeckyCrisisMenu', {
+        gt 'SandraBeckyCrisisAction', 'deny'
+    }
+
+    gs 'Menu.Add', 'SandraBeckyCrisisMenu', 'Уйти от ответа', ''
+    gs 'Menu.AddModule', 'SandraBeckyCrisisMenu', {
+        gt 'SandraBeckyCrisisAction', 'deflect'
+    }
+---
+
+#SandraBeckyCrisisAction
+    *clr
+    clr
+    cla
+
+    $SandraBeckyCrisisChoice = LCASE($ARGS[0])
+
+    gs 'SandraBeckyCrisisActionText', $SandraBeckyCrisisChoice
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С САНДРОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $SandraBeckyCrisisText
+    *pl ' '
+
+    if $SandraBeckyCrisisChoice = 'confess':
+        SandraBeckyCrisisResult = 1
+        SandraBeckyCrisisDone = 1
+        SandraTrustStefan -= 1
+        GirlTrustStefan['sandra'] -= 1
+        FamilyTension += 1
+        SandraPlayerPath += 1
+
+        if GirlTrustStefan['sandra'] < 0:
+            GirlTrustStefan['sandra'] = 0
+        end
+
+        if SandraTrustStefan < 0:
+            SandraTrustStefan = 0
+        end
+
+        gs 'SandraBeckyReconcileOfferText'
+
+        *p $SandraBeckyCrisisText
+        *pl ' '
+
+        gs 'SandraBeckyReconcileBuildMenu'
+
+        *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''SandraBeckyReconcileMenu''">делать</a>?'
+
+    elseif $SandraBeckyCrisisChoice = 'deny':
+        SandraBeckyCrisisResult = -1
+        SandraBeckyCrisisDone = 1
+        FamilyTension += 3
+        SandraTrustStefan -= 2
+        GirlTrustStefan['sandra'] -= 2
+
+        if GirlTrustStefan['sandra'] < 0:
+            GirlTrustStefan['sandra'] = 0
+        end
+
+        if SandraTrustStefan < 0:
+            SandraTrustStefan = 0
+        end
+
+        act 'Вернуться':
+            gt $TalkReturnLoc
+        end
+
+    else:
+        SandraBeckyCrisisResult = 0
+        SandraBeckyLieCount += 1
+        FamilyTension += 1
+
+        act 'Вернуться':
+            gt $TalkReturnLoc
+        end
+    end
+
+    killvar '$SandraBeckyCrisisChoice'
+---
+
+#SandraBeckyReconcileBuildMenu
+    gs 'Menu.Destroy', 'SandraBeckyReconcileMenu'
+    gs 'Menu.Create', 'SandraBeckyReconcileMenu'
+
+    gs 'SandraBeckyThreesomeCanStart'
+
+    if SandraBeckyThreesomeCanStart = 1:
+        gs 'Menu.Add', 'SandraBeckyReconcileMenu', 'Согласиться — встретиться у Бекки', ''
+        gs 'Menu.AddModule', 'SandraBeckyReconcileMenu', {
+            gt 'SandraBeckyThreesomeStart'
+        }
+    end
+
+    gs 'Menu.Add', 'SandraBeckyReconcileMenu', 'Отказаться', ''
+    gs 'Menu.AddModule', 'SandraBeckyReconcileMenu', {
+        gt 'SandraBeckyReconcileDecline'
+    }
+---
+
+#SandraBeckyReconcileDecline
+    *clr
+    clr
+    cla
+
+    *p 'Сандра кивает сухо: "Тогда живи с последствиями." Она уходит — злая, но ещё не окончательно отвергнутая.'
+
+    SandraBeckyCrisisResult = 0
+    FamilyTension += 2
+
+    act 'Вернуться':
+        gt $TalkReturnLoc
+    end
+---
+
+#SandraBeckyThreesomeStart
+    gs 'SandraBeckyThreesomeCanStart'
+
+    if SandraBeckyThreesomeCanStart = 0:
+        gt $TalkReturnLoc
+    end
+
+    gt 'GroupSexSandraBeckyStefanStart'
+---
+
+#SandraBeckyThreesomeApplyAftermath
+    SandraBeckyReconcileDone = 1
+    SandraBeckyThreesomeReady = 0
+
+    gs 'RegisterSex', 'sandra', 'lesbian', 0, 1
+    gs 'RegisterSex', 'becky', 'lesbian', 0, 1
+    gs 'RegisterSex', 'sandra', 'group', 0, 1
+    gs 'RegisterSex', 'becky', 'group', 0, 1
+
+    sluttiness['sandra'] += 2
+    sluttiness['becky'] += 1
+    otkroven['sandra'] += 2
+    otkroven['becky'] += 1
+    SandraBeckyBond += 5
+    SandraPlayerPath += 2
+    FamilyTension -= 2
+
+    if FamilyTension < 0:
+        FamilyTension = 0
+    end
+
+    if FamilyCorruptionStage < 5:
+        FamilyCorruptionStage += 1
+    end
+
+    if SandraBeckyBond > 100:
+        SandraBeckyBond = 100
+    end
+
+    gs 'ClampGirlSocialStats', 'sandra'
+    gs 'ClampGirlSocialStats', 'becky'
+---
+
+#SandraBeckyReconcileDebugReset
+    SandraBeckySundayScandalHeard = 0
+    SandraBeckySundayScandalCanHear = 0
+    SandraBeckyCrisisReady = 0
+    SandraBeckyCrisisDone = 0
+    SandraBeckyCrisisResult = 0
+    SandraBeckyLieCount = 0
+    SandraBeckyReconcileDone = 0
+    SandraBeckyThreesomeReady = 0
+    SandraBeckyThreesomeCanStart = 0
+    PlayerKnows_BeckyStefanSundayGossip = 0
+---

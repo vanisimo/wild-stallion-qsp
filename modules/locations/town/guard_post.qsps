@@ -52,12 +52,17 @@
         gt 'GuardTalk'
     end
 
+    if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
+        act 'Поговорить о лавке Бекки':
+            gt 'MeetGuard'
+        end
+    end
+
     act 'Вернуться на рынок':
         gt 'Market'
     end
 ---
 
-! ====================== РАЗГОВОР СО СТРАЖНИКОМ ======================
 #GuardTalk
     cls
     *pl '══════════════════════════════════════════════'
@@ -70,18 +75,13 @@
     *p 'Грюн скрещивает руки на груди:'
     *p '"Ну что, хозяин трактира? Опять пришёл по делу?"'
 
-    act 'Предложить взятку, чтобы он "присматривал" за лавкой Бекки':
-        if money >= 300:
-            money -= 300
-            IngaGuardProblem = 1
-            IngaServingGuard = 1
-            *p 'Ты тихо передаёшь Грюну 300 монет.'
-            *p 'Грюн ухмыляется: "Хорошо… я займусь этой лавкой. Девчонка там симпатичная, буду заходить почаще."'
-            IngaGuardIgnored = 0
-            act 'Вернуться на рынок': gt 'Market'
-        else:
-            *p 'У тебя недостаточно денег.'
-            act 'Продолжить': gt 'GuardTalk'
+    if IngaGuardProblem = 1 and GuardBribed = 0:
+        *p 'Он многозначительно усмехается: "Лавка Блэнкеншип… симпатичная там девчонка работает."'
+    end
+
+    if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
+        act 'Разобраться с проблемой лавки':
+            gt 'MeetGuard'
         end
     end
 
@@ -89,4 +89,3 @@
         gt 'GuardPost'
     end
 ---
-

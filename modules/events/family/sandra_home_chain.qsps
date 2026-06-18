@@ -1,0 +1,250 @@
+! ================================================
+! FILE: modules/events/family/sandra_home_chain.qsps
+! MODULE: events/family
+! Домашняя лестница Сандры (player-path, SandraRoom)
+! ================================================
+
+#SandraHomeCanAdvance
+    SandraHomeCanAdvance = 0
+
+    if SandraHomeUnlocked = 0:
+        exit
+    end
+
+    if SandraHomeSex = 1:
+        exit
+    end
+
+    if SandraHomeStepToday = 1:
+        exit
+    end
+
+    if time < 4:
+        exit
+    end
+
+    if $GirlLocation['sandra'] <> 'SandraRoom':
+        exit
+    end
+
+    if SandraHomeStage >= 11:
+        exit
+    end
+
+    if Friends['sandra'] < 10 + SandraHomeStage:
+        exit
+    end
+
+    if love['sandra'] < 5 + SandraHomeStage / 2:
+        exit
+    end
+
+    SandraHomeCanAdvance = 1
+---
+
+#SandraHomeUnlockTry
+    SandraHomeUnlockTry = 0
+
+    if SandraHomeUnlocked = 1:
+        exit
+    end
+
+    if SandraHomeSex = 1:
+        exit
+    end
+
+    if time < 4:
+        exit
+    end
+
+    if $GirlLocation['sandra'] <> 'SandraRoom':
+        exit
+    end
+
+    if Friends['sandra'] < 10 and love['sandra'] < 8:
+        exit
+    end
+
+    SandraHomeUnlockTry = 1
+---
+
+#SandraHomeStep
+    gs 'SandraHomeCanAdvance'
+
+    if SandraHomeCanAdvance = 0:
+        gt 'SandraRoom'
+    end
+
+    if SandraHomeStage = 0:
+        $SandraHomeStepKey = 'goodnight'
+    elseif SandraHomeStage = 1:
+        $SandraHomeStepKey = 'sit'
+    elseif SandraHomeStage = 2:
+        $SandraHomeStepKey = 'hug'
+    elseif SandraHomeStage = 3:
+        $SandraHomeStepKey = 'breast_slip'
+    elseif SandraHomeStage = 4:
+        $SandraHomeStepKey = 'compliment'
+    elseif SandraHomeStage = 5:
+        $SandraHomeStepKey = 'kiss'
+    elseif SandraHomeStage = 6:
+        $SandraHomeStepKey = 'noticed'
+    elseif SandraHomeStage = 7:
+        $SandraHomeStepKey = 'help_offer'
+    elseif SandraHomeStage = 8:
+        $SandraHomeStepKey = 'handjob'
+    elseif SandraHomeStage = 9:
+        $SandraHomeStepKey = 'titjob'
+    elseif SandraHomeStage = 10:
+        $SandraHomeStepKey = 'blowjob'
+    else:
+        gt 'SandraRoom'
+    end
+
+    gs 'SandraHomeStepText', $SandraHomeStepKey
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА САНДРЫ — БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $SandraHomeText
+    *pl ' '
+
+    SandraHomeStage += 1
+    SandraHomeStepToday = 1
+    SandraPlayerPath += 1
+
+    if $SandraHomeStepKey = 'goodnight':
+        Friends['sandra'] += 1
+        love['sandra'] += 1
+    elseif $SandraHomeStepKey = 'sit':
+        Friends['sandra'] += 1
+    elseif $SandraHomeStepKey = 'hug':
+        Friends['sandra'] += 1
+        love['sandra'] += 1
+    elseif $SandraHomeStepKey = 'kiss':
+        KissCount['sandra'] += 1
+        love['sandra'] += 1
+        otkroven['sandra'] += 1
+    elseif $SandraHomeStepKey = 'breast_slip' or $SandraHomeStepKey = 'compliment' or $SandraHomeStepKey = 'noticed':
+        CaressCount['sandra'] += 1
+        otkroven['sandra'] += 1
+    elseif $SandraHomeStepKey = 'help_offer':
+        otkroven['sandra'] += 1
+    elseif $SandraHomeStepKey = 'handjob':
+        CaressCount['sandra'] += 1
+        sluttiness['sandra'] += 1
+    elseif $SandraHomeStepKey = 'titjob':
+        CaressCount['sandra'] += 1
+        sluttiness['sandra'] += 1
+    elseif $SandraHomeStepKey = 'blowjob':
+        BlowjobCount['sandra'] += 1
+        OralCount['sandra'] += 1
+        sluttiness['sandra'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'sandra'
+    killvar '$SandraHomeStepKey'
+
+    act 'Вернуться':
+        gt 'SandraRoom'
+    end
+---
+
+#SandraHomeFirstSexLaunch
+    if SandraHomeUnlocked = 0 or SandraHomeStage < 11:
+        gt 'SandraRoom'
+    end
+
+    if SandraHomeSex = 1:
+        gt 'SandraRoom'
+    end
+
+    gs 'SandraHomeStepText', 'presex'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $SandraHomeText
+    *pl ' '
+
+    SandraHomeFirstSexActive = 1
+    SandraHomeStepToday = 1
+
+    if IntimStage['sandra'] < 5:
+        IntimStage['sandra'] = 5
+    end
+
+    if otkroven['sandra'] < 18:
+        otkroven['sandra'] = 18
+    end
+
+    gt 'SexSceneStart', 'sandra', 'SandraHomeAfterSex', 'sandra_home_first'
+---
+
+#SandraHomeAfterSex
+    gs 'SandraHomeAfterSexText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $SandraHomeText
+    *pl ' '
+
+    act 'Вернуться в коридор':
+        gt 'TavernSecondFloor'
+    end
+
+    act 'Остаться в комнате':
+        gt 'SandraRoom'
+    end
+---
+
+#SandraHomeGoodnightUnlock
+    gs 'SandraHomeUnlockTry'
+
+    if SandraHomeUnlockTry = 0:
+        gt 'SandraRoom'
+    end
+
+    SandraHomeUnlocked = 1
+
+    gs 'SandraHomeStepText', 'goodnight'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА САНДРЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $SandraHomeText
+    *pl ' '
+
+    SandraHomeStage = 1
+    SandraHomeStepToday = 1
+    SandraPlayerPath += 1
+    Friends['sandra'] += 1
+    love['sandra'] += 1
+
+    gs 'ClampGirlSocialStats', 'sandra'
+
+    act 'Вернуться':
+        gt 'SandraRoom'
+    end
+---

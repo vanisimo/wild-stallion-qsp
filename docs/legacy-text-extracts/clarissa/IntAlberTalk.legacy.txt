@@ -1,0 +1,108 @@
+Название локации: IntAlberTalk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	LegareProvokeYou=0
+	
+	GS 'Menu.Create','MenuAlberTalk'
+	GS 'Menu.Add','MenuAlberTalk','Поболтать со мессиром Легаре о разной всячине.',''
+	GS 'Menu.AddModule','MenuAlberTalk',{
+		'Вы некоторое время болтаете со Альбером Легаре о несущественных вещах.'
+		if Talked['Alber']<=2 and Rand(1,2)=1 and Friends['Alber']<5:
+			'Вы немного сдружились с мессиром Легаре.'
+			Friends['Alber']+=1
+		end
+		if Talked['Alber']>2: 'Ничего нового из разговора вы не узнали.'
+		Talked['Alber']+=1
+	}
+	gs 'Menu.AddCondition','MenuAlberTalk', "Result=IIF(Talked['Alber']<=2 and LegareProvokeYou=0,-1,0)"
+	
+	GS 'Menu.Add','MenuAlberTalk','Поболтать с мессиром Легаре о более личных вещах',''
+	GS 'Menu.AddModule','MenuAlberTalk',{
+		'Вы некоторое время болтаете с Альбером о его жизни, отношениях с семьей и прочем.'
+		if Talked['Alber']<=2 and Rand(1,2)=1 and Friends['Alber']<=10:
+			'Вы немного сдружились с мессиром Легаре.'
+			Friends['Alber']=Friends['Alber']+1
+		end
+		if Talked['Alber']>2: 'Ничего нового из разговора вы не узнали.'
+		Talked['Alber']+=1
+	}
+	gs 'Menu.AddCondition','MenuAlberTalk', "Result=IIF(Friends['Alber']>=6 and Talked['Alber']<=2 and LegareProvokeYou=0,-1,0)"
+	
+	GS 'Menu.Add','MenuAlberTalk','Спросить мессира Легаре о Лизетте',''
+	GS 'Menu.AddModule','MenuAlberTalk',{
+		if AlberVar['talkedaboutliza']=0:
+			'<br>Набравшись смелости, вы говорите Альберу что видели как у него отсасывала Лизетта. Виноторговец сначала смущается, но потом говорит вам, что его жена постоянно занята по хозяйству и он не видит ничего плохого чтобы воспользоваться страстными губками похотливой мулатки. "Кстати", добавлят он: "господин Стефан, вы, как владелец трактира, можете позвать этих двух достойных дам работать у вас. Вам будет доход, посетителей будет больше и нам,страждующим, хе-хе, будет поудобнее чем на улице".'
+			Friends['Alber']+=1
+			AlberVar['talkedaboutliza']=1
+		else
+			'<br>Вы некоторое время болтаете с Альбером о жарких губках Лизетты. Он замечает вам, что хотя Лизетта не столь опытна как ее мать, он обычно предпочитает ее, а почему - сам не знает.'
+		end
+	
+		Talked['Alber']+=1
+	}
+	gs 'Menu.AddCondition','MenuAlberTalk', "Result=IIF(Friends['Alber']>=5 and AlberVar['sawwithliza'] and Talked['Alber']<=2 and LegareProvokeYou=0,-1,0)"
+	
+	GS 'Menu.Add','MenuAlberTalk','Попробовать помириться',''
+	GS 'Menu.AddModule','MenuAlberTalk',{
+		'<br>"Эй, Альбер, чего ты так надулся?" примирительно сказали вы. "Ну увидел я тебя с моей сестренкой непутевой, ну вспылил. Ну подрались мы малость, бывает. Все, проехали. " и вы протянули месье свою руку. Тот немного поколебался, но все-таки ее пожал. "Ладно, проехали" согласился он.<br> Вы развернулись, чтобы уйти, но услышали, как месье пробормотал сквозь зубы:' 
+		if AmandaVar['fucklegare']<>0:
+			'"А все таки я ее отымел."'
+		elseif AmandaVar['sucklegare']<>0:
+			'"И все таки я ее отымею, раз она у меня уже отсосала."'
+		else
+			'"И все таки я ее отымею."'
+		end
+		Talked['Alber']+=1
+		Friends['Alber']=Min(10,Friends['Alber']+2)
+		AlberVar['FightYouAmanda']=0
+		LegareProvokeYou=1
+	}
+	gs 'Menu.AddCondition','MenuAlberTalk', "Result=IIF(AlberVar['FightYouAmanda']>0 and Talked['Alber']<=2 and LegareProvokeYou=0,-1,0)"
+	
+	
+	
+	GS 'Menu.Add','MenuAlberTalk','Проигнорировать',''
+	GS 'Menu.AddModule','MenuAlberTalk',{
+		'<br>"Да не мое это дело, Аманда уже достаточно взрослая," подумали вы.' 
+		LegareProvokeYou=0
+	}
+	gs 'Menu.AddCondition','MenuAlberTalk', "Result=IIF(LegareProvokeYou<>0,-1,0)"
+	
+	
+	GS 'Menu.Add','MenuAlberTalk','Обругать месье',''
+	GS 'Menu.AddModule','MenuAlberTalk',{
+		cls
+		'"Ах ты ублюдок," завелись вы от слов Легаре. "На девочек молоденьких тебя, значит потянуло. Я тебе, дрищу расфранченному, яйца пообрываю и в глотку твою поганую затолкаю. Отымеет он ее, сволочь. Фантазер хренов, ебарь-неудачник блин нашелся."<br>Выразив таким образом обуревавшие вас чувства невозмутимому Легаре, вы отправились восвояси. Похоже что попытка помириться не задалась.' 
+		'<br>'
+		LegareProvokeYou=0
+		AlberVar['FightYouAmanda']=2
+		Friends['Alber']=Max(1,Friends['Alber']-2)
+		xgt 'MarketPlace'
+	}
+	gs 'Menu.AddCondition','MenuAlberTalk', "Result=IIF(LegareProvokeYou<>0,-1,0)"
+	
+	
+	GS 'Menu.Add','MenuAlberTalk','Заехать с правой',''
+	GS 'Menu.AddModule','MenuAlberTalk',{
+		cls
+		Randvar=func('FightResult',FightLevel['you'],FightLevel['legare'],0)
+		'<br>Слова Альбера привели вас в бешенство. Так что вы, без особых прелюдий, развернулись и врезали месье по наглой морде.' 
+		if Randvar=1:
+			'Наваляв от души любителю девочек, вы напоследок еще раз стукнули его мордой лица о прилавок и довольно удалились восвояси.'
+			gs 'ShowImageSeq', 'alber', 'fight', 'housewon',4
+		else
+			'Но торгаш знал о вашей несдержанности и был готов. Отбив ваш удар, он перехватил вашу руку и, дернув, развернул вас. Не успели вы сообразить что к чему, как смачным пинком виноторговец выкинул вас из своей лавки и захлопнул за вами дверь.'
+			gs 'ShowImageSeq', 'alber', 'fight', 'houselost',3
+		end
+		'<br>'
+		LegareProvokeYou=0
+		AlberVar['FightYouAmanda']=1
+		Friends['Alber']=Max(0,Friends['Alber']-2)
+		xgt 'MarketPlace'
+	}
+	gs 'Menu.AddCondition','MenuAlberTalk', "Result=IIF(LegareProvokeYou<>0,-1,0)"
+	
+	
+
+------------ Конец локации: IntAlberTalk ------------

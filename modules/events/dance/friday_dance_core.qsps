@@ -23,6 +23,10 @@
         FridayDanceMayorSpeechSeen = 0
         FridayDanceRumorCount = 0
         FridayDanceNpcTalkCount = 0
+        FridayDanceTreatWineUsed = 0
+        FridayDanceTreatBeerUsed = 0
+        FridayDanceTreatFoodUsed = 0
+        BeckyFridayContactToday = 0
     end
 ---
 
@@ -239,6 +243,10 @@
 
     FridayDanceNpcTalkCount += 1
 
+    if $DanceNpc = 'becky':
+        gs 'BeckyFridayContactRegister'
+    end
+
     if $DanceNpc = 'amanda':
         AmandaPublicAttention += 1
     elseif $DanceNpc = 'melissa':
@@ -290,6 +298,270 @@
 
 ! ================================================
 ! FILE: modules/events/dance/friday_dance_core.qsps
+! Угощения на площади (вино / пиво / еда из запасов трактира)
+! ================================================
+
+#FridayDanceTreatMenu
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УГОЩЕНИЕ НА ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'Из запасов трактира можно угостить знакомых на танцах. Праздничная атмосфера быстро снимает дневную сдержанность.'
+    *pl ' '
+    *pl 'Запасы: вино ' + STR(winenum) + ', пиво ' + STR(beernum) + ', еда ' + STR(productnum)
+    *pl ' '
+
+    if FridayDanceTreatWineUsed = 0 and winenum >= 3:
+        act 'Угостить вином (3 ед.)':
+            gt 'FridayDanceTreatApply', 'wine'
+        end
+    end
+
+    if FridayDanceTreatBeerUsed = 0 and beernum >= 3:
+        act 'Угостить пивом (3 ед.)':
+            gt 'FridayDanceTreatApply', 'beer'
+        end
+    end
+
+    if FridayDanceTreatFoodUsed = 0 and productnum >= 3:
+        act 'Угостить закусками (3 ед.)':
+            gt 'FridayDanceTreatApply', 'food'
+        end
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+#FridayDanceTreatApply
+    $FridayDanceTreatType = LCASE($ARGS[0])
+
+    if $FridayDanceTreatType = 'wine':
+        if FridayDanceTreatWineUsed = 1 or winenum < 3:
+            gt 'FridayDanceTreatMenu'
+        end
+
+        winenum -= 3
+        FridayDanceTreatWineUsed = 1
+        FridayDanceTreatSlutGain = 2
+        FridayDanceTreatOtkrovenGain = 2
+        FridayDanceTreatCorruptionGain = 1
+    elseif $FridayDanceTreatType = 'beer':
+        if FridayDanceTreatBeerUsed = 1 or beernum < 3:
+            gt 'FridayDanceTreatMenu'
+        end
+
+        beernum -= 3
+        FridayDanceTreatBeerUsed = 1
+        FridayDanceTreatSlutGain = 1
+        FridayDanceTreatOtkrovenGain = 1
+        FridayDanceTreatCorruptionGain = 1
+    elseif $FridayDanceTreatType = 'food':
+        if FridayDanceTreatFoodUsed = 1 or productnum < 3:
+            gt 'FridayDanceTreatMenu'
+        end
+
+        productnum -= 3
+        FridayDanceTreatFoodUsed = 1
+        FridayDanceTreatSlutGain = 1
+        FridayDanceTreatOtkrovenGain = 2
+        FridayDanceTreatCorruptionGain = 1
+    else:
+        killvar '$FridayDanceTreatType'
+        gt 'FridayDanceTreatMenu'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'FridayDanceTreatText', $FridayDanceTreatType
+    gs 'FridayDanceTreatApplyToGirls'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УГОЩЕНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceTreatText
+    *pl ' '
+
+    FamilyCorruptionPoints += FridayDanceTreatCorruptionGain
+
+    gs 'FridayDanceAdvanceRound'
+
+    killvar '$FridayDanceTreatType'
+    killvar 'FridayDanceTreatSlutGain'
+    killvar 'FridayDanceTreatOtkrovenGain'
+    killvar 'FridayDanceTreatCorruptionGain'
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---
+
+#FridayDanceTreatApplyToGirls
+    gs 'UpdateGirlLocations'
+    gs 'FridayDanceTreatBoostGirl', 'amanda'
+    gs 'FridayDanceTreatBoostGirl', 'melissa'
+    gs 'FridayDanceTreatBoostGirl', 'becky'
+    gs 'FridayDanceTreatBoostGirl', 'clarissa'
+    gs 'FridayDanceTreatBoostGirl', 'inga'
+---
+
+#FridayDanceTreatBoostGirl
+    $FridayDanceTreatGirl = LCASE($ARGS[0])
+
+    if $FridayDanceTreatGirl = '':
+        exit
+    end
+
+    if $GirlLocation[$FridayDanceTreatGirl] <> 'DanceHall':
+        killvar '$FridayDanceTreatGirl'
+        exit
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $FridayDanceTreatGirl
+    end
+
+    sluttiness[$FridayDanceTreatGirl] += FridayDanceTreatSlutGain
+    otkroven[$FridayDanceTreatGirl] += FridayDanceTreatOtkrovenGain
+
+    killvar '$FridayDanceTreatGirl'
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Ограниченный танец сестёр без платья для танцев
+! ================================================
+
+#FridayDanceSisterLimited
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $FridayDanceSisterGirl = $GirlKey
+
+    if $FridayDanceSisterGirl <> 'amanda' and $FridayDanceSisterGirl <> 'melissa':
+        killvar '$FridayDanceSisterGirl'
+        gt 'MarketDance'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', $FridayDanceSisterGirl
+    gs 'FridayDanceNoDressText', $FridayDanceSisterGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЕЦ С ' + UCASE($RealName[$FridayDanceSisterGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceText
+    *pl ' '
+
+    act 'Поболтать у края площади':
+        gt 'FridayDanceSisterLimitedTalk', $FridayDanceSisterGirl
+    end
+
+    if Friends[$FridayDanceSisterGirl] >= 5:
+        act 'Осторожно потанцевать':
+            gt 'FridayDanceSisterLimitedDance', $FridayDanceSisterGirl
+        end
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$FridayDanceSisterGirl'
+---
+
+#FridayDanceSisterLimitedTalk
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $FridayDanceSisterGirl = $GirlKey
+
+    if $FridayDanceSisterGirl = '':
+        gt 'MarketDance'
+    end
+
+    gs 'FridayDanceSisterLimitedTalkText', $FridayDanceSisterGirl
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР НА ТАНЦАХ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceText
+    *pl ' '
+
+    Friends[$FridayDanceSisterGirl] += 1
+
+    if $FridayDanceSisterGirl = 'amanda':
+        AmandaPublicAttention += 1
+    elseif $FridayDanceSisterGirl = 'melissa':
+        MelissaFamilyConcern += 1
+    end
+
+    gs 'FridayDanceAdvanceRound'
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$FridayDanceSisterGirl'
+---
+
+#FridayDanceSisterLimitedDance
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $FridayDanceSisterGirl = $GirlKey
+
+    if $FridayDanceSisterGirl = '':
+        gt 'MarketDance'
+    end
+
+    gs 'FridayDanceSisterLimitedDanceText', $FridayDanceSisterGirl
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОСТОРОЖНЫЙ ТАНЕЦ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceText
+    *pl ' '
+
+    Friends[$FridayDanceSisterGirl] += 1
+    sluttiness[$FridayDanceSisterGirl] += 1
+    otkroven[$FridayDanceSisterGirl] += 1
+
+    if $FridayDanceSisterGirl = 'amanda':
+        AmandaPublicAttention += 1
+        AmandaPlayerPath += 1
+    elseif $FridayDanceSisterGirl = 'melissa':
+        MelissaFamilyConcern += 1
+    end
+
+    gs 'FridayDanceAdvanceRound'
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$FridayDanceSisterGirl'
+---
+
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
 ! Debug-меню пятничных танцев
 ! Возврат напрямую в MarketDance
 ! ================================================
@@ -321,6 +593,10 @@
     *pl 'Легаре: ' + $GirlLocation['legare']
     *pl 'Лизетта: ' + $GirlLocation['lizette']
     *pl 'Жоржетта: ' + $GirlLocation['georgett']
+    *pl ' '
+    *pl 'AmandaDanceDressReady: ' + STR(AmandaDanceDressReady)
+    *pl 'MelissaDanceDressReady: ' + STR(MelissaDanceDressReady)
+    *pl 'BeckyFridayContacts: ' + STR(BeckyFridayContacts)
     *pl ' '
 
     act 'Сбросить раунды праздника':

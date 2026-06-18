@@ -1,20 +1,12 @@
 ! ================================================
-! MODULE: actions/TalkWithBecky.qsps
-! Полный разговор с Бекки Блэнкеншип
+! FILE: modules/actions/dialogs/talk_with_becky.qsps
+! MODULE: actions
+! Разговор с Бекки Блэнкеншип (плоские флаги intimacy-арки)
 ! ================================================
 
-! ====================== ОПИСАНИЕ ПЕРЕМЕННЫХ ======================
-! Talked['becky']          — сколько раз игрок уже разговаривал с Бекки (общий счётчик)
-! Friends['becky']         — уровень дружбы с Бекки
-! BeckyVar['IngaStory']    — прогресс истории про дочь Ингу (1–4)
-! BeckyVar['HusbandStory'] — прогресс истории про покойного мужа Эрика (1–5)
-! BeckyVar['EddieStory']   — прогресс истории про сына Эдди (1–2+)
-! BeckyVar['HomeVisited']  — сколько раз игрок был в гостях у Бекки (0 = никогда)
-! BeckyVar['TimesVisited'] — общее количество визитов в дом Бекки
-! BeckyVar['GeorgMention'] — упоминали ли мы историю с Жоржеттой (0/1)
-! ====================== КОНЕЦ ОПИСАНИЯ ======================
-
 #TalkWithBecky
+    $GirlName = 'becky'
+
     gs 'GirlsDesc', $GirlName
     cls
 
@@ -23,176 +15,211 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    gs 'Menu.Create','MenuBeckyTalk'
+    gs 'Menu.Create', 'MenuBeckyTalk'
 
-    ! ====================== 1. ОБЩИЕ ДЕЙСТВИЯ ======================
-    gs 'Menu.Add','MenuBeckyTalk','Осмотреть Бекки',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        gs 'GirlsDesc', $GirlName 
-         ! Показывает описание внешности Бекки
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Осмотреть Бекки', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'GirlsDesc', $GirlName
     }
 
-    gs 'Menu.Add','MenuBeckyTalk','Поболтать о разной фигне',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Поболтать о разной фигне', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
         'Вы некоторое время болтаете со вдовой Блэнкеншип о несущественных вещах.'
-        gs 'CorruptionProgress', $GirlName, 'talk'     
-        ! Обычный разговор
+        gs 'CorruptionProgress', $GirlName, 'talk'
         dynamic 'if Talked[$GirlName]<=2 and Rand(1,2)=1 and Friends[$GirlName]<3:
             ''Вы немного сдружились с Бекки.''
             Friends[$GirlName]+=1
         end
         if Talked[$GirlName]>2: ''Ничего нового из разговора вы не узнали.'''
-        Talked[$GirlName]+=1
+        Talked[$GirlName] += 1
     }
 
-    gs 'Menu.Add','MenuBeckyTalk','Поболтать о более личных вещах',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        'Вы некоторое время болтаете с Бекки о том, как ей живется без мужа.'
-        gs 'CorruptionProgress', $GirlName, 'flirt'   
-         ! Более близкий разговор
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Поболтать о более личных вещах', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        'Вы некоторое время болтаете с Бекки о том, как ей живётся без мужа.'
+        gs 'CorruptionProgress', $GirlName, 'flirt'
         dynamic 'if Talked[$GirlName]<=2 and Rand(1,2)=1 and Friends[$GirlName]<=5:
             ''Вдова несколько раз заинтересованно поглядывает на вас.''
             Friends[$GirlName]+=1
         end
         if Talked[$GirlName]>2: ''Ничего нового из разговора вы не узнали.'''
-        Talked[$GirlName]+=1
+        Talked[$GirlName] += 1
     }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(Friends[$GirlName]>=3,-1,0)"
 
-    ! ====================== 2. ТЕМА ДОЧЕРИ ИНГИ ======================
-    gs 'Menu.Add','MenuBeckyTalk','Спросить Бекки про дочку с женихом',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Вы решили спросить Бекки про дочку и ее развлечения...'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Спросить Бекки про дочку с женихом', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkIngaStory1Text'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        BeckyVar['IngaStory']=2
-        Talked[$GirlName]+=1
+        IngaStory = 1
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['IngaStory']=1 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(IngaStory=0 and Friends[$GirlName]>6 and Talked[$GirlName]<2,-1,0)"
 
-    gs 'Menu.Add','MenuBeckyTalk','Распросить еще про дочку',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Вы решили еще немного распросить Бекки про ее дочку...'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Распросить ещё про дочку', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkIngaStory2Text'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        BeckyVar['IngaStory']=3
-        Talked[$GirlName]+=1
+        IngaStory = 2
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['IngaStory']=2 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(IngaStory=1 and Talked[$GirlName]<2,-1,0)"
 
-    gs 'Menu.Add','MenuBeckyTalk','Распросить про Лукаса, жениха Ингенборг',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Бекки с готовностью отозвалась на ваш вопрос...'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Распросить про Лукаса, жениха Ингенборг', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkIngaStory3Text'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        BeckyVar['IngaStory']=4
-        Talked[$GirlName]+=1
+        IngaStory = 4
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['IngaStory']=3 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(IngaStory=2 and Talked[$GirlName]<2,-1,0)"
 
-    ! ====================== 3. ТЕМА ПОКОЙНОГО МУЖА ======================
-    gs 'Menu.Add','MenuBeckyTalk','Распросить Бекки про ее покойного мужа',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Глаза Бекки затуманились от приятных воспоминаний...'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Распросить Бекки про её покойного мужа', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkHusbandStory1Text'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        BeckyVar['HusbandStory']=2
-        Talked[$GirlName]+=1
+        HusbandStory = 1
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['HusbandStory']=1 and Friends[$GirlName]>13 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(HusbandStory=0 and Friends[$GirlName]>13 and Talked[$GirlName]<2,-1,0)"
 
-    gs 'Menu.Add','MenuBeckyTalk','Распросить еще про Эрика',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Вдовушка охотно продолжила свой нескромный рассказ...'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Распросить ещё про Эрика', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkHusbandStory2Text'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        BeckyVar['HusbandStory']=3
-        Talked[$GirlName]+=1
+        HusbandStory = 2
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['HusbandStory']=2 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(HusbandStory=1 and Talked[$GirlName]<2,-1,0)"
 
-    gs 'Menu.Add','MenuBeckyTalk','Узнать что сталось с другими подружками Эрика',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Бекки на секунду остановила поток своих рассказов...'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Узнать, что сталось с другими подружками Эрика', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkHusbandStory3Text'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        BeckyVar['HusbandStory']=4
-        Talked[$GirlName]+=1
+        HusbandStory = 3
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['HusbandStory']=3 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(HusbandStory=2 and Talked[$GirlName]<2,-1,0)"
 
-    gs 'Menu.Add','MenuBeckyTalk','Спросить про остальных подружек Эрика',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Бекки сморщила свой лобик, вспоминая...'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Спросить про остальных подружек Эрика', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkHusbandStory4Text'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        BeckyVar['HusbandStory']=5
-        Talked[$GirlName]+=1
+        HusbandStory = 4
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['HusbandStory']=4 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(HusbandStory=3 and Talked[$GirlName]<2,-1,0)"
 
-    ! ====================== 4. ТЕМА СЫНА ЭДДИ ======================
-    gs 'Menu.Add','MenuBeckyTalk','Спросить про ее сына Эдди',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Бекки явно гордилась своим сыном...'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Выслушать последние воспоминания о муже', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkHusbandStory5Text'
+        *p $BeckyTalkBlock
+        gs 'CorruptionProgress', $GirlName, 'flirt'
+        HusbandStory = 5
+        Talked[$GirlName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(HusbandStory=4 and Talked[$GirlName]<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Спросить про её сына Эдди', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkEddieStory1Text'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'talk'
-        BeckyVar['EddieStory']=1
-        Talked[$GirlName]+=1
+        EddieStory = 1
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['EddieStory']=0 and Friends[$GirlName]>6 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(EddieStory=0 and Friends[$GirlName]>6 and Talked[$GirlName]<2,-1,0)"
 
-    gs 'Menu.Add','MenuBeckyTalk','Рассказать про игру Эдди и Жоржетты',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        dynamic {
-            tmpRnd=Rand(1,2)
-            if tmpRnd=1:
-                '<br>Вы рассказали Бекки про то, как Эдди просит Жоржетту играть ее роль.'
-            else
-                'Вы напомнили Бекки про то, как Эдди просит Жоржетту играть ее роль.'
-            end
-        }
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Рассказать про игру Эдди и Жоржетты', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkEddieGeorgText'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        if BeckyVar['EddieStory']<2: BeckyVar['EddieStory']=2
-        Talked[$GirlName]+=1
-    }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(EddieVar['TalkedAboutGeorgett']>0 and BeckyVar['HusbandStory']>0 and BeckyVar['EddieStory']>0 and Friends[$GirlName]>8 and Talked[$GirlName]<2,-1,0)"
-
-    ! ====================== 5. ОСОБЫЕ ТЕМЫ ======================
-    gs 'Menu.Add','MenuBeckyTalk','Попробовать напросится в гости',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>Вы решили попробовать напросится в гости к вдовушке...'
-        gs 'CorruptionProgress', $GirlName, 'flirt'
-        Talked[$GirlName]+=1
-    }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['HomeVisited']=2 and Friends[$GirlName]>12 and Talked[$GirlName]<2,-1,0)"
-
-    gs 'Menu.Add','MenuBeckyTalk','Спросить о прошлом визите в гости',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        if BeckyVar['HomeVisited']>=6:
-            '<br>"Бекки, как тебе завершение ужина?"'
-        else
-            '<br>"Бекки, спасибо за ужин и за гостеприимство,"'
+        if EddieStory < 2:
+            EddieStory = 2
         end
+        Talked[$GirlName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(EddieSawGeorg>=1 and HusbandStory>0 and EddieStory>0 and Friends[$GirlName]>8 and Talked[$GirlName]<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Попробовать напроситься в гости', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkHomeInviteRun'
+        *p $BeckyTalkBlock
+        gs 'CorruptionProgress', $GirlName, 'flirt'
+        Talked[$GirlName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(BeckyFridayContacts>=4 and BeckyHomeStage>=2 and Friends[$GirlName]>12 and HusbandStory>0 and BeckyHomeStage<3 and Talked[$GirlName]<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Спросить о прошлом визите в гости', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkPastVisitText'
+        *p $BeckyTalkBlock
         gs 'CorruptionProgress', $GirlName, 'talk'
-        Talked[$GirlName]+=1
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['TimesVisited']>0 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(BeckyTimesVisited>0 and Talked[$GirlName]<2,-1,0)"
 
-    gs 'Menu.Add','MenuBeckyTalk','Указать Бекки на поведение ее сына',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>"Дорогая, а ты заметила как на тебя смотрит твой собственный сын?"'
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Рассказать Бекки про взгляды Эдди', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkEddieOutragedText'
+        *p $BeckyTalkBlock
+        BeckyEddieOutraged = 1
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        Talked[$GirlName]+=1
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['HomeVisited']>=3 and (EddieVar['SawMomSex']>0 or BeckyVar['HomeSex']>0) and BeckyVar['HomeVisited']<7 and BeckyVar['EddieTryToFuck']<4 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(BeckyHomeSex=1 and EddieHelpPromised=1 and BeckyEddieOutraged=0 and BeckyEddieDone=0 and Talked[$GirlName]<2,-1,0)"
 
-    gs 'Menu.Add','MenuBeckyTalk','Рассказать что Эдди требует, чтобы Жоржетта изображала Бекки',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
-        '<br>"Бекки, дорогуша, я тут наблюдал преинтереснейшую сценку..."'
-        BeckyVar['GeorgMention']=1
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Посоветовать сходить к священнику', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkPriestHintText'
+        *p $BeckyTalkBlock
+        BeckyPriestHint = 1
+        gs 'CorruptionProgress', $GirlName, 'talk'
+        Talked[$GirlName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(BeckyEddieOutraged=1 and BeckyPriestHint=0 and BeckyEddieDone=0 and Talked[$GirlName]<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Утешить после исповеди', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkPriestRetryText'
+        *p $BeckyTalkBlock
+        BeckyPriestRetry = 1
+        gs 'CorruptionProgress', $GirlName, 'talk'
+        Talked[$GirlName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(BeckyPriestConfessionSeen=1 and BeckyPriestOk=0 and BeckyPriestRetry=0 and BeckyEddieDone=0 and Talked[$GirlName]<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Поговорить о новых правилах дома', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyEddieNormalizeBeckyText'
+        *p $BeckyTalkBlock
+        gs 'CorruptionProgress', $GirlName, 'talk'
+        Talked[$GirlName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(BeckyEddieDone=1 and Talked[$GirlName]<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Рассказать, что Эдди требует, чтобы Жоржетта изображала Бекки', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkGeorgMentionText'
+        *p $BeckyTalkBlock
+        GeorgMention = 1
         gs 'CorruptionProgress', $GirlName, 'flirt'
-        Talked[$GirlName]+=1
+        Talked[$GirlName] += 1
     }
-    gs 'Menu.AddCondition','MenuBeckyTalk', "Result=IIF(BeckyVar['GeorgMention']=0 and BeckyVar['HomeVisited']<7 and Talked[$GirlName]<2,-1,0)"
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(GeorgMention=0 and BeckyHomeStage<5 and Talked[$GirlName]<2,-1,0)"
 
-    ! ====================== ВОЗВРАТ ======================
-    gs 'Menu.Add','MenuBeckyTalk','Вернуться в лавку',''
-    gs 'Menu.AddModule','MenuBeckyTalk',{
+    gs 'Menu.Add', 'MenuBeckyTalk', 'Вернуться в лавку', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
         gt 'BeckyShop'
     }
 
-    gs 'Menu.Show','MenuBeckyTalk'
+    gs 'Menu.Show', 'MenuBeckyTalk'
 ---
-

@@ -1,0 +1,169 @@
+! ================================================
+! FILE: modules/events/family/melissa_dark_alley.qsps
+! MODULE: events/family
+! Подворотня с Мелиссой после домашнего первого
+! ================================================
+
+#MelissaDanceAlleyEvent
+    *clr
+    clr
+    cla
+
+    $MelissaAlleyGirl = 'melissa'
+
+    gs 'EnsureGirlData', $MelissaAlleyGirl
+
+    if MelissaAlleyDay <> day:
+        gs 'MelissaDanceAlleyReset'
+    end
+
+    if MelissaAlleyStage = 0:
+        MelissaAlleyStage = 1
+        MelissaAlleyRisk = 8 + MelissaDancePublicRisk
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaDanceAlleyMainText') = 1:
+        gs 'MelissaDanceAlleyMainText'
+    elseif $MelissaAlleyLastText <> '':
+        *p $MelissaAlleyLastText
+    else:
+        *p 'Вы с Мелиссой отходите в тёмный проход. Она всё ещё оглядывается — но уже не отступает.'
+    end
+
+    *pl ' '
+
+    gs 'MelissaDanceAlleyBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaAlleyMenu''">делать</a>?'
+---
+
+#MelissaDanceAlleyReset
+    MelissaAlleyDay = day
+    MelissaAlleyStage = 0
+    MelissaAlleyRisk = 0
+    MelissaAlleyKiss = 0
+    MelissaAlleyClose = 0
+    MelissaAlleyAfterSex = 0
+    $MelissaAlleyLastText = ''
+---
+
+#MelissaDanceAlleyBuildMenu
+    gs 'Menu.Destroy', 'MelissaAlleyMenu'
+    gs 'Menu.Create', 'MelissaAlleyMenu'
+
+    gs 'Menu.Add', 'MelissaAlleyMenu', 'Оглядеться', ''
+    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+        gt 'MelissaDanceAlleyAction', 'look'
+    }
+
+    if MelissaAlleyKiss = 0:
+        gs 'Menu.Add', 'MelissaAlleyMenu', 'Поцеловать', ''
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyAction', 'kiss'
+        }
+    end
+
+    if MelissaAlleyKiss = 1 and MelissaAlleyClose = 0:
+        gs 'Menu.Add', 'MelissaAlleyMenu', 'Прижать ближе', ''
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyAction', 'close'
+        }
+    end
+
+    if MelissaAlleyClose = 1:
+        gs 'Menu.Add', 'MelissaAlleyMenu', 'Продолжить близость', ''
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyToSexScene'
+        }
+    end
+
+    gs 'Menu.Add', 'MelissaAlleyMenu', 'Вернуться на площадь', ''
+    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+        gt 'MelissaDanceAlleyEnd'
+    }
+---
+
+#MelissaDanceAlleyAction
+    $MelissaAlleyAction = LCASE($ARGS[0])
+
+    if $MelissaAlleyAction = 'look':
+        MelissaAlleyRisk += 2
+    elseif $MelissaAlleyAction = 'kiss':
+        MelissaAlleyKiss = 1
+        MelissaAlleyRisk += 4
+        MelissaPlayerPath += 1
+    elseif $MelissaAlleyAction = 'close':
+        MelissaAlleyClose = 1
+        MelissaAlleyRisk += 6
+        sluttiness['melissa'] += 1
+    end
+
+    if LOC('MelissaDanceAlleyActionText') = 1:
+        gs 'MelissaDanceAlleyActionText', $MelissaAlleyAction
+    end
+
+    killvar '$MelissaAlleyAction'
+    gt 'MelissaDanceAlleyEvent'
+---
+
+#MelissaDanceAlleyToSexScene
+    *clr
+    clr
+    cla
+
+    if MelissaHomeSex = 0:
+        if LOC('MelissaDanceAlleyHomeGateText') = 1:
+            gs 'MelissaDanceAlleyHomeGateText'
+        else:
+            *p 'Мелисса отстраняется: «Сначала дома. Я же говорила».'
+        end
+
+        act 'Вернуться в подворотню':
+            gt 'MelissaDanceAlleyEvent'
+        end
+
+        act 'На площадь':
+            gt 'MelissaDanceAlleyEnd'
+        end
+
+        exit
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'SexSceneEnsureIntimStage', 'melissa'
+
+    if LOC('MelissaDanceAlleyBeforeSexText') = 1:
+        gs 'MelissaDanceAlleyBeforeSexText'
+    end
+
+    *pl ' '
+
+    MelissaAlleyAfterSex = 1
+
+    act 'Продолжить':
+        gt 'SexSceneStart', 'melissa', 'MarketDance', 'melissa_alley'
+    end
+
+    act 'Остановиться':
+        gt 'MelissaDanceAlleyEnd'
+    end
+---
+
+#MelissaDanceAlleyEnd
+    MelissaDanceEnded = 1
+
+    if LOC('MelissaDanceAlleyEndText') = 1:
+        gs 'MelissaDanceAlleyEndText'
+    end
+
+    *pl ' '
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+---

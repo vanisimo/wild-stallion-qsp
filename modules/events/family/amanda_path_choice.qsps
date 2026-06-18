@@ -1,0 +1,230 @@
+! ================================================
+! FILE: modules/events/family/amanda_path_choice.qsps
+! MODULE: events/family
+! Первый выбор player-path / NPC-path (Аманда)
+! ================================================
+
+#AmandaPathChoiceCanStart
+    AmandaPathChoiceCanStart = 0
+
+    if AmandaPathChoiceDone = 1:
+        exit
+    end
+
+    if AmandaPathChoiceReady = 1:
+        AmandaPathChoiceCanStart = 1
+        exit
+    end
+
+    if AmandaLegareFirstSexDone = 0:
+        if Fact_AmandaLegareMajorRisk = 0:
+            exit
+        end
+
+        if AmandaLegareMajorRiskResult < 2:
+            if AmandaNpcPath < 8:
+                exit
+            end
+        end
+    end
+
+    if AmandaNpcPath < 5 and AmandaLegareFirstSexDone = 0:
+        exit
+    end
+
+    if PlayerKnows_AmandaLegareFridayRace = 0:
+        if PlayerKnows_AmandaLegareMajorRisk = 0:
+            if Fact_AmandaLegarePrivateTalk = 0:
+                if AmandaLegareFirstSexDone = 0:
+                    exit
+                end
+            end
+        end
+    end
+
+    AmandaPathChoiceCanStart = 1
+---
+
+#AmandaPathChoiceTryAutoStart
+    $AmandaPathChoiceReturnLoc = $ARGS[0]
+
+    if $AmandaPathChoiceReturnLoc = '':
+        $AmandaPathChoiceReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaPathChoiceReturnLoc) = 0:
+        $AmandaPathChoiceReturnLoc = 'TavernMain'
+    end
+
+    if AmandaPathChoiceReady = 0:
+        if AmandaLegareFirstSexDone = 1:
+            AmandaPathChoiceReady = 1
+        elseif Fact_AmandaLegareMajorRisk = 1 and AmandaLegareMajorRiskResult >= 2:
+            AmandaPathChoiceReady = 1
+        elseif AmandaNpcPath >= 10:
+            AmandaPathChoiceReady = 1
+        end
+    end
+
+    if LOC('AmandaPathChoiceCanStart') = 1:
+        gs 'AmandaPathChoiceCanStart'
+
+        if AmandaPathChoiceCanStart = 1:
+            gt 'AmandaPathChoiceStart', $AmandaPathChoiceReturnLoc
+        end
+    end
+---
+
+#AmandaPathChoiceStart
+    *clr
+    clr
+    cla
+
+    $AmandaPathChoiceReturnLoc = $ARGS[0]
+
+    if $AmandaPathChoiceReturnLoc = '':
+        $AmandaPathChoiceReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaPathChoiceReturnLoc) = 0:
+        $AmandaPathChoiceReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА: ЧЬЯ ОНА?'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaPathChoiceIntroText') = 1:
+        gs 'AmandaPathChoiceIntroText'
+    else:
+        *p 'Слухи о Легаре и Аманде уже нельзя игнорировать. Пора решить, как вы будете относиться к её NPC-ветке.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG PATH CHOICE] NpcPath: ' + STR(AmandaNpcPath)
+        *pl '[DEBUG PATH CHOICE] PlayerPath: ' + STR(AmandaPlayerPath)
+        *pl '[DEBUG PATH CHOICE] LegareFirstSex: ' + STR(AmandaLegareFirstSexDone)
+        *pl '[DEBUG PATH CHOICE] HomeSex: ' + STR(AmandaHomeSex)
+        *pl ' '
+    end
+
+    gs 'AmandaPathChoiceBuildMenu'
+
+    *p 'Как вы <a href="exec:gs ''Menu.Show'', ''AmandaPathChoiceMenu''">поступите</a>?'
+---
+
+#AmandaPathChoiceBuildMenu
+    gs 'Menu.Destroy', 'AmandaPathChoiceMenu'
+    gs 'Menu.Create', 'AmandaPathChoiceMenu'
+
+    gs 'Menu.Add', 'AmandaPathChoiceMenu', 'Добиваться Аманды самому', ''
+    gs 'Menu.AddModule', 'AmandaPathChoiceMenu', {
+        gt 'AmandaPathChoiceAction', 'pursue_self', $AmandaPathChoiceReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaPathChoiceMenu', 'Запретить ей встречи с парнями', ''
+    gs 'Menu.AddModule', 'AmandaPathChoiceMenu', {
+        gt 'AmandaPathChoiceAction', 'prohibit_guys', $AmandaPathChoiceReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaPathChoiceMenu', 'Не мешать, но следить', ''
+    gs 'Menu.AddModule', 'AmandaPathChoiceMenu', {
+        gt 'AmandaPathChoiceAction', 'watch_npc', $AmandaPathChoiceReturnLoc
+    }
+
+    gs 'Menu.Add', 'AmandaPathChoiceMenu', 'Не вмешиваться', ''
+    gs 'Menu.AddModule', 'AmandaPathChoiceMenu', {
+        gt 'AmandaPathChoiceAction', 'allow_npc', $AmandaPathChoiceReturnLoc
+    }
+---
+
+#AmandaPathChoiceAction
+    *clr
+    clr
+    cla
+
+    $PathChoiceKey = LCASE($ARGS[0])
+    $AmandaPathChoiceReturnLoc = $ARGS[1]
+
+    if $AmandaPathChoiceReturnLoc = '':
+        $AmandaPathChoiceReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaPathChoiceReturnLoc) = 0:
+        $AmandaPathChoiceReturnLoc = 'TavernMain'
+    end
+
+    AmandaPathChoiceDone = 1
+    AmandaPathChoiceReady = 0
+
+    if $PathChoiceKey = 'pursue_self':
+        AmandaPathChoice = 1
+        AmandaPlayerPath += 3
+        AmandaTrustStefan += 2
+        Friends['amanda'] += 2
+
+        if AmandaHomeUnlocked = 0:
+            AmandaHomeUnlocked = 1
+        end
+
+    elseif $PathChoiceKey = 'prohibit_guys':
+        AmandaPathChoice = 2
+        AmandaProhibitGuys = 1
+        AmandaTrustStefan += 1
+        AmandaRebellion += 1
+        MelissaRespectStefan += 1
+        AmandaNpcPath -= 1
+
+        if AmandaNpcPath < 0:
+            AmandaNpcPath = 0
+        end
+
+    elseif $PathChoiceKey = 'watch_npc':
+        AmandaPathChoice = 3
+        AmandaWatchNpcPath = 1
+        AmandaSecretiveness += 1
+        AmandaNpcPath += 1
+
+    elseif $PathChoiceKey = 'allow_npc':
+        AmandaPathChoice = 4
+        AmandaNpcPath += 2
+        AmandaRebellion += 1
+        AmandaSecretiveness += 1
+        MelissaFamilyConcern += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РЕШЕНИЕ ПРИНЯТО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaPathChoiceActionText') = 1:
+        gs 'AmandaPathChoiceActionText', $PathChoiceKey
+    else:
+        *p 'Вы сделали выбор. Аманда запомнит его — и город тоже.'
+    end
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt $AmandaPathChoiceReturnLoc
+    end
+
+    killvar '$PathChoiceKey'
+---
+
+#AmandaPathChoiceDebugReset
+    AmandaPathChoiceDone = 0
+    AmandaPathChoiceReady = 0
+    AmandaPathChoice = 0
+    AmandaProhibitGuys = 0
+    AmandaWatchNpcPath = 0
+    AmandaPathChoiceCanStart = 0
+---

@@ -1,0 +1,268 @@
+! ================================================
+! FILE: modules/events/family/melissa_home_chain.qsps
+! MODULE: events/family
+! Домашняя лестница Мелиссы (player-path)
+! ================================================
+
+#MelissaHomeCanAdvance
+    MelissaHomeCanAdvance = 0
+
+    if MelissaHomeUnlocked = 0:
+        exit
+    end
+
+    if MelissaHomeSex = 1:
+        exit
+    end
+
+    if MelissaHomeStepToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if $GirlLocation['melissa'] <> 'MelissaRoom':
+        exit
+    end
+
+    if MelissaHomeStage >= 6:
+        exit
+    end
+
+    if Friends['melissa'] < 7 + MelissaHomeStage:
+        exit
+    end
+
+    MelissaHomeCanAdvance = 1
+---
+
+#MelissaHomeStep
+    gs 'MelissaHomeCanAdvance'
+
+    if MelissaHomeCanAdvance = 0:
+        gt 'MelissaRoom'
+    end
+
+    if MelissaHomeStage = 0:
+        $MelissaHomeStepKey = 'hug'
+    elseif MelissaHomeStage = 1:
+        $MelissaHomeStepKey = 'kiss'
+    elseif MelissaHomeStage = 2:
+        $MelissaHomeStepKey = 'petting'
+    elseif MelissaHomeStage = 3:
+        $MelissaHomeStepKey = 'handjob'
+    elseif MelissaHomeStage = 4:
+        $MelissaHomeStepKey = 'blowjob'
+    elseif MelissaHomeStage = 5:
+        $MelissaHomeStepKey = 'cuni'
+    else:
+        gt 'MelissaRoom'
+    end
+
+    gs 'MelissaHomeStepText', $MelissaHomeStepKey
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $MelissaHomeText
+    *pl ' '
+
+    MelissaHomeStage += 1
+    MelissaHomeStepToday = 1
+    MelissaPlayerPath += 1
+
+    if $MelissaHomeStepKey = 'hug':
+        Friends['melissa'] += 1
+        love['melissa'] += 1
+    elseif $MelissaHomeStepKey = 'kiss':
+        KissCount['melissa'] += 1
+        love['melissa'] += 1
+        otkroven['melissa'] += 1
+    elseif $MelissaHomeStepKey = 'petting':
+        CaressCount['melissa'] += 1
+        otkroven['melissa'] += 1
+    elseif $MelissaHomeStepKey = 'handjob':
+        CaressCount['melissa'] += 1
+        sluttiness['melissa'] += 1
+    elseif $MelissaHomeStepKey = 'blowjob':
+        BlowjobCount['melissa'] += 1
+        OralCount['melissa'] += 1
+        sluttiness['melissa'] += 1
+    elseif $MelissaHomeStepKey = 'cuni':
+        CuniCount['melissa'] += 1
+        OralCount['melissa'] += 1
+        otkroven['melissa'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+    killvar '$MelissaHomeStepKey'
+
+    act 'Вернуться':
+        gt 'MelissaRoom'
+    end
+---
+
+#MelissaHomeFirstSexLaunch
+    if MelissaHomeUnlocked = 0 or MelissaHomeStage < 6:
+        gt 'MelissaRoom'
+    end
+
+    if MelissaHomeSex = 1:
+        gt 'MelissaRoom'
+    end
+
+    gs 'MelissaHomeStepText', 'presex'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $MelissaHomeText
+    *pl ' '
+
+    MelissaHomeFirstSexActive = 1
+    MelissaHomeStepToday = 1
+
+    if IntimStage['melissa'] < 5:
+        IntimStage['melissa'] = 5
+    end
+
+    if otkroven['melissa'] < 15:
+        otkroven['melissa'] = 15
+    end
+
+    gt 'SexSceneStart', 'melissa', 'MelissaHomeAfterSex', 'melissa_home_first'
+---
+
+#MelissaHomeAfterSex
+    gs 'MelissaHomeAfterSexText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $MelissaHomeText
+    *pl ' '
+
+    act 'Вернуться в коридор':
+        gt 'TavernSecondFloor'
+    end
+
+    act 'Остаться в комнате':
+        gt 'MelissaRoom'
+    end
+---
+
+#MelissaDanceLeaveHome
+    MelissaHomeUnlocked = 1
+    MelissaDanceEnded = 1
+    MelissaPlayerPath += 2
+
+    if LOC('MelissaDanceLeaveHomeText') = 1:
+        gs 'MelissaDanceLeaveHomeText'
+    else:
+        $MelissaDanceLastText = 'Вы уводите Мелиссу с площади в трактир.'
+    end
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УХОД С ТАНЦЕВ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $MelissaDanceLastText
+    *pl ' '
+
+    $GirlLocation['melissa'] = 'MelissaRoom'
+
+    act 'Пойти в комнату Мелиссы':
+        gt 'MelissaRoom'
+    end
+
+    act 'Вернуться на площадь':
+        gt 'MarketDance'
+    end
+---
+
+#MelissaProhibitMinstrelTalk
+    if MelissaMinstrelMet = 0:
+        gt $TalkReturnLoc
+    end
+
+    if MelissaProhibitMinstrel = 1:
+        *p 'Вы уже запретили Мелиссе встречаться с менестрелем. Она помнит это — и обижается.'
+        act 'Вернуться':
+            gt $TalkReturnLoc
+        end
+        exit
+    end
+
+    gs 'MelissaProhibitMinstrelTalkText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР О МЕНЕСТРЕЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $MelissaTalkText
+    *pl ' '
+
+    act 'Запретить встречи с ' + $MelissaMinstrelName:
+        MelissaProhibitMinstrel = 1
+        MelissaControlNeed += 2
+        MelissaJealousy += 1
+        MelissaMusicianInterest -= 3
+
+        if MelissaMusicianInterest < 0:
+            MelissaMusicianInterest = 0
+        end
+
+        gs 'MelissaProhibitMinstrelDoneText'
+        *p $MelissaTalkText
+        act 'Вернуться':
+            gt $TalkReturnLoc
+        end
+    end
+
+    act 'Пока не запрещать':
+        gt $TalkReturnLoc
+    end
+---
+
+#MelissaProhibitMinstrelTalkCanOffer
+    MelissaProhibitMinstrelTalkCanOffer = 0
+
+    if MelissaMinstrelMet = 0:
+        exit
+    end
+
+    if MelissaProhibitMinstrel = 1:
+        exit
+    end
+
+    if MelissaFirstPathChoiceDone = 0:
+        exit
+    end
+
+    MelissaProhibitMinstrelTalkCanOffer = 1
+---

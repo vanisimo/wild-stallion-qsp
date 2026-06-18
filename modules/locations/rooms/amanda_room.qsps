@@ -2,7 +2,6 @@
 ! FILE: modules/locations/amanda_room.qsps
 ! Комната Аманды
 ! Личная комната Аманды на втором этаже трактира
-! Все взаимодействия с девушкой идут через кликабельное имя
 ! ================================================
 
 #AmandaRoom
@@ -39,6 +38,38 @@
 
     if LocationGirlShown = 0:
         *p 'Аманды сейчас нет в комнате.'
+    else:
+        if AmandaHomeUnlocked = 1 and LOC('AmandaHomeStep') = 1:
+            gs 'AmandaHomeCanAdvance'
+
+            if AmandaHomeCanAdvance = 1 and AmandaHomeStage < 6:
+                act 'Провести время наедине с Амандой':
+                    gt 'AmandaHomeStep'
+                end
+            end
+
+            if AmandaHomeStage >= 6 and AmandaHomeSex = 0 and AmandaHomeStepToday = 0 and time >= 3:
+                act 'Продолжить близость':
+                    gt 'AmandaHomeFirstSexLaunch'
+                end
+            end
+
+            if AmandaHomeSex = 1 and LOC('SexSceneStart') = 1 and time >= 3:
+                act 'Провести вечер с Амандой':
+                    gt 'SexSceneStart', 'amanda', 'AmandaHomeAfterSex', 'amanda_repeat'
+                end
+            end
+
+            if MelissaHomeSex = 1 and LOC('AmandaMelissaThreesomeCanStart') = 1:
+                gs 'AmandaMelissaThreesomeCanStart'
+
+                if AmandaMelissaThreesomeCanStart = 1:
+                    act 'Вечер с Амандой и Мелиссой':
+                        gt 'GroupSexAmandaMelissaStefanStart'
+                    end
+                end
+            end
+        end
     end
 
     killvar 'LocationGirlShown'
@@ -49,6 +80,12 @@
         *pl ' '
         *p 'Вы осматриваете комнату Аманды внимательнее.'
         *p 'Всё выглядит просто и аккуратно. У кровати лежит сложенная одежда, а возле окна стоит маленький деревянный табурет.'
+
+        if AmandaDanceDressReady = 1 and AmandaDanceDressSelfBought = 0 and AmandaDanceDressPlayerBought = 1:
+            *p 'На гвозде висит новое платье для танцев — яркое, с глубоким вырезом.'
+        elseif AmandaDanceDressSelfBought = 1:
+            *p 'На стуле лежит платье для танцев — Аманда купила его сама.'
+        end
     end
 
     act 'Выйти в коридор':
@@ -59,4 +96,3 @@
         gt 'TavernMain'
     end
 ---
-

@@ -1,0 +1,245 @@
+! ================================================
+! FILE: modules/events/family/amanda_home_chain.qsps
+! MODULE: events/family
+! Домашняя лестница Аманды (player-path)
+! ================================================
+
+#AmandaHomeCanAdvance
+    AmandaHomeCanAdvance = 0
+
+    if AmandaHomeUnlocked = 0:
+        exit
+    end
+
+    if AmandaHomeSex = 1:
+        exit
+    end
+
+    if AmandaHomeStepToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'AmandaRoom':
+        exit
+    end
+
+    if AmandaHomeStage >= 6:
+        exit
+    end
+
+    AmandaHomeCanAdvance = 1
+---
+
+#AmandaHomeStep
+    gs 'AmandaHomeCanAdvance'
+
+    if AmandaHomeCanAdvance = 0:
+        gt 'AmandaRoom'
+    end
+
+    if AmandaHomeStage = 0:
+        $AmandaHomeStepKey = 'hug'
+    elseif AmandaHomeStage = 1:
+        $AmandaHomeStepKey = 'kiss'
+    elseif AmandaHomeStage = 2:
+        $AmandaHomeStepKey = 'petting'
+    elseif AmandaHomeStage = 3:
+        $AmandaHomeStepKey = 'handjob'
+    elseif AmandaHomeStage = 4:
+        $AmandaHomeStepKey = 'blowjob'
+    elseif AmandaHomeStage = 5:
+        $AmandaHomeStepKey = 'cuni'
+    else:
+        gt 'AmandaRoom'
+    end
+
+    gs 'AmandaHomeStepText', $AmandaHomeStepKey
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $AmandaHomeText
+    *pl ' '
+
+    AmandaHomeStage += 1
+    AmandaHomeStepToday = 1
+    AmandaPlayerPath += 1
+
+    if $AmandaHomeStepKey = 'hug':
+        Friends['amanda'] += 1
+        love['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'kiss':
+        KissCount['amanda'] += 1
+        love['amanda'] += 1
+        otkroven['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'petting':
+        CaressCount['amanda'] += 1
+        otkroven['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'handjob':
+        CaressCount['amanda'] += 1
+        sluttiness['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'blowjob':
+        BlowjobCount['amanda'] += 1
+        OralCount['amanda'] += 1
+        sluttiness['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'cuni':
+        CuniCount['amanda'] += 1
+        OralCount['amanda'] += 1
+        otkroven['amanda'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+    killvar '$AmandaHomeStepKey'
+
+    act 'Вернуться':
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaHomeFirstSexLaunch
+    if AmandaHomeUnlocked = 0 or AmandaHomeStage < 6:
+        gt 'AmandaRoom'
+    end
+
+    if AmandaHomeSex = 1:
+        gt 'AmandaRoom'
+    end
+
+    gs 'AmandaHomeStepText', 'presex'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $AmandaHomeText
+    *pl ' '
+
+    AmandaHomeFirstSexActive = 1
+    AmandaHomeStepToday = 1
+
+    if IntimStage['amanda'] < 5:
+        IntimStage['amanda'] = 5
+    end
+
+    if otkroven['amanda'] < 15:
+        otkroven['amanda'] = 15
+    end
+
+    gt 'SexSceneStart', 'amanda', 'AmandaHomeAfterSex', 'amanda_home_first'
+---
+
+#AmandaHomeAfterSex
+    gs 'AmandaHomeAfterSexText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $AmandaHomeText
+    *pl ' '
+
+    act 'Вернуться в коридор':
+        gt 'TavernSecondFloor'
+    end
+
+    act 'Остаться в комнате':
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaDanceLeaveHome
+    AmandaHomeUnlocked = 1
+    AmandaDanceEnded = 1
+    AmandaPlayerPath += 2
+
+    if LOC('AmandaDanceLeaveHomeText') = 1:
+        gs 'AmandaDanceLeaveHomeText'
+    else:
+        $AmandaDanceLastText = 'Вы уводите Аманду с площади в трактир.'
+    end
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УХОД С ТАНЦЕВ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $AmandaDanceLastText
+    *pl ' '
+
+    $GirlLocation['amanda'] = 'AmandaRoom'
+
+    act 'Пойти в комнату Аманды':
+        gt 'AmandaRoom'
+    end
+
+    act 'Вернуться на площадь':
+        gt 'MarketDance'
+    end
+---
+
+#IrmaBuyAmandaDanceDress
+    if AmandaDanceDressReady = 1:
+        *p 'Платье для танцев Аманды уже готово.'
+        act 'Вернуться': gt 'IrmaShop'
+        exit
+    end
+
+    if Friends['amanda'] <= 8:
+        *p 'Ирма качает головой: "Сначала познакомься с сестрой получше — она сама скажет, какое платье ей нужно."'
+        act 'Вернуться': gt 'IrmaShop'
+        exit
+    end
+
+    gs 'IrmaAmandaDanceDressBuyText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЛАТЬЕ ДЛЯ ТАНЦЕВ — АМАНДА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IrmaDressText
+    *pl ' '
+
+    act 'Купить (70 мараведи)':
+        if money >= 70:
+            money -= 70
+            AmandaDanceDressReady = 1
+            AmandaDanceDressPlayerBought = 1
+            gs 'IrmaAmandaDanceDressBoughtText'
+            *p $IrmaDressText
+            Friends['amanda'] += 2
+            Friends['irma'] += 1
+            act 'Вернуться в лавку': gt 'IrmaShop'
+        else:
+            *p 'У вас недостаточно денег.'
+            act 'Вернуться': gt 'IrmaBuyAmandaDanceDress'
+        end
+    end
+
+    act 'Отказаться':
+        gt 'IrmaShop'
+    end
+---

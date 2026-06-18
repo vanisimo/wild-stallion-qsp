@@ -1,0 +1,390 @@
+! ================================================
+! FILE: modules/events/becky/inga_lucas_arc.qsps
+! MODULE: events/becky
+! Лукас: окно → ММЖ #1–2 → огурцы → анал → DP → застук Бекки
+! ================================================
+
+#IngaLucasWindowCanOffer
+    IngaLucasWindowCanOffer = 0
+
+    if IngaBackroomSex = 0:
+        exit
+    end
+
+    if IngaRoomUnlocked = 0:
+        exit
+    end
+
+    if IngaLucasWindowSeen = 1:
+        exit
+    end
+
+    IngaLucasWindowCanOffer = 1
+---
+
+#IngaLucasWindowEvent
+    *clr
+    clr
+    cla
+
+    IngaLucasWindowSeen = 1
+
+    if LOC('IngaLucasWindowText') = 1:
+        gs 'IngaLucasWindowText'
+    end
+
+    *pl ' '
+
+    act 'Позвать Лукаса в комнату':
+        gt 'IngaLucasInviteStart'
+    end
+
+    act 'Сделать вид, что не заметили':
+        gt 'IngaRoom'
+    end
+---
+
+#IngaLucasInviteStart
+    IngaLucasInviteDone = 1
+    IngaLucasRelation = 1
+
+    if LOC('IngaLucasInviteText') = 1:
+        gs 'IngaLucasInviteText'
+    end
+
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'IngaLucasThreesome1Start'
+    end
+
+    act 'Отказаться':
+        gt 'IngaRoom'
+    end
+---
+
+#IngaLucasThreesomeCanStart
+    IngaLucasThreesomeCanStart = 0
+
+    if IngaLucasInviteDone = 0:
+        exit
+    end
+
+    if IngaBackroomSex = 0:
+        exit
+    end
+
+    if IngaLucasThreesomeCount >= 3:
+        exit
+    end
+
+    IngaLucasThreesomeCanStart = 1
+---
+
+#IngaLucasThreesome1Start
+    IngaLucasThreesomeCount = 1
+    sluttiness['inga'] += 2
+    IngaNpcPath += 1
+    TavernScandal += 1
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ММЖ — СТЕФАН, ЛУКАС И ИНГА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('IngaLucasThreesome1Text') = 1:
+        gs 'IngaLucasThreesome1Text'
+    end
+
+    *pl ' '
+
+    act 'Вернуться в комнату':
+        gt 'IngaRoom'
+    end
+---
+
+#IngaLucasThreesome2Start
+    IngaLucasThreesomeCount = 2
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВТОРОЙ РАЗ ВТРОЁМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('IngaLucasThreesome2Text') = 1:
+        gs 'IngaLucasThreesome2Text'
+    end
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'IngaRoom'
+    end
+---
+
+#IngaLucasAnalCanStart
+    IngaLucasAnalCanStart = 0
+
+    if IngaLucasInviteDone = 0:
+        exit
+    end
+
+    if IngaBackroomSex = 0:
+        exit
+    end
+
+    if IngaLucasCucumberReady = 0:
+        exit
+    end
+
+    if IngaLucasThreesomeCount < 2:
+        exit
+    end
+
+    if IngaLucasAnalDone = 1:
+        exit
+    end
+
+    if analvirgin['inga'] = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 2:
+        exit
+    end
+
+    if time < 3 or time >= 5:
+        exit
+    end
+
+    IngaLucasAnalCanStart = 1
+---
+
+#IngaLucasAnalSceneStart
+    gs 'IngaLucasAnalCanStart'
+
+    if IngaLucasAnalCanStart = 0:
+        gt 'IngaRoom'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Инга мягко отказывает: "Не сегодня. Я ещё… не готова."'
+
+        act 'Вернуться':
+            gt 'IngaRoom'
+        end
+
+        exit
+    end
+
+    *clr
+    clr
+    cla
+
+    if LOC('IngaLucasAnalIntroText') = 1:
+        gs 'IngaLucasAnalIntroText'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИНГА — ПЕРВЫЙ АНАЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IngaLucasAnalBuildMenu'
+
+    *p 'Как вы будете <a href="exec:gs ''Menu.Show'', ''IngaLucasAnalMenu''">действовать</a>?'
+---
+
+#IngaLucasAnalBuildMenu
+    gs 'Menu.Destroy', 'IngaLucasAnalMenu'
+    gs 'Menu.Create', 'IngaLucasAnalMenu'
+
+    gs 'Menu.Add', 'IngaLucasAnalMenu', 'Один на один с Ингой', ''
+    gs 'Menu.AddModule', 'IngaLucasAnalMenu', {
+        gt 'IngaLucasAnalAction', 'solo'
+    }
+
+    if IngaLucasThreesomeCount >= 2:
+        gs 'Menu.Add', 'IngaLucasAnalMenu', 'С Лукасом в комнате', ''
+        gs 'Menu.AddModule', 'IngaLucasAnalMenu', {
+            gt 'IngaLucasAnalAction', 'threesome'
+        }
+    end
+---
+
+#IngaLucasAnalAction
+    *clr
+    clr
+    cla
+
+    $IngaLucasAnalChoice = LCASE($ARGS[0])
+
+    if LOC('IngaLucasAnalActionText') = 1:
+        gs 'IngaLucasAnalActionText', $IngaLucasAnalChoice
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИНГА — ПЕРВЫЙ АНАЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $IngaLucasAnalChoice = 'threesome':
+        IngaLucasAnalThreesomeDone = 1
+        IngaNpcPath += 1
+        TavernScandal += 2
+    else:
+        IngaPlayerPath += 1
+        TavernScandal += 1
+    end
+
+    analvirgin['inga'] = 0
+    IngaLucasAnalDone = 1
+    sluttiness['inga'] += 2
+    otkroven['inga'] += 1
+
+    gs 'RegisterSex', 'inga', 'anal', 1, 1
+    gs 'RegisterPlayerCum'
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+
+    act 'Вернуться в комнату':
+        gt 'IngaRoom'
+    end
+
+    killvar '$IngaLucasAnalChoice'
+---
+
+#IngaLucasThreesomeDpCanStart
+    IngaLucasThreesomeDpCanStart = 0
+
+    if IngaLucasInviteDone = 0:
+        exit
+    end
+
+    if IngaLucasCucumberReady = 0:
+        exit
+    end
+
+    if IngaLucasThreesomeCount < 2:
+        exit
+    end
+
+    if IngaLucasAnalDone = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    if time < 3 or time >= 5:
+        exit
+    end
+
+    IngaLucasThreesomeDpCanStart = 1
+---
+
+#IngaLucasThreesomeDpStart
+    gt 'GroupSexIngaLucasDpStart'
+---
+
+#IngaLucasCucumberShop
+    if IngaLucasThreesomeCount < 1:
+        gt 'BeckyShop'
+    end
+
+    IngaLucasCucumberReady = 1
+    sluttiness['inga'] += 1
+
+    if LOC('IngaLucasCucumberText') = 1:
+        gs 'IngaLucasCucumberText'
+    end
+
+    act 'Вернуться': gt 'BeckyShop'
+---
+
+#BeckyCatchIngaLucasCanStart
+    BeckyCatchIngaLucasCanStart = 0
+
+    if IngaLucasThreesomeCount < 1:
+        exit
+    end
+
+    if BeckyCatchIngaLucasDone = 1:
+        exit
+    end
+
+    BeckyCatchIngaLucasCanStart = 1
+---
+
+#BeckyCatchIngaLucasStart
+    BeckyCatchIngaLucasDone = 1
+    BeckyCatchIngaLucasReady = 1
+    TavernScandal += 2
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' БЕККИ ЗАСТУКАЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('BeckyCatchIngaLucasText') = 1:
+        gs 'BeckyCatchIngaLucasText'
+    end
+
+    *pl ' '
+
+    gs 'BeckyCatchIngaLucasOfferText'
+
+    *p $GroupSexText
+    *pl ' '
+
+    gs 'BeckyCatchIngaLucasBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''BeckyCatchIngaLucasMenu''">делать</a>?'
+---
+
+#BeckyCatchIngaLucasBuildMenu
+    gs 'Menu.Destroy', 'BeckyCatchIngaLucasMenu'
+    gs 'Menu.Create', 'BeckyCatchIngaLucasMenu'
+
+    gs 'BeckyIngaThreesomeCanStart'
+
+    if BeckyIngaThreesomeCanStart = 1:
+        gs 'Menu.Add', 'BeckyCatchIngaLucasMenu', 'Согласиться — встретиться втроём', ''
+        gs 'Menu.AddModule', 'BeckyCatchIngaLucasMenu', {
+            gt 'GroupSexBeckyIngaStefanStart'
+        }
+    end
+
+    gs 'Menu.Add', 'BeckyCatchIngaLucasMenu', 'Отложить разговор', ''
+    gs 'Menu.AddModule', 'BeckyCatchIngaLucasMenu', {
+        gt 'BeckyCatchIngaLucasDecline'
+    }
+---
+
+#BeckyCatchIngaLucasDecline
+    *p 'Бекки кивает сухо: "Тогда делай вид, что я ничего не видела. Пока."'
+
+    act 'Вернуться в лавку':
+        gt 'BeckyShop'
+    end
+
+    act 'В комнату Инги':
+        gt 'IngaRoom'
+    end
+---

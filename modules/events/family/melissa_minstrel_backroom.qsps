@@ -1,0 +1,269 @@
+! ================================================
+! FILE: modules/events/family/melissa_minstrel_backroom.qsps
+! MODULE: events/family
+! Первый секс NPC-path: Мелисса + менестрель у сцены
+! ================================================
+
+#MelissaMinstrelBackroomCanStart
+    MelissaMinstrelBackroomCanStart = 0
+
+    if MelissaMinstrelBackroomDone = 1:
+        exit
+    end
+
+    if MelissaMinstrelFirstSexDone = 1:
+        exit
+    end
+
+    if MelissaHomeSex = 1:
+        exit
+    end
+
+    if MelissaProhibitMinstrel = 1:
+        exit
+    end
+
+    if TavernUpgradeStageDone = 0:
+        exit
+    end
+
+    if MelissaMinstrelKissDone = 0:
+        exit
+    end
+
+    if MelissaMusicStageOfferDone = 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if MelissaMinstrelAffairStage < 1:
+        if MelissaMinstrelHallMissingDone = 0:
+            exit
+        end
+    end
+
+    MelissaMinstrelBackroomCanStart = 1
+---
+
+#MelissaMinstrelBackroomTryStart
+    if LOC('MelissaMinstrelBackroomCanStart') = 1:
+        gs 'MelissaMinstrelBackroomCanStart'
+
+        if MelissaMinstrelBackroomCanStart = 1:
+            gt 'MelissaMinstrelBackroomStart', $ARGS[0]
+        end
+    end
+---
+
+#MelissaMinstrelBackroomStart
+    *clr
+    clr
+    cla
+
+    $MelissaBackroomReturnLoc = $ARGS[0]
+
+    if $MelissaBackroomReturnLoc = '':
+        $MelissaBackroomReturnLoc = 'TavernMain'
+    end
+
+    MelissaMinstrelBackroomDone = 1
+
+    gs 'EnsureGirlData', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗАКУЛИСЬЕ У СЦЕНЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelBackroomIntroText') = 1:
+        gs 'MelissaMinstrelBackroomIntroText'
+    else:
+        *p 'Музыка в зале глухая — сцена отгорожена тканью. За ней слышны приглушённые голоса.'
+        *p 'Мелисса и ' + $MelissaMinstrelName + ' слишком долго не выходят.'
+    end
+
+    *pl ' '
+
+    gs 'MelissaMinstrelBackroomBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaBackroomMenu''">делать</a>?'
+---
+
+#MelissaMinstrelBackroomBuildMenu
+    gs 'Menu.Destroy', 'MelissaBackroomMenu'
+    gs 'Menu.Create', 'MelissaBackroomMenu'
+
+    gs 'Menu.Add', 'MelissaBackroomMenu', 'Ворваться', ''
+    gs 'Menu.AddModule', 'MelissaBackroomMenu', {
+        gt 'MelissaMinstrelBackroomAction', 'interrupt', $MelissaBackroomReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaBackroomMenu', 'Подслушать', ''
+    gs 'Menu.AddModule', 'MelissaBackroomMenu', {
+        gt 'MelissaMinstrelBackroomAction', 'spy', $MelissaBackroomReturnLoc
+    }
+
+    gs 'Menu.Add', 'MelissaBackroomMenu', 'Отойти — пусть сама', ''
+    gs 'Menu.AddModule', 'MelissaBackroomMenu', {
+        gt 'MelissaMinstrelBackroomAction', 'leave', $MelissaBackroomReturnLoc
+    }
+---
+
+#MelissaMinstrelBackroomAction
+    *clr
+    clr
+    cla
+
+    $MelissaBackroomChoice = LCASE($ARGS[0])
+    $MelissaBackroomReturnLoc = $ARGS[1]
+
+    gs 'EnsureGirlData', 'melissa'
+
+    if $MelissaBackroomChoice = 'interrupt':
+        MelissaTrustStefan += 1
+        Friends['melissa'] += 1
+        MelissaPlayerPath += 2
+        MelissaMusicianInterest -= 2
+
+        if MelissaMusicianInterest < 0:
+            MelissaMusicianInterest = 0
+        end
+
+        MelissaMinstrelBackroomResult = 0
+
+    elseif $MelissaBackroomChoice = 'spy':
+        MelissaMinstrelBackroomResult = 1
+        MelissaWatchMinstrel = 1
+        MelissaNpcPath += 2
+        GirlNpcPath['melissa'] += 2
+        MelissaMusicianInterest += 2
+        MelissaSecretiveness += 1
+        TavernScandal += 1
+
+        MinstrelBackroomRoll = RAND(1, 100)
+        MinstrelBackroomChance = 40 + sluttiness['melissa'] / 2 + MelissaMusicianInterest * 2
+
+        if MinstrelBackroomChance > 80:
+            MinstrelBackroomChance = 80
+        end
+
+        if MinstrelBackroomRoll <= MinstrelBackroomChance:
+            MelissaMinstrelFirstSexDone = 1
+            MelissaNpcPath += 3
+            GirlNpcPath['melissa'] += 3
+            MelissaFirstPathChoiceReady = 1
+            Fact_MelissaMinstrelBackroomSex = 1
+            gs 'MelissaMinstrelAffairAdvance'
+        end
+
+        killvar 'MinstrelBackroomRoll'
+        killvar 'MinstrelBackroomChance'
+
+    elseif $MelissaBackroomChoice = 'leave':
+        MelissaMinstrelBackroomResult = 2
+        MelissaNpcPath += 3
+        GirlNpcPath['melissa'] += 3
+        MelissaMusicianInterest += 3
+        MelissaSecretiveness += 2
+        TavernScandal += 2
+
+        MinstrelBackroomRoll = RAND(1, 100)
+        MinstrelBackroomChance = 55 + sluttiness['melissa'] / 2 + MelissaMusicianInterest * 2
+
+        if MinstrelBackroomChance > 90:
+            MinstrelBackroomChance = 90
+        end
+
+        if MinstrelBackroomRoll <= MinstrelBackroomChance:
+            MelissaMinstrelFirstSexDone = 1
+            MelissaNpcPath += 4
+            GirlNpcPath['melissa'] += 4
+            MelissaFirstPathChoiceReady = 1
+            Fact_MelissaMinstrelBackroomSex = 1
+            gs 'MelissaMinstrelAffairAdvance'
+        end
+
+        killvar 'MinstrelBackroomRoll'
+        killvar 'MinstrelBackroomChance'
+    end
+
+    if MelissaMinstrelAffairStage >= 2:
+        MelissaMinstrelThreesomeReady = 1
+    end
+
+    if MelissaFirstPathChoiceDone = 0 and MelissaFirstPathChoiceReady = 1:
+        if LOC('MelissaFirstPathChoiceTryStart') = 1:
+            gs 'MelissaFirstPathChoiceTryStart', $MelissaBackroomReturnLoc
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ЗАКУЛИСЬЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaMinstrelBackroomActionText') = 1:
+        gs 'MelissaMinstrelBackroomActionText', $MelissaBackroomChoice
+    end
+
+    *pl ' '
+
+    act 'Вернуться в зал':
+        gt $MelissaBackroomReturnLoc
+    end
+
+    killvar '$MelissaBackroomChoice'
+---
+
+#MelissaMinstrelThreesomeCanOffer
+    MelissaMinstrelThreesomeCanOffer = 0
+
+    if MelissaMinstrelThreesomeDone = 1:
+        exit
+    end
+
+    if MelissaMinstrelThreesomeReady = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    if MelissaHomeSex = 0:
+        exit
+    end
+
+    if TavernUpgradeStageDone = 0:
+        exit
+    end
+
+    if MelissaMinstrelFirstSexDone = 0:
+        exit
+    end
+
+    MelissaMinstrelThreesomeCanOffer = 1
+---
+
+#MelissaMinstrelThreesomeStart
+    gt 'GroupSexMelissaMinstrelStefanStart'
+---
+
+#MelissaMinstrelBackroomDebugReset
+    MelissaMinstrelBackroomDone = 0
+    MelissaMinstrelBackroomResult = 0
+    MelissaMinstrelFirstSexDone = 0
+    Fact_MelissaMinstrelBackroomSex = 0
+    MelissaMinstrelThreesomeReady = 0
+    MelissaMinstrelThreesomeCanOffer = 0
+    MelissaMinstrelThreesomeDone = 0
+---

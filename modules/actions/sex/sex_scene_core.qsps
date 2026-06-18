@@ -110,6 +110,54 @@
         exit
     end
 
+    if $SexCheckGirl = 'becky' and BeckyHomeFirstSexActive = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'becky' and BeckyHomeSex = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'amanda' and AmandaHomeFirstSexActive = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'amanda' and AmandaHomeSex = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'melissa' and MelissaHomeFirstSexActive = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'melissa' and MelissaHomeSex = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'inga' and IngaBackroomFirstSexActive = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'inga' and IngaBackroomSex = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'sandra' and SandraHomeFirstSexActive = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'sandra' and SandraHomeSex = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'clarissa' and ClarissaIntimFirstSexActive = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'clarissa' and ClarissaIntimSex = 1:
+        exit
+    end
+
     killvar '$SexCheckGirl'
 ---
 
@@ -683,6 +731,8 @@
                 $SexLastText += '<br><br>Мелисса срывается почти одновременно с вами и потом долго не решается поднять глаза.'
             elseif $SexGirl = 'sandra':
                 $SexLastText += '<br><br>Сандра пытается сохранить самообладание, но общий финал всё же ломает её выдержку.'
+            elseif $SexGirl = 'becky':
+                $SexLastText += '<br><br>Бекки срывается почти одновременно с вами и потом шепчет: "Тише… дети ещё внизу."'
             else:
                 $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' достигает пика почти одновременно с вами.'
             end
@@ -693,6 +743,8 @@
                 $SexLastText += '<br><br>Мелисса больше не может сдерживаться. Она дрожит в ваших руках и потом смущённо отворачивается.'
             elseif $SexGirl = 'sandra':
                 $SexLastText += '<br><br>Сандра на мгновение теряет привычную сдержанность, а потом медленно приходит в себя.'
+            elseif $SexGirl = 'becky':
+                $SexLastText += '<br><br>Бекки больше не выдерживает. Она кусает губу, чтобы не застонать слишком громко, и долго не может отдышаться.'
             else:
                 $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' получает удовольствие и некоторое время приходит в себя.'
             end
@@ -850,6 +902,12 @@
 #SexSceneTextAction
     $SexTextAction = LCASE($ARGS[0])
 
+    if $SexGirl = 'amanda' or $SexGirl = 'melissa' or $SexGirl = 'sandra' or $SexGirl = 'becky':
+        gs 'SexSceneText', $SexTextAction
+        killvar '$SexTextAction'
+        exit
+    end
+
     if $SexTextAction = 'intro':
         if $SexGirl = 'amanda':
             $SexLastText = 'Аманда задерживает на вас взгляд чуть дольше обычного. В её улыбке есть и смущение, и вызов.'
@@ -954,6 +1012,71 @@
 
     if SexSceneHadVaginal = 1:
         gs 'RegisterSex', $SexGirl
+    end
+
+    if $SexGirl = 'becky' and BeckyHomeFirstSexActive = 1:
+        BeckyHomeFirstSexActive = 0
+
+        if SexSceneHadVaginal = 1:
+            BeckyHomeSex = 1
+
+            if BeckyHomeStage < 4:
+                BeckyHomeStage = 4
+            end
+        end
+    end
+
+    if $SexGirl = 'amanda' and AmandaHomeFirstSexActive = 1:
+        AmandaHomeFirstSexActive = 0
+
+        if SexSceneHadVaginal = 1:
+            AmandaHomeSex = 1
+            AmandaHomeStage = 7
+            AmandaPlayerPath += 2
+        end
+    end
+
+    if $SexGirl = 'melissa' and MelissaHomeFirstSexActive = 1:
+        MelissaHomeFirstSexActive = 0
+
+        if SexSceneHadVaginal = 1:
+            MelissaHomeSex = 1
+            MelissaHomeStage = 7
+            MelissaPlayerPath += 2
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaBackroomFirstSexActive = 1:
+        IngaBackroomFirstSexActive = 0
+
+        if SexSceneHadVaginal = 1:
+            IngaBackroomSex = 1
+            IngaRomanceStage = 4
+            IngaDanceUnlocked = 1
+            IngaPlayerPath += 2
+            virginity['inga'] = 0
+        end
+    end
+
+    if $SexGirl = 'sandra' and SandraHomeFirstSexActive = 1:
+        SandraHomeFirstSexActive = 0
+
+        if SexSceneHadVaginal = 1:
+            SandraHomeSex = 1
+            SandraHomeStage = 12
+            SandraPlayerPath += 2
+        end
+    end
+
+    if $SexGirl = 'clarissa' and SexSceneHadVaginal = 1:
+        if ClarissaIntimFirstSexActive = 1:
+            ClarissaIntimFirstSexActive = 0
+            ClarissaIntimSex = 1
+            ClarissaIntimStage = 4
+            ClarissaPlayerPath += 2
+        end
+
+        ClarissaVaginalSexCount += 1
     end
 
     if SexSceneHadPlayerCum = 1:

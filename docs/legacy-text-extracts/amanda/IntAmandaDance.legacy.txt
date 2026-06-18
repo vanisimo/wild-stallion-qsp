@@ -1,0 +1,283 @@
+Название локации: IntAmandaDance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	$GirlNameIAD='amanda'
+	DanceMaxIAD=6
+	
+	GS 'Menu.Create','MenuAmandaDance'
+	GS 'Menu.Add','MenuAmandaDance','Осмотреть',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		gs 'GirlsDesc','amanda'	
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep<10,-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Поболтать',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		'Вы подошли к своей сестренке и начали с ней весело болтать о разной ерунде. За разговором незаметно пролетело время.'
+		if Friends[$GirlNameIAD]>=7:
+			'Вы подумали что зря вы стали болтать с сестрой о ерунде. Ничего нового вы не узнали, а доверяет вам она и без пустого трепа.'
+		else
+			if Rand(1,3)=1:
+				'Кажется, Аманда стала еще больше восхищаться вами!'
+				Friends[$GirlNameIAD]+=1
+			end
+		end
+		gs 'ShowImage', $GirlNameIAD, 'dance', 'YouInvite1'	
+		!FridayDancesCount+=1
+		DanceStep=DanceMaxIAD
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep=1 and AmandaVar['albernowdances']=0,-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Пригласить потанцевать',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		'Вы подошли к своей сестренке Аманде и пригласили ее потанцевать.'
+		$HandsDance=''
+		KissDance=0
+		TitsDance=0
+	    if Friends[$GirlNameIAD]>=8 and sluttiness[$GirlNameIAD]>15:
+			'Она с радостью согласилась, вы взяли ее под руку и вскоре вы закружились в танце.'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouInvite2'	
+	    elseif Friends[$GirlNameIAD]>=5 and sluttiness[$GirlNameIAD]>=5:
+			'Она с сомнением сказала: "Ты же мой брат, зачем это мне с тобой танцевать?", но все таки взяла вашу руку и вскоре вы закружились в танце.'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouInvite1'	
+	    else
+			'"Ты что братик, сдурел?!" ответила вам Аманда. Расстроенный отказом, вы отправились восвояси.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIAD
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouInvite1'	
+		end
+		DanceStep+=1	
+		if DanceStep=DanceMaxIAD: 'Танец закончился и вы вернулись к колоннаде.' 	
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep=1 and AmandaVar['albernowdances']=0,-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Продолжить танцевать',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		*p 'Вы продолжили кружится в танце с Амандой.'
+		if $HandsDance='waist': *p ' Ваши руки нежно обнимают талию сестрички.'
+		if $HandsDance='ass': *p ' Ваши руки покоятся на попе вашей младшей сестренкии.'
+		if $HandsDance='ass2': *p ' Ваши руки нежно сжимают упругую попку вашей сестренки через тонкую ткань ее платья.'
+		if KissDance=1: *p ' Вы нежно целуете Аманду во время танца.'
+		if KissDance=2: *p ' Вы страстно, переплетаясь языками, целуете свою сестренку, прилагая все усилия чтобы не сбиться с ритма.'
+		if TitsDance>0: *p ' Аманда трется своими грудками о вашу грудь, потихоньку возбуждаясь.'
+		''
+		DanceStep+=1	
+		if DanceStep=DanceMaxIAD: 'Танец закончился и вы вернулись к колоннаде.' 	
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIAD and AmandaVar['albernowdances']=0,-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Положить руки на талию',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		'Вы положили руки на талию Аманды.'
+	
+		if Friends[$GirlNameIAD]>=6 and sluttiness[$GirlNameIAD]>10:
+			'Она улыбнулась и придвинулась к вам поближе, продолжая танец.'
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 8, 5, 1, 14, 5, 1
+			$HandsDance='waist'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouClose'	
+	    elseif Friends[$GirlNameIAD]>=5 and sluttiness[$GirlNameIAD]>=6:
+			'Ваша сестренка поморщилась, но возражать не стала.'
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 8, 5, 1, 14, 5, 1
+			$HandsDance='waist'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceWorry'	
+	    else
+			'"Стефан, что ты такое делаешь?!" закричала Аманда. Вы попробовали объяснить, что так обычно танцуют, но обнаружили что разговариваете с пустотой, Аманда ушла.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIAD
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 2, 2, -1, 0, 0, 0
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceAngry'	
+		end	
+	
+		DanceStep+=1	
+		if DanceStep=DanceMaxIAD: 'Танец закончился и вы вернулись к колоннаде.' 	
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIAD and AmandaVar['albernowdances']=0 and $HandsDance<>'waist',-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Положить руки на попу',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		if $HandsDance='waist': 
+			'Вы опустили руки с талии на попу Аманды.'
+		else
+			'Вы положили руки на попу Аманды.'
+		end
+	    if Friends[$GirlNameIAD]>=7 and sluttiness[$GirlNameIAD]>18:
+			'Сестренка улыбнулась и придвинулась к вам поближе, продолжая танец.'
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 9, 3, 1, 18, 3, 1
+			$HandsDance='ass'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouClose'
+	    elseif Friends[$GirlNameIAD]>=6 and sluttiness[$GirlNameIAD]>=12:
+			'"Стефан, что ты делаешь?!" прошептала Аманда. Впрочем танцевать она не перестала и рук ваших не убрала.'
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 9, 3, 1, 18, 3, 1
+			$HandsDance='ass'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDance'
+	    elseif Friends[$GirlNameIAD]>=5 and sluttiness[$GirlNameIAD]>=9:
+			'"Стефан, что ты делаешь?!" прошептала Аманда и передвинула ваши руки с попы на талию. '
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 9, 4, 1, 14, 4, 1
+			$HandsDance='waist'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceWorry'	
+	    else
+			'"Стефан, что ты такое делаешь?! Я твоя сестра!" закричала Аманда, с размаху дала вам смачную пощечину, развернулась и ушла, оставив вас в одиночестве.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIAD
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 0, 1, -1, 0, 1, -1
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceAngry'	
+		end	
+		DanceStep+=1	
+		if DanceStep=DanceMaxIAD: 'Танец закончился и вы вернулись к колоннаде.' 	
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIAD and AmandaVar['albernowdances']=0 and strcomp($HandsDance,'^ass')=0,-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Сжать попу Аманды',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		'Ваши беспокойные ручки начали гладить и сжимать попку Аманды.'
+		if Friends[$GirlNameIAD]>=10 and sluttiness[$GirlNameIAD]>20:
+			'Сестренка улыбнулась и прижалась вплотную к вам, начав тереться своими сисечками о вашу грудь.'
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 11, 4, 1, 22, 3, 1
+			$HandsDance='ass2'
+			TitsDance=1
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouClose'
+	    elseif Friends[$GirlNameIAD]>=8 and sluttiness[$GirlNameIAD]>=16:
+			'"Стефанчик, что ты делаешь?! Мы же все таки братик и сестричка" прошептала Аманда, но не сделала ничего, чтобы остановить вас.'
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 11, 4, 1, 22, 3, 1
+			$HandsDance='ass2'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDance'	
+	    elseif Friends[$GirlNameIAD]>=7 and sluttiness[$GirlNameIAD]>=13:
+			'"Стефан, что ты делаешь?!" прошептала Аманда и передвинула ваши руки с попы на талию. '
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 9, 4, 1, 16, 4, 1
+			$HandsDance='waist'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceWorry'	
+	    else
+			'"Стефан, что ты такое делаешь?! Я твоя сестра!" закричала Аманда, с размаху дала вам смачную пощечину, развернулась и ушла, оставив вас в одиночестве.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIAD
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 0, 1, -1, 0, 1, -1
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceAngry'	
+		end
+		DanceStep+=1	
+		if DanceStep=DanceMaxIAD: 'Танец закончился и вы вернулись к колоннаде.' 	
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIAD and AmandaVar['albernowdances']=0 and $HandsDance='ass',-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Поцеловать Аманду',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		'Продолжая танцевать, вы вдруг наклонились к сестренке и впились в ее губы своими.'
+		if Friends[$GirlNameIAD]>=10 and sluttiness[$GirlNameIAD]>21:
+			'Сестренка с готовностью ответила на ваш поцелуй, страстно переплетаясь с вами языками.'
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 11, 4, 1, 24, 3, 1
+			KissDance=2
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouKiss'
+	    elseif Friends[$GirlNameIAD]>=8 and sluttiness[$GirlNameIAD]>=16:
+			'Преодолев секундное замешательство, Аманда откликнулась на ваш поцелуй, хотя и без особого энтузиазма.'
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 11, 4, 1, 24, 3, 1
+			KissDance=1
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouKiss'
+	    elseif Friends[$GirlNameIAD]>=7 and sluttiness[$GirlNameIAD]>=13:
+			'"Стефанчик, что ты делаешь?! Я же твоя сестра!" прошептала Аманда и отстранилась от вас. '
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 9, 6, 1, 16, 6, 1
+			KissDance=0
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceWorry'	
+	    else
+			'"Стефан, что ты такое делаешь?! Я твоя сестра!" закричала Аманда, с размаху дала вам смачную пощечину, развернулась и ушла, оставив вас в одиночестве.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIAD
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 0, 1, -1, 0, 1, -1
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceAngry'	
+		end	
+	
+		DanceStep+=1
+		if DanceStep=DanceMaxIAD: 'Танец закончился и вы вернулись к колоннаде.' 	
+	}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIAD and AmandaVar['albernowdances']=0 and KissDance=0,-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Предложить Аманде прогулятся',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		!Варианты - 0 - выгнала с треском 1 - прогнала но с намеком, 2 - прогнала что вы ее ругали 3 согласилась но пожаловалось что вы ей все запрещали 4 согласилась
+		tmpGropeReact=dyneval($AmandaSexOfferReaction)
+	
+		if tmpGropeReact=2:
+			'Продолжая танцевать, вы вдруг прошептали сестренке на ушко: "Милая, а может прогуляемся немного?"'
+			'"Ага, значит то ты меня ругаешь, шлюхой обзываешь, учишь скромности и всякому возвышенному да? Ф как танцы - так все мигом забыл и мало что за задницу лапаешь, так еще и в подворотню тащищь?" обругала ваше двуличие Аманда. <br>"Знаешь что, иди себе сам в свою подворотню и сам с собою там что хочешь то и делай. Впрочем, ты только одного и хочешь. А я пока пойду!" гневно сказала Аманда, слово с делом у нее не разошлись и она развернулась и ушла, оставив вас в одиночестве.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIAD
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 0, 3, -1, 0, 3, -1
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceAngry'	
+		elseif tmpGropeReact>=3:
+			AmandaVar['leftdances']=1
+			gs 'Table.DeleteLines', 'GirlDance','GirlName','=','amanda'
+			FridayDancesCount=5
+			gt 'AmandaSexDanceStreet'
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouInvite2'	
+	    else
+			'Продолжая танцевать, вы вдруг прошептали сестренке на ушко: "Милая, а может прогуляемся немного?"'
+			'"Стефан, ты что, предлагаешь мне пойти с тобой в какую-то подворотню? Своей сестре?!" гневно сказала Аманда, развернулась и ушла, оставив вас в одиночестве.'
+			!FridayDancesCount+=1
+			DanceStep=DanceMaxIAD
+			gs 'SlutFriendsIncrease', $GirlNameIAD, 0, 1, -1, 0, 1, -1
+			gs 'ShowImage', $GirlNameIAD, 'dance', 'YouDanceAngry'	
+		end	
+	}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=2 and DanceStep<DanceMaxIAD and AmandaVar['albernowdances']=0 and HadSex['amanda']>0 and (strcomp($HandsDance,'^ass')>0 or KissDance>0),-1,0)"
+	
+	
+	GS 'Menu.Add','MenuAmandaDance','Наблюдать за Амандой и мессиром Легаре',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		if DanceStep=1: 'Вы посмотрели на Аманду и мессира Легаре.'
+		if DanceStep-1<=AmandaVar['alberdanceadvance']:
+			*pl $DanceWatchLine[DanceStep]
+		elseif AmandaVar['alberdanceadvance']=0:
+			*pl $DanceWatchLine[1]
+			DanceStep=DanceMaxIAD+1
+		else
+			*pl $DanceWatchLine[0]	
+		end
+		gs 'ShowImage', 'amanda', 'dance', 'alberdanceStep' + Min(DanceStep,3) 
+		
+		if DanceStep=6 and AmandaVar['LegareGo']=1:
+			dynamic $LegareAmandaGoCode
+			*pl $DanceWatchLine[DanceStep]
+			AmandaVar['LegareGo']=0
+		end
+		DanceStep+=1
+		if DanceStep>=DanceMaxIAD+2 : 'Музыка доиграла и Аманда с мессиром Легаре разошлись.' 	
+	}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=1 and DanceStep<DanceMaxIAD+2 and AmandaVar['albernowdances']=1,-1,0)"
+	
+	GS 'Menu.Add','MenuAmandaDance','Вмешаться и разогнать их',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		'Нежелая больше смотреть на это непотребство вы решительно подошли к парочке и заявили:<br>"Мессир! Что вы себе позволяете?! У вас же есть дети старше Аманды, да и вы женаты! А ты что возомнила?! Разве ты не видишь, что он возрастом как наш отец был бы, будь он жив! А ну, кыш отседа и чтобы больше я такого не видел!" '
+		if AmandaVar['alberprohibit']=1:
+			'"Да и вообще, я тебе ведь уже запрещал с ним танцевать, а ты опять за старое! Или ты оглохла или память потеряла?" продолжаете орать вы.'
+		end
+		'Нахмурившись от выволочки, что вы ему учинили, мессир Легаре мрачно удалился.'
+		gs 'SlutFriendsIncrease', 'Alber', 2, 1, -4, 0, 0, 0
+		if AmandaVar['alberfriends']>=7:
+			'"Как ты смеешь лезть в мою личную жизнь, братец?! Я уже взрослая и могу сама решать! А Альбер мне очень-очень нравится, ну и что что он женат!" закричала Аманда и убежала рыдая.'
+			AmandaVar['alberfriends']+=3
+			gs 'SlutFriendsIncrease', 'amanda', 3, 1, -5, 0, 0, 0
+		else
+			'"Хорошо," только и сказала Аманда. Но вам показалось что под внешней покорностью девчонка затаила обиду.'
+			AmandaVar['alberfriends']-=1
+			gs 'SlutFriendsIncrease', 'amanda', 3, 1, -2, 15, 1, -4
+		end
+		AmandaVar['alberprohibit']=1
+		AmandaVar['leftdances']=1
+		DanceStep=DanceMaxIAD+2
+		AmandaVar['albernowdances']=0
+		gs 'Table.DeleteLines', 'GirlDance','GirlName','=','amanda'
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=1 and DanceStep<DanceMaxIAD+2 and AmandaVar['albernowdances']=1,-1,0)"
+	
+	
+	GS 'Menu.Add','MenuAmandaDance','Отойти',''
+	GS 'Menu.AddModule','MenuAmandaDance',{
+		CounterToClean=MaxCounterToClean
+		gs 'CleanScreenOverflow'
+		DanceStep=0
+		dynamic $CurrentActions
+		gs 'ShowImage', $GirlNameIAD, 'dance', 'wait' +Rand(1,2)	
+		dynamic $FridayDanceCounterShow
+		}
+	gs 'Menu.AddCondition','MenuAmandaDance', "Result=IIF(DanceStep>=DanceMaxIAD or AmandaVar['albernowdances']=1 or DanceStep=1,-1,0)"
+
+------------ Конец локации: IntAmandaDance ------------

@@ -1,0 +1,258 @@
+! ================================================
+! FILE: modules/events/dance/amanda_legare_friday_race.qsps
+! MODULE: events/dance
+! 5-я пятница: Легаре может опередить ГГ в подворотне
+! ================================================
+
+#AmandaLegareFridayRaceCanStart
+    AmandaLegareFridayRaceCanStart = 0
+
+    if AmandaLegareFridayRaceDone = 1:
+        exit
+    end
+
+    if AmandaLegareFirstSexDone = 1:
+        exit
+    end
+
+    if AmandaHomeSex = 1:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if AmandaDanceDressReady = 0:
+        exit
+    end
+
+    if LOC('AmandaLegareRaceWindowOpen') = 1:
+        gs 'AmandaLegareRaceWindowOpen'
+    end
+
+    if AmandaLegareRaceWindowOpen = 0:
+        exit
+    end
+
+    if AmandaLegareAfterDanceResolved <> 1:
+        exit
+    end
+
+    if AmandaLegareAfterDanceResult < 2:
+        if AmandaLegareDanceResult < 2:
+            exit
+        end
+    end
+
+    if AmandaLegareHardWarningUsed = 1 and LegareConflictStage >= 4:
+        exit
+    end
+
+    AmandaLegareFridayRaceCanStart = 1
+---
+
+#AmandaLegareFridayRaceTryStart
+    if LOC('AmandaLegareFridayRaceCanStart') = 1:
+        gs 'AmandaLegareFridayRaceCanStart'
+
+        if AmandaLegareFridayRaceCanStart = 1:
+            gt 'AmandaLegareFridayRaceStart'
+        end
+    end
+---
+
+#AmandaLegareFridayRaceStart
+    *clr
+    clr
+    cla
+
+    AmandaLegareFridayRaceDone = 1
+
+    gs 'EnsureGirlData', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЯТАЯ ПЯТНИЦА — ЛЕГАРЕ И АМАНДА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareFridayRaceIntroText') = 1:
+        gs 'AmandaLegareFridayRaceIntroText'
+    else:
+        *p 'Музыка стихает. Легаре подходит к Аманде слишком уверенно — и она не отходит сразу.'
+        *p 'Он жестом указывает на тёмный проход у края площади. Несколько горожан уже смотрят в вашу сторону.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG FRIDAY RACE] FridayCount: ' + STR(AmandaFridayDanceCount)
+        *pl '[DEBUG FRIDAY RACE] Day: ' + STR(day)
+        *pl '[DEBUG FRIDAY RACE] HomeSex: ' + STR(AmandaHomeSex)
+        *pl '[DEBUG FRIDAY RACE] AfterDanceResult: ' + STR(AmandaLegareAfterDanceResult)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareFridayRaceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareFridayRaceMenu''">делать</a>?'
+---
+
+#AmandaLegareFridayRaceBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareFridayRaceMenu'
+    gs 'Menu.Create', 'AmandaLegareFridayRaceMenu'
+
+    gs 'Menu.Add', 'AmandaLegareFridayRaceMenu', 'Остановить Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareFridayRaceMenu', {
+        gt 'AmandaLegareFridayRaceAction', 'stop'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareFridayRaceMenu', 'Подойти к Аманде самому', ''
+    gs 'Menu.AddModule', 'AmandaLegareFridayRaceMenu', {
+        gt 'AmandaLegareFridayRaceAction', 'claim'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareFridayRaceMenu', 'Наблюдать издалека', ''
+    gs 'Menu.AddModule', 'AmandaLegareFridayRaceMenu', {
+        gt 'AmandaLegareFridayRaceAction', 'watch'
+    }
+
+    gs 'Menu.Add', 'AmandaLegareFridayRaceMenu', 'Отойти — пусть решает сама', ''
+    gs 'Menu.AddModule', 'AmandaLegareFridayRaceMenu', {
+        gt 'AmandaLegareFridayRaceAction', 'step_aside'
+    }
+---
+
+#AmandaLegareFridayRaceAction
+    *clr
+    clr
+    cla
+
+    $FridayRaceChoice = LCASE($ARGS[0])
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $FridayRaceChoice = 'stop':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaPlayerPath += 1
+        LegareConflictStage += 2
+        AmandaLegareInterest -= 1
+
+        if AmandaLegareInterest < 0:
+            AmandaLegareInterest = 0
+        end
+
+        AmandaLegareFridayRaceResult = 0
+        PlayerKnows_AmandaLegareFridayRace = 1
+
+    elseif $FridayRaceChoice = 'claim':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 2
+        AmandaPlayerPath += 2
+        AmandaHomeUnlocked = 1
+        AmandaLegareFridayRaceResult = 1
+        PlayerKnows_AmandaLegareFridayRace = 1
+        LegareConflictStage += 1
+
+    elseif $FridayRaceChoice = 'watch':
+        AmandaLegareFridayRaceResult = 2
+        PlayerKnows_AmandaLegareFridayRace = 1
+        AmandaSecretiveness += 1
+        AmandaNpcPath += 1
+        AmandaLegareInterest += 1
+        LegareAmandaInterest += 1
+        TavernScandal += 1
+
+        FridayRaceRoll = RAND(1, 100)
+        FridayRaceChance = 35 + sluttiness['amanda'] / 2 + AmandaPublicAttention * 2
+
+        if FridayRaceChance > 75:
+            FridayRaceChance = 75
+        end
+
+        if FridayRaceRoll <= FridayRaceChance:
+            AmandaLegareFirstSexDone = 1
+            AmandaNpcPath += 3
+            GirlNpcPath['amanda'] += 3
+            AmandaPathChoiceReady = 1
+            Fact_AmandaLegareFridayAlley = 1
+        end
+
+        killvar 'FridayRaceRoll'
+        killvar 'FridayRaceChance'
+
+    elseif $FridayRaceChoice = 'step_aside':
+        AmandaLegareFridayRaceResult = 3
+        PlayerKnows_AmandaLegareFridayRace = 0
+        AmandaSecretiveness += 2
+        AmandaNpcPath += 2
+        GirlNpcPath['amanda'] += 2
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        MelissaFamilyConcern += 1
+        ClarissaJealousy += 1
+        TavernScandal += 1
+
+        FridayRaceRoll = RAND(1, 100)
+        FridayRaceChance = 45 + sluttiness['amanda'] / 2 + AmandaRebellion * 3 + AmandaPublicAttention * 2
+
+        if FridayRaceChance > 85:
+            FridayRaceChance = 85
+        end
+
+        if FridayRaceRoll <= FridayRaceChance:
+            AmandaLegareFirstSexDone = 1
+            AmandaNpcPath += 4
+            GirlNpcPath['amanda'] += 4
+            AmandaPathChoiceReady = 1
+            Fact_AmandaLegareFridayAlley = 1
+        end
+
+        killvar 'FridayRaceRoll'
+        killvar 'FridayRaceChance'
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareFridayRaceActionText') = 1:
+        gs 'AmandaLegareFridayRaceActionText', $FridayRaceChoice
+    else:
+        *p 'Вечер делает свой вывод — и вы тоже.'
+    end
+
+    *pl ' '
+
+    if AmandaLegareFirstSexDone = 1 and AmandaPathChoiceReady = 1:
+        if LOC('AmandaPathChoiceTryAutoStart') = 1:
+            gs 'AmandaPathChoiceTryAutoStart', 'MarketDance'
+        end
+    end
+
+    act 'Вернуться к танцам':
+        gt 'MarketDance'
+    end
+
+    killvar '$FridayRaceChoice'
+---
+
+#AmandaLegareFridayRaceDebugReset
+    AmandaLegareFridayRaceDone = 0
+    AmandaLegareFridayRaceResult = 0
+    PlayerKnows_AmandaLegareFridayRace = 0
+    Fact_AmandaLegareFridayAlley = 0
+    AmandaLegareFridayRaceCanStart = 0
+---

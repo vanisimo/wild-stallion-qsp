@@ -1,0 +1,290 @@
+! ================================================
+! FILE: modules/events/becky/becky_home_chain.qsps
+! MODULE: events/becky
+! Дом Бекки: крыльцо, ужин, спальня, первый секс
+! ================================================
+
+#BeckyHomeGuestArrival
+    if BeckyHomeStage < 3:
+        *pl 'Бекки пока не приглашала вас в гости.'
+        act 'Назад':
+            gt 'Market'
+        end
+        exit
+    end
+
+    if time <> 4:
+        *pl 'Сейчас не время для визита — Бекки принимает гостей по вечерам.'
+        act 'Назад':
+            gt 'Market'
+        end
+        exit
+    end
+
+    if StefanRespectableSuit = 0 and charisma < 40:
+        gs 'BeckyHomeGuestDressFailText'
+        *p $BeckyHomeText
+        act 'Назад':
+            gt 'Market'
+        end
+        exit
+    end
+
+    $BeckyArriveMode = 'guest'
+    gt 'BeckyHomeFront', 'guest'
+---
+
+#BeckyHomeFront
+    if $ARGS[0] <> '':
+        $BeckyArriveMode = $ARGS[0]
+    end
+
+    if $BeckyArriveMode = '':
+        $BeckyArriveMode = 'guest'
+    end
+
+    *clr
+    clr
+    cla
+
+    if BeckyHomeStage < 1:
+        BeckyHomeStage = 1
+    end
+
+    gs 'BeckyHomeFrontRollScene'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ДОМ БЕККИ — КРЫЛЬЦО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if BeckyHomeFrontIngaScene = 1:
+        gs 'BeckyHomeFrontIngaText'
+        *p $BeckyHomeText
+        *pl ' '
+
+        if $BeckyArriveMode = 'FromDances':
+            act 'Сделать вид, что ничего не видели':
+                gt 'BeckyHomeFrontAfterInga', 'pretend'
+            end
+
+            act 'Показать Бекки, что видели':
+                gt 'BeckyHomeFrontAfterInga', 'tell'
+            end
+        else:
+            act 'Осторожно заглянуть за угол':
+                gt 'BeckyHomeFrontAfterInga', 'peek'
+            end
+
+            act 'Сделать вид, что ничего нет':
+                gt 'BeckyHomeFrontAfterInga', 'pretend'
+            end
+
+            if BeckyHomeStage >= 5:
+                act 'Подойти к парочке':
+                    gt 'BeckyHomeFrontAfterInga', 'approach'
+                end
+            end
+        end
+    else:
+        *p 'У крыльца тихо — детей не видно.'
+        *pl ' '
+        gs 'BeckyHomeFrontRouteInside'
+    end
+---
+
+#BeckyHomeFrontRollScene
+    BeckyHomeFrontIngaScene = 0
+    BeckyHomeFrontIngaSex = 0
+
+    if RAND(1, 4) <= 3:
+        BeckyHomeFrontIngaScene = 1
+
+        if RAND(1, 2) = 1:
+            BeckyHomeFrontIngaSex = 1
+        end
+    end
+---
+
+#BeckyHomeFrontAfterInga
+    $BeckyFrontChoice = LCASE($ARGS[0])
+
+    if $BeckyFrontChoice = 'tell' or $BeckyFrontChoice = 'peek':
+        otkroven['becky'] += 1
+        sluttiness['becky'] += 1
+        *p 'Бекки краснеет, но не спорит: "Ну да, молодость… Пошли внутрь, пока они заняты."'
+    elseif $BeckyFrontChoice = 'approach':
+        otkroven['becky'] += 2
+        sluttiness['inga'] += 1
+        sluttiness['becky'] += 1
+        *p 'Вы задерживаетесь у парочки дольше, чем стоило. Бекки торопит вас в дом с нервным смешком.'
+    else:
+        *p '"Кошка пробежала, ерунда," — говорите вы. Бекки хмыкает и кивает.'
+    end
+
+    *pl ' '
+    gs 'BeckyHomeFrontRouteInside'
+---
+
+#BeckyHomeFrontRouteInside
+    if $BeckyArriveMode = 'FromDances' and BeckyHomeStage < 5:
+        gt 'BeckyHomeBedroom'
+    elseif $BeckyArriveMode = 'guest' and BeckyHomeSex = 0:
+        gt 'BeckyHomeGuestDinner'
+    elseif BeckyHomeSex = 1 and BeckyHomeStage >= 4:
+        gt 'BeckyHomeBedroom'
+    else:
+        gt 'BeckyHomeGuestDinner'
+    end
+---
+
+#BeckyHomeGuestDinner
+    *clr
+    clr
+    cla
+
+    gs 'BeckyHomeGuestDinnerText'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УЖИН У БЕККИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $BeckyHomeText
+    *pl ' '
+
+    BeckyTimesVisited += 1
+
+    if winenum >= 3:
+        winenum -= 3
+        Friends['becky'] += 1
+        otkroven['becky'] += 1
+    end
+
+    act 'Пойти с Бекки в спальню':
+        gt 'BeckyHomeBedroom'
+    end
+
+    act 'Попрощаться и уйти':
+        gt 'Market'
+    end
+---
+
+#BeckyHomeBedroom
+    *clr
+    clr
+    cla
+
+    gs 'BeckyHomeBedroomIntroText'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СПАЛЬНЯ БЕККИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $BeckyHomeText
+    *pl ' '
+
+    if BeckyHomeSex = 0:
+        act 'Продолжить':
+            gt 'BeckyHomeFirstSexStep1'
+        end
+    else:
+        if EddieHelpPromised = 1 and BeckyEddieDone = 0 and LOC('BeckyEddieHomeLaunch') = 1:
+            act 'Пойти с Бекки в спальню':
+                gt 'BeckyEddieHomeLaunch'
+            end
+        elseif LOC('SexSceneStart') = 1:
+            act 'Провести вечер с Бекки':
+                gt 'SexSceneStart', 'becky', 'BeckyHomeAfterSex', 'becky_repeat'
+            end
+        end
+
+        act 'Уйти':
+            gt 'Market'
+        end
+    end
+---
+
+#BeckyHomeFirstSexStep1
+    gs 'BeckyHomeFirstSexStep1Text'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $BeckyHomeText
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'BeckyHomeFirstSexStep2'
+    end
+---
+
+#BeckyHomeFirstSexStep2
+    gs 'BeckyHomeFirstSexStep2Text'
+
+    *clr
+    clr
+    cla
+
+    *p $BeckyHomeText
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'BeckyHomeFirstSexStep3'
+    end
+---
+
+#BeckyHomeFirstSexStep3
+    gs 'BeckyHomeFirstSexStep3Text'
+
+    *clr
+    clr
+    cla
+
+    *p $BeckyHomeText
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'BeckyHomeFirstSexLaunch'
+    end
+---
+
+#BeckyHomeFirstSexLaunch
+    BeckyHomeFirstSexActive = 1
+    IntimStage['becky'] = 5
+
+    if otkroven['becky'] < 15:
+        otkroven['becky'] = 15
+    end
+
+    gt 'SexSceneStart', 'becky', 'BeckyHomeAfterSex', 'becky_home_first'
+---
+
+#BeckyHomeAfterSex
+    *clr
+    clr
+    cla
+
+    gs 'BeckyHomeAfterSexText'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $BeckyHomeText
+    *pl ' '
+
+    act 'Вернуться на рынок':
+        gt 'Market'
+    end
+
+    if $BeckyArriveMode = 'FromDances':
+        act 'Вернуться на площадь':
+            gt 'Street'
+        end
+    end
+---

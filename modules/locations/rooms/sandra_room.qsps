@@ -39,6 +39,38 @@
 
     if LocationGirlShown = 0:
         *p 'Сандры сейчас нет в комнате.'
+    else:
+        if SandraHomeUnlocked = 0 and LOC('SandraHomeUnlockTry') = 1:
+            gs 'SandraHomeUnlockTry'
+
+            if SandraHomeUnlockTry = 1:
+                act 'Пожелать спокойной ночи':
+                    gt 'SandraHomeGoodnightUnlock'
+                end
+            end
+        end
+
+        if SandraHomeUnlocked = 1 and LOC('SandraHomeStep') = 1:
+            gs 'SandraHomeCanAdvance'
+
+            if SandraHomeCanAdvance = 1 and SandraHomeStage < 11:
+                act 'Провести время наедине с Сандрой':
+                    gt 'SandraHomeStep'
+                end
+            end
+
+            if SandraHomeStage >= 11 and SandraHomeSex = 0 and SandraHomeStepToday = 0 and time >= 4:
+                act 'Продолжить близость':
+                    gt 'SandraHomeFirstSexLaunch'
+                end
+            end
+
+            if SandraHomeSex = 1 and LOC('SexSceneStart') = 1 and time >= 4:
+                act 'Провести вечер с Сандрой':
+                    gt 'SexSceneStart', 'sandra', 'SandraHomeAfterSex', 'sandra_repeat'
+                end
+            end
+        end
     end
 
     killvar 'LocationGirlShown'

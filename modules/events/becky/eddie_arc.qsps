@@ -1,0 +1,373 @@
+! ================================================
+! FILE: modules/events/becky/eddie_arc.qsps
+! MODULE: events/becky
+! Ветка Эдди: talk → подворотня → исповедь → дом
+! ================================================
+
+#TalkWithEddie
+    $GuyName = 'eddie'
+
+    if LOC('InitEddie') = 1:
+        gs 'InitEddie'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl '       РАЗГОВОР С ЭДДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'Menu.Create', 'MenuEddieTalk'
+
+    gs 'Menu.Add', 'MenuEddieTalk', 'Поболтать о разной фигне', ''
+    gs 'Menu.AddModule', 'MenuEddieTalk', {
+        'Вы некоторое время болтаете с Эдди о несущественных вещах.'
+        dynamic 'if Talked[''eddie'']<=2 and Rand(1,2)=1 and Friends[''eddie'']<=5:
+            ''Вы немного сдружились с Эдди.''
+            Friends[''eddie'']+=1
+        end
+        if Talked[''eddie'']>2: ''Ничего нового из разговора вы не узнали.'''
+        Talked['eddie'] += 1
+    }
+
+    gs 'Menu.Add', 'MenuEddieTalk', 'Поболтать о личных вещах', ''
+    gs 'Menu.AddModule', 'MenuEddieTalk', {
+        'Вы болтаете с Эдди о девушках и о том, кто сколько выпил.'
+        dynamic 'if Talked[''eddie'']<=2 and Rand(1,2)=1 and Friends[''eddie'']<=10:
+            ''Вы немного сдружились с Эдди.''
+            Friends[''eddie'']+=1
+        end
+        if Talked[''eddie'']>2: ''Ничего нового из разговора вы не узнали.'''
+        Talked['eddie'] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(Friends['eddie']>=5,-1,0)"
+
+    gs 'Menu.Add', 'MenuEddieTalk', 'Предложить помочь с мамой', ''
+    gs 'Menu.AddModule', 'MenuEddieTalk', {
+        gs 'EddieHelpPromiseText'
+        *p $EddieArcText
+        EddieHelpPromised = 1
+        Friends['eddie'] += 1
+        Talked['eddie'] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyHomeSex=1 and EddieSawGeorg=2 and EddieHelpPromised=0 and Friends['eddie']>=10 and BeckyEddieDone=0 and Talked['eddie']<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuEddieTalk', 'Поговорить о том, как теперь бывает дома', ''
+    gs 'Menu.AddModule', 'MenuEddieTalk', {
+        'Эдди смущённо улыбается: "Ну… теперь мама не так злится. Спасибо, что помог разобраться."'
+        Friends['eddie'] += 1
+        Talked['eddie'] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyEddieDone=1 and Talked['eddie']<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuEddieTalk', 'Выслушать благодарность лучшего друга', ''
+    gs 'Menu.AddModule', 'MenuEddieTalk', {
+        gs 'EddieBestFriendText'
+        *p $EddieArcText
+        EddieBestFriend = 1
+        EddieWifeOffer = 1
+        Friends['eddie'] += 1
+        Talked['eddie'] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyEddieDone=1 and EddieBestFriend=0 and Friends['eddie']>=18 and Talked['eddie']<2,-1,0)"
+
+    gs 'Menu.Add', 'MenuEddieTalk', 'Вернуться в лавку', ''
+    gs 'Menu.AddModule', 'MenuEddieTalk', {
+        gt 'BeckyShop'
+    }
+
+    gs 'Menu.Show', 'MenuEddieTalk'
+---
+
+#PortAlley
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПОРТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'Узкий проход между складами. Пахнет рыбой, дёгтем и чужими тайнами.'
+    *pl ' '
+
+    if Friends['eddie'] < 8:
+        act 'Вернуться к пристани':
+            gt 'Port'
+        end
+        exit
+    end
+
+    if EddieSawGeorg = 0:
+        act 'Прислушаться':
+            gt 'EddieAlleySpy1'
+        end
+    elseif EddieSawGeorg = 1 and day >= EddieAlleyNextDay:
+        act 'Заглянуть в тень':
+            gt 'EddieAlleySpy2'
+        end
+    elseif EddieSawGeorg >= 2:
+        *p 'Подворотня пуста — Эдди сегодня здесь не появляется.'
+    else:
+        *p 'Пока здесь тихо. Эдди, кажется, ещё не возвращался.'
+    end
+
+    act 'Вернуться к пристани':
+        gt 'Port'
+    end
+---
+
+#EddieAlleySpy1
+    gs 'EddieAlleySpy1Text'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ — ЭДДИ И ЖОРЖЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $EddieArcText
+    *pl ' '
+
+    EddieSawGeorg = 1
+    EddieAlleyNextDay = day + RAND(1, 7)
+    Friends['eddie'] += 1
+
+    act 'Незаметно уйти':
+        gt 'Port'
+    end
+---
+
+#EddieAlleySpy2
+    gs 'EddieAlleySpy2Text'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ — ИГРА «МАМОЧКА»'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $EddieArcText
+    *pl ' '
+
+    EddieSawGeorg = 2
+    Friends['eddie'] += 1
+
+    act 'Незаметно уйти':
+        gt 'Port'
+    end
+---
+
+#BeckyEddieConfession
+    if week <> 7 or time < 2:
+        gt 'Church'
+    end
+
+    if BeckyPriestOk = 1:
+        gt 'Church'
+    end
+
+    if BeckyPriestHint = 0 and BeckyPriestRetry = 0:
+        gt 'Church'
+    end
+
+    gs 'BeckyEddieConfessionIntroText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ БЕККИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $EddieArcText
+    *pl ' '
+
+    BeckyPriestConfessionSeen = 1
+
+    act 'Пожертвовать 30 мараведи священнику':
+        if money >= 30:
+            money -= 30
+            BeckyEddieDonationPaid = 1
+            BeckyPriestOk = 1
+            gs 'BeckyEddieConfessionPaidText'
+            *p $EddieArcText
+            *pl ' '
+            act 'Выйти из церкви':
+                gt 'Church'
+            end
+        else:
+            *p 'У вас недостаточно денег для пожертвования.'
+            act 'Вернуться':
+                gt 'BeckyEddieConfession'
+            end
+        end
+    end
+
+    act 'Уйти, не жертвуя':
+        BeckyPriestOk = 0
+        gs 'BeckyEddieConfessionUnpaidText'
+        *p $EddieArcText
+        *pl ' '
+        act 'Выйти из церкви':
+            gt 'Church'
+        end
+    end
+---
+
+#BeckyEddieHomeLaunch
+    if BeckyHomeSex = 0 or EddieHelpPromised = 0 or BeckyEddieDone = 1:
+        gt 'BeckyHomeBedroom'
+    end
+
+    if BeckyPriestOk = 0:
+        gt 'BeckyEddieHomeFail'
+    end
+
+    gt 'BeckyEddieHomeStep1'
+---
+
+#BeckyEddieHomeFail
+    gs 'BeckyEddieHomeFailText'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРОВАЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $EddieArcText
+    *pl ' '
+
+    BeckyEddieHomeFailed = 1
+
+    if Friends['becky'] > 3:
+        Friends['becky'] -= 3
+    end
+
+    if Friends['eddie'] > 5:
+        Friends['eddie'] -= 5
+    end
+
+    act 'Вернуться на рынок':
+        gt 'Market'
+    end
+---
+
+#BeckyEddieHomeStep1
+    gs 'BeckyEddieHomeStep1Text'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СЦЕНА С ЭДДИ — НАЧАЛО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $EddieArcText
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'BeckyEddieHomeStep2'
+    end
+---
+
+#BeckyEddieHomeStep2
+    gs 'BeckyEddieHomeStep2Text'
+
+    *clr
+    clr
+    cla
+
+    *p $EddieArcText
+    *pl ' '
+
+    act 'Продолжить':
+        gt 'BeckyEddieHomeStep3'
+    end
+---
+
+#BeckyEddieHomeStep3
+    gs 'BeckyEddieHomeStep3Text'
+
+    *clr
+    clr
+    cla
+
+    *p $EddieArcText
+    *pl ' '
+
+    act 'Кивнуть Эдди — уважить просьбу Бекки':
+        gs 'BeckyEddieHomeFinishInsideText'
+        *p $EddieArcText
+        gs 'BeckyEddieHomeFinish'
+        gt 'BeckyEddieHomeAfter'
+    end
+
+    act 'Показать глазами — пусть кончает куда хочет':
+        gs 'BeckyEddieHomeFinishOutsideText'
+        *p $EddieArcText
+        gs 'BeckyEddieHomeFinish'
+        gt 'BeckyEddieHomeAfter'
+    end
+---
+
+#BeckyEddieHomeFinish
+    sluttiness['becky'] += 5
+    otkroven['becky'] += 2
+    Friends['becky'] += 1
+    Friends['eddie'] += 5
+
+    if BeckyHomeStage < 5:
+        BeckyHomeStage = 5
+    end
+
+    BeckyEddieDone = 1
+
+    if BeckyPriestOk = 1:
+        BeckyPriestArcOpen = 1
+        gs 'ChurchSpyBeckyScheduleOpen'
+    end
+---
+
+#BeckyEddieHomeAfter
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'Ночь в доме Бекки больше не будет прежней.'
+    *pl ' '
+
+    act 'Вернуться на рынок':
+        gt 'Market'
+    end
+---
+
+#ProcessEddieMomBackground
+    EddieMomNightShown = 0
+
+    if BeckyEddieDone = 0:
+        exit
+    end
+
+    if RAND(1, 4) <> 1:
+        exit
+    end
+
+    gs 'EddieMomBackgroundText'
+    EddieMomNightShown = 1
+    $LastDayBackgroundEvent = $EddieMomNightText
+---

@@ -61,11 +61,40 @@
 
     gs 'AdvanceMonthIfNeeded'
 
+    gs 'ProcessIntimacyDressSelfBuy'
+
+    if LOC('AmandaFridayDanceAdvance') = 1:
+        gs 'AmandaFridayDanceAdvance'
+    end
+
+    AmandaNeighborBoysToday = 0
+
+    gs 'ProcessEddieMomBackground'
+
     ! ====================== СБРОС ДНЕВНЫХ СЧЁТЧИКОВ ГГ ======================
 
     daily_cum_count = 0
     cametoday = 0
     ChurchDonatedToday = 0
+    BeckyPriestSpyToday = 0
+    AmandaHomeStepToday = 0
+    MelissaHomeStepToday = 0
+    IngaBackroomStepToday = 0
+    SandraHomeStepToday = 0
+    SandraDraupnirFridayToday = 0
+    ClarissaIntimStepToday = 0
+
+    if LOC('MelissaFridayDanceAdvance') = 1:
+        gs 'MelissaFridayDanceAdvance'
+    end
+
+    if LOC('SandraFridayDraupnirAdvance') = 1:
+        gs 'SandraFridayDraupnirAdvance'
+    end
+
+    if LOC('SandraDraupnirFridayBackgroundResolve') = 1:
+        gs 'SandraDraupnirFridayBackgroundResolve'
+    end
 
     ! ====================== СБРОС ДНЕВНЫХ ФЛАГОВ ДЕВУШЕК ======================
 
@@ -259,6 +288,34 @@
 ! Сброс ежедневных флагов девушек и событий
 ! Безопасный локатор, чтобы NextDay не падал
 ! ================================================
+
+#ProcessIntimacyDressSelfBuy
+    if AmandaDanceDressSelfBuyDay <= 0:
+        AmandaDanceDressSelfBuyDay = 28
+    end
+
+    if MelissaDanceDressSelfBuyDay <= 0:
+        MelissaDanceDressSelfBuyDay = 35
+    end
+
+    if day = AmandaDanceDressSelfBuyDay and AmandaDanceDressReady = 0 and Friends['amanda'] > 8:
+        AmandaDanceDressReady = 1
+        AmandaDanceDressSelfBought = 1
+
+        if debug = 1:
+            *pl '[DEBUG] Аманда сама купила платье для танцев (день ' + STR(day) + ').'
+        end
+    end
+
+    if day = MelissaDanceDressSelfBuyDay and MelissaDanceDressReady = 0 and Friends['melissa'] > 8:
+        MelissaDanceDressReady = 1
+        MelissaDanceDressSelfBought = 1
+
+        if debug = 1:
+            *pl '[DEBUG] Мелисса сама купила платье для танцев (день ' + STR(day) + ').'
+        end
+    end
+---
 
 #GirlsResetDailyFlags
     HarassToday['amanda'] = 0
