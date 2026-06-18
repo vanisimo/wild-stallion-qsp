@@ -1,0 +1,63 @@
+! ================================================
+! FILE: modules/events/family/melissa_musician_arc.qsps
+! MODULE: events/family
+! Ветка Мелиссы: платье → танцы → менестрель → сцена в трактире
+! Сцены 1–4 и продолжение романа — TODO, здесь флаги и проверки
+! ================================================
+
+#InitMelissaMusicianArc
+    if MelissaMinstrelAffairStage < 0:
+        MelissaMinstrelAffairStage = 0
+    end
+---
+
+! ================================================
+! Порядок ветки:
+! 1 MelissaDanceDressReady — платье для пятничных танцев
+! 2 MelissaFridayDanceAttended — была на танцах
+! 3 MelissaMinstrelMet — знакомство с менестрелем
+! 4 MelissaMinstrelKissDone — поцелуй
+! 5 MelissaMusicStageOfferDone — разговор о сцене в трактире
+! 6 MelissaMinstrelAffairStage — менестрель идёт дальше с Мелиссой (отдельные ивенты)
+! ================================================
+
+#MelissaMusicianArcCanOfferStageTalk
+    gs 'InitMelissaMusicianArc'
+
+    MelissaMusicStageCanOffer = 0
+    $MelissaMusicianArcBlockReason = ''
+
+    if MelissaMusicStageOfferDone = 1:
+        exit
+    end
+
+    if MelissaDanceDressReady = 0:
+        $MelissaMusicianArcBlockReason = 'Сначала нужно платье для пятничных танцев.'
+        exit
+    end
+
+    if MelissaFridayDanceAttended = 0:
+        $MelissaMusicianArcBlockReason = 'Сначала Мелисса должна сходить на пятничные танцы.'
+        exit
+    end
+
+    if MelissaMinstrelMet = 0:
+        $MelissaMusicianArcBlockReason = 'Сначала она должна познакомиться с менестрелем на танцах.'
+        exit
+    end
+
+    if MelissaMinstrelKissDone = 0:
+        $MelissaMusicianArcBlockReason = 'Пока рано — между ними ещё не было того поцелуя после танца.'
+        exit
+    end
+
+    MelissaMusicStageCanOffer = 1
+---
+
+#MelissaMusicianArcStageTalkBlockedText
+    if $MelissaMusicianArcBlockReason <> '':
+        *p '— <<$MelissaMusicianArcBlockReason>>'
+    else:
+        *p 'Сейчас не время говорить с Мелиссой об этом.'
+    end
+---

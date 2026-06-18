@@ -1,0 +1,42 @@
+! ================================================
+! FILE: modules/locations/shops/draupnir_upgrades_text.qsps
+! MODULE: locations/shops
+! Тексты улучшений у Драупнира
+! ================================================
+
+#DraupnirUpgradesIntroText
+    *p 'Мастерская Драупнира пахнет свежей стружкой и смолой. Гном бормочет себе под нос, но смотрит внимательно — будто уже знает, зачем вы пришли.'
+    if TavernUpgradeSignDone = 0:
+        *p '— Вывеска у вас, — кивает он на улицу, — старая и облезлая. С неё и начнём, если хотите, чтобы трактир снова выглядел живым.'
+    else:
+        *p '— С вывеской уже лучше, — бурчит он. — Что дальше будем чинить?'
+    end
+---
+
+#DraupnirUpgradeOrderDoneText
+    *p 'Драупнир кивает и заносит заказ в свою книгу.'
+    *p '— Деньги принял. Приду, когда будет готово. Трактир пока не закрываем — работаю без вашей суеты.'
+---
+
+#DraupnirUpgradeOrderNoMoneyText
+    *p 'Драупнир хмыкает:'
+    *p '— Без денег я только молотком по воздуху машу. Принесёшь сумму — начнём.'
+---
+
+#DraupnirUpgradeOrderBlockedText
+    if $TavernUpgradeOrderBlockReason <> '':
+        *p '— <<$TavernUpgradeOrderBlockReason>>'
+    end
+---
+
+#DraupnirUpgradeLineText
+    if $DraupnirUpgradeLineStatus = 'done':
+        $DraupnirUpgradeLineText = $DraupnirUpgradeLineTitle + ': готово'
+    elseif $DraupnirUpgradeLineStatus = 'pending':
+        $DraupnirUpgradeLineText = $DraupnirUpgradeLineTitle + ': в работе, осталось ' + STR(DraupnirUpgradeLineDaysLeft) + ' дн.'
+    elseif $DraupnirUpgradeLineStatus = 'locked':
+        $DraupnirUpgradeLineText = $DraupnirUpgradeLineTitle + ': пока недоступно'
+    else:
+        $DraupnirUpgradeLineText = $DraupnirUpgradeLineTitle + ': ' + STR(DraupnirUpgradeLineCost) + ' мараведи, ' + STR(DraupnirUpgradeLineDays) + ' дн.'
+    end
+---

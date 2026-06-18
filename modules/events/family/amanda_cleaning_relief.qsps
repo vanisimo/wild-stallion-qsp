@@ -1,0 +1,105 @@
+! ================================================
+! FILE: modules/events/family/amanda_cleaning_relief.qsps
+! MODULE: events/family
+! Аманда просит снять её с уборки после найма уборщицы
+! ================================================
+
+#AmandaCleaningReliefCanTalk
+    AmandaCleaningReliefCanTalk = 0
+
+    if AmandaCleaningReliefDone = 1:
+        exit
+    end
+
+    if SandraStaffGirlsReactionDone = 0:
+        exit
+    end
+
+    if TavernHiredCleaning = 0:
+        exit
+    end
+
+    if jobcleaning['amanda'] = 0:
+        exit
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if GirlTrustStefan['amanda'] <= 0:
+        GirlTrustStefan['amanda'] = Friends['amanda']
+    end
+
+    if GirlTrustStefan['amanda'] < 40 and Friends['amanda'] < 14:
+        exit
+    end
+
+    AmandaCleaningReliefCanTalk = 1
+---
+
+#AmandaCleaningReliefTalk
+    $AmandaCleaningReturnLoc = $ARGS[0]
+
+    if $AmandaCleaningReturnLoc = '':
+        $AmandaCleaningReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    gs 'AmandaCleaningReliefCanTalk'
+
+    if AmandaCleaningReliefCanTalk = 0:
+        gt $AmandaCleaningReturnLoc
+        exit
+    end
+
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР: Аманда'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaCleaningReliefIntroText'
+    gs 'AmandaCleaningReliefRequestText'
+
+    *pl ' '
+
+    act 'Снять Аманду с уборки':
+        jobcleaning['amanda'] = 0
+
+        if LOC('CalculateTavernStaffEfficiency') = 1:
+            gs 'CalculateTavernStaffEfficiency'
+        end
+
+        if LOC('UpdateGirlLocations') = 1:
+            gs 'UpdateGirlLocations'
+        end
+
+        AmandaCleaningReliefDone = 1
+        GirlTrustStefan['amanda'] += 2
+        AmandaTrustStefan = GirlTrustStefan['amanda']
+        Friends['amanda'] += 1
+
+        gs 'ClampGirlSocialStats', 'amanda'
+
+        gs 'AmandaCleaningReliefAgreeText'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt $AmandaCleaningReturnLoc
+        end
+    end
+
+    act 'Пока оставить уборку на ней':
+        gs 'AmandaCleaningReliefDeclineText'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt $AmandaCleaningReturnLoc
+        end
+    end
+
+    killvar '$AmandaCleaningReturnLoc'
+---

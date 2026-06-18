@@ -15,10 +15,13 @@
     ! ====================== СОХРАНЯЕМ ИТОГИ ДЛЯ ВЫВОДА ======================
 
     LastDayProfit = tavern_expected_profit
+    LastDayGrossIncome = tavern_gross_income
     LastDayFoodIncome = tavern_food_income
     LastDayWineIncome = tavern_wine_income
     LastDayBeerIncome = tavern_beer_income
     LastDayExpenses = tavern_daily_expenses
+    LastDayHiredStaffCost = tavern_hired_staff_daily_cost
+    LastDayCityTax = tavern_city_tax_today
 
     LastDayFoodUsed = tavern_food_used
     LastDayWineUsed = tavern_wine_used
@@ -31,10 +34,24 @@
     LastDayEventProfitBonus = tavern_event_profit_bonus
     LastDayEventReputationBonus = tavern_event_reputation_bonus
 
+    if MayorClerkAdviceGiven = 1 and MayorFirstTalkDone = 0:
+        if LastDayProfit >= 50:
+            MayorWorkoffProfitDays += 1
+
+            if MayorWorkoffProfitDays > 5:
+                MayorWorkoffProfitDays = 5
+            end
+        end
+    end
+
     ! ====================== ПЕРЕХОД ДАТЫ ======================
 
     day += 1
     time = 1
+
+    if LOC('TavernUpgradeAdvanceDay') = 1:
+        gs 'TavernUpgradeAdvanceDay'
+    end
 
     week += 1
 
@@ -64,6 +81,12 @@
     gs 'TavernDailyUpdate'
     gs 'ResetTavernBarWorkDailyFlags'
 
+    SandraStaffGirlsReactionRunToday = SandraStaffGirlsReactionPending
+
+    if LOC('ProcessSandraStaffGirlsReaction') = 1:
+        gs 'ProcessSandraStaffGirlsReaction'
+    end
+
     ! ====================== ПАНЕЛЬ ПРЕДМЕТОВ И ОПИСАНИЕ ГГ ======================
 
     gs 'AddGlobalButtons'
@@ -88,6 +111,14 @@
     *pl 'Сегодня: ' + $WeekDay + ', ' + STR(day) + ' ' + $MonthName + ' ' + STR(year) + ' года.'
     *pl 'Время суток: ' + $TimeOfDay
     *pl ' '
+
+    if SandraStaffGirlsReactionRunToday = 1:
+        gs 'SandraStaffGirlsMorningSummaryText'
+        *pl ' '
+    end
+
+    killvar 'SandraStaffGirlsReactionRunToday'
+
     if LOC('DailyAftermathPrintMorning') = 1:
         gs 'DailyAftermathPrintMorning'
     end
@@ -111,7 +142,12 @@
     *pl 'Еда: ' + STR(LastDayFoodIncome) + ' мараведи'
     *pl 'Вино: ' + STR(LastDayWineIncome) + ' мараведи'
     *pl 'Пиво: ' + STR(LastDayBeerIncome) + ' мараведи'
+    *pl 'Валовый доход: ' + STR(LastDayGrossIncome) + ' мараведи'
     *pl 'Расходы: ' + STR(LastDayExpenses) + ' мараведи'
+
+    if LastDayHiredStaffCost > 0:
+        *pl 'Наёмный персонал: ' + STR(LastDayHiredStaffCost) + ' мараведи'
+    end
 
     if LastDayRepairCost > 0:
         gs 'TavernDayEventRepairSummaryText'
@@ -120,7 +156,9 @@
         killvar '$TavernDayEventRepairSummaryText'
     end
 
+    *pl 'Налог городу (' + STR(TaxPercent) + '%): ' + STR(LastDayCityTax) + ' мараведи'
     *pl 'Итоговая прибыль: ' + STR(LastDayProfit) + ' мараведи'
+    *pl 'Уплачено городу всего: ' + STR(TavernCityTaxTotal) + ' мараведи'
 
     if LastDayRepairCost > 0:
         LastDayNetProfit = LastDayProfit - LastDayRepairCost
@@ -253,6 +291,14 @@
 
     if tavernvisitors < 5:
         tavernvisitors = 5
+    end
+
+    if LOC('ApplyTavernUpgradeVisitorBonuses') = 1:
+        gs 'ApplyTavernUpgradeVisitorBonuses'
+    end
+
+    if tavernvisitors > 80:
+        tavernvisitors = 80
     end
 
     gs 'TavernDayEventRoll'

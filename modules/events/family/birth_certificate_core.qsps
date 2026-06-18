@@ -1,0 +1,109 @@
+! ================================================
+! FILE: modules/events/family/birth_certificate_core.qsps
+! MODULE: events/family
+! Арка свидетельства о рождении Стефана
+! Находка бумаги и выход на мэрию
+! ================================================
+
+#InitBirthCertificateArc
+    if $BirthCertificateFatherName = '':
+        $BirthCertificateFatherName = 'Томас Лермонт'
+    end
+
+    if $BirthCertificateFatherTitle = '':
+        $BirthCertificateFatherTitle = 'дворянин'
+    end
+
+    if BirthCertificateSearchMinDay <= 0:
+        BirthCertificateSearchMinDay = 7
+    end
+---
+
+#BirthCertificateCanSearchSandraChest
+    BirthCertificateCanSearch = 0
+
+    if BirthCertificateFound = 1:
+        exit
+    end
+
+    if BirthCertificateSearched = 1:
+        exit
+    end
+
+    if day < BirthCertificateSearchMinDay:
+        exit
+    end
+
+    if $GirlLocation['sandra'] = 'SandraRoom':
+        exit
+    end
+
+    if time = 5:
+        exit
+    end
+
+    BirthCertificateCanSearch = 1
+---
+
+#BirthCertificateSearchSandraChest
+    gs 'InitBirthCertificateArc'
+    gs 'BirthCertificateCanSearchSandraChest'
+
+    if BirthCertificateCanSearch = 0:
+        exit
+    end
+
+    cls
+
+    gs 'BirthCertificateSearchIntroText'
+
+    *pl ' '
+
+    act 'Прочитать свидетельство':
+        gt 'BirthCertificateReadScene'
+    end
+
+    act 'Закрыть сундук и притвориться, что не видел':
+        BirthCertificateSearched = 1
+        gt 'SandraRoom'
+    end
+---
+
+#BirthCertificateReadScene
+    cls
+
+    gs 'InitBirthCertificateArc'
+    gs 'BirthCertificateReadText'
+
+    BirthCertificateFound = 1
+    BirthCertificateRead = 1
+    BirthCertificateSearched = 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_BirthCertificateFound_1'
+    end
+
+    FamilyTension += 2
+
+    if FamilyTension > 100:
+        FamilyTension = 100
+    end
+
+    *pl ' '
+
+    act 'Подумать, что делать дальше':
+        gt 'BirthCertificateAftermath'
+    end
+---
+
+#BirthCertificateAftermath
+    cls
+
+    gs 'BirthCertificateAftermathText'
+
+    *pl ' '
+
+    act 'Выйти из комнаты':
+        gt 'SandraRoom'
+    end
+---

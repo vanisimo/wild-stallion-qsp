@@ -1,0 +1,60 @@
+! ================================================
+! FILE: modules/events/family/melissa_music_stage.qsps
+! MODULE: events/family
+! Разговор Мелиссы о сцене — только после ветки с менестрелем
+! Заказ у Драупнира — после MelissaMusicStageOfferDone
+! ================================================
+
+#MelissaMusicStageCanOffer
+    gs 'MelissaMusicianArcCanOfferStageTalk'
+---
+
+#MelissaMusicStageTalk
+    cls
+
+    gs 'MelissaMusicStageCanOffer'
+
+    if MelissaMusicStageCanOffer = 0:
+        gs 'MelissaMusicianArcStageTalkBlockedText'
+
+        *pl ' '
+
+        $MelissaStageReturnLoc = $CURLOC
+
+        if $MelissaStageReturnLoc = '':
+            $MelissaStageReturnLoc = 'TavernMain'
+        end
+
+        act 'Вернуться':
+            gt $MelissaStageReturnLoc
+        end
+
+        killvar '$MelissaStageReturnLoc'
+        killvar '$MelissaMusicianArcBlockReason'
+        exit
+    end
+
+    gs 'MelissaMusicStageTalkText'
+
+    MelissaMusicStageOfferDone = 1
+    Friends['melissa'] += 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Melissa_MusicStageOffer_1'
+    end
+
+    *pl ' '
+
+    $MelissaStageReturnLoc = $CURLOC
+
+    if $MelissaStageReturnLoc = '':
+        $MelissaStageReturnLoc = 'TavernMain'
+    end
+
+    act 'Вернуться':
+        gt $MelissaStageReturnLoc
+    end
+
+    killvar '$MelissaStageReturnLoc'
+    killvar '$MelissaMusicianArcBlockReason'
+---

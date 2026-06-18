@@ -32,6 +32,7 @@
     PanelForecastBeerIncome = tavern_beer_income
     PanelForecastGrossIncome = tavern_gross_income
     PanelForecastExpenses = tavern_daily_expenses
+    PanelForecastCityTax = tavern_city_tax_today
     PanelForecastProfit = tavern_expected_profit
     PanelForecastStockPenalty = tavern_stock_penalty
 
@@ -41,6 +42,7 @@
     PanelForecastEfficiency = tavern_work_efficiency
     PanelForecastOverloadPenalty = tavern_overload_penalty
     PanelForecastMissingWorkPenalty = tavern_missing_work_penalty
+    PanelForecastHiredStaffCost = tavern_hired_staff_daily_cost
 
     pl '══════════════════════════════════════════════'
     pl ' ТРАКТИР "ДИКИЙ ЖЕРЕБЕЦ"'
@@ -98,7 +100,14 @@
     pl 'Пиво: ' + STR(PanelForecastBeerIncome) + ' мараведи'
     pl 'Валовый доход: ' + STR(PanelForecastGrossIncome) + ' мараведи'
     pl 'Расходы: ' + STR(PanelForecastExpenses) + ' мараведи'
+
+    if PanelForecastHiredStaffCost > 0:
+        pl 'В том числе наёмники: ' + STR(PanelForecastHiredStaffCost) + ' мараведи'
+    end
+
+    pl 'Налог городу (' + STR(TaxPercent) + '%): ' + STR(PanelForecastCityTax) + ' мараведи'
     pl 'Ожидаемая прибыль: ' + STR(PanelForecastProfit) + ' мараведи'
+    pl 'Уплачено городу всего: ' + STR(TavernCityTaxTotal) + ' мараведи'
 
     if PanelForecastStockPenalty > 0:
         pl 'Штраф запасов: ' + STR(PanelForecastStockPenalty) + '%'
@@ -425,7 +434,16 @@
     end
 
     if tavern_overload_penalty >= 10:
-        pl 'Проблема: девушки перегружены работой.'
+        if SandraStaffHired = 1 and SandraStaffGirlsReactionDone = 1:
+            if tavern_overload_penalty >= 20:
+                pl 'Замечание: нагрузка на девушек всё ещё высокая, но помощницы уже снимают часть работы.'
+            else:
+                pl 'Замечание: перегруз снизился после найма помощниц, но смена пока не идеальна.'
+            end
+        else:
+            pl 'Проблема: девушки перегружены работой.'
+        end
+
         PanelProblemShown = 1
     end
 

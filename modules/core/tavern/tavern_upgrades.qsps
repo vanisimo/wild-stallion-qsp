@@ -1,0 +1,446 @@
+! ================================================
+! FILE: modules/core/tavern/tavern_upgrades.qsps
+! MODULE: core/tavern
+! Постоянные улучшения трактира у столяра Драупнира
+! Оплата сразу, работа завершается через N дней без штрафа трактиру
+! ================================================
+
+#InitTavernUpgrades
+    if TavernUpgradeSignCost <= 0:
+        TavernUpgradeSignCost = 120
+    end
+
+    if TavernUpgradeExteriorCost <= 0:
+        TavernUpgradeExteriorCost = 200
+    end
+
+    if TavernUpgradeKitchenCost <= 0:
+        TavernUpgradeKitchenCost = 180
+    end
+
+    if TavernUpgradeBarCost <= 0:
+        TavernUpgradeBarCost = 150
+    end
+
+    if TavernUpgradeCellarCost <= 0:
+        TavernUpgradeCellarCost = 100
+    end
+
+    if TavernUpgradeDoorsCost <= 0:
+        TavernUpgradeDoorsCost = 90
+    end
+
+    if TavernUpgradeLampCost <= 0:
+        TavernUpgradeLampCost = 70
+    end
+
+    if TavernUpgradeStageCost <= 0:
+        TavernUpgradeStageCost = 250
+    end
+
+    if TavernUpgradeSignDays <= 0:
+        TavernUpgradeSignDays = 1
+    end
+
+    if TavernUpgradeExteriorDays <= 0:
+        TavernUpgradeExteriorDays = 2
+    end
+
+    if TavernUpgradeKitchenDays <= 0:
+        TavernUpgradeKitchenDays = 2
+    end
+
+    if TavernUpgradeBarDays <= 0:
+        TavernUpgradeBarDays = 1
+    end
+
+    if TavernUpgradeCellarDays <= 0:
+        TavernUpgradeCellarDays = 1
+    end
+
+    if TavernUpgradeDoorsDays <= 0:
+        TavernUpgradeDoorsDays = 1
+    end
+
+    if TavernUpgradeLampDays <= 0:
+        TavernUpgradeLampDays = 1
+    end
+
+    if TavernUpgradeStageDays <= 0:
+        TavernUpgradeStageDays = 3
+    end
+---
+
+#TavernUpgradeCountCompleted
+    TavernUpgradesCompletedCount = 0
+
+    if TavernUpgradeSignDone = 1:
+        TavernUpgradesCompletedCount += 1
+    end
+
+    if TavernUpgradeExteriorDone = 1:
+        TavernUpgradesCompletedCount += 1
+    end
+
+    if TavernUpgradeKitchenDone = 1:
+        TavernUpgradesCompletedCount += 1
+    end
+
+    if TavernUpgradeBarDone = 1:
+        TavernUpgradesCompletedCount += 1
+    end
+
+    if TavernUpgradeCellarDone = 1:
+        TavernUpgradesCompletedCount += 1
+    end
+
+    if TavernUpgradeDoorsDone = 1:
+        TavernUpgradesCompletedCount += 1
+    end
+
+    if TavernUpgradeLampDone = 1:
+        TavernUpgradesCompletedCount += 1
+    end
+
+    if TavernUpgradeStageDone = 1:
+        TavernUpgradesCompletedCount += 1
+    end
+---
+
+#TavernUpgradeCanOrder
+    gs 'InitTavernUpgrades'
+
+    $TavernUpgradeOrderKey = LCASE($ARGS[0])
+    TavernUpgradeCanOrder = 0
+    TavernUpgradeOrderCost = 0
+    TavernUpgradeOrderDays = 0
+    $TavernUpgradeOrderBlockReason = ''
+
+    if TavernCarpenterUpgradesUnlocked = 0:
+        $TavernUpgradeOrderBlockReason = 'Клерк ещё не разрешил заказывать улучшения.'
+        killvar '$TavernUpgradeOrderKey'
+        exit
+    end
+
+    if $TavernUpgradeOrderKey = 'sign':
+        TavernUpgradeOrderCost = TavernUpgradeSignCost
+        TavernUpgradeOrderDays = TavernUpgradeSignDays
+
+        if TavernUpgradeSignDone = 1:
+            $TavernUpgradeOrderBlockReason = 'Вывеска уже обновлена.'
+        elseif TavernUpgradeSignPending = 1:
+            $TavernUpgradeOrderBlockReason = 'Драупнир уже делает вывеску.'
+        else:
+            TavernUpgradeCanOrder = 1
+        end
+
+    elseif $TavernUpgradeOrderKey = 'exterior':
+        TavernUpgradeOrderCost = TavernUpgradeExteriorCost
+        TavernUpgradeOrderDays = TavernUpgradeExteriorDays
+
+        if TavernUpgradeSignDone = 0:
+            $TavernUpgradeOrderBlockReason = 'Сначала нужна новая вывеска.'
+        elseif TavernUpgradeExteriorDone = 1:
+            $TavernUpgradeOrderBlockReason = 'Фасад уже отремонтирован.'
+        elseif TavernUpgradeExteriorPending = 1:
+            $TavernUpgradeOrderBlockReason = 'Драупнир уже чинит фасад.'
+        else:
+            TavernUpgradeCanOrder = 1
+        end
+
+    elseif $TavernUpgradeOrderKey = 'kitchen':
+        TavernUpgradeOrderCost = TavernUpgradeKitchenCost
+        TavernUpgradeOrderDays = TavernUpgradeKitchenDays
+
+        if TavernUpgradeSignDone = 0:
+            $TavernUpgradeOrderBlockReason = 'Сначала нужна новая вывеска.'
+        elseif TavernUpgradeKitchenDone = 1:
+            $TavernUpgradeOrderBlockReason = 'Кухня уже приведена в порядок.'
+        elseif TavernUpgradeKitchenPending = 1:
+            $TavernUpgradeOrderBlockReason = 'Драупнир уже работает на кухне.'
+        else:
+            TavernUpgradeCanOrder = 1
+        end
+
+    elseif $TavernUpgradeOrderKey = 'bar':
+        TavernUpgradeOrderCost = TavernUpgradeBarCost
+        TavernUpgradeOrderDays = TavernUpgradeBarDays
+
+        if TavernUpgradeSignDone = 0:
+            $TavernUpgradeOrderBlockReason = 'Сначала нужна новая вывеска.'
+        elseif TavernUpgradeBarDone = 1:
+            $TavernUpgradeOrderBlockReason = 'Стойка уже обновлена.'
+        elseif TavernUpgradeBarPending = 1:
+            $TavernUpgradeOrderBlockReason = 'Драупнир уже чинит стойку.'
+        else:
+            TavernUpgradeCanOrder = 1
+        end
+
+    elseif $TavernUpgradeOrderKey = 'cellar':
+        TavernUpgradeOrderCost = TavernUpgradeCellarCost
+        TavernUpgradeOrderDays = TavernUpgradeCellarDays
+
+        if TavernUpgradeSignDone = 0:
+            $TavernUpgradeOrderBlockReason = 'Сначала нужна новая вывеска.'
+        elseif TavernUpgradeCellarDone = 1:
+            $TavernUpgradeOrderBlockReason = 'Полки в кладовой уже поставлены.'
+        elseif TavernUpgradeCellarPending = 1:
+            $TavernUpgradeOrderBlockReason = 'Драупнир уже делает полки.'
+        else:
+            TavernUpgradeCanOrder = 1
+        end
+
+    elseif $TavernUpgradeOrderKey = 'doors':
+        TavernUpgradeOrderCost = TavernUpgradeDoorsCost
+        TavernUpgradeOrderDays = TavernUpgradeDoorsDays
+
+        if TavernUpgradeSignDone = 0:
+            $TavernUpgradeOrderBlockReason = 'Сначала нужна новая вывеска.'
+        elseif TavernUpgradeDoorsDone = 1:
+            $TavernUpgradeOrderBlockReason = 'Петли уже усилены.'
+        elseif TavernUpgradeDoorsPending = 1:
+            $TavernUpgradeOrderBlockReason = 'Драупнир уже ставит петли.'
+        else:
+            TavernUpgradeCanOrder = 1
+        end
+
+    elseif $TavernUpgradeOrderKey = 'lamp':
+        TavernUpgradeOrderCost = TavernUpgradeLampCost
+        TavernUpgradeOrderDays = TavernUpgradeLampDays
+
+        if TavernUpgradeSignDone = 0:
+            $TavernUpgradeOrderBlockReason = 'Сначала нужна новая вывеска.'
+        elseif TavernUpgradeLampDone = 1:
+            $TavernUpgradeOrderBlockReason = 'Светильник уже повешен.'
+        elseif TavernUpgradeLampPending = 1:
+            $TavernUpgradeOrderBlockReason = 'Драупнир уже вешает светильник.'
+        else:
+            TavernUpgradeCanOrder = 1
+        end
+
+    elseif $TavernUpgradeOrderKey = 'stage':
+        TavernUpgradeOrderCost = TavernUpgradeStageCost
+        TavernUpgradeOrderDays = TavernUpgradeStageDays
+
+        if MelissaMusicStageOfferDone = 0:
+            $TavernUpgradeOrderBlockReason = 'Сначала поговорите с Мелиссой о сцене для музыкантов.'
+        elseif TavernUpgradeSignDone = 0:
+            $TavernUpgradeOrderBlockReason = 'Сначала нужна новая вывеска.'
+        elseif TavernUpgradeStageDone = 1:
+            $TavernUpgradeOrderBlockReason = 'Сцена уже установлена.'
+        elseif TavernUpgradeStagePending = 1:
+            $TavernUpgradeOrderBlockReason = 'Драупнир уже собирает сцену.'
+        else:
+            TavernUpgradeCanOrder = 1
+        end
+    else:
+        $TavernUpgradeOrderBlockReason = 'Неизвестный заказ.'
+    end
+
+    killvar '$TavernUpgradeOrderKey'
+---
+
+#TavernUpgradePlaceOrder
+    $TavernUpgradeOrderKey = LCASE($ARGS[0])
+
+    gs 'TavernUpgradeCanOrder', $TavernUpgradeOrderKey
+
+    if TavernUpgradeCanOrder = 0:
+        killvar '$TavernUpgradeOrderKey'
+        exit
+    end
+
+    if money < TavernUpgradeOrderCost:
+        killvar '$TavernUpgradeOrderKey'
+        exit
+    end
+
+    money -= TavernUpgradeOrderCost
+
+    if $TavernUpgradeOrderKey = 'sign':
+        TavernUpgradeSignPending = 1
+        TavernUpgradeSignDaysLeft = TavernUpgradeOrderDays
+
+    elseif $TavernUpgradeOrderKey = 'exterior':
+        TavernUpgradeExteriorPending = 1
+        TavernUpgradeExteriorDaysLeft = TavernUpgradeOrderDays
+
+    elseif $TavernUpgradeOrderKey = 'kitchen':
+        TavernUpgradeKitchenPending = 1
+        TavernUpgradeKitchenDaysLeft = TavernUpgradeOrderDays
+
+    elseif $TavernUpgradeOrderKey = 'bar':
+        TavernUpgradeBarPending = 1
+        TavernUpgradeBarDaysLeft = TavernUpgradeOrderDays
+
+    elseif $TavernUpgradeOrderKey = 'cellar':
+        TavernUpgradeCellarPending = 1
+        TavernUpgradeCellarDaysLeft = TavernUpgradeOrderDays
+
+    elseif $TavernUpgradeOrderKey = 'doors':
+        TavernUpgradeDoorsPending = 1
+        TavernUpgradeDoorsDaysLeft = TavernUpgradeOrderDays
+
+    elseif $TavernUpgradeOrderKey = 'lamp':
+        TavernUpgradeLampPending = 1
+        TavernUpgradeLampDaysLeft = TavernUpgradeOrderDays
+
+    elseif $TavernUpgradeOrderKey = 'stage':
+        TavernUpgradeStagePending = 1
+        TavernUpgradeStageDaysLeft = TavernUpgradeOrderDays
+    end
+
+    killvar '$TavernUpgradeOrderKey'
+    killvar 'TavernUpgradeCanOrder'
+    killvar 'TavernUpgradeOrderCost'
+    killvar 'TavernUpgradeOrderDays'
+    killvar '$TavernUpgradeOrderBlockReason'
+---
+
+#TavernUpgradeAdvanceDay
+    gs 'TavernUpgradeTickOne', 'sign'
+    gs 'TavernUpgradeTickOne', 'exterior'
+    gs 'TavernUpgradeTickOne', 'kitchen'
+    gs 'TavernUpgradeTickOne', 'bar'
+    gs 'TavernUpgradeTickOne', 'cellar'
+    gs 'TavernUpgradeTickOne', 'doors'
+    gs 'TavernUpgradeTickOne', 'lamp'
+    gs 'TavernUpgradeTickOne', 'stage'
+---
+
+#TavernUpgradeTickOne
+    $TavernUpgradeTickKey = LCASE($ARGS[0])
+
+    if $TavernUpgradeTickKey = 'sign':
+        if TavernUpgradeSignPending = 1 and TavernUpgradeSignDaysLeft > 0:
+            TavernUpgradeSignDaysLeft -= 1
+
+            if TavernUpgradeSignDaysLeft <= 0:
+                TavernUpgradeSignPending = 0
+                TavernUpgradeSignDone = 1
+                tavern_reputation += 3
+
+                if tavern_reputation > 100:
+                    tavern_reputation = 100
+                end
+            end
+        end
+
+    elseif $TavernUpgradeTickKey = 'exterior':
+        if TavernUpgradeExteriorPending = 1 and TavernUpgradeExteriorDaysLeft > 0:
+            TavernUpgradeExteriorDaysLeft -= 1
+
+            if TavernUpgradeExteriorDaysLeft <= 0:
+                TavernUpgradeExteriorPending = 0
+                TavernUpgradeExteriorDone = 1
+                tavern_reputation += 5
+
+                if tavern_reputation > 100:
+                    tavern_reputation = 100
+                end
+            end
+        end
+
+    elseif $TavernUpgradeTickKey = 'kitchen':
+        if TavernUpgradeKitchenPending = 1 and TavernUpgradeKitchenDaysLeft > 0:
+            TavernUpgradeKitchenDaysLeft -= 1
+
+            if TavernUpgradeKitchenDaysLeft <= 0:
+                TavernUpgradeKitchenPending = 0
+                TavernUpgradeKitchenDone = 1
+            end
+        end
+
+    elseif $TavernUpgradeTickKey = 'bar':
+        if TavernUpgradeBarPending = 1 and TavernUpgradeBarDaysLeft > 0:
+            TavernUpgradeBarDaysLeft -= 1
+
+            if TavernUpgradeBarDaysLeft <= 0:
+                TavernUpgradeBarPending = 0
+                TavernUpgradeBarDone = 1
+            end
+        end
+
+    elseif $TavernUpgradeTickKey = 'cellar':
+        if TavernUpgradeCellarPending = 1 and TavernUpgradeCellarDaysLeft > 0:
+            TavernUpgradeCellarDaysLeft -= 1
+
+            if TavernUpgradeCellarDaysLeft <= 0:
+                TavernUpgradeCellarPending = 0
+                TavernUpgradeCellarDone = 1
+            end
+        end
+
+    elseif $TavernUpgradeTickKey = 'doors':
+        if TavernUpgradeDoorsPending = 1 and TavernUpgradeDoorsDaysLeft > 0:
+            TavernUpgradeDoorsDaysLeft -= 1
+
+            if TavernUpgradeDoorsDaysLeft <= 0:
+                TavernUpgradeDoorsPending = 0
+                TavernUpgradeDoorsDone = 1
+            end
+        end
+
+    elseif $TavernUpgradeTickKey = 'lamp':
+        if TavernUpgradeLampPending = 1 and TavernUpgradeLampDaysLeft > 0:
+            TavernUpgradeLampDaysLeft -= 1
+
+            if TavernUpgradeLampDaysLeft <= 0:
+                TavernUpgradeLampPending = 0
+                TavernUpgradeLampDone = 1
+            end
+        end
+
+    elseif $TavernUpgradeTickKey = 'stage':
+        if TavernUpgradeStagePending = 1 and TavernUpgradeStageDaysLeft > 0:
+            TavernUpgradeStageDaysLeft -= 1
+
+            if TavernUpgradeStageDaysLeft <= 0:
+                TavernUpgradeStagePending = 0
+                TavernUpgradeStageDone = 1
+                MelissaMusicianInterest += 2
+
+                if MelissaMusicianInterest > 100:
+                    MelissaMusicianInterest = 100
+                end
+            end
+        end
+    end
+
+    killvar '$TavernUpgradeTickKey'
+---
+
+#ApplyTavernUpgradeStaffBonuses
+    if TavernUpgradeKitchenDone = 1:
+        tavern_kitchen_power += 8
+    end
+
+    if TavernUpgradeBarDone = 1:
+        tavern_waitress_power += 5
+    end
+---
+
+#ApplyTavernUpgradeVisitorBonuses
+    if TavernUpgradeSignDone = 1:
+        tavernvisitors += 2
+    end
+
+    if TavernUpgradeExteriorDone = 1:
+        tavernvisitors += 1
+    end
+
+    if TavernUpgradeLampDone = 1 and time = 4:
+        tavernvisitors += 1
+    end
+---
+
+#ApplyTavernUpgradeIncomeBonuses
+    if TavernUpgradeStageDone = 1 and week = 5:
+        tavern_beer_income = (tavern_beer_income * 110) / 100
+    end
+
+    if TavernUpgradeBarDone = 1:
+        tavern_wine_income = (tavern_wine_income * 105) / 100
+        tavern_beer_income = (tavern_beer_income * 105) / 100
+    end
+---

@@ -67,9 +67,12 @@ Core values:
 Daily calculation values:
 
 - `tavern_food_income`, `tavern_wine_income`, `tavern_beer_income` - income parts.
-- `tavern_gross_income` - gross income before daily expenses.
+- `tavern_gross_income` - gross income before daily expenses and city tax.
 - `tavern_daily_expenses` - staff/work expenses.
-- `tavern_expected_profit` - final expected daily profit.
+- `tavern_city_tax_today` - city tax for the current calculation (`tavern_gross_income * TaxPercent / 100`).
+- `TavernCityTaxTotal` - cumulative city tax paid across the whole game.
+- `TaxPercent` - city tax rate on tavern gross income; default `10`, owner `InitBusinessSchedule`.
+- `tavern_expected_profit` - final expected daily profit after expenses and city tax.
 - `tavern_stock_penalty` - low stock penalty.
 - `tavern_food_used`, `tavern_wine_used`, `tavern_beer_used` - stock consumed by the previous work day.
 - `tavern_can_serve_food`, `tavern_can_serve_drinks` - service availability flags.
@@ -83,7 +86,224 @@ Work capacity values are calculated by tavern/girl job helpers:
 - `tavern_work_efficiency`
 - `tavern_overload_penalty`
 
-`ProcessTavernWorkDay` is the normal daily application path. It updates money, stock, reputation, and event bonuses.
+`ProcessTavernWorkDay` is the normal daily application path. It updates money, stock, reputation, event bonuses, and accumulates `TavernCityTaxTotal`.
+
+City tax flow:
+
+1. `CalculateTavernIncomePreview` computes gross income and staff expenses.
+2. `ApplyTavernCityTaxToProfit` subtracts `tavern_city_tax_today` from `tavern_expected_profit`.
+3. `TavernWorkDayEvent` and supply modifiers may change profit further.
+4. `AccumulateTavernCityTax` adds `tavern_city_tax_today` to `TavernCityTaxTotal` before money is updated.
+
+Mayor gate target for stage 1: `TavernCityTaxTotal >= 600`.
+
+## Birth Certificate Arc (stage 1 / point 1)
+
+Owners:
+
+- `modules/events/family/birth_certificate_core.qsps`
+- `modules/events/family/birth_certificate_text.qsps`
+- `modules/locations/rooms/sandra_room.qsps` — chest search
+- `modules/locations/town/mayor_office.qsps` — clerk talk
+
+Discovery:
+
+1. `day >= BirthCertificateSearchMinDay` (default `7`).
+2. Sandra is not in `SandraRoom`.
+3. Not night (`time <> 5`).
+4. `BirthCertificateFound = 0`.
+
+Player action: `SandraRoom` → «Осмотреть сундук внимательнее».
+
+Content:
+
+- Father in the record: `$BirthCertificateFatherName` (default `Томас Лермонт`), `$BirthCertificateFatherTitle` (default `дворянин`).
+- Not Longcock; registration seal field is empty.
+
+After read:
+
+- `BirthCertificateFound = 1`, `BirthCertificateRead = 1`.
+- Knowledge id: `Stefan_BirthCertificateFound_1`.
+- `FamilyTension += 2`.
+
+Mayor hook:
+
+- `MayorOffice` → «Показать клерку свидетельство о рождении».
+- Clerk explains: magistrate will reject without seal; need mayor audience first.
+
+Debug: `DebugBirthCertificateArcPanel`.
+
+## Tavern Upgrades / Draupnir (stage 1 / PR3)
+
+Owners:
+
+- `modules/core/tavern/tavern_upgrades.qsps`
+- `modules/locations/shops/draupnir_upgrades.qsps`
+- `modules/locations/shops/draupnir_upgrades_text.qsps`
+- `modules/events/family/melissa_music_stage.qsps`
+- `modules/locations/town/craftsmen_quarter.qsps`
+
+Unlock: `TavernCarpenterUpgradesUnlocked = 1` (from mayor clerk workoff in PR4b; debug can force).
+
+Rules:
+
+- Pay immediately; work completes after N days via `TavernUpgradeAdvanceDay` in `NextDay`.
+- No tavern closure or power penalty while work is pending.
+- **Sign first** (`TavernUpgradeSignDone`); other Draupnir upgrades require sign done, any order after that.
+- **Music stage** only after Melissa musician branch (below) sets `MelissaMusicStageOfferDone = 1`. Not in clerk checklist.
+
+| Upgrade | Cost | Days | Effect when done |
+|---------|------|------|------------------|
+| sign | 120 | 1 | rep +3, visitors +2 |
+| exterior | 200 | 2 | rep +5, softer bad day-events |
+| kitchen | 180 | 2 | kitchen power +8 |
+| bar | 150 | 1 | waitress power +5, drink income +5% |
+| cellar | 100 | 1 | rat food loss −30% |
+| doors | 90 | 1 | 35% brawl without repair flag |
+| lamp | 70 | 1 | evening visitors +1 |
+| stage | 250 | 3 | Friday beer +10%, minstrels event bonus, `MelissaMusicianInterest +2` |
+
+Emergency repair (`TavernRepairNeeded`) stays separate from permanent upgrades.
+
+Debug: `DebugTavernUpgradesPanel`.
+
+## Melissa Musician Branch (planned / scaffold)
+
+Owners:
+
+- `modules/events/family/melissa_musician_arc.qsps` — flags and gates
+- `modules/events/family/melissa_musician_arc_text.qsps` — texts (stage talk only so far)
+- `modules/events/family/melissa_music_stage.qsps` — stage talk scene
+
+Order (all required before stage talk):
+
+1. `MelissaDanceDressReady` — dance dress ready (Irma / family; **TODO**).
+2. `MelissaFridayDanceAttended` — Melissa at Friday dances in dress (**TODO**).
+3. `MelissaMinstrelMet` — meet travelling minstrel (**TODO**).
+4. `MelissaMinstrelKissDone` — kiss after dance (**TODO**).
+5. `MelissaMusicStageOfferDone` — talk about tavern stage (`MelissaMusicStageTalk`).
+6. Order stage at Draupnir (`TavernUpgradeStageDone`).
+7. `MelissaMinstrelAffairStage` — minstrel continues with Melissa (**TODO**, separate events).
+
+`MelissaMusicStageCanOffer` uses `MelissaMusicianArcCanOfferStageTalk` — no early unlock by friendship alone.
+
+Personal story `melissa_musician` in `girl_talk_personal` is a later confession, not the stage gate.
+
+## Mayor Office Gate (stage 1)
+
+Owners:
+
+- `modules/locations/town/mayor_office.qsps`
+- `modules/locations/town/mayor_office_text.qsps`
+- `modules/locations/town/street.qsps` — link to `MayorOffice`
+- `modules/core/time/business_schedule.qsps` — `IsMayorOfficeOpen`
+
+Schedule: Wednesday and Thursday, noon or day (`time = 2 or 3`).
+
+Flow (stage 1 main arc):
+
+1. `BirthCertificateRead = 1` — свидетельство найдено.
+2. Pay tavern tax until `TavernCityTaxTotal >= MayorCityTaxGate` (default `600`).
+3. `MayorOffice` → «Просить приём у мэра» → pay `MayorAudienceBribe` (default `180`). Money is **not** refunded.
+4. Mayor refuses (`MayorAudienceRefused = 1`, `MayorFirstTalkDone` stays `0`).
+5. Player demands refund → clerk helps (`MayorOfficeClerkRefundTalk` → `MayorOfficeClerkAdviceTalk`): narrative advice, not a UI checklist.
+6. Advice sets `MayorClerkAdviceGiven = 1`, `TavernCarpenterUpgradesUnlocked = 1`, `MayorClerkMentionedStaff = 1`.
+7. Report to clerk (`MayorOfficeWorkoffGate` → «Доложить клерку о делах трактира») when workoff complete.
+8. Workoff (`MayorClerkWorkoffEvaluate`):
+   - `TavernUpgradeSignDone = 1`
+   - `SandraStaffHired = 1`
+   - `MayorWorkoffProfitDays >= 2` (days with `LastDayProfit >= 50` after advice) **or** `tavern_reputation >= 45`
+9. Mayor accepts — `MayorOfficeFirstTalk`, `MayorFirstTalkDone = 1`.
+10. Magistrate submit blocked until `MayorFirstTalkDone = 1`.
+
+Key state:
+
+- `MayorCityTaxGate`, `MayorAudienceBribe`
+- `MayorBribePaid`, `MayorAudienceRefused`, `MayorClerkAdviceGiven`, `MayorClerkMentionedStaff`
+- `MayorFirstTalkDone` — only after future acceptance, not after bribe
+
+Knowledge ids: `Stefan_MayorClerkAdvice_1`, later `Stefan_MayorFirstTalk_1`.
+
+Debug: `DebugMayorArcPanel` (debug panel).
+
+## Mayor / seal / family corruption (stage 2 — design only)
+
+**Not implemented in QSP yet.** Full story draft:
+
+- `docs/design-mayor-seal-corruption-arc.md`
+
+Session handoff for playtest + next steps:
+
+- `docs/session-notes-2026-06-18.md`
+
+Summary:
+
+- First audience (after workoff) to be extended: respectable suit gate, mayor states **honest path conditions** (~21 days, taxes, reputation) and **second path** (return if reputation not crystal-clear); noble suit at **Irma** (520); Stefan **thoughts** only, no fork buttons.
+- **Irma** = mayor's mistress; rumor **public early**.
+- Optional corruption arc: mayor **desire** (not force); sisters' price = global `PlayerCantForbidGirlMeetings` + `AmandaFutureFavorOwed` / `MelissaFutureFavorOwed`; jewelry gifts; Sandra needs `PlayerKnows_SandraDraupnirAffair` + support talk (Draupnir foreshadow, chest item, Sunday grocery eavesdrop).
+- Strong blackmail TBD: port / weapons shipments.
+
+## Hired Staff (stage 1 / PR2)
+
+Owner: `modules/core/tavern/tavern_hired_staff.qsps`.
+
+Unlock (`CheckTavernHiredStaffUnlocked`):
+
+- `SandraStaffHired = 1` — mother hired at least one role via `SandraStaffHireTalk`.
+- Gate: `MayorClerkMentionedStaff = 1` from mayor clerk advice.
+
+Hiring flow (`modules/events/family/sandra_staff_hire.qsps`):
+
+- Talk topic in Sandra menu: «О работницах для трактира».
+- Mother hires; Stefan pays **moving costs** once: kitchen `30`, waitress `30`, cleaning `25`.
+- Daily salary uses existing `TavernHired*Cost` in `tavern_daily_expenses`.
+- Panel staff: read-only after `SandraStaffHired = 1` (no hire/fire buttons).
+- `SandraStaffTalkDone = 1` when player finishes after at least one hire.
+- `SandraStaffGirlsReactionPending = 1` — set when hire talk finishes; processed next morning.
+
+Girl reactions (`modules/events/family/sandra_staff_girls_reaction.qsps`):
+
+- `ProcessSandraStaffGirlsReaction` in `next_day` — morning notices via `GirlTalkPendingNotice`, `FamilyTrust += 1`.
+- `SandraStaffGirlsReactionDone = 1` after first morning processing.
+- `GirlTalkTavernUseStaffRelief` — tavern talk uses relief/praise text instead of overload complaints when `tavern_overload_penalty >= 10`.
+- Optional talk «После помощниц матери» in girl menus; once per girl via `GirlStaffPraiseTalkDone[girl]`.
+- Panel tavern: softer overload warning when hired staff is active.
+
+## Amanda cleaning relief (point 5)
+
+Owner: `modules/events/family/amanda_cleaning_relief.qsps`.
+
+Gates (`AmandaCleaningReliefCanTalk`):
+
+- `SandraStaffGirlsReactionDone = 1`
+- `TavernHiredCleaning = 1`
+- `jobcleaning['amanda'] = 1`
+- `GirlTrustStefan['amanda'] >= 40` or `Friends['amanda'] >= 14`
+- `AmandaCleaningReliefDone = 0`
+
+Flow:
+
+- Talk topic «Руки портятся от воды» in Amanda menu; special action «Поговорить об уборке и руках».
+- Agree → `jobcleaning['amanda'] = 0`, cleaning stays on hired worker, `AmandaCleaningReliefDone = 1`.
+- Decline → topic remains available.
+
+Until unlock, hire buttons are hidden.
+
+Flags:
+
+- `TavernHiredKitchen`, `TavernHiredWaitress`, `TavernHiredCleaning` — `0/1` per role.
+
+Power added to daily staff calculation:
+
+- kitchen `28`, waitress `25`, cleaning `22`.
+
+Daily cost (included in `tavern_daily_expenses`):
+
+- kitchen `12`, waitress `12`, cleaning `10`.
+
+Overload relief: `-5` penalty per active hired worker.
+
+UI: `PanelStaffInfo` → block `PanelHiredStaffBlock`, toggle via `PanelHiredStaffToggle`.
 
 ## Last Day Summary
 
@@ -92,10 +312,13 @@ Owner: `modules/core/time/next_day.qsps`.
 These values mirror the previous work day for the morning summary:
 
 - `LastDayProfit`
+- `LastDayGrossIncome`
 - `LastDayFoodIncome`
 - `LastDayWineIncome`
 - `LastDayBeerIncome`
 - `LastDayExpenses`
+- `LastDayCityTax`
+- `LastDayHiredStaffCost`
 - `LastDayFoodUsed`
 - `LastDayWineUsed`
 - `LastDayBeerUsed`

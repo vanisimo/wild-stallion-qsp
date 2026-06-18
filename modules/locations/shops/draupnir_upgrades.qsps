@@ -1,0 +1,283 @@
+! ================================================
+! FILE: modules/locations/shops/draupnir_upgrades.qsps
+! MODULE: locations/shops
+! Заказ улучшений трактира у Драупнира
+! ================================================
+
+#DraupnirUpgradesShop
+    cls
+
+    gs 'InitTavernUpgrades'
+    gs 'InitDraupnir'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ДРАУПНИР — УЛУЧШЕНИЯ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'DraupnirUpgradesIntroText'
+
+    *pl ' '
+    *pl 'Заказы:'
+    *pl ' '
+
+    gs 'DraupnirUpgradePrintLine', 'sign', 'Новая вывеска'
+    gs 'DraupnirUpgradePrintLine', 'exterior', 'Внешний ремонт фасада'
+    gs 'DraupnirUpgradePrintLine', 'kitchen', 'Ремонт кухни'
+    gs 'DraupnirUpgradePrintLine', 'bar', 'Обновление стойки бара'
+    gs 'DraupnirUpgradePrintLine', 'cellar', 'Полки в кладовой'
+    gs 'DraupnirUpgradePrintLine', 'doors', 'Железные петли на дверях'
+    gs 'DraupnirUpgradePrintLine', 'lamp', 'Светильник в зале'
+
+    if MelissaMusicStageOfferDone = 1:
+        gs 'DraupnirUpgradePrintLine', 'stage', 'Сцена для музыкантов'
+    end
+
+    *pl ' '
+    *pl 'У вас: ' + STR(money) + ' мараведи'
+
+    gs 'DraupnirUpgradeBuildMenu'
+
+    act 'Вернуться в квартал ремесленников':
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#DraupnirUpgradePrintLine
+    $DraupnirUpgradeLineKey = LCASE($ARGS[0])
+    $DraupnirUpgradeLineTitle = $ARGS[1]
+    $DraupnirUpgradeLineStatus = 'open'
+    DraupnirUpgradeLineDaysLeft = 0
+    DraupnirUpgradeLineCost = 0
+    DraupnirUpgradeLineDays = 0
+
+    gs 'DraupnirUpgradeResolveLineState', $DraupnirUpgradeLineKey
+    gs 'DraupnirUpgradeLineText'
+
+    pl $DraupnirUpgradeLineText
+
+    killvar '$DraupnirUpgradeLineKey'
+    killvar '$DraupnirUpgradeLineTitle'
+    killvar '$DraupnirUpgradeLineStatus'
+    killvar 'DraupnirUpgradeLineDaysLeft'
+    killvar 'DraupnirUpgradeLineCost'
+    killvar 'DraupnirUpgradeLineDays'
+    killvar '$DraupnirUpgradeLineText'
+---
+
+#DraupnirUpgradeResolveLineState
+    $DraupnirUpgradeStateKey = LCASE($ARGS[0])
+
+    if $DraupnirUpgradeStateKey = 'sign':
+        DraupnirUpgradeLineCost = TavernUpgradeSignCost
+        DraupnirUpgradeLineDays = TavernUpgradeSignDays
+
+        if TavernUpgradeSignDone = 1:
+            $DraupnirUpgradeLineStatus = 'done'
+        elseif TavernUpgradeSignPending = 1:
+            $DraupnirUpgradeLineStatus = 'pending'
+            DraupnirUpgradeLineDaysLeft = TavernUpgradeSignDaysLeft
+        end
+
+    elseif $DraupnirUpgradeStateKey = 'exterior':
+        DraupnirUpgradeLineCost = TavernUpgradeExteriorCost
+        DraupnirUpgradeLineDays = TavernUpgradeExteriorDays
+
+        if TavernUpgradeExteriorDone = 1:
+            $DraupnirUpgradeLineStatus = 'done'
+        elseif TavernUpgradeExteriorPending = 1:
+            $DraupnirUpgradeLineStatus = 'pending'
+            DraupnirUpgradeLineDaysLeft = TavernUpgradeExteriorDaysLeft
+        elseif TavernUpgradeSignDone = 0:
+            $DraupnirUpgradeLineStatus = 'locked'
+        end
+
+    elseif $DraupnirUpgradeStateKey = 'kitchen':
+        DraupnirUpgradeLineCost = TavernUpgradeKitchenCost
+        DraupnirUpgradeLineDays = TavernUpgradeKitchenDays
+
+        if TavernUpgradeKitchenDone = 1:
+            $DraupnirUpgradeLineStatus = 'done'
+        elseif TavernUpgradeKitchenPending = 1:
+            $DraupnirUpgradeLineStatus = 'pending'
+            DraupnirUpgradeLineDaysLeft = TavernUpgradeKitchenDaysLeft
+        elseif TavernUpgradeSignDone = 0:
+            $DraupnirUpgradeLineStatus = 'locked'
+        end
+
+    elseif $DraupnirUpgradeStateKey = 'bar':
+        DraupnirUpgradeLineCost = TavernUpgradeBarCost
+        DraupnirUpgradeLineDays = TavernUpgradeBarDays
+
+        if TavernUpgradeBarDone = 1:
+            $DraupnirUpgradeLineStatus = 'done'
+        elseif TavernUpgradeBarPending = 1:
+            $DraupnirUpgradeLineStatus = 'pending'
+            DraupnirUpgradeLineDaysLeft = TavernUpgradeBarDaysLeft
+        elseif TavernUpgradeSignDone = 0:
+            $DraupnirUpgradeLineStatus = 'locked'
+        end
+
+    elseif $DraupnirUpgradeStateKey = 'cellar':
+        DraupnirUpgradeLineCost = TavernUpgradeCellarCost
+        DraupnirUpgradeLineDays = TavernUpgradeCellarDays
+
+        if TavernUpgradeCellarDone = 1:
+            $DraupnirUpgradeLineStatus = 'done'
+        elseif TavernUpgradeCellarPending = 1:
+            $DraupnirUpgradeLineStatus = 'pending'
+            DraupnirUpgradeLineDaysLeft = TavernUpgradeCellarDaysLeft
+        elseif TavernUpgradeSignDone = 0:
+            $DraupnirUpgradeLineStatus = 'locked'
+        end
+
+    elseif $DraupnirUpgradeStateKey = 'doors':
+        DraupnirUpgradeLineCost = TavernUpgradeDoorsCost
+        DraupnirUpgradeLineDays = TavernUpgradeDoorsDays
+
+        if TavernUpgradeDoorsDone = 1:
+            $DraupnirUpgradeLineStatus = 'done'
+        elseif TavernUpgradeDoorsPending = 1:
+            $DraupnirUpgradeLineStatus = 'pending'
+            DraupnirUpgradeLineDaysLeft = TavernUpgradeDoorsDaysLeft
+        elseif TavernUpgradeSignDone = 0:
+            $DraupnirUpgradeLineStatus = 'locked'
+        end
+
+    elseif $DraupnirUpgradeStateKey = 'lamp':
+        DraupnirUpgradeLineCost = TavernUpgradeLampCost
+        DraupnirUpgradeLineDays = TavernUpgradeLampDays
+
+        if TavernUpgradeLampDone = 1:
+            $DraupnirUpgradeLineStatus = 'done'
+        elseif TavernUpgradeLampPending = 1:
+            $DraupnirUpgradeLineStatus = 'pending'
+            DraupnirUpgradeLineDaysLeft = TavernUpgradeLampDaysLeft
+        elseif TavernUpgradeSignDone = 0:
+            $DraupnirUpgradeLineStatus = 'locked'
+        end
+
+    elseif $DraupnirUpgradeStateKey = 'stage':
+        DraupnirUpgradeLineCost = TavernUpgradeStageCost
+        DraupnirUpgradeLineDays = TavernUpgradeStageDays
+
+        if TavernUpgradeStageDone = 1:
+            $DraupnirUpgradeLineStatus = 'done'
+        elseif TavernUpgradeStagePending = 1:
+            $DraupnirUpgradeLineStatus = 'pending'
+            DraupnirUpgradeLineDaysLeft = TavernUpgradeStageDaysLeft
+        elseif TavernUpgradeSignDone = 0:
+            $DraupnirUpgradeLineStatus = 'locked'
+        end
+    end
+
+    killvar '$DraupnirUpgradeStateKey'
+---
+
+#DraupnirUpgradeBuildMenu
+    if TavernUpgradeSignDone = 0 and TavernUpgradeSignPending = 0:
+        act 'Заказать: новая вывеска (' + STR(TavernUpgradeSignCost) + ' м)':
+            gt 'DraupnirUpgradeTryOrder', 'sign'
+        end
+    end
+
+    if TavernUpgradeSignDone = 1 and TavernUpgradeExteriorDone = 0 and TavernUpgradeExteriorPending = 0:
+        act 'Заказать: внешний ремонт (' + STR(TavernUpgradeExteriorCost) + ' м)':
+            gt 'DraupnirUpgradeTryOrder', 'exterior'
+        end
+    end
+
+    if TavernUpgradeSignDone = 1 and TavernUpgradeKitchenDone = 0 and TavernUpgradeKitchenPending = 0:
+        act 'Заказать: ремонт кухни (' + STR(TavernUpgradeKitchenCost) + ' м)':
+            gt 'DraupnirUpgradeTryOrder', 'kitchen'
+        end
+    end
+
+    if TavernUpgradeSignDone = 1 and TavernUpgradeBarDone = 0 and TavernUpgradeBarPending = 0:
+        act 'Заказать: стойка бара (' + STR(TavernUpgradeBarCost) + ' м)':
+            gt 'DraupnirUpgradeTryOrder', 'bar'
+        end
+    end
+
+    if TavernUpgradeSignDone = 1 and TavernUpgradeCellarDone = 0 and TavernUpgradeCellarPending = 0:
+        act 'Заказать: полки в кладовой (' + STR(TavernUpgradeCellarCost) + ' м)':
+            gt 'DraupnirUpgradeTryOrder', 'cellar'
+        end
+    end
+
+    if TavernUpgradeSignDone = 1 and TavernUpgradeDoorsDone = 0 and TavernUpgradeDoorsPending = 0:
+        act 'Заказать: железные петли (' + STR(TavernUpgradeDoorsCost) + ' м)':
+            gt 'DraupnirUpgradeTryOrder', 'doors'
+        end
+    end
+
+    if TavernUpgradeSignDone = 1 and TavernUpgradeLampDone = 0 and TavernUpgradeLampPending = 0:
+        act 'Заказать: светильник в зале (' + STR(TavernUpgradeLampCost) + ' м)':
+            gt 'DraupnirUpgradeTryOrder', 'lamp'
+        end
+    end
+
+    if MelissaMusicStageOfferDone = 1 and TavernUpgradeSignDone = 1 and TavernUpgradeStageDone = 0 and TavernUpgradeStagePending = 0:
+        act 'Заказать: сцена для музыкантов (' + STR(TavernUpgradeStageCost) + ' м)':
+            gt 'DraupnirUpgradeTryOrder', 'stage'
+        end
+    end
+---
+
+#DraupnirUpgradeTryOrder
+    $DraupnirOrderKey = LCASE($ARGS[0])
+
+    gs 'TavernUpgradeCanOrder', $DraupnirOrderKey
+
+    cls
+
+    if TavernUpgradeCanOrder = 0:
+        gs 'DraupnirUpgradeOrderBlockedText'
+
+        *pl ' '
+
+        act 'Вернуться':
+            gt 'DraupnirUpgradesShop'
+        end
+
+        killvar '$DraupnirOrderKey'
+        killvar 'TavernUpgradeCanOrder'
+        killvar 'TavernUpgradeOrderCost'
+        killvar 'TavernUpgradeOrderDays'
+        killvar '$TavernUpgradeOrderBlockReason'
+        exit
+    end
+
+    if money < TavernUpgradeOrderCost:
+        gs 'DraupnirUpgradeOrderNoMoneyText'
+
+        *pl ' '
+        *pl 'Нужно: ' + STR(TavernUpgradeOrderCost) + ' мараведи'
+
+        act 'Вернуться':
+            gt 'DraupnirUpgradesShop'
+        end
+
+        killvar '$DraupnirOrderKey'
+        killvar 'TavernUpgradeCanOrder'
+        killvar 'TavernUpgradeOrderCost'
+        killvar 'TavernUpgradeOrderDays'
+        killvar '$TavernUpgradeOrderBlockReason'
+        exit
+    end
+
+    gs 'TavernUpgradePlaceOrder', $DraupnirOrderKey
+    gs 'DraupnirUpgradeOrderDoneText'
+
+    *pl ' '
+
+    act 'Вернуться':
+        gt 'DraupnirUpgradesShop'
+    end
+
+    killvar '$DraupnirOrderKey'
+    killvar 'TavernUpgradeCanOrder'
+    killvar 'TavernUpgradeOrderCost'
+    killvar 'TavernUpgradeOrderDays'
+    killvar '$TavernUpgradeOrderBlockReason'
+---

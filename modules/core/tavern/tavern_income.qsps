@@ -30,6 +30,7 @@
     tavern_daily_expenses = 0
     tavern_expected_profit = 0
     tavern_stock_penalty = 0
+    tavern_city_tax_today = 0
 
     tavern_can_serve_food = 0
     tavern_can_serve_drinks = 0
@@ -142,6 +143,10 @@
         tavern_beer_income = (tavern_beer_income * tavern_drink_staff_mult) / 100
     end
 
+    if LOC('ApplyTavernUpgradeIncomeBonuses') = 1:
+        gs 'ApplyTavernUpgradeIncomeBonuses'
+    end
+
     ! ====================== МНОЖИТЕЛЬ РЕПУТАЦИИ ======================
 
     if tavern_reputation >= 90:
@@ -202,8 +207,48 @@
 
     tavern_expected_profit = tavern_gross_income - tavern_daily_expenses
 
+    gs 'ApplyTavernCityTaxToProfit'
+---
+
+! ================================================
+! FILE: modules/core/tavern_income.qsps
+! Налог городу с валового дохода трактира
+! TaxPercent задаётся в InitBusinessSchedule
+! tavern_city_tax_today — сумма за текущий расчётный день
+! TavernCityTaxTotal — накопленная уплата за всю игру
+! ================================================
+
+#CalculateTavernCityTax
+    tavern_city_tax_today = 0
+
+    if TaxPercent <= 0:
+        TaxPercent = 10
+    end
+
+    if tavern_gross_income <= 0:
+        exit
+    end
+
+    tavern_city_tax_today = tavern_gross_income * TaxPercent / 100
+---
+
+#ApplyTavernCityTaxToProfit
+    gs 'CalculateTavernCityTax'
+
+    if tavern_city_tax_today <= 0:
+        exit
+    end
+
+    tavern_expected_profit -= tavern_city_tax_today
+
     if tavern_expected_profit < -150:
         tavern_expected_profit = -150
+    end
+---
+
+#AccumulateTavernCityTax
+    if tavern_city_tax_today > 0:
+        TavernCityTaxTotal += tavern_city_tax_today
     end
 ---
 
@@ -219,6 +264,10 @@
     gs 'AddGirlWorkExpenses', 'sandra'
     gs 'AddGirlWorkExpenses', 'melissa'
     gs 'AddGirlWorkExpenses', 'amanda'
+
+    if LOC('AddTavernHiredStaffExpenses') = 1:
+        gs 'AddTavernHiredStaffExpenses'
+    end
 ---
 
 ! ================================================
@@ -364,6 +413,8 @@
         tavern_expected_profit = TavernSupplyProfitResult
     end
 
+    gs 'AccumulateTavernCityTax'
+
     money += tavern_expected_profit
 
     gs 'ConsumeTavernStock'
@@ -409,6 +460,8 @@
         tavern_expected_profit = TavernSupplyProfitResult
     end
 
+    gs 'AccumulateTavernCityTax'
+
     money += tavern_expected_profit
 
     gs 'ConsumeTavernStock'
@@ -427,7 +480,10 @@
     pl 'Еда: ' + STR(tavern_food_income) + ' мараведи'
     pl 'Вино: ' + STR(tavern_wine_income) + ' мараведи'
     pl 'Пиво: ' + STR(tavern_beer_income) + ' мараведи'
+    pl 'Валовый доход: ' + STR(tavern_gross_income) + ' мараведи'
     pl 'Расходы: ' + STR(tavern_daily_expenses) + ' мараведи'
+    pl 'Налог городу (' + STR(TaxPercent) + '%): ' + STR(tavern_city_tax_today) + ' мараведи'
+    pl 'Уплачено городу всего: ' + STR(TavernCityTaxTotal) + ' мараведи'
     pl ' '
 
     pl 'Израсходовано:'

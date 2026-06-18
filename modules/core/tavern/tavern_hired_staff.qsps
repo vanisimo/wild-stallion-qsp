@@ -1,0 +1,333 @@
+! ================================================
+! FILE: modules/core/tavern/tavern_hired_staff.qsps
+! MODULE: core/tavern
+! Безликий наёмный персонал трактира
+! Снимает часть перегрузки с девушек, даёт базовую силу работ
+! Ежедневная плата списывается в tavern_daily_expenses
+! ================================================
+
+#InitTavernHiredStaff
+    if TavernHiredKitchen < 0:
+        TavernHiredKitchen = 0
+    end
+
+    if TavernHiredWaitress < 0:
+        TavernHiredWaitress = 0
+    end
+
+    if TavernHiredCleaning < 0:
+        TavernHiredCleaning = 0
+    end
+
+    if TavernHiredKitchenPower <= 0:
+        TavernHiredKitchenPower = 28
+    end
+
+    if TavernHiredWaitressPower <= 0:
+        TavernHiredWaitressPower = 25
+    end
+
+    if TavernHiredCleaningPower <= 0:
+        TavernHiredCleaningPower = 22
+    end
+
+    if TavernHiredKitchenCost <= 0:
+        TavernHiredKitchenCost = 12
+    end
+
+    if TavernHiredWaitressCost <= 0:
+        TavernHiredWaitressCost = 12
+    end
+
+    if TavernHiredCleaningCost <= 0:
+        TavernHiredCleaningCost = 10
+    end
+
+    if TavernHiredOverloadRelief <= 0:
+        TavernHiredOverloadRelief = 5
+    end
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_hired_staff.qsps
+! Проверка доступности наёмного персонала
+! Открывается после разговора с матерью (пункт 3 основной арки)
+! ================================================
+
+#CheckTavernHiredStaffUnlocked
+    gs 'InitTavernHiredStaff'
+
+    TavernHiredStaffUnlocked = 0
+
+    if SandraStaffHired = 1:
+        TavernHiredStaffUnlocked = 1
+    end
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_hired_staff.qsps
+! Применить силу наёмников и снять штраф перегрузки
+! Вызывается из CalculateTavernStaffEfficiency
+! ================================================
+
+#ApplyTavernHiredStaffEffects
+    gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
+
+    tavern_hired_staff_count = 0
+    tavern_hired_staff_daily_cost = 0
+
+    if TavernHiredStaffUnlocked = 0:
+        TavernHiredKitchen = 0
+        TavernHiredWaitress = 0
+        TavernHiredCleaning = 0
+        exit
+    end
+
+    if TavernHiredKitchen = 1:
+        tavern_kitchen_power += TavernHiredKitchenPower
+        tavern_hired_staff_count += 1
+        tavern_hired_staff_daily_cost += TavernHiredKitchenCost
+    end
+
+    if TavernHiredWaitress = 1:
+        tavern_waitress_power += TavernHiredWaitressPower
+        tavern_hired_staff_count += 1
+        tavern_hired_staff_daily_cost += TavernHiredWaitressCost
+    end
+
+    if TavernHiredCleaning = 1:
+        tavern_cleaning_power += TavernHiredCleaningPower
+        tavern_hired_staff_count += 1
+        tavern_hired_staff_daily_cost += TavernHiredCleaningCost
+    end
+
+    if tavern_hired_staff_count > 0 and tavern_overload_penalty > 0:
+        tavern_overload_penalty -= tavern_hired_staff_count * TavernHiredOverloadRelief
+
+        if tavern_overload_penalty < 0:
+            tavern_overload_penalty = 0
+        end
+    end
+
+    tavern_work_efficiency = (tavern_kitchen_power + tavern_waitress_power + tavern_cleaning_power) / 3
+    tavern_work_efficiency -= tavern_missing_work_penalty
+    tavern_work_efficiency -= tavern_overload_penalty
+
+    if tavern_work_efficiency > 100:
+        tavern_work_efficiency = 100
+    end
+
+    if tavern_work_efficiency < 0:
+        tavern_work_efficiency = 0
+    end
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_hired_staff.qsps
+! Ежедневные расходы на наёмников
+! ================================================
+
+#AddTavernHiredStaffExpenses
+    gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
+
+    tavern_hired_staff_daily_cost = 0
+
+    if TavernHiredStaffUnlocked = 0:
+        exit
+    end
+
+    if TavernHiredKitchen = 1:
+        tavern_hired_staff_daily_cost += TavernHiredKitchenCost
+    end
+
+    if TavernHiredWaitress = 1:
+        tavern_hired_staff_daily_cost += TavernHiredWaitressCost
+    end
+
+    if TavernHiredCleaning = 1:
+        tavern_hired_staff_daily_cost += TavernHiredCleaningCost
+    end
+
+    tavern_daily_expenses += tavern_hired_staff_daily_cost
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_hired_staff.qsps
+! Переключить наёмника на роли из панели персонала
+! ARGS[0] — kitchen / waitress / cleaning
+! ================================================
+
+#PanelHiredStaffToggle
+    $PanelHiredJob = LCASE($ARGS[0])
+
+    if $PanelHiredJob = '':
+        exit
+    end
+
+    if SandraStaffHired = 1:
+        exit
+    end
+
+    gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
+
+    if $PanelHiredJob = 'kitchen':
+        if TavernHiredKitchen = 1:
+            TavernHiredKitchen = 0
+        elseif TavernHiredStaffUnlocked = 1:
+            TavernHiredKitchen = 1
+        end
+
+    elseif $PanelHiredJob = 'waitress':
+        if TavernHiredWaitress = 1:
+            TavernHiredWaitress = 0
+        elseif TavernHiredStaffUnlocked = 1:
+            TavernHiredWaitress = 1
+        end
+
+    elseif $PanelHiredJob = 'cleaning':
+        if TavernHiredCleaning = 1:
+            TavernHiredCleaning = 0
+        elseif TavernHiredStaffUnlocked = 1:
+            TavernHiredCleaning = 1
+        end
+    end
+
+    $PanelReturnLoc = $CURLOC
+
+    if $PanelReturnLoc = '':
+        $PanelReturnLoc = 'TavernMain'
+    end
+
+    gs 'CalculateTavernStaffEfficiency'
+    gs 'UpdateGirlLocations'
+
+    $PanelRestoreAfterRefresh = 'staff'
+
+    gt $PanelReturnLoc
+
+    killvar '$PanelHiredJob'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_hired_staff.qsps
+! Блок панели персонала
+! ================================================
+
+#PanelHiredStaffBlock
+    gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
+
+    pl 'Наёмный персонал:'
+    pl 'Дешёвые работники без имени. Снимают часть перегрузки с семьи.'
+    pl ' '
+
+    if TavernHiredStaffUnlocked = 0:
+        pl 'Пока недоступно.'
+
+        if MayorClerkAdviceGiven = 0:
+            pl 'Сначала добейтесь совета клерка в мэрии после попытки приёма у мэра.'
+        elseif MayorClerkMentionedStaff = 1:
+            pl 'Клерк сказал нанимать через мать. Поговорите с Сандрой о работницах.'
+        else:
+            pl 'Персонал откроется позже по сюжету.'
+        end
+
+        pl ' '
+        exit
+    end
+
+    pl 'Персонал нанят матерью. Увольнение — только через неё.'
+    pl ' '
+
+    gs 'PanelHiredStaffLine', 'kitchen'
+    gs 'PanelHiredStaffLine', 'waitress'
+    gs 'PanelHiredStaffLine', 'cleaning'
+
+    if tavern_hired_staff_daily_cost > 0:
+        pl 'Расход на наёмников за день: ' + STR(tavern_hired_staff_daily_cost) + ' мараведи'
+    end
+
+    pl ' '
+---
+
+#PanelHiredStaffLine
+    $PanelHiredJob = LCASE($ARGS[0])
+
+    if $PanelHiredJob = '':
+        exit
+    end
+
+    gs 'InitTavernHiredStaff'
+    gs 'CheckTavernHiredStaffUnlocked'
+
+    $PanelHiredJobTitle = ''
+    PanelHiredJobActive = 0
+    PanelHiredJobPower = 0
+    PanelHiredJobCost = 0
+
+    if $PanelHiredJob = 'kitchen':
+        $PanelHiredJobTitle = 'Кухня'
+        PanelHiredJobActive = TavernHiredKitchen
+        PanelHiredJobPower = TavernHiredKitchenPower
+        PanelHiredJobCost = TavernHiredKitchenCost
+
+    elseif $PanelHiredJob = 'waitress':
+        $PanelHiredJobTitle = 'Зал'
+        PanelHiredJobActive = TavernHiredWaitress
+        PanelHiredJobPower = TavernHiredWaitressPower
+        PanelHiredJobCost = TavernHiredWaitressCost
+
+    elseif $PanelHiredJob = 'cleaning':
+        $PanelHiredJobTitle = 'Уборка'
+        PanelHiredJobActive = TavernHiredCleaning
+        PanelHiredJobPower = TavernHiredCleaningPower
+        PanelHiredJobCost = TavernHiredCleaningCost
+    end
+
+    if $PanelHiredJobTitle = '':
+        killvar '$PanelHiredJob'
+        killvar '$PanelHiredJobTitle'
+        exit
+    end
+
+    if PanelHiredJobActive = 1:
+        $PanelHiredStatus = 'нанят'
+
+        if SandraStaffHired = 1:
+            $PanelHiredToggleText = ''
+            $PanelHiredCanToggle = 0
+        else:
+            $PanelHiredToggleText = 'Уволить'
+            $PanelHiredCanToggle = 1
+        end
+
+    elseif SandraStaffHired = 1:
+        $PanelHiredStatus = 'нет'
+        $PanelHiredToggleText = ''
+        $PanelHiredCanToggle = 0
+
+    elseif TavernHiredStaffUnlocked = 1:
+        $PanelHiredStatus = 'нет'
+        $PanelHiredToggleText = 'Нанять'
+        $PanelHiredCanToggle = 1
+    else:
+        $PanelHiredStatus = 'закрыто'
+        $PanelHiredToggleText = ''
+        $PanelHiredCanToggle = 0
+    end
+
+    pl $PanelHiredJobTitle + ': ' + $PanelHiredStatus + ' | сила +' + STR(PanelHiredJobPower) + ' | ' + STR(PanelHiredJobCost) + ' м/день'
+
+    if $PanelHiredCanToggle = 1:
+        pl '<a href="exec:gs ''PanelHiredStaffToggle'', ''' + $PanelHiredJob + '''">' + $PanelHiredToggleText + '</a>'
+    end
+
+    killvar '$PanelHiredJob'
+    killvar '$PanelHiredJobTitle'
+    killvar '$PanelHiredStatus'
+    killvar '$PanelHiredToggleText'
+    killvar '$PanelHiredCanToggle'
+---

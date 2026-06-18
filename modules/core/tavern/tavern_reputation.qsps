@@ -95,17 +95,25 @@
         tavern_missing_work_penalty += 15
     end
 
-    tavern_work_efficiency = (tavern_kitchen_power + tavern_waitress_power + tavern_cleaning_power) / 3
-
-    tavern_work_efficiency -= tavern_missing_work_penalty
-    tavern_work_efficiency -= tavern_overload_penalty
-
-    if tavern_work_efficiency > 100:
-        tavern_work_efficiency = 100
+    if LOC('ApplyTavernUpgradeStaffBonuses') = 1:
+        gs 'ApplyTavernUpgradeStaffBonuses'
     end
 
-    if tavern_work_efficiency < 0:
-        tavern_work_efficiency = 0
+    if LOC('ApplyTavernHiredStaffEffects') = 1:
+        gs 'ApplyTavernHiredStaffEffects'
+    else
+        tavern_work_efficiency = (tavern_kitchen_power + tavern_waitress_power + tavern_cleaning_power) / 3
+
+        tavern_work_efficiency -= tavern_missing_work_penalty
+        tavern_work_efficiency -= tavern_overload_penalty
+
+        if tavern_work_efficiency > 100:
+            tavern_work_efficiency = 100
+        end
+
+        if tavern_work_efficiency < 0:
+            tavern_work_efficiency = 0
+        end
     end
 ---
 

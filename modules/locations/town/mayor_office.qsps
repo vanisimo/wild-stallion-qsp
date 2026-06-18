@@ -1,11 +1,27 @@
 ! ================================================
 ! FILE: modules/locations/town/mayor_office.qsps
 ! MODULE: locations/town
-! Мэрия и магистратское подтверждение свидетельства о рождении
+! Мэрия: налоговый гейт и первый приём у мэра
 ! ================================================
+
+#MayorOfficeInit
+    if MayorCityTaxGate <= 0:
+        MayorCityTaxGate = 600
+    end
+
+    if MayorAudienceBribe <= 0:
+        MayorAudienceBribe = 180
+    end
+
+    if TaxPercent <= 0:
+        TaxPercent = 10
+    end
+---
 
 #MayorOffice
     cls
+
+    gs 'MayorOfficeInit'
 
     gs 'IsBusinessOpen', 'mayor'
 
@@ -30,8 +46,58 @@
 
     *pl ' '
 
-    if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0:
-        act 'Подать свидетельство на подтверждение магистрату':
+    act 'Спросить клерка о налогах трактира':
+        gt 'MayorOfficeCityTaxTalk'
+    end
+
+    if BirthCertificateFound = 1 and BirthCertificateRead = 1:
+        act 'Показать клерку свидетельство о рождении':
+            gt 'MayorOfficeBirthCertificateClerk'
+        end
+    end
+
+    if MayorBribePaid = 1 and MayorAudienceRefused = 1 and MayorClerkAdviceGiven = 0:
+        act 'Требовать вернуть деньги за приём':
+            gt 'MayorOfficeClerkRefundTalk'
+        end
+    end
+
+    if MayorClerkAdviceGiven = 1 and MayorFirstTalkDone = 0:
+        act 'Доложить клерку о делах трактира':
+            gt 'MayorOfficeWorkoffGate'
+        end
+    end
+
+    if MayorClerkAdviceGiven = 1:
+        act 'Спросить клерка, как добиться приёма у мэра':
+            gt 'MayorOfficeClerkAdviceReplay'
+        end
+    end
+
+    if MayorFirstTalkDone = 0 and MayorBribePaid = 0:
+        if BirthCertificateRead = 1:
+            act 'Просить приём у мэра':
+                gt 'MayorOfficeAudienceGate'
+            end
+        end
+    elseif MayorFirstTalkDone = 0 and MayorBribePaid = 1 and MayorAudienceRefused = 0:
+        act 'Ждать ответа о приёме':
+            gt 'MayorOfficeMayorRefused'
+        end
+    elseif MayorFirstTalkDone = 1:
+        act 'Поговорить с мэром':
+            gt 'MayorOfficeMayorTalk'
+        end
+    end
+
+    if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0 and MayorFirstTalkDone = 0:
+        act 'Подать свидетельство магистрату':
+            gt 'MayorOfficeMagistrateGate'
+        end
+    end
+
+    if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0 and MayorFirstTalkDone = 1:
+        act 'Подать свидетельство на подтверждение':
             gt 'MayorOfficeMagistrateSubmit'
         end
     end
@@ -50,21 +116,324 @@
         end
     end
 
-    act 'Поговорить с клерком о налогах':
-        *p 'Клерк бормочет о десятине и сроках подачи отчётов. Пока для вас это только напоминание: дворяне платят иначе, чем трактирщики.'
-        act 'Продолжить':
+    act 'Вернуться на улицу':
+        gt 'Street'
+    end
+---
+
+#MayorOfficeBirthCertificateClerk
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeBirthCertificateClerkText'
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeCityTaxTalk
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeCityTaxTalkText'
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeAudienceGate
+    cls
+
+    gs 'MayorOfficeInit'
+
+    MayorAudienceAttempted = 1
+
+    if TavernCityTaxTotal < MayorCityTaxGate:
+        gs 'MayorOfficeAudienceNeedTaxText'
+
+        *pl ' '
+
+        act 'Вернуться в мэрию':
             gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    if MayorFirstTalkDone = 1:
+        gs 'MayorOfficeAudienceAlreadyDoneText'
+
+        *pl ' '
+
+        act 'Вернуться в мэрию':
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    if MayorBribePaid = 1 and MayorAudienceRefused = 1:
+        gs 'MayorOfficeAudienceRefusedDoneText'
+
+        *pl ' '
+
+        act 'Вернуться в мэрию':
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    gs 'MayorOfficeBribeOfferText'
+
+    *pl ' '
+
+    if money < MayorAudienceBribe:
+        act 'У меня не хватает денег':
+            gt 'MayorOfficeBribeNoMoney'
+        end
+    else:
+        act 'Заплатить и просить приём':
+            gt 'MayorOfficeBribePay'
         end
     end
 
-    act 'Вернуться на улицу':
-        gt 'Street'
+    act 'Пока не буду платить':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeBribeNoMoney
+    cls
+
+    gs 'MayorOfficeBribeNoMoneyText'
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeBribePay
+    gs 'MayorOfficeInit'
+
+    if money < MayorAudienceBribe:
+        gt 'MayorOfficeBribeNoMoney'
+        exit
+    end
+
+    money -= MayorAudienceBribe
+    MayorBribePaid = 1
+
+    gt 'MayorOfficeMayorRefused'
+---
+
+#MayorOfficeMayorRefused
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeMayorRefusedText'
+
+    MayorAudienceRefused = 1
+
+    *pl ' '
+
+    act 'Требовать деньги назад у клерка':
+        gt 'MayorOfficeClerkRefundTalk'
+    end
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeClerkRefundTalk
+    cls
+
+    gs 'MayorOfficeInit'
+
+    if MayorClerkAdviceGiven = 1:
+        gt 'MayorOfficeClerkAdviceReplay'
+        exit
+    end
+
+    gs 'MayorOfficeClerkRefundOpenText'
+
+    *pl ' '
+
+    act 'Слушать дальше':
+        gt 'MayorOfficeClerkAdviceTalk'
+    end
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeClerkAdviceTalk
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeClerkAdviceText'
+
+    MayorClerkAdviceGiven = 1
+    TavernCarpenterUpgradesUnlocked = 1
+    MayorClerkMentionedStaff = 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_MayorClerkAdvice_1'
+    end
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeClerkAdviceReplay
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeClerkAdviceReplayText'
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorClerkWorkoffEvaluate
+    MayorWorkoffReady = 0
+    MayorWorkoffSignOk = 0
+    MayorWorkoffStaffOk = 0
+    MayorWorkoffProfitOk = 0
+
+    if TavernUpgradeSignDone = 1:
+        MayorWorkoffSignOk = 1
+    end
+
+    if SandraStaffHired = 1:
+        MayorWorkoffStaffOk = 1
+    end
+
+    if MayorWorkoffProfitDays >= 2:
+        MayorWorkoffProfitOk = 1
+    elseif tavern_reputation >= 45:
+        MayorWorkoffProfitOk = 1
+    end
+
+    if MayorWorkoffSignOk = 1 and MayorWorkoffStaffOk = 1 and MayorWorkoffProfitOk = 1:
+        MayorWorkoffReady = 1
+    end
+---
+
+#MayorOfficeWorkoffGate
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorClerkWorkoffEvaluate'
+
+    gs 'MayorOfficeWorkoffReportIntroText'
+
+    if MayorWorkoffReady = 0:
+        if MayorWorkoffSignOk = 0:
+            gs 'MayorOfficeWorkoffNeedSignText'
+        end
+
+        if MayorWorkoffStaffOk = 0:
+            gs 'MayorOfficeWorkoffNeedStaffText'
+        end
+
+        if MayorWorkoffProfitOk = 0:
+            gs 'MayorOfficeWorkoffNeedProfitText'
+        end
+
+        *pl ' '
+
+        act 'Вернуться в мэрию':
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    gs 'MayorOfficeWorkoffReadyText'
+
+    *pl ' '
+
+    act 'Войти в кабинет мэра':
+        gt 'MayorOfficeFirstTalk'
+    end
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeFirstTalk
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeFirstTalkText'
+
+    MayorFirstTalkDone = 1
+
+    if tavern_reputation < 100:
+        tavern_reputation += 3
+
+        if tavern_reputation > 100:
+            tavern_reputation = 100
+        end
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_MayorFirstTalk_1'
+    end
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeMayorTalk
+    cls
+
+    gs 'MayorOfficeMayorTalkText'
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeMagistrateGate
+    cls
+
+    gs 'MayorOfficeMagistrateGateText'
+
+    *pl ' '
+
+    act 'Вернуться в мэрию':
+        gt 'MayorOffice'
     end
 ---
 
 #MayorOfficeMagistrateSubmit
     cls
 
+    gs 'MayorOfficeInit'
     gs 'IsBusinessOpen', 'mayor'
 
     if BusinessOpen = 0:
@@ -72,8 +441,8 @@
         exit
     end
 
-    if BirthCertificateFound = 0:
-        gt 'MayorOffice'
+    if BirthCertificateFound = 0 or MayorFirstTalkDone = 0:
+        gt 'MayorOfficeMagistrateGate'
         exit
     end
 
