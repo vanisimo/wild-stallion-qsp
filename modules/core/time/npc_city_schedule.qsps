@@ -75,10 +75,20 @@
 
     gs 'IsTavernOpen'
 
+    AmandaAtPortShip = 0
+
     if TavernOpen = 1:
         gs 'SetGirlWorkLocation', 'sandra'
         gs 'SetGirlWorkLocation', 'melissa'
-        gs 'SetGirlWorkLocation', 'amanda'
+
+        gs 'PortCapitalShipCheck'
+
+        if PortMeetWitnessed = 0 and PortCapitalShipAvailable = 1:
+            $GirlLocation['amanda'] = 'Port'
+            AmandaAtPortShip = 1
+        else:
+            gs 'SetGirlWorkLocation', 'amanda'
+        end
     else:
         gs 'ClearGirlLocation', 'sandra'
         gs 'ClearGirlLocation', 'melissa'
@@ -231,16 +241,20 @@
 
     $GirlLocation['irma'] = 'IrmaShop'
 
-    if GeorgetteKnown = 1:
-        $GirlLocation['georgett'] = 'Port'
-    end
+    gs 'PortCapitalShipCheck'
 
-    if AmandaMetLizette = 1 or LizetteKnown = 1:
+    if PortMeetWitnessed = 0 and PortCapitalShipAvailable = 1:
+        $GirlLocation['lizette'] = 'Port'
+    elseif AmandaMetLizette = 1 or LizetteKnown = 1:
         if time = 1 or time = 2:
             $GirlLocation['lizette'] = 'Port'
         else:
             $GirlLocation['lizette'] = 'Market'
         end
+    end
+
+    if GeorgetteKnown = 1 and GeorgetteSeekLizetteDone = 1:
+        $GirlLocation['georgett'] = 'Port'
     end
 ---
 

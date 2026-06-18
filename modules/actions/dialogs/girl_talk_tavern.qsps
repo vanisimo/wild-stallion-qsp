@@ -18,17 +18,26 @@
     gs 'GirlTalkTavernPrintText', 'context'
 
     GirlTalkTavernHallHookReady = 0
+    GirlTalkTavernPortShipHookReady = 0
     GirlTalkTavernDayHookReady = 0
     GirlTalkTavernRepairHookReady = 0
 
+    gs 'GirlTalkTavernHasPortShipHook', $GirlTalkTavernGirl
+
+    if GirlTalkTavernPortShipHookReady = 1:
+        gs 'GirlTalkTavernPrintText', 'port_ship_hook'
+        $GirlTalkTavernPortShipHookKey = $GirlTalkTavernGirl + '_' + STR(day)
+        AmandaPortShipHintDiscussed[$GirlTalkTavernPortShipHookKey] = 1
+        killvar '$GirlTalkTavernPortShipHookKey'
+    else:
     gs 'GirlTalkTavernHasHallHook', $GirlTalkTavernGirl
 
-    if GirlTalkTavernHallHookReady = 1:
+    if GirlTalkTavernPortShipHookReady = 0 and GirlTalkTavernHallHookReady = 1:
         gs 'GirlTalkTavernPrintText', 'hall_hook'
         $GirlTalkTavernHallHookKey = $GirlTalkTavernGirl + '_' + STR(day)
         GirlTalkTavernHallHookDiscussed[$GirlTalkTavernHallHookKey] = 1
         killvar '$GirlTalkTavernHallHookKey'
-    else:
+    elseif GirlTalkTavernPortShipHookReady = 0:
         gs 'GirlTalkTavernHasDayEventHook', $GirlTalkTavernGirl
 
         if GirlTalkTavernDayHookReady = 1:
@@ -47,12 +56,14 @@
             end
         end
     end
+    end
 
     Friends[$GirlTalkTavernGirl] += 1
     management_skill += 1
 
     killvar '$GirlTalkTavernGirl'
     killvar 'GirlTalkTavernHallHookReady'
+    killvar 'GirlTalkTavernPortShipHookReady'
     killvar 'GirlTalkTavernDayHookReady'
     killvar 'GirlTalkTavernRepairHookReady'
 ---

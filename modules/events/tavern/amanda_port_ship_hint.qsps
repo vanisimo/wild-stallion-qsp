@@ -1,0 +1,77 @@
+! ================================================
+! FILE: modules/events/tavern/amanda_port_ship_hint.qsps
+! MODULE: events/tavern
+! Среда, корабль: Аманды нет в зале; подсказки через talk Мелиссы/Сандры
+! ================================================
+
+#AmandaPortShipIsAbsent
+    AmandaPortShipIsAbsent = 0
+
+    if PortMeetWitnessed = 1:
+        exit
+    end
+
+    gs 'PortCapitalShipCheck'
+
+    if PortCapitalShipAvailable = 0:
+        exit
+    end
+
+    if $GirlLocation['amanda'] = 'Port':
+        AmandaPortShipIsAbsent = 1
+        exit
+    end
+
+    if AmandaAtPortShip = 1:
+        AmandaPortShipIsAbsent = 1
+    end
+---
+
+#GirlTalkTavernHasPortShipHook
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkTavernPortShipGirl = $GirlKey
+
+    GirlTalkTavernPortShipHookReady = 0
+
+    if $GirlTalkTavernPortShipGirl <> 'melissa' and $GirlTalkTavernPortShipGirl <> 'sandra':
+        killvar '$GirlTalkTavernPortShipGirl'
+        exit
+    end
+
+    gs 'AmandaPortShipIsAbsent'
+
+    if AmandaPortShipIsAbsent = 0:
+        killvar '$GirlTalkTavernPortShipGirl'
+        killvar 'AmandaPortShipIsAbsent'
+        exit
+    end
+
+    $GirlTalkTavernPortShipHookKey = $GirlTalkTavernPortShipGirl + '_' + STR(day)
+
+    if AmandaPortShipHintDiscussed[$GirlTalkTavernPortShipHookKey] = 1:
+        killvar '$GirlTalkTavernPortShipGirl'
+        killvar '$GirlTalkTavernPortShipHookKey'
+        killvar 'AmandaPortShipIsAbsent'
+        exit
+    end
+
+    GirlTalkTavernPortShipHookReady = 1
+
+    killvar '$GirlTalkTavernPortShipGirl'
+    killvar '$GirlTalkTavernPortShipHookKey'
+    killvar 'AmandaPortShipIsAbsent'
+---
+
+#GirlTalkTavernPortShipHookText
+    $GirlTalkTavernText = ''
+
+    if $GirlTalkTavernGirl = 'melissa':
+        gs 'AmandaPortShipHintText', 'melissa'
+        $GirlTalkTavernText = $AmandaPortShipHintText
+    elseif $GirlTalkTavernGirl = 'sandra':
+        gs 'AmandaPortShipHintText', 'sandra'
+        $GirlTalkTavernText = $AmandaPortShipHintText
+    end
+
+    killvar '$AmandaPortShipHintText'
+---
