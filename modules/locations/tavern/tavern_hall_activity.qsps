@@ -251,7 +251,7 @@
     if LOC('ShowTavernHallImage') = 1:
         gs 'ShowTavernHallImage'
     elseif LOC('ShowLocationTimeImage') = 1:
-        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall'
     end
 
     *pl '══════════════════════════════════════════════'
@@ -292,12 +292,32 @@
 
     *pl ' '
 
-    act 'Осмотреть зал ещё раз':
+    act '<b>Осмотреть зал ещё раз</b>', 'images/common/ui/actions/look.png':
         gt 'TavernHallActivityStart', 'look'
     end
 
-    act 'Вернуться в зал':
+    gs 'TavernHallAddWaitButton'
+
+    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
         gt 'TavernMain'
+    end
+---
+
+! ================================================
+! FILE: modules/locations/tavern_hall_activity.qsps
+! Кнопка ожидания в главном зале и на экранах осмотра
+! Ночью переводит к новому дню через AdvanceTimeFromPanel
+! ================================================
+
+#TavernHallAddWaitButton
+    if time = 5:
+        act '<b>Ждать (ночь — лечь спать)</b>', 'images/common/ui/wait.png':
+            gs 'AdvanceTimeFromPanel'
+        end
+    else:
+        act '<b>Ждать</b>', 'images/common/ui/wait.png':
+            gs 'AdvanceTimeFromPanel'
+        end
     end
 ---
 
@@ -313,7 +333,7 @@
     TavernHallActivityGirlsShown = 0
 
     if $GirlLocation['amanda'] = 'TavernMain':
-        *pl 'Аманда'
+        gs 'ShowGirlNpcLinkLine', 'amanda', 'TavernMain'
         TavernHallActivityGirlsShown += 1
     elseif AmandaAtPortShip = 1:
         gs 'AmandaPortShipHintText', 'hall_note'
@@ -322,12 +342,12 @@
     end
 
     if $GirlLocation['melissa'] = 'TavernMain':
-        *pl 'Мелисса'
+        gs 'ShowGirlNpcLinkLine', 'melissa', 'TavernMain'
         TavernHallActivityGirlsShown += 1
     end
 
     if $GirlLocation['sandra'] = 'TavernMain':
-        *pl 'Сандра'
+        gs 'ShowGirlNpcLinkLine', 'sandra', 'TavernMain'
         TavernHallActivityGirlsShown += 1
     end
 

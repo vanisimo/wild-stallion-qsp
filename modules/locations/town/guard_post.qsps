@@ -9,12 +9,19 @@
     cls
 
     ! ====================== ПРОВЕРКА РАБОЧЕГО ВРЕМЕНИ ======================
-    if not (week >= 1 and week <= 4) or not (time = 2 or time = 3):
+    GuardPostOpen = 0
+    if week >= 1 and week <= 4:
+        if time = 2 or time = 3:
+            GuardPostOpen = 1
+        end
+    end
+
+    if GuardPostOpen = 0:
         *clr
         gs 'ShowImage', 'guard', 'post', 'closed', 'normal'
 
         *pl '══════════════════════════════════════════════'
-        *pl ' 🛡️ ПОСТ СТРАЖНИКОВ — ЗАКРЫТО 🛡️'
+        gs 'PrintTitleLine', ' ПОСТ СТРАЖНИКОВ — ЗАКРЫТО'
         *pl '══════════════════════════════════════════════'
         *pl ' '
 
@@ -28,15 +35,18 @@
             *p 'Сейчас ночь. Пост закрыт.'
         end
 
-        act 'Вернуться на рынок':
+        act '<b>Рынок</b>', 'images/common/ui/actions/market.png':
             gt 'Market'
         end
+        killvar 'GuardPostOpen'
         exit
     end
+
+    killvar 'GuardPostOpen'
     ! =====================================================================
 
     *pl '══════════════════════════════════════════════'
-    *pl ' 🛡️ ПОСТ СТРАЖНИКОВ НА РЫНКЕ 🛡️'
+    gs 'PrintTitleLine', ' ПОСТ СТРАЖНИКОВ НА РЫНКЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
@@ -48,17 +58,16 @@
     *pl ' '
     *pl 'Грюн смотрит на тебя с лёгкой ухмылкой.'
 
-    act 'Поговорить со стражником':
-        gt 'GuardTalk'
-    end
+    gs 'BuildGuardPostMenu'
+    gs 'NpcMenuLink', 'Грюн', 'GuardPostMenu'
 
     if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
-        act 'Поговорить о лавке Бекки':
+        act '<b>Лавка Бекки</b>', 'images/common/ui/actions/shop.png':
             gt 'MeetGuard'
         end
     end
 
-    act 'Вернуться на рынок':
+    act '<b>Рынок</b>', 'images/common/ui/actions/market.png':
         gt 'Market'
     end
 ---
@@ -80,12 +89,34 @@
     end
 
     if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
-        act 'Разобраться с проблемой лавки':
+        act '<b>Лавка Бекки</b>', 'images/common/ui/actions/shop.png':
             gt 'MeetGuard'
         end
     end
 
-    act 'Уйти':
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
         gt 'GuardPost'
     end
+---
+
+#BuildGuardPostMenu
+    gs 'Menu.Destroy', 'GuardPostMenu'
+    gs 'Menu.Create', 'GuardPostMenu'
+
+    gs 'MenuUiAdd', 'GuardPostMenu', 'Поговорить', 'talk'
+    gs 'Menu.AddModule', 'GuardPostMenu', {
+        gt 'GuardTalk'
+    }
+
+    if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
+        gs 'MenuUiAdd', 'GuardPostMenu', 'Лавка Бекки', 'shop'
+        gs 'Menu.AddModule', 'GuardPostMenu', {
+            gt 'MeetGuard'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GuardPostMenu', 'Назад', 'return'
+    gs 'Menu.AddModule', 'GuardPostMenu', {
+        gt 'GuardPost'
+    }
 ---

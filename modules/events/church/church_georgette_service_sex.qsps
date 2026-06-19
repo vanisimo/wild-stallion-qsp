@@ -1,0 +1,139 @@
+! ================================================
+! FILE: modules/events/church/church_georgette_service_sex.qsps
+! MODULE: events/church
+! Этап C2–C3: секс с Жоржеттой на воскресной службе (15 мараведи)
+! ================================================
+
+#GeorgetteChurchSexCanOffer
+    GeorgetteChurchSexCanOffer = 0
+
+    if week <> 7:
+        exit
+    end
+
+    if time <> 1:
+        exit
+    end
+
+    if GeorgetteKnown = 0:
+        exit
+    end
+
+    if GeorgetteChurchAlone = 0 and LizetteChurchWithGeorgette = 0:
+        exit
+    end
+
+    if Friends['georgett'] < 20:
+        exit
+    end
+
+    if HadSex['georgett'] < 1:
+        exit
+    end
+
+    GeorgetteChurchSexCanOffer = 1
+---
+
+#GeorgetteChurchSexStart
+    $GeorgetteChurchSexReturnLoc = $ARGS[0]
+
+    if $GeorgetteChurchSexReturnLoc = '':
+        $GeorgetteChurchSexReturnLoc = 'ChurchSundayServiceMenu'
+    end
+
+    gs 'GeorgetteChurchSexCanOffer'
+
+    if GeorgetteChurchSexCanOffer = 0:
+        gt $GeorgetteChurchSexReturnLoc
+    end
+
+    cls
+
+    gs 'GeorgetteChurchSexText', 'offer'
+    *p $GeorgetteChurchSexText
+
+    *pl ' '
+    *pl 'Деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    act '<b>Заплатить и уйти в тень (15 мараведи)</b>':
+        gt 'GeorgetteChurchSexPay', $GeorgetteChurchSexReturnLoc
+    end
+
+    act '<b>Отказаться</b>':
+        gt $GeorgetteChurchSexReturnLoc
+    end
+
+    killvar '$GeorgetteChurchSexText'
+    killvar 'GeorgetteChurchSexCanOffer'
+---
+
+#GeorgetteChurchSexPay
+    $GeorgetteChurchSexReturnLoc = $ARGS[0]
+
+    if $GeorgetteChurchSexReturnLoc = '':
+        $GeorgetteChurchSexReturnLoc = 'ChurchSundayServiceMenu'
+    end
+
+    if money < 15:
+        gs 'GeorgetteChurchSexText', 'no_money'
+        *p $GeorgetteChurchSexText
+
+        *pl ' '
+
+        act '<b>Вернуться</b>':
+            gt $GeorgetteChurchSexReturnLoc
+        end
+
+        killvar '$GeorgetteChurchSexText'
+        exit
+    end
+
+    money -= 15
+    GeorgetteChurchSexPaidActive = 1
+    IntimStage['georgett'] = 5
+
+    if otkroven['georgett'] < 18:
+        otkroven['georgett'] = 18
+    end
+
+    gt 'SexSceneStart', 'georgett', 'GeorgetteChurchSexAfter', 'georgett_church_service'
+---
+
+#GeorgetteChurchSexAfter
+    *clr
+    clr
+    cla
+
+    GeorgetteChurchSexPaidActive = 0
+
+    if GeorgetteFuckInChurch = 0:
+        GeorgetteFuckInChurch = 1
+    end
+
+    gs 'GeorgetteChurchSexText', 'after'
+    *p $GeorgetteChurchSexText
+
+    Friends['georgett'] += 1
+    otkroven['georgett'] += 1
+
+    if TavernScandal < 100:
+        TavernScandal += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'georgett'
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG GEORGETTE CHURCH] GeorgetteFuckInChurch: ' + STR(GeorgetteFuckInChurch)
+        *pl '[DEBUG GEORGETTE CHURCH] TavernScandal: ' + STR(TavernScandal)
+    end
+
+    *pl ' '
+
+    act '<b>Вернуться к службе</b>':
+        gt 'ChurchSundayServiceMenu'
+    end
+
+    killvar '$GeorgetteChurchSexText'
+---

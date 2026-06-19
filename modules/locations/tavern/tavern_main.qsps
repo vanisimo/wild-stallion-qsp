@@ -14,77 +14,36 @@
     cla
 
     gs 'AddGlobalButtons'
-    gs 'GetDateTimeNames'
-    gs 'CalculateTavernStaffEfficiency'
     gs 'IsTavernOpen'
     gs 'UpdateGirlLocations'
 
     TavernMainOpen = TavernOpen
     $TavernMainClosedReason = $TavernClosedReason
 
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ТРАКТИР "ДИКИЙ ЖЕРЕБЕЦ"'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
     if LOC('ShowTavernHallImage') = 1:
         gs 'ShowTavernHallImage'
     elseif LOC('ShowLocationTimeImage') = 1:
-        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall'
     elseif LOC('ShowLocationImage') = 1:
         gs 'ShowLocationImage', 'tavern', 'full', 'png'
     end
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ТРАКТИР "ДИКИЙ ЖЕРЕБЕЦ"'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    *pl 'Год: ' + STR(year)
-    *pl 'Месяц: ' + $MonthName + ' (' + STR(month) + ')'
-    *pl 'День: ' + STR(day)
-    *pl 'Время: ' + STR(time) + ' — ' + $TimeOfDay
-    *pl 'День недели: ' + $WeekDay
-    *pl ' '
-
-    *pl 'Деньги: ' + STR(money) + ' мараведи'
-    *pl 'Посетителей сегодня: ' + STR(tavernvisitors)
-    *pl ' '
-    *pl 'Репутация: ' + STR(tavern_reputation) + ' / 100'
-    *pl ' '
-
-    ! ====================== СОСТОЯНИЕ ТАВЕРНЫ ======================
-
     if TavernMainOpen = 1:
-        *pl 'Таверна открыта.'
+        gs 'PrintMainLine', 'Статус: открыто'
     else:
-        *pl 'Таверна сейчас закрыта.'
-        *pl 'Причина: ' + $TavernMainClosedReason
+        gs 'PrintMainLine', 'Статус: закрыто'
+        gs 'PrintMainLine', $TavernMainClosedReason
     end
 
     *pl ' '
 
-    ! ====================== ОПИСАНИЕ ГЛАВНОГО ЗАЛА ======================
-
-    if TavernMainOpen = 1:
-        TavernDayEventHallDescPrinted = 0
-
-        if LOC('TavernDayEventPrintHallDescription') = 1:
-            gs 'TavernDayEventPrintHallDescription'
-        end
-
-        if LOC('TavernDayEventPrintCarryOverHall') = 1:
-            gs 'TavernDayEventPrintCarryOverHall'
-        end
-
-        if LOC('TavernDayEventPrintCarpenterEveningRepair') = 1:
-            gs 'TavernDayEventPrintCarpenterEveningRepair'
-        end
-
-        if TavernDayEventHallDescPrinted = 0:
-            *p 'Главный зал полон жизни. За грубыми деревянными столами сидят посетители, в воздухе смешиваются запахи горячей еды, дыма и пролитого пива.'
-            *p 'У стойки слышны разговоры, а с кухни доносится рабочая суета.'
-        end
-
-        killvar 'TavernDayEventHallDescPrinted'
-    else:
-        *p 'Главный зал сейчас почти пуст. Столы убраны, огонь в очаге тлеет, а рабочая суета временно стихла.'
-    end
+    gs 'TavernMainPrintHallDescription'
 
     *pl ' '
 
@@ -93,7 +52,7 @@
     LocationGirlShown = 0
 
     if TavernMainOpen = 1:
-        *pl 'В зале сейчас:'
+        gs 'PrintMainLine', 'В зале сейчас:'
         *pl ' '
 
         gs 'ShowGirlInLocation', 'sandra', 'TavernMain'
@@ -101,10 +60,10 @@
         gs 'ShowGirlInLocation', 'amanda', 'TavernMain'
 
         if LocationGirlShown = 0:
-            *p 'Сейчас в зале нет никого из девушек.'
+            gs 'PrintMainLine', 'Сейчас в зале нет никого из девушек.'
         end
     else:
-        *p 'Девушки не работают в зале, пока таверна закрыта.'
+        gs 'PrintMainLine', 'Девушки не работают в зале, пока таверна закрыта.'
     end
 
     killvar 'LocationGirlShown'
@@ -123,17 +82,19 @@
 
     ! ====================== ДЕЙСТВИЯ В ГЛАВНОМ ЗАЛЕ ======================
 
-    act 'Осмотреть зал':
-        gt 'TavernHallActivityStart', 'look'
-    end
-
-    act 'Встать за стойку':
+    act '<b>Встать за стойку</b>', 'images/common/ui/actions/work.png':
         gt 'TavernHallActivityStart', 'work'
     end
 
+    act '<b>Осмотреть зал</b>', 'images/common/ui/actions/look.png':
+        gt 'TavernHallActivityStart', 'look'
+    end
+
+    gs 'TavernHallAddWaitButton'
+
     ! ====================== ПЕРЕХОДЫ ======================
 
-    act 'Второй этаж':
+    act '<b>Второй этаж</b>', 'images/common/ui/actions/floor.png':
         if LOC('TavernSecondFloor') = 1:
             gt 'TavernSecondFloor'
         else:
@@ -141,7 +102,7 @@
         end
     end
 
-    act 'Кухня':
+    act '<b>Кухня</b>', 'images/common/ui/actions/kitchen.png':
         if LOC('Kitchen') = 1:
             gt 'Kitchen'
         else:
@@ -149,7 +110,7 @@
         end
     end
 
-    act 'Выйти на улицу':
+    act '<b>Улица</b>', 'images/common/ui/actions/street.png':
         if LOC('Street') = 1:
             gt 'Street'
         else:
@@ -157,12 +118,54 @@
         end
     end
 
-    act 'Закончить день и лечь спать':
-        gt 'NextDay'
-    end
-
     killvar 'TavernMainOpen'
     killvar '$TavernMainClosedReason'
+---
+
+! ================================================
+! FILE: modules/locations/tavern_main.qsps
+! Описание главного зала по времени суток
+! Читает TavernOpen после вызова IsTavernOpen
+! Сначала — тексты дневных событий, иначе — базовое описание
+! ================================================
+
+#TavernMainPrintHallDescription
+    if TavernOpen = 0:
+        gs 'PrintMainP', 'Главный зал пуст. Столы убраны, в очаге тлеют угли, и только запах вчерашнего дыма напоминает о рабочих часах.'
+        exit
+    end
+
+    TavernDayEventHallDescPrinted = 0
+
+    if LOC('TavernDayEventPrintHallDescription') = 1:
+        gs 'TavernDayEventPrintHallDescription'
+    end
+
+    if LOC('TavernDayEventPrintCarryOverHall') = 1:
+        gs 'TavernDayEventPrintCarryOverHall'
+    end
+
+    if LOC('TavernDayEventPrintCarpenterEveningRepair') = 1:
+        gs 'TavernDayEventPrintCarpenterEveningRepair'
+    end
+
+    if TavernDayEventHallDescPrinted = 0:
+        if time = 1:
+            gs 'PrintMainP', 'Утро в зале ещё нежное. Столы протёрты, очаг только разогрет, с кухни доносится запах свежего хлеба.'
+            gs 'PrintMainP', 'Первые посетители только подтягиваются — кто за кружкой эля с дороги, кто просто погреться у огня.'
+        elseif time = 2:
+            gs 'PrintMainP', 'К полудню зал оживает. За столами уже сидят торговцы и ремесленники, у стойки слышны заказы на еду и пиво.'
+            gs 'PrintMainP', 'Суета ровная, без вечернего шума — город ещё не успел напиться до крика.'
+        elseif time = 3:
+            gs 'PrintMainP', 'Днём зал работает в полную силу. За грубыми столами громко спорят, смеются и торгуются за последнюю кружку.'
+            gs 'PrintMainP', 'В воздухе — еда, дым и пролитое пиво; у стойки не смолкают голоса, с кухни идёт непрерывная смена блюд.'
+        else:
+            gs 'PrintMainP', 'Вечером зал теплеет от огня и разговоров. Лампы мягко светят на лица, посетители расслаблены, будто день наконец отпустил.'
+            gs 'PrintMainP', 'У стойки всё ещё шумно, но уже без дневной спешки — больше смеха, меньше торопливых криков с кухни.'
+        end
+    end
+
+    killvar 'TavernDayEventHallDescPrinted'
 ---
 
 ! ================================================
@@ -244,21 +247,21 @@
     if LOC('ShowTavernHallImage') = 1:
         gs 'ShowTavernHallImage'
     elseif LOC('ShowLocationTimeImage') = 1:
-        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall'
     elseif LOC('ShowLocationImage') = 1:
         gs 'ShowLocationImage', 'tavern', 'full', 'png'
     end
 
     *pl '══════════════════════════════════════════════'
-    *pl ' ГЛАВНЫЙ ЗАЛ ТРАКТИРА'
+    gs 'PrintTitleLine', ' ГЛАВНЫЙ ЗАЛ ТРАКТИРА'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     if TavernOpen = 1:
-        *p 'Вы некоторое время наблюдаете за залом.'
-        *p 'Посетители переговариваются за столами, кто-то требует ещё пива, кто-то спорит о цене вина, а у стойки привычно шумит трактирная жизнь.'
+        gs 'PrintMainP', 'Вы некоторое время наблюдаете за залом.'
+        gs 'PrintMainP', 'Посетители переговариваются за столами, кто-то требует ещё пива, кто-то спорит о цене вина, а у стойки привычно шумит трактирная жизнь.'
     else:
-        *p 'Зал сейчас тихий. Столы убраны, лавки пустуют, и только запах дыма, дерева и вчерашнего пива напоминает, каким шумным это место бывает в рабочие часы.'
+        gs 'PrintMainP', 'Зал сейчас тихий. Столы убраны, лавки пустуют, и только запах дыма, дерева и вчерашнего пива напоминает, каким шумным это место бывает в рабочие часы.'
     end
 
     *pl ' '
@@ -266,7 +269,7 @@
     LocationGirlShown = 0
 
     if TavernOpen = 1:
-        *pl 'В зале сейчас:'
+        gs 'PrintMainLine', 'В зале сейчас:'
         *pl ' '
 
         gs 'ShowGirlInLocation', 'sandra', 'TavernMain'
@@ -274,10 +277,10 @@
         gs 'ShowGirlInLocation', 'amanda', 'TavernMain'
 
         if LocationGirlShown = 0:
-            *p 'Сейчас в зале нет никого из девушек.'
+            gs 'PrintMainP', 'Сейчас в зале нет никого из девушек.'
         end
     else:
-        *p 'Девушки сейчас не работают в зале.'
+        gs 'PrintMainP', 'Девушки сейчас не работают в зале.'
     end
 
     killvar 'LocationGirlShown'
@@ -289,7 +292,13 @@
         *pl ' '
     end
 
-    act 'Вернуться в зал':
+    act '<b>Осмотреть зал ещё раз</b>', 'images/common/ui/actions/look.png':
+        gt 'TavernHallActivityStart', 'look'
+    end
+
+    gs 'TavernHallAddWaitButton'
+
+    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
         gt 'TavernMain'
     end
 ---

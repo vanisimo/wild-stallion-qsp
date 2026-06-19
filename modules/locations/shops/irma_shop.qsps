@@ -39,7 +39,7 @@
         gs 'ShowImage', 'irma', 'shop', 'closed', 'normal'
 
         *pl '══════════════════════════════════════════════'
-        *pl ' 🧵 ЛАВКА ПОРТНИХИ ИРМЫ — ЗАКРЫТО 🧵'
+        gs 'PrintTitleLine', ' ЛАВКА ПОРТНИХИ ИРМЫ — ЗАКРЫТО'
         *pl '══════════════════════════════════════════════'
         *pl ' '
 
@@ -47,7 +47,7 @@
 
         *pl ' '
 
-        act 'Вернуться к ремесленникам':
+        act '<b>Квартал ремесленников</b>', 'images/common/ui/actions/craftsmen.png':
             gt 'CraftsmenQuarter'
         end
 
@@ -61,7 +61,7 @@
     ! =====================================================================
 
     *pl '══════════════════════════════════════════════'
-    *pl ' 🧵 ЛАВКА ПОРТНИХИ ИРМЫ 🧵'
+    gs 'PrintTitleLine', ' ЛАВКА ПОРТНИХИ ИРМЫ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
@@ -87,18 +87,12 @@
 
     if IrmaMet < 1:
         *p 'Ирма поднимает на вас взгляд — кажется, видит в лавке впервые.'
-
-        act 'Поздороваться':
-            gt 'IrmaFirstMeet', 'IrmaShop'
-        end
-
-        *pl ' '
-        act 'Вернуться к ремесленникам':
-            gt 'CraftsmenQuarter'
-        end
-
-        exit
     end
+
+    *pl ' '
+
+    gs 'ShowGirlTalkLink', 'irma', 'IrmaShop'
+    *pl ' '
 
     ! ====================== РАБОЧАЯ ФОРМА ДЛЯ ДЕВУШЕК ======================
     ! Версия: offer trigger v1
@@ -106,86 +100,70 @@
     ! Сначала Ирма должна сама поднять тему после слухов/скандала/церковного упрёка
     ! или при достаточно хороших отношениях.
 
-    if AmandaDanceDressReady = 0 and Friends['amanda'] > 8 and LOC('IrmaBuyAmandaDanceDress') = 1:
-        act 'Заказать платье для танцев (Аманда)':
-            gt 'IrmaBuyAmandaDanceDress'
-        end
+    if LOC('IrmaDanceDressHandleVisit') = 1:
+        gs 'IrmaDanceDressHandleVisit'
     end
 
-    if MelissaDanceDressReady = 0 and Friends['melissa'] > 8 and LOC('IrmaBuyMelissaDanceDress') = 1:
-        act 'Заказать платье для танцев (Мелисса)':
-            gt 'IrmaBuyMelissaDanceDress'
-        end
-    end
-
-    if IrmaUniformOfferUnlocked = 1:
-        if LOC('IrmaUniformOrders') = 1:
-            act 'Заказать рабочую форму для девушек':
-                gt 'IrmaUniformOrders', 'IrmaShop'
-            end
-        else:
-            if debug = 1:
-                *pl '[DEBUG IRMA] Не подключён модуль IrmaUniformOrders.'
-                *pl 'modules/locations/shops/irma_uniform_orders.qsps'
-                *pl 'modules/locations/shops/irma_uniform_orders_text.qsps'
-                *pl ' '
-            end
-        end
-    else:
+    if IrmaUniformOfferUnlocked <> 1:
         if LOC('IrmaUniformOfferCanStart') = 1:
             gs 'IrmaUniformOfferCanStart'
 
             if IrmaUniformOfferCanStart = 1 and IrmaUniformOfferDeclined = 0:
                 *p 'Ирма смотрит на вас так, будто давно ждала подходящего момента для неприятно выгодного разговора.'
-
-                act 'Выслушать предложение Ирмы':
-                    gt 'IrmaUniformOfferStart', 'IrmaShop'
-                end
-            elseif IrmaUniformOfferDeclined = 1:
-                act 'Вернуться к разговору о форме':
-                    gt 'IrmaUniformOfferStart', 'IrmaShop'
-                end
-            else:
-                if debug = 1:
-                    *pl '[DEBUG IRMA OFFER] Тема формы ещё не открыта.'
-                    *pl 'Нужны слухи/скандальность/пастор/отношения с Ирмой.'
-                    *pl ' '
-                end
-            end
-        else:
-            if debug = 1:
-                *pl '[DEBUG IRMA] Не подключён модуль IrmaUniformOffer.'
-                *pl 'modules/locations/shops/irma_uniform_offer.qsps'
-                *pl 'modules/locations/shops/irma_uniform_offer_text.qsps'
+            elseif IrmaUniformOfferCanStart <> 1 and debug = 1:
+                *pl '[DEBUG IRMA OFFER] Тема формы ещё не открыта.'
+                *pl 'Нужны слухи/скандальность/пастор/отношения с Ирмой.'
                 *pl ' '
             end
+        elseif debug = 1 and LOC('IrmaUniformOfferCanStart') = 0:
+            *pl '[DEBUG IRMA] Не подключён модуль IrmaUniformOffer.'
+            *pl 'modules/locations/shops/irma_uniform_offer.qsps'
+            *pl 'modules/locations/shops/irma_uniform_offer_text.qsps'
+            *pl ' '
         end
+    elseif LOC('IrmaUniformOrders') = 0 and debug = 1:
+        *pl '[DEBUG IRMA] Не подключён модуль IrmaUniformOrders.'
+        *pl 'modules/locations/shops/irma_uniform_orders.qsps'
+        *pl 'modules/locations/shops/irma_uniform_orders_text.qsps'
+        *pl ' '
     end
 
     if debug = 1 and LOC('IrmaUniformOfferDebugUnlock') = 1:
-        act 'DEBUG: открыть тему формы Ирмы':
+        act '<b>DEBUG: открыть тему формы Ирмы</b>':
             *clr
             gs 'IrmaUniformOfferDebugUnlock'
 
-            act 'Продолжить':
+            act '<b>Продолжить</b>':
                 gt 'IrmaShop'
             end
         end
     end
 
     if debug = 1 and LOC('IrmaUniformDebugUnlockAll') = 1:
-        act 'DEBUG: открыть всю откровенную форму':
+        act '<b>DEBUG: открыть всю откровенную форму</b>':
             *clr
             gs 'IrmaUniformDebugUnlockAll'
 
-            act 'Продолжить':
+            act '<b>Продолжить</b>':
                 gt 'IrmaShop'
             end
         end
     end
 
+    if IrmaUniformOfferUnlocked = 1 and LOC('IrmaUniformOrders') = 1:
+        act '<b>Рабочая форма</b>', 'images/common/ui/actions/shop.png':
+            gt 'IrmaUniformOrders', 'IrmaShop'
+        end
+    end
+
+    if IrmaMet >= 1:
+        act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
+            gt 'IrmaShopGifts', 'IrmaShop'
+        end
+    end
+
     *pl ' '
-    act 'Вернуться к ремесленникам':
+    act '<b>Квартал ремесленников</b>', 'images/common/ui/actions/craftsmen.png':
         gt 'CraftsmenQuarter'
     end
 ---

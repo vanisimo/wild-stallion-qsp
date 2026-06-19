@@ -1,0 +1,145 @@
+! ================================================
+! FILE: modules/menu/panels/panel_settings.qsps
+! Панель настроек игры
+! Открывается кнопкой «Настройки» в панели предметов
+! ================================================
+
+#PanelSettings
+    PanelCustomActive = 1
+    clr
+
+    gs 'PanelUiBanner', 'item', 'settings'
+    gs 'PanelUiHeader', 'НАСТРОЙКИ'
+    gs 'PanelUiDivider'
+    pl ' '
+    pl '<a href="exec:gs ''PanelSettingsFonts''">Шрифты</a>'
+    pl ' '
+    pl 'Здесь настраиваются цвет, размер, жирность,'
+    pl 'курсив и тип шрифта для текстовых стилей игры.'
+    pl ' '
+    pl 'Где уже работает:'
+    pl '• Основной текст — боковая панель (время, деньги)'
+    pl '  и описание зала на TavernMain.'
+    pl '• Заголовки — название таверны в главном зале.'
+    pl '• Мысли — события зала и Легаре.'
+    pl ' '
+    pl 'Проверка: Шрифты → Заголовки → Красный →'
+    pl '«Обновить экран игры» → смотрите название таверны.'
+    pl ' '
+    pl '<a href="exec:gs ''PanelSettingsClose''">Вернуться в игру</a>'
+---
+
+! ================================================
+! FILE: modules/menu/panels/panel_settings.qsps
+! Список текстовых стилей
+! ================================================
+
+#PanelSettingsFonts
+    PanelCustomActive = 1
+    clr
+
+    gs 'PanelUiHeader', 'ШРИФТЫ'
+    gs 'PanelUiDivider'
+    pl ' '
+    pl 'Выберите стиль для настройки:'
+    pl ' '
+
+    gs 'PanelSettingsFontMenuLine', 'main'
+    gs 'PanelSettingsFontMenuLine', 'thought'
+    gs 'PanelSettingsFontMenuLine', 'dialog'
+    gs 'PanelSettingsFontMenuLine', 'title'
+    gs 'PanelSettingsFontMenuLine', 'npc'
+    gs 'PanelSettingsFontMenuLine', 'good'
+    gs 'PanelSettingsFontMenuLine', 'warn'
+    gs 'PanelSettingsFontMenuLine', 'bad'
+
+    pl ' '
+    pl '<a href="exec:gs ''PanelSettings''">← Назад в настройки</a>'
+    pl '<a href="exec:gs ''PanelSettingsClose''">Вернуться в игру</a>'
+---
+
+#PanelSettingsFontMenuLine
+    $PanelFontMenuKey = LCASE($ARGS[0])
+
+    gs 'TextStyleCaption', $PanelFontMenuKey
+
+    pl '<a href="exec:gs ''PanelSettingsFontEdit'', ''' + $PanelFontMenuKey + '''">' + $TextStyleCaption + '</a>'
+
+    killvar '$PanelFontMenuKey'
+    killvar '$TextStyleCaption'
+---
+
+! ================================================
+! FILE: modules/menu/panels/panel_settings.qsps
+! Редактирование одного стиля
+! ARGS[0] — ключ стиля
+! ================================================
+
+#PanelSettingsFontEdit
+    $PanelFontEditKey = LCASE($ARGS[0])
+
+    if $PanelFontEditKey = '':
+        gs 'PanelSettingsFonts'
+        exit
+    end
+
+    gs 'EnsureTextStyleSlot', $PanelFontEditKey
+
+    PanelCustomActive = 1
+    clr
+
+    gs 'TextStyleCaption', $PanelFontEditKey
+
+    gs 'PanelUiHeader', 'ШРИФТ: ' + $TextStyleCaption
+    gs 'PanelUiDivider'
+    pl ' '
+
+    gs 'PanelUiSection', 'Превью:'
+    gs 'FormatTextByStyle', 'Так будет выглядеть этот стиль в игре.', $PanelFontEditKey
+    pl $FormattedText
+    killvar '$FormattedText'
+
+    pl ' '
+    pl 'Цвет: ' + $TextStyleColor[$PanelFontEditKey]
+    pl '<a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''''">Без цвета</a>'
+    pl '<a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#ffffff''">Белый</a>  <a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#c0c0c0''">Серый</a>'
+    pl '<a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#d4b483''">Золотой</a>  <a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#606080''">Мысли</a>'
+    pl '<a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#2f6b2f''">Зелёный NPC</a>  <a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#228b22''">Зелёный</a>'
+    pl '<a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#b8860b''">Жёлтый</a>  <a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#8b0000''">Красный</a>'
+    pl '<a href="exec:gs ''TextStyleSetColor'', ''' + $PanelFontEditKey + ''', ''#404040''">Тёмно-серый</a>'
+
+    pl ' '
+    pl 'Размер: ' + $TextStyleSize[$PanelFontEditKey]
+    pl '<a href="exec:gs ''TextStyleSetSize'', ''' + $PanelFontEditKey + ''', ''tiny''">Очень мелкий</a>  <a href="exec:gs ''TextStyleSetSize'', ''' + $PanelFontEditKey + ''', ''small''">Мелкий</a>'
+    pl '<a href="exec:gs ''TextStyleSetSize'', ''' + $PanelFontEditKey + ''', ''normal''">Обычный</a>  <a href="exec:gs ''TextStyleSetSize'', ''' + $PanelFontEditKey + ''', ''big''">Крупный</a>'
+    pl '<a href="exec:gs ''TextStyleSetSize'', ''' + $PanelFontEditKey + ''', ''large''">Большой</a>  <a href="exec:gs ''TextStyleSetSize'', ''' + $PanelFontEditKey + ''', ''huge''">Огромный</a>'
+
+    pl ' '
+
+    if TextStyleBold[$PanelFontEditKey] = 1:
+        pl 'Жирный: включён — <a href="exec:gs ''TextStyleToggleBold'', ''' + $PanelFontEditKey + '''">выключить</a>'
+    else:
+        pl 'Жирный: выключен — <a href="exec:gs ''TextStyleToggleBold'', ''' + $PanelFontEditKey + '''">включить</a>'
+    end
+
+    if TextStyleItalic[$PanelFontEditKey] = 1:
+        pl 'Курсив: включён — <a href="exec:gs ''TextStyleToggleItalic'', ''' + $PanelFontEditKey + '''">выключить</a>'
+    else:
+        pl 'Курсив: выключен — <a href="exec:gs ''TextStyleToggleItalic'', ''' + $PanelFontEditKey + '''">включить</a>'
+    end
+
+    pl ' '
+    pl 'Шрифт: ' + $TextStyleFace[$PanelFontEditKey]
+    pl '<a href="exec:gs ''TextStyleSetFace'', ''' + $PanelFontEditKey + ''', ''''">По умолчанию</a>'
+    pl '<a href="exec:gs ''TextStyleSetFace'', ''' + $PanelFontEditKey + ''', ''Arial''">Arial</a>  <a href="exec:gs ''TextStyleSetFace'', ''' + $PanelFontEditKey + ''', ''Georgia''">Georgia</a>'
+    pl '<a href="exec:gs ''TextStyleSetFace'', ''' + $PanelFontEditKey + ''', ''Times New Roman''">Times New Roman</a>  <a href="exec:gs ''TextStyleSetFace'', ''' + $PanelFontEditKey + ''', ''Verdana''">Verdana</a>'
+
+    pl ' '
+    pl '<a href="exec:gs ''TextStyleResetSlot'', ''' + $PanelFontEditKey + '''">Сбросить стиль по умолчанию</a>'
+    pl '<a href="exec:gs ''TextStyleRefreshGame''">Обновить экран игры</a>'
+    pl '<a href="exec:gs ''PanelSettingsClose''">Вернуться в игру</a>'
+    pl '<a href="exec:gs ''PanelSettingsFonts''">← Назад к списку шрифтов</a>'
+
+    killvar '$PanelFontEditKey'
+    killvar '$TextStyleCaption'
+---

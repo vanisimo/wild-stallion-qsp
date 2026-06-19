@@ -3,14 +3,13 @@
 ! Универсальный вывод картинок локаций
 ! Ищет изображения в общей папке images/locations
 ! Автоматически подбирает вариант по времени суток
-! Без FILEEXISTS, так как в QSP его нет
+! Без FILEEXISTS: png/webp/jpg, классический QSP — только SRC+WIDTH
 ! ================================================
 
 #ShowLocationImage
     $LocImageName = LCASE($ARGS[0])
     $LocImageSize = LCASE($ARGS[1])
     $LocImageExt = LCASE($ARGS[2])
-
     if $LocImageName = '':
         exit
     end
@@ -31,7 +30,7 @@
         $LocImageTimeSuffix = 'day'
     end
 
-    $LocImagePath = 'images/locations/' + $LocImageName + '_' + $LocImageTimeSuffix + '.' + $LocImageExt
+    $LocImageBasePath = 'images/locations/' + $LocImageName + '_' + $LocImageTimeSuffix
 
     if $LocImageSize = 'small':
         $LocImageStyle = 'max-width: 360px; border: 2px solid #444;'
@@ -41,18 +40,21 @@
         $LocImageStyle = 'max-width: 100%; border: 2px solid #444;'
     end
 
-    *pl '<center><img src="' + $LocImagePath + '" style="' + $LocImageStyle + '"></center>'
+    gs 'BuildImageFallbackTag', $LocImageBasePath, $LocImageStyle, $LocImageExt, 0
+    gs 'PrintImageHtml', $ImageFallbackTag, 'main'
     *pl ' '
 
     if debug = 1:
-        *pl '[DEBUG] ShowLocationImage: ' + $LocImagePath
+        *pl '[DEBUG] ShowLocationImage: ' + $ImageResolvedSrc
     end
 
     killvar '$LocImageName'
     killvar '$LocImageSize'
     killvar '$LocImageExt'
     killvar '$LocImageTimeSuffix'
-    killvar '$LocImagePath'
+    killvar '$LocImageBasePath'
     killvar '$LocImageStyle'
+    killvar '$ImageFallbackTag'
+    killvar '$ImageResolvedSrc'
 ---
 

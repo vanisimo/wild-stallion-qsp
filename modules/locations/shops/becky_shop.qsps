@@ -39,7 +39,7 @@
         gs 'ShowImage', 'becky', 'shop', 'closed', 'normal'
 
         *pl '══════════════════════════════════════════════'
-        *pl ' 🛒 ЛАВКА БЛЭНКЕНШИП — ЗАКРЫТО 🛒'
+        gs 'PrintTitleLine', ' ЛАВКА БЛЭНКЕНШИП — ЗАКРЫТО'
         *pl '══════════════════════════════════════════════'
         *pl ' '
 
@@ -47,7 +47,7 @@
 
         *pl ' '
 
-        act 'Вернуться на рынок':
+        act '<b>Вернуться на рынок</b>':
             gt 'Market'
         end
 
@@ -61,7 +61,7 @@
     ! =====================================================================
 
     *pl '══════════════════════════════════════════════'
-    *pl ' 🛒 ЛАВКА ПРОДОВОЛЬСТВИЯ БЛЭНКЕНШИП 🛒'
+    gs 'PrintTitleLine', ' ЛАВКА ПРОДОВОЛЬСТВИЯ БЛЭНКЕНШИП'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
@@ -79,17 +79,29 @@
 
     *pl ' '
     *pl 'Текущие запасы таверны:'
-    *pl '📦 Продукты: <<productnum>> единиц'
+    gs 'PrintMainLine', 'Продукты: ' + STR(productnum) + ' единиц'
     *pl ' '
 
+    if ShopOpen = 1:
+        if $CurrentSeller = 'becky' and Friends['becky'] < 20:
+            *p 'Бекки не хочет продавать вам ничего лишнего, пока вы не помиритесь.'
+        else:
+            act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
+                gt 'BeckyShopGifts', 'BeckyShop'
+            end
+        end
+
+        *pl ' '
+    end
+
     ! ====================== ПОКУПКА ======================
-    *pl '📦 **Продукты в ящиках** (4 монеты за единицу)'
+    gs 'PrintMainLine', 'Продукты в ящиках (4 монеты за единицу)'
 
     ! Проверка отношений с Бекки
     if $CurrentSeller = 'becky' and Friends['becky'] < 20:
         *p 'Бекки холодно смотрит на тебя: "После всего, что было, я не собираюсь тебе ничего продавать."'
     else:
-        act 'Малый ящик (15 ед. — 60 монет)':
+        act '<b>Малый ящик (15 ед. — 60 монет)</b>':
             if money >= 60:
                 money -= 60
                 productnum += 15
@@ -97,10 +109,10 @@
             else:
                 *p 'У тебя недостаточно денег.'
             end
-            act 'Продолжить': gt 'BeckyShop'
+            act '<b>Продолжить</b>': gt 'BeckyShop'
         end
 
-        act 'Средний ящик (40 ед. — 150 монет)':
+        act '<b>Средний ящик (40 ед. — 150 монет)</b>':
             if money >= 150:
                 money -= 150
                 productnum += 40
@@ -108,10 +120,10 @@
             else:
                 *p 'У тебя недостаточно денег.'
             end
-            act 'Продолжить': gt 'BeckyShop'
+            act '<b>Продолжить</b>': gt 'BeckyShop'
         end
 
-        act 'Большой ящик (80 ед. — 280 монет)':
+        act '<b>Большой ящик (80 ед. — 280 монет)</b>':
             if money >= 280:
                 money -= 280
                 productnum += 80
@@ -119,10 +131,10 @@
             else:
                 *p 'У тебя недостаточно денег.'
             end
-            act 'Продолжить': gt 'BeckyShop'
+            act '<b>Продолжить</b>': gt 'BeckyShop'
         end
 
-        act 'Огромный ящик (150 ед. — 500 монет)':
+        act '<b>Огромный ящик (150 ед. — 500 монет)</b>':
             if money >= 500:
                 money -= 500
                 productnum += 150
@@ -143,12 +155,12 @@
             else:
                 *p 'У тебя недостаточно денег.'
             end
-            act 'Продолжить': gt 'BeckyShop'
+            act '<b>Продолжить</b>': gt 'BeckyShop'
         end
     end
 ! ====================== ФЛИРТ С ИНГОЙ ======================
     if $CurrentSeller = 'inga' and IngaRomanceUnlocked = 1 and Friends['inga'] >= 18:
-        act 'Флиртовать с Ингой':
+        act '<b>Флиртовать с Ингой</b>':
             gt 'IngaFlirt'
         end
     end
@@ -162,15 +174,15 @@
 
         if IngaBackroomCanOffer = 1:
             if IngaBackroomSex = 0 and IngaRomanceStage < 3:
-                act 'Зайти в подсобку с Ингой':
+                act '<b>Зайти в подсобку с Ингой</b>':
                     gt 'IngaRomanceStep'
                 end
             elseif IngaBackroomSex = 0 and IngaRomanceStage >= 3:
-                act 'Продолжить в подсобке':
+                act '<b>Продолжить в подсобке</b>':
                     gt 'IngaBackroomFirstSexLaunch'
                 end
             elseif IngaBackroomSex = 1:
-                act 'Провести время в подсобке':
+                act '<b>Провести время в подсобке</b>':
                     gt 'SexSceneStart', 'inga', 'IngaBackroomAfterSex', 'inga_repeat'
                 end
             end
@@ -178,13 +190,13 @@
     end
 
     if $CurrentSeller = 'inga' and IngaLucasThreesomeCount >= 1 and IngaLucasCucumberReady = 0 and LOC('IngaLucasCucumberShop') = 1:
-        act 'Заметить, как Инга выбирает овощи':
+        act '<b>Заметить, как Инга выбирает овощи</b>':
             gt 'IngaLucasCucumberShop'
         end
     end
 
     if IngaRoomUnlocked = 1 and time >= 3:
-        act 'Подняться в комнату Инги':
+        act '<b>Подняться в комнату Инги</b>':
             gt 'IngaRoom'
         end
     end
@@ -193,32 +205,14 @@
         gs 'IngaGuardHarassmentTryActivate'
     end
 
-    if $CurrentSeller = 'inga' and LOC('IngaGuardComplaintCanStart') = 1:
-        gs 'IngaGuardComplaintCanStart'
 
-        if IngaGuardComplaintCanStart = 1:
-            act 'Спросить Ингу о проблеме со стражником':
-                gt 'IngaGuardComplaintStart'
-            end
-        end
-    end
-
-    if $CurrentSeller = 'inga' and LOC('IngaGuardThanksCanStart') = 1:
-        gs 'IngaGuardThanksCanStart'
-
-        if IngaGuardThanksCanStart = 1:
-            act 'Поговорить с Ингой':
-                gt 'IngaGuardThanks'
-            end
-        end
-    end
     ! ====================== ПОКУПКА У ДЕТЕЙ (если Бекки отказывает) ======================
     if $CurrentSeller = 'becky' and Friends['becky'] < 20:
         *pl ' '
         *pl 'Дети Бекки готовы помочь, если у тебя с ними хорошие отношения:'
 
         if Friends['inga'] >= 18 and becky_children_bought_today = 0:
-            act 'Купить маленький ящик у Инги (15 ед. — 60 монет)':
+            act '<b>Купить маленький ящик у Инги (15 ед. — 60 монет)</b>':
                 if money >= 60:
                     money -= 60
                     productnum += 15
@@ -228,11 +222,11 @@
                 else:
                     *p 'У тебя недостаточно денег.'
                 end
-                act 'Продолжить': gt 'BeckyShop'
+                act '<b>Продолжить</b>': gt 'BeckyShop'
             end
         end
         if Friends['eddie'] >= 18 and becky_children_bought_today = 0:
-            act 'Купить маленький ящик у Эдди (15 ед. — 60 монет)':
+            act '<b>Купить маленький ящик у Эдди (15 ед. — 60 монет)</b>':
                 if money >= 60:
                     money -= 60
                     productnum += 15
@@ -242,7 +236,7 @@
                 else:
                     *p 'У тебя недостаточно денег.'
                 end
-                act 'Продолжить': gt 'BeckyShop'
+                act '<b>Продолжить</b>': gt 'BeckyShop'
             end
         end
     end
@@ -250,7 +244,7 @@
     *pl ' '
 
     if BeckyHomeStage >= 3 and time = 4 and LOC('BeckyHomeGuestArrival') = 1:
-        act 'Постучать в дверь дома Бекки':
+        act '<b>Постучать в дверь дома Бекки</b>':
             gt 'BeckyHomeGuestArrival'
         end
     end
@@ -259,24 +253,39 @@
         gs 'BeckyIngaThreesomeCanStart'
 
         if BeckyIngaThreesomeCanStart = 1:
-            act 'Встретиться с Бекки и Ингой втроём':
+            act '<b>Встретиться с Бекки и Ингой втроём</b>':
                 gt 'GroupSexBeckyIngaStefanStart'
             end
         end
     end
 
-    ! ====================== ОБЩЕНИЕ ======================
-    act 'Поговорить с продавцом':
-        if $CurrentSeller = 'becky':
-            gt 'TalkWithBecky'
-        elseif $CurrentSeller = 'inga':
-            gt 'TalkWithInga'
-        else:
-            gt 'TalkWithEddie'
-        end
+    if $CurrentSeller = 'becky':
+        gs 'ShowGirlTalkLink', 'becky', 'BeckyShop'
+    elseif $CurrentSeller = 'inga':
+        gs 'ShowGirlTalkLink', 'inga', 'BeckyShop'
+    else:
+        gs 'BuildEddieShopTalkMenu'
+        gs 'NpcMenuLink', 'Эдди', 'EddieShopTalkMenu'
     end
 
-    act 'Вернуться на рынок':
+    *pl ' '
+
+    act '<b>Вернуться на рынок</b>':
         gt 'Market'
     end
+---
+
+#BuildEddieShopTalkMenu
+    gs 'Menu.Destroy', 'EddieShopTalkMenu'
+    gs 'Menu.Create', 'EddieShopTalkMenu'
+
+    gs 'MenuUiAdd', 'EddieShopTalkMenu', 'Поговорить', 'talk'
+    gs 'Menu.AddModule', 'EddieShopTalkMenu', {
+        gt 'TalkWithEddie'
+    }
+
+    gs 'MenuUiAdd', 'EddieShopTalkMenu', 'Назад', 'return'
+    gs 'Menu.AddModule', 'EddieShopTalkMenu', {
+        gt 'BeckyShop'
+    }
 ---

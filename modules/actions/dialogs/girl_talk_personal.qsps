@@ -193,7 +193,7 @@
     if $TalkGirl = 'amanda':
         gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
         if GirlTalkPersonalStoryReady = 1:
-            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О Легаре', ''
+            gs 'MenuUiAdd', 'GirlTalkPersonalMenu', 'О Легаре', ''
             gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
                 gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'amanda_legare'
             }
@@ -202,7 +202,7 @@
 
         gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_boys'
         if GirlTalkPersonalStoryReady = 1:
-            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О парнях в городе', ''
+            gs 'MenuUiAdd', 'GirlTalkPersonalMenu', 'О парнях в городе', ''
             gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
                 gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'amanda_boys'
             }
@@ -212,7 +212,7 @@
     elseif $TalkGirl = 'melissa':
         gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
         if GirlTalkPersonalStoryReady = 1:
-            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О музыканте', ''
+            gs 'MenuUiAdd', 'GirlTalkPersonalMenu', 'О музыканте', ''
             gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
                 gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'melissa_musician'
             }
@@ -222,7 +222,7 @@
     elseif $TalkGirl = 'sandra':
         gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_carpenter'
         if GirlTalkPersonalStoryReady = 1:
-            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О столяре', ''
+            gs 'MenuUiAdd', 'GirlTalkPersonalMenu', 'О столяре', ''
             gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
                 gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'sandra_carpenter'
             }
@@ -231,7 +231,7 @@
 
         gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_priest'
         if GirlTalkPersonalStoryReady = 1:
-            gs 'Menu.Add', 'GirlTalkPersonalMenu', 'О священнике', ''
+            gs 'MenuUiAdd', 'GirlTalkPersonalMenu', 'О священнике', ''
             gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
                 gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'sandra_priest'
             }
@@ -239,7 +239,7 @@
         end
     end
 
-    gs 'Menu.Add', 'GirlTalkPersonalMenu', 'Вернуться', ''
+    gs 'MenuUiAdd', 'GirlTalkPersonalMenu', 'Вернуться', 'return'
     gs 'Menu.AddModule', 'GirlTalkPersonalMenu', {
         gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
     }
@@ -284,9 +284,11 @@
         exit
     end
 
+    gs 'GirlTalkSessionBegin'
+
     cls
 
-    gs 'ShowGirlSidebar', $TalkGirl
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
 
     *pl '══════════════════════════════════════════════'
     *pl ' ЛИЧНЫЙ РАЗГОВОР: ' + $RealName[$TalkGirl]
@@ -296,6 +298,9 @@
     if LOC('ShowGirlTalkContextImage') = 1:
         gs 'ShowGirlTalkContextImage', $TalkGirl, 'large'
     end
+
+    gs 'GirlTalkShowNpcMenuAnchor', 'main'
+    *pl ' '
 
     gs 'GirlTalkPersonalPrintText', 'intro'
     gs 'GirlTalkPersonalPrintText', 'story'
@@ -342,13 +347,7 @@
 
     *pl ' '
 
-    act 'Поговорить ещё':
-        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
-    end
-
-    act 'Вернуться':
-        gt $TalkReturnLoc
-    end
+    gs 'GirlTalkAddReturnButton'
 
     killvar '$GirlTalkPersonalStoryId'
 ---

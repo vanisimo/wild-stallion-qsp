@@ -1,0 +1,505 @@
+! ================================================
+! FILE: modules/core/girls/girl_intim_session.qsps
+! MODULE: core/girls
+! Сессия интима: якорь NPC в окне и в сайдбаре
+! ================================================
+
+#GirlIntimSessionBegin
+    GirlIntimSessionActive = 1
+---
+
+#GirlIntimSessionEnd
+    GirlIntimSessionActive = 0
+    IntimSessionActive = 0
+    $IntimSessionGirl = ''
+    $IntimSessionLoc = ''
+    IntimForeplayDone = 0
+    IntimPlayerOrgasmCount = 0
+    IntimMaxOrgasmCount = 0
+---
+
+#GirlIntimMenuReturn
+    $GirlIntimMenuReturnLoc = $IntimReturnLoc
+
+    if $GirlIntimMenuReturnLoc = '':
+        $GirlIntimMenuReturnLoc = $CURLOC
+    end
+
+    if $GirlIntimMenuReturnLoc = '':
+        $GirlIntimMenuReturnLoc = 'TavernMain'
+    end
+
+    if LOC($GirlIntimMenuReturnLoc) = 0:
+        $GirlIntimMenuReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlIntimSessionEnd'
+
+    if $CURLOC = $GirlIntimMenuReturnLoc:
+        killvar '$GirlIntimMenuReturnLoc'
+        exit
+    end
+
+    gt $GirlIntimMenuReturnLoc
+    killvar '$GirlIntimMenuReturnLoc'
+---
+
+#GirlIntimCheckNpcLinkAvailable
+    GirlIntimMenuReady = 0
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    if $IntimGirl = '':
+        killvar '$IntimGirl'
+        killvar '$IntimReturnLoc'
+        exit
+    end
+
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = $CURLOC
+    end
+
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = 'TavernMain'
+    end
+
+    if LOC($IntimReturnLoc) = 0:
+        $IntimReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $IntimGirl
+    gs 'UpdateGirlLocations'
+    gs 'MenuGirlCalcConditions', $IntimGirl, $IntimReturnLoc
+
+    if MenuCanIntim = 0:
+        exit
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        exit
+    end
+
+    if SexUsedToday[$IntimGirl] = 1:
+        exit
+    end
+
+    GirlIntimMenuReady = 1
+---
+
+#GirlIntimOpenNpcMenu
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $IntimGirl = $GirlKey
+    $IntimOpenMenuLoc = $ARGS[1]
+    $IntimOpenReturnLoc = $ARGS[2]
+
+    if $IntimGirl = '':
+        exit
+    end
+
+    if $IntimOpenMenuLoc = '':
+        $IntimOpenMenuLoc = $CURLOC
+    end
+
+    if $IntimOpenReturnLoc = '':
+        $IntimOpenReturnLoc = $IntimOpenMenuLoc
+    end
+
+    if LOC($IntimOpenReturnLoc) = 0:
+        $IntimOpenReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlIntimCheckNpcLinkAvailable', $IntimGirl, $IntimOpenMenuLoc
+
+    if GirlIntimMenuReady = 0:
+        killvar '$IntimOpenMenuLoc'
+        killvar '$IntimOpenReturnLoc'
+        exit
+    end
+
+    $IntimReturnLoc = $IntimOpenReturnLoc
+    gs 'GirlIntimSessionBegin'
+    gs 'GirlIntimInitSceneState', $IntimGirl, $IntimOpenMenuLoc
+    gs 'GirlIntimBuildMainMenu'
+    gs 'Menu.Show', 'GirlIntimMainMenu'
+
+    killvar 'GirlIntimMenuReady'
+    killvar '$IntimOpenMenuLoc'
+    killvar '$IntimOpenReturnLoc'
+---
+
+#GirlIntimPrepareForNpcLink
+    gs 'GirlIntimCheckNpcLinkAvailable', $ARGS[0], $ARGS[1]
+
+    if GirlIntimMenuReady = 0:
+        exit
+    end
+
+    gs 'GirlIntimSessionBegin'
+    gs 'GirlIntimInitSceneState', $IntimGirl, $IntimReturnLoc
+    gs 'GirlIntimBuildMainMenu'
+---
+
+#GirlIntimInitSceneState
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $IntimStateGirl = $GirlKey
+    $IntimStateLoc = $ARGS[1]
+
+    if $IntimStateGirl = '':
+        killvar '$IntimStateGirl'
+        killvar '$IntimStateLoc'
+        exit
+    end
+
+    if $IntimStateLoc = '':
+        $IntimStateLoc = $CURLOC
+    end
+
+    if IntimSessionActive = 0 or $IntimSessionGirl <> $IntimStateGirl or $IntimSessionLoc <> $IntimStateLoc:
+        IntimSessionActive = 1
+        $IntimSessionGirl = $IntimStateGirl
+        $IntimSessionLoc = $IntimStateLoc
+        IntimForeplayDone = 0
+        IntimPlayerOrgasmCount = 0
+        IntimMaxOrgasmCount = 2 + RAND(0, 1)
+    end
+
+    killvar '$IntimStateGirl'
+    killvar '$IntimStateLoc'
+---
+
+#GirlIntimBuildMainMenu
+    gs 'Menu.Destroy', 'GirlIntimMainMenu'
+    gs 'Menu.Create', 'GirlIntimMainMenu'
+
+    gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Нежно поцеловать', 'intim'
+    gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+        gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'kiss'
+    }
+
+    gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Ласково прижать к себе', 'intim'
+    gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+        gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'caress'
+    }
+
+    if Friends[$IntimGirl] >= 10 or love[$IntimGirl] >= 8 or sluttiness[$IntimGirl] >= 15 or HadSex[$IntimGirl] > 0:
+        gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Ручные ласки', 'intim'
+        gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'hand'
+        }
+    end
+
+    if sluttiness[$IntimGirl] >= 20 or otkroven[$IntimGirl] >= 15 or love[$IntimGirl] >= 15 or HadSex[$IntimGirl] > 0:
+        gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Оральные ласки', 'intim'
+        gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'oral'
+        }
+    end
+
+    if virginity[$IntimGirl] = 1:
+        gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первый раз', 'intim'
+        gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gt 'GirlFirstSex', $IntimGirl, $IntimReturnLoc
+        }
+    else:
+        gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Вагинальная близость', 'intim'
+        gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'vaginal'
+        }
+    end
+
+    if analvirgin[$IntimGirl] = 1:
+        if HadSex[$IntimGirl] > 0 and sluttiness[$IntimGirl] >= 45 and otkroven[$IntimGirl] >= 25:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первый анальный опыт', 'intim'
+            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gt 'GirlFirstAnal', $IntimGirl, $IntimReturnLoc
+            }
+        end
+    else:
+        if HadSex[$IntimGirl] > 0 or sluttiness[$IntimGirl] >= 35:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Анальная близость', 'intim'
+            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'anal'
+            }
+        end
+    end
+
+    if LOC('SexSceneStart') = 1:
+        gs 'CanStartSexScene', $IntimGirl
+
+        if SexSceneAllowed = 1:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Полная сцена', 'intim'
+            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gt 'SexSceneStart', $IntimGirl, $IntimReturnLoc
+            }
+        end
+
+        killvar 'SexSceneAllowed'
+        killvar '$SexSceneDenyReason'
+    end
+
+    gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Закончить', 'return'
+    gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+        gt 'IntimEnd', $IntimGirl, $IntimReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+        gt 'GirlIntimMenuReturn'
+    }
+---
+
+#GirlIntimRefreshMenuIfAllowed
+    GirlIntimAnchorReady = 0
+
+    if $IntimGirl = '':
+        exit
+    end
+
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $IntimGirl
+    gs 'MenuGirlCalcConditions', $IntimGirl, $IntimReturnLoc
+
+    if MenuCanIntim = 0:
+        exit
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        exit
+    end
+
+    if SexUsedToday[$IntimGirl] = 1:
+        exit
+    end
+
+    GirlIntimAnchorReady = 1
+    gs 'GirlIntimBuildMainMenu'
+---
+
+#GirlIntimShowNpcMenuAnchor
+    $GirlIntimAnchorTarget = LCASE($ARGS[0])
+
+    if $GirlIntimAnchorTarget = '':
+        $GirlIntimAnchorTarget = 'main'
+    end
+
+    gs 'GirlIntimRefreshMenuIfAllowed'
+
+    if GirlIntimAnchorReady = 0:
+        killvar '$GirlIntimAnchorTarget'
+        killvar 'GirlIntimAnchorReady'
+        exit
+    end
+
+    if $RealName[$IntimGirl] = '':
+        $RealName[$IntimGirl] = UCASE(MID($IntimGirl, 1, 1)) + LCASE(MID($IntimGirl, 2))
+    end
+
+    if $GirlIntimAnchorTarget = 'main' or $GirlIntimAnchorTarget = 'both':
+        gs 'NpcMenuIntimLink', $RealName[$IntimGirl], 'GirlIntimMainMenu', 'main'
+    end
+
+    if $GirlIntimAnchorTarget = 'panel' or $GirlIntimAnchorTarget = 'both':
+        gs 'NpcMenuIntimLink', $RealName[$IntimGirl], 'GirlIntimMainMenu', 'panel'
+    end
+
+    killvar '$GirlIntimAnchorTarget'
+    killvar 'GirlIntimAnchorReady'
+---
+
+#GirlIntimShowSidebarWithAnchor
+    gs 'ShowGirlSidebar', $ARGS[0]
+
+    if GirlIntimSessionActive = 1 and LCASE($ARGS[0]) = $IntimGirl:
+        pl ' '
+        gs 'GirlIntimShowNpcMenuAnchor', 'panel'
+    end
+---
+
+#ShowGirlIntimLink
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlIntimLinkGirl = $GirlKey
+    $GirlIntimLinkLoc = $ARGS[1]
+    $GirlIntimLinkOutput = LCASE($ARGS[2])
+
+    if $GirlIntimLinkGirl = '':
+        killvar '$GirlIntimLinkGirl'
+        killvar '$GirlIntimLinkLoc'
+        killvar '$GirlIntimLinkOutput'
+        exit
+    end
+
+    if $GirlIntimLinkLoc = '':
+        $GirlIntimLinkLoc = $CURLOC
+    end
+
+    if LOC($GirlIntimLinkLoc) = 0:
+        $GirlIntimLinkLoc = 'TavernMain'
+    end
+
+    if $GirlIntimLinkOutput = '':
+        $GirlIntimLinkOutput = 'main'
+    end
+
+    gs 'GirlIntimCheckNpcLinkAvailable', $GirlIntimLinkGirl, $GirlIntimLinkLoc
+
+    if GirlIntimMenuReady = 1:
+        if $RealName[$GirlIntimLinkGirl] = '':
+            gs 'EnsureGirlData', $GirlIntimLinkGirl
+        end
+
+        gs 'NpcMenuIntimOpenLink', $RealName[$GirlIntimLinkGirl], $GirlIntimLinkGirl, $GirlIntimLinkLoc, $GirlIntimLinkOutput
+
+        if $GirlIntimLinkOutput = 'panel':
+            pl $NpcIntimOpenLine
+        else:
+            *pl $NpcIntimOpenLine
+        end
+
+        killvar '$NpcIntimOpenLine'
+    else:
+        if $GirlIntimLinkOutput <> 'panel':
+            gs 'FormatNpcIntimLink', $GirlIntimLinkGirl, 'gt ''GirlIntimClosedScreen'', ''' + $GirlIntimLinkGirl + ''', ''' + $GirlIntimLinkLoc + ''''
+            *pl $NpcIntimLink
+            killvar '$NpcIntimLink'
+        end
+    end
+
+    killvar 'GirlIntimMenuReady'
+    killvar '$GirlIntimLinkGirl'
+    killvar '$GirlIntimLinkLoc'
+    killvar '$GirlIntimLinkOutput'
+---
+
+#ShowGirlNpcLinks
+    gs 'ShowGirlNpcLinkLine', $ARGS[0], $ARGS[1], $ARGS[2]
+---
+
+#GirlIntim
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $IntimGirl = $GirlKey
+    $IntimReturnLoc = $ARGS[1]
+
+    if $IntimGirl = '':
+        msg 'Ошибка: GirlIntim вызван без имени девушки.'
+        exit
+    end
+
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = $CURLOC
+    end
+
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = 'TavernMain'
+    end
+
+    if LOC($IntimReturnLoc) = 0:
+        $IntimReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $IntimGirl
+    gs 'UpdateGirlLocations'
+    gs 'MenuGirlCalcConditions', $IntimGirl, $IntimReturnLoc
+
+    if $RealName[$IntimGirl] = '':
+        $RealName[$IntimGirl] = UCASE(MID($IntimGirl, 1, 1)) + LCASE(MID($IntimGirl, 2))
+    end
+
+    if MenuCanIntim = 0:
+        gs 'GirlIntimClosedScreen', $IntimGirl, $IntimReturnLoc
+        exit
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        gs 'GirlIntimClosedScreen', $IntimGirl, $IntimReturnLoc
+        exit
+    end
+
+    if SexUsedToday[$IntimGirl] = 1:
+        gs 'GirlIntimClosedScreen', $IntimGirl, $IntimReturnLoc
+        exit
+    end
+
+    gs 'GirlIntimSessionBegin'
+    gs 'GirlIntimInitSceneState', $IntimGirl, $IntimReturnLoc
+    gs 'GirlIntimBuildMainMenu'
+
+    cls
+
+    gs 'GirlIntimShowSidebarWithAnchor', $IntimGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИНТИМ: ' + $RealName[$IntimGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'IntimLocationText', $IntimGirl, $IntimReturnLoc
+
+    *pl ' '
+    gs 'GirlIntimShowNpcMenuAnchor', 'main'
+    *pl ' '
+
+    *pl 'Дружба: ' + STR(Friends[$IntimGirl])
+    *pl 'Любовь: ' + STR(love[$IntimGirl])
+    *pl 'Откровенность: ' + STR(otkroven[$IntimGirl])
+    *pl 'Распущенность: ' + STR(sluttiness[$IntimGirl])
+    *pl ' '
+    *pl 'Оргазмы Стефана в этой сцене: ' + STR(IntimPlayerOrgasmCount) + ' / ' + STR(IntimMaxOrgasmCount)
+    *pl 'Оргазмы Стефана сегодня: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
+
+    *pl ' '
+
+    act '<b>Вернуться</b>':
+        gt 'GirlIntimMenuReturn'
+    end
+---
+
+#GirlIntimClosedScreen
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $IntimClosedGirl = $GirlKey
+    $IntimClosedReturnLoc = $ARGS[1]
+
+    if $IntimClosedReturnLoc = '':
+        $IntimClosedReturnLoc = 'TavernMain'
+    end
+
+    if $RealName[$IntimClosedGirl] = '':
+        gs 'EnsureGirlData', $IntimClosedGirl
+    end
+
+    cls
+
+    gs 'ShowGirlSidebar', $IntimClosedGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИНТИМ: ' + $RealName[$IntimClosedGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if MenuCanIntim = 0:
+        *p 'Сейчас для этого неподходящее место или недостаточно близкие отношения.'
+    elseif SexUsedToday[$IntimClosedGirl] = 1:
+        *p $RealName[$IntimClosedGirl] + ' уже была с вами сегодня. Ей нужно время прийти в себя.'
+    else:
+        *p 'Стефан слишком вымотан за сегодня. Сейчас можно только поговорить.'
+    end
+
+    *pl ' '
+
+    act '<b>Вернуться</b>':
+        gt $IntimClosedReturnLoc
+    end
+
+    killvar '$IntimClosedGirl'
+    killvar '$IntimClosedReturnLoc'
+---

@@ -1,0 +1,239 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_town.qsps
+! MODULE: actions/dialogs
+! Меню разговоров с городскими девушками
+! ================================================
+
+#GirlTalkBuildLizetteMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О корабле и столице', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'port_talk'
+    }
+
+    if AmandaMetLizette = 1 or LizetteKnown = 1 or AmandaLizaInfluence >= 3:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и Аманде', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_amanda'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if Friends['lizette'] >= 12 or love['lizette'] >= 10 or otkroven['lizette'] >= 12:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkMenuReturn'
+    }
+---
+
+#GirlTalkBuildIrmaMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    if IrmaMet < 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поздороваться', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'IrmaFirstMeet', $TalkReturnLoc
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkMenuReturn'
+        }
+        exit
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и заказах', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'irma_shop'
+    }
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if Friends['irma'] >= 12 or love['irma'] >= 10 or otkroven['irma'] >= 12:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    if LOC('IrmaUniformOfferCanStart') = 1:
+        gs 'IrmaUniformOfferCanStart'
+
+        if IrmaUniformOfferCanStart = 1 and IrmaUniformOfferDeclined = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Предложение Ирмы', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'IrmaUniformOfferStart', $TalkReturnLoc
+            }
+        elseif IrmaUniformOfferDeclined = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разговор о форме', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'IrmaUniformOfferStart', $TalkReturnLoc
+            }
+        end
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkMenuReturn'
+    }
+---
+
+#GirlTalkBuildGretaStubMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkMenuReturn'
+    }
+---
+
+#GirlTalkBuildTownMainMenu
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TownTalkGirl = $GirlKey
+
+    if $TownTalkGirl = '':
+        $TownTalkGirl = $TalkGirl
+    end
+
+    if $TownTalkGirl = 'georgett' or $TownTalkGirl = 'greta':
+        killvar '$TownTalkGirl'
+        exit
+    end
+
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    if Friends[$TownTalkGirl] >= 3 or love[$TownTalkGirl] >= 2:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О городе', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TownTalkGirl, $TalkReturnLoc, 'town_life'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TownTalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if Friends[$TownTalkGirl] >= 12 or love[$TownTalkGirl] >= 10 or otkroven[$TownTalkGirl] >= 12:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TownTalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkMenuReturn'
+    }
+
+    killvar '$TownTalkGirl'
+---
+
+#GirlTalkPortTalkRun
+    gs 'GirlTalkPortTalkPrintText', 'intro'
+    gs 'GirlTalkPortTalkPrintText', 'context'
+
+    Friends['lizette'] += 1
+    trading += 1
+---
+
+#GirlTalkLizetteAmandaRun
+    gs 'GirlTalkLizetteAmandaPrintText', 'intro'
+    gs 'GirlTalkLizetteAmandaPrintText', 'context'
+
+    Friends['lizette'] += 1
+    AmandaLizaInfluence += 1
+
+    if AmandaLizaInfluence > 100:
+        AmandaLizaInfluence = 100
+    end
+
+    gs 'ClampGirlSocialStats', 'lizette'
+---
+
+#GirlTalkIrmaShopRun
+    gs 'GirlTalkIrmaShopPrintText', 'intro'
+    gs 'GirlTalkIrmaShopPrintText', 'context'
+
+    Friends['irma'] += 1
+    trading += 1
+---
+
+#GirlTalkTownLifeRun
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TownTalkGirl = $GirlKey
+
+    if $TownTalkGirl = '':
+        $TownTalkGirl = $TalkGirl
+    end
+
+    gs 'GirlTalkTownLifePrintText', $TownTalkGirl, 'intro'
+    gs 'GirlTalkTownLifePrintText', $TownTalkGirl, 'context'
+
+    Friends[$TownTalkGirl] += 1
+
+    killvar '$TownTalkGirl'
+---
+
+#GirlTalkPortTalkPrintText
+    gs 'GirlTalkPortTalkText', $ARGS[0]
+
+    if $GirlTalkPortTalkText <> '':
+        *p $GirlTalkPortTalkText
+    end
+
+    killvar '$GirlTalkPortTalkText'
+---
+
+#GirlTalkLizetteAmandaPrintText
+    gs 'GirlTalkLizetteAmandaText', $ARGS[0]
+
+    if $GirlTalkLizetteAmandaText <> '':
+        *p $GirlTalkLizetteAmandaText
+    end
+
+    killvar '$GirlTalkLizetteAmandaText'
+---
+
+#GirlTalkIrmaShopPrintText
+    gs 'GirlTalkIrmaShopText', $ARGS[0]
+
+    if $GirlTalkIrmaShopText <> '':
+        *p $GirlTalkIrmaShopText
+    end
+
+    killvar '$GirlTalkIrmaShopText'
+---
+
+#GirlTalkTownLifePrintText
+    gs 'GirlTalkTownLifeText', $ARGS[0], $ARGS[1]
+
+    if $GirlTalkTownLifeText <> '':
+        *p $GirlTalkTownLifeText
+    end
+
+    killvar '$GirlTalkTownLifeText'
+---

@@ -1,10 +1,27 @@
 ! ================================================
-! FILE: modules/images/show_portrait_to_panel.qsps
+! FILE: modules/core/show_image/show_portrait_to_panel.qsps
 ! Вывод портрета NPC в дополнительное описание
 ! Не очищает главное окно
-! Используется для боковой панели и осмотра NPC
+! Использует миниатюры images/common/ui/portraits/*_panel.png
 ! Важно: не использует $GirlName, чтобы не затирать вызывающие локаторы
 ! ================================================
+
+#PortraitPanelResolvePath
+    $PortraitResolveGirl = LCASE($ARGS[0])
+    $PortraitPanelPath = ''
+
+    if $PortraitResolveGirl = '':
+        exit
+    end
+
+    if $PortraitResolveGirl = 'amanda':
+        $PortraitPanelPath = 'images/common/ui/portraits/amanda_panel'
+    else:
+        $PortraitPanelPath = 'images/portraits/' + $PortraitResolveGirl
+    end
+
+    killvar '$PortraitResolveGirl'
+---
 
 #ShowPortraitToPanel
     $PortraitPanelGirl = LCASE($ARGS[0])
@@ -18,23 +35,27 @@
         $PortraitPanelSize = 'small'
     end
 
-    $PortraitPanelPath = 'images/portraits/' + $PortraitPanelGirl + '.webp'
+    gs 'PortraitPanelResolvePath', $PortraitPanelGirl
 
-    if $PortraitPanelSize = 'small':
-        $PortraitPanelStyle = 'max-width: 120px; max-height: 150px; border: 1px solid #555;'
-    elseif $PortraitPanelSize = 'medium':
-        $PortraitPanelStyle = 'max-width: 180px; max-height: 220px; border: 2px solid #444; border-radius: 6px;'
-    else:
-        $PortraitPanelStyle = 'max-width: 260px; max-height: 320px; border: 2px solid #333;'
+    if $PortraitPanelPath = '':
+        $PortraitPanelPath = 'images/portraits/' + $PortraitPanelGirl
     end
 
-    pl '<center><img src="' + $PortraitPanelPath + '" style="' + $PortraitPanelStyle + '"></center>'
+    if $PortraitPanelSize = 'small':
+        $PortraitPanelStyle = '96px'
+    elseif $PortraitPanelSize = 'medium':
+        $PortraitPanelStyle = '140px'
+    else:
+        $PortraitPanelStyle = '180px'
+    end
+
+    gs 'BuildImageFallbackTag', $PortraitPanelPath, $PortraitPanelStyle, 'png', 1
+    gs 'PrintImageHtml', $ImageFallbackTag, 'panel'
     pl ' '
 
     killvar '$PortraitPanelGirl'
     killvar '$PortraitPanelSize'
     killvar '$PortraitPanelPath'
     killvar '$PortraitPanelStyle'
+    killvar '$ImageFallbackTag'
 ---
-
-

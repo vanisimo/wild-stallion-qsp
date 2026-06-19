@@ -18,6 +18,10 @@
     end
 
     if $TalkReturnLoc = '':
+        $TalkReturnLoc = $CURLOC
+    end
+
+    if $TalkReturnLoc = '':
         $TalkReturnLoc = 'TavernMain'
     end
 
@@ -48,9 +52,11 @@
         exit
     end
 
+    gs 'GirlTalkSessionBegin'
+
     cls
 
-    gs 'ShowGirlSidebar', $TalkGirl
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
 
     *pl '══════════════════════════════════════════════'
     *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
@@ -60,6 +66,9 @@
     if LOC('ShowGirlTalkContextImage') = 1:
         gs 'ShowGirlTalkContextImage', $TalkGirl, 'large'
     end
+
+    gs 'GirlTalkShowNpcMenuAnchor', 'main'
+    *pl ' '
 
     gs 'GirlTalkIntroText', $TalkGirl
     gs 'UsefulTalkDebugPanel', $TalkGirl
@@ -71,16 +80,30 @@
     end
 
     *pl ' '
-    gs 'GirlTalkHasHallTopics', $TalkGirl
-    gs 'GirlTalkPersonalCheckAvailable', $TalkGirl
 
-    gs 'GirlTalkBuildMainMenu'
+    if $TalkGirl = 'amanda' or $TalkGirl = 'melissa':
+        gs 'DanceDressEscortCanStart', $TalkGirl
 
-    *p $RealName[$TalkGirl] + ': <a href="exec:gs ''Menu.Show'', ''GirlTalkMainMenu''">выбрать тему разговора</a>.'
-    *pl ' '
+        if DanceDressEscortCanStart = 1:
+            act '<b>Идти к Ирме вместе</b>', 'images/common/ui/actions/travel.png':
+                gt 'IrmaDanceDressEscortStart', $TalkGirl, $TalkReturnLoc
+            end
+        end
+
+        gs 'DanceDressFittingEscortCanStart', $TalkGirl
+
+        if DanceDressFittingEscortCanStart = 1:
+            act '<b>Примерка у Ирмы</b>', 'images/common/ui/actions/shop.png':
+                gt 'IrmaDanceDressEscortStart', $TalkGirl, $TalkReturnLoc
+            end
+        end
+
+        killvar 'DanceDressEscortCanStart'
+        killvar 'DanceDressFittingEscortCanStart'
+    end
 
     if GirlConflictLevel[$TalkGirl] > 0 and GirlConflictUntilDay[$TalkGirl] < day and GirlConflictAfterTalkLevel[$TalkGirl] < GirlConflictLevel[$TalkGirl]:
-        act 'Поговорить о недавней ссоре':
+        act '<b>Поговорить о недавней ссоре</b>':
             gt 'GirlConflictAfterTalk', $TalkGirl, $TalkReturnLoc
         end
     end
@@ -88,19 +111,19 @@
     ! ====================== АМАНДА / ЛЕГАРЕ: ПОСЛЕДСТВИЯ ТАНЦЕВ ======================
 
     if $TalkGirl = 'amanda' and AmandaLegareTalkReady = 1 and LOC('AmandaTalkAboutLegare') = 1:
-        act 'Поговорить о Легаре':
+        act '<b>Поговорить о Легаре</b>':
             gt 'AmandaTalkAboutLegare', $TalkReturnLoc
         end
     end
 
     if $TalkGirl = 'melissa' and MelissaLegareWarningSeen = 1 and MelissaLegarePrivateTalkDone = 0 and LOC('MelissaTalkAboutLegare') = 1:
-        act 'Поговорить о предупреждении насчёт Легаре':
+        act '<b>Поговорить о предупреждении насчёт Легаре</b>':
             gt 'MelissaTalkAboutLegare', $TalkReturnLoc
         end
     end
 
     if $TalkGirl = 'clarissa' and ClarissaTalkAboutAmandaReady = 1 and ClarissaTalkAboutAmandaDone = 0 and LOC('ClarissaTalkAboutLegareAmanda') = 1:
-        act 'Поговорить о Легаре и Аманде':
+        act '<b>Поговорить о Легаре и Аманде</b>':
             gt 'ClarissaTalkAboutLegareAmanda', $TalkReturnLoc
         end
     end
@@ -111,20 +134,20 @@
         gs 'AmandaLegarePrivateAftermathCanTalk'
 
         if AmandaLegarePrivateAftermathCanTalk = 1:
-            act 'Спросить о разговоре с Легаре':
+            act '<b>Спросить о разговоре с Легаре</b>':
                 gt 'AmandaLegarePrivateAftermath', $TalkReturnLoc
             end
         end
     end
 
     if $TalkGirl = 'melissa' and Fact_AmandaLegarePrivateTalk = 1 and MelissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegarePrivate') = 1:
-        act 'Поговорить об Аманде и Легаре':
+        act '<b>Поговорить об Аманде и Легаре</b>':
             gt 'MelissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
         end
     end
 
     if $TalkGirl = 'clarissa' and Fact_AmandaLegarePrivateTalk = 1 and ClarissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegarePrivate') = 1:
-        act 'Поговорить о личном разговоре Легаре с Амандой':
+        act '<b>Поговорить о личном разговоре Легаре с Амандой</b>':
             gt 'ClarissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
         end
     end
@@ -135,20 +158,20 @@
         gs 'AmandaLegareOutsideAftermathCanTalk'
 
         if AmandaLegareOutsideAftermathCanTalk = 1:
-            act 'Поговорить о выходе к Легаре':
+            act '<b>Поговорить о выходе к Легаре</b>':
                 gt 'AmandaLegareOutsideAftermath', $TalkReturnLoc
             end
         end
     end
 
     if $TalkGirl = 'melissa' and MelissaAmandaLegareOutsideTalkReady = 1 and MelissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareOutside') = 1:
-        act 'Поговорить о выходе Аманды из трактира':
+        act '<b>Поговорить о выходе Аманды из трактира</b>':
             gt 'MelissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
         end
     end
 
     if $TalkGirl = 'clarissa' and ClarissaAmandaLegareOutsideTalkReady = 1 and ClarissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareOutside') = 1:
-        act 'Поговорить о том, что Легаре искал Аманду':
+        act '<b>Поговорить о том, что Легаре искал Аманду</b>':
             gt 'ClarissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
         end
     end
@@ -157,7 +180,7 @@
         gs 'MelissaFirstPathChoiceCanStart'
 
         if MelissaFirstPathChoiceCanStart = 1:
-            act 'Поговорить о менестреле и ваших отношениях':
+            act '<b>Поговорить о менестреле и ваших отношениях</b>':
                 gt 'MelissaFirstPathChoiceStart', $TalkReturnLoc
             end
         end
@@ -167,7 +190,7 @@
         gs 'MelissaProhibitMinstrelTalkCanOffer'
 
         if MelissaProhibitMinstrelTalkCanOffer = 1:
-            act 'Поговорить о встречах с менестрелем':
+            act '<b>Поговорить о встречах с менестрелем</b>':
                 gt 'MelissaProhibitMinstrelTalk', $TalkReturnLoc
             end
         end
@@ -177,7 +200,7 @@
         gs 'AmandaPathChoiceCanStart'
 
         if AmandaPathChoiceCanStart = 1:
-            act 'Поговорить о Легаре и ваших отношениях':
+            act '<b>Поговорить о Легаре и ваших отношениях</b>':
                 gt 'AmandaPathChoiceStart', $TalkReturnLoc
             end
         end
@@ -189,20 +212,20 @@
         gs 'AmandaLegareMajorAftermathCanTalk'
 
         if AmandaLegareMajorAftermathCanTalk = 1:
-            act 'Поговорить о том, что случилось с Легаре':
+            act '<b>Поговорить о том, что случилось с Легаре</b>':
                 gt 'AmandaLegareMajorAftermath', $TalkReturnLoc
             end
         end
     end
 
     if $TalkGirl = 'melissa' and MelissaAmandaLegareMajorRiskTalkReady = 1 and MelissaAmandaLegareMajorRiskDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareMajor') = 1:
-        act 'Поговорить о пропаже Аманды':
+        act '<b>Поговорить о пропаже Аманды</b>':
             gt 'MelissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
         end
     end
 
     if $TalkGirl = 'clarissa' and ClarissaAmandaLegareMajorRiskTalkReady = 1 and ClarissaAmandaLegareMajorRiskDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareMajor') = 1:
-        act 'Поговорить с Клариссой о Легаре':
+        act '<b>Поговорить с Клариссой о Легаре</b>':
             gt 'ClarissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
         end
     end
@@ -210,13 +233,13 @@
        ! ====================== КЛАРИССА: ОБХОДНЫЕ ПОСТАВКИ ======================
 
     if $TalkGirl = 'clarissa' and ClarissaSupplyTalkReady = 1 and LOC('ClarissaTalkAboutSupplyRoute') = 1:
-        act 'Поговорить о тайных поставках':
+        act '<b>Поговорить о тайных поставках</b>':
             gt 'ClarissaTalkAboutSupplyRoute', $TalkReturnLoc
         end
     end
 
     if $TalkGirl = 'melissa' and MelissaLegareSupplyTalkReady = 1 and MelissaLegareSupplyTalkDone = 0 and LOC('MelissaTalkAboutLegareSupply') = 1:
-        act 'Поговорить о проблемах с поставками':
+        act '<b>Поговорить о проблемах с поставками</b>':
             gt 'MelissaTalkAboutLegareSupply', $TalkReturnLoc
         end
     end
@@ -225,20 +248,20 @@
         gs 'MarkClarissaSupplyAftermathReady'
 
         if ClarissaSupplyAftermathReady = 1 and LOC('ClarissaTalkAboutSupplyAftermath') = 1:
-            act 'Поговорить о риске тайных поставок':
+            act '<b>Поговорить о риске тайных поставок</b>':
                 gt 'ClarissaTalkAboutSupplyAftermath', $TalkReturnLoc
             end
         end
     end
 
     if $TalkGirl = 'clarissa' and ClarissaLegareSuspicionTalkReady = 1 and ClarissaLegareSuspicionTalkDone = 0 and LOC('ClarissaTalkAboutLegareSuspicion') = 1:
-        act 'Поговорить о подозрениях Легаре':
+        act '<b>Поговорить о подозрениях Легаре</b>':
             gt 'ClarissaTalkAboutLegareSuspicion', $TalkReturnLoc
         end
     end
 
     if $TalkGirl = 'melissa' and MelissaLegareSuspicionTalkReady = 1 and MelissaLegareSuspicionTalkDone = 0 and LOC('MelissaTalkAboutLegareSuspicion') = 1:
-        act 'Поговорить о риске для Клариссы':
+        act '<b>Поговорить о риске для Клариссы</b>':
             gt 'MelissaTalkAboutLegareSuspicion', $TalkReturnLoc
         end
     end
@@ -247,16 +270,111 @@
         gs 'SandraBirthRevealCanTalk'
 
         if SandraBirthRevealCanTalk = 1:
-            act 'Поговорить о том, что случилось в зале':
+            act '<b>Поговорить о том, что случилось в зале</b>':
                 gt 'SandraTalkAboutBirthSecret', $TalkReturnLoc
             end
         end
     end
 
-    act 'Вернуться':
-        gt $TalkReturnLoc
+    gs 'GirlTalkAddReturnButton'
+
+---
+
+! ================================================
+! FILE: modules/actions/girl_talk.qsps
+! Подготовка меню тем (лавки, порт, обзор NPC)
+! ================================================
+
+#GirlTalkCheckNpcLinkAvailable
+    GirlTalkMenuReady = 0
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkGirl = '':
+        killvar '$TalkGirl'
+        killvar '$TalkReturnLoc'
+        exit
     end
 
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = $CURLOC
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($TalkReturnLoc) = 0:
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'MenuGirlCalcConditions', $TalkGirl, $TalkReturnLoc
+
+    if MenuCanTalk = 0:
+        exit
+    end
+
+    GirlTalkMenuReady = 1
+---
+
+#GirlTalkOpenNpcMenu
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkOpenMenuLoc = $ARGS[1]
+    $TalkOpenReturnLoc = $ARGS[2]
+
+    if $TalkGirl = '':
+        exit
+    end
+
+    if $TalkOpenMenuLoc = '':
+        $TalkOpenMenuLoc = $CURLOC
+    end
+
+    if $TalkOpenReturnLoc = '':
+        $TalkOpenReturnLoc = $TalkOpenMenuLoc
+    end
+
+    if LOC($TalkOpenReturnLoc) = 0:
+        $TalkOpenReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlTalkCheckNpcLinkAvailable', $TalkGirl, $TalkOpenMenuLoc
+
+    if GirlTalkMenuReady = 0:
+        killvar '$TalkOpenMenuLoc'
+        killvar '$TalkOpenReturnLoc'
+        exit
+    end
+
+    $TalkReturnLoc = $TalkOpenReturnLoc
+    gs 'GirlTalkSessionBegin'
+    gs 'GirlTalkBuildTopicsMenu'
+    gs 'Menu.Show', 'GirlTalkMainMenu'
+
+    killvar 'GirlTalkMenuReady'
+    killvar '$TalkOpenMenuLoc'
+    killvar '$TalkOpenReturnLoc'
+---
+
+#GirlTalkPrepareForNpcLink
+    gs 'GirlTalkCheckNpcLinkAvailable', $ARGS[0], $ARGS[1]
+
+    if GirlTalkMenuReady = 0:
+        exit
+    end
+
+    gs 'GirlTalkSessionBegin'
+    gs 'GirlTalkBuildTopicsMenu'
+---
+
+#GirlTalkBuildTopicsMenu
+    gs 'GirlTalkHasHallTopics', $TalkGirl
+    gs 'GirlTalkPersonalCheckAvailable', $TalkGirl
+    gs 'GirlTalkBuildMainMenu'
 ---
 
 ! ================================================
@@ -270,28 +388,83 @@
         exit
     end
 
+    if $TalkGirl = 'inga' and LOC('GirlTalkBuildIngaMainMenu') = 1:
+        gs 'GirlTalkBuildIngaMainMenu'
+        exit
+    end
+
+    if $TalkGirl = 'clarissa' and LOC('GirlTalkBuildClarissaMainMenu') = 1:
+        gs 'GirlTalkBuildClarissaMainMenu'
+        exit
+    end
+
+    if $TalkGirl = 'lizette' and LOC('GirlTalkBuildLizetteMainMenu') = 1:
+        gs 'GirlTalkBuildLizetteMainMenu'
+        exit
+    end
+
+    if $TalkGirl = 'irma' and LOC('GirlTalkBuildIrmaMainMenu') = 1:
+        gs 'GirlTalkBuildIrmaMainMenu'
+        exit
+    end
+
+    if $TalkGirl = 'becky' and LOC('GirlTalkBuildBeckyMainMenu') = 1:
+        gs 'GirlTalkBuildBeckyMainMenu'
+        exit
+    end
+
+    if $TalkGirl = 'georgett' and LOC('GirlTalkBuildGeorgetteMainMenu') = 1:
+        gs 'GirlTalkBuildGeorgetteMainMenu'
+        exit
+    end
+
+    if $TalkGirl = 'greta':
+        gs 'GirlTalkBuildGretaStubMenu'
+        exit
+    end
+
+    if $TalkGirl <> 'amanda' and $TalkGirl <> 'melissa':
+        if LOC('GirlTalkBuildTownMainMenu') = 1:
+            gs 'GirlTalkBuildTownMainMenu', $TalkGirl
+            exit
+        end
+    end
+
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    gs 'Menu.Add', 'GirlTalkMainMenu', 'О делах трактира', ''
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О делах трактира', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'tavern'
     }
 
     if Friends[$TalkGirl] >= 3 or love[$TalkGirl] >= 2 or $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
-        gs 'Menu.Add', 'GirlTalkMainMenu', 'О семье', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О семье', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'family'
         }
     end
 
-    gs 'Menu.Add', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    if LOC('DanceDressTalkCanStart') = 1:
+        gs 'DanceDressTalkCanStart', $TalkGirl
+
+        if DanceDressTalkCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Платье для танцев', 'gift'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'dance_dress'
+            }
+        end
+
+        killvar 'DanceDressTalkCanStart'
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
     }
 
     if GirlTalkHallTopicsAvailable = 1:
-        gs 'Menu.Add', 'GirlTalkMainMenu', 'О событиях в зале', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О событиях в зале', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gs 'GirlTalkBuildHallTopicsMenu'
             gs 'Menu.Show', 'GirlTalkHallTopicsMenu'
@@ -299,7 +472,7 @@
     end
 
     if GirlTalkPersonalAvailable = 1:
-        gs 'Menu.Add', 'GirlTalkMainMenu', 'Личный разговор', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Личный разговор', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gs 'GirlTalkPersonalBuildMenu'
             gs 'Menu.Show', 'GirlTalkPersonalMenu'
@@ -310,7 +483,7 @@
         gs 'SandraStaffGirlsReactionCanTalk', $TalkGirl
 
         if SandraStaffGirlsReactionCanTalk = 1:
-            gs 'Menu.Add', 'GirlTalkMainMenu', 'После помощниц матери', ''
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'После помощниц матери', ''
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
                 gt 'SandraStaffGirlsReactionTalk', $TalkGirl, $TalkReturnLoc
             }
@@ -321,7 +494,7 @@
         gs 'AmandaCleaningReliefCanTalk'
 
         if AmandaCleaningReliefCanTalk = 1:
-            gs 'Menu.Add', 'GirlTalkMainMenu', 'Руки портятся от воды', ''
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Руки портятся от воды', ''
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
                 gt 'AmandaCleaningReliefTalk', $TalkReturnLoc
             }
@@ -329,15 +502,15 @@
     end
 
     if Friends[$TalkGirl] >= 12 or love[$TalkGirl] >= 10 or otkroven[$TalkGirl] >= 12:
-        gs 'Menu.Add', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
         }
     end
 
-    gs 'Menu.Add', 'GirlTalkMainMenu', 'Вернуться', ''
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt $TalkReturnLoc
+        gt 'GirlTalkMenuReturn'
     }
 ---
 
@@ -431,9 +604,7 @@
     gs 'GirlTalkBuildHallTopicsMenu'
     gs 'Menu.Show', 'GirlTalkHallTopicsMenu'
 
-    act 'Вернуться к выбору тем':
-        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
-    end
+    gs 'GirlTalkAddReturnButton', 'Вернуться к выбору тем', 'topics'
 ---
 
 #GirlTalkBuildHallTopicsMenu
@@ -442,7 +613,7 @@
     GirlTalkHallTopicAdded = 0
 
     if GirlTalkHallTopicAdded = 0 and $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
-        gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Что случилось в зале', ''
+        gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Что случилось в зале', ''
         gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
             gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_event'
         }
@@ -452,7 +623,7 @@
     if GirlTalkHallTopicAdded = 0 and LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
         gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
         if GirlPolicyResponseTalkAvailable = 1:
-            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Как она выполнила правило', ''
+            gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Как она выполнила правило', ''
             gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
                 gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_policy'
             }
@@ -463,7 +634,7 @@
     if GirlTalkHallTopicAdded = 0 and LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
         gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
         if HallChoiceFamilyTalkAvailable = 1:
-            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Моё решение в зале', ''
+            gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Моё решение в зале', ''
             gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
                 gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_choice'
             }
@@ -474,7 +645,7 @@
     if GirlTalkHallTopicAdded = 0 and LOC('HallFamilyReactionCanDiscuss') = 1:
         gs 'HallFamilyReactionCanDiscuss', $TalkGirl
         if HallFamilyReactionAvailable = 1:
-            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Реакция семьи', ''
+            gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Реакция семьи', ''
             gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
                 gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_family'
             }
@@ -485,7 +656,7 @@
     if GirlTalkHallTopicAdded = 0 and LOC('HallRecentTalkCanDiscuss') = 1:
         gs 'HallRecentTalkCanDiscuss', $TalkGirl
         if HallRecentTalkAvailable = 1:
-            gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Недавний случай в зале', ''
+            gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Недавний случай в зале', ''
             gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
                 gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_recent'
             }
@@ -493,7 +664,7 @@
         end
     end
 
-    gs 'Menu.Add', 'GirlTalkHallTopicsMenu', 'Вернуться', ''
+    gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Вернуться', 'return'
     gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
         gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
     }
@@ -560,7 +731,15 @@
         exit
     end
 
-    if $TalkIntroGirl = 'sandra':
+    if $TalkIntroGirl = 'georgett':
+        if $GirlLocation[$TalkIntroGirl] = 'Port':
+            *p 'Жоржетта стоит у причала так, будто весь порт — её гостиная. Она смотрит на вас с лёгкой насмешкой и материнской настороженностью сразу.'
+        elseif $GirlLocation[$TalkIntroGirl] = 'Church':
+            *p 'В церкви Жоржетта держится смиреннее, чем ночью у воды. Но в уголках губ всё ещё читается та же портовая ирония.'
+        else:
+            *p 'Жоржетта готова поговорить — легко, насмешливо, но внимательно оценивая, зачем вы пришли.'
+        end
+    elseif $TalkIntroGirl = 'sandra':
         if $GirlLocation[$TalkIntroGirl] = 'Kitchen':
             *p 'Сандра отрывается от кухонных дел, вытирает руки и смотрит на вас как на сына, которому доверяют дом, но которого всё ещё проверяют.'
         elseif $GirlLocation[$TalkIntroGirl] = 'SandraRoom':
@@ -694,8 +873,12 @@
 
     gs 'EnsureGirlData', $TalkClosedGirl
 
+    gs 'GirlTalkSessionBegin'
+    $TalkGirl = $TalkClosedGirl
+    $TalkReturnLoc = $TalkClosedReturnLoc
+
     cls
-    gs 'ShowGirlSidebar', $TalkClosedGirl
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkClosedGirl
 
     *pl '══════════════════════════════════════════════'
     *pl ' РАЗГОВОР: ' + $RealName[$TalkClosedGirl]
@@ -719,7 +902,7 @@
         *p 'Сейчас можно попробовать подарок или дать ей время остыть.'
 
         if LOC('MenuGirlGift') = 1:
-            act 'Подарить подарок':
+            act '<b>Подарить подарок</b>':
                 gt 'MenuGirlGift', $TalkClosedGirl, $TalkClosedReturnLoc
             end
         end
@@ -727,9 +910,10 @@
 
     *pl ' '
 
-    act 'Вернуться':
-        gt $TalkClosedReturnLoc
-    end
+    gs 'GirlTalkAddReturnButton'
+
+    killvar '$TalkClosedGirl'
+    killvar '$TalkClosedReturnLoc'
 ---
 
 ! ================================================
@@ -760,6 +944,8 @@
         $TalkReturnLoc = 'TavernMain'
     end
 
+    gs 'GirlTalkSessionBegin'
+
     gs 'EnsureGirlData', $TalkGirl
     gs 'MenuGirlCalcConditions', $TalkGirl, $TalkReturnLoc
 
@@ -789,6 +975,17 @@
         exit
     end
 
+    if $TalkTopic = 'dance_dress':
+        gs 'GirlTalkTopicIsUseful', $TalkTopic
+        gs 'UsefulTalkCheck', $TalkGirl, $TalkTopic
+
+        if UsefulTalkResult = 0:
+            gt 'GirlTalkBlockedUsefulTopic', $TalkGirl, $TalkReturnLoc
+        end
+
+        gt 'GirlTalkDanceDressStart', $TalkGirl, $TalkReturnLoc
+    end
+
     ! ====================== ПРОВЕРКА ЛИМИТА ПОЛЕЗНЫХ РАЗГОВОРОВ ======================
 
     gs 'GirlTalkTopicIsUseful', $TalkTopic
@@ -812,7 +1009,7 @@
 
     cls
 
-    gs 'ShowGirlSidebar', $TalkGirl
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
 
     *pl '══════════════════════════════════════════════'
     *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
@@ -823,6 +1020,9 @@
         gs 'ShowGirlTalkContextImage', $TalkGirl, 'large', $TalkTopic
     end
 
+    gs 'GirlTalkShowNpcMenuAnchor', 'main'
+    *pl ' '
+
     if $TalkTopic = 'smalltalk':
         gs 'SmallTalkNpc', $TalkGirl
 
@@ -831,6 +1031,48 @@
 
     elseif $TalkTopic = 'family':
         gs 'GirlTalkFamilyRun', $TalkGirl
+
+    elseif $TalkTopic = 'shop':
+        gs 'GirlTalkShopRun', $TalkGirl
+
+    elseif $TalkTopic = 'becky_family':
+        gs 'GirlTalkBeckyFamilyRun', $TalkGirl
+
+    elseif $TalkTopic = 'wine_shop':
+        gs 'GirlTalkWineShopRun', $TalkGirl
+
+    elseif $TalkTopic = 'clarissa_home':
+        gs 'GirlTalkClarissaHomeRun', $TalkGirl
+
+    elseif $TalkTopic = 'port_talk':
+        gs 'GirlTalkPortTalkRun', $TalkGirl
+
+    elseif $TalkTopic = 'lizette_amanda':
+        gs 'GirlTalkLizetteAmandaRun', $TalkGirl
+
+    elseif $TalkTopic = 'irma_shop':
+        gs 'GirlTalkIrmaShopRun', $TalkGirl
+
+    elseif $TalkTopic = 'town_life':
+        gs 'GirlTalkTownLifeRun', $TalkGirl
+
+    elseif $TalkTopic = 'georgette_port':
+        gs 'GirlTalkGeorgettePortRun', $TalkGirl
+
+    elseif $TalkTopic = 'georgette_bio':
+        gs 'GirlTalkGeorgetteBioRun', $TalkGirl
+
+    elseif $TalkTopic = 'georgette_lizette':
+        gs 'GirlTalkGeorgetteLizetteRun', $TalkGirl
+
+    elseif $TalkTopic = 'georgette_clients':
+        gs 'GirlTalkGeorgetteClientsRun', $TalkGirl
+
+    elseif $TalkTopic = 'georgette_church':
+        gs 'GirlTalkGeorgetteChurchRun', $TalkGirl
+
+    elseif $TalkTopic = 'georgette_eddie':
+        gs 'GirlTalkGeorgetteEddieRun', $TalkGirl
 
     elseif $TalkTopic = 'daughters':
         gs 'GirlTalkDaughtersRun', $TalkGirl
@@ -871,13 +1113,7 @@
 
     *pl ' '
 
-    act 'Поговорить ещё':
-        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
-    end
-
-    act 'Вернуться':
-        gt $TalkReturnLoc
-    end
+    gs 'GirlTalkAddReturnButton'
 
     killvar '$TalkTopic'
     killvar 'TalkRoll'
@@ -927,23 +1163,21 @@
 
     *pl ' '
 
-    act 'Признать, что был неправ':
+    act '<b>Признать, что был неправ</b>':
         gt 'GirlConflictAfterTalkResult', $ConflictTalkGirl, $TalkReturnLoc, 'apology'
     end
 
-    act 'Объяснить, что защищал её':
+    act '<b>Объяснить, что защищал её</b>':
         gt 'GirlConflictAfterTalkResult', $ConflictTalkGirl, $TalkReturnLoc, 'protect'
     end
 
     if GirlWorkPolicy[$ConflictTalkGirl] = 3 or GirlConflictLevel[$ConflictTalkGirl] >= 2:
-        act 'Сказать, что в трактире нужны правила':
+        act '<b>Сказать, что в трактире нужны правила</b>':
             gt 'GirlConflictAfterTalkResult', $ConflictTalkGirl, $TalkReturnLoc, 'rules'
         end
     end
 
-    act 'Вернуться':
-        gt $TalkReturnLoc
-    end
+    gs 'GirlTalkAddReturnButton'
 ---
 
 #GirlConflictAfterTalkIntroText
@@ -1073,9 +1307,7 @@
 
     *pl ' '
 
-    act 'Вернуться':
-        gt $TalkReturnLoc
-    end
+    gs 'GirlTalkAddReturnButton'
 
     killvar '$ConflictTalkGirl'
     killvar '$ConflictTalkChoice'

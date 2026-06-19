@@ -1,0 +1,149 @@
+! ================================================
+! FILE: modules/debug/debug_port_church_arc.qsps
+! MODULE: debug
+! Отладка арки Порт → Жоржетта → Церковь (этапы A–C)
+! ================================================
+
+#DebugPortChurchArcPanel
+    if debug = 0:
+        clr
+        pl 'DEBUG отключён.'
+        exit
+    end
+
+    gs 'PanelDebugToolsHeader'
+
+    pl 'DEBUG: ПОРТ → ЖОРЖЕТТА → ЦЕРКОВЬ (A–C)'
+    pl 'День ' + STR(day) + ', неделя ' + STR(week) + ', время ' + STR(time)
+    pl ' '
+
+    pl '--- Witness / Лизетта ---'
+    pl 'PortMeetWitnessed: ' + STR(PortMeetWitnessed)
+    pl 'AmandaMetLizette: ' + STR(AmandaMetLizette)
+    pl 'LizetteKnown: ' + STR(LizetteKnown)
+    pl 'AmandaAtPortShip: ' + STR(AmandaAtPortShip)
+    pl ' '
+
+    pl '--- Этап B ---'
+    pl 'GeorgetteSeekScheduled: ' + STR(GeorgetteSeekScheduled)
+    pl 'GeorgetteSeekStartDay: ' + STR(GeorgetteSeekStartDay)
+    pl 'GeorgetteSeekLizetteDone: ' + STR(GeorgetteSeekLizetteDone)
+    pl 'GeorgetteKnown: ' + STR(GeorgetteKnown)
+    pl 'GeorgettePortSexDone: ' + STR(GeorgettePortSexDone)
+    pl ' '
+
+    pl '--- Этап C ---'
+    pl 'GeorgetteChurchAloneTargetDay: ' + STR(GeorgetteChurchAloneTargetDay)
+    pl 'GeorgetteChurchAlone: ' + STR(GeorgetteChurchAlone)
+    pl 'GeorgetteFuckInChurch: ' + STR(GeorgetteFuckInChurch)
+    pl 'Friends[georgett]: ' + STR(Friends['georgett'])
+    pl 'HadSex[georgett]: ' + STR(HadSex['georgett'])
+    pl ' '
+
+    pl '--- Быстрые пресеты ---'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetShipWednesday''">Среда: корабль, до witness (A)</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterWitness''">После witness (B ждёт next_day)</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetSeekToday''">B сегодня: ивент в порту</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterB''">После B: ночной порт</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayC''">Воскресенье C1: служба + Жоржетта</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterC''">После C: секс в соборе был</a>'
+    pl ' '
+
+    pl '--- Переходы ---'
+    pl '<a href="exec:gt ''Port''">Порт</a> | <a href="exec:gt ''Church''">Церковь</a> | <a href="exec:gt ''PortCapitalShipMenu'',''Port''">Корабль</a>'
+    pl '<a href="exec:gt ''ChurchSundayServiceMenu''">Меню службы (если вс/утро)</a>'
+    pl ' '
+
+    gs 'PanelDebugToolsBack'
+---
+
+#DebugPortChurchArcPresetShipWednesday
+    week = 3
+    time = 2
+    PortMeetWitnessed = 0
+    AmandaMetLizette = 0
+    LizetteKnown = 0
+    GeorgetteKnown = 0
+    GeorgetteSeekScheduled = 0
+    GeorgetteSeekStartDay = 0
+    GeorgetteSeekLizetteDone = 0
+    GeorgettePortSexDone = 0
+    GeorgetteChurchAlone = 0
+    GeorgetteChurchAloneTargetDay = 0
+    GeorgetteFuckInChurch = 0
+    gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetAfterWitness
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    LizetteVisitStage = 1
+    GeorgetteSeekScheduled = 0
+    GeorgetteSeekStartDay = 0
+    GeorgetteSeekLizetteDone = 0
+    gs 'GeorgetteSeekScheduleNextDay'
+    gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetSeekToday
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    GeorgetteSeekScheduled = 1
+    GeorgetteSeekStartDay = day
+    GeorgetteSeekLizetteDone = 0
+    GeorgetteKnown = 0
+    time = 2
+    gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetAfterB
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    GeorgetteKnown = 1
+    GeorgetteSeekLizetteDone = 1
+    LizetteMentionedByGeorgette = 1
+    GeorgettePortSexDone = 0
+    GeorgetteChurchAlone = 0
+    GeorgetteChurchAloneTargetDay = 0
+    Friends['georgett'] = 14
+    otkroven['georgett'] = 12
+    time = 5
+    gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetSundayC
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    GeorgetteKnown = 1
+    GeorgetteSeekLizetteDone = 1
+    GeorgettePortSexDone = 1
+    GeorgetteChurchAlone = 1
+    GeorgetteChurchAloneTargetDay = day
+    GeorgetteFuckInChurch = 0
+    Friends['georgett'] = 22
+    otkroven['georgett'] = 18
+    HadSex['georgett'] = 1
+    IntimStage['georgett'] = 5
+    week = 7
+    time = 1
+    if money < 30:
+        money = 30
+    end
+    gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetAfterC
+    gs 'DebugPortChurchArcPresetSundayC'
+    GeorgetteFuckInChurch = 1
+    TavernScandal += 1
+    gs 'DebugPortChurchArcPanel'
+---

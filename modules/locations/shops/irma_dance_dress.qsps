@@ -1,0 +1,531 @@
+! ================================================
+! FILE: modules/locations/shops/irma_dance_dress.qsps
+! Платья для пятничных танцев: диалог → заказ с девушкой → примерка
+! ================================================
+
+#DanceDressNormalizeGirl
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $DanceDressGirlKey = $GirlKey
+    else:
+        $DanceDressGirlKey = LCASE($ARGS[0])
+    end
+
+    if $DanceDressGirlKey <> 'amanda' and $DanceDressGirlKey <> 'melissa':
+        $DanceDressGirlKey = ''
+    end
+---
+
+#DanceDressEnsureName
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressNameGirl = $DanceDressGirlKey
+
+    if $DanceDressNameGirl = '':
+        exit
+    end
+
+    if $RealName[$DanceDressNameGirl] = '':
+        if $DanceDressNameGirl = 'amanda':
+            $RealName[$DanceDressNameGirl] = 'Аманда'
+        elseif $DanceDressNameGirl = 'melissa':
+            $RealName[$DanceDressNameGirl] = 'Мелисса'
+        end
+    end
+
+    killvar '$DanceDressNameGirl'
+---
+
+#DanceDressShopIsOpen
+    DanceDressShopOpen = 1
+
+    if time = 5:
+        DanceDressShopOpen = 0
+    elseif week = 5 and time = 4:
+        DanceDressShopOpen = 0
+    elseif week = 7:
+        DanceDressShopOpen = 0
+    end
+---
+
+#DanceDressTalkCanStart
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressTalkGirl = $DanceDressGirlKey
+    DanceDressTalkCanStart = 0
+
+    if $DanceDressTalkGirl = '':
+        killvar '$DanceDressTalkGirl'
+        exit
+    end
+
+    if Friends[$DanceDressTalkGirl] <= 8:
+        killvar '$DanceDressTalkGirl'
+        exit
+    end
+
+    if $DanceDressTalkGirl = 'amanda':
+        if AmandaDanceDressReady = 1 or AmandaDanceDressSelfBought = 1 or AmandaDanceDressAgreed = 1 or AmandaDanceDressOrdered = 1:
+            killvar '$DanceDressTalkGirl'
+            exit
+        end
+    elseif $DanceDressTalkGirl = 'melissa':
+        if MelissaDanceDressReady = 1 or MelissaDanceDressSelfBought = 1 or MelissaDanceDressAgreed = 1 or MelissaDanceDressOrdered = 1:
+            killvar '$DanceDressTalkGirl'
+            exit
+        end
+    end
+
+    DanceDressTalkCanStart = 1
+    killvar '$DanceDressTalkGirl'
+---
+
+#DanceDressEscortCanStart
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressEscortGirl = $DanceDressGirlKey
+    DanceDressEscortCanStart = 0
+
+    if $DanceDressEscortGirl = '':
+        killvar '$DanceDressEscortGirl'
+        exit
+    end
+
+    gs 'DanceDressShopIsOpen'
+
+    if DanceDressShopOpen = 0:
+        killvar '$DanceDressEscortGirl'
+        exit
+    end
+
+    if $DanceDressEscortGirl = 'amanda':
+        if AmandaDanceDressAgreed = 1 and AmandaDanceDressOrdered = 0 and AmandaDanceDressReady = 0:
+            DanceDressEscortCanStart = 1
+        end
+    elseif $DanceDressEscortGirl = 'melissa':
+        if MelissaDanceDressAgreed = 1 and MelissaDanceDressOrdered = 0 and MelissaDanceDressReady = 0:
+            DanceDressEscortCanStart = 1
+        end
+    end
+
+    killvar '$DanceDressEscortGirl'
+---
+
+#DanceDressFittingEscortCanStart
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressFittingGirl = $DanceDressGirlKey
+    DanceDressFittingEscortCanStart = 0
+
+    if $DanceDressFittingGirl = '':
+        killvar '$DanceDressFittingGirl'
+        exit
+    end
+
+    gs 'DanceDressShopIsOpen'
+
+    if DanceDressShopOpen = 0:
+        killvar '$DanceDressFittingGirl'
+        exit
+    end
+
+    if $DanceDressFittingGirl = 'amanda':
+        if AmandaDanceDressFittingDue = 1 and AmandaDanceDressReady = 0:
+            DanceDressFittingEscortCanStart = 1
+        end
+    elseif $DanceDressFittingGirl = 'melissa':
+        if MelissaDanceDressFittingDue = 1 and MelissaDanceDressReady = 0:
+            DanceDressFittingEscortCanStart = 1
+        end
+    end
+
+    killvar '$DanceDressFittingGirl'
+---
+
+#GirlTalkDanceDressStart
+    *clr
+    clr
+    cla
+
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $TalkGirl = $DanceDressGirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkGirl = '':
+        gt $TalkReturnLoc
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'DanceDressEnsureName', $TalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ПЛАТЬЕ ДЛЯ ТАНЦЕВ — ' + UCASE($RealName[$TalkGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $TalkGirl = 'amanda':
+        gs 'DanceDressPrintText', 'talk_amanda_intro', $TalkGirl
+    else:
+        gs 'DanceDressPrintText', 'talk_melissa_intro', $TalkGirl
+    end
+
+    *pl ' '
+
+    act '<b>Предложить сходить к Ирме вместе</b>', 'images/common/ui/actions/shop.png':
+        gt 'GirlTalkDanceDressAgree', $TalkGirl, $TalkReturnLoc
+    end
+
+    act '<b>Сказать, что она сама разберётся</b>', 'images/common/ui/actions/talk.png':
+        gt 'GirlTalkDanceDressLater', $TalkGirl, $TalkReturnLoc
+    end
+
+    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
+---
+
+#GirlTalkDanceDressAgree
+    *clr
+    clr
+    cla
+
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $TalkGirl = $DanceDressGirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    gs 'DanceDressEnsureName', $TalkGirl
+
+    *pl ' '
+    gs 'PrintTitleLine', ' ПЛАТЬЕ ДЛЯ ТАНЦЕВ'
+    *pl ' '
+
+    if $TalkGirl = 'amanda':
+        AmandaDanceDressAgreed = 1
+        gs 'DanceDressPrintText', 'talk_amanda_agree', $TalkGirl
+    elseif $TalkGirl = 'melissa':
+        MelissaDanceDressAgreed = 1
+        gs 'DanceDressPrintText', 'talk_melissa_agree', $TalkGirl
+    end
+
+    gs 'UsefulTalkRegister', $TalkGirl, 'dance_dress'
+    Friends[$TalkGirl] += 1
+    otkroven[$TalkGirl] += 1
+
+    *pl ' '
+
+    act '<b>Идти к Ирме вместе</b>', 'images/common/ui/actions/travel.png':
+        gt 'IrmaDanceDressEscortStart', $TalkGirl, $TalkReturnLoc
+    end
+
+    act '<b>Поговорить ещё</b>', 'images/common/ui/actions/talk.png':
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
+
+    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        gt $TalkReturnLoc
+    end
+---
+
+#GirlTalkDanceDressLater
+    *clr
+    clr
+    cla
+
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $TalkGirl = $DanceDressGirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    gs 'DanceDressEnsureName', $TalkGirl
+
+    *pl ' '
+    gs 'PrintTitleLine', ' ПЛАТЬЕ ДЛЯ ТАНЦЕВ'
+    *pl ' '
+
+    if $TalkGirl = 'amanda':
+        gs 'DanceDressPrintText', 'talk_amanda_later', $TalkGirl
+    elseif $TalkGirl = 'melissa':
+        gs 'DanceDressPrintText', 'talk_melissa_later', $TalkGirl
+    end
+
+    gs 'UsefulTalkRegister', $TalkGirl, 'dance_dress'
+
+    *pl ' '
+
+    act '<b>Поговорить ещё</b>', 'images/common/ui/actions/talk.png':
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
+
+    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        gt $TalkReturnLoc
+    end
+---
+
+#IrmaDanceDressEscortStart
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressEscortGirl = $DanceDressGirlKey
+    $DanceDressEscortReturn = $ARGS[1]
+
+    if $DanceDressEscortGirl = '':
+        if $DanceDressEscortReturn <> '':
+            gt $DanceDressEscortReturn
+        end
+        gt 'CraftsmenQuarter'
+    end
+
+    gs 'DanceDressShopIsOpen'
+
+    if DanceDressShopOpen = 0:
+        gs 'PrintMainP', 'Сейчас лавка Ирмы закрыта. Загляните в другое время дня.'
+        gt $DanceDressEscortReturn
+    end
+
+    $IrmaDanceDressCompanion = $DanceDressEscortGirl
+    killvar '$DanceDressEscortGirl'
+    killvar '$DanceDressEscortReturn'
+
+    gt 'IrmaShop', 'CraftsmenQuarter'
+---
+
+#IrmaDanceDressHandleVisit
+    $DanceDressVisitGirl = $IrmaDanceDressCompanion
+
+    if $DanceDressVisitGirl = 'amanda' or $DanceDressVisitGirl = 'melissa':
+        if $DanceDressVisitGirl = 'amanda':
+            if AmandaDanceDressFittingDue = 1 and AmandaDanceDressReady = 0:
+                gt 'IrmaDanceDressFittingScene', 'amanda'
+            elseif AmandaDanceDressAgreed = 1 and AmandaDanceDressOrdered = 0:
+                gt 'IrmaDanceDressOrderScene', 'amanda'
+            end
+        elseif $DanceDressVisitGirl = 'melissa':
+            if MelissaDanceDressFittingDue = 1 and MelissaDanceDressReady = 0:
+                gt 'IrmaDanceDressFittingScene', 'melissa'
+            elseif MelissaDanceDressAgreed = 1 and MelissaDanceDressOrdered = 0:
+                gt 'IrmaDanceDressOrderScene', 'melissa'
+            end
+        end
+
+        killvar '$DanceDressVisitGirl'
+        exit
+    end
+
+    if AmandaDanceDressAgreed = 1 and AmandaDanceDressOrdered = 0 and AmandaDanceDressReady = 0:
+        gs 'DanceDressPrintText', 'blocked_no_girl', 'amanda'
+        *pl ' '
+    end
+
+    if MelissaDanceDressAgreed = 1 and MelissaDanceDressOrdered = 0 and MelissaDanceDressReady = 0:
+        gs 'DanceDressPrintText', 'blocked_no_girl', 'melissa'
+        *pl ' '
+    end
+
+    if AmandaDanceDressFittingDue = 1 and AmandaDanceDressReady = 0:
+        gs 'PrintMainP', 'Ирма ждёт Аманду на примерку. Без неё платье не отдаст.'
+        *pl ' '
+    end
+
+    if MelissaDanceDressFittingDue = 1 and MelissaDanceDressReady = 0:
+        gs 'PrintMainP', 'Ирма ждёт Мелиссу на примерку. Одному вам отдавать нечего.'
+        *pl ' '
+    end
+
+    killvar '$DanceDressVisitGirl'
+---
+
+#IrmaDanceDressBlockedNoGirl
+    *clr
+    clr
+    cla
+
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressBlockedGirl = $DanceDressGirlKey
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ИРМА: ПЛАТЬЕ ДЛЯ ТАНЦЕВ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'DanceDressPrintText', 'blocked_no_girl', $DanceDressBlockedGirl
+
+    *pl ' '
+
+    if $DanceDressBlockedGirl = 'amanda' and AmandaDanceDressAgreed = 0 and Friends['amanda'] > 8:
+        gs 'PrintMainP', 'Сначала поговорите с Амандой в трактире — без её согласия заказ не начнётся.'
+    elseif $DanceDressBlockedGirl = 'melissa' and MelissaDanceDressAgreed = 0 and Friends['melissa'] > 8:
+        gs 'PrintMainP', 'Сначала поговорите с Мелиссой в трактире — без её согласия заказ не начнётся.'
+    end
+
+    *pl ' '
+
+    act '<b>Вернуться в лавку</b>', 'images/common/ui/actions/return.png':
+        gt 'IrmaShop'
+    end
+
+    killvar '$DanceDressBlockedGirl'
+---
+
+#IrmaDanceDressOrderScene
+    *clr
+    clr
+    cla
+
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressOrderGirl = $DanceDressGirlKey
+    DanceDressOrderPrice = 70
+
+    gs 'DanceDressEnsureName', $DanceDressOrderGirl
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ЗАКАЗ ПЛАТЬЯ — ' + UCASE($RealName[$DanceDressOrderGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $DanceDressOrderGirl = 'amanda':
+        gs 'DanceDressPrintText', 'order_amanda', $DanceDressOrderGirl
+    else:
+        gs 'DanceDressPrintText', 'order_melissa', $DanceDressOrderGirl
+    end
+
+    *pl ' '
+    gs 'PrintMainLine', 'Цена: ' + STR(DanceDressOrderPrice) + ' мараведи. У вас: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    if money < DanceDressOrderPrice:
+        gs 'DanceDressPrintText', 'order_no_money', $DanceDressOrderGirl
+        *pl ' '
+
+        act '<b>Вернуться в лавку</b>', 'images/common/ui/actions/return.png':
+            $IrmaDanceDressCompanion = ''
+            gt 'IrmaShop'
+        end
+
+        killvar '$DanceDressOrderGirl'
+        exit
+    end
+
+    act '<b>Оплатить заказ</b>', 'images/common/ui/actions/gift.png':
+        gt 'IrmaDanceDressOrderPay', $DanceDressOrderGirl
+    end
+
+    act '<b>Пока не заказывать</b>', 'images/common/ui/actions/return.png':
+        gt 'IrmaShop'
+    end
+
+    killvar '$DanceDressOrderGirl'
+---
+
+#IrmaDanceDressOrderPay
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressPayGirl = $DanceDressGirlKey
+    DanceDressOrderPrice = 70
+
+    if money < DanceDressOrderPrice:
+        gt 'IrmaDanceDressOrderScene', $DanceDressPayGirl
+    end
+
+    money -= DanceDressOrderPrice
+
+    if $DanceDressPayGirl = 'amanda':
+        AmandaDanceDressOrdered = 1
+        AmandaDanceDressFittingDay = day + 1
+        AmandaDanceDressFittingDue = 0
+        gs 'DanceDressPrintText', 'ordered_amanda', $DanceDressPayGirl
+    elseif $DanceDressPayGirl = 'melissa':
+        MelissaDanceDressOrdered = 1
+        MelissaDanceDressFittingDay = day + 1
+        MelissaDanceDressFittingDue = 0
+        gs 'DanceDressPrintText', 'ordered_melissa', $DanceDressPayGirl
+    end
+
+    Friends['irma'] += 1
+    Friends[$DanceDressPayGirl] += 1
+
+    $IrmaDanceDressCompanion = ''
+    $GirlTalkPendingNotice[$DanceDressPayGirl] = 'Завтра нужна примерка платья у Ирмы — сходите вдвоём.'
+
+    *pl ' '
+
+    act '<b>Вернуться в лавку</b>', 'images/common/ui/actions/return.png':
+        gt 'IrmaShop'
+    end
+
+    killvar '$DanceDressPayGirl'
+---
+
+#IrmaDanceDressFittingScene
+    *clr
+    clr
+    cla
+
+    gs 'DanceDressNormalizeGirl', $ARGS[0]
+    $DanceDressFitGirl = $DanceDressGirlKey
+
+    gs 'DanceDressEnsureName', $DanceDressFitGirl
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ПРИМЕРКА — ' + UCASE($RealName[$DanceDressFitGirl])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $DanceDressFitGirl = 'amanda':
+        gs 'DanceDressPrintText', 'fitting_amanda', $DanceDressFitGirl
+    else:
+        gs 'DanceDressPrintText', 'fitting_melissa', $DanceDressFitGirl
+    end
+
+    *pl ' '
+    gs 'DanceDressPrintText', 'fitting_ready', $DanceDressFitGirl
+
+    if $DanceDressFitGirl = 'amanda':
+        AmandaDanceDressReady = 1
+        AmandaDanceDressPlayerBought = 1
+        AmandaDanceDressOrdered = 0
+        AmandaDanceDressFittingDue = 0
+        AmandaDanceDressAgreed = 0
+    elseif $DanceDressFitGirl = 'melissa':
+        MelissaDanceDressReady = 1
+        MelissaDanceDressPlayerBought = 1
+        MelissaDanceDressOrdered = 0
+        MelissaDanceDressFittingDue = 0
+        MelissaDanceDressAgreed = 0
+    end
+
+    Friends[$DanceDressFitGirl] += 2
+    otkroven[$DanceDressFitGirl] += 1
+
+    $IrmaDanceDressCompanion = ''
+    $GirlTalkPendingNotice[$DanceDressFitGirl] = ''
+
+    *pl ' '
+
+    act '<b>Вернуться в лавку</b>', 'images/common/ui/actions/return.png':
+        gt 'IrmaShop'
+    end
+
+    killvar '$DanceDressFitGirl'
+---
+
+#ProcessDanceDressFittingDue
+    if AmandaDanceDressOrdered = 1 and AmandaDanceDressReady = 0 and day >= AmandaDanceDressFittingDay:
+        AmandaDanceDressFittingDue = 1
+
+        if $GirlTalkPendingNotice['amanda'] = '':
+            $GirlTalkPendingNotice['amanda'] = 'Ирма ждёт примерку платья для танцев — сходите с Амандой в лавку.'
+        end
+    end
+
+    if MelissaDanceDressOrdered = 1 and MelissaDanceDressReady = 0 and day >= MelissaDanceDressFittingDay:
+        MelissaDanceDressFittingDue = 1
+
+        if $GirlTalkPendingNotice['melissa'] = '':
+            $GirlTalkPendingNotice['melissa'] = 'Ирма ждёт примерку платья для танцев — сходите с Мелиссой в лавку.'
+        end
+    end
+---
+
+#IrmaBuyAmandaDanceDress
+    gt 'IrmaDanceDressBlockedNoGirl', 'amanda'
+---
+
+#IrmaBuyMelissaDanceDress
+    gt 'IrmaDanceDressBlockedNoGirl', 'melissa'
+---

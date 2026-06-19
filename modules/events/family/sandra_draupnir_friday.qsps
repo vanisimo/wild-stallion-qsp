@@ -104,40 +104,100 @@
 ---
 
 #DraupnirShop
-    cls
+    *clr
+    clr
+    cla
 
+    gs 'AddGlobalButtons'
     gs 'InitDraupnir'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' МАСТЕРСКАЯ ДРАУПНИРА'
+    gs 'PrintTitleLine', ' МАСТЕРСКАЯ ДРАУПНИРА'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     gs 'SandraDraupnirFridayShopText'
+    gs 'PrintMainP', $SandraDraupnirShopText
+    killvar '$SandraDraupnirShopText'
 
-    *p $SandraDraupnirShopText
     *pl ' '
 
-    if week = 5 and time = 4 and $GirlLocation['sandra'] = 'DraupnirShop' and SandraDraupnirFridayToday = 0:
-        act 'Прислушаться к разговору в мастерской':
-            gt 'SandraDraupnirFridayStart'
-        end
-    end
+    gs 'BuildDraupnirTalkMenu'
+    gs 'NpcMenuLink', 'Драупнир', 'DraupnirTalkMenu'
+
+    *pl ' '
 
     if TavernCarpenterUpgradesUnlocked = 1:
-        act 'Заказать улучшения трактира':
+        act '<b>Улучшения трактира</b>', 'images/common/ui/actions/work.png':
             gt 'DraupnirUpgradesShop'
+        end
+    else:
+        act '<b>Заказ для трактира</b>', 'images/common/ui/actions/work.png':
+            gt 'DraupnirUpgradesLocked'
         end
     end
 
     if TavernRepairNeeded = 1 and TavernRepairOrdered = 0:
-        act 'Зайти по поводу срочного ремонта':
+        act '<b>Срочный ремонт</b>', 'images/common/ui/actions/work.png':
             gt 'TavernDayEventCarpenterRepair'
+        end
+    elseif TavernRepairNeeded = 1 and TavernRepairOrdered = 1:
+        act '<b>Ремонт заказан</b>', 'images/common/ui/actions/work.png':
+            gt 'TavernDayEventCarpenterRepairAlreadyOrdered'
         end
     end
 
-    act 'Вернуться в квартал ремесленников':
+    act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
+        gt 'DraupnirGiftShop', 'DraupnirShop'
+    end
+
+    *pl ' '
+
+    act '<b>Квартал ремесленников</b>', 'images/common/ui/actions/craftsmen.png':
         gt 'CraftsmenQuarter'
+    end
+---
+
+#BuildDraupnirTalkMenu
+    gs 'Menu.Destroy', 'DraupnirTalkMenu'
+    gs 'Menu.Create', 'DraupnirTalkMenu'
+
+    gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Поболтать', 'talk'
+    gs 'Menu.AddModule', 'DraupnirTalkMenu', {
+        gt 'DraupnirSmallTalk'
+    }
+
+    if week = 5 and time = 4 and $GirlLocation['sandra'] = 'DraupnirShop' and SandraDraupnirFridayToday = 0:
+        gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Разговор в мастерской', 'look'
+        gs 'Menu.AddModule', 'DraupnirTalkMenu', {
+            gt 'SandraDraupnirFridayStart'
+        }
+    end
+
+    gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Назад', 'return'
+    gs 'Menu.AddModule', 'DraupnirTalkMenu', {
+        gt 'DraupnirShop'
+    }
+---
+
+#DraupnirUpgradesLocked
+    *clr
+    clr
+    cla
+
+    gs 'InitDraupnir'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ДРАУПНИР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'DraupnirUpgradesLockedText'
+
+    *pl ' '
+
+    act '<b>Назад в мастерскую</b>', 'images/common/ui/actions/return.png':
+        gt 'DraupnirShop'
     end
 ---
 
@@ -178,17 +238,17 @@
     gs 'Menu.Destroy', 'SandraDraupnirFridayMenu'
     gs 'Menu.Create', 'SandraDraupnirFridayMenu'
 
-    gs 'Menu.Add', 'SandraDraupnirFridayMenu', 'Подойти к Сандре', ''
+    gs 'MenuUiAdd', 'SandraDraupnirFridayMenu', 'Подойти к Сандре', ''
     gs 'Menu.AddModule', 'SandraDraupnirFridayMenu', {
         gt 'SandraDraupnirFridayAction', 'approach'
     }
 
-    gs 'Menu.Add', 'SandraDraupnirFridayMenu', 'Подсмотреть из-за угла', ''
+    gs 'MenuUiAdd', 'SandraDraupnirFridayMenu', 'Подсмотреть из-за угла', ''
     gs 'Menu.AddModule', 'SandraDraupnirFridayMenu', {
         gt 'SandraDraupnirFridayAction', 'watch'
     }
 
-    gs 'Menu.Add', 'SandraDraupnirFridayMenu', 'Отойти — пусть решает сама', ''
+    gs 'MenuUiAdd', 'SandraDraupnirFridayMenu', 'Отойти — пусть решает сама', ''
     gs 'Menu.AddModule', 'SandraDraupnirFridayMenu', {
         gt 'SandraDraupnirFridayAction', 'step_aside'
     }
@@ -239,11 +299,11 @@
     *p $SandraDraupnirFridayText
     *pl ' '
 
-    act 'Вернуться в квартал':
+    act '<b>Вернуться в квартал</b>':
         gt 'CraftsmenQuarter'
     end
 
-    act 'Остаться у мастерской':
+    act '<b>Остаться у мастерской</b>':
         gt 'DraupnirShop'
     end
 

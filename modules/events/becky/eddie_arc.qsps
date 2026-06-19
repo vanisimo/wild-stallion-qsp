@@ -20,7 +20,7 @@
 
     gs 'Menu.Create', 'MenuEddieTalk'
 
-    gs 'Menu.Add', 'MenuEddieTalk', 'Поболтать о разной фигне', ''
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Поболтать о разной фигне', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
         'Вы некоторое время болтаете с Эдди о несущественных вещах.'
         dynamic 'if Talked[''eddie'']<=2 and Rand(1,2)=1 and Friends[''eddie'']<=5:
@@ -31,7 +31,7 @@
         Talked['eddie'] += 1
     }
 
-    gs 'Menu.Add', 'MenuEddieTalk', 'Поболтать о личных вещах', ''
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Поболтать о личных вещах', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
         'Вы болтаете с Эдди о девушках и о том, кто сколько выпил.'
         dynamic 'if Talked[''eddie'']<=2 and Rand(1,2)=1 and Friends[''eddie'']<=10:
@@ -43,7 +43,7 @@
     }
     gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(Friends['eddie']>=5,-1,0)"
 
-    gs 'Menu.Add', 'MenuEddieTalk', 'Предложить помочь с мамой', ''
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Предложить помочь с мамой', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
         gs 'EddieHelpPromiseText'
         *p $EddieArcText
@@ -53,7 +53,7 @@
     }
     gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyHomeSex=1 and EddieSawGeorg=2 and EddieHelpPromised=0 and Friends['eddie']>=10 and BeckyEddieDone=0 and Talked['eddie']<2,-1,0)"
 
-    gs 'Menu.Add', 'MenuEddieTalk', 'Поговорить о том, как теперь бывает дома', ''
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Поговорить о том, как теперь бывает дома', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
         'Эдди смущённо улыбается: "Ну… теперь мама не так злится. Спасибо, что помог разобраться."'
         Friends['eddie'] += 1
@@ -61,7 +61,7 @@
     }
     gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyEddieDone=1 and Talked['eddie']<2,-1,0)"
 
-    gs 'Menu.Add', 'MenuEddieTalk', 'Выслушать благодарность лучшего друга', ''
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Выслушать благодарность лучшего друга', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
         gs 'EddieBestFriendText'
         *p $EddieArcText
@@ -72,7 +72,7 @@
     }
     gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyEddieDone=1 and EddieBestFriend=0 and Friends['eddie']>=18 and Talked['eddie']<2,-1,0)"
 
-    gs 'Menu.Add', 'MenuEddieTalk', 'Вернуться в лавку', ''
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Вернуться в лавку', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
         gt 'BeckyShop'
     }
@@ -93,18 +93,18 @@
     *pl ' '
 
     if Friends['eddie'] < 8:
-        act 'Вернуться к пристани':
+        act '<b>Вернуться к пристани</b>':
             gt 'Port'
         end
         exit
     end
 
     if EddieSawGeorg = 0:
-        act 'Прислушаться':
+        act '<b>Прислушаться</b>':
             gt 'EddieAlleySpy1'
         end
     elseif EddieSawGeorg = 1 and day >= EddieAlleyNextDay:
-        act 'Заглянуть в тень':
+        act '<b>Заглянуть в тень</b>':
             gt 'EddieAlleySpy2'
         end
     elseif EddieSawGeorg >= 2:
@@ -113,7 +113,7 @@
         *p 'Пока здесь тихо. Эдди, кажется, ещё не возвращался.'
     end
 
-    act 'Вернуться к пристани':
+    act '<b>Вернуться к пристани</b>':
         gt 'Port'
     end
 ---
@@ -136,7 +136,7 @@
     EddieAlleyNextDay = day + RAND(1, 7)
     Friends['eddie'] += 1
 
-    act 'Незаметно уйти':
+    act '<b>Незаметно уйти</b>':
         gt 'Port'
     end
 ---
@@ -158,7 +158,7 @@
     EddieSawGeorg = 2
     Friends['eddie'] += 1
 
-    act 'Незаметно уйти':
+    act '<b>Незаметно уйти</b>':
         gt 'Port'
     end
 ---
@@ -191,7 +191,7 @@
 
     BeckyPriestConfessionSeen = 1
 
-    act 'Пожертвовать 30 мараведи священнику':
+    act '<b>Пожертвовать 30 мараведи священнику</b>':
         if money >= 30:
             money -= 30
             BeckyEddieDonationPaid = 1
@@ -199,23 +199,23 @@
             gs 'BeckyEddieConfessionPaidText'
             *p $EddieArcText
             *pl ' '
-            act 'Выйти из церкви':
+            act '<b>Выйти из церкви</b>':
                 gt 'Church'
             end
         else:
             *p 'У вас недостаточно денег для пожертвования.'
-            act 'Вернуться':
+            act '<b>Вернуться</b>':
                 gt 'BeckyEddieConfession'
             end
         end
     end
 
-    act 'Уйти, не жертвуя':
+    act '<b>Уйти, не жертвуя</b>':
         BeckyPriestOk = 0
         gs 'BeckyEddieConfessionUnpaidText'
         *p $EddieArcText
         *pl ' '
-        act 'Выйти из церкви':
+        act '<b>Выйти из церкви</b>':
             gt 'Church'
         end
     end
@@ -257,7 +257,7 @@
         Friends['eddie'] -= 5
     end
 
-    act 'Вернуться на рынок':
+    act '<b>Вернуться на рынок</b>':
         gt 'Market'
     end
 ---
@@ -276,7 +276,7 @@
     *p $EddieArcText
     *pl ' '
 
-    act 'Продолжить':
+    act '<b>Продолжить</b>':
         gt 'BeckyEddieHomeStep2'
     end
 ---
@@ -291,7 +291,7 @@
     *p $EddieArcText
     *pl ' '
 
-    act 'Продолжить':
+    act '<b>Продолжить</b>':
         gt 'BeckyEddieHomeStep3'
     end
 ---
@@ -306,14 +306,14 @@
     *p $EddieArcText
     *pl ' '
 
-    act 'Кивнуть Эдди — уважить просьбу Бекки':
+    act '<b>Кивнуть Эдди — уважить просьбу Бекки</b>':
         gs 'BeckyEddieHomeFinishInsideText'
         *p $EddieArcText
         gs 'BeckyEddieHomeFinish'
         gt 'BeckyEddieHomeAfter'
     end
 
-    act 'Показать глазами — пусть кончает куда хочет':
+    act '<b>Показать глазами — пусть кончает куда хочет</b>':
         gs 'BeckyEddieHomeFinishOutsideText'
         *p $EddieArcText
         gs 'BeckyEddieHomeFinish'
@@ -351,7 +351,7 @@
     *p 'Ночь в доме Бекки больше не будет прежней.'
     *pl ' '
 
-    act 'Вернуться на рынок':
+    act '<b>Вернуться на рынок</b>':
         gt 'Market'
     end
 ---

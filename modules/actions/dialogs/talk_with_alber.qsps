@@ -1,0 +1,104 @@
+! ================================================
+! FILE: modules/actions/dialogs/talk_with_alber.qsps
+! MODULE: actions/dialogs
+! Разговор с Альбером Легаре (фаза 1: усталый отец; фаза 3: наставник)
+! ================================================
+
+#TalkWithAlber
+    $GuyName = 'alber'
+    $AlberReturnLoc = $ARGS[0]
+
+    if $AlberReturnLoc = '' or LOC($AlberReturnLoc) = 0:
+        $AlberReturnLoc = 'WineShop'
+    end
+
+    gs 'InitAlber'
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl '       РАЗГОВОР С МЕССИРОМ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $guytextdesc[$GuyName] <> '':
+        *p $guytextdesc[$GuyName]
+    end
+
+    *pl ' '
+
+    gs 'Menu.Create', 'MenuAlberTalk'
+
+    gs 'MenuUiAdd', 'MenuAlberTalk', 'Поболтать о всякой ерунде', ''
+    gs 'Menu.AddModule', 'MenuAlberTalk', {
+        'Вы перебрасываетесь с Альбером парой фраз о погоде, ценах и чужих телегах на рынке.'
+        if Talked[$GuyName] <= 2 and Rand(1, 2) = 1 and Friends[$GuyName] < 8:
+            'Мессир отвечает без холодности — усталая вежливость человека, которому приятно, что с ним говорят не только о долгах.'
+            Friends[$GuyName] += 1
+        end
+        if Talked[$GuyName] > 2:
+            'Ничего нового из разговора вы не узнали.'
+        end
+        Talked[$GuyName] += 1
+    }
+
+    gs 'MenuUiAdd', 'MenuAlberTalk', 'О детях и лавке', ''
+    gs 'Menu.AddModule', 'MenuAlberTalk', {
+        gs 'AlberTalkShopText'
+        *p $AlberTalkBlock
+        killvar '$AlberTalkBlock'
+        if Talked[$GuyName] <= 3 and Friends[$GuyName] <= 22:
+            Friends[$GuyName] += 1
+        end
+        Talked[$GuyName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(LegareConflictStage<4,-1,0)"
+
+    gs 'MenuUiAdd', 'MenuAlberTalk', 'О доме и Клариссе', ''
+    gs 'Menu.AddModule', 'MenuAlberTalk', {
+        gs 'AlberTalkHomeText'
+        *p $AlberTalkBlock
+        killvar '$AlberTalkBlock'
+        if Talked[$GuyName] <= 3 and Friends[$GuyName] <= 24:
+            Friends[$GuyName] += 1
+        end
+        Talked[$GuyName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(Friends[$GuyName]>=6 and LegareConflictStage<4,-1,0)"
+
+    gs 'MenuUiAdd', 'MenuAlberTalk', 'Спросить о Лизетте', ''
+    gs 'Menu.AddModule', 'MenuAlberTalk', {
+        gs 'AlberTalkLizetteText'
+        *p $AlberTalkBlock
+        killvar '$AlberTalkBlock'
+        if Talked[$GuyName] <= 3:
+            Friends[$GuyName] += 1
+        end
+        Talked[$GuyName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(Friends[$GuyName]>=8 and (LizetteKnown=1 or PortMeetWitnessed=1) and LegareConflictStage<4,-1,0)"
+
+    gs 'MenuUiAdd', 'MenuAlberTalk', 'Помириться', ''
+    gs 'Menu.AddModule', 'MenuAlberTalk', {
+        gt 'AlberReconcileWithStefan', $AlberReturnLoc
+    }
+    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(LegareReconciledWithStefan=0 and LegareFirstConflictStage>=1 and LegareConflictStage>=2 and LegareConflictStage<7 and Friends[$GuyName]>=6,-1,0)"
+
+    gs 'MenuUiAdd', 'MenuAlberTalk', 'Спросить совета', ''
+    gs 'Menu.AddModule', 'MenuAlberTalk', {
+        gs 'AlberTalkMentorText'
+        *p $AlberTalkBlock
+        killvar '$AlberTalkBlock'
+        Friends[$GuyName] += 1
+        Talked[$GuyName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(LegareReconciledWithStefan=1,-1,0)"
+
+    gs 'MenuUiAdd', 'MenuAlberTalk', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'MenuAlberTalk', {
+        gt $AlberReturnLoc
+    }
+
+    gs 'Menu.Show', 'MenuAlberTalk'
+
+    killvar '$AlberReturnLoc'
+---

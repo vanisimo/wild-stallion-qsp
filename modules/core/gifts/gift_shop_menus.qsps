@@ -1,0 +1,192 @@
+! ================================================
+! FILE: modules/core/gifts/gift_shop_menus.qsps
+! MODULE: core/gifts
+! Меню покупки подарков в разных локациях
+! ================================================
+
+#MarketGiftStall
+    $GiftShopReturnLoc = $ARGS[0]
+
+    if $GiftShopReturnLoc = '':
+        $GiftShopReturnLoc = 'Market'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРИЛАВОК МЕЛОЧЕЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'Узкий прилавок с солью, тканями и сладостями. Торговец не задаёт лишних вопросов, если платят сразу.'
+    *pl ' '
+    *pl 'Деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    act '<b>Редкая соль — 18 мараведи</b>':
+        gt 'GiftShopBuy', $GiftShopReturnLoc, 'rare_salt', 'MarketGiftStall'
+    end
+
+    act '<b>Льняной фартук с карманами — 22 мараведи</b>':
+        gt 'GiftShopBuy', $GiftShopReturnLoc, 'linen_apron', 'MarketGiftStall'
+    end
+
+    act '<b>Масло для выпечки — 28 мараведи</b>':
+        gt 'GiftShopBuy', $GiftShopReturnLoc, 'baking_oil', 'MarketGiftStall'
+    end
+
+    act '<b>Засахаренные фрукты — 20 мараведи</b>':
+        gt 'GiftShopBuy', $GiftShopReturnLoc, 'sugared_fruits', 'MarketGiftStall'
+    end
+
+    act '<b>Вернуться</b>':
+        gt $GiftShopReturnLoc
+    end
+---
+
+#BeckyShopGifts
+    $GiftShopReturnLoc = $ARGS[0]
+
+    if $GiftShopReturnLoc = '':
+        $GiftShopReturnLoc = 'BeckyShop'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДАРКИ У БЛЭНКЕНШИП'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    act '<b>Связка сушёных трав — 15 мараведи</b>':
+        gt 'GiftShopBuy', $GiftShopReturnLoc, 'herb_bundle', 'BeckyShopGifts'
+    end
+
+    act '<b>Мешочек редкой соли — 18 мараведи</b>':
+        gt 'GiftShopBuy', $GiftShopReturnLoc, 'rare_salt', 'BeckyShopGifts'
+    end
+
+    act '<b>Вернуться в лавку</b>':
+        gt $GiftShopReturnLoc
+    end
+---
+
+#DraupnirGiftShop
+    $GiftShopReturnLoc = $ARGS[0]
+
+    if $GiftShopReturnLoc = '':
+        $GiftShopReturnLoc = 'DraupnirShop'
+    end
+
+    cls
+
+    gs 'InitDraupnir'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ДРАУПНИР — КУХОННЫЕ ВЕЩИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p 'Драупнир откладывает стружку и показывает доски и ножи, выточенные для трактирной кухни. На доске едва заметна гравировка «Л».'
+    *pl ' '
+    *pl 'Деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    act '<b>Дубовая разделочная доска — 65 мараведи</b>':
+        gt 'GiftShopBuy', $GiftShopReturnLoc, 'draupnir_cutting_board', 'DraupnirGiftShop'
+    end
+
+    act '<b>Набор кухонных ножей в чехле — 90 мараведи</b>':
+        gt 'GiftShopBuy', $GiftShopReturnLoc, 'kitchen_knife_set', 'DraupnirGiftShop'
+    end
+
+    act '<b>Вернуться</b>':
+        gt $GiftShopReturnLoc
+    end
+---
+
+#IrmaShopGifts
+    $GiftShopReturnLoc = $ARGS[0]
+
+    if $GiftShopReturnLoc = '':
+        $GiftShopReturnLoc = 'IrmaShop'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДАРКИ У ИРМЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if IrmaMet < 1:
+        *p 'Ирма ещё не знакома с вами — сначала поздоровайтесь.'
+    else:
+        *p 'Ирма отодвигает готовые платья и показывает отрезы, нитки и бисер. Такие вещи удобно купить здесь и потом подарить кому-то из знакомых девушек.'
+        *pl ' '
+        *pl 'Деньги: ' + STR(money) + ' мараведи.'
+        *pl ' '
+
+        act '<b>Бисер для вышивки — 18 мараведи</b>':
+            gt 'GiftShopBuy', $GiftShopReturnLoc, 'irma_seed_beads', 'IrmaShopGifts'
+        end
+
+        act '<b>Отрез добротной ткани — 28 мараведи</b>':
+            gt 'GiftShopBuy', $GiftShopReturnLoc, 'irma_fabric_roll', 'IrmaShopGifts'
+        end
+
+        act '<b>Моток шёлковой нити — 40 мараведи</b>':
+            gt 'GiftShopBuy', $GiftShopReturnLoc, 'irma_silk_spool', 'IrmaShopGifts'
+        end
+
+        if Friends['irma'] >= 12:
+            act '<b>Брошь с цветными камнями — 45 мараведи</b>':
+                gt 'GiftShopBuy', $GiftShopReturnLoc, 'irma_brooch', 'IrmaShopGifts'
+            end
+        end
+    end
+
+    *pl ' '
+
+    act '<b>Вернуться в лавку</b>':
+        gt $GiftShopReturnLoc
+    end
+---
+
+#LizettePortGiftShop
+    $GiftShopReturnLoc = $ARGS[0]
+
+    if $GiftShopReturnLoc = '':
+        $GiftShopReturnLoc = 'Port'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛИЗЕТТА У КОРАБЛЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if AmandaMetLizette = 0 or LizetteKnown = 0:
+        *p 'Лизетта ещё не знакома с вами и Амандой — покупать у неё нечего.'
+    else:
+        *p 'Лизетта поправляет на запястье тонкий южный браслет и улыбается так, будто продаёт не металл, а обещание более широкого мира.'
+        *pl ' '
+        *pl 'Деньги: ' + STR(money) + ' мараведи.'
+        *pl ' '
+
+        if GiftInventory['lizette_bracelet'] > 0:
+            *p 'Такой браслет у вас уже есть.'
+        else:
+            act '<b>Купить южный браслет — 55 мараведи</b>':
+                gt 'GiftShopBuy', $GiftShopReturnLoc, 'lizette_bracelet', 'LizettePortGiftShop'
+            end
+        end
+    end
+
+    *pl ' '
+
+    act '<b>Вернуться к кораблю</b>':
+        gt 'PortCapitalShipMenu', $GiftShopReturnLoc
+    end
+---

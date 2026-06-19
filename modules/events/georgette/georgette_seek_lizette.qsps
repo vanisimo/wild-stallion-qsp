@@ -1,0 +1,131 @@
+! ================================================
+! FILE: modules/events/georgette/georgette_seek_lizette.qsps
+! MODULE: events/georgette
+! Этап B: днём Жоржетта ищет дочь у причала
+! ================================================
+
+#GeorgetteSeekScheduleNextDay
+    if PortMeetWitnessed = 0:
+        exit
+    end
+
+    if GeorgetteSeekScheduled = 1:
+        exit
+    end
+
+    GeorgetteSeekDelayDays = Rand(2, 5)
+    GeorgetteSeekStartDay = day + GeorgetteSeekDelayDays
+    GeorgetteSeekScheduled = 1
+---
+
+#GeorgetteSeekLizetteCanStart
+    GeorgetteSeekCanStart = 0
+
+    if PortMeetWitnessed = 0:
+        exit
+    end
+
+    if GeorgetteSeekLizetteDone = 1:
+        exit
+    end
+
+    if GeorgetteSeekScheduled = 0:
+        exit
+    end
+
+    if day < GeorgetteSeekStartDay:
+        exit
+    end
+
+    if time < 1 or time > 3:
+        exit
+    end
+
+    GeorgetteSeekCanStart = 1
+---
+
+#GeorgetteSeekLizetteEvent
+    $GeorgetteSeekReturnLoc = $ARGS[0]
+
+    if $GeorgetteSeekReturnLoc = '':
+        $GeorgetteSeekReturnLoc = 'Port'
+    end
+
+    gs 'GeorgetteSeekLizetteCanStart'
+
+    if GeorgetteSeekCanStart = 0:
+        gt $GeorgetteSeekReturnLoc
+    end
+
+    gs 'EnsureGirlData', 'georgett'
+    gs 'EnsureGirlData', 'lizette'
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЖОРЖЕТТА ИЩЕТ ДОЧЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GeorgetteSeekLizetteText', 'intro'
+    *p $GeorgetteSeekText
+
+    *pl ' '
+
+    gs 'GeorgetteSeekLizetteText', 'search'
+    *p $GeorgetteSeekText
+
+    *pl ' '
+
+    act '<b>Подойти ближе</b>':
+        gt 'GeorgetteSeekLizetteFinish', $GeorgetteSeekReturnLoc
+    end
+
+    act '<b>Не вмешиваться</b>':
+        gt $GeorgetteSeekReturnLoc
+    end
+
+    killvar '$GeorgetteSeekText'
+    killvar 'GeorgetteSeekCanStart'
+---
+
+#GeorgetteSeekLizetteFinish
+    $GeorgetteSeekReturnLoc = $ARGS[0]
+
+    if $GeorgetteSeekReturnLoc = '':
+        $GeorgetteSeekReturnLoc = 'Port'
+    end
+
+    cls
+
+    GeorgetteKnown = 1
+    GeorgetteSeekLizetteDone = 1
+    LizetteMentionedByGeorgette = 1
+
+    gs 'GeorgetteSeekLizetteText', 'meet_stefan'
+    *p $GeorgetteSeekText
+
+    *pl ' '
+
+    gs 'GeorgetteSeekLizetteText', 'night_invite'
+    *p $GeorgetteSeekText
+
+    Friends['georgett'] += 2
+    otkroven['georgett'] += 1
+
+    gs 'UpdateGirlLocations'
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG GEORGETTE SEEK] GeorgetteKnown: ' + STR(GeorgetteKnown)
+        *pl '[DEBUG GEORGETTE SEEK] GeorgetteSeekLizetteDone: ' + STR(GeorgetteSeekLizetteDone)
+    end
+
+    *pl ' '
+
+    act '<b>Вернуться к причалу</b>':
+        gt $GeorgetteSeekReturnLoc
+    end
+
+    killvar '$GeorgetteSeekText'
+---

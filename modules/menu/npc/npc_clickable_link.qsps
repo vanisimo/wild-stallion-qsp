@@ -1,28 +1,369 @@
-! FILE: modules/menu/npc_clickable_link.qsps
+! ================================================
+! FILE: modules/menu/npc/npc_clickable_link.qsps
+! Кликабельные имена NPC: иконка «поболтать» + синее крупное имя
+! ================================================
 
-#NpcClickableLink
-$group = LCASE($Args[0])
-if $group = 'family' or $group = 'семья':
-  gs 'NpcClickableLink', 'sandra'
-  gs 'NpcClickableLink', 'melissa'
-  gs 'NpcClickableLink', 'amanda'
-  exit
-end
-if $group = 'all' or $group = 'все' or $group = 'girls':
-  counter = 0
-  :loopgirls
-  if counter < arrsize('$AllGirlNames'):
-    gs 'NpcClickableLink', $AllGirlNames[counter]
-    counter += 1
-    jump 'loopgirls'
-  end
-  exit
-end
-$girl = LCASE($Args[0])
-if $RealName[$girl] = '':
-  $RealName[$girl] = ucase(mid($girl,1,1)) + lcase(mid($girl,2))
-end
-$link = '<a href="exec:gs ''NPC_Click'', ''' + $girl + '''"><font color="green">' + $RealName[$girl] + '</font></a>'
-*pl $link
+#NpcTalkIconInline
+    $NpcTalkIconInline = '<img src="images/common/ui/actions/talk.png" width="18">'
 ---
 
+#NpcIntimIconInline
+    $NpcIntimIconInline = '<img src="images/common/ui/actions/intim.png" width="18">'
+---
+
+#FormatNpcIntimLink
+    $FmtNpcIntimKey = LCASE($ARGS[0])
+    $FmtNpcIntimExec = $ARGS[1]
+
+    if $FmtNpcIntimKey = '':
+        killvar '$FmtNpcIntimKey'
+        killvar '$FmtNpcIntimExec'
+        exit
+    end
+
+    if $RealName[$FmtNpcIntimKey] = '':
+        $RealName[$FmtNpcIntimKey] = UCASE(MID($FmtNpcIntimKey, 1, 1)) + LCASE(MID($FmtNpcIntimKey, 2))
+    end
+
+    if $FmtNpcIntimExec = '':
+        $FmtNpcIntimExec = 'gt ''GirlIntimClosedScreen'', ''' + $FmtNpcIntimKey + ''', ''' + $CURLOC + ''''
+    end
+
+    gs 'FormatTextByStyle', $RealName[$FmtNpcIntimKey], 'npc_link'
+    $FmtNpcIntimLink = '<a href="exec:' + $FmtNpcIntimExec + '">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    gs 'NpcIntimIconInline'
+    $NpcIntimLink = $NpcIntimIconInline + ' ' + $FmtNpcIntimLink
+
+    killvar '$FmtNpcIntimKey'
+    killvar '$FmtNpcIntimExec'
+    killvar '$FmtNpcIntimLink'
+    killvar '$NpcIntimIconInline'
+---
+
+#FormatNpcTalkLink
+    $FmtNpcTalkKey = LCASE($ARGS[0])
+    $FmtNpcTalkExec = $ARGS[1]
+
+    if $FmtNpcTalkKey = '':
+        killvar '$FmtNpcTalkKey'
+        killvar '$FmtNpcTalkExec'
+        exit
+    end
+
+    if $RealName[$FmtNpcTalkKey] = '':
+        $RealName[$FmtNpcTalkKey] = UCASE(MID($FmtNpcTalkKey, 1, 1)) + LCASE(MID($FmtNpcTalkKey, 2))
+    end
+
+    if $FmtNpcTalkExec = '':
+        $FmtNpcTalkExec = 'gs ''NPC_Click'', ''' + $FmtNpcTalkKey + ''''
+    end
+
+    gs 'FormatTextByStyle', $RealName[$FmtNpcTalkKey], 'npc_link'
+    $FmtNpcTalkLink = '<a href="exec:' + $FmtNpcTalkExec + '">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    gs 'NpcTalkIconInline'
+    $NpcTalkLink = $NpcTalkIconInline + ' ' + $FmtNpcTalkLink
+
+    killvar '$FmtNpcTalkKey'
+    killvar '$FmtNpcTalkExec'
+    killvar '$FmtNpcTalkLink'
+    killvar '$NpcTalkIconInline'
+---
+
+#NpcClickableLink
+    $group = LCASE($Args[0])
+
+    if $group = 'family' or $group = 'семья':
+        gs 'NpcClickableLink', 'sandra'
+        gs 'NpcClickableLink', 'melissa'
+        gs 'NpcClickableLink', 'amanda'
+        killvar '$group'
+        exit
+    end
+
+    if $group = 'all' or $group = 'все' or $group = 'girls':
+        counter = 0
+        :loopgirls
+        if counter < arrsize('$AllGirlNames'):
+            gs 'NpcClickableLink', $AllGirlNames[counter]
+            counter += 1
+            jump 'loopgirls'
+        end
+        killvar '$group'
+        exit
+    end
+
+    $girl = LCASE($Args[0])
+    gs 'FormatNpcTalkLink', $girl
+    *pl $NpcTalkLink
+    killvar '$girl'
+    killvar '$group'
+    killvar '$NpcTalkLink'
+---
+
+#NpcMenuTalkOpenLink
+    $NpcTalkOpenLabel = $ARGS[0]
+    $NpcTalkOpenGirl = LCASE($ARGS[1])
+    $NpcTalkOpenLoc = $ARGS[2]
+    $NpcTalkOpenOutput = LCASE($ARGS[3])
+    $NpcTalkOpenReturnLoc = $ARGS[4]
+
+    if $NpcTalkOpenGirl = '' or $NpcTalkOpenLabel = '':
+        killvar '$NpcTalkOpenLabel'
+        killvar '$NpcTalkOpenGirl'
+        killvar '$NpcTalkOpenLoc'
+        killvar '$NpcTalkOpenOutput'
+        exit
+    end
+
+    if $NpcTalkOpenLoc = '':
+        $NpcTalkOpenLoc = $CURLOC
+    end
+
+    if $NpcTalkOpenOutput = '':
+        $NpcTalkOpenOutput = 'main'
+    end
+
+    if $NpcTalkOpenReturnLoc = '':
+        $NpcTalkOpenReturnLoc = $NpcTalkOpenLoc
+    end
+
+    gs 'FormatTextByStyle', $NpcTalkOpenLabel, 'npc_link'
+    $NpcTalkOpenHref = '<a href="exec:gs ''GirlTalkOpenNpcMenu'', ''' + $NpcTalkOpenGirl + ''', ''' + $NpcTalkOpenLoc + ''', ''' + $NpcTalkOpenReturnLoc + '''">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    gs 'NpcTalkIconInline'
+    $NpcTalkOpenLine = $NpcTalkIconInline + ' ' + $NpcTalkOpenHref
+
+    killvar '$NpcTalkOpenLabel'
+    killvar '$NpcTalkOpenGirl'
+    killvar '$NpcTalkOpenLoc'
+    killvar '$NpcTalkOpenOutput'
+    killvar '$NpcTalkOpenReturnLoc'
+    killvar '$NpcTalkOpenHref'
+    killvar '$NpcTalkIconInline'
+---
+
+#NpcMenuIntimOpenLink
+    $NpcIntimOpenLabel = $ARGS[0]
+    $NpcIntimOpenGirl = LCASE($ARGS[1])
+    $NpcIntimOpenLoc = $ARGS[2]
+    $NpcIntimOpenOutput = LCASE($ARGS[3])
+
+    if $NpcIntimOpenGirl = '' or $NpcIntimOpenLabel = '':
+        killvar '$NpcIntimOpenLabel'
+        killvar '$NpcIntimOpenGirl'
+        killvar '$NpcIntimOpenLoc'
+        killvar '$NpcIntimOpenOutput'
+        exit
+    end
+
+    if $NpcIntimOpenLoc = '':
+        $NpcIntimOpenLoc = $CURLOC
+    end
+
+    if $NpcIntimOpenOutput = '':
+        $NpcIntimOpenOutput = 'main'
+    end
+
+    gs 'FormatTextByStyle', $NpcIntimOpenLabel, 'npc_link'
+    $NpcIntimOpenHref = '<a href="exec:gs ''GirlIntimOpenNpcMenu'', ''' + $NpcIntimOpenGirl + ''', ''' + $NpcIntimOpenLoc + '''">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    gs 'NpcIntimIconInline'
+    $NpcIntimOpenLine = $NpcIntimIconInline + ' ' + $NpcIntimOpenHref
+
+    killvar '$NpcIntimOpenLabel'
+    killvar '$NpcIntimOpenGirl'
+    killvar '$NpcIntimOpenLoc'
+    killvar '$NpcIntimOpenOutput'
+    killvar '$NpcIntimOpenHref'
+    killvar '$NpcIntimIconInline'
+    killvar '$NpcIntimOpenLine'
+---
+
+#NpcMenuIntimOpenIconLink
+    $NpcIntimIconGirl = LCASE($ARGS[0])
+    $NpcIntimIconLoc = $ARGS[1]
+    $NpcIntimIconOutput = LCASE($ARGS[2])
+    $NpcIntimIconReturnLoc = $ARGS[3]
+
+    if $NpcIntimIconGirl = '':
+        killvar '$NpcIntimIconGirl'
+        killvar '$NpcIntimIconLoc'
+        killvar '$NpcIntimIconOutput'
+        exit
+    end
+
+    if $NpcIntimIconLoc = '':
+        $NpcIntimIconLoc = $CURLOC
+    end
+
+    if $NpcIntimIconOutput = '':
+        $NpcIntimIconOutput = 'main'
+    end
+
+    if $NpcIntimIconReturnLoc = '':
+        $NpcIntimIconReturnLoc = $NpcIntimIconLoc
+    end
+
+    gs 'NpcIntimIconInline'
+    $NpcIntimOpenIconLine = '<a href="exec:gs ''GirlIntimOpenNpcMenu'', ''' + $NpcIntimIconGirl + ''', ''' + $NpcIntimIconLoc + ''', ''' + $NpcIntimIconReturnLoc + '''">' + $NpcIntimIconInline + '</a>'
+
+    killvar '$NpcIntimIconGirl'
+    killvar '$NpcIntimIconLoc'
+    killvar '$NpcIntimIconOutput'
+    killvar '$NpcIntimIconReturnLoc'
+    killvar '$NpcIntimIconInline'
+---
+
+#NpcMenuLink
+    $NpcMenuLabel = $ARGS[0]
+    $NpcMenuName = $ARGS[1]
+    $NpcMenuOutputTarget = LCASE($ARGS[2])
+
+    if $NpcMenuLabel = '' or $NpcMenuName = '':
+        killvar '$NpcMenuLabel'
+        killvar '$NpcMenuName'
+        killvar '$NpcMenuOutputTarget'
+        exit
+    end
+
+    if $NpcMenuOutputTarget = '':
+        $NpcMenuOutputTarget = 'main'
+    end
+
+    gs 'FormatTextByStyle', $NpcMenuLabel, 'npc_link'
+    $NpcMenuHref = '<a href="exec:gs ''Menu.Show'', ''' + $NpcMenuName + '''">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    gs 'NpcTalkIconInline'
+    $NpcMenuLine = $NpcTalkIconInline + ' ' + $NpcMenuHref
+
+    if $NpcMenuOutputTarget = 'panel':
+        pl $NpcMenuLine
+    else:
+        *pl $NpcMenuLine
+    end
+
+    killvar '$NpcMenuLabel'
+    killvar '$NpcMenuName'
+    killvar '$NpcMenuOutputTarget'
+    killvar '$NpcMenuHref'
+    killvar '$NpcTalkIconInline'
+    killvar '$NpcMenuLine'
+---
+
+#NpcMenuIntimLink
+    $NpcIntimMenuLabel = $ARGS[0]
+    $NpcIntimMenuName = $ARGS[1]
+    $NpcIntimMenuOutputTarget = LCASE($ARGS[2])
+
+    if $NpcIntimMenuLabel = '' or $NpcIntimMenuName = '':
+        killvar '$NpcIntimMenuLabel'
+        killvar '$NpcIntimMenuName'
+        killvar '$NpcIntimMenuOutputTarget'
+        exit
+    end
+
+    if $NpcIntimMenuOutputTarget = '':
+        $NpcIntimMenuOutputTarget = 'main'
+    end
+
+    gs 'FormatTextByStyle', $NpcIntimMenuLabel, 'npc_link'
+    $NpcIntimMenuHref = '<a href="exec:gs ''Menu.Show'', ''' + $NpcIntimMenuName + '''">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    gs 'NpcIntimIconInline'
+    $NpcIntimMenuLine = $NpcIntimIconInline + ' ' + $NpcIntimMenuHref
+
+    if $NpcIntimMenuOutputTarget = 'panel':
+        pl $NpcIntimMenuLine
+    else:
+        *pl $NpcIntimMenuLine
+    end
+
+    killvar '$NpcIntimMenuLabel'
+    killvar '$NpcIntimMenuName'
+    killvar '$NpcIntimMenuOutputTarget'
+    killvar '$NpcIntimMenuHref'
+    killvar '$NpcIntimIconInline'
+    killvar '$NpcIntimMenuLine'
+---
+
+#NpcNavLink
+    $NpcNavLabel = $ARGS[0]
+    $NpcNavIcon = LCASE($ARGS[1])
+    $NpcNavExec = $ARGS[2]
+    $NpcNavOutputTarget = LCASE($ARGS[3])
+
+    if $NpcNavLabel = '' or $NpcNavExec = '':
+        killvar '$NpcNavLabel'
+        killvar '$NpcNavIcon'
+        killvar '$NpcNavExec'
+        killvar '$NpcNavOutputTarget'
+        exit
+    end
+
+    if $NpcNavOutputTarget = '':
+        $NpcNavOutputTarget = 'main'
+    end
+
+    gs 'FormatTextByStyle', $NpcNavLabel, 'npc_link'
+    $NpcNavHref = '<a href="exec:' + $NpcNavExec + '">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    if $NpcNavIcon = 'intim':
+        gs 'NpcIntimIconInline'
+        $NpcNavIconInline = $NpcIntimIconInline
+    else:
+        gs 'NpcTalkIconInline'
+        $NpcNavIconInline = $NpcTalkIconInline
+    end
+
+    $NpcNavLine = $NpcNavIconInline + ' ' + $NpcNavHref
+
+    if $NpcNavOutputTarget = 'panel':
+        pl $NpcNavLine
+    else:
+        *pl $NpcNavLine
+    end
+
+    killvar '$NpcNavLabel'
+    killvar '$NpcNavIcon'
+    killvar '$NpcNavExec'
+    killvar '$NpcNavOutputTarget'
+    killvar '$NpcNavHref'
+    killvar '$NpcNavIconInline'
+    killvar '$NpcNavLine'
+---
+
+#PrintMenuOpenLink
+    $PrintMenuOpenName = $ARGS[0]
+    $PrintMenuOpenLabel = $ARGS[1]
+
+    if $PrintMenuOpenName = '':
+        killvar '$PrintMenuOpenName'
+        killvar '$PrintMenuOpenLabel'
+        exit
+    end
+
+    if $PrintMenuOpenLabel = '':
+        $PrintMenuOpenLabel = 'выбрать действие'
+    end
+
+    gs 'FormatTextByStyle', $PrintMenuOpenLabel, 'npc_link'
+    $PrintMenuOpenHref = '<a href="exec:gs ''Menu.Show'', ''' + $PrintMenuOpenName + '''">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    gs 'NpcTalkIconInline'
+    *p $NpcTalkIconInline + ' ' + $PrintMenuOpenHref
+
+    killvar '$PrintMenuOpenName'
+    killvar '$PrintMenuOpenLabel'
+    killvar '$PrintMenuOpenHref'
+    killvar '$NpcTalkIconInline'
+---

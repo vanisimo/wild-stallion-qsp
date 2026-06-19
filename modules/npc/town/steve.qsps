@@ -51,14 +51,20 @@
         max_daily_cum = 2
     end
 
-    if daily_cum_count >= max_daily_cum:
-        Result = 0
+    if max_daily_cum <= 0:
+        max_daily_cum = 2
+    end
 
-        if debug = 1:
-            *pl '[DEBUG] Лимит оргазмов исчерпан: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
-        end
-    else:
-        Result = 1
+    PlayerCanCumToday = 0
+
+    if daily_cum_count < max_daily_cum:
+        PlayerCanCumToday = 1
+    end
+
+    Result = PlayerCanCumToday
+
+    if PlayerCanCumToday = 0 and debug = 1:
+        *pl '[DEBUG] Лимит оргазмов исчерпан: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
     end
 ---
 
@@ -72,7 +78,7 @@
 #RegisterPlayerCum
     gs 'CanCumToday'
 
-    if Result = 0:
+    if PlayerCanCumToday = 0:
         *p 'Стефан слишком вымотан за сегодня. Больше он не сможет кончить до завтра.'
         Result = 0
         exit

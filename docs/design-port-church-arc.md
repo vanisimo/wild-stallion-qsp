@@ -440,8 +440,8 @@ Glory hole; беременность; «мамка дядям отсасывае
 | # | Этап | Файлы | Статус |
 |---|------|-------|--------|
 | 1 | **A** | port witness, hint, schedule | ✅ v1 |
-| 2 | **B** | georgette_seek, georgette_port_night, port.qsps, next_day | ⬜ |
-| 3 | **C** | church_sunday_service, georgette_service_sex, church.qsps | ⬜ |
+| 2 | **B** | georgette_seek, georgette_port_night, port.qsps, next_day | ✅ v1 |
+| 3 | **C** | church_sunday_service, georgette_service_sex, church.qsps | ✅ v1 |
 | 4 | **D** | church_confession_dynamic, church_after_sermon | ⬜ |
 | 5 | **E** | church_spy_georgette | ⬜ |
 | 6 | **F** | Лизетта на службе, LizaSaw, LizetteSexUnlocked | ⬜ |

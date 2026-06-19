@@ -1,0 +1,115 @@
+! ================================================
+! FILE: modules/events/legare/alber_reconcile_stefan.qsps
+! MODULE: events/legare
+! Примирение Стефана с Альбером → фаза 3 (наставник)
+! ================================================
+
+#AlberReconcileCanOffer
+    AlberReconcileCanOffer = 0
+
+    if LegareReconciledWithStefan = 1:
+        exit
+    end
+
+    if LegareFirstConflictStage < 1:
+        exit
+    end
+
+    if LegareConflictStage < 2:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    if Friends['alber'] < 6:
+        exit
+    end
+
+    AlberReconcileCanOffer = 1
+---
+
+#AlberReconcileWithStefan
+    $AlberReconcileReturnLoc = $ARGS[0]
+
+    if $AlberReconcileReturnLoc = '' or LOC($AlberReconcileReturnLoc) = 0:
+        $AlberReconcileReturnLoc = 'WineShop'
+    end
+
+    gs 'AlberReconcileCanOffer'
+
+    if AlberReconcileCanOffer = 0:
+        gt 'TalkWithAlber', $AlberReconcileReturnLoc
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРИМИРЕНИЕ С ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AlberReconcileStefanText', 'intro'
+    *p $AlberReconcileText
+
+    *pl ' '
+
+    gs 'AlberReconcileStefanText', 'offer'
+    *p $AlberReconcileText
+
+    *pl ' '
+
+    act '<b>Протянуть руку и закрыть конфликт</b>':
+        gt 'AlberReconcileWithStefanAccept', $AlberReconcileReturnLoc
+    end
+
+    act '<b>Передумать</b>':
+        gt 'TalkWithAlber', $AlberReconcileReturnLoc
+    end
+
+    killvar '$AlberReconcileText'
+    killvar 'AlberReconcileCanOffer'
+---
+
+#AlberReconcileWithStefanAccept
+    $AlberReconcileReturnLoc = $ARGS[0]
+
+    if $AlberReconcileReturnLoc = '' or LOC($AlberReconcileReturnLoc) = 0:
+        $AlberReconcileReturnLoc = 'WineShop'
+    end
+
+    cls
+
+    LegareReconciledWithStefan = 1
+
+    if LegareConflictStage > 2:
+        LegareConflictStage -= 2
+    else:
+        LegareConflictStage = 0
+    end
+
+    Friends['alber'] += 2
+
+    gs 'AlberReconcileStefanText', 'accept'
+    *p $AlberReconcileText
+
+    *pl ' '
+
+    gs 'AlberReconcileStefanText', 'after'
+    *p $AlberReconcileText
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG ALBER RECONCILE] LegareReconciledWithStefan: ' + STR(LegareReconciledWithStefan)
+        *pl '[DEBUG ALBER RECONCILE] LegareConflictStage: ' + STR(LegareConflictStage)
+    end
+
+    *pl ' '
+
+    act '<b>Вернуться в лавку</b>':
+        gt 'TalkWithAlber', $AlberReconcileReturnLoc
+    end
+
+    killvar '$AlberReconcileText'
+---

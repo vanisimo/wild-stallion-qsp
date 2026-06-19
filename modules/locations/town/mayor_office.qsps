@@ -19,14 +19,16 @@
 ---
 
 #MayorOffice
-    cls
+    *clr
+    clr
+    cla
 
+    gs 'AddGlobalButtons'
     gs 'MayorOfficeInit'
-
     gs 'IsBusinessOpen', 'mayor'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' МЭРИЯ'
+    gs 'PrintTitleLine', ' МЭРИЯ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
@@ -35,7 +37,7 @@
 
         *pl ' '
 
-        act 'Вернуться на улицу':
+        act '<b>Улица</b>', 'images/common/ui/actions/street.png':
             gt 'Street'
         end
 
@@ -46,58 +48,54 @@
 
     *pl ' '
 
-    act 'Спросить клерка о налогах трактира':
+    act '<b>Налоги трактира</b>', 'images/common/ui/actions/policy.png':
         gt 'MayorOfficeCityTaxTalk'
     end
 
     if BirthCertificateFound = 1 and BirthCertificateRead = 1:
-        act 'Показать клерку свидетельство о рождении':
+        act '<b>Свидетельство о рождении</b>', 'images/common/ui/actions/policy.png':
             gt 'MayorOfficeBirthCertificateClerk'
         end
     end
 
     if MayorBribePaid = 1 and MayorAudienceRefused = 1 and MayorClerkAdviceGiven = 0:
-        act 'Требовать вернуть деньги за приём':
+        act '<b>Вернуть деньги за приём</b>', 'images/common/ui/actions/gift.png':
             gt 'MayorOfficeClerkRefundTalk'
         end
     end
 
     if MayorClerkAdviceGiven = 1 and MayorFirstTalkDone = 0:
-        act 'Доложить клерку о делах трактира':
+        act '<b>Доложить о делах</b>', 'images/common/ui/tavern.png':
             gt 'MayorOfficeWorkoffGate'
         end
     end
 
-    if MayorClerkAdviceGiven = 1:
-        act 'Спросить клерка, как добиться приёма у мэра':
-            gt 'MayorOfficeClerkAdviceReplay'
-        end
+    if MayorClerkAdviceGiven = 1 or MayorFirstTalkDone = 1 or (BirthCertificateMagistratePending = 1 and BirthCertificateMagistrateConfirmed = 0):
+        gs 'BuildMayorOfficeTalkMenu'
+        gs 'PrintMenuOpenLink', 'MayorOfficeTalkMenu', 'Разговоры в мэрии'
+        *pl ' '
     end
 
     if MayorFirstTalkDone = 0 and MayorBribePaid = 0:
         if BirthCertificateRead = 1:
-            act 'Просить приём у мэра':
+            act '<b>Приём у мэра</b>', 'images/common/ui/actions/mayor.png':
                 gt 'MayorOfficeAudienceGate'
             end
         end
     elseif MayorFirstTalkDone = 0 and MayorBribePaid = 1 and MayorAudienceRefused = 0:
-        act 'Ждать ответа о приёме':
+        act '<b>Ждать ответа</b>', 'images/common/ui/wait.png':
             gt 'MayorOfficeMayorRefused'
-        end
-    elseif MayorFirstTalkDone = 1:
-        act 'Поговорить с мэром':
-            gt 'MayorOfficeMayorTalk'
         end
     end
 
     if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0 and MayorFirstTalkDone = 0:
-        act 'Подать свидетельство магистрату':
+        act '<b>Подать свидетельство</b>', 'images/common/ui/actions/policy.png':
             gt 'MayorOfficeMagistrateGate'
         end
     end
 
     if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0 and MayorFirstTalkDone = 1:
-        act 'Подать свидетельство на подтверждение':
+        act '<b>Подтвердить свидетельство</b>', 'images/common/ui/actions/policy.png':
             gt 'MayorOfficeMagistrateSubmit'
         end
     end
@@ -110,13 +108,9 @@
     if BirthCertificateMagistratePending = 1 and BirthCertificateMagistrateConfirmed = 0:
         *p 'Ваше дело всё ещё на проверке. Магистрат ждёт ответ из столицы.'
         *pl ' '
-
-        act 'Узнать о ходе дела':
-            gt 'MayorOfficeMagistratePendingScreen'
-        end
     end
 
-    act 'Вернуться на улицу':
+    act '<b>Улица</b>', 'images/common/ui/actions/street.png':
         gt 'Street'
     end
 ---
@@ -129,7 +123,7 @@
 
     *pl ' '
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -142,7 +136,7 @@
 
     *pl ' '
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -159,7 +153,7 @@
 
         *pl ' '
 
-        act 'Вернуться в мэрию':
+        act '<b>Вернуться в мэрию</b>':
             gt 'MayorOffice'
         end
 
@@ -171,7 +165,7 @@
 
         *pl ' '
 
-        act 'Вернуться в мэрию':
+        act '<b>Вернуться в мэрию</b>':
             gt 'MayorOffice'
         end
 
@@ -183,7 +177,7 @@
 
         *pl ' '
 
-        act 'Вернуться в мэрию':
+        act '<b>Вернуться в мэрию</b>':
             gt 'MayorOffice'
         end
 
@@ -195,16 +189,16 @@
     *pl ' '
 
     if money < MayorAudienceBribe:
-        act 'У меня не хватает денег':
+        act '<b>У меня не хватает денег</b>':
             gt 'MayorOfficeBribeNoMoney'
         end
     else:
-        act 'Заплатить и просить приём':
+        act '<b>Заплатить и просить приём</b>':
             gt 'MayorOfficeBribePay'
         end
     end
 
-    act 'Пока не буду платить':
+    act '<b>Пока не буду платить</b>':
         gt 'MayorOffice'
     end
 ---
@@ -216,7 +210,7 @@
 
     *pl ' '
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -245,11 +239,11 @@
 
     *pl ' '
 
-    act 'Требовать деньги назад у клерка':
+    act '<b>Требовать деньги назад у клерка</b>':
         gt 'MayorOfficeClerkRefundTalk'
     end
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -268,11 +262,11 @@
 
     *pl ' '
 
-    act 'Слушать дальше':
+    act '<b>Слушать дальше</b>':
         gt 'MayorOfficeClerkAdviceTalk'
     end
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -293,7 +287,7 @@
 
     *pl ' '
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -306,7 +300,7 @@
 
     *pl ' '
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -359,7 +353,7 @@
 
         *pl ' '
 
-        act 'Вернуться в мэрию':
+        act '<b>Вернуться в мэрию</b>':
             gt 'MayorOffice'
         end
 
@@ -370,11 +364,11 @@
 
     *pl ' '
 
-    act 'Войти в кабинет мэра':
+    act '<b>Войти в кабинет мэра</b>':
         gt 'MayorOfficeFirstTalk'
     end
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -401,7 +395,7 @@
 
     *pl ' '
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -413,7 +407,7 @@
 
     *pl ' '
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -425,7 +419,7 @@
 
     *pl ' '
 
-    act 'Вернуться в мэрию':
+    act '<b>Вернуться в мэрию</b>':
         gt 'MayorOffice'
     end
 ---
@@ -473,14 +467,14 @@
 
         *pl ' '
 
-        act 'Вернуться':
+        act '<b>Вернуться</b>':
             gt 'MayorOffice'
         end
 
         exit
     end
 
-    act 'Оплатить госпошлину и подать документ':
+    act '<b>Оплатить госпошлину и подать документ</b>':
         money -= BirthCertificateMagistrateFee
         BirthCertificateMagistrateSubmitted = 1
         BirthCertificateMagistrateSubmitDay = day
@@ -503,12 +497,12 @@
 
         *pl ' '
 
-        act 'Вернуться в мэрию':
+        act '<b>Вернуться в мэрию</b>':
             gt 'MayorOffice'
         end
     end
 
-    act 'Подумать и вернуться позже':
+    act '<b>Подумать и вернуться позже</b>':
         gt 'MayorOffice'
     end
 ---
@@ -560,7 +554,38 @@
 
     *pl ' '
 
-    act 'Вернуться':
+    act '<b>Вернуться</b>':
         gt 'MayorOffice'
     end
+---
+
+#BuildMayorOfficeTalkMenu
+    gs 'Menu.Destroy', 'MayorOfficeTalkMenu'
+    gs 'Menu.Create', 'MayorOfficeTalkMenu'
+
+    if MayorClerkAdviceGiven = 1:
+        gs 'MenuUiAdd', 'MayorOfficeTalkMenu', 'Как добиться приёма', 'talk'
+        gs 'Menu.AddModule', 'MayorOfficeTalkMenu', {
+            gt 'MayorOfficeClerkAdviceReplay'
+        }
+    end
+
+    if MayorFirstTalkDone = 1:
+        gs 'MenuUiAdd', 'MayorOfficeTalkMenu', 'Мэр', 'mayor'
+        gs 'Menu.AddModule', 'MayorOfficeTalkMenu', {
+            gt 'MayorOfficeMayorTalk'
+        }
+    end
+
+    if BirthCertificateMagistratePending = 1 and BirthCertificateMagistrateConfirmed = 0:
+        gs 'MenuUiAdd', 'MayorOfficeTalkMenu', 'Ход дела', 'talk'
+        gs 'Menu.AddModule', 'MayorOfficeTalkMenu', {
+            gt 'MayorOfficeMagistratePendingScreen'
+        }
+    end
+
+    gs 'MenuUiAdd', 'MayorOfficeTalkMenu', 'Назад', 'return'
+    gs 'Menu.AddModule', 'MayorOfficeTalkMenu', {
+        gt 'MayorOffice'
+    }
 ---

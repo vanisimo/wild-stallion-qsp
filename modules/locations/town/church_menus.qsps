@@ -1,0 +1,65 @@
+! ================================================
+! FILE: modules/locations/town/church_menus.qsps
+! Меню действий в церкви
+! ================================================
+
+#BuildChurchMenu
+    gs 'Menu.Destroy', 'ChurchMenu'
+    gs 'Menu.Create', 'ChurchMenu'
+
+    if week = 7:
+        if time = 1:
+            gs 'MenuUiAdd', 'ChurchMenu', 'Служба', 'church'
+            gs 'Menu.AddModule', 'ChurchMenu', {
+                gt 'ChurchSundayServiceMenu'
+            }
+        elseif time = 2:
+            if BeckyPriestOk = 0 and (BeckyPriestHint = 1 or BeckyPriestRetry = 1) and LOC('BeckyEddieConfession') = 1:
+                gs 'MenuUiAdd', 'ChurchMenu', 'Исповедь Бекки', 'look'
+                gs 'Menu.AddModule', 'ChurchMenu', {
+                    gt 'BeckyEddieConfession'
+                }
+            end
+
+            if BeckyPriestArcOpen = 1 and LOC('ChurchSpyBeckyStart') = 1:
+                gs 'ChurchSpyBeckyCheckAvailable'
+
+                if BeckyPriestSpyReady = 1:
+                    gs 'MenuUiAdd', 'ChurchMenu', 'Подслушать Бекки', 'look'
+                    gs 'Menu.AddModule', 'ChurchMenu', {
+                        gt 'ChurchSpyBeckyStart'
+                    }
+                end
+
+                if LOC('ChurchSpyBeckyDonationBoost') = 1:
+                    gs 'MenuUiAdd', 'ChurchMenu', 'Пожертвование 15', 'gift'
+                    gs 'Menu.AddModule', 'ChurchMenu', {
+                        gt 'ChurchSpyBeckyDonationBoost'
+                    }
+                end
+            end
+
+            gs 'MenuUiAdd', 'ChurchMenu', 'Исповедаться', 'talk'
+            gs 'Menu.AddModule', 'ChurchMenu', {
+                gs 'PrintMainP', 'Ты зашёл в исповедальную кабинку и рассказал о своих грехах.'
+                gs 'CorruptionProgress', 'player', 'confession'
+                gt 'Church'
+            }
+        else:
+            gs 'MenuUiAdd', 'ChurchMenu', 'Рынок', 'market'
+            gs 'Menu.AddModule', 'ChurchMenu', {
+                gt 'Market'
+            }
+        end
+    end
+
+    gs 'MenuUiAdd', 'ChurchMenu', 'Отец Герхард', 'talk'
+    gs 'Menu.AddModule', 'ChurchMenu', {
+        gt 'TalkWithGerhard'
+    }
+
+    gs 'MenuUiAdd', 'ChurchMenu', 'Назад', 'return'
+    gs 'Menu.AddModule', 'ChurchMenu', {
+        gt 'Church'
+    }
+---

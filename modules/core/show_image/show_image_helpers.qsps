@@ -4,6 +4,178 @@
 ! Упрощают вызовы картинок по всему проекту
 ! ================================================
 
+! ================================================
+! FILE: modules/core/show_image/show_image_helpers.qsps
+! Выбор расширения без FILEEXISTS
+! Классический QSP 5.90: у IMG только SRC и WIDTH (без onerror/style)
+! Порядок по умолчанию: png → webp → jpg
+! ================================================
+
+#EnsureImageExtOrder
+    if ImageExtOrderReady = 1:
+        exit
+    end
+
+    $ImageExtOrder[0] = 'png'
+    $ImageExtOrder[1] = 'webp'
+    $ImageExtOrder[2] = 'jpg'
+    ImageExtOrderReady = 1
+---
+
+#ImageStyleToWidth
+    $ImageStyleSource = $ARGS[0]
+
+    $ImageStyleWidth = '100%'
+
+    if $ImageStyleSource = '':
+        exit
+    end
+
+    if INSTR($ImageStyleSource, '%') > 0:
+        $ImageStyleWidth = $ImageStyleSource
+    elseif INSTR($ImageStyleSource, '360px') > 0:
+        $ImageStyleWidth = '360'
+    elseif INSTR($ImageStyleSource, '560px') > 0:
+        $ImageStyleWidth = '560'
+    elseif INSTR($ImageStyleSource, '300px') > 0:
+        $ImageStyleWidth = '300'
+    elseif INSTR($ImageStyleSource, '260px') > 0:
+        $ImageStyleWidth = '260'
+    elseif INSTR($ImageStyleSource, '220px') > 0:
+        $ImageStyleWidth = '220'
+    elseif INSTR($ImageStyleSource, '180px') > 0:
+        $ImageStyleWidth = '180'
+    elseif INSTR($ImageStyleSource, '140px') > 0:
+        $ImageStyleWidth = '140'
+    elseif INSTR($ImageStyleSource, '96px') > 0:
+        $ImageStyleWidth = '96'
+    elseif INSTR($ImageStyleSource, '80px') > 0:
+        $ImageStyleWidth = '80'
+    elseif INSTR($ImageStyleSource, '64px') > 0:
+        $ImageStyleWidth = '64'
+    elseif INSTR($ImageStyleSource, '48px') > 0:
+        $ImageStyleWidth = '48'
+    elseif INSTR($ImageStyleSource, 'max-width:') > 0 and INSTR($ImageStyleSource, '120px') > 0:
+        $ImageStyleWidth = '120'
+    elseif INSTR($ImageStyleSource, '150px') > 0:
+        $ImageStyleWidth = '150'
+    elseif INSTR($ImageStyleSource, '120px') > 0:
+        $ImageStyleWidth = '120'
+    end
+
+    killvar '$ImageStyleSource'
+---
+
+#BuildImageExtList
+    $BuildExtPrefer = LCASE($ARGS[0])
+    ImageBuildSingleExt = ARGS[1]
+
+    ImageFallbackExtCount = 0
+
+    if ImageBuildSingleExt = 1 and $BuildExtPrefer <> '':
+        $ImageFallbackExtList[0] = $BuildExtPrefer
+        ImageFallbackExtCount = 1
+        exit
+    end
+
+    gs 'EnsureImageExtOrder'
+
+    if $BuildExtPrefer <> '':
+        $ImageFallbackExtList[0] = $BuildExtPrefer
+        ImageFallbackExtCount = 1
+    end
+
+    ImageFallbackIdx = 0
+
+    :loopBuildExtList
+    if ImageFallbackIdx >= arrsize('$ImageExtOrder'):
+        jump 'endBuildExtList'
+    end
+
+    $BuildExtCandidate = $ImageExtOrder[ImageFallbackIdx]
+    ImageFallbackSkip = 0
+
+    if $BuildExtPrefer <> '' and $BuildExtCandidate = $BuildExtPrefer:
+        ImageFallbackSkip = 1
+    end
+
+    if ImageFallbackSkip = 0:
+        $ImageFallbackExtList[ImageFallbackExtCount] = $BuildExtCandidate
+        ImageFallbackExtCount += 1
+    end
+
+    ImageFallbackIdx += 1
+    jump 'loopBuildExtList'
+
+    :endBuildExtList
+
+    if ImageFallbackExtCount = 0:
+        $ImageFallbackExtList[0] = 'png'
+        ImageFallbackExtCount = 1
+    end
+
+    killvar '$BuildExtPrefer'
+    killvar '$BuildExtCandidate'
+    killvar 'ImageFallbackIdx'
+    killvar 'ImageFallbackSkip'
+---
+
+#BuildImageFallbackTag
+    $ImageFallbackBase = $ARGS[0]
+    $ImageFallbackStyle = $ARGS[1]
+    $ImageFallbackPreferExt = LCASE($ARGS[2])
+    ImageFallbackSingleExt = ARGS[3]
+
+    $ImageFallbackTag = ''
+    $ImageResolvedSrc = ''
+    $ImageResolvedWidth = ''
+
+    if $ImageFallbackBase = '':
+        exit
+    end
+
+    gs 'BuildImageExtList', $ImageFallbackPreferExt, ImageFallbackSingleExt
+
+    if ImageFallbackExtCount <= 0:
+        exit
+    end
+
+    $ImageResolvedSrc = $ImageFallbackBase + '.' + $ImageFallbackExtList[0]
+
+    if $ImageFallbackStyle = '':
+        $ImageResolvedWidth = '100%'
+    else:
+        gs 'ImageStyleToWidth', $ImageFallbackStyle
+        $ImageResolvedWidth = $ImageStyleWidth
+        killvar '$ImageStyleWidth'
+    end
+
+    $ImageFallbackTag = '<img src="' + $ImageResolvedSrc + '" width="' + $ImageResolvedWidth + '">'
+
+    killvar '$ImageFallbackBase'
+    killvar '$ImageFallbackStyle'
+    killvar '$ImageFallbackPreferExt'
+    killvar 'ImageFallbackSingleExt'
+---
+
+#PrintImageHtml
+    $PrintImageHtmlTag = $ARGS[0]
+    $PrintImageHtmlMode = LCASE($ARGS[1])
+
+    if $PrintImageHtmlTag = '':
+        exit
+    end
+
+    if $PrintImageHtmlMode = 'panel':
+        pl '<center>' + $PrintImageHtmlTag + '</center>'
+    else:
+        *pl '<center>' + $PrintImageHtmlTag + '</center>'
+    end
+
+    killvar '$PrintImageHtmlTag'
+    killvar '$PrintImageHtmlMode'
+---
+
 #ShowPortrait
 $girl = LCASE($Args[0])
 $size = $Args[1]

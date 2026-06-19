@@ -1,69 +1,71 @@
 ! ================================================
 ! FILE: modules/locations/street.qsps
 ! Улица перед трактиром
-! 5-частная система времени + ShowImage
 ! ================================================
 
 #Street
-    cls
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
+
     *pl '══════════════════════════════════════════════'
-    *pl ' 🌍 УЛИЦА ПЕРЕД ТРАКТИРОМ'
+    gs 'PrintTitleLine', ' УЛИЦА ПЕРЕД ТРАКТИРОМ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    ! ====================== ОПИСАНИЕ В ЗАВИСИМОСТИ ОТ ВРЕМЕНИ ======================
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/street'
+    elseif LOC('ShowLocationImage') = 1:
+        gs 'ShowLocationImage', 'street'
+    end
+
     if time = 1:
-        *pl '🌅 УТРО'
-        *p 'Улица ещё тихая. Первые торговцы открывают лавки, пахнет свежим хлебом.'
+        gs 'PrintTitleLine', ' УТРО'
+        gs 'PrintMainP', 'Улица ещё тихая. Первые торговцы открывают лавки, пахнет свежим хлебом.'
     elseif time = 2:
-        *pl '☀️ ПОЛДЕНЬ'
-        *p 'Улица оживлённая. Много людей, телеги, крики торговцев.'
+        gs 'PrintTitleLine', ' ПОЛДЕНЬ'
+        gs 'PrintMainP', 'Улица оживлённая. Много людей, телеги, крики торговцев.'
     elseif time = 3:
-        *pl '🏙️ ДЕНЬ'
-        *p 'Самое активное время. Улица полна народу.'
+        gs 'PrintTitleLine', ' ДЕНЬ'
+        gs 'PrintMainP', 'Самое активное время. Улица полна народу.'
     elseif time = 4:
-        *pl '🌇 ВЕЧЕР'
-        *p 'Солнце клонится к закату. Атмосфера тёплая и расслабленная.'
+        gs 'PrintTitleLine', ' ВЕЧЕР'
+        gs 'PrintMainP', 'Солнце клонится к закату. Атмосфера тёплая и расслабленная.'
     elseif time = 5:
-        *pl '🌙 НОЧЬ'
-        *p 'Улица погружена в полумрак. Горят фонари, становится тише и немного опаснее.'
+        gs 'PrintTitleLine', ' НОЧЬ'
+        gs 'PrintMainP', 'Улица погружена в полумрак. Горят фонари, становится тише и немного опаснее.'
     end
 
     *pl ' '
-    *pl 'Куда пойдёшь?'
+    gs 'PrintMainLine', 'Куда пойдёшь?'
 
-    act '🏠 Вернуться в трактир':
+    act '<b>Трактир</b>', 'images/common/ui/tavern.png':
         gt 'TavernMain'
     end
 
-    act '🛒 Пойти на рынок':
+    act '<b>Рынок</b>', 'images/common/ui/actions/market.png':
         gt 'Market'
     end
 
-    act '⛪ Пойти в церковь':
+    act '<b>Церковь</b>', 'images/common/ui/actions/church.png':
         gt 'Church'
     end
 
-    act '⚓ Пойти в порт':
+    act '<b>Порт</b>', 'images/common/ui/actions/port.png':
         gt 'Port'
     end
 
-    act '🔨 Пойти в квартал ремесленников':
+    act '<b>Ремесленники</b>', 'images/common/ui/actions/craftsmen.png':
         gt 'CraftsmenQuarter'
     end
 
-    act '🏛️ Пойти в мэрию':
+    act '<b>Мэрия</b>', 'images/common/ui/actions/mayor.png':
         gt 'MayorOffice'
     end
 
-    act '🚶 Просто прогуляться по улице':
-        *p 'Ты неспешно прошёлся по улице, наблюдая за жизнью города.'
-        time += 1
-        if time > 5:
-            time = 1
-            gs 'NextDay'
-        end
-        act 'Продолжить': gt 'Street'
+    act '<b>Прогуляться</b>', 'images/common/ui/actions/look.png':
+        gs 'AdvanceTimeWalk', 'Street', 'Ты неспешно прошёлся по улице, наблюдая за жизнью города.'
     end
 ---
-

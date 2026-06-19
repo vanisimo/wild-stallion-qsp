@@ -13,6 +13,10 @@
         $GeorgetteReturnLoc = 'Port'
     end
 
+    if LOC($GeorgetteReturnLoc) = 0:
+        $GeorgetteReturnLoc = 'Port'
+    end
+
     GeorgetteKnown = 1
 
     cls
@@ -29,19 +33,33 @@
     gs 'GeorgetteLizetteIntroText', 'first_meet'
     *p $GeorgetteLizetteIntroText
 
+    $TalkGirl = 'georgett'
+    $TalkReturnLoc = $GeorgetteReturnLoc
+
+    gs 'GirlTalkSessionBegin'
+    gs 'EnsureGirlData', 'georgett'
+    gs 'GirlTalkBuildGeorgetteMainMenu'
+
+    gs 'GirlTalkShowSidebarWithAnchor', 'georgett'
+
+    *pl ' '
+    gs 'GirlTalkShowNpcMenuAnchor', 'main'
     *pl ' '
 
-    act 'Спросить, что она здесь делает':
-        gt 'GeorgettePortTalk', $GeorgetteReturnLoc, 'port'
+    act '<b>Вернуться</b>':
+        if $TalkReturnLoc = 'GeorgettePortNightMenu':
+            gs 'GirlTalkSessionEnd'
+            gt 'GeorgettePortNightMenu', 'Port'
+        elseif $TalkReturnLoc = 'ChurchSundayServiceMenu':
+            gs 'GirlTalkSessionEnd'
+            gt 'ChurchSundayServiceMenu'
+        else:
+            gt 'GirlTalkMenuReturn'
+        end
     end
 
-    act 'Спросить, не её ли дочь часто бывает в порту':
-        gt 'GeorgettePortTalk', $GeorgetteReturnLoc, 'daughter'
-    end
-
-    act 'Закончить разговор':
-        gt $GeorgetteReturnLoc
-    end
+    killvar '$GeorgetteReturnLoc'
+    killvar '$GeorgetteLizetteIntroText'
 ---
 
 ! ================================================
@@ -87,18 +105,18 @@
     *pl ' '
 
     if LizetteMentionedByGeorgette = 0:
-        act 'Спросить о дочери':
+        act '<b>Спросить о дочери</b>':
             gt 'GeorgettePortTalk', $GeorgetteReturnLoc, 'daughter'
         end
     end
 
     if LOC('PortCapitalShipMenu') = 1:
-        act 'Посмотреть товары у корабля':
+        act '<b>Посмотреть товары у корабля</b>':
             gt 'PortCapitalShipMenu', $GeorgetteReturnLoc
         end
     end
 
-    act 'Вернуться к причалу':
+    act '<b>Вернуться к причалу</b>':
         gt $GeorgetteReturnLoc
     end
 
@@ -130,11 +148,11 @@
     *pl 'LizetteKnown: ' + STR(LizetteKnown)
     *pl ' '
 
-    act 'Познакомиться с Жоржеттой':
+    act '<b>Познакомиться с Жоржеттой</b>':
         gt 'GeorgetteFirstMeet', $GeorgetteReturnLoc
     end
 
-    act 'Сразу отметить, что Жоржетта рассказала о Лизетте':
+    act '<b>Сразу отметить, что Жоржетта рассказала о Лизетте</b>':
         GeorgetteKnown = 1
         LizetteMentionedByGeorgette = 1
         $LizetteSourceKnown = 'georgette'
@@ -142,12 +160,12 @@
     end
 
     if LOC('PortAmandaLizetteMeet') = 1:
-        act 'Запустить знакомство Аманды с Лизеттой':
+        act '<b>Запустить знакомство Аманды с Лизеттой</b>':
             gt 'PortAmandaLizetteMeet', $GeorgetteReturnLoc
         end
     end
 
-    act 'Вернуться':
+    act '<b>Вернуться</b>':
         gt $GeorgetteReturnLoc
     end
 ---

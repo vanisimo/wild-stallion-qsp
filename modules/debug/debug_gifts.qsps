@@ -1,0 +1,96 @@
+! ================================================
+! FILE: modules/debug/debug_gifts.qsps
+! MODULE: debug
+! Панель отладки подарков
+! ================================================
+
+#DebugGiftPanel
+    if debug = 0:
+        clr
+        pl 'DEBUG отключён.'
+        exit
+    end
+
+    gs 'PanelDebugToolsHeader'
+
+    pl 'DEBUG: ПОДАРКИ'
+    pl ' '
+    pl 'PortGiftBoughtTotal: ' + STR(PortGiftBoughtTotal)
+    pl ' '
+
+    gs 'DebugGiftPanelLine', 'capital_hair_ribbon'
+    gs 'DebugGiftPanelLine', 'island_glass_beads'
+    gs 'DebugGiftPanelLine', 'foreign_scarf'
+    gs 'DebugGiftPanelLine', 'mammoth_ivory_box'
+    gs 'DebugGiftPanelLine', 'southern_spices'
+    gs 'DebugGiftPanelLine', 'spiced_oil'
+    gs 'DebugGiftPanelLine', 'dance_fan'
+    gs 'DebugGiftPanelLine', 'hand_mirror'
+    gs 'DebugGiftPanelLine', 'seashell_necklace'
+    gs 'DebugGiftPanelLine', 'sugared_fruits'
+    gs 'DebugGiftPanelLine', 'draupnir_cutting_board'
+    gs 'DebugGiftPanelLine', 'kitchen_knife_set'
+    gs 'DebugGiftPanelLine', 'rare_salt'
+    gs 'DebugGiftPanelLine', 'linen_apron'
+    gs 'DebugGiftPanelLine', 'recipe_codex'
+    gs 'DebugGiftPanelLine', 'herb_bundle'
+    gs 'DebugGiftPanelLine', 'baking_oil'
+    gs 'DebugGiftPanelLine', 'irma_fabric_roll'
+    gs 'DebugGiftPanelLine', 'irma_silk_spool'
+    gs 'DebugGiftPanelLine', 'irma_seed_beads'
+    gs 'DebugGiftPanelLine', 'irma_brooch'
+    gs 'DebugGiftPanelLine', 'lizette_bracelet'
+
+    pl ' '
+    pl '<a href="exec:gs ''DebugGiftPanelAddAll''">+1 ко всем подаркам</a>'
+    pl '<a href="exec:gs ''DebugGiftPanelClearAll''">Обнулить инвентарь</a>'
+
+    gs 'PanelDebugToolsBack'
+---
+
+#DebugGiftPanelLine
+    $DebugGiftLineId = LCASE($ARGS[0])
+
+    gs 'GiftRegistryResolve', $DebugGiftLineId
+
+    pl $GiftRegistryLabel + ': ' + STR(GiftInventory[$DebugGiftLineId])
+    pl '<a href="exec:GiftInventory[''' + $DebugGiftLineId + '''] += 1 & gs ''DebugGiftPanel''">+1</a>'
+
+    killvar '$DebugGiftLineId'
+    killvar 'GiftRegistryPrice'
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+    killvar '$GiftRegistryLabel'
+---
+
+#DebugGiftPanelAddAll
+    GiftInventory['capital_hair_ribbon'] += 1
+    GiftInventory['island_glass_beads'] += 1
+    GiftInventory['foreign_scarf'] += 1
+    GiftInventory['mammoth_ivory_box'] += 1
+    GiftInventory['southern_spices'] += 1
+    GiftInventory['spiced_oil'] += 1
+    GiftInventory['dance_fan'] += 1
+    GiftInventory['hand_mirror'] += 1
+    GiftInventory['seashell_necklace'] += 1
+    GiftInventory['sugared_fruits'] += 1
+    GiftInventory['draupnir_cutting_board'] += 1
+    GiftInventory['kitchen_knife_set'] += 1
+    GiftInventory['rare_salt'] += 1
+    GiftInventory['linen_apron'] += 1
+    GiftInventory['recipe_codex'] += 1
+    GiftInventory['herb_bundle'] += 1
+    GiftInventory['baking_oil'] += 1
+    GiftInventory['irma_fabric_roll'] += 1
+    GiftInventory['irma_silk_spool'] += 1
+    GiftInventory['irma_seed_beads'] += 1
+    GiftInventory['irma_brooch'] += 1
+    GiftInventory['lizette_bracelet'] += 1
+
+    gs 'DebugGiftPanel'
+---
+
+#DebugGiftPanelClearAll
+    gs 'InitGiftInventory'
+    gs 'DebugGiftPanel'
+---

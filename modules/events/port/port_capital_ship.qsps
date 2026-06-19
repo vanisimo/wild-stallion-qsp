@@ -38,7 +38,7 @@
     cls
 
     if LOC('ShowLocationTimeImage') = 1:
-        gs 'ShowLocationTimeImage', 'images/locations/port/capital_ship', 4
+        gs 'ShowLocationTimeImage', 'images/locations/port/capital_ship'
     end
 
     *pl '══════════════════════════════════════════════'
@@ -59,7 +59,7 @@
 
         *pl ' '
 
-        act 'Вернуться к причалу':
+        act '<b>Вернуться к причалу</b>':
             gt $PortReturnLoc
         end
 
@@ -78,17 +78,28 @@
         *pl ' '
     end
 
-    act 'Осмотреть товары':
+    act '<b>Осмотреть товары</b>':
         gt 'PortCapitalShipBrowse', $PortReturnLoc
     end
 
-    act 'Купить подарок':
+    act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
         gt 'PortGiftShop', $PortReturnLoc
+    end
+
+    if AmandaMetLizette = 1 and LizetteKnown = 1:
+        gs 'ShowGirlTalkLink', 'lizette', 'PortCapitalShipMenu'
+        *pl ' '
+
+        if GiftInventory['lizette_bracelet'] <= 0:
+            act '<b>Подарки у Лизетты</b>', 'images/common/ui/actions/gift.png':
+                gt 'LizettePortGiftShop', $PortReturnLoc
+            end
+        end
     end
 
     if LOC('PortAmandaLizetteTryMeet') = 1:
         if PortMeetWitnessed = 0 and PortCapitalShipAvailable = 1:
-            act 'Заметить Аманду у товаров':
+            act '<b>Заметить Аманду у товаров</b>':
                 gt 'PortAmandaLizetteTryMeet', $PortReturnLoc
             end
         end
@@ -96,13 +107,13 @@
 
     if debug = 1:
         if LOC('PortAmandaLizetteMeet') = 1:
-            act 'DEBUG: Аманда знакомится с Лизеттой':
+            act '<b>DEBUG: Аманда знакомится с Лизеттой</b>':
                 gt 'PortAmandaLizetteMeet', $PortReturnLoc
             end
         end
     end
 
-    act 'Вернуться к причалу':
+    act '<b>Вернуться к причалу</b>':
         gt $PortReturnLoc
     end
 ---
@@ -131,11 +142,11 @@
 
     *pl ' '
 
-    act 'Купить подарок':
+    act '<b>Купить подарок</b>':
         gt 'PortGiftShop', $PortReturnLoc
     end
 
-    act 'Вернуться к кораблю':
+    act '<b>Вернуться к кораблю</b>':
         gt 'PortCapitalShipMenu', $PortReturnLoc
     end
 ---
@@ -168,31 +179,47 @@
     *pl 'Деньги: ' + STR(money) + ' мараведи.'
     *pl ' '
 
-    act 'Южные специи — 35 мараведи':
+    act '<b>Южные специи — 35 мараведи</b>':
         gt 'PortGiftBuy', $PortReturnLoc, 'southern_spices'
     end
 
-    act 'Шкатулка из северной мамонтовой кости — 80 мараведи':
+    act '<b>Шкатулка из северной мамонтовой кости — 80 мараведи</b>':
         gt 'PortGiftBuy', $PortReturnLoc, 'mammoth_ivory_box'
     end
 
-    act 'Столичная лента для волос — 25 мараведи':
+    act '<b>Столичная лента для волос — 25 мараведи</b>':
         gt 'PortGiftBuy', $PortReturnLoc, 'capital_hair_ribbon'
     end
 
-    act 'Стеклянные бусы с южных островов — 45 мараведи':
+    act '<b>Стеклянные бусы с южных островов — 45 мараведи</b>':
         gt 'PortGiftBuy', $PortReturnLoc, 'island_glass_beads'
     end
 
-    act 'Масло с пряным запахом — 55 мараведи':
+    act '<b>Масло с пряным запахом — 55 мараведи</b>':
         gt 'PortGiftBuy', $PortReturnLoc, 'spiced_oil'
     end
 
-    act 'Тонкий заморский платок — 60 мараведи':
+    act '<b>Тонкий заморский платок — 60 мараведи</b>':
         gt 'PortGiftBuy', $PortReturnLoc, 'foreign_scarf'
     end
 
-    act 'Вернуться к кораблю':
+    act '<b>Веер для площади — 40 мараведи</b>':
+        gt 'PortGiftBuy', $PortReturnLoc, 'dance_fan'
+    end
+
+    act '<b>Зеркальце в резной рамке — 50 мараведи</b>':
+        gt 'PortGiftBuy', $PortReturnLoc, 'hand_mirror'
+    end
+
+    act '<b>Морская ракушка на шнурке — 30 мараведи</b>':
+        gt 'PortGiftBuy', $PortReturnLoc, 'seashell_necklace'
+    end
+
+    act '<b>Тетрадь рецептов из столицы — 70 мараведи</b>':
+        gt 'PortGiftBuy', $PortReturnLoc, 'recipe_codex'
+    end
+
+    act '<b>Вернуться к кораблю</b>':
         gt 'PortCapitalShipMenu', $PortReturnLoc
     end
 ---
@@ -210,29 +237,14 @@
         $PortReturnLoc = 'Port'
     end
 
-    PortGiftPrice = 0
-    $PortGiftName = ''
+    gs 'GiftRegistryResolve', $PortGiftId
 
-    if $PortGiftId = 'southern_spices':
-        PortGiftPrice = 35
-        $PortGiftName = 'южные специи'
-    elseif $PortGiftId = 'mammoth_ivory_box':
-        PortGiftPrice = 80
-        $PortGiftName = 'шкатулка из северной мамонтовой кости'
-    elseif $PortGiftId = 'capital_hair_ribbon':
-        PortGiftPrice = 25
-        $PortGiftName = 'столичная лента для волос'
-    elseif $PortGiftId = 'island_glass_beads':
-        PortGiftPrice = 45
-        $PortGiftName = 'стеклянные бусы с южных островов'
-    elseif $PortGiftId = 'spiced_oil':
-        PortGiftPrice = 55
-        $PortGiftName = 'масло с пряным запахом'
-    elseif $PortGiftId = 'foreign_scarf':
-        PortGiftPrice = 60
-        $PortGiftName = 'тонкий заморский платок'
-    else:
+    PortGiftPrice = GiftRegistryPrice
+    $PortGiftName = $GiftRegistryAccusative
+
+    if GiftRegistryKnown = 0:
         $PortGiftName = 'неизвестный товар'
+        PortGiftPrice = 0
     end
 
     cls
@@ -264,15 +276,18 @@
 
     *pl ' '
 
-    act 'Купить ещё':
+    act '<b>Купить ещё</b>':
         gt 'PortGiftShop', $PortReturnLoc
     end
 
-    act 'Вернуться к кораблю':
+    act '<b>Вернуться к кораблю</b>':
         gt 'PortCapitalShipMenu', $PortReturnLoc
     end
 
     killvar '$PortGiftId'
     killvar '$PortGiftName'
     killvar 'PortGiftPrice'
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+    killvar '$GiftRegistryLabel'
 ---

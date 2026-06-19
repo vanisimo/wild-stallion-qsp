@@ -1,8 +1,7 @@
 ! ================================================
 ! FILE: modules/locations/player_room.qsps
 ! Личная комната Стефана
-! Отдых, сон, сундук и личные действия
-! Механика энергии удалена
+! Сундук, сон и личные действия
 ! Картинка зависит от времени суток
 ! ================================================
 
@@ -23,62 +22,62 @@
 
     *pl ' '
 
-    act 'Осмотреть комнату':
+    act '<b>Осмотреть комнату</b>', 'images/common/ui/actions/look.png':
         *pl ' '
         *p 'Вы осматриваете комнату внимательнее. Кровать грубая, но достаточно удобная. В сундуке лежат ваши вещи, а на столе можно найти несколько записей о делах трактира.'
     end
 
-    act 'Проверить сундук и вещи':
+    act '<b>Сундук</b>', 'images/common/ui/actions/gift.png':
         gt 'PlayerRoomChest'
     end
 
-    act 'Отдохнуть':
-        *pl ' '
-        *p 'Вы немного отдыхаете, сидя в тишине своей комнаты.'
-
-        time += 1
-
-        if time > 5:
-            gt 'NextDay'
-        else:
-            act 'Продолжить':
-                gt 'PlayerRoom'
-            end
-        end
-    end
-
-    act 'Лечь спать до утра':
+    act '<b>Лечь спать до утра</b>', 'images/common/ui/actions/sleep.png':
         gt 'NextDay'
     end
 
-    act 'Мастурбировать':
-        gs 'CanCumToday'
-
-        if Result = 0:
-            *pl ' '
-            *p 'Вы слишком устали. Сегодня вы уже не сможете кончить.'
-
-            act 'Продолжить':
-                gt 'PlayerRoom'
-            end
-        else:
-            *pl ' '
-            *p 'Вы решили снять напряжение в одиночестве.'
-
-            gs 'RegisterPlayerCum'
-
-            act 'Продолжить':
-                gt 'PlayerRoom'
-            end
-        end
+    act '<b>Мастурбировать</b>', 'images/common/ui/actions/intim.png':
+        gt 'PlayerRoomMasturbate'
     end
 
-    act 'Выйти в коридор':
+    act '<b>Выйти в коридор</b>', 'images/common/ui/actions/floor.png':
         gt 'TavernSecondFloor'
-    end
-
-    act 'Вернуться в главный зал':
-        gt 'TavernMain'
     end
 ---
 
+#PlayerRoomMasturbate
+    gs 'CanCumToday'
+
+    cls
+
+    gs 'ShowLocationImage', 'rooms/player/masturbate', 'full', 'png'
+
+    if PlayerCanCumToday = 0:
+        *pl ' '
+        *p 'Вы слишком устали. Сегодня вы уже не сможете кончить.'
+        *pl ' '
+        *pl 'Оргазмы сегодня: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
+
+        act '<b>Продолжить</b>', 'images/common/ui/actions/return.png':
+            gt 'PlayerRoom'
+        end
+
+        exit
+    end
+
+    *pl ' '
+    *p 'Вы решили снять напряжение в одиночестве.'
+
+    gs 'RegisterPlayerCum'
+
+    if Result = 1:
+        *p 'Напряжение наконец отпускает. Вы тяжело переводите дыхание и приводите себя в порядок.'
+        *pl ' '
+        *pl 'Оргазмы сегодня: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
+    end
+
+    *pl ' '
+
+    act '<b>Продолжить</b>', 'images/common/ui/actions/return.png':
+        gt 'PlayerRoom'
+    end
+---

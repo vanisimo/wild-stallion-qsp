@@ -29,7 +29,7 @@
 
     ! Широкие локации: зал, рынок, церковь, улица
     if $ImageWidthLocation = '':
-        $ImageWidthLocation = '35%'
+        $ImageWidthLocation = '55%'
     end
 
     ! Обычные сюжетные события
@@ -66,6 +66,8 @@
     if ImageDebugShowType <= 0:
         ImageDebugShowType = 1
     end
+
+    gs 'EnsureImageExtOrder'
 ---
 
 ! ================================================
@@ -185,14 +187,15 @@
         $SizedImageWidth = '75%'
     end
 
-    *p '<center><img src="' + $SizedImagePath + '" width="' + $SizedImageWidth + '"></center>'
+    gs 'BuildImageFallbackTag', $SizedImagePath, $SizedImageWidth, '', 0
+    gs 'PrintImageHtml', $ImageFallbackTag, 'main'
 
     if $SizedImageCaption <> '':
         *pl '<center><small>' + $SizedImageCaption + '</small></center>'
     end
 
     if debug_images = 1:
-        *pl '<small>[IMAGE] ' + $SizedImagePath + '</small>'
+        *pl '<small>[IMAGE] ' + $ImageResolvedSrc + '</small>'
 
         if ImageDebugShowType = 1:
             *pl '<small>[IMAGE WIDTH] ' + $SizedImageWidth + '</small>'
@@ -202,6 +205,8 @@
     killvar '$SizedImagePath'
     killvar '$SizedImageWidth'
     killvar '$SizedImageCaption'
+    killvar '$ImageFallbackTag'
+    killvar '$ImageResolvedSrc'
 ---
 
 ! ================================================
@@ -217,6 +222,7 @@
     $SmartImagePath = $ARGS[0]
     $SmartImageType = LCASE($ARGS[1])
     $SmartImageCaption = $ARGS[2]
+    $SmartImagePreferExt = LCASE($ARGS[3])
 
     if $SmartImagePath = '':
         if debug_images = 1:
@@ -234,14 +240,15 @@
 
     gs 'GetImageWidthByType', $ImageSmartType
 
-    *p '<center><img src="' + $SmartImagePath + '" width="' + $ImageSmartWidth + '"></center>'
+    gs 'BuildImageFallbackTag', $SmartImagePath, $ImageSmartWidth, $SmartImagePreferExt, 0
+    gs 'PrintImageHtml', $ImageFallbackTag, 'main'
 
     if $SmartImageCaption <> '':
         *pl '<center><small>' + $SmartImageCaption + '</small></center>'
     end
 
     if debug_images = 1:
-        *pl '<small>[IMAGE] ' + $SmartImagePath + '</small>'
+        *pl '<small>[IMAGE] ' + $ImageResolvedSrc + '</small>'
 
         if ImageDebugShowType = 1:
             *pl '<small>[IMAGE TYPE] ' + $ImageSmartType + ' / width ' + $ImageSmartWidth + '</small>'
@@ -251,8 +258,11 @@
     killvar '$SmartImagePath'
     killvar '$SmartImageType'
     killvar '$SmartImageCaption'
+    killvar '$SmartImagePreferExt'
     killvar '$ImageSmartType'
     killvar '$ImageSmartWidth'
+    killvar '$ImageFallbackTag'
+    killvar '$ImageResolvedSrc'
 ---
 
 ! ================================================
@@ -267,6 +277,7 @@
     $ImagePath = $ARGS[0]
     $ImageCaption = $ARGS[1]
     $ImageType = LCASE($ARGS[2])
+    $ImagePreferExt = LCASE($ARGS[3])
 
     if $ImagePath = '':
         if debug_images = 1:
@@ -276,11 +287,12 @@
         exit
     end
 
-    gs 'ShowImageSmart', $ImagePath, $ImageType, $ImageCaption
+    gs 'ShowImageSmart', $ImagePath, $ImageType, $ImageCaption, $ImagePreferExt
 
     killvar '$ImagePath'
     killvar '$ImageCaption'
     killvar '$ImageType'
+    killvar '$ImagePreferExt'
 ---
 
 ! ================================================
@@ -300,12 +312,8 @@
     $ImageFolder = $ARGS[0]
     $ImageBase = $ARGS[1]
     ImageVariants = ARGS[2]
-    $ImageExt = $ARGS[3]
+    $ImageExt = LCASE($ARGS[3])
     $ImageType = LCASE($ARGS[4])
-
-    if $ImageExt = '':
-        $ImageExt = 'webp'
-    end
 
     if ImageVariants <= 0:
         ImageVariants = 1
@@ -314,12 +322,12 @@
     ImageRoll = RAND(1, ImageVariants)
 
     if $ImageFolder = '':
-        $ImagePath = $ImageBase + '_' + STR(ImageRoll) + '.' + $ImageExt
+        $ImagePath = $ImageBase + '_' + STR(ImageRoll)
     else:
-        $ImagePath = $ImageFolder + '/' + $ImageBase + '_' + STR(ImageRoll) + '.' + $ImageExt
+        $ImagePath = $ImageFolder + '/' + $ImageBase + '_' + STR(ImageRoll)
     end
 
-    gs 'ShowImagePath', $ImagePath, '', $ImageType
+    gs 'ShowImagePath', $ImagePath, '', $ImageType, $ImageExt
 
     killvar '$ImageFolder'
     killvar '$ImageBase'
@@ -333,24 +341,29 @@
 ! FILE: modules/core/show_image/image_debug_random.qsps
 ! Вывод картинки локации с учётом времени суток
 ! ARGS[0] — папка локации
-! ARGS[1] — количество вариантов
-! ARGS[2] — расширение, необязательно
+! ARGS[1] — расширение (приоритет), необязательно
 ! Пример:
-! gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
-! images/locations/tavern/hall/morning_1.webp
+! gs 'ShowLocationTimeImage', 'images/locations/tavern/hall'
+! images/locations/tavern/hall/morning.webp
 ! ================================================
 
 #ShowLocationTimeImage
     $ImageFolder = $ARGS[0]
-    ImageVariants = ARGS[1]
-    $ImageExt = $ARGS[2]
+    $ImageExt = LCASE($ARGS[1])
+
+    if $ImageFolder = '':
+        exit
+    end
 
     gs 'ImageTimeKey'
-    gs 'ShowRandomImagePath', $ImageFolder, $ImageTimeKey, ImageVariants, $ImageExt, 'location'
+
+    $ImagePath = $ImageFolder + '/' + $ImageTimeKey
+
+    gs 'ShowImagePath', $ImagePath, '', 'location', $ImageExt
 
     killvar '$ImageFolder'
     killvar '$ImageExt'
-    killvar 'ImageVariants'
+    killvar '$ImagePath'
 ---
 
 ! ================================================
@@ -360,7 +373,7 @@
 ! ================================================
 
 #ShowTavernHallImage
-    gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 4
+    gs 'ShowLocationTimeImage', 'images/locations/tavern/hall'
 ---
 
 ! ================================================
@@ -370,7 +383,7 @@
 ! ================================================
 
 #ShowTavernKitchenImage
-    gs 'ShowLocationTimeImage', 'images/locations/tavern/kitchen', 3
+    gs 'ShowLocationTimeImage', 'images/locations/tavern/kitchen'
 ---
 
 ! ================================================
@@ -505,7 +518,7 @@
         exit
     end
 
-    $ImagePath = 'images/girls/' + $ImageGirl + '/portrait.webp'
+    $ImagePath = 'images/girls/' + $ImageGirl + '/portrait'
 
     gs 'ShowImagePath', $ImagePath, '', 'portrait'
 

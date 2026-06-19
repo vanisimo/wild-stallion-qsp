@@ -2,7 +2,7 @@
 ! FILE: modules/core/show_image/show_image.qsps
 ! Универсальная система вывода изображений
 ! Картинки лежат в общей папке images/
-! Без FILEEXISTS, так как в QSP его нет
+! Без FILEEXISTS: png/webp/jpg, классический QSP — только SRC+WIDTH
 ! Поддерживает старые и новые вызовы ShowImage
 ! ================================================
 
@@ -13,7 +13,6 @@
     $ImgPose = LCASE($ARGS[3])
     $ImgExt = LCASE($ARGS[4])
     $ImgSize = LCASE($ARGS[5])
-
     if $ImgType = '':
         exit
     end
@@ -82,59 +81,60 @@
         $ImgStyle = 'max-width: 180px; max-height: 220px; border: 2px solid #444; border-radius: 6px;'
     end
 
-    ! ====================== ФОРМИРОВАНИЕ ПУТИ ======================
+    ! ====================== ФОРМИРОВАНИЕ ПУТИ БЕЗ РАСШИРЕНИЯ ======================
 
-    $ImgPath = ''
+    $ImgBasePath = ''
 
     if $ImgType = 'portrait':
         if $ImgAction <> '':
-            $ImgPath = 'images/portraits/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+            $ImgBasePath = 'images/portraits/' + $ImgGirl + '/' + $ImgAction
         else:
-            $ImgPath = 'images/portraits/' + $ImgGirl + '.' + $ImgExt
+            $ImgBasePath = 'images/portraits/' + $ImgGirl
         end
     elseif $ImgType = 'dance':
         if $ImgPose <> '':
-            $ImgPath = 'images/dance/' + $ImgGirl + '/' + $ImgAction + '_' + $ImgPose + '.' + $ImgExt
+            $ImgBasePath = 'images/dance/' + $ImgGirl + '/' + $ImgAction + '_' + $ImgPose
         else:
-            $ImgPath = 'images/dance/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+            $ImgBasePath = 'images/dance/' + $ImgGirl + '/' + $ImgAction
         end
     elseif $ImgType = 'event':
         if $ImgGirl <> '':
             if $ImgPose <> '':
-                $ImgPath = 'images/events/' + $ImgGirl + '/' + $ImgAction + '_' + $ImgPose + '.' + $ImgExt
+                $ImgBasePath = 'images/events/' + $ImgGirl + '/' + $ImgAction + '_' + $ImgPose
             else:
-                $ImgPath = 'images/events/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+                $ImgBasePath = 'images/events/' + $ImgGirl + '/' + $ImgAction
             end
         else:
-            $ImgPath = 'images/events/' + $ImgAction + '.' + $ImgExt
+            $ImgBasePath = 'images/events/' + $ImgAction
         end
     elseif $ImgType = 'sex':
         if $ImgPose <> '':
-            $ImgPath = 'images/sex/' + $ImgGirl + '/' + $ImgAction + '/' + $ImgPose + '.' + $ImgExt
+            $ImgBasePath = 'images/sex/' + $ImgGirl + '/' + $ImgAction + '/' + $ImgPose
         else:
-            $ImgPath = 'images/sex/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+            $ImgBasePath = 'images/sex/' + $ImgGirl + '/' + $ImgAction
         end
     elseif $ImgType = 'location':
         if $ImgAction <> '':
-            $ImgPath = 'images/locations/' + $ImgGirl + '/' + $ImgAction + '.' + $ImgExt
+            $ImgBasePath = 'images/locations/' + $ImgGirl + '/' + $ImgAction
         else:
-            $ImgPath = 'images/locations/' + $ImgGirl + '.' + $ImgExt
+            $ImgBasePath = 'images/locations/' + $ImgGirl
         end
     else:
-        $ImgPath = 'images/common/' + $ImgAction + '.' + $ImgExt
+        $ImgBasePath = 'images/common/' + $ImgAction
     end
 
-    if $ImgPath = '':
+    if $ImgBasePath = '':
         exit
     end
 
     ! ====================== ВЫВОД ======================
 
-    *pl '<center><img src="' + $ImgPath + '" style="' + $ImgStyle + '"></center>'
+    gs 'BuildImageFallbackTag', $ImgBasePath, $ImgStyle, $ImgExt, 0
+    gs 'PrintImageHtml', $ImageFallbackTag, 'main'
     *pl ' '
 
     if debug = 1:
-        *pl '[DEBUG] ShowImage: ' + $ImgPath
+        *pl '[DEBUG] ShowImage: ' + $ImageResolvedSrc
     end
 
     killvar '$ImgType'
@@ -144,7 +144,9 @@
     killvar '$ImgExt'
     killvar '$ImgSize'
     killvar '$ImgStyle'
-    killvar '$ImgPath'
+    killvar '$ImgBasePath'
+    killvar '$ImageFallbackTag'
+    killvar '$ImageResolvedSrc'
     killvar '$ImgOldGirl'
     killvar '$ImgOldAction'
     killvar '$ImgOldPose'

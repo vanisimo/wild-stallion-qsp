@@ -27,56 +27,6 @@
     gs 'UpdateGirlLocations'
     gs 'MenuGirlCalcConditions', $IntimGirl, $IntimReturnLoc
 
-    if MenuCanIntim = 0:
-        msg 'Сейчас для этого неподходящее место или недостаточно близкие отношения.'
-        gt $IntimReturnLoc
-    end
-
-    gs 'CanCumToday'
-
-    if Result = 0:
-        if debug = 1:
-            msg 'DEBUG: дневной лимит Стефана исчерпан, но вход в IntimEntry разрешён.'
-        else:
-            msg 'Стефан слишком вымотан за сегодня.'
-            gt $IntimReturnLoc
-        end
-    end
-
-    if $RealName[$IntimGirl] = '':
-        $RealName[$IntimGirl] = UCASE(MID($IntimGirl, 1, 1)) + LCASE(MID($IntimGirl, 2))
-    end
-
-    cls
-
-    gs 'ShowGirlSidebar', $IntimGirl
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ЛИЧНЫЙ МОМЕНТ: ' + $RealName[$IntimGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if $IntimReturnLoc = 'PlayerRoom':
-        *p 'Вы находитесь в своей комнате. Здесь достаточно тихо и уединённо.'
-    elseif $IntimReturnLoc = 'SandraRoom' or $IntimReturnLoc = 'MelissaRoom' or $IntimReturnLoc = 'AmandaRoom':
-        *p 'Комната даёт достаточно уединения, чтобы разговор стал намного личнее.'
-    elseif $IntimReturnLoc = 'Kitchen':
-        *p 'На кухне не самое спокойное место. Придётся быть осторожнее.'
-    elseif $IntimReturnLoc = 'TavernMain':
-        *p 'Главный зал слишком людный, поэтому всё должно оставаться крайне осторожным.'
-    else:
-        *p 'Вы выбираете момент, чтобы остаться ближе друг к другу.'
-    end
-
-    *pl ' '
-
-    act 'Продолжить':
-        $ReturnLocation = $IntimReturnLoc
-        gt 'StartIntimMenu', $IntimGirl, $IntimReturnLoc
-    end
-
-    act 'Передумать':
-        gt $IntimReturnLoc
-    end
+    gt 'GirlIntim', $IntimGirl, $IntimReturnLoc
 ---
 

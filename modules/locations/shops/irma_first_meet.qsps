@@ -1,14 +1,10 @@
 ! ================================================
 ! FILE: modules/locations/shops/irma_first_meet.qsps
 ! Первое знакомство с Ирмой в лавке
-! Версия: v1
+! Версия: v2
 ! ================================================
 
 #IrmaFirstMeet
-    *clr
-    clr
-    cla
-
     $IrmaFirstMeetReturnLoc = $ARGS[0]
 
     if $IrmaFirstMeetReturnLoc = '':
@@ -18,6 +14,8 @@
     if LOC($IrmaFirstMeetReturnLoc) = 0:
         $IrmaFirstMeetReturnLoc = 'IrmaShop'
     end
+
+    cls
 
     gs 'ShowImage', 'irma', 'shop', 'talk', 'normal'
 
@@ -46,9 +44,22 @@
         IrmaLastVisitDay = day
     end
 
+    $TalkGirl = 'irma'
+    $TalkReturnLoc = $IrmaFirstMeetReturnLoc
+
+    gs 'GirlTalkSessionBegin'
+    gs 'EnsureGirlData', 'irma'
+    gs 'GirlTalkBuildIrmaMainMenu'
+
+    gs 'GirlTalkShowSidebarWithAnchor', 'irma'
+
+    *pl ' '
+    gs 'GirlTalkShowNpcMenuAnchor', 'main'
     *pl ' '
 
-    act 'Продолжить':
-        gt $IrmaFirstMeetReturnLoc
+    act '<b>Вернуться в лавку</b>':
+        gt 'GirlTalkMenuReturn'
     end
+
+    killvar '$IrmaFirstMeetReturnLoc'
 ---

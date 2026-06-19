@@ -1,0 +1,102 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_inga.qsps
+! MODULE: actions/dialogs
+! Меню и разговоры Инги в лавке Бекки
+! ================================================
+
+#GirlTalkBuildIngaMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    if LOC('IngaGuardComplaintCanStart') = 1:
+        gs 'IngaGuardComplaintCanStart'
+
+        if IngaGuardComplaintCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Спросить о проблеме со стражником', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'IngaGuardComplaintStart'
+            }
+        end
+    end
+
+    if LOC('IngaGuardThanksCanStart') = 1:
+        gs 'IngaGuardThanksCanStart'
+
+        if IngaGuardThanksCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поблагодарить за помощь', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'IngaGuardThanks'
+            }
+        end
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и торговле', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'shop'
+    }
+
+    if Friends['inga'] >= 3 or love['inga'] >= 2 or otkroven['inga'] >= 6:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О матери и доме', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_family'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if Friends['inga'] >= 12 or love['inga'] >= 10 or otkroven['inga'] >= 12:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkMenuReturn'
+    }
+---
+
+#GirlTalkShopRun
+    gs 'GirlTalkShopPrintText', 'intro'
+    gs 'GirlTalkShopPrintText', 'context'
+
+    Friends['inga'] += 1
+    trading += 1
+---
+
+#GirlTalkBeckyFamilyRun
+    gs 'GirlTalkBeckyFamilyPrintText', 'intro'
+    gs 'GirlTalkBeckyFamilyPrintText', 'context'
+
+    Friends['inga'] += 1
+
+    if love['inga'] > 0:
+        love['inga'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GirlTalkShopPrintText
+    gs 'GirlTalkShopText', $ARGS[0]
+
+    if $GirlTalkShopText <> '':
+        *p $GirlTalkShopText
+    end
+
+    killvar '$GirlTalkShopText'
+---
+
+#GirlTalkBeckyFamilyPrintText
+    gs 'GirlTalkBeckyFamilyText', $ARGS[0]
+
+    if $GirlTalkBeckyFamilyText <> '':
+        *p $GirlTalkBeckyFamilyText
+    end
+
+    killvar '$GirlTalkBeckyFamilyText'
+---

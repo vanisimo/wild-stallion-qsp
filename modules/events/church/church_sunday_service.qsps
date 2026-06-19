@@ -1,0 +1,268 @@
+! ================================================
+! FILE: modules/events/church/church_sunday_service.qsps
+! MODULE: events/church
+! Воскресная утренняя служба — меню прихожан (этап C)
+! ================================================
+
+#ChurchSundayServiceCanEnter
+    ChurchSundayServiceOpen = 0
+
+    if week <> 7:
+        exit
+    end
+
+    if time <> 1:
+        exit
+    end
+
+    ChurchSundayServiceOpen = 1
+---
+
+#ChurchSundayServiceMenu
+    gs 'ChurchSundayServiceCanEnter'
+
+    if ChurchSundayServiceOpen = 0:
+        gt 'Church'
+    end
+
+    gs 'GeorgetteChurchAloneTryActivate'
+    gs 'UpdateGirlLocations'
+
+    cls
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ВОСКРЕСНАЯ СЛУЖБА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSundayServiceText', 'intro'
+    *p $ChurchServiceText
+
+    *pl ' '
+
+    act '<b>Поболтать с семьёй (Сандра, Мелисса, Аманда)</b>':
+        gt 'ChurchSundayServiceTalkFamily'
+    end
+
+    act '<b>Поболтать с Легаре и Клариссой</b>':
+        gt 'ChurchSundayServiceTalkLegare'
+    end
+
+    act '<b>Поболтать с Бекки и детьми</b>':
+        gt 'ChurchSundayServiceTalkBecky'
+    end
+
+    if GeorgetteChurchAlone = 1 or LizetteChurchWithGeorgette = 1:
+        if $GirlLocation['georgett'] = 'Church':
+            gs 'ShowGirlNpcLinks', 'georgett', 'ChurchSundayServiceMenu'
+            *pl ' '
+        end
+
+        if GeorgetteKnown = 1 and $GirlLocation['georgett'] = 'Church':
+
+            gs 'GeorgetteChurchSexCanOffer'
+
+            if GeorgetteChurchSexCanOffer = 1:
+                act '<b>Уйти с Жоржеттой в тень колонны (15 мараведи)</b>':
+                    gt 'GeorgetteChurchSexStart', 'ChurchSundayServiceMenu'
+                end
+            end
+
+            killvar 'GeorgetteChurchSexCanOffer'
+        end
+    end
+
+    act '<b>Осмотреть мэра на почётном месте</b>':
+        gt 'ChurchSundayServiceInspectMayor'
+    end
+
+    act '<b>Осмотреть Ирму у колонны</b>':
+        gt 'ChurchSundayServiceInspectIrma'
+    end
+
+    gs 'ChurchSundayServiceRumorCanTry'
+
+    if ChurchServiceRumorCanTry = 1:
+        act '<b>Пройтись по собору и прислушаться</b>':
+            gt 'ChurchSundayServiceRumors'
+        end
+    end
+
+    killvar 'ChurchServiceRumorCanTry'
+
+    act '<b>Послушать проповедь</b>':
+        *p 'Ты постоял до конца проповеди. На душе на мгновение стало тише — пока город снова не напомнил о своих тайнах.'
+        gs 'CorruptionProgress', 'player', 'prayer'
+        act '<b>Продолжить</b>': gt 'ChurchSundayServiceMenu'
+    end
+
+    act '<b>Выйти из собора</b>':
+        gt 'Street'
+    end
+
+    killvar '$ChurchServiceText'
+    killvar 'ChurchSundayServiceOpen'
+---
+
+#ChurchSundayServiceTalkFamily
+    cls
+
+    gs 'ChurchSundayServiceText', 'family'
+    *p $ChurchServiceText
+
+    Friends['sandra'] += 1
+    Friends['melissa'] += 1
+    Friends['amanda'] += 1
+
+    *pl ' '
+
+    act '<b>Вернуться к прихожанам</b>':
+        gt 'ChurchSundayServiceMenu'
+    end
+
+    killvar '$ChurchServiceText'
+---
+
+#ChurchSundayServiceTalkLegare
+    cls
+
+    gs 'ChurchSundayServiceText', 'legare'
+    *p $ChurchServiceText
+
+    Friends['clarissa'] += 1
+    Friends['alber'] += 1
+
+    *pl ' '
+
+    act '<b>Вернуться к прихожанам</b>':
+        gt 'ChurchSundayServiceMenu'
+    end
+
+    killvar '$ChurchServiceText'
+---
+
+#ChurchSundayServiceTalkBecky
+    cls
+
+    gs 'ChurchSundayServiceText', 'becky'
+    *p $ChurchServiceText
+
+    Friends['becky'] += 1
+    Friends['inga'] += 1
+
+    *pl ' '
+
+    act '<b>Вернуться к прихожанам</b>':
+        gt 'ChurchSundayServiceMenu'
+    end
+
+    killvar '$ChurchServiceText'
+---
+
+#ChurchSundayServiceInspectMayor
+    cls
+
+    gs 'ChurchSundayServiceText', 'mayor'
+    *p $ChurchServiceText
+
+    *pl ' '
+
+    act '<b>Вернуться к прихожанам</b>':
+        gt 'ChurchSundayServiceMenu'
+    end
+
+    killvar '$ChurchServiceText'
+---
+
+#ChurchSundayServiceInspectIrma
+    cls
+
+    gs 'ChurchSundayServiceText', 'irma'
+    *p $ChurchServiceText
+
+    *pl ' '
+
+    act '<b>Вернуться к прихожанам</b>':
+        gt 'ChurchSundayServiceMenu'
+    end
+
+    killvar '$ChurchServiceText'
+---
+
+#ChurchSundayServiceRumorCanTry
+    ChurchServiceRumorCanTry = 0
+
+    $ChurchServiceRumorKey = 'service_' + STR(day)
+    ChurchServiceRumorCountToday = 0
+
+    if ChurchRumorAttempts_Service[$ChurchServiceRumorKey] > 0:
+        ChurchServiceRumorCountToday = ChurchRumorAttempts_Service[$ChurchServiceRumorKey]
+    end
+
+    if ChurchServiceRumorCountToday < 3:
+        ChurchServiceRumorCanTry = 1
+    end
+
+    killvar '$ChurchServiceRumorKey'
+---
+
+#ChurchSundayServiceRumors
+    gs 'ChurchSundayServiceRumorCanTry'
+
+    if ChurchServiceRumorCanTry = 0:
+        cls
+        gs 'ChurchSundayServiceText', 'rumor_done'
+        *p $ChurchServiceText
+
+        *pl ' '
+
+        act '<b>Вернуться</b>':
+            gt 'ChurchSundayServiceMenu'
+        end
+
+        killvar '$ChurchServiceText'
+        exit
+    end
+
+    $ChurchServiceRumorKey = 'service_' + STR(day)
+
+    if ChurchRumorAttempts_Service[$ChurchServiceRumorKey] <= 0:
+        ChurchRumorAttempts_Service[$ChurchServiceRumorKey] = 0
+    end
+
+    ChurchRumorAttempts_Service[$ChurchServiceRumorKey] += 1
+    ChurchServiceRumorPick = RAND(1, 4)
+
+    cls
+
+    if ChurchServiceRumorPick = 1:
+        gs 'ChurchSundayServiceText', 'rumor_1'
+    elseif ChurchServiceRumorPick = 2:
+        gs 'ChurchSundayServiceText', 'rumor_2'
+    elseif ChurchServiceRumorPick = 3:
+        gs 'ChurchSundayServiceText', 'rumor_3'
+    else:
+        gs 'ChurchSundayServiceText', 'rumor_4'
+    end
+
+    *p $ChurchServiceText
+
+    ChurchRumorSeed += 1
+
+    *pl ' '
+    *pl 'Слух ' + STR(ChurchRumorAttempts_Service[$ChurchServiceRumorKey]) + ' из 3 за эту службу.'
+
+    act '<b>Прислушаться ещё</b>':
+        gt 'ChurchSundayServiceRumors'
+    end
+
+    act '<b>Вернуться к прихожанам</b>':
+        gt 'ChurchSundayServiceMenu'
+    end
+
+    killvar '$ChurchServiceText'
+    killvar '$ChurchServiceRumorKey'
+    killvar 'ChurchServiceRumorPick'
+    killvar 'ChurchServiceRumorCountToday'
+---

@@ -1,0 +1,171 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_georgette.qsps
+! MODULE: actions/dialogs
+! Отдельное меню разговоров Жоржетты (не generic town)
+! ================================================
+
+#GirlTalkBuildGeorgetteMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    if GeorgetteKnown < 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поздороваться', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GeorgetteFirstMeet', $TalkReturnLoc
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            if $TalkReturnLoc = 'GeorgettePortNightMenu':
+                gs 'GirlTalkSessionEnd'
+                gt 'GeorgettePortNightMenu', 'Port'
+            elseif $TalkReturnLoc = 'ChurchSundayServiceMenu':
+                gs 'GirlTalkSessionEnd'
+                gt 'ChurchSundayServiceMenu'
+            else:
+                gt 'GirlTalkMenuReturn'
+            end
+        }
+        exit
+    end
+
+    if GeorgetteKnown = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О порте и кораблях', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_port'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О её жизни', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_bio'
+        }
+    end
+
+    if LizetteMentionedByGeorgette = 1 or PortMeetWitnessed = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О дочери Лизетте', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_lizette'
+        }
+    end
+
+    if Friends['georgett'] >= 14:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О клиентах и городе', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_clients'
+        }
+    end
+
+    if GeorgettePortSexDone = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О церкви и отце Герхарде', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_church'
+        }
+    end
+
+    if Friends['georgett'] >= 18 and EddieSawGeorg >= 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Об Эдди из лавки Бекки', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_eddie'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if Friends['georgett'] >= 12 or love['georgett'] >= 10 or otkroven['georgett'] >= 12:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        if $TalkReturnLoc = 'GeorgettePortNightMenu':
+            gs 'GirlTalkSessionEnd'
+            gt 'GeorgettePortNightMenu', 'Port'
+        elseif $TalkReturnLoc = 'ChurchSundayServiceMenu':
+            gs 'GirlTalkSessionEnd'
+            gt 'ChurchSundayServiceMenu'
+        else:
+            gt 'GirlTalkMenuReturn'
+        end
+    }
+---
+
+#GirlTalkGeorgettePortRun
+    gs 'GirlTalkGeorgettePrintText', 'georgette_port', 'intro'
+    gs 'GirlTalkGeorgettePrintText', 'georgette_port', 'context'
+
+    Friends['georgett'] += 1
+    trading += 1
+---
+
+#GirlTalkGeorgetteBioRun
+    gs 'GirlTalkGeorgettePrintText', 'georgette_bio', 'intro'
+    gs 'GirlTalkGeorgettePrintText', 'georgette_bio', 'context'
+
+    Friends['georgett'] += 1
+    otkroven['georgett'] += 1
+
+    gs 'ClampGirlSocialStats', 'georgett'
+---
+
+#GirlTalkGeorgetteLizetteRun
+    gs 'GirlTalkGeorgettePrintText', 'georgette_lizette', 'intro'
+    gs 'GirlTalkGeorgettePrintText', 'georgette_lizette', 'context'
+
+    Friends['georgett'] += 1
+    LizetteMentionedByGeorgette = 1
+
+    if AmandaLizaInfluence < 100:
+        AmandaLizaInfluence += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'georgett'
+---
+
+#GirlTalkGeorgetteClientsRun
+    gs 'GirlTalkGeorgettePrintText', 'georgette_clients', 'intro'
+    gs 'GirlTalkGeorgettePrintText', 'georgette_clients', 'context'
+
+    Friends['georgett'] += 1
+    otkroven['georgett'] += 1
+
+    gs 'ClampGirlSocialStats', 'georgett'
+---
+
+#GirlTalkGeorgetteChurchRun
+    gs 'GirlTalkGeorgettePrintText', 'georgette_church', 'intro'
+    gs 'GirlTalkGeorgettePrintText', 'georgette_church', 'context'
+
+    Friends['georgett'] += 1
+    otkroven['georgett'] += 1
+
+    gs 'ClampGirlSocialStats', 'georgett'
+---
+
+#GirlTalkGeorgetteEddieRun
+    gs 'GirlTalkGeorgettePrintText', 'georgette_eddie', 'intro'
+    gs 'GirlTalkGeorgettePrintText', 'georgette_eddie', 'context'
+
+    Friends['georgett'] += 1
+
+    if EddieStory < 2:
+        EddieStory = 2
+    end
+
+    gs 'ClampGirlSocialStats', 'georgett'
+---
+
+#GirlTalkGeorgettePrintText
+    gs 'GirlTalkGeorgetteText', $ARGS[0], $ARGS[1]
+
+    if $GirlTalkGeorgetteText <> '':
+        *p $GirlTalkGeorgetteText
+    end
+
+    killvar '$GirlTalkGeorgetteText'
+---

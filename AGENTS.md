@@ -156,13 +156,18 @@ Current core design constraints:
 
 Main character file:
 
-- `modules/npc/steve.qsps`
+- `modules/npc/town/steve.qsps`
+
+Character voice and boundaries (canon):
+
+- `docs/design-stefan-voice.md`
 
 Main character:
 
 - Stefan Longcock / Стефан Лонгкок
 - age: 20
 - start location: `TavernMain`
+- archetype: young former slacker, rough-humorous, status-proud inn owner; Act 1 not yet bold — testing boundaries; women notice his status but he cannot use it well yet; lewd thoughts OK, actions slower; alcohol background only, not narrative focus; friendly but does not give away what is his without being convinced
 
 Known stats include:
 

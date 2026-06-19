@@ -30,7 +30,7 @@
         *p 'Сейчас уже слишком поздно. Таверна закрыта, и становиться за стойку бессмысленно.'
         *pl ' '
 
-        act 'Вернуться в зал':
+        act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
             gt 'TavernMain'
         end
 
@@ -41,7 +41,7 @@
         *p 'Сейчас таверна закрыта. За стойкой делать нечего.'
         *pl ' '
 
-        act 'Вернуться в зал':
+        act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
             gt 'TavernMain'
         end
 
@@ -52,7 +52,7 @@
         *p 'В эту часть дня вы уже работали за стойкой. Сейчас лучше заняться чем-нибудь другим.'
         *pl ' '
 
-        act 'Вернуться в зал':
+        act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
             gt 'TavernMain'
         end
 
@@ -92,28 +92,17 @@
 
     *pl ' '
 
-    act 'Закончить смену':
-        gt 'TavernBarWorkFinish'
+    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
+        gt 'TavernBarWorkEndAndReturn'
     end
 ---
 
 ! ================================================
 ! FILE: modules/actions/tavern/tavern_bar_work.qsps
-! Завершение смены за стойкой
-! Сначала даёт шанс событию, потом двигает время.
-! Если событие запустилось через dispatcher, оно само забирает экран.
+! Завершение смены: событие, сдвиг времени, возврат в зал
 ! ================================================
 
-#TavernBarWorkFinish
-    *clr
-    clr
-    cla
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' КОНЕЦ СМЕНЫ ЗА СТОЙКОЙ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
+#TavernBarWorkEndAndReturn
     TavernEventDispatcherResult = 0
 
     gs 'TavernBarWorkMaybeHallEvent'
@@ -122,13 +111,17 @@
         exit
     end
 
-    *p 'Смена за стойкой подходит к концу. Вы вытираете руки, оглядываете зал и наконец отходите от бочек и кружек.'
-    *pl ' '
+    gs 'TavernBarWorkAdvanceTime'
+    gt 'TavernMain'
+---
 
-    act 'Вернуться в зал':
-        gs 'TavernBarWorkAdvanceTime'
-        gt 'TavernMain'
-    end
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Совместимость со старыми вызовами
+! ================================================
+
+#TavernBarWorkFinish
+    gt 'TavernBarWorkEndAndReturn'
 ---
 
 ! ================================================

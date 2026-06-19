@@ -1,0 +1,182 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_clarissa.qsps
+! MODULE: actions/dialogs
+! Меню разговора Клариссы вне сюжетных act-кнопок
+! ================================================
+
+#GirlTalkBuildClarissaMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке вина', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'wine_shop'
+    }
+
+    if Friends['clarissa'] >= 3 or love['clarissa'] >= 2 or otkroven['clarissa'] >= 6:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Легаре и её доме', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'clarissa_home'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if Friends['clarissa'] >= 12 or love['clarissa'] >= 10 or otkroven['clarissa'] >= 12:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    if LOC('ClarissaShopTalk') = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить в лавке', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaShopTalk', $TalkReturnLoc
+        }
+    end
+
+    if ClarissaIntimUnlocked = 1 and LOC('ClarissaIntimStep') = 1:
+        gs 'ClarissaIntimCanAdvance'
+
+        if ClarissaIntimCanAdvance = 1 and ClarissaIntimStage < 3:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Провести время в подсобке', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaIntimStep'
+            }
+        end
+
+        if ClarissaIntimStage >= 3 and ClarissaIntimSex = 0 and ClarissaIntimStepToday = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Продолжить близость', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaIntimFirstSexLaunch'
+            }
+        end
+
+        if ClarissaIntimSex = 1 and LOC('SexSceneStart') = 1 and ClarissaIntimStepToday = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Встретиться снова', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'SexSceneStart', 'clarissa', 'ClarissaIntimAfterSex', 'clarissa_repeat'
+            }
+        end
+    end
+
+    if LOC('ClarissaAnalCanStart') = 1:
+        gs 'ClarissaAnalCanStart'
+
+        if ClarissaAnalCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Особая близость', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaAnalSceneStart'
+            }
+        end
+    end
+
+    if LOC('ClarissaLegareReconcileCanStart') = 1:
+        gs 'ClarissaLegareReconcileCanStart'
+
+        if ClarissaLegareReconcileCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О примирении с Альбером', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaLegareReconcileStart'
+            }
+        end
+    end
+
+    if LOC('ClarissaGroupMmfLegareCanStart') = 1:
+        gs 'ClarissaGroupMmfLegareCanStart'
+
+        if ClarissaGroupMmfLegareCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Втроём с Альбером', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GroupSexClarissaLegareMmfStart'
+            }
+        end
+    end
+
+    if LOC('ClarissaGroupMmfMelissaCanStart') = 1:
+        gs 'ClarissaGroupMmfMelissaCanStart'
+
+        if ClarissaGroupMmfMelissaCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'С Мелиссой', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GroupSexClarissaMelissaMmfStart'
+            }
+        end
+    end
+
+    if LOC('ClarissaGroupFfmAmandaCanStart') = 1:
+        gs 'ClarissaGroupFfmAmandaCanStart'
+
+        if ClarissaGroupFfmAmandaCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вечер с Амандой и Альбером', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GroupSexClarissaAmandaLegareFfmStart'
+            }
+        end
+    end
+
+    if LOC('AmandaLegareMmfCanStart') = 1:
+        gs 'AmandaLegareMmfCanStart'
+
+        if AmandaLegareMmfCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Аманда и Альбер в подсобке', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GroupSexAmandaLegareStefanStart'
+            }
+        end
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkMenuReturn'
+    }
+---
+
+#GirlTalkWineShopRun
+    gs 'GirlTalkWineShopPrintText', 'intro'
+    gs 'GirlTalkWineShopPrintText', 'context'
+
+    Friends['clarissa'] += 1
+    trading += 1
+---
+
+#GirlTalkClarissaHomeRun
+    gs 'GirlTalkClarissaHomePrintText', 'intro'
+    gs 'GirlTalkClarissaHomePrintText', 'context'
+
+    Friends['clarissa'] += 1
+
+    if love['clarissa'] > 0:
+        love['clarissa'] += 1
+    end
+
+    if ClarissaJealousy > 0 and AmandaLegareFirstSexDone = 1:
+        ClarissaTrustStefan += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'clarissa'
+---
+
+#GirlTalkWineShopPrintText
+    gs 'GirlTalkWineShopText', $ARGS[0]
+
+    if $GirlTalkWineShopText <> '':
+        *p $GirlTalkWineShopText
+    end
+
+    killvar '$GirlTalkWineShopText'
+---
+
+#GirlTalkClarissaHomePrintText
+    gs 'GirlTalkClarissaHomeText', $ARGS[0]
+
+    if $GirlTalkClarissaHomeText <> '':
+        *p $GirlTalkClarissaHomeText
+    end
+
+    killvar '$GirlTalkClarissaHomeText'
+---

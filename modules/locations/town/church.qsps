@@ -4,78 +4,51 @@
 ! ================================================
 
 #Church
-    cls
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
+    gs 'GetCitySchedulePhase'
     gs 'ShowImage', 'church', 'general', 'normal'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' ⛪ ЦЕРКОВЬ ИЛЬМАТЕРА'
+    gs 'PrintTitleLine', ' ЦЕРКОВЬ ИЛЬМАТЕРА'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if week = 7:   ! Воскресенье
+    if week = 7:
         if time = 1:
-            *pl '🌅 УТРЕННЯЯ СЛУЖБА'
-            *p 'Сегодня воскресенье. В храме много людей. Отец Герхард проводит службу.'
-            act 'Послушать службу':
-                *p 'Ты послушал проповедь. На душе стало легче.'
-                gs 'CorruptionProgress', 'player', 'prayer'
-                act 'Продолжить': gt 'Church'
-            end
+            gs 'PrintTitleLine', ' УТРЕННЯЯ СЛУЖБА'
+            gs 'PrintMainP', 'В соборе идёт служба. Сквозь двери слышны молитвы, шорох платьев и редкие кашли тех, кто пришёл не только ради Бога.'
+        elseif time = 2:
+            gs 'PrintTitleLine', ' ВОСКРЕСНЫЙ ПОЛДЕНЬ — ИСПОВЕДИ'
+            gs 'PrintMainP', 'После службы отец Герхард принимает исповеди. В такие часы город шепчет громче, чем молится.'
         else:
-            *pl '🌤️ ДЕНЬ — ИСПОВЕДИ'
-            *p 'После службы отец Герхард принимает исповеди.'
-
-            if BeckyPriestOk = 0 and (BeckyPriestHint = 1 or BeckyPriestRetry = 1) and LOC('BeckyEddieConfession') = 1:
-                act 'Прислушаться к исповеди Бекки (Эдди)':
-                    gt 'BeckyEddieConfession'
-                end
-            end
-
-            if BeckyPriestArcOpen = 1 and LOC('ChurchSpyBeckyStart') = 1:
-                gs 'ChurchSpyBeckyCheckAvailable'
-
-                if BeckyPriestSpyReady = 1:
-                    act 'Подслушать исповедь Бекки и отца Герхарда':
-                        gt 'ChurchSpyBeckyStart'
-                    end
-                end
-
-                if LOC('ChurchSpyBeckyDonationBoost') = 1:
-                    act 'Пожертвовать 15 мараведи (исповедь вдовы)':
-                        gt 'ChurchSpyBeckyDonationBoost'
-                    end
-                end
-            end
-
-            act 'Исповедаться':
-                *p 'Ты зашёл в исповедальную кабинку и рассказал о своих грехах.'
-                gs 'CorruptionProgress', 'player', 'confession'
-                act 'Продолжить': gt 'Church'
-            end
+            gs 'PrintTitleLine', ' ВОСКРЕСЕНЬЕ'
+            gs 'PrintMainP', 'Обычный бизнес закрыт. Горожане ходят в гости, а церковь уже пустеет — но слухи ещё долго не улетают из переулков.'
         end
     else:
-        *pl 'Обычный день в церкви. Тихо и спокойно.'
+        gs 'PrintMainLine', 'Обычный день в церкви. Тихо и спокойно.'
     end
 
     *pl ' '
 
-    act 'Поговорить с отцом Герхардом':
-        gt 'TalkWithGerhard'
-    end
+    gs 'BuildChurchMenu'
+    gs 'PrintMenuOpenLink', 'ChurchMenu', 'Действия в церкви'
 
-    act 'Пожертвовать деньги':
+    act '<b>Пожертвовать</b>', 'images/common/ui/actions/gift.png':
         amount = input('Сколько мараведи пожертвовать?')
         if amount > 0 and money >= amount:
             money -= amount
-            *p 'Ты пожертвовал <<amount>> мараведи.'
+            gs 'PrintMainP', 'Ты пожертвовал ' + STR(amount) + ' мараведи.'
             ChurchDonatedToday += 1
             tavern_reputation += 1
         end
-        act 'Продолжить': gt 'Church'
+        gt 'Church'
     end
 
-    act 'Вернуться на улицу':
+    act '<b>Улица</b>', 'images/common/ui/actions/street.png':
         gt 'Street'
     end
 ---
-

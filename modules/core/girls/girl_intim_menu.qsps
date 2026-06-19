@@ -10,118 +10,22 @@
 #StartIntimMenu
     gs 'NormalizeGirlKey', $ARGS[0]
     $IntimGirl = $GirlKey
-    $IntimLoc = $ARGS[1]
+    $IntimReturnLoc = $ARGS[1]
 
     if $IntimGirl = '':
         msg 'Ошибка: StartIntimMenu вызван без имени девушки.'
         exit
     end
 
-    if $IntimLoc = '':
-        $IntimLoc = $CURLOC
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = $CURLOC
     end
 
-    if $IntimLoc = '':
-        $IntimLoc = 'PlayerRoom'
+    if $IntimReturnLoc = '':
+        $IntimReturnLoc = 'PlayerRoom'
     end
 
-    gs 'EnsureGirlData', $IntimGirl
-    gs 'UpdateGirlLocations'
-    gs 'MenuGirlCalcConditions', $IntimGirl, $IntimLoc
-
-    if MenuCanIntim = 0:
-        msg 'Сейчас для этого неподходящее место или недостаточно близкие отношения.'
-        gt $IntimLoc
-    end
-
-    if $RealName[$IntimGirl] = '':
-        $RealName[$IntimGirl] = UCASE(MID($IntimGirl, 1, 1)) + LCASE(MID($IntimGirl, 2))
-    end
-
-    if IntimSessionActive = 0 or $IntimSessionGirl <> $IntimGirl or $IntimSessionLoc <> $IntimLoc:
-        IntimSessionActive = 1
-        $IntimSessionGirl = $IntimGirl
-        $IntimSessionLoc = $IntimLoc
-        IntimForeplayDone = 0
-        IntimPlayerOrgasmCount = 0
-        IntimMaxOrgasmCount = 2 + RAND(0, 1)
-    end
-
-    cls
-
-    gs 'ShowGirlSidebar', $IntimGirl
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ИНТИМ: ' + $RealName[$IntimGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    gs 'IntimLocationText', $IntimGirl, $IntimLoc
-
-    *pl ' '
-    *pl 'Дружба: ' + STR(Friends[$IntimGirl])
-    *pl 'Любовь: ' + STR(love[$IntimGirl])
-    *pl 'Откровенность: ' + STR(otkroven[$IntimGirl])
-    *pl 'Распущенность: ' + STR(sluttiness[$IntimGirl])
-    *pl ' '
-    *pl 'Оргазмы Стефана в этой сцене: ' + STR(IntimPlayerOrgasmCount) + ' / ' + STR(IntimMaxOrgasmCount)
-    *pl 'Оргазмы Стефана сегодня: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
-
-    if debug = 1:
-        *pl ' '
-        *pl '[DEBUG] daily_cum_count: ' + STR(daily_cum_count)
-        *pl '[DEBUG] max_daily_cum: ' + STR(max_daily_cum)
-    end
-
-    *pl ' '
-
-    act 'Нежно поцеловать':
-        gt 'IntimScene', $IntimGirl, $IntimLoc, 'kiss'
-    end
-
-    act 'Ласково прижать к себе':
-        gt 'IntimScene', $IntimGirl, $IntimLoc, 'caress'
-    end
-
-    if Friends[$IntimGirl] >= 10 or love[$IntimGirl] >= 8 or sluttiness[$IntimGirl] >= 15 or HadSex[$IntimGirl] > 0:
-        act 'Ручные ласки':
-            gt 'IntimScene', $IntimGirl, $IntimLoc, 'hand'
-        end
-    end
-
-    if sluttiness[$IntimGirl] >= 20 or otkroven[$IntimGirl] >= 15 or love[$IntimGirl] >= 15 or HadSex[$IntimGirl] > 0:
-        act 'Оральные ласки':
-            gt 'IntimScene', $IntimGirl, $IntimLoc, 'oral'
-        end
-    end
-
-    if virginity[$IntimGirl] = 1:
-        act 'Первый раз':
-            gt 'GirlFirstSex', $IntimGirl, $IntimLoc
-        end
-    else:
-        act 'Вагинальная близость':
-            gt 'IntimScene', $IntimGirl, $IntimLoc, 'vaginal'
-        end
-    end
-
-    if analvirgin[$IntimGirl] = 1:
-        if HadSex[$IntimGirl] > 0 and sluttiness[$IntimGirl] >= 45 and otkroven[$IntimGirl] >= 25:
-            act 'Первый анальный опыт':
-                gt 'GirlFirstAnal', $IntimGirl, $IntimLoc
-            end
-        end
-    else:
-        if HadSex[$IntimGirl] > 0 or sluttiness[$IntimGirl] >= 35:
-            act 'Анальная близость':
-                gt 'IntimScene', $IntimGirl, $IntimLoc, 'anal'
-            end
-        end
-    end
-
-    act 'Закончить и вернуться':
-        gt 'IntimEnd', $IntimGirl, $IntimLoc
-    end
+    gt 'GirlIntim', $IntimGirl, $IntimReturnLoc
 ---
 
 ! ================================================
@@ -162,7 +66,7 @@
 
     gs 'CanCumToday'
 
-    if Result = 1:
+    if PlayerCanCumToday = 1:
         gs 'RegisterPlayerCum'
 
         if Result = 1:
@@ -263,17 +167,26 @@
     if $SceneType <> 'kiss' and $SceneType <> 'caress':
         if IntimPlayerOrgasmCount >= IntimMaxOrgasmCount and debug = 0:
             msg 'Стефан уже достаточно вымотан в этой сцене.'
-            gt 'StartIntimMenu', $SceneGirl, $SceneReturnLoc
+            gt 'GirlIntim', $SceneGirl, $SceneReturnLoc
         end
     end
 
+    $IntimGirl = $SceneGirl
+    $IntimReturnLoc = $SceneReturnLoc
+
+    gs 'GirlIntimSessionBegin'
+    gs 'GirlIntimInitSceneState', $SceneGirl, $SceneReturnLoc
+
     cls
 
-    gs 'ShowGirlSidebar', $SceneGirl
+    gs 'GirlIntimShowSidebarWithAnchor', $SceneGirl
 
     *pl '══════════════════════════════════════════════'
     *pl ' ИНТИМ: ' + $RealName[$SceneGirl]
     *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlIntimShowNpcMenuAnchor', 'main'
     *pl ' '
 
     if $SceneType = 'kiss':
@@ -331,8 +244,8 @@
             *p $RealName[$SceneGirl] + ' напряжённо качает головой.'
             *p 'Без подготовки она не готова к такому.'
 
-            act 'Вернуться':
-                gt 'StartIntimMenu', $SceneGirl, $SceneReturnLoc
+            act '<b>Вернуться</b>':
+                gt 'GirlIntim', $SceneGirl, $SceneReturnLoc
             end
 
             exit
@@ -361,11 +274,11 @@
         *pl ' '
     end
 
-    act 'Продолжить':
-        gt 'StartIntimMenu', $SceneGirl, $SceneReturnLoc
+    act '<b>Продолжить</b>':
+        gt 'GirlIntim', $SceneGirl, $SceneReturnLoc
     end
 
-    act 'Закончить':
+    act '<b>Закончить</b>':
         gt 'IntimEnd', $SceneGirl, $SceneReturnLoc
     end
 ---
@@ -398,16 +311,11 @@
 
     *p 'Вы приводите себя в порядок и стараетесь не привлекать лишнего внимания.'
 
-    IntimSessionActive = 0
-    $IntimSessionGirl = ''
-    $IntimSessionLoc = ''
-    IntimForeplayDone = 0
-    IntimPlayerOrgasmCount = 0
-    IntimMaxOrgasmCount = 0
+    gs 'GirlIntimSessionEnd'
 
     *pl ' '
 
-    act 'Вернуться':
+    act '<b>Вернуться</b>':
         gt $IntimEndReturnLoc
     end
 ---

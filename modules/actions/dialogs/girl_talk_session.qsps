@@ -1,0 +1,268 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_session.qsps
+! MODULE: actions/dialogs
+! Сессия разговора: якорь NPC в окне и в сайдбаре
+! ================================================
+
+#GirlTalkSessionBegin
+    GirlTalkSessionActive = 1
+---
+
+#GirlTalkSessionEnd
+    GirlTalkSessionActive = 0
+---
+
+#GirlTalkMenuReturn
+    $GirlTalkMenuReturnLoc = $TalkReturnLoc
+
+    if $GirlTalkMenuReturnLoc = '':
+        $GirlTalkMenuReturnLoc = $CURLOC
+    end
+
+    if $GirlTalkMenuReturnLoc = '':
+        $GirlTalkMenuReturnLoc = 'TavernMain'
+    end
+
+    if LOC($GirlTalkMenuReturnLoc) = 0:
+        $GirlTalkMenuReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlTalkSessionEnd'
+
+    if $CURLOC = $GirlTalkMenuReturnLoc:
+        killvar '$GirlTalkMenuReturnLoc'
+        exit
+    end
+
+    gt $GirlTalkMenuReturnLoc
+    killvar '$GirlTalkMenuReturnLoc'
+---
+
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_session.qsps
+! Кнопка возврата из экранов диалога
+! ================================================
+
+#GirlTalkAddReturnButton
+    $GirlTalkReturnLabel = $ARGS[0]
+    $GirlTalkReturnMode = LCASE($ARGS[1])
+
+    if $GirlTalkReturnLabel = '':
+        $GirlTalkReturnLabel = 'Вернуться'
+    end
+
+    if $GirlTalkReturnMode = 'topics':
+        act '<b>' + $GirlTalkReturnLabel + '</b>', 'images/common/ui/actions/return.png':
+            gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+        end
+    else:
+        act '<b>' + $GirlTalkReturnLabel + '</b>', 'images/common/ui/actions/return.png':
+            gt 'GirlTalkMenuReturn'
+        end
+    end
+
+    killvar '$GirlTalkReturnLabel'
+    killvar '$GirlTalkReturnMode'
+---
+
+#GirlTalkRefreshTopicsMenuIfAllowed
+    GirlTalkAnchorReady = 0
+
+    if $TalkGirl = '':
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'MenuGirlCalcConditions', $TalkGirl, $TalkReturnLoc
+
+    if MenuCanTalk = 0:
+        exit
+    end
+
+    GirlTalkAnchorReady = 1
+    gs 'GirlTalkBuildTopicsMenu'
+---
+
+#GirlTalkShowNpcMenuAnchor
+    $GirlTalkAnchorTarget = LCASE($ARGS[0])
+
+    if $GirlTalkAnchorTarget = '':
+        $GirlTalkAnchorTarget = 'main'
+    end
+
+    gs 'GirlTalkRefreshTopicsMenuIfAllowed'
+
+    if GirlTalkAnchorReady = 0:
+        killvar '$GirlTalkAnchorTarget'
+        killvar 'GirlTalkAnchorReady'
+        exit
+    end
+
+    if $RealName[$TalkGirl] = '':
+        $RealName[$TalkGirl] = UCASE(MID($TalkGirl, 1, 1)) + LCASE(MID($TalkGirl, 2))
+    end
+
+    if $GirlTalkAnchorTarget = 'main' or $GirlTalkAnchorTarget = 'both':
+        gs 'NpcMenuLink', $RealName[$TalkGirl], 'GirlTalkMainMenu', 'main'
+    end
+
+    if $GirlTalkAnchorTarget = 'panel' or $GirlTalkAnchorTarget = 'both':
+        gs 'NpcMenuLink', $RealName[$TalkGirl], 'GirlTalkMainMenu', 'panel'
+    end
+
+    killvar '$GirlTalkAnchorTarget'
+    killvar 'GirlTalkAnchorReady'
+---
+
+#GirlTalkShowSidebarWithAnchor
+    gs 'ShowGirlSidebar', $ARGS[0]
+
+    if GirlTalkSessionActive = 1 and LCASE($ARGS[0]) = $TalkGirl:
+        pl ' '
+        gs 'GirlTalkShowNpcMenuAnchor', 'panel'
+    end
+---
+
+#ShowGirlTalkLink
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkLinkGirl = $GirlKey
+    $GirlTalkLinkLoc = $ARGS[1]
+    $GirlTalkLinkOutput = LCASE($ARGS[2])
+
+    if $GirlTalkLinkGirl = '':
+        killvar '$GirlTalkLinkGirl'
+        killvar '$GirlTalkLinkLoc'
+        killvar '$GirlTalkLinkOutput'
+        exit
+    end
+
+    if $GirlTalkLinkLoc = '':
+        $GirlTalkLinkLoc = $CURLOC
+    end
+
+    if LOC($GirlTalkLinkLoc) = 0:
+        $GirlTalkLinkLoc = 'TavernMain'
+    end
+
+    if $GirlTalkLinkOutput = '':
+        $GirlTalkLinkOutput = 'main'
+    end
+
+    gs 'GirlTalkCheckNpcLinkAvailable', $GirlTalkLinkGirl, $GirlTalkLinkLoc
+
+    if GirlTalkMenuReady = 1:
+        if $RealName[$GirlTalkLinkGirl] = '':
+            gs 'EnsureGirlData', $GirlTalkLinkGirl
+        end
+
+        gs 'NpcMenuTalkOpenLink', $RealName[$GirlTalkLinkGirl], $GirlTalkLinkGirl, $GirlTalkLinkLoc, $GirlTalkLinkOutput
+
+        if $GirlTalkLinkOutput = 'panel':
+            pl $NpcTalkOpenLine
+        else:
+            *pl $NpcTalkOpenLine
+        end
+
+        killvar '$NpcTalkOpenLine'
+    else:
+        if $GirlTalkLinkOutput <> 'panel':
+            gs 'FormatNpcTalkLink', $GirlTalkLinkGirl, 'gt ''GirlTalkClosedScreen'', ''' + $GirlTalkLinkGirl + ''', ''' + $GirlTalkLinkLoc + ''''
+            *pl $NpcTalkLink
+            killvar '$NpcTalkLink'
+        end
+    end
+
+    killvar 'GirlTalkMenuReady'
+    killvar '$GirlTalkLinkGirl'
+    killvar '$GirlTalkLinkLoc'
+    killvar '$GirlTalkLinkOutput'
+---
+
+#ShowGirlNpcLinkLine
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlNpcLineGirl = $GirlKey
+    $GirlNpcLineLoc = $ARGS[1]
+    $GirlNpcLineOutput = LCASE($ARGS[2])
+    $GirlNpcLineReturnLoc = $ARGS[3]
+
+    if $GirlNpcLineGirl = '':
+        killvar '$GirlNpcLineGirl'
+        killvar '$GirlNpcLineLoc'
+        killvar '$GirlNpcLineOutput'
+        exit
+    end
+
+    if $GirlNpcLineLoc = '':
+        $GirlNpcLineLoc = $CURLOC
+    end
+
+    if LOC($GirlNpcLineLoc) = 0:
+        $GirlNpcLineLoc = 'TavernMain'
+    end
+
+    if $GirlNpcLineOutput = '':
+        $GirlNpcLineOutput = 'main'
+    end
+
+    if $GirlNpcLineReturnLoc = '':
+        $GirlNpcLineReturnLoc = $GirlNpcLineLoc
+    end
+
+    if $RealName[$GirlNpcLineGirl] = '':
+        gs 'EnsureGirlData', $GirlNpcLineGirl
+    end
+
+    $GirlNpcLineText = ''
+    GirlNpcLineTalkReady = 0
+    GirlNpcLineIntimReady = 0
+
+    gs 'GirlTalkCheckNpcLinkAvailable', $GirlNpcLineGirl, $GirlNpcLineLoc
+    GirlNpcLineTalkReady = GirlTalkMenuReady
+    killvar 'GirlTalkMenuReady'
+
+    gs 'GirlIntimCheckNpcLinkAvailable', $GirlNpcLineGirl, $GirlNpcLineLoc
+    GirlNpcLineIntimReady = GirlIntimMenuReady
+    killvar 'GirlIntimMenuReady'
+
+    if GirlNpcLineTalkReady = 1:
+        gs 'NpcMenuTalkOpenLink', $RealName[$GirlNpcLineGirl], $GirlNpcLineGirl, $GirlNpcLineLoc, $GirlNpcLineOutput, $GirlNpcLineReturnLoc
+        $GirlNpcLineText = $NpcTalkOpenLine
+        killvar '$NpcTalkOpenLine'
+    elseif $GirlNpcLineOutput <> 'panel':
+        gs 'FormatNpcTalkLink', $GirlNpcLineGirl, 'gt ''GirlTalkClosedScreen'', ''' + $GirlNpcLineGirl + ''', ''' + $GirlNpcLineLoc + ''''
+        $GirlNpcLineText = $NpcTalkLink
+        killvar '$NpcTalkLink'
+    end
+
+    if GirlNpcLineIntimReady = 1:
+        gs 'NpcMenuIntimOpenIconLink', $GirlNpcLineGirl, $GirlNpcLineLoc, $GirlNpcLineOutput, $GirlNpcLineReturnLoc
+
+        if $GirlNpcLineText <> '':
+            $GirlNpcLineText = $GirlNpcLineText + ' ' + $NpcIntimOpenIconLine
+        else:
+            $GirlNpcLineText = $NpcIntimOpenIconLine
+        end
+
+        killvar '$NpcIntimOpenIconLine'
+    end
+
+    if $GirlNpcLineText <> '':
+        if $GirlNpcLineOutput = 'panel':
+            pl $GirlNpcLineText
+        else:
+            *pl $GirlNpcLineText
+        end
+    end
+
+    killvar '$GirlNpcLineText'
+    killvar 'GirlNpcLineTalkReady'
+    killvar 'GirlNpcLineIntimReady'
+    killvar '$GirlNpcLineGirl'
+    killvar '$GirlNpcLineLoc'
+    killvar '$GirlNpcLineOutput'
+    killvar '$GirlNpcLineReturnLoc'
+---

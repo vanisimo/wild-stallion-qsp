@@ -4,38 +4,84 @@
 ! ================================================
 
 #Port
-    cls
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
+    gs 'UpdateGirlLocations'
+
+    if time <> 5:
+        gs 'GeorgetteSeekLizetteCanStart'
+
+        if GeorgetteSeekCanStart = 1:
+            killvar 'GeorgetteSeekCanStart'
+            gt 'GeorgetteSeekLizetteEvent', 'Port'
+        end
+
+        killvar 'GeorgetteSeekCanStart'
+    end
+
     gs 'ShowImage', 'port', 'general', 'normal'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' ⚓ ГОРОДСКОЙ ПОРТ'
+    gs 'PrintTitleLine', ' ГОРОДСКОЙ ПОРТ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    *p 'Соленый морской воздух, крики чаек, скрип кораблей и шум волн. Здесь всегда кипит жизнь — разгружают товары, чинят паруса, торгуют рыбой.'
-
-    act 'Прогуляться по пристани':
-        *p 'Ты прошёлся вдоль причала, наблюдая за кораблями и моряками.'
-        act 'Продолжить': gt 'Port'
+    if time = 5:
+        gs 'PrintMainP', 'Ночной порт дышит солью и тенью. Фонари качаются на ветру, а причалы почти пусты — здесь остаются только те, кому днём неудобно показываться.'
+    else:
+        gs 'PrintMainP', 'Соленый морской воздух, крики чаек, скрип кораблей и шум волн. Здесь всегда кипит жизнь — разгружают товары, чинят паруса, торгуют рыбой.'
     end
 
-    act 'Посмотреть корабль из столицы':
-        gt 'PortCapitalShipMenu', 'Port'
+    LocationGirlShown = 0
+
+    gs 'ShowGirlInLocation', 'amanda', 'Port'
+    gs 'ShowGirlInLocation', 'lizette', 'Port'
+    gs 'ShowGirlInLocation', 'georgett', 'Port'
+
+    if LocationGirlShown = 1:
+        *pl ' '
+    end
+
+    killvar 'LocationGirlShown'
+
+    *pl ' '
+
+    act '<b>Прогуляться</b>', 'images/common/ui/actions/look.png':
+        gs 'LocationWalk', 'Port', 'Ты прошёлся вдоль причала, наблюдая за кораблями и моряками.'
+    end
+
+    if time <> 5:
+        act '<b>Корабль из столицы</b>', 'images/common/ui/actions/look.png':
+            gt 'PortCapitalShipMenu', 'Port'
+        end
+    end
+
+    if time = 5:
+        gs 'GeorgettePortNightCanEnter'
+
+        if GeorgettePortNightOpen = 1:
+            gs 'NpcNavLink', 'Жоржетта', 'intim', 'gt ''GeorgettePortNightMenu'', ''Port'''
+        end
+
+        killvar 'GeorgettePortNightOpen'
     end
 
     if Friends['eddie'] >= 8 and LOC('PortAlley') = 1:
-        act 'Заглянуть в подворотню':
+        act '<b>Подворотня</b>', 'images/common/ui/actions/look.png':
             gt 'PortAlley'
         end
     end
 
     if debug = 1:
-        act 'DEBUG: Жоржетта / Лизетта / порт':
+        act '<b>DEBUG: Жоржетта / Лизетта / порт</b>', 'images/common/ui/debug.png':
             gt 'GeorgetteLizetteDebugMenu', 'Port'
         end
     end
 
-    act 'Вернуться на улицу':
+    act '<b>Улица</b>', 'images/common/ui/actions/street.png':
         gt 'Street'
     end
 ---

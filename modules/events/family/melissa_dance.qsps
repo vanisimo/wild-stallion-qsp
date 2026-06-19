@@ -62,7 +62,7 @@
         *p 'Танец с Мелиссой на сегодня уже закончен.'
         *pl ' '
 
-        act 'Вернуться к танцам':
+        act '<b>Вернуться к танцам</b>':
             gt 'MarketDance'
         end
 
@@ -93,53 +93,53 @@
     gs 'Menu.Create', 'MelissaDanceMenu'
 
     if MelissaDanceStage = 0:
-        gs 'Menu.Add', 'MelissaDanceMenu', 'Танец', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Танец', ''
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'dance'
         }
     else:
-        gs 'Menu.Add', 'MelissaDanceMenu', 'Танец', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Танец', ''
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'continue'
         }
     end
 
     if MelissaDanceStage >= 1 and MelissaDanceWaist = 0 and Friends['melissa'] >= 6:
-        gs 'Menu.Add', 'MelissaDanceMenu', 'Талия', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Талия', ''
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'waist'
         }
     end
 
     if MelissaDanceWaist = 1 and MelissaDanceKiss = 0 and Friends['melissa'] >= 8:
-        gs 'Menu.Add', 'MelissaDanceMenu', 'Поцелуй', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Поцелуй', ''
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'kiss'
         }
     end
 
     if MelissaDanceKiss = 1 and MelissaDanceNeck = 0:
-        gs 'Menu.Add', 'MelissaDanceMenu', 'Поцелуй в шею', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Поцелуй в шею', ''
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'neck'
         }
     end
 
     if MelissaDanceNeck = 1 and MelissaDanceAlley = 0:
-        gs 'Menu.Add', 'MelissaDanceMenu', 'Подворотня', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Подворотня', ''
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'alley'
         }
     end
 
     if MelissaDanceKiss = 1 and MelissaHomeUnlocked = 0 and LOC('MelissaDanceLeaveHome') = 1:
-        gs 'Menu.Add', 'MelissaDanceMenu', 'Уйти с Мелиссой в трактир', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Уйти с Мелиссой в трактир', ''
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceLeaveHome'
         }
     end
 
-    gs 'Menu.Add', 'MelissaDanceMenu', 'Закончить танец', ''
+    gs 'MenuUiAdd', 'MelissaDanceMenu', 'Закончить танец', ''
     gs 'Menu.AddModule', 'MelissaDanceMenu', {
         MelissaDanceEnded = 1
         gt 'MarketDance'
@@ -248,62 +248,17 @@
     *pl ' '
 
     if MelissaHomeSex = 1 and LOC('MelissaDanceAlleyEvent') = 1:
-        act 'Продолжить в подворотне':
+        act '<b>Продолжить в подворотне</b>':
             gt 'MelissaDanceAlleyEvent'
         end
     end
 
-    act 'Вернуться на площадь':
+    act '<b>Вернуться на площадь</b>':
         gt 'MarketDance'
     end
 ---
 
-#IrmaBuyMelissaDanceDress
-    if MelissaDanceDressReady = 1:
-        *p 'Платье для танцев Мелиссы уже готово.'
-        act 'Вернуться': gt 'IrmaShop'
-        exit
-    end
 
-    if Friends['melissa'] <= 8:
-        *p 'Ирма советует сначала поговорить с Мелиссой о платье — сестра должна сама захотеть наряд для площади.'
-        act 'Вернуться': gt 'IrmaShop'
-        exit
-    end
-
-    gs 'IrmaMelissaDanceDressBuyText'
-
-    *clr
-    clr
-    cla
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПЛАТЬЕ ДЛЯ ТАНЦЕВ — МЕЛИССА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-    *p $IrmaDressText
-    *pl ' '
-
-    act 'Купить (70 мараведи)':
-        if money >= 70:
-            money -= 70
-            MelissaDanceDressReady = 1
-            MelissaDanceDressPlayerBought = 1
-            gs 'IrmaMelissaDanceDressBoughtText'
-            *p $IrmaDressText
-            Friends['melissa'] += 2
-            Friends['irma'] += 1
-            act 'Вернуться в лавку': gt 'IrmaShop'
-        else:
-            *p 'У вас недостаточно денег.'
-            act 'Вернуться': gt 'IrmaBuyMelissaDanceDress'
-        end
-    end
-
-    act 'Отказаться':
-        gt 'IrmaShop'
-    end
----
 
 #MelissaDanceDebugReset
     MelissaDanceDay = 0
