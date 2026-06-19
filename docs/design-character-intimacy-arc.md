@@ -1,7 +1,7 @@
 # Арка близости: девушки, тайминг, группы
 
-**Статус:** дизайн согласован по всем персонажам intimacy-арки (**Бекки → Инга**). Реализация в QSP — **не начата** (чеклист внизу).  
-**Код:** не реализовывать до закрытия всех персонажей и финальной сверки с legacy.  
+**Статус:** дизайн согласован (**Бекки → Инга**). QSP акт 1 — **реализован** в `f27d9fd` (PR-I6…I16); ручной QA — `docs/qa-checklist-intimacy-act1-weeks1-8.md`.  
+**Код:** smoke-test — Дебаг → **Intimacy smoke-test**; пресеты — **Intimacy-арки (акт 1)**.
 **Связанные документы:** `docs/handoff.md` (экономика), `docs/design-mayor-seal-corruption-arc.md` (снятие запретов), `docs/design-port-church-arc.md` (Лизетта), `AGENTS.md` (шкалы).
 
 ---
@@ -1090,29 +1090,29 @@ flowchart TD
 | Legacy / import | Design | Код |
 |-----------------|--------|-----|
 | `EventWaitressHarrass` | harassment в зале | ✓ `hall_harassment.qsps` |
-| Гном / пятница | **не танцы**, `DraupnirShop` | расписание: Сандра всё ещё может быть на `DanceHall` — **править** PR-I1 |
-| Комнатная лестница | 10+ шагов `SandraRoom` | локация + сундук; **intim нет** (PR-I12) |
+| Гном / пятница | **не танцы**, `DraupnirShop` | ✓ `npc_city_schedule.qsps`; `sandra_draupnir_friday.qsps` |
+| Комнатная лестница | 10+ шагов `SandraRoom` | ✓ `sandra_home_chain.qsps` |
 | Священник + Сандра | **не v1** | `sandra_priest` в talk — задел |
-| ЖЖМ с Бекки | после `BeckyEddieDone` | **нет** (PR-I13) |
+| ЖЖМ с Бекки | после `BeckyEddieDone` | ✓ `sandra_becky_reconcile.qsps` |
 
 ### Инга
 
 | Legacy | Design | Код |
 |--------|--------|-----|
-| Квест стражника | **180+180** или rep≥60 | **300** одним платежом в `guard_bribe_quest.qsps` — **расхождение** |
-| Ветки помощи | **А / Б / В** | только линейный `GuardBribed`; нет `IngaGuardHelpStage` |
-| `IngaSexEncounter` | `SexSceneStart` + лестница | ещё `StartIntimMenu` |
-| Суббота подсобка | ветка В / Б | `IngaGuardSaturday` — есть, без ветвления |
-| Лукас, ММЖ, DP | §Инга design | **нет** (PR-I11) |
-| Танцы после 1-го секса | `IngaDanceUnlocked` | **нет** |
+| Квест стражника | **180+180** или rep≥60 | ✓ `guard_bribe_quest.qsps`, `IngaGuardBribeCost=180` |
+| Ветки помощи | **А / Б / В** | ✓ `IngaGuardHelpStage`, жалобы в `becky_shop` |
+| Секс с ГГ | `SexSceneStart` + лестница | ✓ `inga_romance.qsps` (`IngaSexEncounter` снят) |
+| Суббота подсобка | ветка В / Б | ✓ `inga_guard_quest.qsps` (spy / interrupt / MMF) |
+| Лукас, ММЖ, DP | §Инга design | ✓ `inga_lucas_arc.qsps` |
+| Танцы после 1-го секса | `IngaDanceUnlocked` | ✓ `inga_dance.qsps`, `sex_scene_core` |
 
 ### Кларисса
 
 | Legacy (`IntAlberTalk`, закупки) | Design | Код |
 |----------------------------------|--------|-----|
 | Talk, ревность к Аманде+Легаре | ✓ | `ClarissaTalkAboutAmandaLegare*`, воскресные визиты |
-| Лестница секса, анал, 3 группы | design §Кларисса | **TODO** (PR-I14) |
-| Лор «вдовец, дети» | править шапки | `clarissa.qsps` / `alber.qsps` — **старый лор** |
+| Лестница секса, анал, 3 группы | design §Кларисса | ✓ `clarissa_intim_arc.qsps`, `group_sex*.qsps` |
+| Лор «вдовец, дети» | править шапки | **TODO** — `clarissa.qsps` / `alber.qsps` (тексты) |
 
 ### Церковь (пересечение с intimacy)
 
@@ -1130,18 +1130,14 @@ flowchart TD
 4. **Тайминг:** самопокупка и гонки **позже**, чем типичный legacy-спидран.  
 5. **Сандра:** нет узла «запретить гнома» — только наблюдение (design).
 
-### Код `modules/`: техдолг до PR-I
+### Код `modules/`: остаточный техдолг (после I6…I16)
 
 | Файл | Проблема |
 |------|----------|
-| `talk_with_becky.qsps` | `BeckyVar`, `EddieVar`; `HomeVisited=2`; `EddieTryToFuck`; нет квиза citydress |
-| `game_init.qsps` | нет intimacy-флагов Бекки/Эдди/Инги; есть только Melissa arc |
-| `guard_bribe_quest.qsps` | 300 м, нет веток А/Б/В |
-| `inga_guard_quest.qsps` | `StartIntimMenu`, суббота без design-веток |
-| `market_dance.qsps` | танец только **Аманда**; нет Бекки/Мелиссы |
-| `npc_city_schedule.qsps` | Сандра на пт — проверить `DanceHall` vs `DraupnirShop` |
-| `becky_shop.qsps` | `TalkWithEddie` без `eddie_arc` |
-| `sandra_room.qsps` / `amanda_room.qsps` / `melissa_room.qsps` | нет intim-лестниц |
+| `clarissa.qsps` / `alber.qsps` | лор «вдовец, вторая жена, дети» — только в design |
+| `intim_entry.qsps` / `group_sex.qsps` | часть путей ещё через `StartIntimMenu` (не intimacy-цепочки) |
+| `market_dance.qsps` | танцы сестёр/Бекки — в `friday_dance_core`; проверить хуки в `market_dance` |
+| Ручной QA | недели 1–8 по чеклисту в игре (QSP 5.90) |
 
 ### Правки PR-плана после сверки
 
@@ -1183,7 +1179,8 @@ flowchart TD
 - [x] Единый таймлайн по неделям (платья, сцена, NPC-first risk)
 - [x] Сверка с `Traktir.qsps` и `docs/import-traktir-legacy.md`  
 - [x] PR-план по файлам в `modules/`  
-- [ ] Не помечать реализованным до QSP-кода  
+- [x] QSP акт 1 (I6…I16, коммит `f27d9fd`)  
+- [ ] Ручной проход QA weeks 1–8 в QSP Player
 
 ---
 

@@ -8,11 +8,11 @@
 
 ## 0. Подготовка
 
-- [ ] `powershell -File scripts\build.ps1` — без ошибок дублей `#Location`
-- [ ] `powershell -File scripts\generate-location-index.ps1` — индекс обновлён
+- [x] `powershell -File scripts\build.ps1` — без ошибок дублей `#Location` _(2026-06-18, 322 файла)_
+- [x] `scripts\check.ps1` / `-Strict` — индекс и analysis актуальны _(2026-06-18)_
 - [ ] Запуск `game.qsp` в QSP 5.90
 - [ ] `debug = 1` для пресетов (или честный проход без дебага — отметить: ______)
-- [ ] **Smoke-test:** Дебаг → Intimacy smoke-test → все строки **OK**
+- [ ] **Smoke-test:** Дебаг → Intimacy smoke-test → все строки **OK** _(в игре; в коде 30 локаторов на месте)_
 
 ---
 
@@ -134,9 +134,9 @@
 
 ## Регрессия сборки
 
-- [ ] `scripts\check.ps1` — 0 duplicate locations
-- [ ] `scripts\check.ps1 -Strict` — индекс и analysis актуальны
-- [ ] Нет битых `gt`/`gs` в smoke-test (все **OK**)
+- [x] `scripts\check.ps1` — 0 duplicate locations _(2026-06-18)_
+- [x] `scripts\check.ps1 -Strict` — индекс и analysis актуальны _(2026-06-18)_
+- [ ] Нет битых `gt`/`gs` в smoke-test (все **OK**) — **только в QSP Player**
 
 ---
 
