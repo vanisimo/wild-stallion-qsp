@@ -1,0 +1,293 @@
+! ================================================
+! FILE: modules/events/kitchen/kitchen_harassment.qsps
+! Приставания к Сандре на кухне / в проходе из кухни
+! Версия: v1 / тот же шаблон, что hall_harassment v3
+! Назначение:
+! - только Сандра, jobkitchen
+! - вход: шум с кухни (зал) или осмотр кухни
+! - меню «мне», inline-итог, лёгкий разговор о правилах
+! Тексты: modules/events/kitchen/kitchen_harassment_text.qsps
+! Общая логика: modules/events/hall/hall_harassment.qsps
+! ================================================
+
+#KitchenHarassment
+    *clr
+    clr
+    cla
+
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    if LOC('CalculateTavernStaffEfficiency') = 1:
+        gs 'CalculateTavernStaffEfficiency'
+    end
+
+    $KitchenHarassReturnLoc = $ARGS[0]
+
+    if $KitchenHarassReturnLoc = '':
+        $KitchenHarassReturnLoc = 'Kitchen'
+    end
+
+    if LOC($KitchenHarassReturnLoc) = 0:
+        $KitchenHarassReturnLoc = 'Kitchen'
+    end
+
+    if KitchenHarassmentDay = day and KitchenHarassmentTime = time:
+        if HallHarassmentResolved = 1 and $HallHarassGirl <> '':
+            gs 'KitchenHarassmentRenderScreen'
+            exit
+        end
+
+        gt $KitchenHarassReturnLoc
+        exit
+    end
+
+    if TavernOpen = 0:
+        *pl '══════════════════════════════════════════════'
+        *pl ' КУХНЯ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'KitchenHarassmentPrintText', 'closed'
+
+        *pl ' '
+
+        act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
+            gt 'TavernMain'
+        end
+
+        exit
+    end
+
+    gs 'KitchenHarassmentPickGirl'
+
+    if $KitchenHarassGirl = '':
+        exit
+    end
+
+    $HallHarassGirl = $KitchenHarassGirl
+    $HallHarassJob = 'kitchen'
+    $HallHarassReturnLoc = $KitchenHarassReturnLoc
+
+    KitchenHarassmentDay = day
+    KitchenHarassmentTime = time
+    HallHarassmentResolved = 0
+    HallHarassPolicyChosen = 0
+    HallHarassPolicyValue = 0
+    $HallHarassConsequenceArea = 'kitchen'
+    $HallHarassEventLoc = 'KitchenHarassment'
+
+    gs 'EnsureGirlData', $HallHarassGirl
+
+    if $RealName[$HallHarassGirl] = '':
+        $RealName[$HallHarassGirl] = 'Сандра'
+    end
+
+    HallHarassType = RAND(1, 4)
+
+    if KitchenHarassEntryType <= 0:
+        KitchenHarassEntryType = 1
+    end
+
+    gs 'KitchenHarassmentRenderScreen'
+---
+
+#KitchenHarassmentTry
+    $KitchenHarassReturnLoc = $ARGS[0]
+
+    if $KitchenHarassReturnLoc = '':
+        $KitchenHarassReturnLoc = 'Kitchen'
+    end
+
+    KitchenHarassmentStarted = 0
+
+    if KitchenHarassmentDay = day and KitchenHarassmentTime = time:
+        exit
+    end
+
+    gs 'UpdateGirlLocations'
+
+    if LOC('CalculateTavernStaffEfficiency') = 1:
+        gs 'CalculateTavernStaffEfficiency'
+    end
+
+    gs 'KitchenHarassmentPickGirl'
+
+    if $KitchenHarassGirl <> '':
+        if RAND(1, 100) <= 22:
+            KitchenHarassmentStarted = 1
+            KitchenHarassEntryType = 2
+            gt 'KitchenHarassment', $KitchenHarassReturnLoc
+        end
+    end
+---
+
+#KitchenHarassmentTryFromHall
+    $KitchenHarassReturnLoc = $ARGS[0]
+
+    if $KitchenHarassReturnLoc = '':
+        $KitchenHarassReturnLoc = 'TavernMain'
+    end
+
+    KitchenHarassmentStarted = 0
+
+    if KitchenHarassmentDay = day and KitchenHarassmentTime = time:
+        exit
+    end
+
+    gs 'UpdateGirlLocations'
+
+    if jobkitchen['sandra'] <> 1:
+        exit
+    end
+
+    if $GirlLocation['sandra'] <> 'Kitchen' and $GirlLocation['sandra'] <> 'TavernMain':
+        exit
+    end
+
+    if RAND(1, 100) <= 14:
+        KitchenHarassmentStarted = 1
+        KitchenHarassEntryType = 1
+        $KitchenHarassGirl = 'sandra'
+        gt 'KitchenHarassment', $KitchenHarassReturnLoc
+    end
+---
+
+#KitchenHarassmentPickGirl
+    $KitchenHarassGirl = ''
+
+    if jobkitchen['sandra'] = 1:
+        if $GirlLocation['sandra'] = 'Kitchen' or $GirlLocation['sandra'] = 'TavernMain':
+            $KitchenHarassGirl = 'sandra'
+        end
+    end
+---
+
+#KitchenHarassmentRenderScreen
+    if HallHarassmentResolved = 0:
+        *pl '══════════════════════════════════════════════'
+
+        if $KitchenHarassReturnLoc = 'TavernMain' and KitchenHarassEntryType = 1:
+            *pl ' ГЛАВНЫЙ ЗАЛ: ШУМ С КУХНИ'
+        elseif $KitchenHarassReturnLoc = 'TavernMain' and KitchenHarassEntryType = 2:
+            *pl ' ГЛАВНЫЙ ЗАЛ: КЛИЕНТ С КУХНИ'
+        else:
+            *pl ' КУХНЯ: НЕПРИЯТНЫЙ СЛУЧАЙ'
+        end
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        if KitchenHarassEntryType = 1 and $KitchenHarassReturnLoc = 'TavernMain':
+            gs 'KitchenHarassmentPrintText', 'entry_noise'
+            *pl ' '
+        elseif KitchenHarassEntryType = 2 and $KitchenHarassReturnLoc = 'TavernMain':
+            gs 'KitchenHarassmentPrintText', 'entry_chase'
+            *pl ' '
+        end
+
+        gs 'HallHarassmentShowIntroImage', $HallHarassGirl, $HallHarassJob, HallHarassType
+        gs 'KitchenHarassmentIntro'
+
+        *pl ' '
+        gs 'KitchenHarassmentPrintDecisionPrompt'
+    else:
+        gs 'HallHarassmentRenderAfterScreen'
+        *pl ' '
+        gs 'KitchenHarassmentPrintFooter'
+    end
+---
+
+#KitchenHarassmentPrintDecisionPrompt
+    gs 'KitchenHarassmentBuildChoiceMenu'
+    gs 'HallEventChoiceThoughtsBody', 'harassment_kitchen'
+    gs 'PrintThoughtMenuPromptP', 'KitchenHarassmentChoiceMenu', 'мне', $HallEventChoiceThoughtsText
+    killvar '$HallEventChoiceThoughtsText'
+---
+
+#KitchenHarassmentBuildChoiceMenu
+    gs 'Menu.Destroy', 'KitchenHarassmentChoiceMenu'
+    gs 'Menu.Create', 'KitchenHarassmentChoiceMenu'
+
+    gs 'MenuUiAdd', 'KitchenHarassmentChoiceMenu', 'Вмешаться', ''
+    gs 'Menu.AddModule', 'KitchenHarassmentChoiceMenu', {
+        gs 'KitchenHarassmentChoose', 'protect_hard'
+    }
+
+    gs 'MenuUiAdd', 'KitchenHarassmentChoiceMenu', 'Стоять и смотреть', ''
+    gs 'Menu.AddModule', 'KitchenHarassmentChoiceMenu', {
+        gs 'KitchenHarassmentChoose', 'watch'
+    }
+
+    gs 'MenuUiAdd', 'KitchenHarassmentChoiceMenu', 'Не вмешиваться', ''
+    gs 'Menu.AddModule', 'KitchenHarassmentChoiceMenu', {
+        gs 'KitchenHarassmentChoose', 'ignore'
+    }
+---
+
+#KitchenHarassmentChoose
+    $HallHarassReaction = LCASE($ARGS[0])
+
+    if $HallHarassReaction = '':
+        $HallHarassReaction = 'ignore'
+    end
+
+    $HallHarassConsequenceArea = 'kitchen'
+    $HallHarassEventLoc = 'KitchenHarassment'
+
+    gs 'HallHarassmentApplyChoice'
+    gt 'KitchenHarassment', $KitchenHarassReturnLoc
+---
+
+#KitchenHarassmentIntro
+    if HallHarassType = 1:
+        gs 'HallHarassmentPrintText', 'kitchen_intro_1'
+    elseif HallHarassType = 2:
+        gs 'HallHarassmentPrintText', 'kitchen_intro_2'
+    elseif HallHarassType = 3:
+        gs 'HallHarassmentPrintText', 'kitchen_intro_3'
+    else:
+        gs 'HallHarassmentPrintText', 'kitchen_intro_4'
+    end
+
+    if GirlNoPantiesWork[$HallHarassGirl] = 1:
+        if HallHarassType = 2:
+            gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'cleaning_bend'
+        else:
+            gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'default'
+        end
+        *pl ' '
+    end
+---
+
+#KitchenHarassmentPrintHallReaction
+    if $HallHarassReaction = 'protect_hard':
+        if $HallHarassTalkReaction = 'protect_fail':
+            gs 'KitchenHarassmentPrintText', 'hall_reaction_protect_fail'
+        else:
+            gs 'KitchenHarassmentPrintText', 'hall_reaction_protect'
+        end
+    elseif $HallHarassReaction = 'watch':
+        if $HallHarassTalkReaction = 'watch_lewd':
+            gs 'KitchenHarassmentPrintText', 'hall_reaction_watch_lewd'
+        elseif $HallHarassTalkReaction = 'watch_bad':
+            gs 'KitchenHarassmentPrintText', 'hall_reaction_watch_bad'
+        else:
+            gs 'KitchenHarassmentPrintText', 'hall_reaction_watch'
+        end
+    else:
+        gs 'KitchenHarassmentPrintText', 'hall_reaction_ignore'
+    end
+---
+
+#KitchenHarassmentPrintFooter
+    *pl ' '
+
+    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
+        HallHarassmentResolved = 0
+        HallHarassPolicyChosen = 0
+        HallHarassPolicyValue = 0
+        $HallHarassGirl = ''
+        gt $KitchenHarassReturnLoc
+    end
+---

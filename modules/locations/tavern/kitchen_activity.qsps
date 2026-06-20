@@ -1,0 +1,203 @@
+! ================================================
+! FILE: modules/locations/tavern/kitchen_activity.qsps
+! Единый вход для осмотра кухни
+! Версия: v1 / work-осмотр как в зале v16
+! Назначение:
+! - сюжет -> приоритет, считается в лимит 3 (отдельно от зала)
+! - редко KitchenCustomerEvent (12%) -> бонус, лимит не тратит
+! - KitchenHarassmentTry -> сцена, считается в лимит
+! - иначе work-фото + текст, считается в лимит
+! - лимит 3 осмотра за часть дня, серая кнопка -> фон кухни
+! ================================================
+
+#KitchenLookGetKey
+    $KitchenLookKey = STR(day) + '_' + STR(time)
+---
+
+#KitchenLookDebugReset
+    gs 'KitchenLookGetKey'
+    KitchenLookCount[$KitchenLookKey] = 0
+    KitchenLookClick = 0
+    KitchenLookLastResult = 0
+    KitchenImageModeCode = 0
+    $KitchenLookLastImageMode = ''
+    gs 'KitchenLookCheckLimit'
+---
+
+#KitchenLookCheckLimit
+    gs 'KitchenLookGetKey'
+
+    if KitchenLookMaxPerPart <= 0:
+        KitchenLookMaxPerPart = 3
+    end
+
+    KitchenLookCanUse = 1
+    KitchenLookRemaining = KitchenLookMaxPerPart - KitchenLookCount[$KitchenLookKey]
+
+    if KitchenLookRemaining <= 0:
+        KitchenLookCanUse = 0
+        KitchenLookRemaining = 0
+    end
+---
+
+#KitchenLookRegister
+    gs 'KitchenLookGetKey'
+    KitchenLookCount[$KitchenLookKey] += 1
+    KitchenLookClick += 1
+    gs 'KitchenLookCheckLimit'
+---
+
+#KitchenLookBuildNoEventMessage
+    if TavernOpen = 0:
+        $KitchenLookMessage = 'Вы оглядываете кухню, но таверна сейчас закрыта. Очаг почти погас, столы убраны, и рабочая суета стихла.'
+    elseif KitchenActivityNoEventReason = 4:
+        $KitchenLookMessage = 'Вы ещё раз проходите взглядом по кухне. На столе лежат ножи и миски, у очага тлеет жар — но на этот раз ничего особенного не происходит.'
+    else:
+        $KitchenLookMessage = 'Вы внимательнее осматриваете кухню. На столе лежат ножи, деревянные миски и кухонная утварь, а возле очага копится жар от огня. Если на кухне не хватает рабочих рук или заканчиваются продукты, это быстро ударит по доходу трактира.'
+    end
+---
+
+#KitchenLookCountWorkers
+    KitchenLookCanShowWork = 0
+
+    if jobkitchen['sandra'] = 1 and $GirlLocation['sandra'] = 'Kitchen':
+        KitchenLookCanShowWork = 1
+    end
+
+    if jobkitchen['melissa'] = 1 and $GirlLocation['melissa'] = 'Kitchen':
+        KitchenLookCanShowWork = 1
+    end
+
+    if jobkitchen['amanda'] = 1 and $GirlLocation['amanda'] = 'Kitchen':
+        KitchenLookCanShowWork = 1
+    end
+---
+
+#KitchenLookGoKitchenWork
+    KitchenLookLastResult = 1
+    KitchenImageModeCode = 1
+    gt 'Kitchen'
+---
+
+#KitchenLookGoKitchenBg
+    KitchenImageModeCode = 2
+    gt 'Kitchen'
+---
+
+#KitchenLookReturnToKitchen
+    gs 'KitchenLookRegister'
+    gs 'UpdateGirlLocations'
+    gs 'KitchenLookCountWorkers'
+
+    if KitchenLookCanShowWork = 1 and time <> 5:
+        gt 'KitchenLookGoKitchenWork'
+    else:
+        gt 'KitchenLookGoKitchenBg'
+    end
+---
+
+#KitchenAddLookButton
+    gs 'KitchenLookCheckLimit'
+
+    if KitchenLookCanUse = 1:
+        act '<b>Осмотреть кухню</b>', 'images/common/ui/actions/look.png':
+            gt 'KitchenActivityStart', 'look'
+        end
+    else:
+        act '<font color="#808080"><b>Осмотреть кухню</b></font>', 'images/common/ui/actions/look.png':
+            KitchenLookLastResult = 5
+            gt 'KitchenLookGoKitchenBg'
+        end
+    end
+---
+
+#KitchenActivityStart
+    $KitchenActivityMode = LCASE($ARGS[0])
+
+    if $KitchenActivityMode = '':
+        $KitchenActivityMode = 'look'
+    end
+
+    gs 'KitchenLookCheckLimit'
+
+    if KitchenLookCanUse = 0:
+        KitchenLookLastResult = 5
+        gt 'KitchenLookGoKitchenBg'
+    end
+
+    KitchenActivityStoryStarted = 0
+    KitchenActivityNoEventReason = 0
+
+    gs 'IsTavernOpen'
+    gs 'UpdateGirlLocations'
+
+    if TavernOpen = 0:
+        KitchenActivityNoEventReason = 1
+        gt 'KitchenLookReturnToKitchen'
+    end
+
+    gs 'KitchenActivityTryStoryEvents'
+
+    if KitchenActivityStoryStarted = 1:
+        gs 'KitchenLookRegister'
+        KitchenLookLastResult = 2
+        exit
+    end
+
+    gs 'KitchenLookTryRareBonusEvents'
+
+    if KitchenLookRareEventStarted = 1:
+        KitchenLookLastResult = 6
+        exit
+    end
+
+    KitchenHarassmentStarted = 0
+    gs 'KitchenHarassmentTry', 'Kitchen'
+
+    if KitchenHarassmentStarted = 1:
+        gs 'KitchenLookRegister'
+        KitchenLookLastResult = 3
+        exit
+    end
+
+    KitchenActivityNoEventReason = 4
+
+    gt 'KitchenLookReturnToKitchen'
+---
+
+! ================================================
+! FILE: modules/locations/tavern/kitchen_activity.qsps
+! Редкий бонус: конфликт на кухне (не тратит лимит осмотра)
+! ================================================
+
+#KitchenLookTryRareBonusEvents
+    KitchenLookRareEventStarted = 0
+
+    if KitchenLookRareChance <= 0:
+        KitchenLookRareChance = 12
+    end
+
+    KitchenLookRareRoll = RAND(1, 100)
+
+    if KitchenLookRareRoll > KitchenLookRareChance:
+        exit
+    end
+
+    if LOC('KitchenCustomerEventCanStart') = 1:
+        gs 'KitchenCustomerEventCanStart'
+
+        if KitchenCustomerEventCanStart = 1:
+            KitchenLookRareEventStarted = 1
+            gt 'KitchenCustomerEventStart', $KitchenCustomerSelectedGirl, 'Kitchen'
+        end
+    end
+---
+
+! ================================================
+! FILE: modules/locations/tavern/kitchen_activity.qsps
+! Проверка сюжетных событий кухни (приоритет, хук на будущее)
+! ================================================
+
+#KitchenActivityTryStoryEvents
+    KitchenActivityStoryStarted = 0
+---

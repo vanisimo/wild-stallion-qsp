@@ -1,3 +1,9 @@
+! ================================================
+! FILE: modules/locations/town/market.qsps
+! Городской рынок
+! Версия: v3 / лавки, пост стражи, улица
+! ================================================
+
 #Market
     *clr
     clr
@@ -75,20 +81,9 @@
                     gt 'SundayVisitClarissaMelissa', 'Market'
                 end
             end
-
-            act '<b>Прогуляться</b>', 'images/common/ui/actions/look.png':
-                gs 'LocationWalk', 'Market', 'Вы проходите между закрытыми рядами. Воскресная тишина кажется непривычной, но именно в ней легче заметить, кто к кому заходит и кто с кем говорит.'
-            end
         end
 
         *pl ' '
-
-        if debug = 1:
-            *pl '[DEBUG MARKET] week: ' + STR(week)
-            *pl '[DEBUG MARKET] time: ' + STR(time)
-            *pl '[DEBUG MARKET] phase: ' + $CitySchedulePhase
-            *pl ' '
-        end
 
         act '<b>Улица</b>', 'images/common/ui/actions/street.png':
             gt 'Street'
@@ -109,8 +104,9 @@
 
     *pl ' '
 
-    act '<b>Блэнкеншип</b>', 'images/common/ui/actions/shop.png':
-        gt 'BeckyShop'
+    act '<b>Лавка продовольствия</b>', 'images/common/ui/actions/shop.png':
+        killvar '$BeckyShopHoldTab'
+        gt 'BeckyShop', 'main'
     end
 
     if BeckyHomeStage >= 3 and time = 4 and LOC('BeckyHomeGuestArrival') = 1:
@@ -119,36 +115,19 @@
         end
     end
 
-    act '<b>Легаре</b>', 'images/common/ui/actions/shop.png':
-        gt 'WineShop'
+    act '<b>Лавка виноторговца</b>', 'images/common/ui/actions/shop.png':
+        killvar '$WineShopHoldTab'
+        gt 'WineShop', 'main'
     end
 
-    act '<b>Сладости</b>', 'images/common/ui/actions/gift.png':
-        gt 'MarketGiftStall', 'Market'
-    end
-
-    if LOC('CraftsmenQuarter') = 1:
-        act '<b>Ремесленники</b>', 'images/common/ui/actions/craftsmen.png':
-            gt 'CraftsmenQuarter'
-        end
+    act '<b>Лавка сладостей</b>', 'images/common/ui/actions/gift.png':
+        killvar '$SweetsShopHoldTab'
+        gt 'SweetsShop', 'main'
     end
 
     if LOC('GuardPost') = 1:
-        act '<b>Стража</b>', 'images/common/ui/actions/guard.png':
+        act '<b>Пост стражи</b>', 'images/common/ui/actions/guard.png':
             gt 'GuardPost'
-        end
-    end
-
-    act '<b>Прогуляться</b>', 'images/common/ui/actions/look.png':
-        gs 'LocationWalk', 'Market', 'Вы неторопливо проходите между рядами, присматриваясь к лицам и прислушиваясь к обрывкам разговоров.'
-    end
-
-    if debug = 1:
-        act '<b>DEBUG: расписание рынка</b>', 'images/common/ui/debug.png':
-            *pl ' '
-            *pl '[DEBUG MARKET] week: ' + STR(week)
-            *pl '[DEBUG MARKET] time: ' + STR(time)
-            *pl '[DEBUG MARKET] phase: ' + $CitySchedulePhase
         end
     end
 

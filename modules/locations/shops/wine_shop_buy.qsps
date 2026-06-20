@@ -1,0 +1,148 @@
+! ================================================
+! FILE: modules/locations/shops/wine_shop_buy.qsps
+! Покупки в лавке виноторговца без отдельного экрана
+! ================================================
+
+#WineShopRefreshPanel
+    $PanelRestoreAfterRefresh = 'tavern'
+---
+
+#WineShopReturnAfterPurchase
+    gs 'WineShopRefreshPanel'
+
+    if $WineShopTab = '':
+        if $WineShopHoldTab <> '':
+            $WineShopTab = $WineShopHoldTab
+        else:
+            $WineShopTab = 'wine'
+        end
+    end
+
+    gt 'WineShop', $WineShopTab
+---
+
+#WineShopBuyWine
+    $WineShopBarrelSize = LCASE($ARGS[0])
+    WineShopBigPurchaseFlash = 0
+
+    if $CurrentSeller = 'alber' and Friends['alber'] < 15:
+        $WineShopMessage = 'Альбер не собирается продавать вам вино после того, как вы себя вели.'
+        gs 'WineShopReturnAfterPurchase'
+        exit
+    end
+
+    WineShopBarrelUnits = 0
+    WineShopBarrelCost = 0
+    $WineShopBarrelLabel = ''
+
+    if $WineShopBarrelSize = 'small':
+        WineShopBarrelUnits = 25
+        WineShopBarrelCost = 220
+        $WineShopBarrelLabel = 'малый бочёнок вина'
+    elseif $WineShopBarrelSize = 'medium':
+        WineShopBarrelUnits = 60
+        WineShopBarrelCost = 510
+        $WineShopBarrelLabel = 'средний бочёнок вина'
+    elseif $WineShopBarrelSize = 'large':
+        WineShopBarrelUnits = 120
+        WineShopBarrelCost = 990
+        $WineShopBarrelLabel = 'большой бочёнок вина'
+    elseif $WineShopBarrelSize = 'huge':
+        WineShopBarrelUnits = 200
+        WineShopBarrelCost = 1550
+        $WineShopBarrelLabel = 'огромный бочёнок вина'
+    else:
+        $WineShopMessage = 'Такого бочёнка на прилавке нет.'
+        gs 'WineShopReturnAfterPurchase'
+        exit
+    end
+
+    if money < WineShopBarrelCost:
+        $WineShopMessage = 'У вас недостаточно денег на ' + $WineShopBarrelLabel + '.'
+        gs 'WineShopReturnAfterPurchase'
+        exit
+    end
+
+    money -= WineShopBarrelCost
+    winenum += WineShopBarrelUnits
+    $WineShopMessage = 'Вы покупаете ' + $WineShopBarrelLabel + ' (' + STR(WineShopBarrelUnits) + ' ед.).'
+
+    if $WineShopBarrelSize = 'medium':
+        if $CurrentSeller = 'clarissa' and LOC('ClarissaWineBulkPurchase') = 1:
+            gs 'ClarissaWineBulkPurchase', WineShopBarrelUnits
+        end
+    elseif $WineShopBarrelSize = 'huge':
+        WineShopBigPurchaseFlash = 1
+        $WineShopMessage += '<br><br>Продавец очень доволен такой крупной покупкой!'
+
+        if $CurrentSeller = 'clarissa':
+            $WineShopMessage += '<br><br>Кларисса радостно улыбается: «Ого! Большой заказ!»'
+            Friends['clarissa'] += 5
+
+            if LOC('ClarissaWineBulkPurchase') = 1:
+                gs 'ClarissaWineBulkPurchase', WineShopBarrelUnits
+            end
+        else:
+            $WineShopMessage += '<br><br>Мессир Легаре довольно кивает: «Хороший заказ.»'
+            Friends['alber'] += 4
+        end
+    end
+
+    killvar '$WineShopBarrelLabel'
+    killvar '$WineShopBarrelSize'
+    killvar 'WineShopBarrelUnits'
+    killvar 'WineShopBarrelCost'
+
+    $WineShopTab = 'wine'
+    gs 'WineShopReturnAfterPurchase'
+---
+
+#WineShopBuyBeer
+    $WineShopBarrelSize = LCASE($ARGS[0])
+
+    if $CurrentSeller = 'alber' and Friends['alber'] < 15:
+        $WineShopMessage = 'Альбер отказывается продавать вам пиво.'
+        gs 'WineShopReturnAfterPurchase'
+        exit
+    end
+
+    WineShopBarrelUnits = 0
+    WineShopBarrelCost = 0
+    $WineShopBarrelLabel = ''
+
+    if $WineShopBarrelSize = 'small':
+        WineShopBarrelUnits = 40
+        WineShopBarrelCost = 150
+        $WineShopBarrelLabel = 'малый бочёнок пива'
+    elseif $WineShopBarrelSize = 'medium':
+        WineShopBarrelUnits = 100
+        WineShopBarrelCost = 360
+        $WineShopBarrelLabel = 'средний бочёнок пива'
+    elseif $WineShopBarrelSize = 'large':
+        WineShopBarrelUnits = 200
+        WineShopBarrelCost = 700
+        $WineShopBarrelLabel = 'большой бочёнок пива'
+    else:
+        $WineShopMessage = 'Такого бочёнка на прилавке нет.'
+        gs 'WineShopReturnAfterPurchase'
+        exit
+    end
+
+    if money < WineShopBarrelCost:
+        $WineShopMessage = 'У вас недостаточно денег на ' + $WineShopBarrelLabel + '.'
+        gs 'WineShopReturnAfterPurchase'
+        exit
+    end
+
+    money -= WineShopBarrelCost
+    beernum += WineShopBarrelUnits
+    $WineShopMessage = 'Вы покупаете ' + $WineShopBarrelLabel + ' (' + STR(WineShopBarrelUnits) + ' ед.).'
+
+    killvar '$WineShopBarrelLabel'
+    killvar '$WineShopBarrelSize'
+    killvar 'WineShopBarrelUnits'
+    killvar 'WineShopBarrelCost'
+
+    $WineShopTab = 'beer'
+    gs 'WineShopReturnAfterPurchase'
+---

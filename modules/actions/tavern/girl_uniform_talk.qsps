@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/actions/tavern/girl_uniform_talk.qsps
 ! Разговор с девушкой о рабочей форме
-! Версия: v1
+! Версия: v2 / без трусиков на смене
 ! Назначение:
 ! - НЕ админ-меню
 ! - живой разговор после покупки формы у Ирмы
@@ -100,6 +100,22 @@
         }
     end
 
+    gs 'GirlNoPantiesWorkCanOffer', $UniformTalkGirl
+
+    if GirlNoPantiesWorkCanOffer = 1 and GirlNoPantiesWork[$UniformTalkGirl] = 0:
+        gs 'MenuUiAdd', 'GirlUniformTalkMenu', 'Просить ходить без трусиков', ''
+        gs 'Menu.AddModule', 'GirlUniformTalkMenu', {
+            gt 'GirlNoPantiesWorkTalkSet', $UniformTalkGirl, 1, $UniformTalkReturnLoc
+        }
+    end
+
+    if GirlNoPantiesWork[$UniformTalkGirl] = 1:
+        gs 'MenuUiAdd', 'GirlUniformTalkMenu', 'Попросить надеть трусики', ''
+        gs 'Menu.AddModule', 'GirlUniformTalkMenu', {
+            gt 'GirlNoPantiesWorkTalkSet', $UniformTalkGirl, 0, $UniformTalkReturnLoc
+        }
+    end
+
     gs 'MenuUiAdd', 'GirlUniformTalkMenu', 'Не говорить о форме', ''
     gs 'Menu.AddModule', 'GirlUniformTalkMenu', {
         gt $UniformTalkReturnLoc
@@ -150,6 +166,20 @@
     gs 'GirlUniformTalkEnsureName', $UniformTalkGirl
 
     GirlUniformLevel[$UniformTalkGirl] = UniformTalkLevel
+
+    if UniformTalkLevel = 1:
+        GirlUniformTransitionTalkDone[$UniformTalkGirl] = 1
+    end
+
+    if UniformTalkLevel = 0:
+        GirlNoPantiesWork[$UniformTalkGirl] = 0
+    end
+
+    if LOC('TavernRevealingUniformHallSync') = 1:
+        gs 'TavernRevealingUniformHallSync'
+    end
+
+    gs 'GirlNoPantiesWorkClampGirl', $UniformTalkGirl
 
     if UniformTalkLevel = 1:
         TavernScandal += 1
@@ -308,8 +338,106 @@
     *pl '<b>Сейчас:</b> ' + $UniformTalkCurrent
     *pl '<b>Доступно:</b> ' + $UniformTalkAvailable
 
+    if GirlNoPantiesWork[$UniformTalkGirl] = 1:
+        *pl '<b>Под юбкой:</b> без трусиков на смене'
+    else:
+        *pl '<b>Под юбкой:</b> обычно'
+    end
+
     killvar '$UniformTalkCurrent'
     killvar '$UniformTalkAvailable'
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_uniform_talk.qsps
+! Без трусиков / надеть обратно
+! ================================================
+
+#GirlNoPantiesWorkTalkSet
+    *clr
+    clr
+    cla
+
+    gs 'GirlUniformTalkNormalizeKey', $ARGS[0]
+    $UniformTalkGirl = $UniformTalkGirlKey
+    GirlNoPantiesWorkTalkMode = ARGS[1]
+    $UniformTalkReturnLoc = $ARGS[2]
+
+    if $UniformTalkGirl = '':
+        $UniformTalkGirl = 'amanda'
+    end
+
+    if $UniformTalkReturnLoc = '':
+        $UniformTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($UniformTalkReturnLoc) = 0:
+        $UniformTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlUniformTalkEnsureName', $UniformTalkGirl
+
+    if GirlNoPantiesWorkTalkMode = 1:
+        gs 'GirlNoPantiesWorkCanOffer', $UniformTalkGirl
+
+        if GirlNoPantiesWorkCanOffer = 0:
+            gt 'GirlUniformTalkStart', $UniformTalkGirl, $UniformTalkReturnLoc
+        end
+
+        gs 'GirlNoPantiesWorkRollAgreeRemove', $UniformTalkGirl
+
+        if GirlNoPantiesWorkAgreed = 1:
+            GirlNoPantiesWork[$UniformTalkGirl] = 1
+            $GirlNoPantiesTextKey = 'remove_agree'
+        else:
+            $GirlNoPantiesTextKey = 'remove_refuse'
+        end
+    else:
+        if GirlNoPantiesWork[$UniformTalkGirl] <> 1:
+            gt 'GirlUniformTalkStart', $UniformTalkGirl, $UniformTalkReturnLoc
+        end
+
+        gs 'GirlNoPantiesWorkRollAgreePutOn', $UniformTalkGirl
+
+        if GirlNoPantiesWorkAgreed = 1:
+            GirlNoPantiesWork[$UniformTalkGirl] = 0
+            $GirlNoPantiesTextKey = 'puton_agree'
+        else:
+            $GirlNoPantiesTextKey = 'puton_refuse'
+        end
+    end
+
+    gs 'GirlNoPantiesWorkClampGirl', $UniformTalkGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $UniformTalkGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР О ФОРМЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    $GirlNoPantiesGirl = $UniformTalkGirl
+
+    gs 'GirlNoPantiesWorkPrintText', $GirlNoPantiesTextKey
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG NO PANTIES] girl: ' + $UniformTalkGirl
+        *pl '[DEBUG NO PANTIES] GirlNoPantiesWork: ' + STR(GirlNoPantiesWork[$UniformTalkGirl])
+        *pl '[DEBUG NO PANTIES] sluttiness: ' + STR(sluttiness[$UniformTalkGirl])
+        *pl '[DEBUG NO PANTIES] FamilyCorruptionStage: ' + STR(FamilyCorruptionStage)
+        *pl ' '
+    end
+
+    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        gt 'GirlUniformTalkStart', $UniformTalkGirl, $UniformTalkReturnLoc
+    end
+
+    killvar 'GirlNoPantiesWorkTalkMode'
+    killvar '$GirlNoPantiesTextKey'
 ---
 
 ! ================================================

@@ -61,6 +61,15 @@
 
 #PolicyEventContextTextGirl
     $PolicyContextGirlText = ''
+    $PolicyContextGirlNoPantiesText = ''
+
+    if GirlNoPantiesWork[$PolicyContextGirl] = 1:
+        if LOC('GirlNoPantiesWorkText') = 1:
+            gs 'GirlNoPantiesWorkNormalizeKey', $PolicyContextGirl
+            gs 'GirlNoPantiesWorkText', 'policy_context'
+            $PolicyContextGirlNoPantiesText = $GirlNoPantiesEventText
+        end
+    end
 
     if sluttiness[$PolicyContextGirl] >= 55 or GirlNpcPath[$PolicyContextGirl] >= 55:
         if $PolicyContextEvent = 'kitchen':
@@ -73,6 +82,16 @@
     elseif sluttiness[$PolicyContextGirl] <= 10 and GirlNpcPath[$PolicyContextGirl] <= 10:
         $PolicyContextGirlText = $RealName[$PolicyContextGirl] + ' держится напряжённо. Для неё это ещё не игра и не способ заработать лишнюю монету, а чужая лапа, чужой смех и мерзкая попытка решить, что девушка в трактире обязана терпеть всё.'
     end
+
+    if $PolicyContextGirlNoPantiesText <> '':
+        if $PolicyContextGirlText <> '':
+            $PolicyContextGirlText = $PolicyContextGirlNoPantiesText + '<br><br>' + $PolicyContextGirlText
+        else:
+            $PolicyContextGirlText = $PolicyContextGirlNoPantiesText
+        end
+    end
+
+    killvar '$PolicyContextGirlNoPantiesText'
 ---
 
 #PolicyEventContextTextTavern

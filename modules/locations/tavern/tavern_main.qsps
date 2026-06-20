@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/locations/tavern_main.qsps
 ! Главный зал трактира
-! Версия: v4 / подключение общего входа TavernHallActivityStart
+! Версия: v11 / ночью без девушек и без work-фото
 ! Назначение:
 ! - кнопка Осмотреть зал теперь идёт через tavern_hall_activity.qsps
 ! - кнопка Встать за стойку тоже идёт через общий activity-wrapper
@@ -13,6 +13,33 @@
     clr
     cla
 
+    TavernMainWorkLookMode = 0
+    $TavernMainResolvedImageMode = ''
+
+    if TavernMainImageModeCode = 1:
+        TavernMainWorkLookMode = 1
+        $TavernMainResolvedImageMode = 'work'
+        TavernMainImageModeCode = 0
+    elseif TavernMainImageModeCode = 2:
+        $TavernMainResolvedImageMode = 'hall'
+        TavernMainImageModeCode = 0
+    else:
+        $TavernMainIncomingImageMode = LCASE($ARGS[0])
+
+        if $TavernMainIncomingImageMode = 'work':
+            TavernMainWorkLookMode = 1
+            $TavernMainResolvedImageMode = 'work'
+        elseif $TavernMainIncomingImageMode = 'hall':
+            $TavernMainResolvedImageMode = 'hall'
+        end
+
+        killvar '$TavernMainIncomingImageMode'
+    end
+
+    if TavernMainWorkLookMode = 1:
+        gs 'TavernHallLookBuildNoEventMessage'
+    end
+
     gs 'AddGlobalButtons'
     gs 'IsTavernOpen'
     gs 'UpdateGirlLocations'
@@ -20,18 +47,22 @@
     TavernMainOpen = TavernOpen
     $TavernMainClosedReason = $TavernClosedReason
 
+    gs 'TavernMainShowLocationImage'
 
+    *pl ' '
     *pl '══════════════════════════════════════════════'
     gs 'PrintTitleLine', ' ТРАКТИР "ДИКИЙ ЖЕРЕБЕЦ"'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if LOC('ShowTavernHallImage') = 1:
-        gs 'ShowTavernHallImage'
-    elseif LOC('ShowLocationTimeImage') = 1:
-        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall'
-    elseif LOC('ShowLocationImage') = 1:
-        gs 'ShowLocationImage', 'tavern', 'full', 'png'
+    TavernHallLookMessageShown = 0
+
+    if $TavernHallLookMessage <> '':
+        TavernHallLookMessageShown = 1
+        *pl ' '
+        gs 'PrintMainP', $TavernHallLookMessage
+        *pl ' '
+        killvar '$TavernHallLookMessage'
     end
 
     if TavernMainOpen = 1:
@@ -43,35 +74,59 @@
 
     *pl ' '
 
-    gs 'TavernMainPrintHallDescription'
+    if TavernMainWorkLookMode = 0:
+        gs 'TavernMainPrintHallDescription'
+    end
 
     *pl ' '
 
     ! ====================== ДЕВУШКИ В ГЛАВНОМ ЗАЛЕ ======================
 
-    LocationGirlShown = 0
+    if time <> 5:
+        LocationGirlShown = 0
 
-    if TavernMainOpen = 1:
-        gs 'PrintMainLine', 'В зале сейчас:'
-        *pl ' '
+        if TavernMainOpen = 1:
+            gs 'PrintMainLine', 'В зале сейчас:'
+            *pl ' '
 
-        gs 'ShowGirlInLocation', 'sandra', 'TavernMain'
-        gs 'ShowGirlInLocation', 'melissa', 'TavernMain'
-        gs 'ShowGirlInLocation', 'amanda', 'TavernMain'
+            gs 'ShowGirlInLocation', 'sandra', 'TavernMain'
+            gs 'ShowGirlInLocation', 'melissa', 'TavernMain'
+            gs 'ShowGirlInLocation', 'amanda', 'TavernMain'
 
-        if LocationGirlShown = 0:
-            gs 'PrintMainLine', 'Сейчас в зале нет никого из девушек.'
+            if LocationGirlShown = 0:
+                gs 'PrintMainLine', 'Сейчас в зале нет никого из девушек.'
+            end
+        else:
+            gs 'PrintMainLine', 'Девушки не работают в зале, пока таверна закрыта.'
         end
-    else:
-        gs 'PrintMainLine', 'Девушки не работают в зале, пока таверна закрыта.'
-    end
 
-    killvar 'LocationGirlShown'
+        killvar 'LocationGirlShown'
+    end
 
     *pl ' '
 
     if debug = 1:
-        *pl '[DEBUG TAVERN MAIN] TavernMain fixed v3'
+        gs 'TavernHallLookCheckLimit'
+        gs 'TavernHallLookGetKey'
+        *pl '[DEBUG TAVERN MAIN] TavernMain v11 time: ' + STR(time)
+        *pl '[DEBUG TAVERN MAIN] look message shown: ' + IIF(TavernHallLookMessageShown = 1, 'yes', 'no')
+        *pl '[DEBUG TAVERN MAIN] look remaining: ' + STR(TavernHallLookRemaining) + ' / ' + STR(TavernHallLookMaxPerPart)
+        *pl '[DEBUG TAVERN MAIN] look key: ' + $TavernHallLookKey + ' used: ' + STR(TavernHallLookCount[$TavernHallLookKey])
+        *pl '[DEBUG TAVERN MAIN] last look result: ' + STR(TavernHallLookLastResult) + ' (1=work 2=story 3=harass 5=limit 6=bonus)'
+        *pl '[DEBUG TAVERN MAIN] image mode: ' + $TavernHallLookLastImageMode + ' work look: ' + STR(TavernMainWorkLookMode)
+
+        if TavernHallLookLastResult = 1:
+            *pl '[DEBUG TAVERN MAIN] итог: обычный осмотр — work-фото и текст.'
+        elseif TavernHallLookLastResult = 2:
+            *pl '[DEBUG TAVERN MAIN] итог: сюжетное событие — work-фото на этот клик не показывается.'
+        elseif TavernHallLookLastResult = 3:
+            *pl '[DEBUG TAVERN MAIN] итог: приставание — work-фото на этот клик не показывается.'
+        elseif TavernHallLookLastResult = 6:
+            *pl '[DEBUG TAVERN MAIN] итог: бонус (пропажа/пошлое) — лимит не потрачен, work-фото на этот клик нет.'
+        elseif TavernHallLookLastResult = 5:
+            *pl '[DEBUG TAVERN MAIN] итог: лимит исчерпан — серая кнопка, только фон зала.'
+        end
+        killvar 'TavernHallLookMessageShown'
         *pl '[DEBUG TAVERN MAIN] AmandaLegareMajorRiskReady: ' + STR(AmandaLegareMajorRiskReady)
         *pl '[DEBUG TAVERN MAIN] AmandaLegareSecondMeetReady: ' + STR(AmandaLegareSecondMeetReady)
         *pl '[DEBUG TAVERN MAIN] AmandaLegareOutsideWallReady: ' + STR(AmandaLegareOutsideWallReady)
@@ -86,10 +141,7 @@
         gt 'TavernHallActivityStart', 'work'
     end
 
-    act '<b>Осмотреть зал</b>', 'images/common/ui/actions/look.png':
-        gt 'TavernHallActivityStart', 'look'
-    end
-
+    gs 'TavernHallAddLookButton'
     gs 'TavernHallAddWaitButton'
 
     ! ====================== ПЕРЕХОДЫ ======================
@@ -120,6 +172,8 @@
 
     killvar 'TavernMainOpen'
     killvar '$TavernMainClosedReason'
+    killvar 'TavernMainWorkLookMode'
+    killvar '$TavernMainResolvedImageMode'
 ---
 
 ! ================================================
@@ -128,6 +182,40 @@
 ! Читает TavernOpen после вызова IsTavernOpen
 ! Сначала — тексты дневных событий, иначе — базовое описание
 ! ================================================
+
+#TavernMainShowLocationImage
+    $TavernMainImageModeForDraw = LCASE($TavernMainResolvedImageMode)
+
+    if $TavernMainImageModeForDraw = '':
+        $TavernMainImageModeForDraw = LCASE($TavernMainImageMode)
+    end
+
+    $TavernHallLookLastImageMode = $TavernMainImageModeForDraw
+
+    if $TavernHallLookLastImageMode = '':
+        $TavernHallLookLastImageMode = 'default'
+    end
+
+    killvar '$TavernMainImageMode'
+
+    if $TavernMainImageModeForDraw = 'work' and time <> 5:
+        gs 'ShowTavernHallWorkImage'
+    else:
+        gs 'TavernMainShowHallBackgroundImage'
+    end
+
+    killvar '$TavernMainImageModeForDraw'
+---
+
+#TavernMainShowHallBackgroundImage
+    if LOC('ShowTavernHallImage') = 1:
+        gs 'ShowTavernHallImage'
+    elseif LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 'jpg'
+    elseif LOC('ShowLocationImage') = 1:
+        gs 'ShowLocationImage', 'tavern', 'full', 'png'
+    end
+---
 
 #TavernMainPrintHallDescription
     if TavernOpen = 0:
@@ -247,7 +335,7 @@
     if LOC('ShowTavernHallImage') = 1:
         gs 'ShowTavernHallImage'
     elseif LOC('ShowLocationTimeImage') = 1:
-        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall'
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 'jpg'
     elseif LOC('ShowLocationImage') = 1:
         gs 'ShowLocationImage', 'tavern', 'full', 'png'
     end
@@ -268,7 +356,7 @@
 
     LocationGirlShown = 0
 
-    if TavernOpen = 1:
+    if TavernOpen = 1 and time <> 5:
         gs 'PrintMainLine', 'В зале сейчас:'
         *pl ' '
 
@@ -279,7 +367,7 @@
         if LocationGirlShown = 0:
             gs 'PrintMainP', 'Сейчас в зале нет никого из девушек.'
         end
-    else:
+    elseif TavernOpen = 0:
         gs 'PrintMainP', 'Девушки сейчас не работают в зале.'
     end
 
@@ -292,10 +380,7 @@
         *pl ' '
     end
 
-    act '<b>Осмотреть зал ещё раз</b>', 'images/common/ui/actions/look.png':
-        gt 'TavernHallActivityStart', 'look'
-    end
-
+    gs 'TavernHallAddLookButton'
     gs 'TavernHallAddWaitButton'
 
     act '<b>Главный зал</b>', 'images/common/ui/tavern.png':

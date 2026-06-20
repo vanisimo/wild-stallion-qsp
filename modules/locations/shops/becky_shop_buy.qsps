@@ -1,0 +1,175 @@
+! ================================================
+! FILE: modules/locations/shops/becky_shop_buy.qsps
+! Покупки в лавке продовольствия без отдельного экрана
+! ================================================
+
+#BeckyShopRefreshPanel
+    $PanelRestoreAfterRefresh = 'tavern'
+---
+
+#BeckyShopReturnAfterPurchase
+    gs 'BeckyShopRefreshPanel'
+
+    if $BeckyShopTab = '':
+        if $BeckyShopHoldTab <> '':
+            $BeckyShopTab = $BeckyShopHoldTab
+        else:
+            $BeckyShopTab = 'food'
+        end
+    end
+
+    gt 'BeckyShop', $BeckyShopTab
+---
+
+#BeckyShopBuyBox
+    $BeckyShopBoxSize = LCASE($ARGS[0])
+    BeckyShopBigPurchaseFlash = 0
+
+    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
+        $BeckyShopMessage = 'Бекки не собирается продавать вам продукты, пока вы не помиритесь.'
+        gs 'BeckyShopReturnAfterPurchase'
+        exit
+    end
+
+    BeckyShopBoxUnits = 0
+    BeckyShopBoxCost = 0
+    $BeckyShopBoxLabel = ''
+
+    if $BeckyShopBoxSize = 'small':
+        BeckyShopBoxUnits = 15
+        BeckyShopBoxCost = 60
+        $BeckyShopBoxLabel = 'маленький ящик продуктов'
+    elseif $BeckyShopBoxSize = 'medium':
+        BeckyShopBoxUnits = 40
+        BeckyShopBoxCost = 150
+        $BeckyShopBoxLabel = 'средний ящик продуктов'
+    elseif $BeckyShopBoxSize = 'large':
+        BeckyShopBoxUnits = 80
+        BeckyShopBoxCost = 280
+        $BeckyShopBoxLabel = 'большой ящик продуктов'
+    elseif $BeckyShopBoxSize = 'huge':
+        BeckyShopBoxUnits = 150
+        BeckyShopBoxCost = 500
+        $BeckyShopBoxLabel = 'огромный ящик продуктов'
+    else:
+        $BeckyShopMessage = 'Такого ящика у прилавка нет.'
+        gs 'BeckyShopReturnAfterPurchase'
+        exit
+    end
+
+    if money < BeckyShopBoxCost:
+        $BeckyShopMessage = 'У вас недостаточно денег на ' + $BeckyShopBoxLabel + '.'
+        gs 'BeckyShopReturnAfterPurchase'
+        exit
+    end
+
+    money -= BeckyShopBoxCost
+    productnum += BeckyShopBoxUnits
+    $BeckyShopMessage = 'Вы покупаете ' + $BeckyShopBoxLabel + ' (' + STR(BeckyShopBoxUnits) + ' ед.).'
+
+    if $BeckyShopBoxSize = 'huge':
+        BeckyShopBigPurchaseFlash = 1
+        $BeckyShopMessage += '<br><br>Продавец очень доволен такой крупной покупкой!'
+
+        if $CurrentSeller = 'becky':
+            Friends['becky'] += 5
+        elseif $CurrentSeller = 'inga':
+            Friends['inga'] += 4
+        else:
+            Friends['eddie'] += 3
+        end
+    end
+
+    killvar '$BeckyShopBoxLabel'
+    killvar '$BeckyShopBoxSize'
+    killvar 'BeckyShopBoxUnits'
+    killvar 'BeckyShopBoxCost'
+
+    gs 'BeckyShopReturnAfterPurchase'
+---
+
+#BeckyShopBuyBoxChild
+    $BeckyShopChildSeller = LCASE($ARGS[0])
+
+    if becky_children_bought_today = 1:
+        $BeckyShopMessage = 'Сегодня дети Бекки уже помогли вам с покупкой — больше не продадут.'
+        gs 'BeckyShopReturnAfterPurchase'
+        exit
+    end
+
+    if $BeckyShopChildSeller = 'inga':
+        if Friends['inga'] < 18:
+            $BeckyShopMessage = 'Инга не хочет торговать с вами за спиной матери.'
+            gs 'BeckyShopReturnAfterPurchase'
+            exit
+        end
+
+        $BeckyShopChildName = 'Инга'
+    elseif $BeckyShopChildSeller = 'eddie':
+        if Friends['eddie'] < 18:
+            $BeckyShopMessage = 'Эдди не хочет торговать с вами за спиной матери.'
+            gs 'BeckyShopReturnAfterPurchase'
+            exit
+        end
+
+        $BeckyShopChildName = 'Эдди'
+    else:
+        $BeckyShopMessage = 'Никто из детей сейчас не готов помочь.'
+        gs 'BeckyShopReturnAfterPurchase'
+        exit
+    end
+
+    if money < 60:
+        $BeckyShopMessage = 'У вас недостаточно денег на маленький ящик продуктов.'
+        gs 'BeckyShopReturnAfterPurchase'
+        exit
+    end
+
+    money -= 60
+    productnum += 15
+    becky_children_bought_today = 1
+    $BeckyShopMessage = $BeckyShopChildName + ' продаёт вам маленький ящик продуктов (15 ед.).'
+
+    if $BeckyShopChildSeller = 'inga':
+        Friends['inga'] += 2
+    else:
+        Friends['eddie'] += 2
+    end
+
+    killvar '$BeckyShopChildSeller'
+    killvar '$BeckyShopChildName'
+
+    gs 'BeckyShopReturnAfterPurchase'
+---
+
+#BeckyShopBuyGift
+    $GiftShopId = LCASE($ARGS[0])
+
+    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
+        $BeckyShopMessage = 'Бекки не хочет продавать вам подарки, пока вы не помиритесь.'
+        gs 'BeckyShopReturnAfterPurchase'
+        exit
+    end
+
+    gs 'GiftRegistryResolve', $GiftShopId
+
+    if GiftRegistryKnown = 0 or GiftRegistryPrice <= 0:
+        $BeckyShopMessage = 'Такого товара у прилавка сейчас нет.'
+    elseif money < GiftRegistryPrice:
+        $BeckyShopMessage = 'Вам не хватает денег на ' + $GiftRegistryAccusative + '.'
+    else:
+        money -= GiftRegistryPrice
+        GiftInventory[$GiftShopId] += 1
+        PortGiftBoughtTotal += 1
+        $BeckyShopMessage = 'Вы покупаете ' + $GiftRegistryAccusative + '. Подарок добавлен в ваши вещи.'
+    end
+
+    killvar '$GiftShopId'
+    killvar 'GiftRegistryPrice'
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+    killvar '$GiftRegistryLabel'
+
+    $BeckyShopTab = 'gifts'
+    gs 'BeckyShopReturnAfterPurchase'
+---

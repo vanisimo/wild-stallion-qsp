@@ -341,6 +341,85 @@
     killvar '$NpcNavLine'
 ---
 
+#GetMenuOpenLinkHref
+    $MenuOpenLinkName = $ARGS[0]
+    $MenuOpenLinkLabel = $ARGS[1]
+    $MenuOpenLinkHref = ''
+
+    if $MenuOpenLinkName = '':
+        killvar '$MenuOpenLinkName'
+        killvar '$MenuOpenLinkLabel'
+        exit
+    end
+
+    if $MenuOpenLinkLabel = '':
+        $MenuOpenLinkLabel = 'выбрать действие'
+    end
+
+    gs 'FormatTextByStyle', $MenuOpenLinkLabel, 'npc_link'
+    $MenuOpenLinkHref = '<a href="exec:gs ''Menu.Show'', ''' + $MenuOpenLinkName + '''">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    killvar '$MenuOpenLinkName'
+    killvar '$MenuOpenLinkLabel'
+---
+
+#GetNpcGtLinkHref
+    $NpcGtLinkLabel = $ARGS[0]
+    $NpcGtLinkExec = $ARGS[1]
+    $NpcGtLinkHref = ''
+
+    if $NpcGtLinkLabel = '' or $NpcGtLinkExec = '':
+        killvar '$NpcGtLinkLabel'
+        killvar '$NpcGtLinkExec'
+        exit
+    end
+
+    gs 'FormatTextByStyle', $NpcGtLinkLabel, 'npc_link'
+    $NpcGtLinkHref = '<a href="exec:' + $NpcGtLinkExec + '">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+
+    killvar '$NpcGtLinkLabel'
+    killvar '$NpcGtLinkExec'
+---
+
+#PrintThoughtMenuPromptP
+    $ThoughtMenuPromptName = $ARGS[0]
+    $ThoughtMenuPromptLabel = $ARGS[1]
+    $ThoughtMenuPromptBody = $ARGS[2]
+    $ThoughtMenuPromptBefore = $ARGS[3]
+    $ThoughtMenuPromptAfter = $ARGS[4]
+
+    if $ThoughtMenuPromptBody = '':
+        killvar '$ThoughtMenuPromptName'
+        killvar '$ThoughtMenuPromptLabel'
+        killvar '$ThoughtMenuPromptBody'
+        killvar '$ThoughtMenuPromptBefore'
+        killvar '$ThoughtMenuPromptAfter'
+        exit
+    end
+
+    if $ThoughtMenuPromptBefore = '':
+        $ThoughtMenuPromptBefore = 'что же '
+    end
+
+    if $ThoughtMenuPromptAfter = '':
+        $ThoughtMenuPromptAfter = ' делать: '
+    end
+
+    gs 'GetMenuOpenLinkHref', $ThoughtMenuPromptName, $ThoughtMenuPromptLabel
+    gs 'FormatTextByStyle', $ThoughtMenuPromptBefore + $MenuOpenLinkHref + $ThoughtMenuPromptAfter + $ThoughtMenuPromptBody, 'thought'
+    *p $FormattedText
+
+    killvar '$FormattedText'
+    killvar '$MenuOpenLinkHref'
+    killvar '$ThoughtMenuPromptName'
+    killvar '$ThoughtMenuPromptLabel'
+    killvar '$ThoughtMenuPromptBody'
+    killvar '$ThoughtMenuPromptBefore'
+    killvar '$ThoughtMenuPromptAfter'
+---
+
 #PrintMenuOpenLink
     $PrintMenuOpenName = $ARGS[0]
     $PrintMenuOpenLabel = $ARGS[1]

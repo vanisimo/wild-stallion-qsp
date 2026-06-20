@@ -1,13 +1,101 @@
 ! ================================================
 ! FILE: modules/locations/tavern_hall_activity.qsps
 ! Единый вход для действий в зале трактира
-! Версия: v5 / видимый осмотр при каждом клике
+! Версия: v16 / work всегда; лимит только на work/сюжет/приставание
 ! Назначение:
-! - кнопка "Осмотреть зал" всегда даёт видимый экран результата
-! - в debug-режиме всегда пытается запустить допустимое событие
-! - если события нет, показывает причину и счётчик кликов
-! - обычный режим больше не возвращает молча в TavernMainLookHallNormal
+! - сюжет -> приоритет, считается в лимит 3
+! - редко пропажа/пошлое (12%) -> бонус, лимит не тратит
+! - HallHarassmentTry -> сцена, считается в лимит
+! - иначе work-фото + текст, считается в лимит
+! - лимит 3 work-осмотра за часть дня, серая кнопка -> фон зала
 ! ================================================
+
+#TavernHallLookGetKey
+    $TavernHallLookKey = STR(day) + '_' + STR(time)
+---
+
+#TavernHallLookDebugReset
+    gs 'TavernHallLookGetKey'
+    TavernHallLookCount[$TavernHallLookKey] = 0
+    TavernHallLookClick = 0
+    TavernHallLookLastResult = 0
+    TavernMainImageModeCode = 0
+    $TavernHallLookLastImageMode = ''
+    gs 'TavernHallLookCheckLimit'
+---
+
+#TavernHallLookCheckLimit
+    gs 'TavernHallLookGetKey'
+
+    if TavernHallLookMaxPerPart <= 0:
+        TavernHallLookMaxPerPart = 3
+    end
+
+    TavernHallLookCanUse = 1
+    TavernHallLookRemaining = TavernHallLookMaxPerPart - TavernHallLookCount[$TavernHallLookKey]
+
+    if TavernHallLookRemaining <= 0:
+        TavernHallLookCanUse = 0
+        TavernHallLookRemaining = 0
+    end
+---
+
+#TavernHallLookRegister
+    gs 'TavernHallLookGetKey'
+    TavernHallLookCount[$TavernHallLookKey] += 1
+    TavernHallLookClick += 1
+    gs 'TavernHallLookCheckLimit'
+---
+
+#TavernHallLookBuildNoEventMessage
+    if TavernOpen = 0:
+        $TavernHallLookMessage = 'Вы оглядываете зал, но таверна сейчас закрыта. Столы пустуют, шум стих, и даже самый наглый клиент не может приставать к девушкам, если клиентов нет.'
+    elseif TavernHallActivityNoEventReason = 4:
+        $TavernHallLookMessage = 'Вы ещё раз проходите взглядом по залу. Посетители переговариваются за столами, у стойки шумит обычная трактирная жизнь — но на этот раз ничего особенного не происходит.'
+    else:
+        $TavernHallLookMessage = 'Вы некоторое время наблюдаете за залом. На этот раз ничего такого, что требовало бы отдельной сцены, не происходит, но сам осмотр не пропал: вы действительно оценили обстановку.'
+    end
+---
+
+#TavernHallLookFinishOnMain
+    gs 'TavernHallLookBuildNoEventMessage'
+---
+
+#TavernHallLookGoMainWork
+    TavernHallLookLastResult = 1
+    TavernMainImageModeCode = 1
+    gt 'TavernMain'
+---
+
+#TavernHallLookGoMainHall
+    TavernMainImageModeCode = 2
+    gt 'TavernMain'
+---
+
+#TavernHallLookReturnToMain
+    gs 'TavernHallLookRegister'
+
+    if time = 5:
+        gt 'TavernHallLookGoMainHall'
+    else:
+        gt 'TavernHallLookGoMainWork'
+    end
+---
+
+#TavernHallAddLookButton
+    gs 'TavernHallLookCheckLimit'
+
+    if TavernHallLookCanUse = 1:
+        act '<b>Осмотреть зал</b>', 'images/common/ui/actions/look.png':
+            gt 'TavernHallActivityStart', 'look'
+        end
+    else:
+        act '<font color="#808080"><b>Осмотреть зал</b></font>', 'images/common/ui/actions/look.png':
+            TavernHallLookLastResult = 5
+            gt 'TavernHallLookGoMainHall'
+        end
+    end
+---
 
 #TavernHallActivityStart
     $TavernHallActivityMode = LCASE($ARGS[0])
@@ -20,7 +108,13 @@
         gt 'TavernBarWorkStart'
     end
 
-    TavernHallLookClick += 1
+    gs 'TavernHallLookCheckLimit'
+
+    if TavernHallLookCanUse = 0:
+        TavernHallLookLastResult = 5
+        gt 'TavernHallLookGoMainHall'
+    end
+
     TavernHallActivityStoryStarted = 0
     TavernEventDispatcherResult = 0
     TavernHallActivityDispatcherTried = 0
@@ -32,46 +126,85 @@
 
     if TavernOpen = 0:
         TavernHallActivityNoEventReason = 1
-        gt 'TavernHallActivityNoEventScreen'
+        gt 'TavernHallLookReturnToMain'
     end
 
     gs 'TavernHallActivityTryStoryEvents'
 
     if TavernHallActivityStoryStarted = 1:
+        gs 'TavernHallLookRegister'
+        TavernHallLookLastResult = 2
         exit
     end
 
-    if debug = 1:
-        TavernHallActivityForcedByDebug = 1
-        TavernHallActivityDispatcherTried = 1
-        gs 'TavernEventDispatcherTry', 'TavernMain'
+    gs 'TavernHallLookTryRareBonusEvents'
 
-        if TavernEventDispatcherResult = 1:
-            exit
-        end
-
-        TavernHallActivityNoEventReason = 2
-        gt 'TavernHallActivityNoEventScreen'
+    if TavernHallLookRareEventStarted = 1:
+        TavernHallLookLastResult = 6
+        exit
     end
 
-    gs 'TavernHallActivityCalcChance'
+    TavernHallActivityDispatcherTried = 1
+    HallHarassmentStarted = 0
+    gs 'HallHarassmentTry', 'TavernMain'
 
-    TavernHallActivityRoll = RAND(1, 100)
-
-    if TavernHallActivityRoll <= TavernHallActivityChance:
-        TavernHallActivityDispatcherTried = 1
-        gs 'TavernEventDispatcherTry', 'TavernMain'
-
-        if TavernEventDispatcherResult = 1:
-            exit
-        end
-
-        TavernHallActivityNoEventReason = 3
-    else:
-        TavernHallActivityNoEventReason = 4
+    if HallHarassmentStarted = 1:
+        gs 'TavernHallLookRegister'
+        TavernHallLookLastResult = 3
+        exit
     end
 
-    gt 'TavernHallActivityNoEventScreen'
+    KitchenHarassmentStarted = 0
+    gs 'KitchenHarassmentTryFromHall', 'TavernMain'
+
+    if KitchenHarassmentStarted = 1:
+        gs 'TavernHallLookRegister'
+        TavernHallLookLastResult = 3
+        exit
+    end
+
+    TavernHallActivityNoEventReason = 4
+
+    gt 'TavernHallLookReturnToMain'
+---
+
+! ================================================
+! FILE: modules/locations/tavern_hall_activity.qsps
+! Редкий бонус: пропажа или пошлое поведение (не тратит лимит осмотра)
+! ================================================
+
+#TavernHallLookTryRareBonusEvents
+    TavernHallLookRareEventStarted = 0
+
+    if TavernHallLookRareChance <= 0:
+        TavernHallLookRareChance = 12
+    end
+
+    TavernHallLookRareRoll = RAND(1, 100)
+
+    if TavernHallLookRareRoll > TavernHallLookRareChance:
+        exit
+    end
+
+    TavernHallLookRarePick = RAND(1, 100)
+
+    if TavernHallLookRarePick <= 50 and LOC('HallMissingGirlCanStart') = 1:
+        gs 'HallMissingGirlCanStart'
+
+        if HallMissingGirlCanStart = 1:
+            TavernHallLookRareEventStarted = 1
+            gt 'HallMissingGirlStart', $HallMissingGirlSelected, 'TavernMain'
+        end
+    end
+
+    if LOC('HallLewdBehaviorCanStart') = 1:
+        gs 'HallLewdBehaviorCanStart'
+
+        if HallLewdBehaviorCanStart = 1:
+            TavernHallLookRareEventStarted = 1
+            gt 'HallLewdBehaviorStart', $HallLewdSelectedGirl, 'TavernMain'
+        end
+    end
 ---
 
 ! ================================================
@@ -251,7 +384,7 @@
     if LOC('ShowTavernHallImage') = 1:
         gs 'ShowTavernHallImage'
     elseif LOC('ShowLocationTimeImage') = 1:
-        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall'
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/hall', 'jpg'
     end
 
     *pl '══════════════════════════════════════════════'
@@ -292,10 +425,7 @@
 
     *pl ' '
 
-    act '<b>Осмотреть зал ещё раз</b>', 'images/common/ui/actions/look.png':
-        gt 'TavernHallActivityStart', 'look'
-    end
-
+    gs 'TavernHallAddLookButton'
     gs 'TavernHallAddWaitButton'
 
     act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
@@ -327,6 +457,10 @@
 ! ================================================
 
 #TavernHallActivityPrintGirlsInHall
+    if time = 5:
+        exit
+    end
+
     *pl 'В зале сейчас:'
     *pl ' '
 

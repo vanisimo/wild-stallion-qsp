@@ -1,17 +1,31 @@
-#BeckyShop
-    cls
+! ================================================
+! FILE: modules/locations/shops/becky_shop.qsps
+! Лавка продовольствия Блэнкеншип
+! Версия: v10 / подэкраны: таблица цен + товары + «Назад»
+! ================================================
 
-    ! ====================== ПРОВЕРКА РАБОЧЕГО ВРЕМЕНИ ======================
-    ! Версия: final current game fix v5
-    ! Проверка встроена прямо в лавку.
-    ! Больше НЕ зависит от #IsShopOpen / #IsBusinessOpen.
-    !
-    ! Новая система времени:
-    ! time = 1 утро
-    ! time = 2 полдень
-    ! time = 3 день
-    ! time = 4 вечер
-    ! time = 5 ночь
+#BeckyShop
+    *clr
+    clr
+    cla
+
+    $BeckyShopTabIncoming = LCASE($ARGS[0])
+
+    if $BeckyShopTabIncoming = 'main' or $BeckyShopTabIncoming = 'food' or $BeckyShopTabIncoming = 'gifts':
+        $BeckyShopTab = $BeckyShopTabIncoming
+    elseif $BeckyShopTabIncoming = '':
+        if $BeckyShopHoldTab <> '':
+            $BeckyShopTab = $BeckyShopHoldTab
+        else:
+            $BeckyShopTab = 'main'
+        end
+    else:
+        $BeckyShopTab = 'main'
+    end
+
+    $BeckyShopHoldTab = $BeckyShopTab
+
+    killvar '$BeckyShopTabIncoming'
 
     ShopOpen = 1
     $ClosedReason = ''
@@ -39,7 +53,7 @@
         gs 'ShowImage', 'becky', 'shop', 'closed', 'normal'
 
         *pl '══════════════════════════════════════════════'
-        gs 'PrintTitleLine', ' ЛАВКА БЛЭНКЕНШИП — ЗАКРЫТО'
+        gs 'PrintTitleLine', ' ЛАВКА ПРОДОВОЛЬСТВИЯ БЛЭНКЕНШИП — ЗАКРЫТО'
         *pl '══════════════════════════════════════════════'
         *pl ' '
 
@@ -47,7 +61,8 @@
 
         *pl ' '
 
-        act '<b>Вернуться на рынок</b>':
+        act '<b>Рынок</b>', 'images/common/ui/actions/market.png':
+            killvar '$BeckyShopHoldTab'
             gt 'Market'
         end
 
@@ -55,112 +70,292 @@
     end
 
     if debug = 1:
-        *pl '[DEBUG BECKY SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time)
+        *pl '[DEBUG BECKY SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time) + ' | tab=' + $BeckyShopTab
         *pl ' '
     end
-    ! =====================================================================
 
+    gs 'BeckyShopResolveSeller'
+    gs 'BeckyShopRenderCommonHeader'
+
+    if $BeckyShopMessage <> '':
+        gs 'PrintMainP', $BeckyShopMessage
+        *pl ' '
+        killvar '$BeckyShopMessage'
+    end
+
+    if $BeckyShopTab = 'food':
+        gs 'BeckyShopRenderFoodTab'
+        *pl ' '
+        gs 'BeckyShopRenderBackButton'
+    elseif $BeckyShopTab = 'gifts':
+        gs 'BeckyShopRenderGiftsTab'
+        *pl ' '
+        gs 'BeckyShopRenderBackButton'
+    else:
+        gs 'BeckyShopRenderMainTab'
+        *pl ' '
+        gs 'BeckyShopRenderMainExtraActions'
+        *pl ' '
+        gs 'BeckyShopRenderMainNavButtons'
+    end
+---
+
+#BeckyShopResolveSeller
+    if time = 1:
+        $CurrentSeller = 'inga'
+        $BeckyShopSellerLabel = 'Ингеборга'
+        $BeckyShopSellerDesc = 'Утром за прилавком дежурит Ингеборга. Она быстро сметает, быстро считает и не любит, когда торгуются без уважения.'
+    elseif time = 2:
+        $CurrentSeller = 'eddie'
+        $BeckyShopSellerLabel = 'Эдди'
+        $BeckyShopSellerDesc = 'За прилавком стоит Эдди. Он ещё молод, но уже уверенно знает, где лежит каждый мешок и сколько стоит каждый ящик.'
+    else:
+        $CurrentSeller = 'becky'
+        $BeckyShopSellerLabel = 'Бекки Блэнкеншип'
+        $BeckyShopSellerDesc = 'За прилавком стоит Бекки Блэнкеншип. Она знает ваш трактир, помнит долги и не терпит пустых разговоров у продуктового прилавка.'
+    end
+---
+
+#BeckyShopRenderCommonHeader
+    if BeckyShopBigPurchaseFlash = 1:
+        gs 'ShowImage', $CurrentSeller, 'shop', 'happy', 'big_purchase'
+        BeckyShopBigPurchaseFlash = 0
+    else:
+        gs 'ShowImage', $CurrentSeller, 'shop', 'normal', 'normal'
+    end
+
+    *pl ' '
     *pl '══════════════════════════════════════════════'
     gs 'PrintTitleLine', ' ЛАВКА ПРОДОВОЛЬСТВИЯ БЛЭНКЕНШИП'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    ! ====================== ОСНОВНОЙ ПРОДАВЕЦ ======================
-    if time = 1:
-        *pl 'За прилавком стоит **Ингеборга** (Инга).'
-        $CurrentSeller = 'inga'
-    elseif time = 2:
-        *pl 'За прилавком стоит **Эдди**.'
-        $CurrentSeller = 'eddie'
+    gs 'BeckyShopRenderSellerLine'
+    *pl ' '
+---
+
+#BeckyShopRenderSellerLine
+    if $CurrentSeller = 'becky':
+        gs 'BeckyShopPrintGirlTalkInText', 'becky', 'Бекки Блэнкеншип', 'За прилавком стоит ', '. Она знает ваш трактир, помнит долги и не терпит пустых разговоров у продуктового прилавка.'
+    elseif $CurrentSeller = 'inga':
+        gs 'BeckyShopPrintGirlTalkInText', 'inga', 'Ингеборга', 'Утром за прилавком дежурит ', '. Она быстро сметает, быстро считает и не любит, когда торгуются без уважения.'
     else:
-        *pl 'За прилавком стоит **Бекки Блэнкеншип**.'
-        $CurrentSeller = 'becky'
+        gs 'BeckyShopPrintEddieTalkInText'
     end
 
-    *pl ' '
-    *pl 'Текущие запасы таверны:'
-    gs 'PrintMainLine', 'Продукты: ' + STR(productnum) + ' единиц'
-    *pl ' '
+    killvar '$BeckyShopSellerLabel'
+    killvar '$BeckyShopSellerDesc'
+---
 
-    if ShopOpen = 1:
-        if $CurrentSeller = 'becky' and Friends['becky'] < 20:
-            *p 'Бекки не хочет продавать вам ничего лишнего, пока вы не помиритесь.'
-        else:
-            act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
-                gt 'BeckyShopGifts', 'BeckyShop'
-            end
+#BeckyShopPrintGirlTalkInText
+    $BeckyShopTalkGirl = LCASE($ARGS[0])
+    $BeckyShopTalkLabel = $ARGS[1]
+    $BeckyShopTalkPrefix = $ARGS[2]
+    $BeckyShopTalkSuffix = $ARGS[3]
+
+    gs 'GirlTalkCheckNpcLinkAvailable', $BeckyShopTalkGirl, 'BeckyShop'
+
+    if GirlTalkMenuReady = 1:
+        gs 'FormatTextByStyle', $BeckyShopTalkLabel, 'npc_link'
+        $BeckyShopTalkHref = '<a href="exec:gs ''GirlTalkOpenNpcMenu'', ''' + $BeckyShopTalkGirl + ''', ''BeckyShop'', ''BeckyShop''">' + $FormattedText + '</a>'
+        killvar '$FormattedText'
+        *pl $BeckyShopTalkPrefix + $BeckyShopTalkHref + $BeckyShopTalkSuffix
+        killvar '$BeckyShopTalkHref'
+    else:
+        *pl $BeckyShopTalkPrefix + '**' + $BeckyShopTalkLabel + '**' + $BeckyShopTalkSuffix
+    end
+
+    killvar 'GirlTalkMenuReady'
+    killvar '$BeckyShopTalkGirl'
+    killvar '$BeckyShopTalkLabel'
+    killvar '$BeckyShopTalkPrefix'
+    killvar '$BeckyShopTalkSuffix'
+---
+
+#BeckyShopPrintEddieTalkInText
+    gs 'BuildEddieShopTalkMenu'
+    gs 'FormatTextByStyle', 'Эдди', 'npc_link'
+    $BeckyShopTalkHref = '<a href="exec:gs ''Menu.Show'', ''EddieShopTalkMenu''">' + $FormattedText + '</a>'
+    killvar '$FormattedText'
+    *pl 'За прилавком стоит ' + $BeckyShopTalkHref + '. Он ещё молод, но уже уверенно знает, где лежит каждый мешок и сколько стоит каждый ящик.'
+    killvar '$BeckyShopTalkHref'
+---
+
+#BeckyShopRenderMainTab
+    *p 'На полках ящики с зерном, солью и провизией. Здесь закупают всё, что потом уходит на кухню трактира.'
+
+    if BeckyHomeStage >= 3 and time = 4 and LOC('BeckyHomeGuestArrival') = 1:
+        *pl ' '
+
+        act '<b>Постучать в дверь дома Бекки</b>', 'images/common/ui/actions/talk.png':
+            gt 'BeckyHomeGuestArrival'
         end
+    end
+---
 
+#BeckyShopRenderFoodTab
+    gs 'PrintMainLine', 'Ящики продуктов'
+    *pl ' '
+    gs 'BeckyShopRenderFoodPriceTable'
+    *pl ' '
+
+    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
+        *p 'Бекки холодно смотрит на вас: "После всего, что было, я не собираюсь тебе ничего продавать."'
         *pl ' '
     end
 
-    ! ====================== ПОКУПКА ======================
-    gs 'PrintMainLine', 'Продукты в ящиках (4 монеты за единицу)'
+    act '<b>Малый ящик</b>', 'images/common/ui/actions/shop.png':
+        $BeckyShopTab = 'food'
+        gs 'BeckyShopBuyBox', 'small'
+    end
 
-    ! Проверка отношений с Бекки
-    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
-        *p 'Бекки холодно смотрит на тебя: "После всего, что было, я не собираюсь тебе ничего продавать."'
-    else:
-        act '<b>Малый ящик (15 ед. — 60 монет)</b>':
-            if money >= 60:
-                money -= 60
-                productnum += 15
-                *p 'Ты купил маленький ящик продуктов.'
-            else:
-                *p 'У тебя недостаточно денег.'
-            end
-            act '<b>Продолжить</b>': gt 'BeckyShop'
-        end
+    act '<b>Средний ящик</b>', 'images/common/ui/actions/shop.png':
+        $BeckyShopTab = 'food'
+        gs 'BeckyShopBuyBox', 'medium'
+    end
 
-        act '<b>Средний ящик (40 ед. — 150 монет)</b>':
-            if money >= 150:
-                money -= 150
-                productnum += 40
-                *p 'Ты купил средний ящик продуктов.'
-            else:
-                *p 'У тебя недостаточно денег.'
-            end
-            act '<b>Продолжить</b>': gt 'BeckyShop'
-        end
+    act '<b>Большой ящик</b>', 'images/common/ui/actions/shop.png':
+        $BeckyShopTab = 'food'
+        gs 'BeckyShopBuyBox', 'large'
+    end
 
-        act '<b>Большой ящик (80 ед. — 280 монет)</b>':
-            if money >= 280:
-                money -= 280
-                productnum += 80
-                *p 'Ты купил большой ящик продуктов.'
-            else:
-                *p 'У тебя недостаточно денег.'
-            end
-            act '<b>Продолжить</b>': gt 'BeckyShop'
-        end
+    act '<b>Огромный ящик</b>', 'images/common/ui/actions/shop.png':
+        $BeckyShopTab = 'food'
+        gs 'BeckyShopBuyBox', 'huge'
+    end
+---
 
-        act '<b>Огромный ящик (150 ед. — 500 монет)</b>':
-            if money >= 500:
-                money -= 500
-                productnum += 150
+#BeckyShopRenderFoodPriceTable
+    $BeckyShopTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
+    $BeckyShopCellStyle = 'border:1px solid #555; padding:5px 10px;'
+    $BeckyShopThStyle = $BeckyShopCellStyle + ' text-align:left; font-weight:bold;'
 
-                *clr
-                gs 'ShowImage', $CurrentSeller, 'shop', 'happy', 'big_purchase'
+    $BeckyShopFoodTableHtml = '<table style="' + $BeckyShopTableStyle + '"><tr>'
+    $BeckyShopFoodTableHtml += '<th style="' + $BeckyShopThStyle + '">Ящик</th>'
+    $BeckyShopFoodTableHtml += '<th style="' + $BeckyShopThStyle + '">Количество</th>'
+    $BeckyShopFoodTableHtml += '<th style="' + $BeckyShopThStyle + '">Цена</th></tr>'
+    $BeckyShopFoodTableHtml += '<tr><td style="' + $BeckyShopCellStyle + '">Малый</td><td style="' + $BeckyShopCellStyle + '">15 ед.</td><td style="' + $BeckyShopCellStyle + '">60 монет</td></tr>'
+    $BeckyShopFoodTableHtml += '<tr><td style="' + $BeckyShopCellStyle + '">Средний</td><td style="' + $BeckyShopCellStyle + '">40 ед.</td><td style="' + $BeckyShopCellStyle + '">150 монет</td></tr>'
+    $BeckyShopFoodTableHtml += '<tr><td style="' + $BeckyShopCellStyle + '">Большой</td><td style="' + $BeckyShopCellStyle + '">80 ед.</td><td style="' + $BeckyShopCellStyle + '">280 монет</td></tr>'
+    $BeckyShopFoodTableHtml += '<tr><td style="' + $BeckyShopCellStyle + '">Огромный</td><td style="' + $BeckyShopCellStyle + '">150 ед.</td><td style="' + $BeckyShopCellStyle + '">500 монет</td></tr>'
+    $BeckyShopFoodTableHtml += '</table>'
 
-                *p 'Ты купил огромный ящик продуктов.'
-                *p 'Продавец очень доволен такой крупной покупкой!'
+    *p $BeckyShopFoodTableHtml
+    gs 'PrintMainLine', '4 монеты за единицу.'
 
-                if $CurrentSeller = 'becky':
-                    Friends['becky'] += 5
-                elseif $CurrentSeller = 'inga':
-                    Friends['inga'] += 4
-                else:
-                    Friends['eddie'] += 3
-                end
-            else:
-                *p 'У тебя недостаточно денег.'
-            end
-            act '<b>Продолжить</b>': gt 'BeckyShop'
+    killvar '$BeckyShopFoodTableHtml'
+    killvar '$BeckyShopTableStyle'
+    killvar '$BeckyShopCellStyle'
+    killvar '$BeckyShopThStyle'
+---
+
+#BeckyShopRenderGiftsPriceTable
+    $BeckyShopTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
+    $BeckyShopCellStyle = 'border:1px solid #555; padding:5px 10px;'
+    $BeckyShopThStyle = $BeckyShopCellStyle + ' text-align:left; font-weight:bold;'
+
+    gs 'GiftRegistryResolve', 'herb_bundle'
+    $BeckyShopGiftHerbLabel = $GiftRegistryLabel
+    BeckyShopGiftHerbPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    gs 'GiftRegistryResolve', 'rare_salt'
+    $BeckyShopGiftSaltLabel = $GiftRegistryLabel
+    BeckyShopGiftSaltPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    $BeckyShopGiftsTableHtml = '<table style="' + $BeckyShopTableStyle + '"><tr>'
+    $BeckyShopGiftsTableHtml += '<th style="' + $BeckyShopThStyle + '">Подарок</th>'
+    $BeckyShopGiftsTableHtml += '<th style="' + $BeckyShopThStyle + '">Цена</th></tr>'
+    $BeckyShopGiftsTableHtml += '<tr><td style="' + $BeckyShopCellStyle + '">' + $BeckyShopGiftHerbLabel + '</td><td style="' + $BeckyShopCellStyle + '">' + STR(BeckyShopGiftHerbPrice) + ' монет</td></tr>'
+    $BeckyShopGiftsTableHtml += '<tr><td style="' + $BeckyShopCellStyle + '">' + $BeckyShopGiftSaltLabel + '</td><td style="' + $BeckyShopCellStyle + '">' + STR(BeckyShopGiftSaltPrice) + ' монет</td></tr>'
+    $BeckyShopGiftsTableHtml += '</table>'
+
+    *p $BeckyShopGiftsTableHtml
+
+    killvar '$BeckyShopGiftsTableHtml'
+    killvar '$BeckyShopTableStyle'
+    killvar '$BeckyShopCellStyle'
+    killvar '$BeckyShopThStyle'
+    killvar '$BeckyShopGiftHerbLabel'
+    killvar '$BeckyShopGiftSaltLabel'
+    killvar '$GiftRegistryLabel'
+    killvar 'BeckyShopGiftHerbPrice'
+    killvar 'BeckyShopGiftSaltPrice'
+---
+
+#BeckyShopRenderChildrenFoodBuy
+    *pl 'Дети Бекки готовы помочь, если у вас с ними хорошие отношения:'
+    *pl ' '
+
+    if Friends['inga'] >= 18 and becky_children_bought_today = 0:
+        act '<b>Малый ящик у Инги — 15 ед., 60 монет</b>', 'images/common/ui/actions/shop.png':
+            $BeckyShopTab = 'food'
+            gs 'BeckyShopBuyBoxChild', 'inga'
         end
     end
-! ====================== ФЛИРТ С ИНГОЙ ======================
+
+    if Friends['eddie'] >= 18 and becky_children_bought_today = 0:
+        act '<b>Малый ящик у Эдди — 15 ед., 60 монет</b>', 'images/common/ui/actions/shop.png':
+            $BeckyShopTab = 'food'
+            gs 'BeckyShopBuyBoxChild', 'eddie'
+        end
+    end
+---
+
+#BeckyShopRenderGiftsTab
+    gs 'PrintMainLine', 'Подарки для девушек'
+    *pl ' '
+    gs 'BeckyShopRenderGiftsPriceTable'
+    *pl ' '
+
+    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
+        *p 'Бекки не хочет продавать вам подарки, пока вы не помиритесь.'
+    else:
+        act '<b>Связка сушёных трав</b>', 'images/common/ui/actions/gift.png':
+            $BeckyShopTab = 'gifts'
+            gs 'BeckyShopBuyGift', 'herb_bundle'
+        end
+
+        act '<b>Мешочек редкой соли</b>', 'images/common/ui/actions/gift.png':
+            $BeckyShopTab = 'gifts'
+            gs 'BeckyShopBuyGift', 'rare_salt'
+        end
+    end
+---
+
+#BeckyShopRenderMainNavButtons
+    act '<b>Продовольствие</b>', 'images/common/ui/actions/shop.png':
+        gt 'BeckyShop', 'food'
+    end
+
+    act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
+        gt 'BeckyShop', 'gifts'
+    end
+
+    act '<b>Рынок</b>', 'images/common/ui/actions/market.png':
+        killvar '$BeckyShopHoldTab'
+        gt 'Market'
+    end
+---
+
+#BeckyShopRenderBackButton
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
+        gt 'BeckyShop', 'main'
+    end
+---
+
+#BeckyShopRenderMainExtraActions
+    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
+        gs 'BeckyShopRenderChildrenFoodBuy'
+    end
+
     if $CurrentSeller = 'inga' and IngaRomanceUnlocked = 1 and Friends['inga'] >= 18:
-        act '<b>Флиртовать с Ингой</b>':
+        *pl ' '
+
+        act '<b>Флиртовать с Ингой</b>', 'images/common/ui/actions/flirt.png':
             gt 'IngaFlirt'
         end
     end
@@ -174,15 +369,15 @@
 
         if IngaBackroomCanOffer = 1:
             if IngaBackroomSex = 0 and IngaRomanceStage < 3:
-                act '<b>Зайти в подсобку с Ингой</b>':
+                act '<b>Зайти в подсобку с Ингой</b>', 'images/common/ui/actions/intim.png':
                     gt 'IngaRomanceStep'
                 end
             elseif IngaBackroomSex = 0 and IngaRomanceStage >= 3:
-                act '<b>Продолжить в подсобке</b>':
+                act '<b>Продолжить в подсобке</b>', 'images/common/ui/actions/intim.png':
                     gt 'IngaBackroomFirstSexLaunch'
                 end
             elseif IngaBackroomSex = 1:
-                act '<b>Провести время в подсобке</b>':
+                act '<b>Провести время в подсобке</b>', 'images/common/ui/actions/intim.png':
                     gt 'SexSceneStart', 'inga', 'IngaBackroomAfterSex', 'inga_repeat'
                 end
             end
@@ -190,13 +385,13 @@
     end
 
     if $CurrentSeller = 'inga' and IngaLucasThreesomeCount >= 1 and IngaLucasCucumberReady = 0 and LOC('IngaLucasCucumberShop') = 1:
-        act '<b>Заметить, как Инга выбирает овощи</b>':
+        act '<b>Заметить, как Инга выбирает овощи</b>', 'images/common/ui/actions/look.png':
             gt 'IngaLucasCucumberShop'
         end
     end
 
     if IngaRoomUnlocked = 1 and time >= 3:
-        act '<b>Подняться в комнату Инги</b>':
+        act '<b>Подняться в комнату Инги</b>', 'images/common/ui/actions/floor.png':
             gt 'IngaRoom'
         end
     end
@@ -205,73 +400,14 @@
         gs 'IngaGuardHarassmentTryActivate'
     end
 
-
-    ! ====================== ПОКУПКА У ДЕТЕЙ (если Бекки отказывает) ======================
-    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
-        *pl ' '
-        *pl 'Дети Бекки готовы помочь, если у тебя с ними хорошие отношения:'
-
-        if Friends['inga'] >= 18 and becky_children_bought_today = 0:
-            act '<b>Купить маленький ящик у Инги (15 ед. — 60 монет)</b>':
-                if money >= 60:
-                    money -= 60
-                    productnum += 15
-                    becky_children_bought_today = 1
-                    *p 'Инга продала тебе маленький ящик продуктов.'
-                    Friends['inga'] += 2
-                else:
-                    *p 'У тебя недостаточно денег.'
-                end
-                act '<b>Продолжить</b>': gt 'BeckyShop'
-            end
-        end
-        if Friends['eddie'] >= 18 and becky_children_bought_today = 0:
-            act '<b>Купить маленький ящик у Эдди (15 ед. — 60 монет)</b>':
-                if money >= 60:
-                    money -= 60
-                    productnum += 15
-                    becky_children_bought_today = 1
-                    *p 'Эдди продал тебе маленький ящик продуктов.'
-                    Friends['eddie'] += 2
-                else:
-                    *p 'У тебя недостаточно денег.'
-                end
-                act '<b>Продолжить</b>': gt 'BeckyShop'
-            end
-        end
-    end
-
-    *pl ' '
-
-    if BeckyHomeStage >= 3 and time = 4 and LOC('BeckyHomeGuestArrival') = 1:
-        act '<b>Постучать в дверь дома Бекки</b>':
-            gt 'BeckyHomeGuestArrival'
-        end
-    end
-
     if $CurrentSeller = 'becky' and LOC('BeckyIngaThreesomeCanStart') = 1:
         gs 'BeckyIngaThreesomeCanStart'
 
         if BeckyIngaThreesomeCanStart = 1:
-            act '<b>Встретиться с Бекки и Ингой втроём</b>':
+            act '<b>Встретиться с Бекки и Ингой втроём</b>', 'images/common/ui/actions/intim.png':
                 gt 'GroupSexBeckyIngaStefanStart'
             end
         end
-    end
-
-    if $CurrentSeller = 'becky':
-        gs 'ShowGirlTalkLink', 'becky', 'BeckyShop'
-    elseif $CurrentSeller = 'inga':
-        gs 'ShowGirlTalkLink', 'inga', 'BeckyShop'
-    else:
-        gs 'BuildEddieShopTalkMenu'
-        gs 'NpcMenuLink', 'Эдди', 'EddieShopTalkMenu'
-    end
-
-    *pl ' '
-
-    act '<b>Вернуться на рынок</b>':
-        gt 'Market'
     end
 ---
 
@@ -284,8 +420,8 @@
         gt 'TalkWithEddie'
     }
 
-    gs 'MenuUiAdd', 'EddieShopTalkMenu', 'Назад', 'return'
+    gs 'MenuUiAdd', 'EddieShopTalkMenu', 'Закрыть', 'return'
     gs 'Menu.AddModule', 'EddieShopTalkMenu', {
-        gt 'BeckyShop'
+        gt 'BeckyShop', 'main'
     }
 ---

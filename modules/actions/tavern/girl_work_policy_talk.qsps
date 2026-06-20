@@ -99,6 +99,200 @@
 
 ! ================================================
 ! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
+! Лёгкий разговор о правилах после приставания
+! ================================================
+
+#GirlWorkPolicyTalkHallAfterHarass
+    $HallHarassReturnLoc = $ARGS[1]
+
+    if $HallHarassReturnLoc = '':
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+
+    gt 'HallHarassment', $HallHarassReturnLoc
+---
+
+#GirlWorkPolicyTalkKitchenAfterHarass
+    $KitchenHarassReturnLoc = $ARGS[1]
+
+    if $KitchenHarassReturnLoc = '':
+        $KitchenHarassReturnLoc = 'Kitchen'
+    end
+
+    gt 'KitchenHarassment', $KitchenHarassReturnLoc
+---
+
+#GirlWorkPolicyTalkAfterHarassApply
+    gs 'GirlWorkPolicyTalkNormalizeKey', $ARGS[0]
+    $PolicyTalkGirl = $PolicyTalkGirlKey
+    $PolicyTalkArea = LCASE($ARGS[1])
+    PolicyTalkValue = ARGS[2]
+
+    if $PolicyTalkGirl = '':
+        $PolicyTalkGirl = 'amanda'
+    end
+
+    if $PolicyTalkArea <> 'hall' and $PolicyTalkArea <> 'kitchen':
+        $PolicyTalkArea = 'hall'
+    end
+
+    if PolicyTalkValue < 1:
+        PolicyTalkValue = 1
+    end
+
+    if PolicyTalkValue > 3:
+        PolicyTalkValue = 3
+    end
+
+    gs 'GirlWorkPolicyTalkEnsureName', $PolicyTalkGirl
+
+    if $PolicyTalkArea = 'kitchen':
+        GirlKitchenPolicy[$PolicyTalkGirl] = PolicyTalkValue
+    else:
+        GirlWorkPolicy[$PolicyTalkGirl] = PolicyTalkValue
+    end
+
+    if PolicyTalkValue = 1:
+        GirlTrustStefan[$PolicyTalkGirl] += 1
+        GirlSecretiveness[$PolicyTalkGirl] -= 1
+    elseif PolicyTalkValue = 2:
+        GirlTrustStefan[$PolicyTalkGirl] += 1
+        GirlRebellion[$PolicyTalkGirl] += 1
+    elseif PolicyTalkValue = 3:
+        GirlPublicAttention[$PolicyTalkGirl] += 1
+        GirlNpcPath[$PolicyTalkGirl] += 1
+        TavernScandal += 1
+    end
+
+    if GirlSecretiveness[$PolicyTalkGirl] < 0:
+        GirlSecretiveness[$PolicyTalkGirl] = 0
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    if $PolicyTalkGirl = 'amanda':
+        AmandaPublicAttention = GirlPublicAttention['amanda']
+        AmandaNpcPath = GirlNpcPath['amanda']
+    elseif $PolicyTalkGirl = 'melissa':
+        MelissaNpcPath = GirlNpcPath['melissa']
+    elseif $PolicyTalkGirl = 'sandra':
+        SandraNpcPath = GirlNpcPath['sandra']
+    end
+---
+
+#GirlWorkPolicyTalkAfterHarassStart
+    *clr
+    clr
+    cla
+
+    gs 'GirlWorkPolicyTalkNormalizeKey', $ARGS[0]
+    $PolicyTalkGirl = $PolicyTalkGirlKey
+    $PolicyTalkArea = LCASE($ARGS[1])
+    $PolicyTalkReturnLoc = $ARGS[2]
+
+    if $PolicyTalkGirl = '':
+        $PolicyTalkGirl = 'amanda'
+    end
+
+    if $PolicyTalkArea = '':
+        $PolicyTalkArea = 'hall'
+    end
+
+    if $PolicyTalkArea <> 'hall' and $PolicyTalkArea <> 'kitchen':
+        $PolicyTalkArea = 'hall'
+    end
+
+    if $PolicyTalkReturnLoc = '':
+        $PolicyTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($PolicyTalkReturnLoc) = 0:
+        $PolicyTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'GirlWorkPolicyTalkEnsureName', $PolicyTalkGirl
+
+    *pl '══════════════════════════════════════════════'
+
+    if $PolicyTalkArea = 'kitchen':
+        *pl ' ПРАВИЛА ПОСЛЕ КУХОННОГО СЛУЧАЯ'
+    else:
+        *pl ' ПРАВИЛА ПОСЛЕ СЛУЧАЯ В ЗАЛЕ'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
+
+    *pl ' '
+
+    gs 'GirlWorkPolicyTalkAfterHarassBuildMenu'
+    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_prompt_body'
+    gs 'PrintThoughtMenuPromptP', 'GirlWorkPolicyAfterHarassMenu', 'ей', $PolicyTalkText, 'что сказать ', ': '
+    killvar '$PolicyTalkText'
+
+    *pl ' '
+
+    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
+        gt $PolicyTalkReturnLoc
+    end
+---
+
+#GirlWorkPolicyTalkAfterHarassBuildMenu
+    gs 'Menu.Destroy', 'GirlWorkPolicyAfterHarassMenu'
+    gs 'Menu.Create', 'GirlWorkPolicyAfterHarassMenu'
+
+    if $PolicyTalkArea = 'kitchen':
+        gs 'MenuUiAdd', 'GirlWorkPolicyAfterHarassMenu', 'Звать Стефана', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyAfterHarassMenu', {
+            gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 1, $PolicyTalkReturnLoc
+        }
+
+        gs 'MenuUiAdd', 'GirlWorkPolicyAfterHarassMenu', 'Решать самой', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyAfterHarassMenu', {
+            gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 2, $PolicyTalkReturnLoc
+        }
+
+        gs 'MenuUiAdd', 'GirlWorkPolicyAfterHarassMenu', 'Удерживать клиента любой ценой', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyAfterHarassMenu', {
+            gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 3, $PolicyTalkReturnLoc
+        }
+    else:
+        gs 'MenuUiAdd', 'GirlWorkPolicyAfterHarassMenu', 'Держаться прилично', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyAfterHarassMenu', {
+            gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 1, $PolicyTalkReturnLoc
+        }
+
+        gs 'MenuUiAdd', 'GirlWorkPolicyAfterHarassMenu', 'Решать самой', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyAfterHarassMenu', {
+            gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 2, $PolicyTalkReturnLoc
+        }
+
+        gs 'MenuUiAdd', 'GirlWorkPolicyAfterHarassMenu', 'Удерживать клиента ради чаевых', ''
+        gs 'Menu.AddModule', 'GirlWorkPolicyAfterHarassMenu', {
+            gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 3, $PolicyTalkReturnLoc
+        }
+    end
+---
+
+#GirlWorkPolicyTalkAfterHarassSet
+    gs 'GirlWorkPolicyTalkAfterHarassApply', $ARGS[0], $ARGS[1], ARGS[2]
+
+    HallHarassPolicyValue = PolicyTalkValue
+    HallHarassPolicyChosen = 1
+
+    if LCASE($ARGS[1]) = 'kitchen':
+        gt 'KitchenHarassment', $ARGS[3]
+    else:
+        gt 'HallHarassment', $ARGS[3]
+    end
+---
+
+! ================================================
+! FILE: modules/actions/tavern/girl_work_policy_talk.qsps
 ! Быстрый вход после событий кухни
 ! ================================================
 

@@ -1,0 +1,244 @@
+! ================================================
+! FILE: modules/locations/shops/sweets_shop.qsps
+! Лавка сладостей на рынке
+! Версия: v1 / главный экран + подэкраны сладости/подарки
+! ================================================
+
+#SweetsShop
+    *clr
+    clr
+    cla
+
+    $SweetsShopTabIncoming = LCASE($ARGS[0])
+
+    if $SweetsShopTabIncoming = 'main' or $SweetsShopTabIncoming = 'sweets' or $SweetsShopTabIncoming = 'gifts':
+        $SweetsShopTab = $SweetsShopTabIncoming
+    elseif $SweetsShopTabIncoming = '':
+        if $SweetsShopHoldTab <> '':
+            $SweetsShopTab = $SweetsShopHoldTab
+        else:
+            $SweetsShopTab = 'main'
+        end
+    else:
+        $SweetsShopTab = 'main'
+    end
+
+    $SweetsShopHoldTab = $SweetsShopTab
+
+    killvar '$SweetsShopTabIncoming'
+
+    ShopOpen = 1
+    $ClosedReason = ''
+
+    if time = 5:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас ночь, лавки закрыты'
+    elseif week = 5 and time = 4:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас пятничный вечер, лавки закрыты, горожане идут на танцы'
+    elseif week = 7:
+        ShopOpen = 0
+
+        if time = 1:
+            $ClosedReason = 'сейчас воскресное утро, все ушли на службу в церковь'
+        elseif time = 2:
+            $ClosedReason = 'сейчас воскресный полдень, в церкви идут исповеди'
+        else:
+            $ClosedReason = 'сейчас воскресенье, лавки закрыты'
+        end
+    end
+
+    if ShopOpen < 1:
+        *clr
+        gs 'ShowImage', 'market', 'sweets', 'closed', 'normal'
+
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' ЛАВКА СЛАДОСТЕЙ — ЗАКРЫТО'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        *p 'Лавка закрыта. Причина: ' + $ClosedReason + '.'
+
+        *pl ' '
+
+        act '<b>Рынок</b>', 'images/common/ui/actions/market.png':
+            killvar '$SweetsShopHoldTab'
+            gt 'Market'
+        end
+
+        exit
+    end
+
+    if debug = 1:
+        *pl '[DEBUG SWEETS SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time) + ' | tab=' + $SweetsShopTab
+        *pl ' '
+    end
+
+    gs 'SweetsShopRenderCommonHeader'
+
+    if $SweetsShopMessage <> '':
+        gs 'PrintMainP', $SweetsShopMessage
+        *pl ' '
+        killvar '$SweetsShopMessage'
+    end
+
+    if $SweetsShopTab = 'sweets':
+        gs 'SweetsShopRenderSweetsTab'
+        *pl ' '
+        gs 'SweetsShopRenderBackButton'
+    elseif $SweetsShopTab = 'gifts':
+        gs 'SweetsShopRenderGiftsTab'
+        *pl ' '
+        gs 'SweetsShopRenderBackButton'
+    else:
+        gs 'SweetsShopRenderMainTab'
+        *pl ' '
+        gs 'SweetsShopRenderMainNavButtons'
+    end
+---
+
+#SweetsShopRenderCommonHeader
+    gs 'ShowImage', 'market', 'sweets', 'normal', 'normal'
+
+    *pl ' '
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ЛАВКА СЛАДОСТЕЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Узкий прилавок с сахаром, сухофруктами и мелочами. Торговец не задаёт лишних вопросов, если платят сразу.'
+    *pl ' '
+---
+
+#SweetsShopRenderMainTab
+    *p 'Здесь покупают сладости для стола и мелкие вещи, которые потом удобно подарить знакомым девушкам.'
+---
+
+#SweetsShopRenderSweetsTab
+    gs 'PrintMainLine', 'Сладости и выпечка'
+    *pl ' '
+    gs 'SweetsShopRenderSweetsPriceTable'
+    *pl ' '
+
+    act '<b>Засахаренные фрукты</b>', 'images/common/ui/actions/gift.png':
+        $SweetsShopTab = 'sweets'
+        gs 'SweetsShopBuyItem', 'sugared_fruits', 'sweets'
+    end
+
+    act '<b>Масло для выпечки</b>', 'images/common/ui/actions/gift.png':
+        $SweetsShopTab = 'sweets'
+        gs 'SweetsShopBuyItem', 'baking_oil', 'sweets'
+    end
+---
+
+#SweetsShopRenderGiftsTab
+    gs 'PrintMainLine', 'Подарки и мелочи'
+    *pl ' '
+    gs 'SweetsShopRenderGiftsPriceTable'
+    *pl ' '
+
+    act '<b>Редкая соль</b>', 'images/common/ui/actions/gift.png':
+        $SweetsShopTab = 'gifts'
+        gs 'SweetsShopBuyItem', 'rare_salt', 'gifts'
+    end
+
+    act '<b>Льняной фартук</b>', 'images/common/ui/actions/gift.png':
+        $SweetsShopTab = 'gifts'
+        gs 'SweetsShopBuyItem', 'linen_apron', 'gifts'
+    end
+---
+
+#SweetsShopRenderSweetsPriceTable
+    $SweetsShopTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
+    $SweetsShopCellStyle = 'border:1px solid #555; padding:5px 10px;'
+    $SweetsShopThStyle = $SweetsShopCellStyle + ' text-align:left; font-weight:bold;'
+
+    gs 'GiftRegistryResolve', 'sugared_fruits'
+    $SweetsShopSugaredLabel = $GiftRegistryLabel
+    SweetsShopSugaredPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    gs 'GiftRegistryResolve', 'baking_oil'
+    $SweetsShopOilLabel = $GiftRegistryLabel
+    SweetsShopOilPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    $SweetsShopSweetsTableHtml = '<table style="' + $SweetsShopTableStyle + '"><tr>'
+    $SweetsShopSweetsTableHtml += '<th style="' + $SweetsShopThStyle + '">Товар</th>'
+    $SweetsShopSweetsTableHtml += '<th style="' + $SweetsShopThStyle + '">Цена</th></tr>'
+    $SweetsShopSweetsTableHtml += '<tr><td style="' + $SweetsShopCellStyle + '">' + $SweetsShopSugaredLabel + '</td><td style="' + $SweetsShopCellStyle + '">' + STR(SweetsShopSugaredPrice) + ' монет</td></tr>'
+    $SweetsShopSweetsTableHtml += '<tr><td style="' + $SweetsShopCellStyle + '">' + $SweetsShopOilLabel + '</td><td style="' + $SweetsShopCellStyle + '">' + STR(SweetsShopOilPrice) + ' монет</td></tr>'
+    $SweetsShopSweetsTableHtml += '</table>'
+
+    *p $SweetsShopSweetsTableHtml
+
+    killvar '$SweetsShopSweetsTableHtml'
+    killvar '$SweetsShopTableStyle'
+    killvar '$SweetsShopCellStyle'
+    killvar '$SweetsShopThStyle'
+    killvar '$SweetsShopSugaredLabel'
+    killvar '$SweetsShopOilLabel'
+    killvar '$GiftRegistryLabel'
+    killvar 'SweetsShopSugaredPrice'
+    killvar 'SweetsShopOilPrice'
+---
+
+#SweetsShopRenderGiftsPriceTable
+    $SweetsShopTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
+    $SweetsShopCellStyle = 'border:1px solid #555; padding:5px 10px;'
+    $SweetsShopThStyle = $SweetsShopCellStyle + ' text-align:left; font-weight:bold;'
+
+    gs 'GiftRegistryResolve', 'rare_salt'
+    $SweetsShopSaltLabel = $GiftRegistryLabel
+    SweetsShopSaltPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    gs 'GiftRegistryResolve', 'linen_apron'
+    $SweetsShopApronLabel = $GiftRegistryLabel
+    SweetsShopApronPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    $SweetsShopGiftsTableHtml = '<table style="' + $SweetsShopTableStyle + '"><tr>'
+    $SweetsShopGiftsTableHtml += '<th style="' + $SweetsShopThStyle + '">Товар</th>'
+    $SweetsShopGiftsTableHtml += '<th style="' + $SweetsShopThStyle + '">Цена</th></tr>'
+    $SweetsShopGiftsTableHtml += '<tr><td style="' + $SweetsShopCellStyle + '">' + $SweetsShopSaltLabel + '</td><td style="' + $SweetsShopCellStyle + '">' + STR(SweetsShopSaltPrice) + ' монет</td></tr>'
+    $SweetsShopGiftsTableHtml += '<tr><td style="' + $SweetsShopCellStyle + '">' + $SweetsShopApronLabel + '</td><td style="' + $SweetsShopCellStyle + '">' + STR(SweetsShopApronPrice) + ' монет</td></tr>'
+    $SweetsShopGiftsTableHtml += '</table>'
+
+    *p $SweetsShopGiftsTableHtml
+
+    killvar '$SweetsShopGiftsTableHtml'
+    killvar '$SweetsShopTableStyle'
+    killvar '$SweetsShopCellStyle'
+    killvar '$SweetsShopThStyle'
+    killvar '$SweetsShopSaltLabel'
+    killvar '$SweetsShopApronLabel'
+    killvar '$GiftRegistryLabel'
+    killvar 'SweetsShopSaltPrice'
+    killvar 'SweetsShopApronPrice'
+---
+
+#SweetsShopRenderMainNavButtons
+    act '<b>Сладости</b>', 'images/common/ui/actions/gift.png':
+        gt 'SweetsShop', 'sweets'
+    end
+
+    act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
+        gt 'SweetsShop', 'gifts'
+    end
+
+    act '<b>Рынок</b>', 'images/common/ui/actions/market.png':
+        killvar '$SweetsShopHoldTab'
+        gt 'Market'
+    end
+---
+
+#SweetsShopRenderBackButton
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
+        gt 'SweetsShop', 'main'
+    end
+---

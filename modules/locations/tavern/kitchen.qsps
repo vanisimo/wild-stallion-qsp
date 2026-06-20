@@ -1,15 +1,43 @@
 ! ================================================
-! FILE: modules/locations/kitchen.qsps
+! FILE: modules/locations/tavern/kitchen.qsps
 ! Кухня трактира
-! Рабочая зона кухни и будущих событий
-! Девушки отображаются только если работают на кухне
-! Картинка зависит от времени суток
+! Версия: v2 / осмотр через kitchen_activity.qsps
+! Назначение:
+! - кнопка Осмотреть кухню идёт через kitchen_activity.qsps
+! - work-фото и текст после осмотра как в главном зале
+! - девушки отображаются только если работают на кухне
 ! ================================================
 
 #Kitchen
     cls
 
-    gs 'ShowLocationImage', 'tavern/kitchen', 'full', 'png'
+    KitchenWorkLookMode = 0
+    $KitchenResolvedImageMode = ''
+
+    if KitchenImageModeCode = 1:
+        KitchenWorkLookMode = 1
+        $KitchenResolvedImageMode = 'work'
+        KitchenImageModeCode = 0
+    elseif KitchenImageModeCode = 2:
+        $KitchenResolvedImageMode = 'bg'
+        KitchenImageModeCode = 0
+    else:
+        $KitchenIncomingImageMode = LCASE($ARGS[0])
+
+        if $KitchenIncomingImageMode = 'work':
+            KitchenWorkLookMode = 1
+            $KitchenResolvedImageMode = 'work'
+        elseif $KitchenIncomingImageMode = 'bg':
+            $KitchenResolvedImageMode = 'bg'
+        end
+
+        killvar '$KitchenIncomingImageMode'
+    end
+
+    if KitchenWorkLookMode = 1:
+        gs 'KitchenLookBuildNoEventMessage'
+    end
+
     gs 'AddGlobalButtons'
     gs 'GetDateTimeNames'
     gs 'CalculateTavernStaffEfficiency'
@@ -19,21 +47,34 @@
     KitchenOpen = TavernOpen
     $KitchenClosedReason = $TavernClosedReason
 
+    gs 'KitchenShowLocationImage'
+
     *pl '══════════════════════════════════════════════'
     *pl ' КУХНЯ ТРАКТИРА'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if KitchenOpen = 1:
-        *p 'Вы заходите на кухню. Здесь пахнет дымом, хлебом, мясом и горячими травами.'
-        *p 'У стены стоят мешки с продуктами, большие котлы и грубый деревянный стол для готовки.'
-        *p 'Именно отсюда начинается большая часть дохода трактира.'
-    else:
-        *p 'Кухня сейчас не работает. Очаг почти погас, столы убраны, а рабочая суета стихла.'
-        *p 'В закрытое время здесь тихо и пусто.'
+    KitchenLookMessageShown = 0
+
+    if $KitchenLookMessage <> '':
+        KitchenLookMessageShown = 1
+        gs 'PrintMainP', $KitchenLookMessage
+        *pl ' '
+        killvar '$KitchenLookMessage'
     end
 
-    *pl ' '
+    if KitchenWorkLookMode = 0:
+        if KitchenOpen = 1:
+            *p 'Вы заходите на кухню. Здесь пахнет дымом, хлебом, мясом и горячими травами.'
+            *p 'У стены стоят мешки с продуктами, большие котлы и грубый деревянный стол для готовки.'
+            *p 'Именно отсюда начинается большая часть дохода трактира.'
+        else:
+            *p 'Кухня сейчас не работает. Очаг почти погас, столы убраны, а рабочая суета стихла.'
+            *p 'В закрытое время здесь тихо и пусто.'
+        end
+
+        *pl ' '
+    end
 
     *pl 'Запасы продуктов: ' + STR(productnum)
     *pl 'Сила кухни: ' + STR(tavern_kitchen_power)
@@ -46,14 +87,10 @@
     end
 
     ! ====================== ДЕВУШКИ НА КУХНЕ ======================
-    ! На кухне показываются только те, кто назначен на работу кухни
-    ! Если девушка работает в зале или убирает, она отображается в главном зале
-    ! Если девушка свободна, днём она не отображается
-    ! Ночью девушки находятся в своих комнатах
 
     LocationGirlShown = 0
 
-    if KitchenOpen = 1:
+    if KitchenOpen = 1 and time <> 5:
         *pl 'На кухне сейчас:'
         *pl ' '
 
@@ -64,28 +101,91 @@
         if LocationGirlShown = 0:
             *p 'Сейчас на кухне никто из девушек не работает.'
         end
-    else:
+    elseif KitchenOpen = 0:
         *p 'Во время закрытия трактира девушки не работают на кухне.'
     end
+
+    KitchenHasWorkers = LocationGirlShown
 
     killvar 'LocationGirlShown'
 
     *pl ' '
 
+    if debug = 1:
+        gs 'KitchenLookCheckLimit'
+        gs 'KitchenLookGetKey'
+        *pl '[DEBUG KITCHEN] look message shown: ' + IIF(KitchenLookMessageShown = 1, 'yes', 'no')
+        *pl '[DEBUG KITCHEN] look remaining: ' + STR(KitchenLookRemaining) + ' / ' + STR(KitchenLookMaxPerPart)
+        *pl '[DEBUG KITCHEN] look key: ' + $KitchenLookKey + ' used: ' + STR(KitchenLookCount[$KitchenLookKey])
+        *pl '[DEBUG KITCHEN] last look result: ' + STR(KitchenLookLastResult) + ' (1=work 2=story 3=harass 5=limit 6=bonus)'
+        *pl '[DEBUG KITCHEN] image mode: ' + $KitchenLookLastImageMode + ' work look: ' + STR(KitchenWorkLookMode)
+
+        if KitchenLookLastResult = 1:
+            *pl '[DEBUG KITCHEN] итог: обычный осмотр — work-фото и текст.'
+        elseif KitchenLookLastResult = 2:
+            *pl '[DEBUG KITCHEN] итог: сюжетное событие — work-фото на этот клик не показывается.'
+        elseif KitchenLookLastResult = 3:
+            *pl '[DEBUG KITCHEN] итог: приставание — work-фото на этот клик не показывается.'
+        elseif KitchenLookLastResult = 6:
+            *pl '[DEBUG KITCHEN] итог: бонус (конфликт) — лимит не потрачен, work-фото на этот клик нет.'
+        elseif KitchenLookLastResult = 5:
+            *pl '[DEBUG KITCHEN] итог: лимит исчерпан — серая кнопка, только фон кухни.'
+        end
+
+        killvar 'KitchenLookMessageShown'
+        *pl ' '
+    end
+
     ! ====================== ДЕЙСТВИЯ НА КУХНЕ ======================
 
-    act '<b>Осмотреть кухню</b>', 'images/common/ui/actions/look.png':
-        *pl ' '
-        *p 'Вы внимательнее осматриваете кухню. На столе лежат ножи, деревянные миски и кухонная утварь, а возле очага копится жар от огня.'
-        *pl ' '
-        *p 'Если на кухне не хватает рабочих рук или заканчиваются продукты, это быстро ударит по доходу трактира.'
-    end
+    gs 'KitchenAddLookButton'
 
     act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
         gt 'TavernMain'
     end
 
     killvar 'KitchenOpen'
+    killvar 'KitchenHasWorkers'
+    killvar 'KitchenWorkLookMode'
+    killvar '$KitchenResolvedImageMode'
     killvar '$KitchenClosedReason'
 ---
 
+! ================================================
+! FILE: modules/locations/tavern/kitchen.qsps
+! Картинка кухни: work-осмотр или фон локации
+! ================================================
+
+#KitchenShowLocationImage
+    $KitchenImageModeForDraw = LCASE($KitchenResolvedImageMode)
+
+    if $KitchenImageModeForDraw = '':
+        $KitchenImageModeForDraw = 'default'
+    end
+
+    $KitchenLookLastImageMode = $KitchenImageModeForDraw
+
+    if $KitchenImageModeForDraw = 'work' and time <> 5:
+        gs 'KitchenLookCountWorkers'
+
+        if KitchenLookCanShowWork = 1 and LOC('ShowTavernKitchenWorkImage') = 1:
+            gs 'ShowTavernKitchenWorkImage'
+        else:
+            gs 'KitchenShowBackgroundImage'
+        end
+    else:
+        gs 'KitchenShowBackgroundImage'
+    end
+
+    killvar '$KitchenImageModeForDraw'
+---
+
+#KitchenShowBackgroundImage
+    if LOC('ShowTavernKitchenImage') = 1:
+        gs 'ShowTavernKitchenImage'
+    elseif LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/kitchen', 'jpg'
+    elseif LOC('ShowLocationImage') = 1:
+        gs 'ShowLocationImage', 'tavern/kitchen', 'full', 'png'
+    end
+---

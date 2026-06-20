@@ -1,0 +1,197 @@
+! ================================================
+! FILE: modules/actions/tavern/girl_no_panties_work.qsps
+! Рабочая смена без трусиков (зал + кухня)
+! Версия: v1
+! Назначение:
+! - ворота и согласие/отказ в разговоре о форме
+! - не влияет на work-фото осмотра
+! - влияет на тексты harassment / hall_lewd / kitchen
+!
+! Тексты:
+! modules/actions/tavern/girl_no_panties_work_text.qsps
+! ================================================
+
+#GirlNoPantiesWorkIsActive
+    gs 'GirlNoPantiesWorkNormalizeKey', $ARGS[0]
+    GirlNoPantiesWorkActive = 0
+
+    if $GirlNoPantiesGirl = '':
+        exit
+    end
+
+    if GirlNoPantiesWork[$GirlNoPantiesGirl] = 1:
+        GirlNoPantiesWorkActive = 1
+    end
+---
+
+#GirlNoPantiesWorkCanOffer
+    gs 'GirlNoPantiesWorkNormalizeKey', $ARGS[0]
+    GirlNoPantiesWorkCanOffer = 0
+
+    if $GirlNoPantiesGirl = '':
+        exit
+    end
+
+    if $GirlNoPantiesGirl <> 'amanda' and $GirlNoPantiesGirl <> 'melissa' and $GirlNoPantiesGirl <> 'sandra':
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    if GirlUniformLevel[$GirlNoPantiesGirl] <> 1:
+        exit
+    end
+
+    if uniform_purchased[$GirlNoPantiesGirl] = 0 and revealing_uniform_all_bought = 0:
+        exit
+    end
+
+    GirlNoPantiesOfferMinSlut = 45
+
+    if $GirlNoPantiesGirl = 'sandra':
+        GirlNoPantiesOfferMinSlut = 48
+    elseif $GirlNoPantiesGirl = 'amanda':
+        GirlNoPantiesOfferMinSlut = 42
+    end
+
+    if sluttiness[$GirlNoPantiesGirl] < GirlNoPantiesOfferMinSlut:
+        exit
+    end
+
+    GirlNoPantiesWorkCanOffer = 1
+
+    killvar 'GirlNoPantiesOfferMinSlut'
+---
+
+#GirlNoPantiesWorkRollAgreeRemove
+    gs 'GirlNoPantiesWorkNormalizeKey', $ARGS[0]
+    GirlNoPantiesWorkAgreed = 0
+
+    if $GirlNoPantiesGirl = '':
+        exit
+    end
+
+    GirlNoPantiesAgreeChance = 50
+
+    if sluttiness[$GirlNoPantiesGirl] >= 60:
+        GirlNoPantiesAgreeChance = 85
+    end
+
+    if $GirlNoPantiesGirl = 'amanda':
+        GirlNoPantiesAgreeChance += 10
+    elseif $GirlNoPantiesGirl = 'sandra':
+        GirlNoPantiesAgreeChance -= 15
+    end
+
+    if GirlNoPantiesAgreeChance < 10:
+        GirlNoPantiesAgreeChance = 10
+    end
+
+    if GirlNoPantiesAgreeChance > 95:
+        GirlNoPantiesAgreeChance = 95
+    end
+
+    if RAND(1, 100) <= GirlNoPantiesAgreeChance:
+        GirlNoPantiesWorkAgreed = 1
+    end
+
+    killvar 'GirlNoPantiesAgreeChance'
+---
+
+#GirlNoPantiesWorkRollAgreePutOn
+    gs 'GirlNoPantiesWorkNormalizeKey', $ARGS[0]
+    GirlNoPantiesWorkAgreed = 0
+
+    if $GirlNoPantiesGirl = '':
+        exit
+    end
+
+    if sluttiness[$GirlNoPantiesGirl] < 45:
+        GirlNoPantiesWorkAgreed = 1
+        exit
+    end
+
+    GirlNoPantiesAgreeChance = 75
+
+    if sluttiness[$GirlNoPantiesGirl] >= 60:
+        GirlNoPantiesAgreeChance = 40
+    end
+
+    if $GirlNoPantiesGirl = 'amanda':
+        GirlNoPantiesAgreeChance -= 10
+    elseif $GirlNoPantiesGirl = 'sandra':
+        GirlNoPantiesAgreeChance += 15
+    end
+
+    if GirlNoPantiesAgreeChance < 8:
+        GirlNoPantiesAgreeChance = 8
+    end
+
+    if GirlNoPantiesAgreeChance > 95:
+        GirlNoPantiesAgreeChance = 95
+    end
+
+    if RAND(1, 100) <= GirlNoPantiesAgreeChance:
+        GirlNoPantiesWorkAgreed = 1
+    end
+
+    killvar 'GirlNoPantiesAgreeChance'
+---
+
+#GirlNoPantiesWorkClampGirl
+    gs 'GirlNoPantiesWorkNormalizeKey', $ARGS[0]
+
+    if $GirlNoPantiesGirl = '':
+        exit
+    end
+
+    if GirlNoPantiesWork[$GirlNoPantiesGirl] < 0:
+        GirlNoPantiesWork[$GirlNoPantiesGirl] = 0
+    end
+
+    if GirlNoPantiesWork[$GirlNoPantiesGirl] > 1:
+        GirlNoPantiesWork[$GirlNoPantiesGirl] = 1
+    end
+
+    if GirlNoPantiesWork[$GirlNoPantiesGirl] = 1:
+        if GirlUniformLevel[$GirlNoPantiesGirl] <> 1:
+            GirlNoPantiesWork[$GirlNoPantiesGirl] = 0
+        end
+    end
+---
+
+#GirlNoPantiesEventPrintAddon
+    gs 'GirlNoPantiesWorkNormalizeKey', $ARGS[0]
+    $GirlNoPantiesEventArea = LCASE($ARGS[1])
+    $GirlNoPantiesEventScene = LCASE($ARGS[2])
+
+    if $GirlNoPantiesGirl = '':
+        exit
+    end
+
+    if GirlNoPantiesWork[$GirlNoPantiesGirl] <> 1:
+        exit
+    end
+
+    if $RealName[$GirlNoPantiesGirl] = '':
+        if LOC('GirlUniformTalkEnsureName') = 1:
+            gs 'GirlUniformTalkEnsureName', $GirlNoPantiesGirl
+        end
+    end
+
+    gs 'GirlNoPantiesWorkPrintText', 'event_addon'
+
+    killvar '$GirlNoPantiesEventArea'
+    killvar '$GirlNoPantiesEventScene'
+---
+
+#GirlNoPantiesWorkNormalizeKey
+    if LOC('NormalizeGirlKey') = 1:
+        gs 'NormalizeGirlKey', $ARGS[0]
+        $GirlNoPantiesGirl = $GirlKey
+    else:
+        $GirlNoPantiesGirl = LCASE($ARGS[0])
+    end
+---

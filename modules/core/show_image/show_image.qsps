@@ -23,7 +23,7 @@
 
     ! ====================== СОВМЕСТИМОСТЬ СО СТАРЫМИ ВЫЗОВАМИ ======================
 
-    if $ImgType <> 'location' and $ImgType <> 'portrait' and $ImgType <> 'dance' and $ImgType <> 'event' and $ImgType <> 'sex' and $ImgType <> 'common':
+    if $ImgType <> 'location' and $ImgType <> 'portrait' and $ImgType <> 'dance' and $ImgType <> 'event' and $ImgType <> 'sex' and $ImgType <> 'scene' and $ImgType <> 'common':
         if $ImgGirl = 'portraits':
             $ImgOldGirl = $ImgType
             $ImgOldAction = $ImgAction
@@ -41,11 +41,17 @@
             $ImgGirl = $ImgOldGirl
             $ImgAction = $ImgOldAction
             $ImgPose = $ImgOldPose
-        else:
+        elseif $ImgAction = 'group':
+            $ImgOldGirl = $ImgType
             $ImgOldAction = $ImgAction
+            $ImgOldPose = $ImgPose
 
-            $ImgType = 'common'
+            $ImgType = 'sex'
+            $ImgGirl = $ImgOldGirl
             $ImgAction = $ImgOldAction
+            $ImgPose = $ImgOldPose
+        else:
+            gs 'ShowImageLegacyLocationMap'
         end
     end
 
@@ -61,6 +67,8 @@
         elseif $ImgType = 'event':
             $ImgExt = 'webp'
         elseif $ImgType = 'sex':
+            $ImgExt = 'webp'
+        elseif $ImgType = 'scene':
             $ImgExt = 'webp'
         else:
             $ImgExt = 'webp'
@@ -107,7 +115,7 @@
         else:
             $ImgBasePath = 'images/events/' + $ImgAction
         end
-    elseif $ImgType = 'sex':
+    elseif $ImgType = 'sex' or $ImgType = 'scene':
         if $ImgPose <> '':
             $ImgBasePath = 'images/sex/' + $ImgGirl + '/' + $ImgAction + '/' + $ImgPose
         else:
@@ -150,5 +158,25 @@
     killvar '$ImgOldGirl'
     killvar '$ImgOldAction'
     killvar '$ImgOldPose'
+    killvar '$ImgOldCategory'
+    killvar '$ImgLegacyFile'
+---
+
+#ShowImageLegacyLocationMap
+    $ImgOldGirl = $ImgType
+    $ImgOldCategory = $ImgGirl
+    $ImgOldAction = $ImgAction
+    $ImgOldPose = $ImgPose
+
+    $ImgLegacyFile = $ImgOldAction
+
+    if $ImgOldPose <> '' and $ImgOldPose <> 'normal':
+        $ImgLegacyFile = $ImgOldAction + '_' + $ImgOldPose
+    end
+
+    $ImgType = 'location'
+    $ImgGirl = $ImgOldGirl
+    $ImgAction = $ImgOldCategory + '/' + $ImgLegacyFile
+    $ImgPose = ''
 ---
 

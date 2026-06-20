@@ -50,6 +50,9 @@
         TavernKitchenRumor = 0
     end
 
+    RevealingUniformHallEnabled = 0
+    TavernHallLookShowWorkImage = 0
+
     ! ====================== ДЕВУШКИ ======================
     gs 'InitGirlTavernEventState', 'amanda'
     gs 'InitGirlTavernEventState', 'melissa'
@@ -167,6 +170,25 @@
     gs 'ClampGirlTavernEventState', 'amanda'
     gs 'ClampGirlTavernEventState', 'melissa'
     gs 'ClampGirlTavernEventState', 'sandra'
+
+    gs 'TavernRevealingUniformHallSync'
+---
+
+! ================================================
+! FILE: modules/core/tavern/tavern_event_state_core.qsps
+! Общий переключатель откровенной формы в зале
+! ================================================
+
+#TavernRevealingUniformHallSync
+    RevealingUniformHallEnabled = 0
+
+    if GirlUniformLevel['amanda'] = 1 and GirlUniformLevel['melissa'] = 1 and GirlUniformLevel['sandra'] = 1:
+        if uniform_purchased['amanda'] = 1 and uniform_purchased['melissa'] = 1 and uniform_purchased['sandra'] = 1:
+            RevealingUniformHallEnabled = 1
+        elseif revealing_uniform_all_bought = 1:
+            RevealingUniformHallEnabled = 1
+        end
+    end
 ---
 
 ! ================================================
@@ -198,6 +220,10 @@
         GirlUniformLevel[$TavernStateGirl] = 0
     elseif GirlUniformLevel[$TavernStateGirl] > 1:
         GirlUniformLevel[$TavernStateGirl] = 1
+    end
+
+    if LOC('GirlNoPantiesWorkClampGirl') = 1:
+        gs 'GirlNoPantiesWorkClampGirl', $TavernStateGirl
     end
 
     if GirlHallLewdStage[$TavernStateGirl] < 0:

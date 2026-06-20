@@ -1,17 +1,14 @@
 ! ================================================
 ! FILE: modules/events/family/sandra_staff_hire.qsps
 ! MODULE: events/family
-! Мать нанимает подсобный персонал трактира
+! Мать нанимает подсобный персонал после совета клерка
+! Помощница на заготовки и ночная уборщица
 ! Подъёмные сразу, зарплата ежедневно через tavern_hired_staff
 ! ================================================
 
 #InitSandraStaffHire
     if TavernHiredKitchenMovingCost <= 0:
         TavernHiredKitchenMovingCost = 30
-    end
-
-    if TavernHiredWaitressMovingCost <= 0:
-        TavernHiredWaitressMovingCost = 30
     end
 
     if TavernHiredCleaningMovingCost <= 0:
@@ -60,24 +57,18 @@
 
     *pl ' '
     *pl 'У вас: ' + STR(money) + ' мараведи'
-    *pl 'Подъёмные: кухня ' + STR(TavernHiredKitchenMovingCost) + ', зал ' + STR(TavernHiredWaitressMovingCost) + ', уборка ' + STR(TavernHiredCleaningMovingCost)
-    *pl 'Зарплата в день: ' + STR(TavernHiredKitchenCost) + ' / ' + STR(TavernHiredWaitressCost) + ' / ' + STR(TavernHiredCleaningCost)
+    *pl 'Подъёмные: заготовки ' + STR(TavernHiredKitchenMovingCost) + ' м, ночная уборка ' + STR(TavernHiredCleaningMovingCost) + ' м'
+    *pl 'Зарплата в день: ' + STR(TavernHiredKitchenCost) + ' / ' + STR(TavernHiredCleaningCost)
     *pl ' '
 
     if TavernHiredKitchen = 0:
-        act 'Дать подъёмные: работница на кухню (' + STR(TavernHiredKitchenMovingCost) + ' м)':
+        act 'Дать подъёмные: помощница на заготовки (' + STR(TavernHiredKitchenMovingCost) + ' м)':
             gt 'SandraStaffHireTryRole', 'kitchen', $SandraStaffReturnLoc
         end
     end
 
-    if TavernHiredWaitress = 0:
-        act 'Дать подъёмные: работница в зале (' + STR(TavernHiredWaitressMovingCost) + ' м)':
-            gt 'SandraStaffHireTryRole', 'waitress', $SandraStaffReturnLoc
-        end
-    end
-
     if TavernHiredCleaning = 0:
-        act 'Дать подъёмные: уборщица (' + STR(TavernHiredCleaningMovingCost) + ' м)':
+        act 'Дать подъёмные: ночная уборщица (' + STR(TavernHiredCleaningMovingCost) + ' м)':
             gt 'SandraStaffHireTryRole', 'cleaning', $SandraStaffReturnLoc
         end
     end
@@ -109,25 +100,16 @@
 
     if $SandraStaffHireRole = 'kitchen':
         SandraStaffHireMovingCost = TavernHiredKitchenMovingCost
-        $SandraStaffHireRoleTitle = 'кухню'
+        $SandraStaffHireRoleTitle = 'помощницу на заготовки'
 
         if TavernHiredKitchen = 1:
             gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
             exit
         end
 
-    elseif $SandraStaffHireRole = 'waitress':
-        SandraStaffHireMovingCost = TavernHiredWaitressMovingCost
-        $SandraStaffHireRoleTitle = 'зал'
-
-        if TavernHiredWaitress = 1:
-            gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
-            exit
-        end
-
     elseif $SandraStaffHireRole = 'cleaning':
         SandraStaffHireMovingCost = TavernHiredCleaningMovingCost
-        $SandraStaffHireRoleTitle = 'уборку'
+        $SandraStaffHireRoleTitle = 'ночную уборщицу'
 
         if TavernHiredCleaning = 1:
             gt 'SandraStaffHireTalk', $SandraStaffReturnLoc
@@ -158,16 +140,14 @@
 
     if $SandraStaffHireRole = 'kitchen':
         TavernHiredKitchen = 1
-    elseif $SandraStaffHireRole = 'waitress':
-        TavernHiredWaitress = 1
     elseif $SandraStaffHireRole = 'cleaning':
         TavernHiredCleaning = 1
     end
 
     SandraStaffHired = 1
 
+    gs 'ApplyFamilyTavernJobs'
     gs 'CalculateTavernStaffEfficiency'
-    gs 'UpdateGirlLocations'
 
     cls
     gs 'SandraStaffHireRoleHiredText'
