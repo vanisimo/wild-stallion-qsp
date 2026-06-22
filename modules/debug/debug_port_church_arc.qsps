@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/debug/debug_port_church_arc.qsps
 ! MODULE: debug
-! Отладка арки Порт → Жоржетта → Церковь (этапы A–C)
+! Отладка арки Порт → Жоржетта → Церковь (этапы A–G)
 ! ================================================
 
 #DebugPortChurchArcPanel
@@ -13,7 +13,7 @@
 
     gs 'PanelDebugToolsHeader'
 
-    pl 'DEBUG: ПОРТ → ЖОРЖЕТТА → ЦЕРКОВЬ (A–C)'
+    pl 'DEBUG: ПОРТ → ЖОРЖЕТТА → ЦЕРКОВЬ (A–G)'
     pl 'День ' + STR(day) + ', неделя ' + STR(week) + ', время ' + STR(time)
     pl ' '
 
@@ -45,7 +45,10 @@
     pl 'LizettePriestSpySeen: ' + STR(LizettePriestSpySeen)
     pl 'LizetteSexUnlocked: ' + STR(LizetteSexUnlocked)
     pl 'ChurchSpyBasicUnlocked: ' + STR(ChurchSpyBasicUnlocked)
+    pl 'ChurchSpyWindowHint: ' + STR(ChurchSpyWindowHint)
     pl 'ChurchSpyWindowUpgrade: ' + STR(ChurchSpyWindowUpgrade)
+    pl 'ChurchSundayNoonVisitCount: ' + STR(ChurchSundayNoonVisitCount)
+    pl 'ChurchConfessionDoneDay: ' + STR(ChurchConfessionDoneDay)
     pl 'Friends[georgett]: ' + STR(Friends['georgett'])
     pl 'HadSex[georgett]: ' + STR(HadSex['georgett'])
     pl ' '
@@ -57,6 +60,9 @@
     pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterB''">После B: ночной порт</a>'
     pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayC''">Воскресенье C1: служба + Жоржетта</a>'
     pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterC''">После C: секс в соборе был</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayD''">Воскресенье D: полдень, исповедь</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayE''">Воскресенье E: spy Жоржетта</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayF''">Воскресенье F: Лизетта на службе</a>'
     pl ' '
 
     pl '--- Переходы ---'
@@ -156,5 +162,41 @@
     gs 'DebugPortChurchArcPresetSundayC'
     GeorgetteFuckInChurch = 1
     TavernScandal += 1
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetSundayD
+    gs 'DebugPortChurchArcPresetAfterC'
+    week = 7
+    time = 2
+    GeorgetteConfessBasic = 0
+    GeorgetteConfessInChurch = 0
+    GeorgetteConfessLizaSaw = 0
+    ChurchConfessionDoneDay = 0
+    ChurchSpyListenDoneDay = 0
+    ChurchAfterSermonDoneDay = 0
+    ChurchSpyBasicUnlocked = 0
+    gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetSundayE
+    gs 'DebugPortChurchArcPresetSundayD'
+    GeorgetteConfessBasic = 1
+    ChurchConfessionDoneDay = day
+    ChurchSpyBasicUnlocked = 1
+    GeorgettePriestSpySeen = 0
+    ChurchSpyListenDoneDay = 0
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetSundayF
+    gs 'DebugPortChurchArcPresetSundayE'
+    GeorgettePriestSpySeen = 1
+    LizetteChurchWithGeorgette = 1
+    LizetteChurchWithGeorgetteTargetDay = day
+    week = 7
+    time = 1
+    gs 'UpdateGirlLocations'
     gs 'DebugPortChurchArcPanel'
 ---

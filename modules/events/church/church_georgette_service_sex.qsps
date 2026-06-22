@@ -38,25 +38,43 @@
     $GeorgetteChurchSexReturnLoc = $ARGS[0]
 
     if $GeorgetteChurchSexReturnLoc = '':
-        $GeorgetteChurchSexReturnLoc = 'ChurchSundayServiceMenu'
+        $GeorgetteChurchSexReturnLoc = 'ChurchSundayService'
+    end
+
+    gt 'GeorgetteChurchSexApproach', $GeorgetteChurchSexReturnLoc
+---
+
+#GeorgetteChurchSexApproach
+    $GeorgetteChurchSexReturnLoc = $ARGS[0]
+
+    if $GeorgetteChurchSexReturnLoc = '':
+        $GeorgetteChurchSexReturnLoc = 'ChurchSundayService'
     end
 
     gs 'GeorgetteChurchSexCanOffer'
 
     if GeorgetteChurchSexCanOffer = 0:
+        killvar 'GeorgetteChurchSexCanOffer'
         gt $GeorgetteChurchSexReturnLoc
     end
 
+    killvar 'GeorgetteChurchSexCanOffer'
+
     cls
 
-    gs 'GeorgetteChurchSexText', 'offer'
+    gs 'ShowImage', 'georgett', 'normal', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ЖОРЖЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GeorgetteChurchSexText', 'approach'
     *p $GeorgetteChurchSexText
 
     *pl ' '
-    *pl 'Деньги: ' + STR(money) + ' мараведи.'
-    *pl ' '
 
-    act '<b>Заплатить и уйти в тень (15 мараведи)</b>', 'images/common/ui/actions/intim.png':
+    act '<b>Продолжить</b>', 'images/common/ui/actions/intim.png':
         gt 'GeorgetteChurchSexPay', $GeorgetteChurchSexReturnLoc
     end
 
@@ -65,28 +83,29 @@
     end
 
     killvar '$GeorgetteChurchSexText'
-    killvar 'GeorgetteChurchSexCanOffer'
 ---
 
 #GeorgetteChurchSexPay
     $GeorgetteChurchSexReturnLoc = $ARGS[0]
 
     if $GeorgetteChurchSexReturnLoc = '':
-        $GeorgetteChurchSexReturnLoc = 'ChurchSundayServiceMenu'
+        $GeorgetteChurchSexReturnLoc = 'ChurchSundayService'
     end
+
+    gs 'GeorgetteChurchSexCanOffer'
+
+    if GeorgetteChurchSexCanOffer = 0:
+        killvar 'GeorgetteChurchSexCanOffer'
+        gt $GeorgetteChurchSexReturnLoc
+    end
+
+    killvar 'GeorgetteChurchSexCanOffer'
 
     if money < 15:
         gs 'GeorgetteChurchSexText', 'no_money'
-        *p $GeorgetteChurchSexText
-
-        *pl ' '
-
-        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
-            gt $GeorgetteChurchSexReturnLoc
-        end
-
+        gs 'PrintMainP', $GeorgetteChurchSexText
         killvar '$GeorgetteChurchSexText'
-        exit
+        gt $GeorgetteChurchSexReturnLoc
     end
 
     money -= 15

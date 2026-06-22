@@ -1,0 +1,59 @@
+! ================================================
+! FILE: modules/events/church/church_after_sermon.qsps
+! MODULE: events/church
+! Прогулка у собора — воскресный полдень (этап D4)
+! ================================================
+
+#ChurchAfterSermonCanWalk
+    ChurchAfterSermonCanWalk = 0
+
+    if week <> 7:
+        exit
+    end
+
+    if time <> 2:
+        exit
+    end
+
+    if ChurchAfterSermonDoneDay = day:
+        exit
+    end
+
+    ChurchAfterSermonCanWalk = 1
+---
+
+#ChurchAfterSermonStart
+    gs 'ChurchAfterSermonCanWalk'
+
+    if ChurchAfterSermonCanWalk = 0:
+        gt 'ChurchSundayNoon'
+    end
+
+    cls
+
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' У СОБОРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PrintMainP', 'Ты обходишь церковь снаружи. Прихожане расходятся по Рипербану, а у боковой двери всё ещё слышны приглушённые голоса — кто-то исповедуется, кто-то ждёт своей очереди.'
+
+    *pl ' '
+
+    if ChurchSpyWindowHint = 0 and ChurchSundayNoonVisitCount >= 2:
+        gs 'PrintMainP', 'У высокого окна комнаты чистых сердец стена потёрта — будто кто-то часто встаёт на цыпочки и смотрит в щель. Ты запоминаешь это место.'
+        ChurchSpyWindowHint = 1
+    end
+
+    ChurchAfterSermonDoneDay = day
+
+    *pl ' '
+
+    act '<b>Вернуться в зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayNoon'
+    end
+
+    killvar 'ChurchAfterSermonCanWalk'
+---

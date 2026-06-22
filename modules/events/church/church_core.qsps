@@ -4,6 +4,10 @@
 ! Общие хелперы церкви: навигация, счётчики, spy unlock
 ! ================================================
 
+#ChurchUiHolyCircleIcon
+    $ChurchUiHolyCircleIcon = 'images/common/ui/actions/holy_circle.png'
+---
+
 #ChurchRenderStreetExit
     act '<b>Улица Рипербан</b>', 'images/common/ui/actions/street.png':
         gt 'Street'
@@ -40,6 +44,8 @@
 
     ChurchSundayNoonVisitDay = day
     ChurchSundayNoonVisitCount += 1
+
+    gs 'ChurchSpyWindowHintTryFallback'
 ---
 
 #ChurchSpyEnsureBasicUnlocked
@@ -70,6 +76,20 @@
     end
 
     if GirlPersonalStoryDiscussed['sandra_carpenter'] = 1:
+        ChurchSpyWindowHint = 1
+    end
+---
+
+#ChurchSpyWindowHintTryFallback
+    if ChurchSpyWindowHint = 1:
+        exit
+    end
+
+    if ChurchSpyWindowUpgrade = 1:
+        exit
+    end
+
+    if ChurchSundayNoonVisitCount >= 2:
         ChurchSpyWindowHint = 1
     end
 ---

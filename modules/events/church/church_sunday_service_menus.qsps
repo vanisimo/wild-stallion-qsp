@@ -4,6 +4,16 @@
 ! Воскресная служба — меню прихожан в тексте
 ! ================================================
 
+#ChurchSundayServiceMenuRunInspect
+    $ChurchServiceActiveMenuTarget = $ChurchServiceMenuTargetCache
+
+    if $ChurchServiceActiveMenuTarget = '':
+        gt 'ChurchSundayService'
+    end
+
+    gt 'ChurchSundayServiceInspect'
+---
+
 #ChurchSundayServiceEmbedMenuLink
     $ChurchServiceLinkLabel = $ARGS[0]
     $ChurchServiceLinkId = LCASE($ARGS[1])
@@ -19,7 +29,8 @@
 ---
 
 #ChurchSundayServiceShowMenu
-    $ChurchServiceActiveMenuTarget = LCASE($ARGS[0])
+    $ChurchServiceMenuTargetCache = LCASE($ARGS[0])
+    $ChurchServiceActiveMenuTarget = $ChurchServiceMenuTargetCache
 
     if $ChurchServiceActiveMenuTarget = '':
         exit
@@ -35,11 +46,11 @@
 
     gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Осмотреть', 'look'
     gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
-        gt 'ChurchSundayServiceInspect'
+        gt 'ChurchSundayServiceMenuRunInspect'
     }
 
     if $ChurchServiceActiveMenuTarget = 'gerhard':
-        gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Слушать проповедь', 'church'
+        gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Слушать проповедь', 'circle'
         gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
             gt 'ChurchSundayServiceSermon'
         }
@@ -49,9 +60,37 @@
 
     if ChurchServiceTalkAllowed = 1:
         gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Поговорить', 'talk'
-        gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
-            gt 'ChurchSundayServiceTalk'
-        }
+
+        if $ChurchServiceActiveMenuTarget = 'family':
+            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+                gt 'ChurchSundayServiceTalkFamily'
+            }
+        elseif $ChurchServiceActiveMenuTarget = 'legare':
+            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+                gt 'ChurchSundayServiceTalkLegare'
+            }
+        elseif $ChurchServiceActiveMenuTarget = 'becky':
+            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+                gt 'ChurchSundayServiceTalkBecky'
+            }
+        elseif $ChurchServiceActiveMenuTarget = 'georgette':
+            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+                gt 'ChurchSundayServiceTalkGeorgette'
+            }
+        end
+    end
+
+    if $ChurchServiceActiveMenuTarget = 'georgette':
+        gs 'GeorgetteChurchSexCanOffer'
+
+        if GeorgetteChurchSexCanOffer = 1:
+            gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Предложить секс', 'intim'
+            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+                gt 'GeorgetteChurchSexApproach', 'ChurchSundayService'
+            }
+        end
+
+        killvar 'GeorgetteChurchSexCanOffer'
     end
 
     killvar 'ChurchServiceTalkAllowed'
@@ -106,6 +145,10 @@
 ---
 
 #ChurchSundayServiceInspect
+    if $ChurchServiceActiveMenuTarget = '':
+        $ChurchServiceActiveMenuTarget = $ChurchServiceMenuTargetCache
+    end
+
     $ChurchServiceInspectTarget = $ChurchServiceActiveMenuTarget
 
     cls
@@ -133,6 +176,10 @@
 ---
 
 #ChurchSundayServiceTalk
+    if $ChurchServiceActiveMenuTarget = '':
+        $ChurchServiceActiveMenuTarget = $ChurchServiceMenuTargetCache
+    end
+
     $ChurchServiceTalkTarget = $ChurchServiceActiveMenuTarget
 
     gs 'ChurchSundayServiceTalkAllowed', $ChurchServiceActiveMenuTarget
