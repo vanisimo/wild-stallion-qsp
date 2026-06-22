@@ -1,0 +1,100 @@
+! ================================================
+! FILE: modules/events/church/church_confession_dynamic.qsps
+! MODULE: events/church
+! Исповедь ГГ — воскресный полдень, B1 приоритет грехов
+! ================================================
+
+#ChurchConfessionCanStart
+    ChurchConfessionReady = 0
+
+    if week <> 7:
+        exit
+    end
+
+    if time <> 2:
+        exit
+    end
+
+    if ChurchConfessionDoneDay = day:
+        exit
+    end
+
+    ChurchConfessionReady = 1
+---
+
+#ChurchConfessionStart
+    gs 'ChurchConfessionCanStart'
+
+    if ChurchConfessionReady = 0:
+        gt 'ChurchSundayNoon'
+    end
+
+    gs 'ChurchConfessionPickSin'
+
+    cls
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ИСПОВЕДЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchConfessionDynamicText', $ChurchConfessionSinId
+    *p $ChurchConfessionText
+
+    gs 'ChurchConfessionApplySin', $ChurchConfessionSinId
+
+    ChurchConfessionDoneDay = day
+    ChurchSpyBasicUnlocked = 1
+
+    *pl ' '
+
+    act '<b>Вернуться в зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayNoon'
+    end
+
+    killvar '$ChurchConfessionSinId'
+    killvar '$ChurchConfessionText'
+    killvar 'ChurchConfessionReady'
+---
+
+#ChurchConfessionPickSin
+    $ChurchConfessionSinId = 'minor'
+
+    if GeorgetteConfessLizaSaw = 0 and LizaSawSexInChurch = 1 and GeorgetteFuckInChurch = 1:
+        $ChurchConfessionSinId = 'georgette_liza_saw'
+    elseif GeorgetteConfessInChurch = 0 and GeorgetteFuckInChurch = 1:
+        $ChurchConfessionSinId = 'georgette_in_church'
+    elseif GeorgetteConfessBasic = 0 and HadSex['georgett'] >= 1:
+        $ChurchConfessionSinId = 'georgette_basic'
+    elseif HadSex['amanda'] >= 1 and ChurchConfessionAmandaWeekDone < day:
+        $ChurchConfessionSinId = 'amanda_stub'
+    elseif HadSex['melissa'] >= 1 and ChurchConfessionMelissaWeekDone < day:
+        $ChurchConfessionSinId = 'melissa_stub'
+    end
+---
+
+#ChurchConfessionApplySin
+    $ChurchConfessionApplyId = LCASE($ARGS[0])
+
+    if $ChurchConfessionApplyId = 'georgette_liza_saw':
+        GeorgetteConfessLizaSaw = 1
+        PriestConfessionCorruption += 1
+    elseif $ChurchConfessionApplyId = 'georgette_in_church':
+        GeorgetteConfessInChurch = 1
+        PriestConfessionCorruption += 1
+    elseif $ChurchConfessionApplyId = 'georgette_basic':
+        GeorgetteConfessBasic = 1
+        PriestConfessionCorruption += 1
+    elseif $ChurchConfessionApplyId = 'amanda_stub':
+        ChurchConfessionAmandaWeekDone = day + 7
+        PriestConfessionCorruption += 1
+    elseif $ChurchConfessionApplyId = 'melissa_stub':
+        ChurchConfessionMelissaWeekDone = day + 7
+        PriestConfessionCorruption += 1
+    end
+
+    gs 'CorruptionProgress', 'player', 'confession'
+
+    killvar '$ChurchConfessionApplyId'
+---

@@ -1,0 +1,243 @@
+! ================================================
+! FILE: modules/events/church/church_sunday_service_menus.qsps
+! MODULE: events/church
+! Воскресная служба — меню прихожан в тексте
+! ================================================
+
+#ChurchSundayServiceEmbedMenuLink
+    $ChurchServiceLinkLabel = $ARGS[0]
+    $ChurchServiceLinkId = LCASE($ARGS[1])
+
+    gs 'FormatTextByStyle', $ChurchServiceLinkLabel, 'npc_link'
+    gs 'NpcTalkIconInline'
+    $ChurchServiceMenuLink = $NpcTalkIconInline + ' <a href="exec:gs ''ChurchSundayServiceShowMenu'', ''' + $ChurchServiceLinkId + '''">' + $FormattedText + '</a>'
+
+    killvar '$FormattedText'
+    killvar '$NpcTalkIconInline'
+    killvar '$ChurchServiceLinkLabel'
+    killvar '$ChurchServiceLinkId'
+---
+
+#ChurchSundayServiceShowMenu
+    $ChurchServiceActiveMenuTarget = LCASE($ARGS[0])
+
+    if $ChurchServiceActiveMenuTarget = '':
+        exit
+    end
+
+    gs 'ChurchSundayServiceBuildMenu'
+    gs 'Menu.Show', 'ChurchServiceNpcMenu'
+---
+
+#ChurchSundayServiceBuildMenu
+    gs 'Menu.Destroy', 'ChurchServiceNpcMenu'
+    gs 'Menu.Create', 'ChurchServiceNpcMenu'
+
+    gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Осмотреть', 'look'
+    gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+        gt 'ChurchSundayServiceInspect'
+    }
+
+    if $ChurchServiceActiveMenuTarget = 'gerhard':
+        gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Слушать проповедь', 'church'
+        gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+            gt 'ChurchSundayServiceSermon'
+        }
+    end
+
+    gs 'ChurchSundayServiceTalkAllowed', $ChurchServiceActiveMenuTarget
+
+    if ChurchServiceTalkAllowed = 1:
+        gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Поговорить', 'talk'
+        gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+            gt 'ChurchSundayServiceTalk'
+        }
+    end
+
+    killvar 'ChurchServiceTalkAllowed'
+---
+
+#ChurchSundayServiceTalkAllowed
+    ChurchServiceTalkAllowed = 0
+    $ChurchServiceTalkTarget = LCASE($ARGS[0])
+
+    if ChurchServiceTalkDoneDay = day:
+        killvar '$ChurchServiceTalkTarget'
+        exit
+    end
+
+    if $ChurchServiceTalkTarget = 'becky':
+        ChurchServiceTalkAllowed = 1
+    elseif $ChurchServiceTalkTarget = 'legare':
+        ChurchServiceTalkAllowed = 1
+    elseif $ChurchServiceTalkTarget = 'family':
+        ChurchServiceTalkAllowed = 1
+    elseif $ChurchServiceTalkTarget = 'georgette':
+        if GeorgetteKnown = 1 and (GeorgetteChurchAlone = 1 or LizetteChurchWithGeorgette = 1):
+            ChurchServiceTalkAllowed = 1
+        end
+    end
+
+    killvar '$ChurchServiceTalkTarget'
+---
+
+#ChurchSundayServiceShowNpcImage
+    $ChurchServiceImageTarget = LCASE($ARGS[0])
+
+    if $ChurchServiceImageTarget = 'gerhard':
+        gs 'ShowImage', 'gerhard', 'normal', 'normal'
+    elseif $ChurchServiceImageTarget = 'mayor':
+        gs 'ShowImage', 'church', 'general', 'normal'
+    elseif $ChurchServiceImageTarget = 'irma':
+        gs 'ShowImage', 'irma', 'shop', 'talk', 'normal'
+    elseif $ChurchServiceImageTarget = 'becky':
+        gs 'ShowImage', 'becky', 'shop', 'normal', 'normal'
+    elseif $ChurchServiceImageTarget = 'legare':
+        gs 'ShowImage', 'clarissa', 'shop', 'normal', 'normal'
+    elseif $ChurchServiceImageTarget = 'family':
+        gs 'ShowImage', 'sandra', 'normal', 'normal'
+    elseif $ChurchServiceImageTarget = 'georgette':
+        gs 'ShowImage', 'georgett', 'normal', 'normal'
+    else:
+        gs 'ShowImage', 'church', 'general', 'normal'
+    end
+
+    killvar '$ChurchServiceImageTarget'
+---
+
+#ChurchSundayServiceInspect
+    $ChurchServiceInspectTarget = $ChurchServiceActiveMenuTarget
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ОСМОТР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSundayServiceShowNpcImage', $ChurchServiceInspectTarget
+
+    *pl ' '
+
+    gs 'ChurchSundayServiceText', 'inspect_' + $ChurchServiceInspectTarget
+    *p $ChurchServiceText
+
+    *pl ' '
+
+    act '<b>Назад в зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayService'
+    end
+
+    killvar '$ChurchServiceInspectTarget'
+    killvar '$ChurchServiceText'
+---
+
+#ChurchSundayServiceTalk
+    $ChurchServiceTalkTarget = $ChurchServiceActiveMenuTarget
+
+    gs 'ChurchSundayServiceTalkAllowed', $ChurchServiceActiveMenuTarget
+
+    if ChurchServiceTalkAllowed = 0:
+        gt 'ChurchSundayService'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' РАЗГОВОР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSundayServiceShowNpcImage', $ChurchServiceTalkTarget
+
+    *pl ' '
+
+    if $ChurchServiceTalkTarget = 'becky':
+        gs 'ChurchSundayServiceText', 'becky'
+        Friends['becky'] += 1
+        Friends['inga'] += 1
+    elseif $ChurchServiceTalkTarget = 'legare':
+        gs 'ChurchSundayServiceText', 'legare'
+        Friends['clarissa'] += 1
+        Friends['alber'] += 1
+    elseif $ChurchServiceTalkTarget = 'family':
+        gs 'ChurchSundayServiceText', 'family'
+        Friends['sandra'] += 1
+        Friends['melissa'] += 1
+        Friends['amanda'] += 1
+    elseif $ChurchServiceTalkTarget = 'georgette':
+        gs 'ChurchSundayServiceText', 'georgette'
+        Friends['georgett'] += 1
+    else:
+        gt 'ChurchSundayService'
+    end
+
+    ChurchServiceTalkDoneDay = day
+
+    *p $ChurchServiceText
+
+    *pl ' '
+
+    act '<b>Назад в зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayService'
+    end
+
+    killvar '$ChurchServiceTalkTarget'
+    killvar '$ChurchServiceText'
+    killvar 'ChurchServiceTalkAllowed'
+---
+
+#ChurchSundayServicePrintIntro
+    gs 'ChurchSundayServiceEmbedMenuLink', 'отец Герхард', 'gerhard'
+    $ChurchIntroGerhard = $ChurchServiceMenuLink
+    killvar '$ChurchServiceMenuLink'
+
+    gs 'ChurchSundayServiceEmbedMenuLink', 'Родриго Борджиа', 'mayor'
+    $ChurchIntroMayor = $ChurchServiceMenuLink
+    killvar '$ChurchServiceMenuLink'
+
+    gs 'ChurchSundayServiceEmbedMenuLink', 'Ирма', 'irma'
+    $ChurchIntroIrma = $ChurchServiceMenuLink
+    killvar '$ChurchServiceMenuLink'
+
+    gs 'ChurchSundayServiceEmbedMenuLink', 'Бекки Блэнкеншип', 'becky'
+    $ChurchIntroBecky = $ChurchServiceMenuLink
+    killvar '$ChurchServiceMenuLink'
+
+    gs 'ChurchSundayServiceEmbedMenuLink', 'семья виноторговца Легаре', 'legare'
+    $ChurchIntroLegare = $ChurchServiceMenuLink
+    killvar '$ChurchServiceMenuLink'
+
+    gs 'ChurchSundayServiceEmbedMenuLink', 'своей семьёй', 'family'
+    $ChurchIntroFamily = $ChurchServiceMenuLink
+    killvar '$ChurchServiceMenuLink'
+
+    $ChurchServiceText = 'Собор наполнен звуками голосов. ' + $ChurchIntroGerhard + ' у алтаря; прихожане осеняют себя священным кругом перед молитвой.'
+    $ChurchServiceText += '<br><br>На почётном месте — мэр города ' + $ChurchIntroMayor + '. В тени колонны видна портниха ' + $ChurchIntroIrma + '. Чуть дальше в зале — ' + $ChurchIntroBecky + ' со своими детьми.'
+    $ChurchServiceText += '<br><br>' + $ChurchIntroLegare + ' стоят позади мэра и раскланиваются со знакомыми. Вы стоите рядом ' + $ChurchIntroFamily + '.'
+
+    if GeorgetteKnown = 1 and (GeorgetteChurchAlone = 1 or LizetteChurchWithGeorgette = 1) and $GirlLocation['georgett'] = 'Church':
+        gs 'ChurchSundayServiceEmbedMenuLink', 'Жоржетта', 'georgette'
+        $ChurchIntroGeorgette = $ChurchServiceMenuLink
+        killvar '$ChurchServiceMenuLink'
+        $ChurchServiceText += '<br><br>За спинами прихожан мелькает ' + $ChurchIntroGeorgette + ' — вы уже знаете, кто это.'
+        killvar '$ChurchIntroGeorgette'
+    else:
+        gs 'ChurchSundayServiceEmbedMenuLink', 'чья-то тень', 'shadow'
+        $ChurchIntroShadow = $ChurchServiceMenuLink
+        killvar '$ChurchServiceMenuLink'
+        $ChurchServiceText += '<br><br>За спинами прихожан мелькает ' + $ChurchIntroShadow + ', но вы не можете понять, кто это.'
+        killvar '$ChurchIntroShadow'
+    end
+
+    if ChurchServiceTalkDoneDay = day:
+        $ChurchServiceText += '<br><br><span style="color:#888"><i>Сегодня вы уже говорили с прихожанами — в меню остаётся только осмотр.</i></span>'
+    end
+
+    killvar '$ChurchIntroGerhard'
+    killvar '$ChurchIntroMayor'
+    killvar '$ChurchIntroIrma'
+    killvar '$ChurchIntroBecky'
+    killvar '$ChurchIntroLegare'
+    killvar '$ChurchIntroFamily'
+---

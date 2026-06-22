@@ -1,0 +1,127 @@
+! ================================================
+! FILE: modules/events/church/church_spy_core.qsps
+! MODULE: events/church
+! Подслушивание: маршрутизация, fallback, окно Драупнира
+! ================================================
+
+#ChurchSpyGeorgetteCheckAvailable
+    ChurchSpyGeorgetteReady = 0
+
+    if week <> 7 or time <> 2:
+        exit
+    end
+
+    if GeorgetteConfessBasic = 0:
+        exit
+    end
+
+    if GeorgettePriestSpySeen = 1:
+        exit
+    end
+
+    if ChurchSpyGeorgetteSkipDay > 0 and day < ChurchSpyGeorgetteSkipDay:
+        exit
+    end
+
+    ChurchSpyGeorgetteReady = 1
+---
+
+#ChurchSpyLizetteCheckAvailable
+    ChurchSpyLizetteReady = 0
+
+    if week <> 7 or time <> 2:
+        exit
+    end
+
+    if GeorgetteConfessLizaSaw = 0:
+        exit
+    end
+
+    if LizaSawSexInChurch = 0:
+        exit
+    end
+
+    if LizettePriestSpySeen = 1:
+        exit
+    end
+
+    if LizettePriestSpyStage = 0:
+        ChurchSpyLizetteReady = 1
+        exit
+    end
+
+    if LizettePriestSpyStage = 1:
+        if ChurchSpyLizetteAct2ReadyDay > 0 and day < ChurchSpyLizetteAct2ReadyDay:
+            exit
+        end
+
+        ChurchSpyLizetteReady = 1
+    end
+---
+
+#ChurchSpyGenericStart
+    cls
+    gs 'ShowImage', 'gerhard', 'normal', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' КОМНАТА ЧИСТЫХ СЕРДЕЦ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    ChurchSpyGenericPick = RAND(1, 4)
+
+    if ChurchSpyGenericPick = 1:
+        gs 'ChurchSpyCoreText', 'generic_1'
+    elseif ChurchSpyGenericPick = 2:
+        gs 'ChurchSpyCoreText', 'generic_2'
+    elseif ChurchSpyGenericPick = 3:
+        gs 'ChurchSpyCoreText', 'generic_3'
+    else:
+        gs 'ChurchSpyCoreText', 'generic_4'
+    end
+
+    if ChurchSpyWindowUpgrade = 1:
+        *p 'С верхнего угла слышно отчётливо. Отец Герхард принимает очередную исповедь.'
+        *pl ' '
+        *p $ChurchSpyCoreText
+    else:
+        *p 'Сквозь щель в двери виден лишь силуэт священника. Голоса приглушены.'
+        *pl ' '
+        *p $ChurchSpyCoreText
+    end
+
+    gs 'ChurchSpyMarkDoneToday'
+
+    *pl ' '
+
+    act '<b>Вернуться в зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayNoon'
+    end
+
+    killvar '$ChurchSpyCoreText'
+    killvar 'ChurchSpyGenericPick'
+---
+
+#ChurchSpyWindowInspect
+    cls
+
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ВЕРХНЕЕ ОКНО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyCoreText', 'window_find'
+    *p $ChurchSpyCoreText
+
+    ChurchSpyWindowUpgrade = 1
+
+    *pl ' '
+
+    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayNoon'
+    end
+
+    killvar '$ChurchSpyCoreText'
+---

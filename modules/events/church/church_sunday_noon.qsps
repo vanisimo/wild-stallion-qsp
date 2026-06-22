@@ -1,0 +1,70 @@
+! ================================================
+! FILE: modules/events/church/church_sunday_noon.qsps
+! MODULE: events/church
+! Воскресный полдень — исповедь + подслушивание
+! ================================================
+
+#ChurchSundayNoon
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
+    gs 'ChurchSundayNoonVisitRegister'
+    gs 'UpdateGirlLocations'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ЦЕРКОВЬ ИЛЬМАТЕРА'
+    gs 'PrintTitleLine', ' ВОСКРЕСНЫЙ ПОЛДЕНЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    gs 'PrintMainP', 'Служба кончилась. У двери в комнату чистых сердец тихо стоят те, кому есть что сказать — и те, кому есть что подслушать.'
+
+    *pl ' '
+
+    gs 'ChurchConfessionCanStart'
+
+    if ChurchConfessionReady = 1:
+        act '<b>Исповедаться</b>', 'images/common/ui/actions/church.png':
+            gt 'ChurchConfessionStart'
+        end
+    else:
+        *pl '<span style="color:#888">Исповедь на сегодня уже принята.</span>'
+    end
+
+    gs 'ChurchSpyCanListenToday'
+
+    if ChurchSpyListenReady = 1:
+        act '<b>Прислушаться у двери комнаты чистых сердец</b>', 'images/common/ui/actions/look.png':
+            gt 'ChurchSpyRouteStart'
+        end
+    elseif ChurchSpyListenDoneDay = day:
+        *pl '<span style="color:#888">Ты уже прислушивался сегодня.</span>'
+    end
+
+    if ChurchSpyWindowHint = 1 and ChurchSpyWindowUpgrade = 0:
+        act '<b>Осмотреть верхнее окно</b>', 'images/common/ui/actions/look.png':
+            gt 'ChurchSpyWindowInspect'
+        end
+    end
+
+    if BeckyPriestOk = 0 and (BeckyPriestHint = 1 or BeckyPriestRetry = 1) and LOC('BeckyEddieConfession') = 1:
+        act '<b>Исповедь Бекки (сюжет)</b>', 'images/common/ui/actions/church.png':
+            gt 'BeckyEddieConfession'
+        end
+    end
+
+    if BeckyPriestArcOpen = 1 and LOC('ChurchSpyBeckyDonationBoost') = 1 and BeckyPriestSpyBoost = 0:
+        act '<b>Пожертвование 15 (исповедь Бекки)</b>', 'images/common/ui/actions/gift.png':
+            gt 'ChurchSpyBeckyDonationBoost'
+        end
+    end
+
+    gs 'ChurchRenderStreetExit'
+
+    killvar 'ChurchConfessionReady'
+    killvar 'ChurchSpyListenReady'
+---

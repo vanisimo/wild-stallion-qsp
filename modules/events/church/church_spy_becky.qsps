@@ -45,19 +45,19 @@
 #ChurchSpyBeckyDonationBoost
     if BeckyPriestArcOpen = 0:
         *p 'Сейчас особых исповедей вдовы не ожидается.'
-        act '<b>Вернуться</b>': gt 'Church'
+        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png': gt 'ChurchSundayNoon'
         exit
     end
 
     if BeckyPriestSpyBoost = 1:
         *p 'Вы уже пожертвовали на ближайшую исповедь Бекки.'
-        act '<b>Вернуться</b>': gt 'Church'
+        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png': gt 'ChurchSundayNoon'
         exit
     end
 
     if money < 15:
         *p 'Нужно 15 мараведи для пожертвования.'
-        act '<b>Вернуться</b>': gt 'Church'
+        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png': gt 'ChurchSundayNoon'
         exit
     end
 
@@ -68,18 +68,18 @@
 
     *p 'Вы кладёте 15 мараведи в ящик пожертвований. Отец Герхард кивает: вдове Блэнкеншип на следующей исповеди уделят больше внимания.'
 
-    act '<b>Вернуться</b>': gt 'Church'
+    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png': gt 'ChurchSundayNoon'
 ---
 
 #ChurchSpyBeckyStart
     if BeckyPriestArcOpen = 0:
-        gt 'Church'
+        gt 'ChurchSundayNoon'
     end
 
     gs 'ChurchSpyBeckyCheckAvailable'
 
     if BeckyPriestSpyReady = 0:
-        gt 'Church'
+        gt 'ChurchSundayNoon'
     end
 
     BeckyPriestSpyStep = 1
@@ -99,9 +99,9 @@
     *pl ' '
 
     if BeckyPriestSpyCount = 0:
-        *p 'Вы замечаете, что в исповедальню зашла Бекки. Через щель видно, как отец Герхард принимает её не совсем так, как остальных прихожан.'
+        *p 'Бекки проходит в комнату чистых сердец. Через щель в двери видно, как отец Герхард принимает её слишком близко — лицом к лицу, без кабинки.'
     else:
-        *p 'Бекки снова пришла на исповедь в воскресный полдень. Вы знаете, чем это обычно заканчивается.'
+        *p 'Бекки снова в воскресный полдень у двери комнаты чистых сердец. Вы уже знаете, чем это заканчивается.'
     end
 
     *pl ' '
@@ -109,19 +109,21 @@
     *pl ' '
 
     if BeckyPriestSpyStep < 3:
-        act '<b>Смотреть дальше</b>':
+        act '<b>Смотреть дальше</b>', 'images/common/ui/actions/look.png':
             BeckyPriestSpyStep += 1
             gt 'ChurchSpyBeckyStep'
         end
 
-        act '<b>Уйти, не досматривая</b>':
+        act '<b>Уйти, не досматривая</b>', 'images/common/ui/actions/return.png':
             gs 'ChurchSpyBeckyPartialExit'
-            gt 'Church'
+            gs 'ChurchSpyMarkDoneToday'
+            gt 'ChurchSundayNoon'
         end
     else
-        act '<b>Вернуться в церковь</b>':
+        act '<b>Вернуться в зал</b>', 'images/common/ui/actions/return.png':
             gs 'ChurchSpyBeckyFinish'
-            gt 'Church'
+            gs 'ChurchSpyMarkDoneToday'
+            gt 'ChurchSundayNoon'
         end
     end
 ---

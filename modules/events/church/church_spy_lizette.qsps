@@ -1,0 +1,131 @@
+! ================================================
+! FILE: modules/events/church/church_spy_lizette.qsps
+! MODULE: events/church
+! Spy: отец Герхард + Лизетта — два акта (G1/G2)
+! ================================================
+
+#ChurchSpyLizetteStart
+    gs 'ChurchSpyLizetteCheckAvailable'
+
+    if ChurchSpyLizetteReady = 0:
+        gt 'ChurchSundayNoon'
+    end
+
+    if LizettePriestSpyStage = 0:
+        ChurchSpyLizetteAct = 1
+    else:
+        ChurchSpyLizetteAct = 2
+    end
+
+    ChurchSpyLizetteStep = 1
+    gt 'ChurchSpyLizetteStep'
+---
+
+#ChurchSpyLizetteStep
+    cls
+
+    if ChurchSpyWindowUpgrade = 1:
+        gs 'ShowImage', 'lizette', 'normal', 'normal'
+    else:
+        gs 'ShowImage', 'gerhard', 'normal', 'normal'
+    end
+
+    *pl '══════════════════════════════════════════════'
+
+    if ChurchSpyLizetteAct = 1:
+        gs 'PrintTitleLine', ' ЛИЗЕТТА — ИСПОВЕДЬ (АКТ 1)'
+    else:
+        gs 'PrintTitleLine', ' ЛИЗЕТТА — ИСПОВЕДЬ (АКТ 2)'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if ChurchSpyLizetteStep = 1:
+        gs 'ChurchSpyLizetteText', 'intro_' + STR(ChurchSpyLizetteAct)
+        *p $ChurchSpyLizetteText
+        *pl ' '
+    end
+
+    gs 'ChurchSpyLizetteText', 'act' + STR(ChurchSpyLizetteAct) + '_step_' + STR(ChurchSpyLizetteStep)
+    *p $ChurchSpyLizetteText
+    *pl ' '
+
+    if ChurchSpyLizetteAct = 1 and ChurchSpyLizetteStep < 3:
+        act '<b>Слушать дальше</b>', 'images/common/ui/actions/look.png':
+            ChurchSpyLizetteStep += 1
+            gt 'ChurchSpyLizetteStep'
+        end
+
+        act '<b>Уйти</b>', 'images/common/ui/actions/return.png':
+            gt 'ChurchSundayNoon'
+        end
+    elseif ChurchSpyLizetteAct = 1:
+        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+            gt 'ChurchSpyLizetteFinishAct1'
+        end
+    elseif ChurchSpyLizetteAct = 2 and ChurchSpyLizetteStep < 2:
+        act '<b>Смотреть дальше</b>', 'images/common/ui/actions/look.png':
+            ChurchSpyLizetteStep += 1
+            gt 'ChurchSpyLizetteStep'
+        end
+
+        act '<b>Уйти</b>', 'images/common/ui/actions/return.png':
+            gt 'ChurchSundayNoon'
+        end
+    else:
+        act '<b>Вернуться в зал</b>', 'images/common/ui/actions/return.png':
+            gt 'ChurchSpyLizetteFinishAct2'
+        end
+    end
+
+    killvar '$ChurchSpyLizetteText'
+---
+
+#ChurchSpyLizetteFinishAct1
+    LizettePriestSpyStage = 1
+    ChurchSpyLizetteAct2ReadyDay = day + 7
+
+    gs 'ChurchSpyMarkDoneToday'
+
+    otkroven['lizette'] += 1
+    Friends['lizette'] += 1
+
+    gs 'ChurchSpyLizetteText', 'after_act1'
+    *p $ChurchSpyLizetteText
+
+    *pl ' '
+
+    act '<b>В зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayNoon'
+    end
+
+    killvar '$ChurchSpyLizetteText'
+    killvar 'ChurchSpyLizetteAct'
+    killvar 'ChurchSpyLizetteStep'
+---
+
+#ChurchSpyLizetteFinishAct2
+    LizettePriestSpyStage = 2
+    LizettePriestSpySeen = 1
+    LizetteSexUnlocked = 1
+
+    gs 'ChurchSpyMarkDoneToday'
+
+    otkroven['lizette'] += 2
+    sluttiness['lizette'] += 1
+    PriestConfessionCorruption += 1
+
+    gs 'ChurchSpyLizetteText', 'after_act2'
+    *p $ChurchSpyLizetteText
+
+    *pl ' '
+
+    act '<b>В зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayNoon'
+    end
+
+    killvar '$ChurchSpyLizetteText'
+    killvar 'ChurchSpyLizetteAct'
+    killvar 'ChurchSpyLizetteStep'
+---

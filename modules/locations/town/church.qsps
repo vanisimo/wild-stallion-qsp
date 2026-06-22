@@ -1,6 +1,6 @@
 ! ================================================
-! FILE: modules/locations/church.qsps
-! Церковь Ильматера
+! FILE: modules/locations/town/church.qsps
+! Церковь Ильматера — роутинг по фазе расписания
 ! ================================================
 
 #Church
@@ -10,45 +10,41 @@
 
     gs 'AddGlobalButtons'
     gs 'GetCitySchedulePhase'
-    gs 'ShowImage', 'church', 'general', 'normal'
+
+    if week = 7:
+        if time = 1:
+            gt 'ChurchSundayService'
+        elseif time = 2:
+            gt 'ChurchSundayNoon'
+        else:
+            gt 'ChurchSundayQuiet'
+        end
+    else:
+        gt 'ChurchWeekday'
+    end
+---
+
+#ChurchSundayQuiet
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
 
     *pl '══════════════════════════════════════════════'
     gs 'PrintTitleLine', ' ЦЕРКОВЬ ИЛЬМАТЕРА'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if week = 7:
-        if time = 1:
-            gs 'PrintTitleLine', ' УТРЕННЯЯ СЛУЖБА'
-            gs 'PrintMainP', 'В соборе идёт служба. Сквозь двери слышны молитвы, шорох платьев и редкие кашли тех, кто пришёл не только ради Бога.'
-        elseif time = 2:
-            gs 'PrintTitleLine', ' ВОСКРЕСНЫЙ ПОЛДЕНЬ — ИСПОВЕДИ'
-            gs 'PrintMainP', 'После службы отец Герхард принимает исповеди. В такие часы город шепчет громче, чем молится.'
-        else:
-            gs 'PrintTitleLine', ' ВОСКРЕСЕНЬЕ'
-            gs 'PrintMainP', 'Обычный бизнес закрыт. Горожане ходят в гости, а церковь уже пустеет — но слухи ещё долго не улетают из переулков.'
-        end
-    else:
-        gs 'PrintMainLine', 'Обычный день в церкви. Тихо и спокойно.'
-    end
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    gs 'PrintMainP', 'Воскресенье после полудня. Обычный бизнес закрыт — горожане в гостях, а собор пустеет. Слухи ещё долго не улетают с Рипербана.'
 
     *pl ' '
 
-    gs 'BuildChurchMenu'
-    gs 'PrintMenuOpenLink', 'ChurchMenu', 'Действия в церкви'
-
-    act '<b>Пожертвовать</b>', 'images/common/ui/actions/gift.png':
-        amount = input('Сколько мараведи пожертвовать?')
-        if amount > 0 and money >= amount:
-            money -= amount
-            gs 'PrintMainP', 'Ты пожертвовал ' + STR(amount) + ' мараведи.'
-            ChurchDonatedToday += 1
-            tavern_reputation += 1
-        end
-        gt 'Church'
+    act '<b>Рынок</b>', 'images/common/ui/actions/market.png':
+        gt 'Market'
     end
 
-    act '<b>Улица</b>', 'images/common/ui/actions/street.png':
-        gt 'Street'
-    end
+    gs 'ChurchRenderStreetExit'
 ---

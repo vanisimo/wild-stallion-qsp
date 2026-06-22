@@ -2,7 +2,7 @@
 
 **Статус:** дизайн согласован, реализация по этапам.  
 **Источник legacy:** `Traktir.qsps` — `#PortStreets`, `#Church`, `#ChurchIspoved`, `#ChurchAfterCermon`, `#IntGeorgettTalk`, `StreetClients`.  
-**Связанные документы:** `docs/import-traktir-legacy.md` (общий импорт), `docs/design-mayor-seal-corruption-arc.md` (мэр, костюм, слухи).
+**Связанные документы:** `docs/import-traktir-legacy.md` (общий импорт), `docs/design-mayor-seal-corruption-arc.md` (мэр, костюм, слухи), `docs/design-interaction-schemes.md` §9 (UI церкви, spy, Рипербан).
 
 ---
 
@@ -15,7 +15,9 @@
 | Witness у корабля | Без присутствия ГГ у причала в среду знакомства Аманды и Лизетты **нет** |
 | Intim Лизетты с ГГ | Только **церковская цепочка** (`LizetteSexUnlocked`); платный «снять» в порту — после `LizetteProstPort` |
 | Цены | Порт «снять» **10** мараведи; секс на службе **15** мараведи |
-| Исповедь | Слот **полдень** воскресенья (`time = 2`, `sunday_confession`); в **один** полдень можно **и** исповедаться, **и** прогуляться/spy |
+| Исповедь | Слот **полдень** воскресенья (`time = 2`, `sunday_confession`); в **один** полдень можно **и** исповедаться, **и** подслушать/spy |
+| Spy unlock | **Базовый** spy — авто (не блокирует арку); **улучшенный угол** (`ChurchSpyWindowUpgrade`) — опционально через слух/Sandra/окно (см. §9 `design-interaction-schemes`) |
+| Лизетта spy | **Два акта** = **две недели** полдня; `LizetteSexUnlocked` только после акта 2 |
 | Подворотня | Рандомные клиенты + **Легаре/Эдди без** гейта `AmandaLegare` |
 | `qsp-project.json` | **Не менять** без явной просьбы |
 
@@ -31,8 +33,9 @@ flowchart TD
     C2 --> D[Этап D: полдень исповедь + прогулка]
     D --> E[Этап E: spy жрец + Жоржетта]
     E --> F[Этап F: Лизетта на службе + дочь смотрит]
-    F --> G[Этап G: spy жрец + Лизетта]
-    G --> H[Этап H: обе ночью + подворотня]
+    F --> G1[Этап G1: spy Лизетта акт 1 — допрос, объятие]
+    G1 --> G2[Этап G2: spy Лизетта акт 2 — секс с жрецом]
+    G2 --> H[Этап H: обе ночью + подворотня]
 
     A -.-> AL[Параллельно: Аманда + Лизетта talk]
     AL -.-> AL2[Воскресенье день/вечер AmandaRoom]
@@ -239,9 +242,11 @@ end
 
 | Шаг | Условие | Сцена |
 |-----|---------|--------|
-| E1 | **+1 воскресенье** после D, `GeorgetteConfessBasic = 1` | Полдень: прогулка → подсмотр **Жоржетта + отец Герхард** |
+| E1 | **+1 воскресенье** после D, `GeorgetteConfessBasic = 1` | Полдень: подслушать → **Жоржетта + отец Герхард** (Комната чистых сердец) |
 | E2 | Ночь, порт, talk Жоржетта | «Ты на исповеди всё рассказал — с меня не убудет» |
 | E3 | — | `GeorgettePriestSpySeen = 1` |
+
+Пропуск → арка **ждёт**; повтор при следующей исповеди о Жоржетте. Базовый spy доступен без квеста на механизм окна.
 
 ### Файлы (план)
 
@@ -256,9 +261,8 @@ end
 | F1 | **+1 воскресенье** после E | Утро: **Лизетта с Жоржеттой** в меню прихожан (отдельная группа, не с Амандой) |
 | F2 | Повторный секс с Жоржеттой на службе (C2) | Лизетта **смотрит** / ласкает себя → `LizaSawSexInChurch = 1` |
 | F3 | **+1 воскресенье**, исповедь | Пункт «трахал Жоржетту на глазах у дочери» → `GeorgetteConfessLizaSaw = 1` |
-| F4 | После F3 | `LizetteSexUnlocked = 1` — **intim** с Лизеттой в церкви (не платный порт) |
 
-**Секс ГГ с Лизеттой (intim):** только церковь; гейт `LizetteSexUnlocked`; не раньше F3/F4.
+**Секс ГГ с Лизеттой (intim):** гейт `LizetteSexUnlocked` — **после G2**, не на F3.
 
 ### Файлы (план)
 
@@ -266,17 +270,33 @@ end
 
 ---
 
-## Этап G — Spy: священник + Лизетта
+## Этап G — Spy: священник + Лизетта (два акта, две недели)
+
+Локация: **Комната чистых сердец** (`#ChurchPureHeartsRoom`). Legacy: `churchlizaadmit`, `IntLizettAfterCermon`.
+
+### G1 — Акт 1 (неделя 1)
 
 | Шаг | Условие | Сцена |
 |-----|---------|--------|
-| G1 | **+1 воскресенье** после F3 | Полдень: прогулка → spy **Лизетта + священник** |
-| G2 | Ночь, порт, talk Жоржетта | «Девочка созрела, пусть идёт работать со мной» → `LizetteProstPort = 1` |
-| G3 | — | `LizettePriestSpySeen = 1` |
+| G1a | **+1 воскресенье** после F3, `GeorgetteConfessLizaSaw = 1`, `LizaSawSexInChurch = 1` | Полдень: spy **Лизетта + отец Герхард** |
+| G1b | Содержание | Жрец выспрашивает: видела ли мать и ГГ в церкви; хотела бы сама; делала ли |
+| G1c | Потолок | Жрец **только обнимает и успокаивает** — без секса |
+| G1d | Ночь, порт, talk Жоржетта | «Дочь на исповеди расплакалась — с меня не убудет» (зеркало E) |
+| G1e | Флаги | `LizettePriestSpyStage = 1`; `LizettePriestSpySeen` **ещё 0** |
+
+Пропуск полдня → повтор на **следующем** воскресенье с готовым гейтом G1.
+
+### G2 — Акт 2 (неделя 2)
+
+| Шаг | Условие | Сцена |
+|-----|---------|--------|
+| G2a | **+1 воскресенье** после G1, `LizettePriestSpyStage = 1` | Полдень: spy — продолжение → секс Лизетта + Герхард |
+| G2b | Ночь, порт, talk Жоржетта | «Девочка созрела, пусть идёт работать со мной» → `LizetteProstPort = 1` |
+| G2c | Флаги | `LizettePriestSpyStage = 2`, `LizettePriestSpySeen = 1`, `LizetteSexUnlocked = 1` |
 
 ### Файлы (план)
 
-`modules/events/church/church_spy_lizette.qsps`, `church_spy_lizette_text.qsps`
+`modules/events/church/church_spy_lizette.qsps`, `church_spy_lizette_text.qsps` (ветки `stage=1` / `stage=2`)
 
 ---
 
@@ -401,7 +421,11 @@ Glory hole; беременность; «мамка дядям отсасывае
 | `GeorgetteConfessLizaSaw` | 0 | Исповедь: на глазах у дочери |
 | `LizaSawSexInChurch` | 0 | Лизетта видела секс на службе |
 | `GeorgettePriestSpySeen` | 0 | E1 spy |
-| `LizettePriestSpySeen` | 0 | G1 spy |
+| `LizettePriestSpyStage` | 0 | G: 0 нет, 1 акт 1 (допрос), 2 акт 2 (секс) |
+| `LizettePriestSpySeen` | 0 | G2 завершён |
+| `ChurchSpyBasicUnlocked` | 0 | Базовое подслушивание (авто, не блокирует арку) |
+| `ChurchSpyWindowHint` | 0 | Слух/Sandra/fallback про механизм у окна |
+| `ChurchSpyWindowUpgrade` | 0 | Улучшенный угол обзора (бонус) |
 | `PriestConfessionCorruption` | 0 | Задел |
 | `PortChurchArcWeek` | 0 | Опциональный счётчик недель |
 
@@ -444,8 +468,8 @@ Glory hole; беременность; «мамка дядям отсасывае
 | 3 | **C** | church_sunday_service, georgette_service_sex, church.qsps | ✅ v1 |
 | 4 | **D** | church_confession_dynamic, church_after_sermon | ⬜ |
 | 5 | **E** | church_spy_georgette | ⬜ |
-| 6 | **F** | Лизетта на службе, LizaSaw, LizetteSexUnlocked | ⬜ |
-| 7 | **G** | church_spy_lizette, LizetteProstPort talk | ⬜ |
+| 6 | **F** | Лизетта на службе, LizaSaw, GeorgetteConfessLizaSaw | ⬜ |
+| 7 | **G1–G2** | church_spy_lizette (2 акта), LizetteSexUnlocked, LizetteProstPort talk | ⬜ |
 | 8 | **H** | port_alley_spy, обе ночью | ⬜ |
 | 9 | **Параллель** | amanda_lizette_phrases, AmandaRoom воскресенье | ⬜ |
 
@@ -473,7 +497,14 @@ Glory hole; беременность; «мамка дядям отсасывае
 
 ### Полдень
 
-Исповедь + прогулка (этапы D–G). Отдельный счётчик слухов от утра.
+Исповедь + подслушивание (этапы D–G). UI: текст + ссылки (без `BuildChurchMenu`). Подробности — `design-interaction-schemes.md` §9.
+
+| Элемент | Правило |
+|---------|---------|
+| Исповедь ГГ | 1× за полдень; B1 — верхний грех по приоритету |
+| Spy сюжетный | Жоржетта (E), Лизетта (G1→G2), Бекки (ongoing) — **тот же полдень** |
+| Spy без NPC | Силуэт + roll (слухи или бытовые исповеди) |
+| Spy unlock | Базовый — авто; улучшенный угол — опционально (Драупнир/окно) |
 
 ### День / вечер
 
@@ -503,8 +534,9 @@ Glory hole; беременность; «мамка дядям отсасывае
 2. Веса клиентов подворотни — таблица выше, можно подкрутить при плейтесте.
 3. `PriestConfessionCorruption` — только инкремент в v1, без эффекта на NPC.
 4. Тексты 2 лор-историй за визит к Древу — отдельная ветка (Ирма), не эта арка.
+5. Порог `SandraTrust` для hint про окно — при реализации (черновик: `GirlTrustStefan['sandra'] >= 15` или `GirlPersonalStoryUnlock['sandra_carpenter'] = 1`).
 
-**Закрыто:** всё в таблице «Глобальные правила» и этапах A–H.
+**Закрыто:** глобальные правила; этапы A–H; UI церкви и spy (§9 `design-interaction-schemes`); Лизетта 2 акта; spy unlock без hard gate.
 
 ---
 
@@ -543,6 +575,8 @@ Glory hole; беременность; «мамка дядям отсасывае
 - [ ] `modules/events/port/port_alley_spy_text.qsps`
 - [ ] `modules/npc/amanda/amanda_lizette_phrases.qsps`
 - [ ] `modules/locations/town/church.qsps` (замена заглушки)
+- [ ] `modules/locations/town/church_pure_hearts_room.qsps` — `#ChurchPureHeartsRoom`
+- [ ] Init-флаги: `LizettePriestSpyStage`, `ChurchSpyBasicUnlocked`, `ChurchSpyWindowHint`, `ChurchSpyWindowUpgrade` в `business_schedule.qsps`
 
 ---
 

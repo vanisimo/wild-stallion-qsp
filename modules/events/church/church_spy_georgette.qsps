@@ -1,0 +1,76 @@
+! ================================================
+! FILE: modules/events/church/church_spy_georgette.qsps
+! MODULE: events/church
+! Spy: отец Герхард + Жоржетта (этап E)
+! ================================================
+
+#ChurchSpyGeorgetteStart
+    gs 'ChurchSpyGeorgetteCheckAvailable'
+
+    if ChurchSpyGeorgetteReady = 0:
+        gt 'ChurchSundayNoon'
+    end
+
+    cls
+    gs 'ShowImage', 'gerhard', 'normal', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' КОМНАТА ЧИСТЫХ СЕРДЕЦ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyGeorgetteText', 'intro'
+    *p $ChurchSpyGeorgetteText
+
+    *pl ' '
+
+    ChurchSpyGeorgetteStep = 1
+    gt 'ChurchSpyGeorgetteStep'
+---
+
+#ChurchSpyGeorgetteStep
+    gs 'ChurchSpyGeorgetteText', 'step_' + STR(ChurchSpyGeorgetteStep)
+
+    *p $ChurchSpyGeorgetteText
+    *pl ' '
+
+    if ChurchSpyGeorgetteStep < 3:
+        act '<b>Слушать дальше</b>', 'images/common/ui/actions/look.png':
+            ChurchSpyGeorgetteStep += 1
+            gt 'ChurchSpyGeorgetteStep'
+        end
+
+        act '<b>Уйти</b>', 'images/common/ui/actions/return.png':
+            ChurchSpyGeorgetteSkipDay = day + 7
+            gt 'ChurchSundayNoon'
+        end
+    else:
+        act '<b>Вернуться в зал</b>', 'images/common/ui/actions/return.png':
+            gt 'ChurchSpyGeorgetteFinish'
+        end
+    end
+
+    killvar '$ChurchSpyGeorgetteText'
+---
+
+#ChurchSpyGeorgetteFinish
+    GeorgettePriestSpySeen = 1
+    gs 'LizetteChurchWithGeorgetteSchedule'
+
+    gs 'ChurchSpyMarkDoneToday'
+
+    otkroven['georgett'] += 1
+    PriestConfessionCorruption += 1
+
+    gs 'ChurchSpyGeorgetteText', 'after'
+    *p $ChurchSpyGeorgetteText
+
+    *pl ' '
+
+    act '<b>В зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayNoon'
+    end
+
+    killvar '$ChurchSpyGeorgetteText'
+    killvar 'ChurchSpyGeorgetteStep'
+---

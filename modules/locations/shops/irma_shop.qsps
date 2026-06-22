@@ -1,17 +1,51 @@
+! ================================================
+! FILE: modules/locations/shops/irma_shop.qsps
+! Лавка портнихи Ирмы
+! Версия: v11 / подэкраны: main + форма + подарки + «Назад»
+! ================================================
+
 #IrmaShop
-    cls
-    
-    ! ====================== ПРОВЕРКА РАБОЧЕГО ВРЕМЕНИ ======================
-    ! Версия: final current game fix v5
-    ! Проверка встроена прямо в лавку.
-    ! Больше НЕ зависит от #IsShopOpen / #IsBusinessOpen.
-    !
-    ! Новая система времени:
-    ! time = 1 утро
-    ! time = 2 полдень
-    ! time = 3 день
-    ! time = 4 вечер
-    ! time = 5 ночь
+    *clr
+    clr
+    cla
+
+    $IrmaShopTabIncoming = LCASE($ARGS[0])
+    $IrmaShopReturnIncoming = $ARGS[1]
+
+    if $IrmaShopTabIncoming = 'main' or $IrmaShopTabIncoming = 'uniforms' or $IrmaShopTabIncoming = 'gifts':
+        $IrmaShopTab = $IrmaShopTabIncoming
+    elseif $IrmaShopTabIncoming = 'craftsmenquarter' or $IrmaShopTabIncoming = 'craftsmen_quarter':
+        $IrmaShopReturnLoc = 'CraftsmenQuarter'
+        $IrmaShopTab = 'main'
+    elseif $IrmaShopTabIncoming = '':
+        if $IrmaShopHoldTab <> '':
+            $IrmaShopTab = $IrmaShopHoldTab
+        else:
+            $IrmaShopTab = 'main'
+        end
+    else:
+        $IrmaShopReturnLoc = $IrmaShopTabIncoming
+        $IrmaShopTab = 'main'
+    end
+
+    if $IrmaShopReturnIncoming <> '':
+        if LOC($IrmaShopReturnIncoming) = 1:
+            $IrmaShopReturnLoc = $IrmaShopReturnIncoming
+        end
+    end
+
+    if $IrmaShopReturnLoc = '':
+        $IrmaShopReturnLoc = 'CraftsmenQuarter'
+    end
+
+    if LOC($IrmaShopReturnLoc) = 0:
+        $IrmaShopReturnLoc = 'CraftsmenQuarter'
+    end
+
+    $IrmaShopHoldTab = $IrmaShopTab
+
+    killvar '$IrmaShopTabIncoming'
+    killvar '$IrmaShopReturnIncoming'
 
     ShopOpen = 1
     $ClosedReason = ''
@@ -48,6 +82,7 @@
         *pl ' '
 
         act '<b>Квартал ремесленников</b>', 'images/common/ui/actions/craftsmen.png':
+            killvar '$IrmaShopHoldTab'
             gt 'CraftsmenQuarter'
         end
 
@@ -55,17 +90,43 @@
     end
 
     if debug = 1:
-        *pl '[DEBUG IRMA SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time)
+        *pl '[DEBUG IRMA SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time) + ' | tab=' + $IrmaShopTab + ' | return=' + $IrmaShopReturnLoc
         *pl ' '
     end
-    ! =====================================================================
 
+    gs 'IrmaShopRenderCommonHeader'
+
+    if $IrmaShopMessage <> '':
+        gs 'PrintMainP', $IrmaShopMessage
+        *pl ' '
+        killvar '$IrmaShopMessage'
+    end
+
+    if $IrmaShopTab = 'uniforms':
+        gs 'IrmaShopRenderUniformsTab'
+        *pl ' '
+        gs 'IrmaShopRenderBackButton'
+    elseif $IrmaShopTab = 'gifts':
+        gs 'IrmaShopRenderGiftsTab'
+        *pl ' '
+        gs 'IrmaShopRenderBackButton'
+    else:
+        gs 'IrmaShopRenderMainTab'
+        *pl ' '
+        gs 'IrmaShopRenderMainExtraActions'
+        *pl ' '
+        gs 'IrmaShopRenderMainNavButtons'
+    end
+---
+
+#IrmaShopRenderCommonHeader
+    gs 'ShowImage', 'irma', 'shop', 'talk', 'normal'
+
+    *pl ' '
     *pl '══════════════════════════════════════════════'
     gs 'PrintTitleLine', ' ЛАВКА ПОРТНИХИ ИРМЫ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-
-    gs 'ShowImage', 'irma', 'shop', 'talk', 'normal'
 
     *p 'Ты заходишь в уютную лавку, где повсюду висят отрезы ткани, кружева и готовые платья. За прилавком стоит полуэльфийка Ирма.'
 
@@ -74,9 +135,6 @@
     end
 
     *pl ' '
-
-    ! ====================== ЗНАКОМСТВО С ИРМОЙ ======================
-    ! Первый визит — отдельная сцена; IrmaMet не выставляется при входе в лавку.
 
     if IrmaMet >= 1:
         if IrmaLastVisitDay <> day:
@@ -93,13 +151,13 @@
 
     gs 'ShowGirlTalkLink', 'irma', 'IrmaShop'
     *pl ' '
+---
 
-    ! ====================== РАБОЧАЯ ФОРМА ДЛЯ ДЕВУШЕК ======================
-    ! Версия: offer trigger v1
-    ! Откровенная форма больше не доступна сразу.
-    ! Сначала Ирма должна сама поднять тему после слухов/скандала/церковного упрёка
-    ! или при достаточно хороших отношениях.
+#IrmaShopRenderMainTab
+    *p 'На стенах — выкройки, на полках — катушки ниток. Здесь шьют платья для танцев, заказывают рабочую форму и покупают мелочи для подарков.'
+---
 
+#IrmaShopRenderMainExtraActions
     if LOC('IrmaDanceDressHandleVisit') = 1:
         gs 'IrmaDanceDressHandleVisit'
     end
@@ -134,7 +192,7 @@
             gs 'IrmaUniformOfferDebugUnlock'
 
             act '<b>Продолжить</b>':
-                gt 'IrmaShop'
+                gt 'IrmaShop', 'main', $IrmaShopReturnLoc
             end
         end
     end
@@ -145,25 +203,183 @@
             gs 'IrmaUniformDebugUnlockAll'
 
             act '<b>Продолжить</b>':
-                gt 'IrmaShop'
+                gt 'IrmaShop', 'main', $IrmaShopReturnLoc
             end
         end
     end
+---
 
-    if IrmaUniformOfferUnlocked = 1 and LOC('IrmaUniformOrders') = 1:
-        act '<b>Рабочая форма</b>', 'images/common/ui/actions/shop.png':
-            gt 'IrmaUniformOrders', 'IrmaShop'
+#IrmaShopRenderUniformsTab
+    gs 'PrintMainLine', 'Рабочая форма для трактира'
+    *pl ' '
+
+    if IrmaUniformOfferUnlocked = 0:
+        *p 'Ирма пока не поднимает тему откровенной рабочей формы. Для такого заказа нужен повод: городские слухи, скандальная слава трактира, церковный упрёк или достаточно доверительный разговор с самой Ирмой.'
+        *pl ' '
+
+        if LOC('IrmaUniformOfferCanStart') = 1:
+            gs 'IrmaUniformOfferCanStart'
+
+            if IrmaUniformOfferCanStart = 1:
+                act '<b>Выслушать предложение Ирмы</b>', 'images/common/ui/actions/talk.png':
+                    gt 'IrmaUniformOfferStart', $IrmaShopReturnLoc
+                end
+            end
         end
+    else:
+        if LOC('IrmaUniformOrders') = 1:
+            gs 'IrmaUniformPrintText', 'intro'
+            *pl ' '
+            gs 'IrmaUniformPrintStatus'
+            *pl ' '
+
+            act '<b>Заказать форму</b>', 'images/common/ui/actions/shop.png':
+                gt 'IrmaUniformOrders', 'IrmaShop'
+            end
+        else:
+            *p 'Модуль заказов формы не подключён.'
+        end
+    end
+---
+
+#IrmaShopRenderGiftsTab
+    gs 'PrintMainLine', 'Подарки и мелочи'
+    *pl ' '
+
+    if IrmaMet < 1:
+        *p 'Ирма ещё не знакома с вами — сначала поздоровайтесь.'
+    else:
+        *p 'Ирма отодвигает готовые платья и показывает отрезы, нитки и бисер. Такие вещи удобно купить здесь и потом подарить кому-то из знакомых девушек.'
+        *pl ' '
+        gs 'IrmaShopRenderGiftsPriceTable'
+        *pl ' '
+
+        act '<b>Бисер для вышивки</b>', 'images/common/ui/actions/gift.png':
+            $IrmaShopTab = 'gifts'
+            gs 'IrmaShopBuyGift', 'irma_seed_beads'
+        end
+
+        act '<b>Отрез добротной ткани</b>', 'images/common/ui/actions/gift.png':
+            $IrmaShopTab = 'gifts'
+            gs 'IrmaShopBuyGift', 'irma_fabric_roll'
+        end
+
+        act '<b>Моток шёлковой нити</b>', 'images/common/ui/actions/gift.png':
+            $IrmaShopTab = 'gifts'
+            gs 'IrmaShopBuyGift', 'irma_silk_spool'
+        end
+
+        if Friends['irma'] >= 12:
+            act '<b>Брошь с цветными камнями</b>', 'images/common/ui/actions/gift.png':
+                $IrmaShopTab = 'gifts'
+                gs 'IrmaShopBuyGift', 'irma_brooch'
+            end
+        end
+    end
+---
+
+#IrmaShopRenderGiftsPriceTable
+    $IrmaShopTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
+    $IrmaShopCellStyle = 'border:1px solid #555; padding:5px 10px;'
+    $IrmaShopThStyle = $IrmaShopCellStyle + ' text-align:left; font-weight:bold;'
+
+    gs 'GiftRegistryResolve', 'irma_seed_beads'
+    $IrmaShopGiftBeadsLabel = $GiftRegistryLabel
+    IrmaShopGiftBeadsPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    gs 'GiftRegistryResolve', 'irma_fabric_roll'
+    $IrmaShopGiftFabricLabel = $GiftRegistryLabel
+    IrmaShopGiftFabricPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    gs 'GiftRegistryResolve', 'irma_silk_spool'
+    $IrmaShopGiftSilkLabel = $GiftRegistryLabel
+    IrmaShopGiftSilkPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    gs 'GiftRegistryResolve', 'irma_brooch'
+    $IrmaShopGiftBroochLabel = $GiftRegistryLabel
+    IrmaShopGiftBroochPrice = GiftRegistryPrice
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+
+    $IrmaShopGiftsTableHtml = '<table style="' + $IrmaShopTableStyle + '"><tr>'
+    $IrmaShopGiftsTableHtml += '<th style="' + $IrmaShopThStyle + '">Подарок</th>'
+    $IrmaShopGiftsTableHtml += '<th style="' + $IrmaShopThStyle + '">Цена</th></tr>'
+    $IrmaShopGiftsTableHtml += '<tr><td style="' + $IrmaShopCellStyle + '">' + $IrmaShopGiftBeadsLabel + '</td><td style="' + $IrmaShopCellStyle + '">' + STR(IrmaShopGiftBeadsPrice) + ' монет</td></tr>'
+    $IrmaShopGiftsTableHtml += '<tr><td style="' + $IrmaShopCellStyle + '">' + $IrmaShopGiftFabricLabel + '</td><td style="' + $IrmaShopCellStyle + '">' + STR(IrmaShopGiftFabricPrice) + ' монет</td></tr>'
+    $IrmaShopGiftsTableHtml += '<tr><td style="' + $IrmaShopCellStyle + '">' + $IrmaShopGiftSilkLabel + '</td><td style="' + $IrmaShopCellStyle + '">' + STR(IrmaShopGiftSilkPrice) + ' монет</td></tr>'
+
+    if Friends['irma'] >= 12:
+        $IrmaShopGiftsTableHtml += '<tr><td style="' + $IrmaShopCellStyle + '">' + $IrmaShopGiftBroochLabel + '</td><td style="' + $IrmaShopCellStyle + '">' + STR(IrmaShopGiftBroochPrice) + ' монет</td></tr>'
+    end
+
+    $IrmaShopGiftsTableHtml += '</table>'
+
+    *p $IrmaShopGiftsTableHtml
+
+    killvar '$IrmaShopGiftsTableHtml'
+    killvar '$IrmaShopTableStyle'
+    killvar '$IrmaShopCellStyle'
+    killvar '$IrmaShopThStyle'
+    killvar '$IrmaShopGiftBeadsLabel'
+    killvar '$IrmaShopGiftFabricLabel'
+    killvar '$IrmaShopGiftSilkLabel'
+    killvar '$IrmaShopGiftBroochLabel'
+    killvar '$GiftRegistryLabel'
+    killvar 'IrmaShopGiftBeadsPrice'
+    killvar 'IrmaShopGiftFabricPrice'
+    killvar 'IrmaShopGiftSilkPrice'
+    killvar 'IrmaShopGiftBroochPrice'
+---
+
+#IrmaShopBuyGift
+    $IrmaShopGiftId = LCASE($ARGS[0])
+
+    gs 'GiftRegistryResolve', $IrmaShopGiftId
+
+    if GiftRegistryKnown = 0 or GiftRegistryPrice <= 0:
+        $IrmaShopMessage = 'Такого товара у Ирмы сейчас нет.'
+    elseif money < GiftRegistryPrice:
+        $IrmaShopMessage = 'Вам не хватает денег на ' + $GiftRegistryAccusative + '.'
+    else:
+        money -= GiftRegistryPrice
+        GiftInventory[$IrmaShopGiftId] += 1
+        $IrmaShopMessage = 'Вы покупаете ' + $GiftRegistryAccusative + ' за ' + STR(GiftRegistryPrice) + ' монет.'
+    end
+
+    killvar '$IrmaShopGiftId'
+    killvar '$GiftRegistryAccusative'
+    killvar '$GiftRegistryLabel'
+    killvar 'GiftRegistryKnown'
+    killvar 'GiftRegistryPrice'
+
+    gt 'IrmaShop', 'gifts', $IrmaShopReturnLoc
+---
+
+#IrmaShopRenderMainNavButtons
+    act '<b>Рабочая форма</b>', 'images/common/ui/actions/shop.png':
+        gt 'IrmaShop', 'uniforms', $IrmaShopReturnLoc
     end
 
     if IrmaMet >= 1:
         act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
-            gt 'IrmaShopGifts', 'IrmaShop'
+            gt 'IrmaShop', 'gifts', $IrmaShopReturnLoc
         end
     end
 
-    *pl ' '
     act '<b>Квартал ремесленников</b>', 'images/common/ui/actions/craftsmen.png':
-        gt 'CraftsmenQuarter'
+        killvar '$IrmaShopHoldTab'
+        gt $IrmaShopReturnLoc
+    end
+---
+
+#IrmaShopRenderBackButton
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
+        gt 'IrmaShop', 'main', $IrmaShopReturnLoc
     end
 ---
