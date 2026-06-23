@@ -466,11 +466,11 @@ Glory hole; беременность; «мамка дядям отсасывае
 | 1 | **A** | port witness, hint, schedule | ✅ v1 |
 | 2 | **B** | georgette_seek, georgette_port_night, port.qsps, next_day | ✅ v1 |
 | 3 | **C** | church_sunday_service, georgette_service_sex, church.qsps | ✅ v1 |
-| 4 | **D** | church_confession_dynamic, church_after_sermon | ⬜ |
-| 5 | **E** | church_spy_georgette | ⬜ |
-| 6 | **F** | Лизетта на службе, LizaSaw, GeorgetteConfessLizaSaw | ⬜ |
-| 7 | **G1–G2** | church_spy_lizette (2 акта), LizetteSexUnlocked, LizetteProstPort talk | ⬜ |
-| 8 | **H** | port_alley_spy, обе ночью | ⬜ |
+| 4 | **D** | church_confession_dynamic, church_after_sermon | ✅ v1 |
+| 5 | **E** | church_spy_georgette | ✅ v1 |
+| 6 | **F** | Лизетта на службе, LizaSaw, GeorgetteConfessLizaSaw | ✅ v1 |
+| 7 | **G1–G2** | church_spy_lizette (2 акта), LizetteSexUnlocked, LizetteProstPort | ✅ v1 (`LizetteProstPort` после G2) |
+| 8 | **H** | port_prost_night, port_alley_spy | ✅ v1 |
 | 9 | **Параллель** | amanda_lizette_phrases, AmandaRoom воскресенье | ⬜ |
 
 После каждого PR — отметка `[x]` в `import-traktir-legacy.md` и здесь.
@@ -553,30 +553,56 @@ Glory hole; беременность; «мамка дядям отсасывае
 - [x] `modules/core/time/business_schedule.qsps` (init-флаги)
 - [x] `modules/locations/town/port.qsps` (Жоржетта убрана до B)
 
-### Очередь
+### Очередь (оставшееся / полировка)
 
-- [ ] `modules/events/georgette/georgette_seek_lizette.qsps`
-- [ ] `modules/events/georgette/georgette_seek_lizette_text.qsps`
-- [ ] `modules/events/georgette/georgette_port_night.qsps`
-- [ ] `modules/events/georgette/georgette_port_night_text.qsps`
-- [ ] `modules/events/georgette/georgette_backstory_text.qsps`
-- [ ] `modules/events/church/church_sunday_service.qsps`
-- [ ] `modules/events/church/church_sunday_service_text.qsps`
-- [ ] `modules/events/church/church_sunday_rumors.qsps`
-- [ ] `modules/events/church/church_sunday_rumors_text.qsps`
-- [ ] `modules/events/church/church_georgette_service_sex.qsps`
-- [ ] `modules/events/church/church_confession_dynamic.qsps`
-- [ ] `modules/events/church/church_confession_dynamic_text.qsps`
-- [ ] `modules/events/church/church_after_sermon.qsps`
-- [ ] `modules/events/church/church_spy_georgette.qsps`
-- [ ] `modules/events/church/church_spy_lizette.qsps`
-- [ ] `modules/events/church/church_spy_becky.qsps` (параллельно, не блокирует арку)
-- [ ] `modules/events/port/port_alley_spy.qsps`
-- [ ] `modules/events/port/port_alley_spy_text.qsps`
-- [ ] `modules/npc/amanda/amanda_lizette_phrases.qsps`
-- [ ] `modules/locations/town/church.qsps` (замена заглушки)
-- [ ] `modules/locations/town/church_pure_hearts_room.qsps` — `#ChurchPureHeartsRoom`
-- [ ] Init-флаги: `LizettePriestSpyStage`, `ChurchSpyBasicUnlocked`, `ChurchSpyWindowHint`, `ChurchSpyWindowUpgrade` в `business_schedule.qsps`
+- [ ] `images/locations/church/window/ajar.png` — арт окна (бриф `ASSET-ajar.txt`)
+- [ ] `ChurchSundayQuiet` — воскресенье день/вечер: визиты NPC (не только рынок)
+- [ ] Исповедь Аманды/Мелиссы — полные ветки вместо `amanda_stub` / `melissa_stub`
+- [ ] Talk Жоржетты ночью после E/G — зеркальные реплики из дизайна (опционально)
+- [ ] `amanda_lizette_phrases` — параллельная ветка
+
+### Реализовано (сводка 2026-06)
+
+- [x] `modules/events/georgette/georgette_seek_lizette.qsps`
+- [x] `modules/events/georgette/georgette_seek_lizette_text.qsps`
+- [x] `modules/events/georgette/georgette_port_night.qsps`
+- [x] `modules/events/georgette/georgette_port_night_text.qsps`
+- [x] `modules/events/church/church_sunday_service*.qsps`
+- [x] `modules/events/church/church_sunday_rumors.qsps` (тексты в `church_sunday_service_text`)
+- [x] `modules/events/church/church_georgette_service_sex.qsps`
+- [x] `modules/events/church/church_confession_dynamic*.qsps`
+- [x] `modules/events/church/church_after_sermon.qsps`
+- [x] `modules/events/church/church_spy_georgette*.qsps`
+- [x] `modules/events/church/church_spy_lizette*.qsps`
+- [x] `modules/events/church/church_spy_becky*.qsps`
+- [x] `modules/events/port/port_prost_night*.qsps`, `port_alley_spy*.qsps`
+- [x] `modules/locations/town/church.qsps`, `church_pure_hearts_room.qsps`
+- [x] Init-флаги в `business_schedule.qsps`
+
+---
+
+## Чеклист плотного теста A–H
+
+Инструмент: **Дебаг → Порт–церковь** (`DebugPortChurchArcPanel`). Пресеты A–F, H; слухи и окно — вручную на воскресенье.
+
+| # | Неделя / слот | Что проверить | Ожидание |
+|---|---------------|---------------|----------|
+| 1 | A — среда, корабль | Witness Аманда+Лизетта | `PortMeetWitnessed`, hint в трактире |
+| 2 | B — ночь порта | Seek Жоржетта, секс 10 | `GeorgettePortSexDone`, расписание C |
+| 3 | C — вс утро | Жоржетта одна, talk, секс 15 | `GeorgetteFuckInChurch`, опция в меню |
+| 3b | C — вс утро | «Прислушаться к слухам» ×3 | `rumor_1…3`, 4-й отказ |
+| 4 | D — вс полдень | Исповедь + обход без лимита | грех по приоритету; spy только после исповеди |
+| 4b | D | Hint у Бекки (вс день) → механизм | `ChurchSpyWindowUpgrade`, картинка ajar* |
+| 5 | E — вс полдень | Spy Жоржетта+жрец | `GeorgettePriestSpySeen`, расписание F |
+| 6 | F — вс утро | Лизетта с матерью, секс+свидетель | `LizaSawSexInChurch` |
+| 7 | F — вс полдень | Исповедь «на глазах у дочери» | `GeorgetteConfessLizaSaw` |
+| 8 | G1 — вс полдень | Spy Лизетта акт 1 | `LizettePriestSpyStage=1`, +7 дней |
+| 9 | G2 — вс полдень | Spy акт 2 | `LizetteSexUnlocked`, `LizetteProstPort=1` |
+| 10 | H — ночь порт | Причал + подворотня | 10 монет, клиент roll, 1×/ночь в переулке |
+
+\* Без `ajar.png` — fallback `ShowImage`; сцена работает.
+
+**Параллельно (не блокирует арку):** Becky priest spy, Eddie `PortAlley`, пожертвования, щит в проповеди.
 
 ---
 

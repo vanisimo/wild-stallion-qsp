@@ -1,0 +1,162 @@
+! ================================================
+! FILE: modules/events/port/port_prost_night.qsps
+! MODULE: events/port
+! Этап H1 — ночной порт: Жоржетта и Лизетта на причале
+! ================================================
+
+#PortProstNightCanEnter
+    PortProstNightOpen = 0
+
+    if LizetteProstPort = 0:
+        exit
+    end
+
+    if time <> 5:
+        exit
+    end
+
+    if GeorgetteKnown = 0:
+        exit
+    end
+
+    if LizetteKnown = 0:
+        exit
+    end
+
+    PortProstNightOpen = 1
+---
+
+#PortProstNightMenu
+    $PortProstNightReturnLoc = $ARGS[0]
+
+    if $PortProstNightReturnLoc = '':
+        $PortProstNightReturnLoc = 'Port'
+    end
+
+    gs 'PortProstNightCanEnter'
+
+    if PortProstNightOpen = 0:
+        gt $PortProstNightReturnLoc
+    end
+
+    cls
+
+    gs 'ShowImage', 'port', 'general', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' НОЧНОЙ ПРИЧАЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PortProstNightText', 'intro'
+    *p $PortProstNightText
+    killvar '$PortProstNightText'
+
+    *pl ' '
+    *pl 'Деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    act '<b>Снять Жоржетту (10)</b>', 'images/common/ui/actions/intim.png':
+        gt 'PortProstNightHire', $PortProstNightReturnLoc, 'georgett'
+    end
+
+    if LizetteSexUnlocked = 1:
+        act '<b>Снять Лизетту (10)</b>', 'images/common/ui/actions/intim.png':
+            gt 'PortProstNightHire', $PortProstNightReturnLoc, 'lizette'
+        end
+    else:
+        *pl '<span style="color:#888">Лизетта ещё не готова к такому — сначала церковная цепочка.</span>'
+    end
+
+    gs 'PortAlleySpyCanEnter'
+
+    if PortAlleySpyOpen = 1:
+        act '<b>Подворотня</b>', 'images/common/ui/actions/look.png':
+            gt 'PortAlleySpyStart', $PortProstNightReturnLoc
+        end
+    end
+
+    killvar 'PortAlleySpyOpen'
+
+    act '<b>Уйти с причала</b>', 'images/common/ui/actions/return.png':
+        gt $PortProstNightReturnLoc
+    end
+
+    killvar 'PortProstNightOpen'
+---
+
+#PortProstNightHire
+    $PortProstNightReturnLoc = $ARGS[0]
+    $PortProstNightGirl = LCASE($ARGS[1])
+
+    if $PortProstNightReturnLoc = '':
+        $PortProstNightReturnLoc = 'Port'
+    end
+
+    if money < 10:
+        gs 'PortProstNightText', 'no_money'
+        cls
+        *p $PortProstNightText
+        killvar '$PortProstNightText'
+        *pl ' '
+        act '<b>Назад</b>':
+            gt 'PortProstNightMenu', $PortProstNightReturnLoc
+        end
+        killvar '$PortProstNightGirl'
+        exit
+    end
+
+    money -= 10
+
+    if $PortProstNightGirl = 'georgett':
+        IntimStage['georgett'] = 5
+        gt 'SexSceneStart', 'georgett', 'PortProstNightAfterGeorg', 'georgett_port_first'
+    elseif $PortProstNightGirl = 'lizette' and LizetteSexUnlocked = 1:
+        IntimStage['lizette'] = 5
+        gt 'SexSceneStart', 'lizette', 'PortProstNightAfterLiz', 'normal'
+    else:
+        money += 10
+        gt 'PortProstNightMenu', $PortProstNightReturnLoc
+    end
+
+    killvar '$PortProstNightGirl'
+---
+
+#PortProstNightAfterGeorg
+    *clr
+    clr
+    cla
+
+    gs 'PortProstNightText', 'after_georgett'
+    *p $PortProstNightText
+    killvar '$PortProstNightText'
+
+    Friends['georgett'] += 1
+    gs 'ClampGirlSocialStats', 'georgett'
+
+    *pl ' '
+
+    act '<b>К причалу</b>':
+        gt 'PortProstNightMenu', 'Port'
+    end
+---
+
+#PortProstNightAfterLiz
+    *clr
+    clr
+    cla
+
+    gs 'PortProstNightText', 'after_lizette'
+    *p $PortProstNightText
+    killvar '$PortProstNightText'
+
+    Friends['lizette'] += 1
+    otkroven['lizette'] += 1
+    gs 'ClampGirlSocialStats', 'lizette'
+
+    *pl ' '
+
+    act '<b>К причалу</b>':
+        gt 'PortProstNightMenu', 'Port'
+    end
+---

@@ -1,0 +1,108 @@
+! ================================================
+! FILE: modules/events/church/church_sunday_rumors.qsps
+! MODULE: events/church
+! Слухи на утренней службе — до 3 попыток за день
+! ================================================
+
+#ChurchServiceRumorCanStart
+    ChurchServiceRumorCanStart = 0
+
+    if week <> 7:
+        exit
+    end
+
+    if time <> 1:
+        exit
+    end
+
+    gs 'ChurchSundayServiceCanEnter'
+
+    if ChurchSundayServiceOpen = 0:
+        exit
+    end
+
+    if ChurchServiceRumorDay <> day:
+        ChurchServiceRumorDay = day
+        ChurchServiceRumorCount = 0
+    end
+
+    if ChurchServiceRumorCount >= 3:
+        exit
+    end
+
+    ChurchServiceRumorCanStart = 1
+---
+
+#ChurchSundayServiceRumorAct
+    gs 'ChurchServiceRumorCanStart'
+
+    if ChurchServiceRumorCanStart = 0:
+        exit
+    end
+
+    act '<b>Прислушаться к слухам</b>', 'images/common/ui/actions/look.png':
+        gt 'ChurchSundayServiceRumor'
+    end
+
+    killvar 'ChurchServiceRumorCanStart'
+---
+
+#ChurchSundayServiceRumor
+    gs 'ChurchServiceRumorCanStart'
+
+    if ChurchServiceRumorCanStart = 0:
+        gt 'ChurchSundayService'
+    end
+
+    if ChurchServiceRumorDay <> day:
+        ChurchServiceRumorDay = day
+        ChurchServiceRumorCount = 0
+    end
+
+    ChurchServiceRumorCount += 1
+
+    cls
+
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' СЛУХИ В СОБОРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if ChurchServiceRumorCount > 3:
+        gs 'ChurchSundayServiceText', 'rumor_done'
+    else:
+        ChurchServiceRumorPick = ChurchServiceRumorCount
+
+        if ChurchServiceRumorPick > 4:
+            ChurchServiceRumorPick = 4
+        end
+
+        gs 'ChurchSundayServiceText', 'rumor_' + STR(ChurchServiceRumorPick)
+    end
+
+    *p $ChurchServiceText
+
+    if ChurchRumorSeed < 3 and ChurchServiceRumorCount <= 3:
+        ChurchRumorSeed += 1
+    end
+
+    *pl ' '
+
+    if ChurchServiceRumorCount < 3:
+        gs 'PrintMainP', 'Ещё ' + STR(3 - ChurchServiceRumorCount) + ' раз можно прислушаться, пока служба не кончится.'
+    else:
+        gs 'PrintMainP', 'На этой службе вы уже выслушали весь шёпот прихожан.'
+    end
+
+    *pl ' '
+
+    act '<b>В зал</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchSundayService'
+    end
+
+    killvar '$ChurchServiceText'
+    killvar 'ChurchServiceRumorPick'
+    killvar 'ChurchServiceRumorCanStart'
+---
