@@ -40,11 +40,18 @@
         exit
     end
 
+    gs 'BeckySandraChurchGearGossipCanHear'
     gs 'SandraBeckySundayScandalCanHear'
     gs 'SundayVisitBeckySandraText'
 
     *p $SundayVisitText
     *pl ' '
+
+    if BeckySandraChurchGearGossipCanHear = 1 and ChurchSpyWindowGearGossipHeard = 0:
+        ChurchSpyWindowGearGossipHeard = 1
+        ChurchSpyWindowHint = 1
+        ChurchSpyWindowUpgrade = 1
+    end
 
     SundayBeckySandraVisitSeen[day] = 1
     PlayerKnows_SandraBeckySundayTalk = 1
@@ -74,6 +81,32 @@
     act '<b>Отойти от лавки</b>':
         gt $SundayVisitReturnLoc
     end
+
+    killvar 'BeckySandraChurchGearGossipCanHear'
+---
+
+#BeckySandraChurchGearGossipCanHear
+    BeckySandraChurchGearGossipCanHear = 0
+
+    if ChurchSpyWindowHint = 1:
+        exit
+    end
+
+    if ChurchSpyWindowGearGossipHeard = 1:
+        exit
+    end
+
+    if PlayerKnows_SandraBeckySundayTalk = 0:
+        exit
+    end
+
+    if SandraBeckyBond < 12:
+        if GirlPersonalStoryUnlock['sandra_carpenter'] = 0:
+            exit
+        end
+    end
+
+    BeckySandraChurchGearGossipCanHear = 1
 ---
 
 ! ================================================

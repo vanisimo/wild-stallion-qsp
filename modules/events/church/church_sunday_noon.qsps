@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/events/church/church_sunday_noon.qsps
 ! MODULE: events/church
-! Воскресный полдень — исповедь + подслушивание
+! Воскресный полдень — исповедь + прогулка у собора
 ! ================================================
 
 #ChurchSundayNoon
@@ -21,7 +21,7 @@
 
     gs 'ShowImage', 'church', 'general', 'normal'
 
-    gs 'PrintMainP', 'Служба кончилась. У двери в комнату чистых сердец тихо стоят те, кому есть что сказать — и те, кому есть что подслушать.'
+    gs 'PrintMainP', 'Служба кончилась. У двери в комнату чистых сердец тихо стоят те, кому есть что сказать — и те, кому есть что подслушать у высокого окна снаружи.'
 
     *pl ' '
 
@@ -35,23 +35,11 @@
         *pl '<span style="color:#888">Исповедь на сегодня уже принята.</span>'
     end
 
-    gs 'ChurchSpyCanListenToday'
+    gs 'ChurchWalkAroundCanEnter'
 
-    if ChurchSpyListenReady = 1:
-        act '<b>Прислушаться у двери</b>', 'images/common/ui/actions/look.png':
-            gt 'ChurchSpyRouteStart'
-        end
-    elseif ChurchSpyListenDoneDay = day:
-        *pl '<span style="color:#888">Ты уже прислушивался сегодня.</span>'
-    end
-
-    if ChurchSpyWindowHint = 0 and ChurchSundayNoonVisitCount >= 2:
-        *pl '<span style="color:#888"><i>У высокого окна комнаты чистых сердец стена выглядит потёртой — будто сюда часто подходят не только за исповедью.</i></span>'
-    end
-
-    if ChurchSpyWindowHint = 1 and ChurchSpyWindowUpgrade = 0:
-        act '<b>Осмотреть верхнее окно</b>', 'images/common/ui/actions/look.png':
-            gt 'ChurchSpyWindowInspect'
+    if ChurchWalkAroundOpen = 1:
+        act '<b>Обойти собор</b>', 'images/common/ui/actions/look.png':
+            gt 'ChurchWalkAroundStart'
         end
     end
 
@@ -70,5 +58,5 @@
     gs 'ChurchRenderStreetExit'
 
     killvar 'ChurchConfessionReady'
-    killvar 'ChurchSpyListenReady'
+    killvar 'ChurchWalkAroundOpen'
 ---

@@ -44,58 +44,10 @@
 
     ChurchSundayNoonVisitDay = day
     ChurchSundayNoonVisitCount += 1
-
-    gs 'ChurchSpyWindowHintTryFallback'
 ---
 
-#ChurchSpyEnsureBasicUnlocked
-    if ChurchSpyBasicUnlocked = 1:
-        exit
-    end
-
-    if ChurchConfessionDoneDay = day:
-        ChurchSpyBasicUnlocked = 1
-        exit
-    end
-
-    gs 'ChurchSpyGeorgetteCheckAvailable'
-    gs 'ChurchSpyLizetteCheckAvailable'
-    gs 'ChurchSpyBeckyCheckAvailable'
-
-    if ChurchSpyGeorgetteReady = 1 or ChurchSpyLizetteReady = 1 or BeckyPriestSpyReady = 1:
-        ChurchSpyBasicUnlocked = 1
-    end
-
-    killvar 'ChurchSpyGeorgetteReady'
-    killvar 'ChurchSpyLizetteReady'
----
-
-#ChurchSpyWindowHintTryFromSandra
-    if ChurchSpyWindowHint = 1:
-        exit
-    end
-
-    if GirlPersonalStoryDiscussed['sandra_carpenter'] = 1:
-        ChurchSpyWindowHint = 1
-    end
----
-
-#ChurchSpyWindowHintTryFallback
-    if ChurchSpyWindowHint = 1:
-        exit
-    end
-
-    if ChurchSpyWindowUpgrade = 1:
-        exit
-    end
-
-    if ChurchSundayNoonVisitCount >= 2:
-        ChurchSpyWindowHint = 1
-    end
----
-
-#ChurchSpyCanListenToday
-    ChurchSpyListenReady = 0
+#ChurchSpyPlotCanStart
+    ChurchSpyPlotCanStart = 0
 
     if week <> 7:
         exit
@@ -105,9 +57,7 @@
         exit
     end
 
-    gs 'ChurchSpyEnsureBasicUnlocked'
-
-    if ChurchSpyBasicUnlocked = 0:
+    if ChurchConfessionDoneDay <> day:
         exit
     end
 
@@ -115,15 +65,17 @@
         exit
     end
 
-    ChurchSpyListenReady = 1
+    ChurchSpyPlotCanStart = 1
 ---
 
 #ChurchSpyRouteStart
-    gs 'ChurchSpyCanListenToday'
+    gs 'ChurchSpyPlotCanStart'
 
-    if ChurchSpyListenReady = 0:
-        gt 'ChurchSundayNoon'
+    if ChurchSpyPlotCanStart = 0:
+        gt 'ChurchWalkAroundStart'
     end
+
+    killvar 'ChurchSpyPlotCanStart'
 
     gs 'ChurchSpyGeorgetteCheckAvailable'
 
