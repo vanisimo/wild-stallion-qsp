@@ -1,9 +1,7 @@
 ! ================================================
 ! FILE: modules/events/port/port_capital_ship.qsps
 ! Корабль из столицы и редкие товары в порту
-! Логика события, покупки подарков и недельной доступности
-! Большие тексты берутся из:
-! modules/events/port/port_capital_ship_text.qsps
+! Тексты: modules/events/port/port_capital_ship_text.qsps
 ! ================================================
 
 #PortCapitalShipCheck
@@ -21,11 +19,6 @@
     end
 ---
 
-! ================================================
-! FILE: modules/events/port/port_capital_ship.qsps
-! Вход в рынок редкостей у корабля
-! ================================================
-
 #PortCapitalShipMenu
     $PortReturnLoc = $ARGS[0]
 
@@ -42,24 +35,18 @@
     end
 
     *pl '══════════════════════════════════════════════'
-    *pl ' КОРАБЛЬ ИЗ СТОЛИЦЫ'
+    gs 'PrintTitleLine', ' КОРАБЛЬ ИЗ СТОЛИЦЫ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     if PortCapitalShipAvailable = 0:
         gs 'PortCapitalShipText', 'not_available'
         *p $PortCapitalShipText
-
-        if debug = 1:
-            *pl ' '
-            *pl '[DEBUG PORT SHIP] День недели: ' + STR(week)
-            *pl '[DEBUG PORT SHIP] Время: ' + STR(time)
-            *pl '[DEBUG PORT SHIP] День корабля: ' + STR(CapitalShipWeekDay)
-        end
+        killvar '$PortCapitalShipText'
 
         *pl ' '
 
-        act '<b>Вернуться к причалу</b>':
+        act '<b>Вернуться к причалу</b>', 'images/common/ui/actions/return.png':
             gt $PortReturnLoc
         end
 
@@ -68,95 +55,68 @@
 
     gs 'PortCapitalShipText', 'intro'
     *p $PortCapitalShipText
+    killvar '$PortCapitalShipText'
 
     *pl ' '
-
-    if debug = 1:
-        *pl '[DEBUG PORT SHIP] Корабль доступен.'
-        *pl '[DEBUG PORT SHIP] День недели: ' + STR(week)
-        *pl '[DEBUG PORT SHIP] Время: ' + STR(time)
-        *pl ' '
-    end
-
-    act '<b>Осмотреть товары</b>':
-        gt 'PortCapitalShipBrowse', $PortReturnLoc
-    end
 
     act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
         gt 'PortGiftShop', $PortReturnLoc
     end
 
-    if AmandaMetLizette = 1 and LizetteKnown = 1:
-        gs 'ShowGirlTalkLink', 'lizette', 'PortCapitalShipMenu'
-        *pl ' '
-
-        if GiftInventory['lizette_bracelet'] <= 0:
-            act '<b>Подарки у Лизетты</b>', 'images/common/ui/actions/gift.png':
-                gt 'LizettePortGiftShop', $PortReturnLoc
-            end
-        end
-    end
-
-    if LOC('PortAmandaLizetteTryMeet') = 1:
-        if PortMeetWitnessed = 0 and PortCapitalShipAvailable = 1:
-            act '<b>Заметить Аманду у товаров</b>':
-                gt 'PortAmandaLizetteTryMeet', $PortReturnLoc
-            end
-        end
-    end
-
-    if debug = 1:
-        if LOC('PortAmandaLizetteMeet') = 1:
-            act '<b>DEBUG: Аманда знакомится с Лизеттой</b>':
-                gt 'PortAmandaLizetteMeet', $PortReturnLoc
-            end
-        end
-    end
-
-    act '<b>Вернуться к причалу</b>':
+    act '<b>Вернуться к причалу</b>', 'images/common/ui/actions/return.png':
         gt $PortReturnLoc
     end
 ---
 
-! ================================================
-! FILE: modules/events/port/port_capital_ship.qsps
-! Осмотр товаров без покупки
-! ================================================
+#PortGiftShopRenderPriceTable
+    $PortGiftTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
+    $PortGiftCellStyle = 'border:1px solid #555; padding:5px 10px;'
+    $PortGiftThStyle = $PortGiftCellStyle + ' text-align:left; font-weight:bold;'
 
-#PortCapitalShipBrowse
-    $PortReturnLoc = $ARGS[0]
+    $PortGiftTableHtml = '<table style="' + $PortGiftTableStyle + '"><tr>'
+    $PortGiftTableHtml += '<th style="' + $PortGiftThStyle + '">Подарок</th>'
+    $PortGiftTableHtml += '<th style="' + $PortGiftThStyle + '">Цена</th></tr>'
 
-    if $PortReturnLoc = '':
-        $PortReturnLoc = 'Port'
+    $PortGiftRowIds[0] = 'capital_hair_ribbon'
+    $PortGiftRowIds[1] = 'seashell_necklace'
+    $PortGiftRowIds[2] = 'southern_spices'
+    $PortGiftRowIds[3] = 'dance_fan'
+    $PortGiftRowIds[4] = 'island_glass_beads'
+    $PortGiftRowIds[5] = 'hand_mirror'
+    $PortGiftRowIds[6] = 'spiced_oil'
+    $PortGiftRowIds[7] = 'foreign_scarf'
+    $PortGiftRowIds[8] = 'recipe_codex'
+    $PortGiftRowIds[9] = 'mammoth_ivory_box'
+
+    PortGiftRowIndex = 0
+
+    :PortGiftTableRowLoop
+    if PortGiftRowIndex >= 10:
+        goto PortGiftTableRowDone
     end
 
-    cls
+    $PortGiftRowId = $PortGiftRowIds[PortGiftRowIndex]
+    gs 'GiftRegistryResolve', $PortGiftRowId
+    $PortGiftTableHtml += '<tr><td style="' + $PortGiftCellStyle + '">' + $GiftRegistryLabel + '</td><td style="' + $PortGiftCellStyle + '">' + STR(GiftRegistryPrice) + ' мараведи</td></tr>'
+    killvar 'GiftRegistryPrice'
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+    killvar '$GiftRegistryLabel'
+    killvar '$PortGiftRowId'
+    PortGiftRowIndex += 1
+    goto PortGiftTableRowLoop
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ТОВАРЫ ИЗ СТОЛИЦЫ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    :PortGiftTableRowDone
+    $PortGiftTableHtml += '</table>'
 
-    gs 'PortCapitalShipText', 'browse'
-    *p $PortCapitalShipText
+    *p $PortGiftTableHtml
 
-    *pl ' '
-
-    act '<b>Купить подарок</b>':
-        gt 'PortGiftShop', $PortReturnLoc
-    end
-
-    act '<b>Вернуться к кораблю</b>':
-        gt 'PortCapitalShipMenu', $PortReturnLoc
-    end
+    killvar '$PortGiftTableHtml'
+    killvar '$PortGiftTableStyle'
+    killvar '$PortGiftCellStyle'
+    killvar '$PortGiftThStyle'
+    killvar 'PortGiftRowIndex'
 ---
-
-! ================================================
-! FILE: modules/events/port/port_capital_ship.qsps
-! Магазин подарков у корабля
-! Пока только покупка в общий инвентарь подарков
-! Позже эти предметы можно подключить к системе подарков NPC
-! ================================================
 
 #PortGiftShop
     $PortReturnLoc = $ARGS[0]
@@ -168,82 +128,81 @@
     cls
 
     *pl '══════════════════════════════════════════════'
-    *pl ' РЕДКИЕ ПОДАРКИ'
+    gs 'PrintTitleLine', ' РЕДКИЕ ПОДАРКИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     gs 'PortCapitalShipText', 'gift_shop'
     *p $PortCapitalShipText
+    killvar '$PortCapitalShipText'
 
     *pl ' '
     *pl 'Деньги: ' + STR(money) + ' мараведи.'
 
     gs 'GiftInventoryTotal'
-    gs 'GiftPortVisitEnsureWeek'
 
     if GiftInventoryMaxCarry <= 0:
         GiftInventoryMaxCarry = 12
     end
 
-    if GiftPortVisitMax <= 0:
-        GiftPortVisitMax = 2
-    end
-
     *pl 'В сумке: ' + STR(GiftInventoryTotal) + ' / ' + STR(GiftInventoryMaxCarry)
-    *pl 'Куплено у корабля за приход: ' + STR(PortGiftBoughtThisVisit) + ' / ' + STR(GiftPortVisitMax)
     *pl ' '
 
-    act '<b>Южные специи — 35 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'southern_spices'
+    if $PortGiftShopMessage <> '':
+        *p $PortGiftShopMessage
+        *pl ' '
+        killvar '$PortGiftShopMessage'
     end
 
-    act '<b>Шкатулка из северной мамонтовой кости — 80 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'mammoth_ivory_box'
+    gs 'PortGiftShopRenderPriceTable'
+    *pl ' '
+
+    act '<b>Столичная лента для волос — 25 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'capital_hair_ribbon'
     end
 
-    act '<b>Столичная лента для волос — 25 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'capital_hair_ribbon'
+    act '<b>Морская ракушка на шнурке — 30 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'seashell_necklace'
     end
 
-    act '<b>Стеклянные бусы с южных островов — 45 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'island_glass_beads'
+    act '<b>Южные специи — 35 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'southern_spices'
     end
 
-    act '<b>Масло с пряным запахом — 55 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'spiced_oil'
+    act '<b>Веер для площади — 40 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'dance_fan'
     end
 
-    act '<b>Тонкий заморский платок — 60 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'foreign_scarf'
+    act '<b>Стеклянные бусы с южных островов — 45 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'island_glass_beads'
     end
 
-    act '<b>Веер для площади — 40 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'dance_fan'
+    act '<b>Зеркальце в резной рамке — 50 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'hand_mirror'
     end
 
-    act '<b>Зеркальце в резной рамке — 50 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'hand_mirror'
+    act '<b>Масло с пряным запахом — 55 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'spiced_oil'
     end
 
-    act '<b>Морская ракушка на шнурке — 30 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'seashell_necklace'
+    act '<b>Тонкий заморский платок — 60 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'foreign_scarf'
     end
 
-    act '<b>Тетрадь рецептов из столицы — 70 мараведи</b>':
-        gt 'PortGiftBuy', $PortReturnLoc, 'recipe_codex'
+    act '<b>Тетрадь рецептов из столицы — 70 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'recipe_codex'
     end
 
-    act '<b>Вернуться к кораблю</b>':
+    act '<b>Шкатулка из северной мамонтовой кости — 80 мараведи</b>', 'images/common/ui/actions/gift.png':
+        gs 'PortGiftBuyItem', $PortReturnLoc, 'mammoth_ivory_box'
+    end
+
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
         gt 'PortCapitalShipMenu', $PortReturnLoc
     end
 ---
 
-! ================================================
-! FILE: modules/events/port/port_capital_ship.qsps
-! Покупка подарка
-! ================================================
-
-#PortGiftBuy
+#PortGiftBuyItem
     $PortReturnLoc = $ARGS[0]
     $PortGiftId = LCASE($ARGS[1])
 
@@ -251,40 +210,13 @@
         $PortReturnLoc = 'Port'
     end
 
-    cls
+    gs 'GiftInventoryTryPurchase', $PortGiftId, ''
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПОКУПКА ПОДАРКА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    gs 'GiftInventoryTryPurchase', $PortGiftId, 'PortGiftShop'
-
-    *p $GiftPurchaseMessage
-
-    if GiftPurchaseOk = 1:
-        *p 'Подарок добавлен в сумку.'
-    end
+    $PortGiftShopMessage = $GiftPurchaseMessage
 
     killvar 'GiftPurchaseOk'
     killvar '$GiftPurchaseMessage'
-
-    if debug = 1:
-        *pl ' '
-        *pl '[DEBUG GIFT] ID: ' + $PortGiftId
-        *pl '[DEBUG GIFT] Количество: ' + STR(GiftInventory[$PortGiftId])
-        *pl '[DEBUG GIFT] Деньги: ' + STR(money)
-    end
-
-    *pl ' '
-
-    act '<b>Купить ещё</b>':
-        gt 'PortGiftShop', $PortReturnLoc
-    end
-
-    act '<b>Вернуться к кораблю</b>':
-        gt 'PortCapitalShipMenu', $PortReturnLoc
-    end
-
     killvar '$PortGiftId'
+
+    gt 'PortGiftShop', $PortReturnLoc
 ---

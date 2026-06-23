@@ -83,25 +83,6 @@
         exit
     end
 
-    gs 'GiftInventoryUsesPortVisitLimit', $GiftCanAddMenuLoc
-
-    if GiftInventoryUsesPortVisitLimit = 1:
-        gs 'GiftPortVisitEnsureWeek'
-
-        if GiftPortVisitMax <= 0:
-            GiftPortVisitMax = 2
-        end
-
-        if PortGiftBoughtThisVisit >= GiftPortVisitMax:
-            $GiftCanAddReason = 'Торговец с корабля не отпустит больше ' + STR(GiftPortVisitMax) + ' покупок за один приход — сумки у матросов тоже не резиновые.'
-            killvar 'GiftInventoryUsesPortVisitLimit'
-            killvar '$GiftCanAddId'
-            killvar '$GiftCanAddMenuLoc'
-            exit
-        end
-    end
-
-    killvar 'GiftInventoryUsesPortVisitLimit'
     GiftInventoryCanAdd = 1
     killvar '$GiftCanAddId'
     killvar '$GiftCanAddMenuLoc'
@@ -110,15 +91,7 @@
 #GiftInventoryRegisterPurchase
     $GiftRegisterMenuLoc = LCASE($ARGS[0])
 
-    gs 'GiftInventoryUsesPortVisitLimit', $GiftRegisterMenuLoc
-
-    if GiftInventoryUsesPortVisitLimit = 1:
-        gs 'GiftPortVisitEnsureWeek'
-        PortGiftBoughtThisVisit += 1
-    end
-
     PortGiftBoughtTotal += 1
-    killvar 'GiftInventoryUsesPortVisitLimit'
     killvar '$GiftRegisterMenuLoc'
 ---
 
