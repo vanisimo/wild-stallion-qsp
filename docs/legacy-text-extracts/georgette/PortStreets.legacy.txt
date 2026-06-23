@@ -1,0 +1,67 @@
+Название локации: PortStreets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	'Вы находитесь в лабиринте узких улочек и переулков, ведущих к порту. <br>Где-то здесь расположен храм богини Эллоны.'
+	
+	
+	$GirlNamePS1='georgett'
+	$GirlNamePS2='liza'
+	
+	if $Args[0]='FirstTalk':
+		'-Привет красавчик! Не хочешь ли поразвлечься? Всего восемь мараведи!'
+		'Вы поговорили с ней и узнали, что ее зовут Жоржетта Брюно, она шлюха и промышляет здесь уже давно.'
+		Friends[$GirlNamePS1]=Friends[$GirlNamePS1]+1
+	end
+	
+	if $CurrentLoc[$GirlNamePS1]=$CurLoc and time=3 and week<>5 and No(GeorgettVar['TalkChurchAfterCermonLiza']!0 and LizaVar['ProstStart']=0):
+		if Friends[$GirlNamePS1]=0:
+		'На углу стоит молодая женщина, не очень высокого роста, чуть пухленькая и с большой налитой грудью, одетая в прозрачную блузку и короткую юбку. Она белокура и кареглаза. Ее внешность и повадки не дают никаких сомнений в том, что она выбрала себе путь отнюдь не монашки.'
+		if pregnancy[$GirlNamePS1]>=210: 'Она беременна и находится на позднем сроке. Ее живот красноречиво об этом свидетельствует.'
+		if pregnancy[$GirlNamePS1]<210 and pregnancy[$GirlNamePS1] >=150: 'Средних размеров беременный животик сексуально напоминает  о ее бурной личной жизни.'
+		if pregnancy[$GirlNamePS1]>120 and pregnancy[$GirlNamePS1] < 150: 'Видно что она нагуляла себе животик, но он еще не очень заметен.'	
+		gs 'ShowImage', 'georgett', 'port', 'wait'
+		act 'Заговорить с ней': gt $CurLoc,'FirstTalk'
+		else
+			if time=3: gs 'AddOthersSperm', $GirlNamePS1, 6
+			
+			gs 'IntGeorgettTalk', $GirlNamePS1
+			gs 'IntLizaTalk', $GirlNamePS2
+	
+			if LizaVar['ProstStart']:
+				if time=3: gs 'AddOthersSperm', $GirlNamePS2, 8
+				randvarPS=Rand(1,5)
+				if randvarPS=1 and dyneval($CheckIfSexEventExist,$GirlNamePS1, time)>0 :
+					'На углу стоит юная <a href="exec: GS ''Menu.Call'',''MenuLizaTalk''">Лизетта</a> и ждет клиентов. А вот ее мамаша клиента уже похоже нашла.'		
+					act 'Пойти проверить подворотню':gt 'StreetClients',1, 'georgett'	
+				elseif randvarPS=2 and dyneval($CheckIfSexEventExist,$GirlNamePS1, time)>0 :
+					'На углу стоит <a href="exec: GS ''Menu.Call'',''MenuGeorgettTalk''">Жоржетта</a> и ждет клиентов. А вот ее старшую дочку, судя по всему, уже кто-то снял.'
+					gs 'ShowImage', 'georgett', 'port', 'lizaminet'
+					act 'Пойти проверить подворотню':gt 'StreetClients',1, 'liza'	
+				else
+					'На углу стоит <a href="exec: GS ''Menu.Call'',''MenuGeorgettTalk''">Жоржетта</a> со своей дочкой <a href="exec: GS ''Menu.Call'',''MenuLizaTalk''">Лизеттой</a> и ждут клиентов.'
+				end
+			else
+				if Rand(1,3)=1:
+					'Почему-то Жоржетты сейчас нет на ее обычном месте. Где же она может быть?'
+					if HadSex[$GirlNamePS1]>0: act 'Пойти проверить подворотню':gt 'StreetClients',1, 'georgett'
+				else
+					'На углу стоит <a href="exec: GS ''Menu.Call'',''MenuGeorgettTalk''">Жоржетта</a> и ждет клиентов.'
+					gs 'ShowImage', 'georgett', 'port', 'wait'
+				end
+			end
+	
+		end
+	else
+		gs 'ShowImageSeq', 'georgett', 'port', 'port',3
+	end
+	
+	!gs 'ShowImage', 'general', '', 'LocStreet'
+	
+	act 'Идти в храм Эллоны':gt 'EllonaTemple'
+	act 'Вернуться к трактиру':gt 'StreetTavern'
+	
+	gs 'AddCleanScreen'
+	
+
+------------ Конец локации: PortStreets ------------

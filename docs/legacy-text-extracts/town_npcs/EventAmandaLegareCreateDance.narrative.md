@@ -1,0 +1,5 @@
+# EventAmandaLegareCreateDance
+
+## Тексты (выжимка)
+
+_(автоматическая выжимка пуста — смотри `.legacy.txt`)_

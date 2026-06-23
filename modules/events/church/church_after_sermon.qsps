@@ -112,6 +112,16 @@
         gt 'ChurchSundayNoon'
     end
 
+    gs 'ChurchSpyPlotCanStart'
+
+    if ChurchSpyPlotCanStart = 1:
+        killvar 'ChurchWalkAroundOpen'
+        killvar 'ChurchSpyPlotCanStart'
+        gt 'ChurchSpyRouteStart'
+    end
+
+    killvar 'ChurchSpyPlotCanStart'
+
     cls
 
     *pl '══════════════════════════════════════════════'
@@ -147,12 +157,6 @@
 
         ChurchWalkWindowPick = RAND(1, 3)
 
-        if ChurchSpyPlotCanStart = 1:
-            killvar 'ChurchWalkAroundOpen'
-            killvar 'ChurchSpyPlotCanStart'
-            gt 'ChurchSpyRouteStart'
-        end
-
         gs 'ChurchWalkWindowText', 'open_' + STR(ChurchWalkWindowPick)
         *p $ChurchWalkText
     end
@@ -166,7 +170,13 @@
         *pl '<span style="color:#888"><i>Сегодня ты уже подслушивал исповедь, которая касалась тебя.</i></span>'
         *pl ' '
     elseif ChurchSpyWindowHint = 1 and ChurchSpyWindowMechanismFound = 0:
-        *pl '<span style="color:#888"><i>Чтобы видеть больше, сначала найди механизм в створке.</i></span>'
+        *pl '<span style="color:#888"><i>Чтобы увидеть Жоржетту и падре, а не только голоса, сначала найди гномью шестерёнку в створке.</i></span>'
+        *pl ' '
+    elseif (GeorgetteConfessBasic = 1 or GeorgetteConfessInChurch = 1) and ChurchConfessionDoneDay = day and ChurchSpyWindowMechanismFound = 1 and ChurchSpyListenDoneDay <> day:
+        *pl '<span style="color:#888"><i>После исповеди за окном может быть больше, чем чужие грехи — если не уйти сразу.</i></span>'
+        *pl ' '
+    elseif ChurchConfessionDoneDay <> day and (GeorgettePortSexDone = 1 or GeorgetteFuckInChurch = 1):
+        *pl '<span style="color:#888"><i>Сначала исповедь в комнате чистых сердец — иначе у окна только чужие шёпоты.</i></span>'
         *pl ' '
     end
 

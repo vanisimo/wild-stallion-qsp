@@ -66,6 +66,22 @@ EXTRACT_LOCATIONS: dict[str, list[str]] = {
     "clarissa": [
         "IntAlberTalk",
     ],
+    "lizette": [
+        "InitLiza",
+        "IntLizaTalk",
+        "IntLizaDressChange",
+        "IntLizaSex",
+        "IntLizettAfterCermon",
+        "EventAmandaLizettTalk",
+        "EventAmandaLizettTalk2",
+        "InitAmandaLizaTalkItems",
+    ],
+    "town_npcs": [
+        "IntRobinTalk",
+        "IntZimmerTalk",
+        "FrancheskaTalk",
+        "EventAmandaLegareCreateDance",
+    ],
     "cut_reference": [
         "AmandaAtGloryHole",
         "SexProstTavern",

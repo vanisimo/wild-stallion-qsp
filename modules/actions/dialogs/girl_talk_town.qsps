@@ -8,12 +8,14 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О корабле и столице', 'talk'
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'port_talk'
-    }
+    if LizetteKnown = 1 or PortMeetWitnessed = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О корабле и столице', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'port_talk'
+        }
+    end
 
-    if AmandaMetLizette = 1 or LizetteKnown = 1 or AmandaLizaInfluence >= 3:
+    if LizetteTalkPortDone = 1 and (AmandaMetLizette = 1 or PortMeetWitnessed = 1):
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и Аманде', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_amanda'
@@ -73,10 +75,12 @@
         exit
     end
 
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и заказах', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'irma_shop'
-    }
+    if IrmaTalkSmalltalkDone = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и заказах', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'irma_shop'
+        }
+    end
 
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
@@ -143,7 +147,7 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    if Friends[$TownTalkGirl] >= 3 or love[$TownTalkGirl] >= 2:
+    if TownTalkSmalltalkDone[$TownTalkGirl] = 1 or Friends[$TownTalkGirl] >= 3 or love[$TownTalkGirl] >= 2:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О городе', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TownTalkGirl, $TalkReturnLoc, 'town_life'
@@ -174,6 +178,7 @@
     gs 'GirlTalkPortTalkPrintText', 'intro'
     gs 'GirlTalkPortTalkPrintText', 'context'
 
+    LizetteTalkPortDone = 1
     Friends['lizette'] += 1
     trading += 1
 ---
@@ -182,6 +187,7 @@
     gs 'GirlTalkLizetteAmandaPrintText', 'intro'
     gs 'GirlTalkLizetteAmandaPrintText', 'context'
 
+    LizetteTalkAmandaDone = 1
     Friends['lizette'] += 1
     AmandaLizaInfluence += 1
 
@@ -196,8 +202,22 @@
     gs 'GirlTalkIrmaShopPrintText', 'intro'
     gs 'GirlTalkIrmaShopPrintText', 'context'
 
+    IrmaTalkShopDone = 1
     Friends['irma'] += 1
     trading += 1
+---
+
+#GirlTalkAfterSmalltalk
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkSmalltalkGirl = $GirlKey
+
+    if $GirlTalkSmalltalkGirl = 'irma':
+        IrmaTalkSmalltalkDone = 1
+    elseif $GirlTalkSmalltalkGirl = 'juliette' or $GirlTalkSmalltalkGirl = 'lizette':
+        TownTalkSmalltalkDone[$GirlTalkSmalltalkGirl] = 1
+    end
+
+    killvar '$GirlTalkSmalltalkGirl'
 ---
 
 #GirlTalkTownLifeRun
@@ -211,6 +231,7 @@
     gs 'GirlTalkTownLifePrintText', $TownTalkGirl, 'intro'
     gs 'GirlTalkTownLifePrintText', $TownTalkGirl, 'context'
 
+    TownTalkLifeDone[$TownTalkGirl] = 1
     Friends[$TownTalkGirl] += 1
 
     killvar '$TownTalkGirl'

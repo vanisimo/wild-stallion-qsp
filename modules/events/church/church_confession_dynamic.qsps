@@ -22,6 +22,29 @@
     ChurchConfessionReady = 1
 ---
 
+#ChurchConfessionHintText
+    $ChurchConfessionHint = ''
+
+    if ChurchConfessionDoneDay = day:
+        exit
+    end
+
+    if GeorgettePortSexDone = 1 and GeorgetteChurchAlone = 1 and GeorgetteFuckInChurch = 0 and week = 7 and time = 2:
+        $ChurchConfessionHint = 'Отец Герхард ждёт в комнате чистых сердец — но если на утренней службе вы не зашли с Жоржеттой в подсобку, исповедь о ней будет пустой болтовнёй.'
+        exit
+    end
+
+    if GeorgetteFuckInChurch = 1 and GeorgetteConfessInChurch = 0 and week = 7 and time = 2:
+        $ChurchConfessionHint = 'После того, что было за колоннами, падре ждёт правды — не общих грехов, а конкретной.'
+        exit
+    end
+
+    if GeorgetteConfessBasic = 1 and GeorgetteConfessInChurch = 0 and GeorgetteFuckInChurch = 0 and GeorgettePortSexDone = 1 and week = 7 and time = 2:
+        $ChurchConfessionHint = 'Вы уже признались в порту. Чтобы исповедь была о церкви, а не только о складах, на утренней службе нужно успеть больше.'
+        exit
+    end
+---
+
 #ChurchConfessionStart
     gs 'ChurchConfessionCanStart'
 
@@ -72,7 +95,7 @@
         $ChurchConfessionSinId = 'georgette_liza_saw'
     elseif GeorgetteConfessInChurch = 0 and GeorgetteFuckInChurch = 1:
         $ChurchConfessionSinId = 'georgette_in_church'
-    elseif GeorgetteConfessBasic = 0 and HadSex['georgett'] >= 1:
+    elseif GeorgetteConfessBasic = 0 and HadSex['georgett'] >= 1 and GeorgettePortSexDone = 1:
         $ChurchConfessionSinId = 'georgette_basic'
     elseif HadSex['amanda'] >= 1 and ChurchConfessionAmandaWeekDone < day:
         $ChurchConfessionSinId = 'amanda_stub'
@@ -89,6 +112,11 @@
         PriestConfessionCorruption += 1
     elseif $ChurchConfessionApplyId = 'georgette_in_church':
         GeorgetteConfessInChurch = 1
+
+        if GeorgetteConfessBasic = 0:
+            GeorgetteConfessBasic = 1
+        end
+
         PriestConfessionCorruption += 1
     elseif $ChurchConfessionApplyId = 'georgette_basic':
         GeorgetteConfessBasic = 1

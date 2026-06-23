@@ -1,8 +1,46 @@
 ! ================================================
 ! FILE: modules/events/church/church_spy_georgette.qsps
 ! MODULE: events/church
-! Spy: отец Герхард + Жоржетта (этап E)
+! Spy: отец Герхард + Жоржетта (этап E + цепочка 1–7)
+! После 1-й сцены — GeorgettePriestSpySeen, арка идёт дальше.
+! Сцены 2–7 и рандом — опционально по воскресеньям.
 ! ================================================
+
+#ChurchSpyGeorgetteSceneStepMax
+    ChurchSpyGeorgetteSceneStepMax = 4
+
+    if ChurchSpyGeorgetteScene = 2:
+        ChurchSpyGeorgetteSceneStepMax = 5
+    elseif ChurchSpyGeorgetteScene = 3:
+        ChurchSpyGeorgetteSceneStepMax = 5
+    elseif ChurchSpyGeorgetteScene = 4:
+        ChurchSpyGeorgetteSceneStepMax = 5
+    elseif ChurchSpyGeorgetteScene = 5:
+        ChurchSpyGeorgetteSceneStepMax = 6
+    elseif ChurchSpyGeorgetteScene = 6:
+        ChurchSpyGeorgetteSceneStepMax = 5
+    elseif ChurchSpyGeorgetteScene = 7:
+        ChurchSpyGeorgetteSceneStepMax = 5
+    end
+---
+
+#ChurchSpyGeorgettePickScene
+    if GeorgettePriestSpyStage >= 7:
+        ChurchSpyGeorgetteScene = RAND(1, 7)
+    else:
+        ChurchSpyGeorgetteScene = GeorgettePriestSpyStage + 1
+    end
+
+    if ChurchSpyGeorgetteScene < 1:
+        ChurchSpyGeorgetteScene = 1
+    end
+
+    if ChurchSpyGeorgetteScene > 7:
+        ChurchSpyGeorgetteScene = 7
+    end
+
+    gs 'ChurchSpyGeorgetteSceneStepMax'
+---
 
 #ChurchSpyGeorgetteStart
     gs 'ChurchSpyGeorgetteCheckAvailable'
@@ -10,6 +48,8 @@
     if ChurchSpyGeorgetteReady = 0:
         gt 'ChurchWalkAroundStart'
     end
+
+    gs 'ChurchSpyGeorgettePickScene'
 
     cls
 
@@ -26,7 +66,13 @@
 
     *pl ' '
 
-    gs 'ChurchSpyGeorgetteText', 'intro'
+    if ChurchSpyGeorgetteScene < 1:
+        ChurchSpyGeorgetteScene = 1
+    end
+
+    ChurchSpyGeorgetteTextScene = ChurchSpyGeorgetteScene
+    ChurchSpyGeorgetteTextStep = 0
+    gs 'ChurchSpyGeorgetteSceneText'
     *p $ChurchSpyGeorgetteText
 
     *pl ' '
@@ -36,12 +82,15 @@
 ---
 
 #ChurchSpyGeorgetteStep
-    gs 'ChurchSpyGeorgetteText', 'step_' + STR(ChurchSpyGeorgetteStep)
+    gs 'ChurchSpyGeorgetteSceneStepMax'
 
+    ChurchSpyGeorgetteTextScene = ChurchSpyGeorgetteScene
+    ChurchSpyGeorgetteTextStep = ChurchSpyGeorgetteStep
+    gs 'ChurchSpyGeorgetteSceneText'
     *p $ChurchSpyGeorgetteText
     *pl ' '
 
-    if ChurchSpyGeorgetteStep < 3:
+    if ChurchSpyGeorgetteStep < ChurchSpyGeorgetteSceneStepMax:
         act '<b>Слушать дальше</b>', 'images/common/ui/actions/look.png':
             ChurchSpyGeorgetteStep += 1
             gt 'ChurchSpyGeorgetteStep'
@@ -52,24 +101,47 @@
             gt 'ChurchWalkAroundStart'
         end
     else:
-        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        act '<b>Отойти от окна</b>', 'images/common/ui/actions/return.png':
             gt 'ChurchSpyGeorgetteFinish'
         end
     end
 
     killvar '$ChurchSpyGeorgetteText'
+    killvar 'ChurchSpyGeorgetteSceneStepMax'
 ---
 
 #ChurchSpyGeorgetteFinish
-    GeorgettePriestSpySeen = 1
-    gs 'LizetteChurchWithGeorgetteSchedule'
+    GeorgettePriestSpyFirstDone = 0
+
+    if GeorgettePriestSpySeen = 0:
+        GeorgettePriestSpySeen = 1
+        GeorgettePriestSpyFirstDone = 1
+        gs 'LizetteChurchWithGeorgetteSchedule'
+    end
+
+    if GeorgettePriestSpyStage < 7:
+        GeorgettePriestSpyStage += 1
+    end
 
     gs 'ChurchSpyMarkDoneToday'
 
     otkroven['georgett'] += 1
     PriestConfessionCorruption += 1
 
-    gs 'ChurchSpyGeorgetteText', 'after'
+    if GeorgettePriestSpyFirstDone = 1:
+        ChurchSpyGeorgetteTextScene = ChurchSpyGeorgetteScene
+        ChurchSpyGeorgetteTextStep = 99
+        gs 'ChurchSpyGeorgetteSceneText'
+    elseif GeorgettePriestSpyStage >= 7:
+        ChurchSpyGeorgetteTextScene = 0
+        ChurchSpyGeorgetteTextStep = 98
+        gs 'ChurchSpyGeorgetteSceneText'
+    else:
+        ChurchSpyGeorgetteTextScene = 0
+        ChurchSpyGeorgetteTextStep = 97
+        gs 'ChurchSpyGeorgetteSceneText'
+    end
+
     *p $ChurchSpyGeorgetteText
 
     *pl ' '
@@ -80,4 +152,5 @@
 
     killvar '$ChurchSpyGeorgetteText'
     killvar 'ChurchSpyGeorgetteStep'
+    killvar 'GeorgettePriestSpyFirstDone'
 ---

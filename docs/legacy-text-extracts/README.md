@@ -13,8 +13,10 @@
 | `amanda/` | InitAmanda, IntAmandaTalk, IntAmandaDance, IntAmandaDressChange, IntAmandaSex, AmandaSexDanceStreet, AmandaLoverSex, AmandaLegareDanceSequence, AfterDanceSexLegare, AfterDanceLegare, TavernAmandaRoom, AmandaAtHomeCode |
 | `melissa/` | InitMelissa, IntMelissaTalk, IntMelissaDressChange |
 | `sandra/` | InitSandra, IntSandraTalk, IntSandraDressChange |
-| `inga/` | InitInga, `inga_guard_snippets.md` (стражник/Лукас; отдельной локации квеста нет) |
+| `inga/` | InitInga |
 | `clarissa/` | IntAlberTalk |
+| `lizette/` | InitLiza, IntLizaTalk, IntLizaDressChange, IntLizaSex, IntLizettAfterCermon, EventAmandaLizettTalk, EventAmandaLizettTalk2, InitAmandaLizaTalkItems |
+| `town_npcs/` | IntRobinTalk, IntZimmerTalk, FrancheskaTalk, EventAmandaLegareCreateDance |
 | `cut_reference/` | AmandaAtGloryHole, SexProstTavern |
 
 ## Статусы (ключевые)
@@ -42,12 +44,3 @@
 | `IntEddieTalk` | TAKE |
 | `IntMelissaDressChange` | TAKE — самопокупка д.35 |
 | `SexProstTavern` | CUT — порт вместо трактира |
-
-## Повторный запуск
-
-```powershell
-python scripts/extract_legacy_texts.py
-python scripts/legacy_supplement_inga.py
-```
-
-Путь к монолиту задан в `scripts/extract_legacy_texts.py` (`LEGACY_PATH`).

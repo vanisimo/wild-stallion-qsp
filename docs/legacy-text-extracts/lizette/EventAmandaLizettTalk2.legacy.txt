@@ -1,0 +1,58 @@
+Название локации: EventAmandaLizettTalk2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	Eyewitness=Args[0]
+	YourReaction2=0
+	
+	!{Аргументы PartEventGirlReactionTalk
+	DefiniteAccept=Args[3]
+	FriendLimit=Args[4]
+	SlutLimit=Args[5]
+	}
+	$Result=dyneval( $GetRandomTalkPhraseFromTable, 'AmandaLizaTalk')
+	
+	!----Ваша реакция
+	
+	GS 'Menu.Create','MenuAmandaLizaTalk2'
+	GS 'Menu.Add','MenuAmandaLizaTalk2','Строго наругать Аманду за то, та болтает с Лизеттой',''
+	GS 'Menu.AddModule','MenuAmandaLizaTalk2',{
+		YourReaction2=1
+		AmandaVar['prohibitliza']=2
+		'Вы поймали проходящую мимо сестренку и строго ее отчитали за то, что она болтала с Лизеттой несмотря на запрет. Аманда расплакалась и убежала в слезах.'
+		gs 'SlutFriendsIncrease', 'amanda', 3, 1, -1, 0, 0, 0
+	
+	}
+	gs 'Menu.AddCondition','MenuAmandaLizaTalk2', "Result=IIF(YourReaction2=0 and AmandaVar['prohibitliza']>0,-1,0)"
+		
+	GS 'Menu.Add','MenuAmandaLizaTalk2','Сказать Аманде, чтобы не болтала с Лизеттой',''
+	GS 'Menu.AddModule','MenuAmandaLizaTalk2',{
+		YourReaction2=2
+		AmandaVar['prohibitliza']=1
+		'Вы поймали проходящую мимо сестренку и сказали ей, чтобы она не болтала с Лизеттой, так как та распущенная девчонка и хорошему не научит. Аманда выслушала вас и пообещала с Лизеттой не говорить.'
+	}
+	gs 'Menu.AddCondition','MenuAmandaLizaTalk2', "Result=IIF(YourReaction2=0 and AmandaVar['prohibitliza']=0,-1,0)"		
+	
+	GS 'Menu.Add','MenuAmandaLizaTalk2','Сказать Аманде, что вы погорячились, когда запретили ей говорить с Лизеттой',''
+	GS 'Menu.AddModule','MenuAmandaLizaTalk2',{
+		YourReaction2=3
+		AmandaVar['prohibitliza']=0
+		'Вы поймали проходящую мимо сестренку и сказали ей, что погорячились, вы не хотите на нее давить и она имеет полное право говорить с кем хочет. Аманда поблагодарила вас за доверие и пошла по своим делам.'
+		if Friends['amanda']<5 and Rand(1,4):
+			'Ей очень понравилось, что вы ей так доверяте.'
+			gs 'SlutFriendsIncrease', 'amanda', 6, 1, 1, 0, 0, 0
+		end
+	}
+	gs 'Menu.AddCondition','MenuAmandaLizaTalk2', "Result=IIF(YourReaction2=0 and AmandaVar['prohibitliza']>0,-1,0)"	
+					
+	if Eyewitness>0:
+		$Result+='<br><br>После разговора Аманда с Лизеттой разошлись. Намеренны ли вы что-то <a href="exec: GS ''Menu.Call'',''MenuAmandaLizaTalk2''">сказать</a> проходящей мимо Аманде?'
+		act 'Вернуться к своим делам':gt 'TavernMain',1
+	end
+	
+	
+	
+	
+	!$Result+=sluttiness['amanda'] + '???' + AmandaVar['lizafriends']+'????'
+
+------------ Конец локации: EventAmandaLizettTalk2 ------------

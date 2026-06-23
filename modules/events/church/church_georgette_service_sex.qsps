@@ -6,6 +6,7 @@
 
 #GeorgetteChurchSexCanOffer
     GeorgetteChurchSexCanOffer = 0
+    $GeorgetteChurchSexBlockReason = ''
 
     if week <> 7:
         exit
@@ -16,22 +17,63 @@
     end
 
     if GeorgetteKnown = 0:
+        $GeorgetteChurchSexBlockReason = 'unknown'
+        exit
+    end
+
+    if GeorgettePortSexDone = 0:
+        $GeorgetteChurchSexBlockReason = 'no_port_sex'
         exit
     end
 
     if GeorgetteChurchAlone = 0 and LizetteChurchWithGeorgette = 0:
-        exit
-    end
-
-    if Friends['georgett'] < 20:
+        $GeorgetteChurchSexBlockReason = 'not_sunday'
         exit
     end
 
     if HadSex['georgett'] < 1:
+        $GeorgetteChurchSexBlockReason = 'no_port_sex'
+        exit
+    end
+
+    if GeorgetteTalkBioDone = 0:
+        $GeorgetteChurchSexBlockReason = 'no_talk'
+        exit
+    end
+
+    if Friends['georgett'] < 12:
+        $GeorgetteChurchSexBlockReason = 'low_friends'
         exit
     end
 
     GeorgetteChurchSexCanOffer = 1
+    killvar '$GeorgetteChurchSexBlockReason'
+---
+
+#GeorgetteChurchSexHintText
+    gs 'GeorgetteChurchSexCanOffer'
+
+    $GeorgetteChurchSexHint = ''
+
+    if GeorgetteChurchSexCanOffer = 1:
+        killvar 'GeorgetteChurchSexCanOffer'
+        exit
+    end
+
+    if $GeorgetteChurchSexBlockReason = 'no_port_sex':
+        $GeorgetteChurchSexHint = 'Жоржетта смотрит на вас оценивающе. Пока вы не были с ней ночью в порту, в церкви она делает вид, что вы чужие.'
+    elseif $GeorgetteChurchSexBlockReason = 'not_sunday':
+        $GeorgetteChurchSexHint = 'Сегодня Жоржетты нет на службе — или она пришла не в том составе, в каком ждёт вашего шёпота.'
+    elseif $GeorgetteChurchSexBlockReason = 'no_talk':
+        $GeorgetteChurchSexHint = 'Она кивает вам вежливо, но не подводит к разговору. Сначала поговорите с ней ночью в порту — хотя бы о её жизни.'
+    elseif $GeorgetteChurchSexBlockReason = 'low_friends':
+        $GeorgetteChurchSexHint = 'Жоржетта улыбается уголком губ, но не зовёт в подсобку. Ей ещё мало доверяют для такого риска.'
+    else:
+        $GeorgetteChurchSexHint = ''
+    end
+
+    killvar 'GeorgetteChurchSexCanOffer'
+    killvar '$GeorgetteChurchSexBlockReason'
 ---
 
 #GeorgetteChurchSexStart
@@ -154,8 +196,16 @@
 
     *pl ' '
 
+    gs 'PrintMainP', 'Служба ещё идёт. Когда прихожане разойдутся, наступит полдень — тогда можно исповедаться и обойти собор снаружи.'
+
+    *pl ' '
+
     act '<b>Вернуться к службе</b>', 'images/common/ui/actions/return.png':
         gt 'ChurchSundayService'
+    end
+
+    act '<b>Дождаться полдня</b>', 'images/common/ui/actions/holy_circle.png':
+        gs 'ChurchSundayServiceAdvanceToNoon'
     end
 
     killvar '$GeorgetteChurchSexText'

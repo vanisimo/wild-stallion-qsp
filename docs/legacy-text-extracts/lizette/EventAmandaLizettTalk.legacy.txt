@@ -1,0 +1,114 @@
+Название локации: EventAmandaLizettTalk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Описание локации:
+
+	Eyewitness=Args[0]
+	YourReaction1=0
+	NotToSpeak=0
+	
+	if jobWhoreAvail['liza']:
+		if AmandaVar['prohibitliza']=1:
+			$Result='Проходя по трактиру вы вдруг услышали как вашa младшая сестренка, Аманда, говорит Лизетте:<br>"Ой, нельзя мне с тобой говорить, мастер Стефан запретил!"'
+			if Rand(1,Max(2,10-AmandaVar['lizafriends']*3/2))=1:
+				$Result+='<br>"Ну да ладно", добавляет она, "его вроде здесь нет, так что давай немножко поболтаем!"'
+			else
+				$Result+='<br>И девицы расходятся по своим делам.'
+				NotToSpeak=1
+			end
+		elseif AmandaVar['prohibitliza']=2:
+			$Result='Проходя по трактиру вы вдруг услышали как вашa младшая сестренка, Аманда, говорит Лизетте:<br>"Ой, ты что, знаешь как мастер Стефан ругаться будет, если узнает что мы с тобой болтаем!"'
+			if Rand(1,Max(4,20-AmandaVar['lizafriends']*2))=1:
+				$Result+='<br>"Ну ладно, его нет, а с тобой болтать интересно, так что рискнем!" - добавляет она после секундных раздумий.'
+			else
+				$Result+='<br>И девицы расходятся по своим делам.'
+				NotToSpeak=1
+			end
+		else
+			if (sluttiness['amanda']<=5 and Rand(1,2)=1) or (sluttiness['amanda']<=10 and sluttiness['amanda']>5 and Rand(1,4)=1):
+				$Result='Проходя по трактиру вы вдруг услышали как ваша младшая сестренка, Аманда, говорит Лизетте:<br>"Не хочу я с тобой болтать, ты такая распущенная и такие пошлые вещи рассказываешь!"'
+				NotToSpeak=1
+			else
+				$Result='Проходя по трактиру вы вдруг услышали как Лизетта весело болтает с вашей младшей сестренкой, Амандой.'
+			end
+		end
+	
+		GS 'Menu.Create','MenuAmandaLizaTalk'
+		GS 'Menu.Add','MenuAmandaLizaTalk','Похвалить Аманду, за то, что не стала болтать с Лизеттой',''
+		GS 'Menu.AddModule','MenuAmandaLizaTalk',{
+			YourReaction1=1
+			'Вы похвалили сестренку за то, что она послушалась вас и не стала болтать с Лизеттой. На ее лицо читалось явное облегчение от того, что она не попалась.'
+			act 'Вернуться к своим делам':gt 'TavernMain',1
+		}
+		gs 'Menu.AddCondition','MenuAmandaLizaTalk', "Result=IIF(YourReaction1=0 and AmandaVar['prohibitliza']>0 and NotToSpeak=1,-1,0)"	
+		
+		GS 'Menu.Add','MenuAmandaLizaTalk','Строго наругать Аманду за то, та болтает с Лизеттой',''
+		GS 'Menu.AddModule','MenuAmandaLizaTalk',{
+			YourReaction1=2
+			AmandaVar['prohibitliza']=2
+			NotToSpeak=1
+			'Вы подошли к болтушкам и начали сурово отчитывать сестренку за то, что она не выполнила вашего наказа. Аманда расплакалась и убежала в слезах.'
+			gs 'SlutFriendsIncrease', 'amanda', 4, 1, -1, 0, 0, 0
+			act 'Вернуться к своим делам':gt 'TavernMain',1
+		}
+		gs 'Menu.AddCondition','MenuAmandaLizaTalk', "Result=IIF(YourReaction1=0 and AmandaVar['prohibitliza']>0 and NotToSpeak=0,-1,0)"
+		
+		GS 'Menu.Add','MenuAmandaLizaTalk','Сказать Аманде, чтобы не болтала с Лизеттой',''
+		GS 'Menu.AddModule','MenuAmandaLizaTalk',{
+			YourReaction1=3
+			AmandaVar['prohibitliza']=1
+			NotToSpeak=1
+			'Вы подошли к болтушкам и вмешались в их разговор, отозвав сестренку в сторону, якобы по неотложному делу. Как только вы остались вдвоем вы сказали Аманде, чтобы она не болтала с Лизеттой, так как та распущенная девчонка и хорошему не научит. Аманда выслушала вас и пообещала с Лизеттой не говорить.'
+			act 'Вернуться к своим делам':gt 'TavernMain',1
+		}
+		gs 'Menu.AddCondition','MenuAmandaLizaTalk', "Result=IIF(YourReaction1=0 and AmandaVar['prohibitliza']=0 and NotToSpeak=0,-1,0)"		
+	
+		GS 'Menu.Add','MenuAmandaLizaTalk','Сказать Аманде, что она правильно не стала болтать с Лизеттой',''
+		GS 'Menu.AddModule','MenuAmandaLizaTalk',{
+			YourReaction1=4
+			AmandaVar['prohibitliza']=1
+			NotToSpeak=1
+			'Вы подошли к сестренке и сказали, что случайно слышали ее разговор с Лизеттой. Вы отметили, что она абсолютно правильно не стала с ней болтать и что вы тоже не советуете ей трепаться с юной шлюхой. При слове "шлюха" Аманда зарделась и пообещала с Лизеттой больше не говорить.'
+			act 'Вернуться к своим делам':gt 'TavernMain',1
+		}
+		gs 'Menu.AddCondition','MenuAmandaLizaTalk', "Result=IIF(YourReaction1=0 and AmandaVar['prohibitliza']=0 and NotToSpeak=1,-1,0)"	
+		
+		GS 'Menu.Add','MenuAmandaLizaTalk','Сказать Аманде, что вы погорячились, когда запретили ей говорить с Лизеттой',''
+		GS 'Menu.AddModule','MenuAmandaLizaTalk',{
+			YourReaction1=5
+			AmandaVar['prohibitliza']=0
+			'Вы подошли к сестренке и сказали, что погорячились, вы не хотите на нее давить и она имеет полное право говорить с кем хочет. Аманда поблагодарила вас за доверие и пошла по своим делам.'
+			act 'Вернуться к своим делам':gt 'TavernMain',1
+		}
+		gs 'Menu.AddCondition','MenuAmandaLizaTalk', "Result=IIF(YourReaction1=0 and AmandaVar['prohibitliza']>0 and NotToSpeak=1,-1,0)"	
+			
+		GS 'Menu.Add','MenuAmandaLizaTalk','Подслушать',''
+		GS 'Menu.AddModule','MenuAmandaLizaTalk',{
+			YourReaction1=6
+			'Вы решили подслушать, что будет дальше.'
+			*pl Func('EventAmandaLizettTalk2',Eyewitness)
+		}
+		gs 'Menu.AddCondition','MenuAmandaLizaTalk', "Result=IIF(YourReaction1=0 and NotToSpeak=0,-1,0)"
+	
+		GS 'Menu.Add','MenuAmandaLizaTalk','Вернуться к своим делам',''
+		GS 'Menu.AddModule','MenuAmandaLizaTalk',{
+			YourReaction1=7
+			gt 'TavernMain',1
+		}
+		gs 'Menu.AddCondition','MenuAmandaLizaTalk', "Result=IIF(YourReaction1=0 and NotToSpeak=1,-1,0)"
+			
+		if Eyewitness>0:
+			$Result+='<br><br>Что вы намеренны <a href="exec: GS ''Menu.Call'',''MenuAmandaLizaTalk''">предпринять</a>?'
+		elseif NotToSpeak=0:
+			$Result+=Func('EventAmandaLizettTalk2',Eyewitness)
+		end
+	else
+		$Result=''
+	end
+	
+	if Eyewitness=0: 
+		$Result=''
+	else
+		gs 'ShowImage', 'amanda', 'tavern', 'lizatalk'+Rand(1,2)
+	end
+
+------------ Конец локации: EventAmandaLizettTalk ------------

@@ -3,54 +3,118 @@
 ! Воскресные визиты и подслушивания у закрытых лавок
 ! Версия: v1
 ! Назначение:
-! - воскресенье день/вечер открывает городские визиты
-! - у лавки Бекки можно подслушать Бекки и Сандру
+! - воскресенье день/вечер (sunday_visits): у лавки Бекки подслушивание
+! - слух про шестерёнку — первый визит, до скандала и прочих тем
 ! - у лавки Легаре можно подслушать Клариссу и Мелиссу
 ! Большие тексты берутся из:
 ! modules/events/visits/sunday_shop_visits_text.qsps
 ! ================================================
 
-#SundayVisitBeckySandra
-    $SundayVisitReturnLoc = $ARGS[0]
+#SundayVisitBeckySandraCanEnter
+    SundayVisitBeckySandraOpen = 0
 
-    if $SundayVisitReturnLoc = '':
-        $SundayVisitReturnLoc = 'Market'
+    if week <> 7:
+        exit
     end
 
+    gs 'GetCitySchedulePhase'
+
+    if $CitySchedulePhase = 'sunday_visits':
+        SundayVisitBeckySandraOpen = 1
+    end
+---
+
+#SundayVisitBeckySandraCanEavesdrop
+    SundayVisitBeckySandraCanEavesdrop = 0
+
+    gs 'SundayVisitBeckySandraCanEnter'
+
+    if SundayVisitBeckySandraOpen = 0:
+        killvar 'SundayVisitBeckySandraOpen'
+        exit
+    end
+
+    killvar 'SundayVisitBeckySandraOpen'
+
+    gs 'BeckySandraChurchGearGossipCanHear'
+
+    if BeckySandraChurchGearGossipCanHear = 1:
+        SundayVisitBeckySandraCanEavesdrop = 1
+        killvar 'BeckySandraChurchGearGossipCanHear'
+        exit
+    end
+
+    killvar 'BeckySandraChurchGearGossipCanHear'
+
+    if SundayBeckySandraVisitSeen[day] = 1:
+        exit
+    end
+
+    SundayVisitBeckySandraCanEavesdrop = 1
+---
+
+#SundayVisitClarissaMelissaCanEavesdrop
+    SundayVisitClarissaMelissaCanEavesdrop = 0
+
+    if week <> 7:
+        exit
+    end
+
+    gs 'GetCitySchedulePhase'
+
+    if $CitySchedulePhase <> 'sunday_visits':
+        exit
+    end
+
+    if SundayClarissaMelissaVisitSeen[day] = 1:
+        exit
+    end
+
+    SundayVisitClarissaMelissaCanEavesdrop = 1
+---
+
+#SundayVisitBeckySandra
     *clr
     clr
     cla
 
-    gs 'GetCitySchedulePhase'
+    gs 'SundayVisitBeckySandraCanEnter'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ЛАВКА БЕККИ: ВОСКРЕСНЫЙ ВИЗИТ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if $CitySchedulePhase <> 'sunday_visits':
-        *p 'Сейчас у лавки Бекки тихо. Дверь закрыта, но за ней не слышно разговора.'
-        *p 'Похоже, визиты начнутся позже, когда город разойдётся после службы и исповедей.'
-        *pl ' '
-
-        act '<b>Вернуться</b>':
-            gt $SundayVisitReturnLoc
-        end
-
-        exit
+    if SundayVisitBeckySandraOpen = 0:
+        gt 'Market'
     end
+
+    killvar 'SundayVisitBeckySandraOpen'
 
     gs 'BeckySandraChurchGearGossipCanHear'
     gs 'SandraBeckySundayScandalCanHear'
+    SundayVisitBeckyGearScene = BeckySandraChurchGearGossipCanHear
     gs 'SundayVisitBeckySandraText'
+
+    if SundayVisitBeckyGearScene = 1:
+        gs 'ShowImage', 'church', 'window', 'ajar'
+    else:
+        gs 'ShowImage', 'becky', 'shop', 'closed', 'normal'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' У ОКНА ЛАВКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PrintMainP', 'Вы обходите угол здания и задерживаетесь у приоткрытого окна — оттуда доносятся голоса.'
+
+    *pl ' '
 
     *p $SundayVisitText
     *pl ' '
 
-    if BeckySandraChurchGearGossipCanHear = 1 and ChurchSpyWindowGearGossipHeard = 0:
+    if SundayVisitBeckyGearScene = 1 and ChurchSpyWindowGearGossipHeard = 0:
         ChurchSpyWindowGearGossipHeard = 1
         ChurchSpyWindowHint = 1
     end
+
+    killvar 'SundayVisitBeckyGearScene'
 
     SundayBeckySandraVisitSeen[day] = 1
     PlayerKnows_SandraBeckySundayTalk = 1
@@ -77,8 +141,8 @@
         *pl ' '
     end
 
-    act '<b>Отойти от лавки</b>':
-        gt $SundayVisitReturnLoc
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
+        gt 'Market'
     end
 
     killvar 'BeckySandraChurchGearGossipCanHear'
@@ -87,22 +151,8 @@
 #BeckySandraChurchGearGossipCanHear
     BeckySandraChurchGearGossipCanHear = 0
 
-    if ChurchSpyWindowHint = 1:
-        exit
-    end
-
     if ChurchSpyWindowGearGossipHeard = 1:
         exit
-    end
-
-    if PlayerKnows_SandraBeckySundayTalk = 0:
-        exit
-    end
-
-    if SandraBeckyBond < 12:
-        if GirlPersonalStoryUnlock['sandra_carpenter'] = 0:
-            exit
-        end
     end
 
     BeckySandraChurchGearGossipCanHear = 1
@@ -114,36 +164,31 @@
 ! ================================================
 
 #SundayVisitClarissaMelissa
-    $SundayVisitReturnLoc = $ARGS[0]
-
-    if $SundayVisitReturnLoc = '':
-        $SundayVisitReturnLoc = 'Market'
-    end
-
     *clr
     clr
     cla
 
-    gs 'GetCitySchedulePhase'
+    gs 'SundayVisitClarissaMelissaCanEavesdrop'
+
+    if SundayVisitClarissaMelissaCanEavesdrop = 0:
+        killvar 'SundayVisitClarissaMelissaCanEavesdrop'
+        gt 'Market'
+    end
+
+    killvar 'SundayVisitClarissaMelissaCanEavesdrop'
+
+    gs 'SundayVisitClarissaMelissaText'
+
+    gs 'ShowImage', 'wine', 'shop', 'closed', 'normal'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' ЛАВКА ЛЕГАРЕ: ВОСКРЕСНЫЙ ВИЗИТ'
+    gs 'PrintTitleLine', ' У ОКНА ЛАВКИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if $CitySchedulePhase <> 'sunday_visits':
-        *p 'У лавки Легаре сейчас пусто. Ставни закрыты, а за дверью не слышно ни Клариссы, ни Мелиссы.'
-        *p 'Такие разговоры лучше искать после службы и исповедей.'
-        *pl ' '
+    gs 'PrintMainP', 'Вы обходите фасад и задерживаетесь у приоткрытого окна — оттуда доносятся голоса.'
 
-        act '<b>Вернуться</b>':
-            gt $SundayVisitReturnLoc
-        end
-
-        exit
-    end
-
-    gs 'SundayVisitClarissaMelissaText'
+    *pl ' '
 
     *p $SundayVisitText
     *pl ' '
@@ -166,8 +211,8 @@
         *pl ' '
     end
 
-    act '<b>Отойти от лавки</b>':
-        gt $SundayVisitReturnLoc
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
+        gt 'Market'
     end
 ---
 
@@ -211,11 +256,11 @@
     end
 
     act '<b>Тест: Бекки и Сандра</b>':
-        gt 'SundayVisitBeckySandra', $SundayVisitReturnLoc
+        gt 'SundayVisitBeckySandra'
     end
 
     act '<b>Тест: Кларисса и Мелисса</b>':
-        gt 'SundayVisitClarissaMelissa', $SundayVisitReturnLoc
+        gt 'SundayVisitClarissaMelissa'
     end
 
     act '<b>Вернуться</b>':

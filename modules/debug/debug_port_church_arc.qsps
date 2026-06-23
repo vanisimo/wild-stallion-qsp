@@ -30,6 +30,14 @@
     pl 'GeorgetteSeekLizetteDone: ' + STR(GeorgetteSeekLizetteDone)
     pl 'GeorgetteKnown: ' + STR(GeorgetteKnown)
     pl 'GeorgettePortSexDone: ' + STR(GeorgettePortSexDone)
+    pl '--- Темы talk Жоржетты ---'
+    pl 'Bio: ' + STR(GeorgetteTalkBioDone) + ' | Port: ' + STR(GeorgetteTalkPortDone) + ' | Lizette: ' + STR(GeorgetteTalkLizetteDone)
+    pl 'Clients: ' + STR(GeorgetteTalkClientsDone) + ' | Sex: ' + STR(GeorgetteTalkSexDone) + ' | Family: ' + STR(GeorgetteTalkFamilyDone) + ' | Children: ' + STR(GeorgetteTalkChildrenDone)
+    pl 'Church: ' + STR(GeorgetteTalkChurchDone) + ' | Spy: ' + STR(GeorgetteTalkPriestSpyDone) + ' | LizSpy1: ' + STR(GeorgetteTalkLizetteSpy1Done) + ' | LizPriest: ' + STR(GeorgetteTalkLizettePriestReportDone) + ' | LizSpy2: ' + STR(GeorgetteTalkLizetteSpy2Done) + ' | Eddie: ' + STR(GeorgetteTalkEddieDone)
+    pl '--- Темы talk Лизетты ---'
+    pl 'Port: ' + STR(LizetteTalkPortDone) + ' | Amanda: ' + STR(LizetteTalkAmandaDone)
+    pl '--- Темы talk Ирма ---'
+    pl 'Smalltalk: ' + STR(IrmaTalkSmalltalkDone) + ' | Shop: ' + STR(IrmaTalkShopDone)
     pl ' '
 
     pl '--- Этап C ---'
@@ -38,7 +46,7 @@
     pl 'GeorgetteFuckInChurch: ' + STR(GeorgetteFuckInChurch)
     pl 'GeorgetteConfessBasic: ' + STR(GeorgetteConfessBasic)
     pl 'GeorgetteConfessLizaSaw: ' + STR(GeorgetteConfessLizaSaw)
-    pl 'GeorgettePriestSpySeen: ' + STR(GeorgettePriestSpySeen)
+    pl 'GeorgettePriestSpySeen: ' + STR(GeorgettePriestSpySeen) + ' | stage: ' + STR(GeorgettePriestSpyStage) + ' / 7'
     pl 'LizetteChurchWithGeorgette: ' + STR(LizetteChurchWithGeorgette)
     pl 'LizaSawSexInChurch: ' + STR(LizaSawSexInChurch)
     pl 'LizettePriestSpyStage: ' + STR(LizettePriestSpyStage)
@@ -67,6 +75,7 @@
     pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterC''">После C: секс в соборе был</a>'
     pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayD''">Воскресенье D: полдень, исповедь</a>'
     pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayE''">Воскресенье E: spy Жоржетта</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterE''">После E: ночь в порту + talk</a>'
     pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayF''">Воскресенье F: Лизетта на службе</a>'
     pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayH''">После G2: ночной порт H</a>'
     pl ' '
@@ -77,6 +86,8 @@
     pl '<a href="exec:gt ''ChurchSundayNoon''">Полдень (если вс/полдень)</a>'
     pl '<a href="exec:gs ''DebugPortChurchArcGiveWindowHint''">+ hint окна (как у лавки Бекки)</a>'
     pl '<a href="exec:gs ''DebugPortChurchArcGiveWindowMechanism''">+ механизм найден (окно приоткрыто)</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcUnlockGeorgetteTalks''">+ все темы Жоржетты</a>'
+    pl '<a href="exec:gs ''DebugPortChurchArcUnlockLizetteTalks''">+ все темы Лизетты</a>'
     pl ' '
 
     gs 'PanelDebugToolsBack'
@@ -126,20 +137,133 @@
     gs 'DebugPortChurchArcPanel'
 ---
 
+#DebugPortChurchArcSetGeorgetteRelations
+    $DebugGeorgetteRelStage = LCASE($ARGS[0])
+
+    GeorgetteKnown = 1
+    GeorgetteSeekLizetteDone = 1
+    LizetteMentionedByGeorgette = 1
+    GeorgetteTalkBioDone = 1
+    GeorgetteTalkPortDone = 1
+    GeorgetteTalkLizetteDone = 1
+    GeorgetteTalkChurchDone = 0
+    GeorgetteTalkPriestSpyDone = 0
+    GeorgetteTalkEddieDone = 0
+
+    if $DebugGeorgetteRelStage = 'b':
+        Friends['georgett'] = 14
+        otkroven['georgett'] = 12
+        GeorgettePortSexDone = 0
+        GeorgetteTalkClientsDone = 0
+        HadSex['georgett'] = 0
+        IntimStage['georgett'] = 0
+    elseif $DebugGeorgetteRelStage = 'c':
+        Friends['georgett'] = 22
+        otkroven['georgett'] = 18
+        GeorgettePortSexDone = 1
+        GeorgetteTalkClientsDone = 1
+        HadSex['georgett'] = 1
+        IntimStage['georgett'] = 5
+        GeorgetteFuckInChurch = 0
+        GeorgettePriestSpySeen = 0
+        GeorgettePriestSpyStage = 0
+    elseif $DebugGeorgetteRelStage = 'c2':
+        Friends['georgett'] = 24
+        otkroven['georgett'] = 22
+        GeorgettePortSexDone = 1
+        GeorgetteTalkClientsDone = 1
+        HadSex['georgett'] = 1
+        IntimStage['georgett'] = 5
+        GeorgetteFuckInChurch = 1
+        GeorgetteConfessBasic = 0
+        GeorgettePriestSpySeen = 0
+        GeorgettePriestSpyStage = 0
+    elseif $DebugGeorgetteRelStage = 'd':
+        Friends['georgett'] = 24
+        otkroven['georgett'] = 22
+        GeorgettePortSexDone = 1
+        GeorgetteTalkClientsDone = 1
+        HadSex['georgett'] = 1
+        IntimStage['georgett'] = 5
+        GeorgetteFuckInChurch = 1
+        GeorgetteConfessBasic = 0
+        GeorgettePriestSpySeen = 0
+        GeorgettePriestSpyStage = 0
+    elseif $DebugGeorgetteRelStage = 'e':
+        Friends['georgett'] = 26
+        otkroven['georgett'] = 26
+        GeorgettePortSexDone = 1
+        GeorgetteTalkClientsDone = 1
+        HadSex['georgett'] = 1
+        IntimStage['georgett'] = 5
+        GeorgetteFuckInChurch = 1
+        GeorgetteConfessBasic = 1
+        GeorgettePriestSpySeen = 1
+        GeorgettePriestSpyStage = 1
+    elseif $DebugGeorgetteRelStage = 'f':
+        Friends['georgett'] = 28
+        otkroven['georgett'] = 28
+        GeorgettePortSexDone = 1
+        GeorgetteTalkClientsDone = 1
+        GeorgetteTalkPriestSpyDone = 1
+        HadSex['georgett'] = 1
+        IntimStage['georgett'] = 5
+        GeorgetteFuckInChurch = 1
+        GeorgetteConfessBasic = 1
+        GeorgettePriestSpySeen = 1
+        GeorgettePriestSpyStage = 1
+    elseif $DebugGeorgetteRelStage = 'h':
+        Friends['georgett'] = 30
+        otkroven['georgett'] = 30
+        GeorgettePortSexDone = 1
+        GeorgetteTalkClientsDone = 1
+        GeorgetteTalkChurchDone = 1
+        GeorgetteTalkPriestSpyDone = 1
+        HadSex['georgett'] = 2
+        IntimStage['georgett'] = 5
+        GeorgetteFuckInChurch = 1
+        GeorgetteConfessBasic = 1
+        GeorgettePriestSpySeen = 1
+        GeorgettePriestSpyStage = 7
+    end
+
+    gs 'ClampGirlSocialStats', 'georgett'
+    killvar '$DebugGeorgetteRelStage'
+---
+
 #DebugPortChurchArcPresetAfterB
     PortMeetWitnessed = 1
     AmandaMetLizette = 1
     LizetteKnown = 1
-    GeorgetteKnown = 1
-    GeorgetteSeekLizetteDone = 1
-    LizetteMentionedByGeorgette = 1
-    GeorgettePortSexDone = 0
     GeorgetteChurchAlone = 0
     GeorgetteChurchAloneTargetDay = 0
-    Friends['georgett'] = 14
-    otkroven['georgett'] = 12
+    gs 'DebugPortChurchArcSetGeorgetteRelations', 'b'
     time = 5
+    GeorgettePortNightGone = 0
     gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcUnlockGeorgetteTalks
+    GeorgetteTalkBioDone = 1
+    GeorgetteTalkPortDone = 1
+    GeorgetteTalkLizetteDone = 1
+    GeorgetteTalkClientsDone = 1
+    GeorgetteTalkSexDone = 1
+    GeorgetteTalkFamilyDone = 1
+    GeorgetteTalkChildrenDone = 1
+    GeorgetteTalkChurchDone = 1
+    GeorgetteTalkPriestSpyDone = 1
+    GeorgetteTalkLizetteSpy1Done = 1
+    GeorgetteTalkLizettePriestReportDone = 1
+    GeorgetteTalkLizetteSpy2Done = 1
+    GeorgetteTalkEddieDone = 1
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcUnlockLizetteTalks
+    LizetteTalkPortDone = 1
+    LizetteTalkAmandaDone = 1
     gs 'DebugPortChurchArcPanel'
 ---
 
@@ -147,16 +271,9 @@
     PortMeetWitnessed = 1
     AmandaMetLizette = 1
     LizetteKnown = 1
-    GeorgetteKnown = 1
-    GeorgetteSeekLizetteDone = 1
-    GeorgettePortSexDone = 1
+    gs 'DebugPortChurchArcSetGeorgetteRelations', 'c'
     GeorgetteChurchAlone = 1
     GeorgetteChurchAloneTargetDay = day
-    GeorgetteFuckInChurch = 0
-    Friends['georgett'] = 22
-    otkroven['georgett'] = 18
-    HadSex['georgett'] = 1
-    IntimStage['georgett'] = 5
     week = 7
     time = 1
     if money < 30:
@@ -168,39 +285,85 @@
 
 #DebugPortChurchArcPresetAfterC
     gs 'DebugPortChurchArcPresetSundayC'
-    GeorgetteFuckInChurch = 1
+    gs 'DebugPortChurchArcSetGeorgetteRelations', 'c2'
+    GeorgetteChurchAlone = 0
     TavernScandal += 1
     gs 'DebugPortChurchArcPanel'
 ---
 
 #DebugPortChurchArcPresetSundayD
-    gs 'DebugPortChurchArcPresetAfterC'
-    week = 7
-    time = 2
-    GeorgetteConfessBasic = 0
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    gs 'DebugPortChurchArcSetGeorgetteRelations', 'd'
+    GeorgetteChurchAlone = 0
     GeorgetteConfessInChurch = 0
     GeorgetteConfessLizaSaw = 0
+    week = 7
+    time = 2
     ChurchConfessionDoneDay = 0
     ChurchSpyListenDoneDay = 0
     ChurchAfterSermonDoneDay = 0
     ChurchSpyBasicUnlocked = 0
+    if money < 30:
+        money = 30
+    end
     gs 'UpdateGirlLocations'
     gs 'DebugPortChurchArcPanel'
 ---
 
 #DebugPortChurchArcPresetSundayE
-    gs 'DebugPortChurchArcPresetSundayD'
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    gs 'DebugPortChurchArcSetGeorgetteRelations', 'd'
+    GeorgetteChurchAlone = 0
     GeorgetteConfessBasic = 1
+    GeorgetteConfessInChurch = 1
+    week = 7
+    time = 2
     ChurchConfessionDoneDay = day
     ChurchSpyBasicUnlocked = 1
-    GeorgettePriestSpySeen = 0
     ChurchSpyListenDoneDay = 0
+    ChurchAfterSermonDoneDay = 0
+    ChurchSpyWindowHint = 1
+    ChurchSpyWindowGearGossipHeard = 1
+    ChurchSpyWindowMechanismFound = 1
+    ChurchSpyWindowUpgrade = 1
+    gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcPresetAfterE
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    gs 'DebugPortChurchArcSetGeorgetteRelations', 'e'
+    GeorgetteChurchAlone = 0
+    GeorgetteConfessBasic = 1
+    GeorgetteConfessInChurch = 1
+    ChurchConfessionDoneDay = day
+    ChurchSpyBasicUnlocked = 1
+    ChurchSpyListenDoneDay = day
+    ChurchSpyWindowMechanismFound = 1
+    ChurchSpyWindowUpgrade = 1
+    week = 7
+    time = 5
+    GeorgettePortNightGone = 0
+    gs 'UpdateGirlLocations'
     gs 'DebugPortChurchArcPanel'
 ---
 
 #DebugPortChurchArcPresetSundayF
-    gs 'DebugPortChurchArcPresetSundayE'
-    GeorgettePriestSpySeen = 1
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    gs 'DebugPortChurchArcSetGeorgetteRelations', 'f'
+    GeorgetteChurchAlone = 0
+    GeorgetteConfessBasic = 1
+    GeorgetteConfessInChurch = 1
+    ChurchConfessionDoneDay = day
+    ChurchSpyListenDoneDay = day
     LizetteChurchWithGeorgette = 1
     LizetteChurchWithGeorgetteTargetDay = day
     week = 7
@@ -210,14 +373,16 @@
 ---
 
 #DebugPortChurchArcPresetSundayH
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    gs 'DebugPortChurchArcSetGeorgetteRelations', 'h'
     LizettePriestSpyStage = 2
     LizettePriestSpySeen = 1
     LizetteSexUnlocked = 1
     LizetteProstPort = 1
-    GeorgetteKnown = 1
-    LizetteKnown = 1
-    GeorgettePortSexDone = 1
     time = 5
+    GeorgettePortNightGone = 0
     PortAlleySpyDay = 0
     gs 'UpdateGirlLocations'
     gs 'DebugPortChurchArcPanel'
