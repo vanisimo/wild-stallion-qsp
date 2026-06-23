@@ -151,24 +151,17 @@
         exit
     end
 
-    gs 'GiftRegistryResolve', $GiftShopId
+    gs 'GiftInventoryTryPurchase', $GiftShopId, ''
 
-    if GiftRegistryKnown = 0 or GiftRegistryPrice <= 0:
-        $BeckyShopMessage = 'Такого товара у прилавка сейчас нет.'
-    elseif money < GiftRegistryPrice:
-        $BeckyShopMessage = 'Вам не хватает денег на ' + $GiftRegistryAccusative + '.'
+    if GiftPurchaseOk = 1:
+        $BeckyShopMessage = $GiftPurchaseMessage + ' Подарок добавлен в сумку.'
     else:
-        money -= GiftRegistryPrice
-        GiftInventory[$GiftShopId] += 1
-        PortGiftBoughtTotal += 1
-        $BeckyShopMessage = 'Вы покупаете ' + $GiftRegistryAccusative + '. Подарок добавлен в ваши вещи.'
+        $BeckyShopMessage = $GiftPurchaseMessage
     end
 
+    killvar 'GiftPurchaseOk'
+    killvar '$GiftPurchaseMessage'
     killvar '$GiftShopId'
-    killvar 'GiftRegistryPrice'
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-    killvar '$GiftRegistryLabel'
 
     $BeckyShopTab = 'gifts'
     gs 'BeckyShopReturnAfterPurchase'

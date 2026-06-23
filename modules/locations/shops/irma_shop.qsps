@@ -340,23 +340,13 @@
 #IrmaShopBuyGift
     $IrmaShopGiftId = LCASE($ARGS[0])
 
-    gs 'GiftRegistryResolve', $IrmaShopGiftId
+    gs 'GiftInventoryTryPurchase', $IrmaShopGiftId, ''
 
-    if GiftRegistryKnown = 0 or GiftRegistryPrice <= 0:
-        $IrmaShopMessage = 'Такого товара у Ирмы сейчас нет.'
-    elseif money < GiftRegistryPrice:
-        $IrmaShopMessage = 'Вам не хватает денег на ' + $GiftRegistryAccusative + '.'
-    else:
-        money -= GiftRegistryPrice
-        GiftInventory[$IrmaShopGiftId] += 1
-        $IrmaShopMessage = 'Вы покупаете ' + $GiftRegistryAccusative + ' за ' + STR(GiftRegistryPrice) + ' монет.'
-    end
+    $IrmaShopMessage = $GiftPurchaseMessage
 
+    killvar 'GiftPurchaseOk'
+    killvar '$GiftPurchaseMessage'
     killvar '$IrmaShopGiftId'
-    killvar '$GiftRegistryAccusative'
-    killvar '$GiftRegistryLabel'
-    killvar 'GiftRegistryKnown'
-    killvar 'GiftRegistryPrice'
 
     gt 'IrmaShop', 'gifts', $IrmaShopReturnLoc
 ---

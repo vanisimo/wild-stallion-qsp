@@ -29,24 +29,17 @@
         $SweetsShopItemTab = 'sweets'
     end
 
-    gs 'GiftRegistryResolve', $SweetsShopItemId
+    gs 'GiftInventoryTryPurchase', $SweetsShopItemId, ''
 
-    if GiftRegistryKnown = 0 or GiftRegistryPrice <= 0:
-        $SweetsShopMessage = 'Такого товара у прилавка сейчас нет.'
-    elseif money < GiftRegistryPrice:
-        $SweetsShopMessage = 'Вам не хватает денег на ' + $GiftRegistryAccusative + '.'
+    if GiftPurchaseOk = 1:
+        $SweetsShopMessage = $GiftPurchaseMessage
     else:
-        money -= GiftRegistryPrice
-        GiftInventory[$SweetsShopItemId] += 1
-        PortGiftBoughtTotal += 1
-        $SweetsShopMessage = 'Вы покупаете ' + $GiftRegistryAccusative + '. Торговец заворачивает покупку и отдаёт вам на вынос.'
+        $SweetsShopMessage = $GiftPurchaseMessage
     end
 
+    killvar 'GiftPurchaseOk'
+    killvar '$GiftPurchaseMessage'
     killvar '$SweetsShopItemId'
-    killvar 'GiftRegistryPrice'
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-    killvar '$GiftRegistryLabel'
 
     $SweetsShopTab = $SweetsShopItemTab
     killvar '$SweetsShopItemTab'

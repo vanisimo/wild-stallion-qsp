@@ -177,6 +177,20 @@
 
     *pl ' '
     *pl 'Деньги: ' + STR(money) + ' мараведи.'
+
+    gs 'GiftInventoryTotal'
+    gs 'GiftPortVisitEnsureWeek'
+
+    if GiftInventoryMaxCarry <= 0:
+        GiftInventoryMaxCarry = 12
+    end
+
+    if GiftPortVisitMax <= 0:
+        GiftPortVisitMax = 2
+    end
+
+    *pl 'В сумке: ' + STR(GiftInventoryTotal) + ' / ' + STR(GiftInventoryMaxCarry)
+    *pl 'Куплено у корабля за приход: ' + STR(PortGiftBoughtThisVisit) + ' / ' + STR(GiftPortVisitMax)
     *pl ' '
 
     act '<b>Южные специи — 35 мараведи</b>':
@@ -237,16 +251,6 @@
         $PortReturnLoc = 'Port'
     end
 
-    gs 'GiftRegistryResolve', $PortGiftId
-
-    PortGiftPrice = GiftRegistryPrice
-    $PortGiftName = $GiftRegistryAccusative
-
-    if GiftRegistryKnown = 0:
-        $PortGiftName = 'неизвестный товар'
-        PortGiftPrice = 0
-    end
-
     cls
 
     *pl '══════════════════════════════════════════════'
@@ -254,18 +258,16 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if PortGiftPrice <= 0:
-        *p 'Торговец разводит руками: такого товара у него нет.'
-    elseif money < PortGiftPrice:
-        *p 'Вам не хватает денег на ' + $PortGiftName + '.'
-    else:
-        money -= PortGiftPrice
-        GiftInventory[$PortGiftId] += 1
-        PortGiftBoughtTotal += 1
+    gs 'GiftInventoryTryPurchase', $PortGiftId, 'PortGiftShop'
 
-        *p 'Вы покупаете ' + $PortGiftName + '. Торговец заворачивает покупку в грубую ткань и перевязывает тонкой верёвкой.'
-        *p 'Подарок добавлен в ваши вещи.'
+    *p $GiftPurchaseMessage
+
+    if GiftPurchaseOk = 1:
+        *p 'Подарок добавлен в сумку.'
     end
+
+    killvar 'GiftPurchaseOk'
+    killvar '$GiftPurchaseMessage'
 
     if debug = 1:
         *pl ' '
@@ -285,9 +287,4 @@
     end
 
     killvar '$PortGiftId'
-    killvar '$PortGiftName'
-    killvar 'PortGiftPrice'
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-    killvar '$GiftRegistryLabel'
 ---

@@ -29,6 +29,165 @@
     GiftInventory['lizette_bracelet'] = 0
 
     PortGiftBoughtTotal = 0
+    GiftInventoryMaxCarry = 12
+    GiftPortVisitMax = 2
+    PortGiftBoughtThisVisit = 0
+    PortGiftVisitWeek = 0
+---
+
+#GiftInventoryTotal
+    GiftInventoryTotal = GiftInventory['capital_hair_ribbon'] + GiftInventory['island_glass_beads'] + GiftInventory['foreign_scarf'] + GiftInventory['mammoth_ivory_box'] + GiftInventory['southern_spices'] + GiftInventory['spiced_oil'] + GiftInventory['dance_fan'] + GiftInventory['hand_mirror'] + GiftInventory['seashell_necklace'] + GiftInventory['sugared_fruits'] + GiftInventory['draupnir_cutting_board'] + GiftInventory['kitchen_knife_set'] + GiftInventory['rare_salt'] + GiftInventory['linen_apron'] + GiftInventory['recipe_codex'] + GiftInventory['herb_bundle'] + GiftInventory['baking_oil'] + GiftInventory['irma_fabric_roll'] + GiftInventory['irma_silk_spool'] + GiftInventory['irma_seed_beads'] + GiftInventory['irma_brooch'] + GiftInventory['lizette_bracelet']
+---
+
+#GiftPortVisitEnsureWeek
+    if PortGiftVisitWeek <> week:
+        PortGiftVisitWeek = week
+        PortGiftBoughtThisVisit = 0
+    end
+---
+
+#GiftInventoryUsesPortVisitLimit
+    GiftInventoryUsesPortVisitLimit = 0
+    $GiftPortLimitMenuLoc = LCASE($ARGS[0])
+
+    if $GiftPortLimitMenuLoc = 'portgiftshop' or $GiftPortLimitMenuLoc = 'lizetteportgiftshop':
+        GiftInventoryUsesPortVisitLimit = 1
+    end
+
+    killvar '$GiftPortLimitMenuLoc'
+---
+
+#GiftInventoryCanAdd
+    GiftInventoryCanAdd = 0
+    $GiftCanAddId = LCASE($ARGS[0])
+    $GiftCanAddMenuLoc = LCASE($ARGS[1])
+    $GiftCanAddReason = ''
+
+    if GiftInventoryMaxCarry <= 0:
+        GiftInventoryMaxCarry = 12
+    end
+
+    gs 'GiftInventoryTotal'
+
+    if GiftInventoryTotal >= GiftInventoryMaxCarry:
+        $GiftCanAddReason = 'В сумке уже ' + STR(GiftInventoryMaxCarry) + ' вещей — некуда девать новый подарок. Сначала вручите что-нибудь из накопленного.'
+        killvar '$GiftCanAddId'
+        killvar '$GiftCanAddMenuLoc'
+        exit
+    end
+
+    if $GiftCanAddId = 'lizette_bracelet' and GiftInventory['lizette_bracelet'] > 0:
+        $GiftCanAddReason = 'Такой браслет у вас уже есть.'
+        killvar '$GiftCanAddId'
+        killvar '$GiftCanAddMenuLoc'
+        exit
+    end
+
+    gs 'GiftInventoryUsesPortVisitLimit', $GiftCanAddMenuLoc
+
+    if GiftInventoryUsesPortVisitLimit = 1:
+        gs 'GiftPortVisitEnsureWeek'
+
+        if GiftPortVisitMax <= 0:
+            GiftPortVisitMax = 2
+        end
+
+        if PortGiftBoughtThisVisit >= GiftPortVisitMax:
+            $GiftCanAddReason = 'Торговец с корабля не отпустит больше ' + STR(GiftPortVisitMax) + ' покупок за один приход — сумки у матросов тоже не резиновые.'
+            killvar 'GiftInventoryUsesPortVisitLimit'
+            killvar '$GiftCanAddId'
+            killvar '$GiftCanAddMenuLoc'
+            exit
+        end
+    end
+
+    killvar 'GiftInventoryUsesPortVisitLimit'
+    GiftInventoryCanAdd = 1
+    killvar '$GiftCanAddId'
+    killvar '$GiftCanAddMenuLoc'
+---
+
+#GiftInventoryRegisterPurchase
+    $GiftRegisterMenuLoc = LCASE($ARGS[0])
+
+    gs 'GiftInventoryUsesPortVisitLimit', $GiftRegisterMenuLoc
+
+    if GiftInventoryUsesPortVisitLimit = 1:
+        gs 'GiftPortVisitEnsureWeek'
+        PortGiftBoughtThisVisit += 1
+    end
+
+    PortGiftBoughtTotal += 1
+    killvar 'GiftInventoryUsesPortVisitLimit'
+    killvar '$GiftRegisterMenuLoc'
+---
+
+#GiftInventoryTryPurchase
+    GiftPurchaseOk = 0
+    $GiftPurchaseId = LCASE($ARGS[0])
+    $GiftPurchaseMenuLoc = $ARGS[1]
+    $GiftPurchaseMessage = ''
+
+    if $GiftPurchaseMenuLoc = '':
+        $GiftPurchaseMenuLoc = ''
+    end
+
+    gs 'GiftRegistryResolve', $GiftPurchaseId
+
+    if GiftRegistryKnown = 0 or GiftRegistryPrice <= 0:
+        $GiftPurchaseMessage = 'Такого товара у продавца сейчас нет.'
+        killvar '$GiftPurchaseId'
+        killvar '$GiftPurchaseMenuLoc'
+        exit
+    end
+
+    gs 'GiftInventoryCanAdd', $GiftPurchaseId, $GiftPurchaseMenuLoc
+
+    if GiftInventoryCanAdd = 0:
+        $GiftPurchaseMessage = $GiftCanAddReason
+        killvar '$GiftCanAddReason'
+        killvar '$GiftPurchaseId'
+        killvar '$GiftPurchaseMenuLoc'
+        killvar 'GiftRegistryPrice'
+        killvar 'GiftRegistryKnown'
+        killvar '$GiftRegistryAccusative'
+        killvar '$GiftRegistryLabel'
+        exit
+    end
+
+    if money < GiftRegistryPrice:
+        $GiftPurchaseMessage = 'Вам не хватает денег на ' + $GiftRegistryAccusative + '.'
+    else:
+        money -= GiftRegistryPrice
+        GiftInventory[$GiftPurchaseId] += 1
+        gs 'GiftInventoryRegisterPurchase', $GiftPurchaseMenuLoc
+
+        $GiftPurchaseMessage = 'Вы покупаете ' + $GiftRegistryAccusative + '. Продавец заворачивает покупку и отдаёт вам на вынос.'
+        GiftPurchaseOk = 1
+    end
+
+    killvar '$GiftCanAddReason'
+    killvar '$GiftPurchaseId'
+    killvar '$GiftPurchaseMenuLoc'
+    killvar 'GiftRegistryPrice'
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+    killvar '$GiftRegistryLabel'
+---
+
+#GiftBagPanelLine
+    $GiftBagLineId = LCASE($ARGS[0])
+
+    if GiftInventory[$GiftBagLineId] > 0:
+        gs 'GiftRegistryResolve', $GiftBagLineId
+        gs 'PanelUiLine', $GiftRegistryLabel + ' — ' + STR(GiftInventory[$GiftBagLineId]) + ' шт.'
+        killvar 'GiftRegistryPrice'
+        killvar 'GiftRegistryKnown'
+        killvar '$GiftRegistryAccusative'
+        killvar '$GiftRegistryLabel'
+    end
+
+    killvar '$GiftBagLineId'
 ---
 
 #GiftHasAnyInInventory
@@ -200,18 +359,16 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if GiftRegistryKnown = 0 or GiftRegistryPrice <= 0:
-        *p 'Такого товара у продавца сейчас нет.'
-    elseif money < GiftRegistryPrice:
-        *p 'Вам не хватает денег на ' + $GiftRegistryAccusative + '.'
-    else:
-        money -= GiftRegistryPrice
-        GiftInventory[$GiftShopId] += 1
-        PortGiftBoughtTotal += 1
+    gs 'GiftInventoryTryPurchase', $GiftShopId, $GiftShopMenuLoc
 
-        *p 'Вы покупаете ' + $GiftRegistryAccusative + '. Продавец заворачивает покупку и отдаёт вам на вынос.'
-        *p 'Подарок добавлен в ваши вещи.'
+    *p $GiftPurchaseMessage
+
+    if GiftPurchaseOk = 1:
+        *p 'Подарок добавлен в сумку.'
     end
+
+    killvar 'GiftPurchaseOk'
+    killvar '$GiftPurchaseMessage'
 
     if debug = 1:
         *pl ' '

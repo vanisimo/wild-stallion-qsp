@@ -77,9 +77,16 @@
         *pl 'Деньги: ' + STR(money) + ' мараведи.'
         *pl ' '
 
-        if GiftInventory['lizette_bracelet'] > 0:
-            *p 'Такой браслет у вас уже есть.'
+        gs 'GiftInventoryCanAdd', 'lizette_bracelet', 'LizettePortGiftShop'
+
+        if GiftInventoryCanAdd = 0:
+            *p $GiftCanAddReason
+            killvar '$GiftCanAddReason'
+            killvar 'GiftInventoryCanAdd'
         else:
+            killvar '$GiftCanAddReason'
+            killvar 'GiftInventoryCanAdd'
+
             act '<b>Купить южный браслет — 55 мараведи</b>':
                 gt 'GiftShopBuy', $GiftShopReturnLoc, 'lizette_bracelet', 'LizettePortGiftShop'
             end
