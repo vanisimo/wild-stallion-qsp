@@ -2,6 +2,7 @@
 ! FILE: modules/events/church/church_after_sermon.qsps
 ! MODULE: events/church
 ! Прогулка у собора — воскресный полдень (этап D4)
+! ASSET: images/locations/church/window/ajar.png — см. ASSET-ajar.txt
 ! ================================================
 
 #ChurchWalkAroundCanEnter
@@ -36,7 +37,18 @@
 
     gs 'PrintMainP', 'Ты обходишь церковь снаружи. Прихожане расходятся по Рипербану, а у боковой стены, где высокое окно комнаты чистых сердец, слышны приглушённые голоса.'
 
+    if ChurchSpyWindowHint = 1 and ChurchSpyWindowMechanismFound = 0:
+        *pl ' '
+        gs 'PrintMainP', 'Сандра с Бекки не зря смеялись над гномьей шестерёнкой — у этой створки что-то торчит в раме, но пока ты не знаешь, как этим пользоваться.'
+    end
+
     *pl ' '
+
+    if ChurchSpyWindowHint = 1 and ChurchSpyWindowMechanismFound = 0:
+        act '<b>Найти механизм</b>', 'images/common/ui/actions/look.png':
+            gt 'ChurchWalkWindowMechanismFirst'
+        end
+    end
 
     act '<b>Прислушаться у окна</b>', 'images/common/ui/actions/look.png':
         gt 'ChurchWalkWindowListen'
@@ -49,19 +61,55 @@
     killvar 'ChurchWalkAroundOpen'
 ---
 
-#ChurchWalkWindowListen
+#ChurchWalkWindowMechanismFirst
     gs 'ChurchWalkAroundCanEnter'
 
     if ChurchWalkAroundOpen = 0:
         gt 'ChurchSundayNoon'
     end
 
-    gs 'ChurchSpyPlotCanStart'
+    if ChurchSpyWindowHint = 0:
+        gt 'ChurchWalkAroundStart'
+    end
 
-    if ChurchSpyPlotCanStart = 1:
-        killvar 'ChurchWalkAroundOpen'
-        killvar 'ChurchSpyPlotCanStart'
-        gt 'ChurchSpyRouteStart'
+    if ChurchSpyWindowMechanismFound = 1:
+        gt 'ChurchWalkWindowListen'
+    end
+
+    cls
+
+    gs 'ShowImage', 'church', 'window', 'ajar'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' МЕХАНИЗМ В СТВОРКЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchWalkWindowText', 'mechanism_first'
+    *p $ChurchWalkText
+
+    ChurchSpyWindowMechanismFound = 1
+    ChurchSpyWindowUpgrade = 1
+
+    *pl ' '
+
+    act '<b>Прислушаться у окна</b>', 'images/common/ui/actions/look.png':
+        gt 'ChurchWalkWindowListen'
+    end
+
+    act '<b>К собору</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchWalkAroundStart'
+    end
+
+    killvar '$ChurchWalkText'
+    killvar 'ChurchWalkAroundOpen'
+---
+
+#ChurchWalkWindowListen
+    gs 'ChurchWalkAroundCanEnter'
+
+    if ChurchWalkAroundOpen = 0:
+        gt 'ChurchSundayNoon'
     end
 
     cls
@@ -71,32 +119,39 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if ChurchSpyWindowHint = 0:
+    if ChurchSpyWindowMechanismFound = 0:
         ChurchWalkWindowPick = RAND(1, 4)
         gs 'ShowImage', 'church', 'general', 'normal'
 
         *pl ' '
 
-        gs 'PrintMainP', 'Витраж закрыт. Сквозь цветное стекло не видно ничего — только голоса, будто из-под воды.'
+        if ChurchSpyWindowHint = 1:
+            gs 'PrintMainP', 'Витраж закрыт. Ты уже знаешь, что у створки спрятан гномий механизм — но пока не нашёл, как им воспользоваться.'
+        else:
+            gs 'PrintMainP', 'Витраж закрыт. Сквозь цветное стекло не видно ничего — только голоса, будто из-под воды.'
+        end
 
         *pl ' '
 
         gs 'ChurchWalkWindowText', 'muffled_' + STR(ChurchWalkWindowPick)
         *p $ChurchWalkText
     else:
+        gs 'ShowImage', 'church', 'window', 'ajar'
+
+        *pl ' '
+
+        gs 'ChurchWalkWindowText', 'mechanism_repeat'
+        *p $ChurchWalkText
+
+        *pl ' '
+
         ChurchWalkWindowPick = RAND(1, 3)
 
-        if ChurchWalkWindowPick = 1 or ChurchWalkWindowPick = 3:
-            gs 'ShowImage', 'gerhard', 'normal', 'normal'
-        else:
-            gs 'ShowImage', 'church', 'general', 'normal'
+        if ChurchSpyPlotCanStart = 1:
+            killvar 'ChurchWalkAroundOpen'
+            killvar 'ChurchSpyPlotCanStart'
+            gt 'ChurchSpyRouteStart'
         end
-
-        *pl ' '
-
-        gs 'PrintMainP', 'Створка приоткрыта — ты знаешь, где шестерёнка в раме. Сквозь щель видно больше, чем слышно из зала.'
-
-        *pl ' '
 
         gs 'ChurchWalkWindowText', 'open_' + STR(ChurchWalkWindowPick)
         *p $ChurchWalkText
@@ -109,6 +164,9 @@
         *pl ' '
     elseif ChurchSpyListenDoneDay = day:
         *pl '<span style="color:#888"><i>Сегодня ты уже подслушивал исповедь, которая касалась тебя.</i></span>'
+        *pl ' '
+    elseif ChurchSpyWindowHint = 1 and ChurchSpyWindowMechanismFound = 0:
+        *pl '<span style="color:#888"><i>Чтобы видеть больше, сначала найди механизм в створке.</i></span>'
         *pl ' '
     end
 
