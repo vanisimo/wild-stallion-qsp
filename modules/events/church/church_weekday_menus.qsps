@@ -1,0 +1,71 @@
+! ================================================
+! FILE: modules/events/church/church_weekday_menus.qsps
+! MODULE: events/church
+! Церковь в будни — меню отца Герхарда в тексте
+! ================================================
+
+#ChurchWeekdayEmbedGerhardLink
+    gs 'FormatTextByStyle', 'отец Герхард', 'npc_link'
+    gs 'NpcTalkIconInline'
+    $ChurchWeekdayGerhardLink = $NpcTalkIconInline + ' <a href="exec:gs ''ChurchWeekdayShowGerhardMenu''">' + $FormattedText + '</a>'
+
+    killvar '$FormattedText'
+    killvar '$NpcTalkIconInline'
+---
+
+#ChurchWeekdayShowGerhardMenu
+    gs 'ChurchWeekdayBuildGerhardMenu'
+    gs 'Menu.Show', 'ChurchWeekdayGerhardMenu'
+---
+
+#ChurchWeekdayBuildGerhardMenu
+    gs 'Menu.Destroy', 'ChurchWeekdayGerhardMenu'
+    gs 'Menu.Create', 'ChurchWeekdayGerhardMenu'
+
+    gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Осмотреть', 'look'
+    gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', {
+        gt 'ChurchWeekdayGerhardInspect'
+    }
+
+    gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Поговорить', 'talk'
+    gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', {
+        gt 'ChurchGerhardWeekdayTalk'
+    }
+
+    gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'О пожертвованиях', 'circle'
+    gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', {
+        gt 'ChurchDonationInfo'
+    }
+---
+
+#ChurchWeekdayPrintIntro
+    gs 'ChurchWeekdayEmbedGerhardLink'
+
+    $ChurchWeekdayIntroText = 'В соборе тихо. У алтаря горят свечи, в проходах пахнет воском и старым деревом. Неподалёку от алтаря стоит ' + $ChurchWeekdayGerhardLink + '.'
+
+    killvar '$ChurchWeekdayGerhardLink'
+---
+
+#ChurchWeekdayGerhardInspect
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ОСМОТР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ShowImage', 'gerhard', 'normal', 'normal'
+
+    *pl ' '
+
+    gs 'ChurchWeekdayText', 'inspect_gerhard'
+    *p $ChurchWeekdayText
+
+    *pl ' '
+
+    act '<b>Назад в зал</b>', 'images/common/ui/actions/return.png':
+        gt 'Church'
+    end
+
+    killvar '$ChurchWeekdayText'
+---

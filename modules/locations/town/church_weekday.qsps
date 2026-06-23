@@ -18,21 +18,44 @@
 
     gs 'ShowImage', 'church', 'general', 'normal'
 
-    gs 'PrintMainP', 'В соборе тихо. У алтаря горят свечи, в проходах пахнет воском и старым деревом.'
+    gs 'ChurchWeekdayPrintIntro'
+    *p $ChurchWeekdayIntroText
+    killvar '$ChurchWeekdayIntroText'
 
     *pl ' '
 
-    act '<b>Поговорить с отцом Герхардом</b>', 'images/common/ui/actions/talk.png':
-        gt 'ChurchGerhardWeekdayTalk'
+    if ChurchDonatedToday <> 1:
+        act '<b>Пожертвования</b>', 'images/common/ui/actions/holy_circle.png':
+            gt 'ChurchWeekdayDonations'
+        end
     end
 
-    act '<b>О пожертвованиях</b>', 'images/common/ui/actions/holy_circle.png':
-        gt 'ChurchDonationInfo'
-    end
+    gs 'ChurchRenderStreetExit'
+---
+
+#ChurchWeekdayDonations
+    cls
+
+    gs 'AddGlobalButtons'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ЦЕРКОВЬ ИЛЬМАТЕРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    gs 'ChurchWeekdayText', 'donations'
+    *p $ChurchWeekdayText
+    killvar '$ChurchWeekdayText'
+
+    *pl ' '
 
     gs 'ChurchWeekdayDonationAct'
 
-    gs 'ChurchRenderStreetExit'
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
+        gt 'Church'
+    end
 ---
 
 #ChurchGerhardWeekdayTalk
@@ -49,7 +72,7 @@
 
     *pl ' '
 
-    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+    act '<b>Назад в зал</b>', 'images/common/ui/actions/return.png':
         gt 'Church'
     end
 ---
@@ -73,7 +96,7 @@
 
     *pl ' '
 
-    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+    act '<b>Назад в зал</b>', 'images/common/ui/actions/return.png':
         gt 'Church'
     end
 ---
