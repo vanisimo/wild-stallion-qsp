@@ -1,0 +1,331 @@
+! ================================================
+! FILE: modules/events/port/port_night.qsps
+! MODULE: events/port
+! Ночной порт на главном #Port: ролл занятости, переулок, видимость NPC
+! ================================================
+
+#PortNightResetDaily
+    $PortNightBusyGirl = ''
+    PortAlleyPeekCount = 0
+    GeorgettePortNightGone = 0
+    LizettePortNightGone = 0
+---
+
+#PortNightIsActive
+    PortNightActive = 0
+
+    if time <> 5:
+        exit
+    end
+
+    gs 'GeorgettePortNightCanEnter'
+
+    if GeorgettePortNightOpen = 1:
+        PortNightActive = 1
+        exit
+    end
+
+    killvar 'GeorgettePortNightOpen'
+
+    gs 'PortProstNightCanEnter'
+
+    if PortProstNightOpen = 1:
+        PortNightActive = 1
+    end
+
+    killvar 'PortProstNightOpen'
+---
+
+#PortNightPeekLimit
+    if LizetteProstPort = 1:
+        PortNightPeekLimit = 4
+    else:
+        PortNightPeekLimit = 2
+    end
+---
+
+#PortNightRollBusy
+    gs 'PortNightIsActive'
+
+    if PortNightActive = 0:
+        $PortNightBusyGirl = ''
+        killvar 'PortNightActive'
+        exit
+    end
+
+    killvar 'PortNightActive'
+
+    PortNightBusyRoll = RAND(1, 100)
+    $PortNightBusyGirl = ''
+
+    if LizetteProstPort = 1:
+        if PortNightBusyRoll <= 70:
+            $PortNightBusyGirl = ''
+        elseif PortNightBusyRoll <= 85:
+            $PortNightBusyGirl = 'georgett'
+        else:
+            $PortNightBusyGirl = 'lizette'
+        end
+    else:
+        if PortNightBusyRoll <= 30:
+            $PortNightBusyGirl = 'georgett'
+        end
+    end
+
+    killvar 'PortNightBusyRoll'
+
+    if $PortNightBusyGirl = 'georgett':
+        if GeorgettePortNightGone = 1:
+            $PortNightBusyGirl = ''
+        end
+    end
+
+    if $PortNightBusyGirl = 'lizette':
+        if LizettePortNightGone = 1:
+            $PortNightBusyGirl = ''
+        end
+    end
+---
+
+#PortNightGirlVisible
+    PortNightGirlVisible = 0
+    $PortNightVisibleGirl = LCASE($ARGS[0])
+
+    if $PortNightVisibleGirl = '':
+        killvar '$PortNightVisibleGirl'
+        exit
+    end
+
+    if time <> 5:
+        killvar '$PortNightVisibleGirl'
+        exit
+    end
+
+    if $PortNightVisibleGirl = 'georgett':
+        gs 'GeorgettePortNightCanEnter'
+
+        if GeorgettePortNightOpen = 0:
+            killvar 'GeorgettePortNightOpen'
+            killvar '$PortNightVisibleGirl'
+            exit
+        end
+
+        killvar 'GeorgettePortNightOpen'
+
+        if GeorgettePortNightGone = 1:
+            killvar '$PortNightVisibleGirl'
+            exit
+        end
+
+        if $PortNightBusyGirl = 'georgett':
+            killvar '$PortNightVisibleGirl'
+            exit
+        end
+
+        PortNightGirlVisible = 1
+    elseif $PortNightVisibleGirl = 'lizette':
+        if LizetteProstPort = 0:
+            killvar '$PortNightVisibleGirl'
+            exit
+        end
+
+        if LizetteKnown = 0:
+            killvar '$PortNightVisibleGirl'
+            exit
+        end
+
+        if LizettePortNightGone = 1:
+            killvar '$PortNightVisibleGirl'
+            exit
+        end
+
+        if $PortNightBusyGirl = 'lizette':
+            killvar '$PortNightVisibleGirl'
+            exit
+        end
+
+        PortNightGirlVisible = 1
+    end
+
+    killvar '$PortNightVisibleGirl'
+---
+
+#PortNightTryShowGirlLink
+    $PortNightLinkGirl = LCASE($ARGS[0])
+
+    if $PortNightLinkGirl = '':
+        killvar '$PortNightLinkGirl'
+        exit
+    end
+
+    gs 'PortNightGirlVisible', $PortNightLinkGirl
+
+    if PortNightGirlVisible = 1:
+        gs 'ShowGirlNpcLinks', $PortNightLinkGirl, 'Port', 'Port'
+        LocationGirlShown = 1
+    end
+
+    killvar 'PortNightGirlVisible'
+    killvar '$PortNightLinkGirl'
+---
+
+#PortNightPrintDockText
+    gs 'PortNightGirlVisible', 'georgett'
+    PortNightDockGeorg = PortNightGirlVisible
+    killvar 'PortNightGirlVisible'
+
+    gs 'PortNightGirlVisible', 'lizette'
+    PortNightDockLiz = PortNightGirlVisible
+    killvar 'PortNightGirlVisible'
+
+    if PortNightDockGeorg = 1 and PortNightDockLiz = 1:
+        gs 'PortNightText', 'dock_both'
+        *p $PortNightText
+    elseif PortNightDockGeorg = 1:
+        gs 'PortNightText', 'dock_georgett'
+        *p $PortNightText
+    elseif PortNightDockLiz = 1:
+        gs 'PortNightText', 'dock_lizette'
+        *p $PortNightText
+    elseif $PortNightBusyGirl = 'georgett':
+        gs 'PortNightText', 'busy_georgett'
+        *p $PortNightText
+    elseif $PortNightBusyGirl = 'lizette':
+        gs 'PortNightText', 'busy_lizette'
+        *p $PortNightText
+    end
+
+    killvar '$PortNightText'
+    killvar 'PortNightDockGeorg'
+    killvar 'PortNightDockLiz'
+---
+
+#PortNightAlleyCanShow
+    PortNightAlleyOpen = 0
+
+    if time <> 5:
+        exit
+    end
+
+    gs 'PortNightIsActive'
+
+    if PortNightActive = 0:
+        killvar 'PortNightActive'
+        exit
+    end
+
+    killvar 'PortNightActive'
+
+    if $PortNightBusyGirl = '':
+        exit
+    end
+
+    if $PortNightBusyGirl = 'georgett' and GeorgettePortNightGone = 1:
+        exit
+    end
+
+    if $PortNightBusyGirl = 'lizette' and LizettePortNightGone = 1:
+        exit
+    end
+
+    gs 'PortNightPeekLimit'
+
+    if PortAlleyPeekCount >= PortNightPeekLimit:
+        killvar 'PortNightPeekLimit'
+        exit
+    end
+
+    killvar 'PortNightPeekLimit'
+
+    PortNightAlleyOpen = 1
+---
+
+#PortNightAlleyPeekStart
+    gs 'PortNightAlleyCanShow'
+
+    if PortNightAlleyOpen = 0:
+        gt 'Port'
+    end
+
+    killvar 'PortNightAlleyOpen'
+
+    gs 'PortNightAlleyPickScene'
+
+    if $PortNightAlleySceneId = '':
+        gt 'Port'
+    end
+
+    gt 'PortNightAlleyPeekScene'
+---
+
+#PortNightAlleyPeekScene
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ПЕРЕУЛОК У ПОРТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ShowEventImage') = 1 and $PortNightAlleySceneId <> '':
+        gs 'ShowEventImage', 'images/events/port/night_alley', $PortNightAlleySceneId, 1
+    end
+
+    *pl ' '
+
+    if $PortNightBusyGirl = 'georgett':
+        gs 'PortNightAlleyText', 'peek_open_georgett'
+    elseif $PortNightBusyGirl = 'lizette':
+        gs 'PortNightAlleyText', 'peek_open_lizette'
+    end
+
+    *p $PortNightAlleyText
+    killvar '$PortNightAlleyText'
+
+    *pl ' '
+
+    gs 'PortNightAlleyText', $PortNightAlleySceneId
+    *p $PortNightAlleyText
+    killvar '$PortNightAlleyText'
+
+    gs 'PortNightAlleyApplySceneEffects'
+
+    PortAlleyPeekCount += 1
+
+    if $PortNightBusyGirl = 'georgett':
+        Friends['georgett'] += 1
+        otkroven['georgett'] += 1
+    elseif $PortNightBusyGirl = 'lizette':
+        Friends['lizette'] += 1
+        otkroven['lizette'] += 1
+    end
+
+    gs 'PortNightPeekLimit'
+
+    if PortAlleyPeekCount >= PortNightPeekLimit:
+        if $PortNightBusyGirl = 'georgett':
+            GeorgettePortNightGone = 1
+            gs 'PortNightAlleyText', 'limit_georgett'
+        elseif $PortNightBusyGirl = 'lizette':
+            LizettePortNightGone = 1
+            gs 'PortNightAlleyText', 'limit_lizette'
+        end
+
+        *pl ' '
+        *p $PortNightAlleyText
+        killvar '$PortNightAlleyText'
+        $PortNightBusyGirl = ''
+    end
+
+    killvar 'PortNightPeekLimit'
+
+    *pl ' '
+
+    act '<b>Назад к причалу</b>', 'images/common/ui/actions/return.png':
+        gs 'PortNightRollBusy'
+        PortNightSkipEntryRoll = 1
+        killvar '$PortNightAlleySceneId'
+        gt 'Port'
+    end
+
+    killvar '$PortNightAlleySceneId'
+---

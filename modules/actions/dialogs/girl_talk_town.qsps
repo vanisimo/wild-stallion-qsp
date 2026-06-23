@@ -8,33 +8,51 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О корабле и столице', ''
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О корабле и столице', 'talk'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'port_talk'
     }
 
     if AmandaMetLizette = 1 or LizetteKnown = 1 or AmandaLizaInfluence >= 3:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и Аманде', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и Аманде', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_amanda'
         }
     end
 
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', 'talk'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
     }
 
     if Friends['lizette'] >= 12 or love['lizette'] >= 10 or otkroven['lizette'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
         }
     end
 
+    if $TalkReturnLoc = 'Port' and time = 5 and LizettePortNightGone = 0 and LizetteSexUnlocked = 1:
+        gs 'PortNightGirlVisible', 'lizette'
+
+        if PortNightGirlVisible = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Снять Лизетту (10 мараведи)', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'PortProstNightHire', 'Port', 'lizette'
+            }
+        end
+
+        killvar 'PortNightGirlVisible'
+    end
+
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkMenuReturn'
+        if $TalkReturnLoc = 'Port':
+            gs 'GirlTalkSessionEnd'
+            gt 'Port'
+        else:
+            gt 'GirlTalkMenuReturn'
+        end
     }
 ---
 

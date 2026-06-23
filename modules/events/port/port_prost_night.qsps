@@ -27,62 +27,7 @@
 ---
 
 #PortProstNightMenu
-    $PortProstNightReturnLoc = $ARGS[0]
-
-    if $PortProstNightReturnLoc = '':
-        $PortProstNightReturnLoc = 'Port'
-    end
-
-    gs 'PortProstNightCanEnter'
-
-    if PortProstNightOpen = 0:
-        gt $PortProstNightReturnLoc
-    end
-
-    cls
-
-    gs 'ShowImage', 'port', 'general', 'normal'
-
-    *pl '══════════════════════════════════════════════'
-    gs 'PrintTitleLine', ' НОЧНОЙ ПРИЧАЛ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    gs 'PortProstNightText', 'intro'
-    *p $PortProstNightText
-    killvar '$PortProstNightText'
-
-    *pl ' '
-    *pl 'Деньги: ' + STR(money) + ' мараведи.'
-    *pl ' '
-
-    act '<b>Снять Жоржетту (10)</b>', 'images/common/ui/actions/intim.png':
-        gt 'PortProstNightHire', $PortProstNightReturnLoc, 'georgett'
-    end
-
-    if LizetteSexUnlocked = 1:
-        act '<b>Снять Лизетту (10)</b>', 'images/common/ui/actions/intim.png':
-            gt 'PortProstNightHire', $PortProstNightReturnLoc, 'lizette'
-        end
-    else:
-        *pl '<span style="color:#888">Лизетта ещё не готова к такому — сначала церковная цепочка.</span>'
-    end
-
-    gs 'PortAlleySpyCanEnter'
-
-    if PortAlleySpyOpen = 1:
-        act '<b>Подворотня</b>', 'images/common/ui/actions/look.png':
-            gt 'PortAlleySpyStart', $PortProstNightReturnLoc
-        end
-    end
-
-    killvar 'PortAlleySpyOpen'
-
-    act '<b>Уйти с причала</b>', 'images/common/ui/actions/return.png':
-        gt $PortProstNightReturnLoc
-    end
-
-    killvar 'PortProstNightOpen'
+    gt 'Port'
 ---
 
 #PortProstNightHire
@@ -99,8 +44,8 @@
         *p $PortProstNightText
         killvar '$PortProstNightText'
         *pl ' '
-        act '<b>Назад</b>':
-            gt 'PortProstNightMenu', $PortProstNightReturnLoc
+        act '<b>Назад</b>', 'images/common/ui/actions/return.png':
+            gt 'Port'
         end
         killvar '$PortProstNightGirl'
         exit
@@ -109,6 +54,7 @@
     money -= 10
 
     if $PortProstNightGirl = 'georgett':
+        GeorgettePortSexPaidActive = 1
         IntimStage['georgett'] = 5
         gt 'SexSceneStart', 'georgett', 'PortProstNightAfterGeorg', 'georgett_port_first'
     elseif $PortProstNightGirl = 'lizette' and LizetteSexUnlocked = 1:
@@ -116,7 +62,7 @@
         gt 'SexSceneStart', 'lizette', 'PortProstNightAfterLiz', 'normal'
     else:
         money += 10
-        gt 'PortProstNightMenu', $PortProstNightReturnLoc
+        gt 'Port'
     end
 
     killvar '$PortProstNightGirl'
@@ -127,6 +73,9 @@
     clr
     cla
 
+    GeorgettePortSexPaidActive = 0
+    GeorgettePortNightGone = 1
+
     gs 'PortProstNightText', 'after_georgett'
     *p $PortProstNightText
     killvar '$PortProstNightText'
@@ -136,8 +85,8 @@
 
     *pl ' '
 
-    act '<b>К причалу</b>':
-        gt 'PortProstNightMenu', 'Port'
+    act '<b>К причалу</b>', 'images/common/ui/actions/return.png':
+        gt 'Port'
     end
 ---
 
@@ -145,6 +94,8 @@
     *clr
     clr
     cla
+
+    LizettePortNightGone = 1
 
     gs 'PortProstNightText', 'after_lizette'
     *p $PortProstNightText
@@ -156,7 +107,7 @@
 
     *pl ' '
 
-    act '<b>К причалу</b>':
-        gt 'PortProstNightMenu', 'Port'
+    act '<b>К причалу</b>', 'images/common/ui/actions/return.png':
+        gt 'Port'
     end
 ---

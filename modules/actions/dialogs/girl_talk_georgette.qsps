@@ -16,9 +16,9 @@
 
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            if $TalkReturnLoc = 'GeorgettePortNightMenu':
+            if $TalkReturnLoc = 'Port':
                 gs 'GirlTalkSessionEnd'
-                gt 'GeorgettePortNightMenu', 'Port'
+                gt 'Port'
             elseif $TalkReturnLoc = 'ChurchSundayServiceMenu':
                 gs 'GirlTalkSessionEnd'
                 gt 'ChurchSundayServiceMenu'
@@ -30,62 +30,80 @@
     end
 
     if GeorgetteKnown = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О порте и кораблях', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О порте и кораблях', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_port'
         }
 
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О её жизни', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О её жизни', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_bio'
         }
     end
 
     if LizetteMentionedByGeorgette = 1 or PortMeetWitnessed = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О дочери Лизетте', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О дочери Лизетте', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_lizette'
         }
     end
 
     if Friends['georgett'] >= 14:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О клиентах и городе', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О клиентах и городе', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_clients'
         }
     end
 
     if GeorgettePortSexDone = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О церкви и отце Герхарде', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О церкви и отце Герхарде', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_church'
         }
     end
 
     if Friends['georgett'] >= 18 and EddieSawGeorg >= 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Об Эдди из лавки Бекки', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Об Эдди из лавки Бекки', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_eddie'
         }
     end
 
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', 'talk'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
     }
 
     if Friends['georgett'] >= 12 or love['georgett'] >= 10 or otkroven['georgett'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
         }
     end
 
+    if $TalkReturnLoc = 'Port' and time = 5 and GeorgettePortNightGone = 0:
+        gs 'PortNightGirlVisible', 'georgett'
+
+        if PortNightGirlVisible = 1:
+            if GeorgettePortSexDone = 0:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Снять Жоржетту (10 мараведи)', 'intim'
+            else:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Провести ночь с Жоржеттой (10 мараведи)', 'intim'
+            end
+
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GeorgettePortNightPaySex', 'Port'
+            }
+        end
+
+        killvar 'PortNightGirlVisible'
+    end
+
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        if $TalkReturnLoc = 'GeorgettePortNightMenu':
+        if $TalkReturnLoc = 'Port':
             gs 'GirlTalkSessionEnd'
-            gt 'GeorgettePortNightMenu', 'Port'
+            gt 'Port'
         elseif $TalkReturnLoc = 'ChurchSundayServiceMenu':
             gs 'GirlTalkSessionEnd'
             gt 'ChurchSundayServiceMenu'

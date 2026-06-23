@@ -1,0 +1,68 @@
+! ================================================
+! FILE: modules/events/port/port_night_alley_scenes.qsps
+! MODULE: events/port
+! Выбор сцены наблюдения в переулке
+! ================================================
+
+#PortNightAlleyPickScene
+    $PortNightAlleySceneId = ''
+
+    if $PortNightBusyGirl = 'georgett':
+        if LizetteProstPort = 0 and PortAlleyPeekCount = 0:
+            $PortNightAlleySceneId = 'georgett_sailors'
+            exit
+        end
+
+        PortNightAlleyPickRoll = RAND(1, 100)
+
+        if PortNightAlleyPickRoll <= 35:
+            $PortNightAlleySceneId = 'georgett_sailors'
+        elseif PortNightAlleyPickRoll <= 55:
+            $PortNightAlleySceneId = 'georgett_townsman'
+        elseif PortNightAlleyPickRoll <= 75:
+            $PortNightAlleySceneId = 'georgett_oral'
+        elseif PortNightAlleyPickRoll <= 88:
+            $PortNightAlleySceneId = 'georgett_wall'
+        elseif PortNightAlleyPickRoll <= 95:
+            $PortNightAlleySceneId = 'georgett_priest'
+        else:
+            $PortNightAlleySceneId = 'georgett_eddie'
+        end
+
+        killvar 'PortNightAlleyPickRoll'
+    elseif $PortNightBusyGirl = 'lizette':
+        PortNightAlleyPickRoll = RAND(1, 100)
+
+        if PortNightAlleyPickRoll <= 35:
+            $PortNightAlleySceneId = 'lizette_sailors'
+        elseif PortNightAlleyPickRoll <= 60:
+            $PortNightAlleySceneId = 'lizette_young'
+        elseif PortNightAlleyPickRoll <= 82:
+            $PortNightAlleySceneId = 'lizette_townsman'
+        else:
+            $PortNightAlleySceneId = 'lizette_legare'
+        end
+
+        killvar 'PortNightAlleyPickRoll'
+    end
+---
+
+#PortNightAlleyApplySceneEffects
+    if $PortNightAlleySceneId = 'lizette_legare':
+        TavernScandal += 1
+    elseif $PortNightAlleySceneId = 'georgett_eddie':
+        if Friends['eddie'] < 30:
+            Friends['eddie'] += 1
+        end
+
+        if EddieSawGeorg < 2:
+            EddieSawGeorg += 1
+        end
+    elseif $PortNightAlleySceneId = 'georgett_priest':
+        PriestConfessionCorruption += 1
+    else:
+        if TavernScandal > 0:
+            TavernScandal += 1
+        end
+    end
+---

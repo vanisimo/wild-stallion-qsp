@@ -23,79 +23,7 @@
 ---
 
 #GeorgettePortNightMenu
-    $GeorgetteNightReturnLoc = $ARGS[0]
-
-    if $GeorgetteNightReturnLoc = '':
-        $GeorgetteNightReturnLoc = 'Port'
-    end
-
-    gs 'GeorgettePortNightCanEnter'
-
-    if GeorgettePortNightOpen = 0:
-        gt $GeorgetteNightReturnLoc
-    end
-
-    gs 'EnsureGirlData', 'georgett'
-
-    cls
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' НОЧНОЙ ПОРТ — ЖОРЖЕТТА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    gs 'GeorgettePortNightText', 'intro'
-    *p $GeorgettePortNightText
-
-    *pl ' '
-    *pl 'Деньги: ' + STR(money) + ' мараведи.'
-    *pl ' '
-
-    if LOC('ShowGirlNpcLinks') = 1:
-        gs 'ShowGirlNpcLinks', 'georgett', 'GeorgettePortNightMenu'
-        *pl ' '
-    end
-
-    act '<b>Подглядеть из тени</b>':
-        gt 'GeorgettePortNightPeek', $GeorgetteNightReturnLoc
-    end
-
-    if GeorgettePortSexDone = 0:
-        act '<b>Снять Жоржетту (10 мараведи)</b>':
-            gt 'GeorgettePortNightPaySex', $GeorgetteNightReturnLoc
-        end
-    else:
-        act '<b>Провести ночь с Жоржеттой (10 мараведи)</b>':
-            gt 'GeorgettePortNightPaySex', $GeorgetteNightReturnLoc
-        end
-    end
-
-    act '<b>Уйти с причала</b>':
-        gt $GeorgetteNightReturnLoc
-    end
-
-    killvar '$GeorgettePortNightText'
-    killvar 'GeorgettePortNightOpen'
----
-
-#GeorgettePortNightPeek
-    $GeorgetteNightReturnLoc = $ARGS[0]
-
-    cls
-
-    gs 'GeorgettePortNightText', 'peek'
-    *p $GeorgettePortNightText
-
-    Friends['georgett'] += 1
-    otkroven['georgett'] += 1
-
-    *pl ' '
-
-    act '<b>Вернуться</b>':
-        gt 'GeorgettePortNightMenu', $GeorgetteNightReturnLoc
-    end
-
-    killvar '$GeorgettePortNightText'
+    gt 'Port'
 ---
 
 #GeorgettePortNightPaySex
@@ -113,8 +41,8 @@
 
         *pl ' '
 
-        act '<b>Вернуться</b>':
-            gt 'GeorgettePortNightMenu', $GeorgetteNightReturnLoc
+        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+            gt 'Port'
         end
 
         killvar '$GeorgettePortNightText'
@@ -148,6 +76,8 @@
         gs 'GeorgetteChurchAloneSchedule'
     end
 
+    GeorgettePortNightGone = 1
+
     gs 'GeorgettePortNightText', 'after_sex'
     *p $GeorgettePortNightText
 
@@ -158,8 +88,8 @@
 
     *pl ' '
 
-    act '<b>Вернуться в порт</b>':
-        gt 'GeorgettePortNightMenu', 'Port'
+    act '<b>Вернуться в порт</b>', 'images/common/ui/actions/return.png':
+        gt 'Port'
     end
 
     killvar '$GeorgettePortNightText'

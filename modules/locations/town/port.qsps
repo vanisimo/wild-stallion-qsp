@@ -22,7 +22,15 @@
         killvar 'GeorgetteSeekCanStart'
     end
 
-    gs 'ShowImage', 'port', 'general', 'normal'
+    if time = 5:
+        if LOC('ShowLocationTimeImage') = 1:
+            gs 'ShowLocationTimeImage', 'images/locations/port/general'
+        else:
+            gs 'ShowImage', 'port', 'general', 'normal'
+        end
+    else:
+        gs 'ShowImage', 'port', 'general', 'normal'
+    end
 
     *pl '══════════════════════════════════════════════'
     gs 'PrintTitleLine', ' ГОРОДСКОЙ ПОРТ'
@@ -37,23 +45,57 @@
 
     LocationGirlShown = 0
 
-    gs 'PortAmandaLizetteSceneActive'
+    if time = 5:
+        gs 'PortNightIsActive'
 
-    if PortAmandaSceneActive = 1:
-        *pl ' '
-        gs 'PortAmandaLizettePrintPortScene'
-        *p $PortAmandaSceneLine
-        killvar '$PortAmandaSceneLine'
-        LocationGirlShown = 1
+        if PortNightActive = 1:
+            if PortNightSkipEntryRoll = 1:
+                PortNightSkipEntryRoll = 0
+            else:
+                gs 'PortNightRollBusy'
+            end
+            *pl ' '
+            gs 'PortNightPrintDockText'
+            killvar '$PortNightText'
+            *pl ' '
+            gs 'PortNightTryShowGirlLink', 'georgett'
+            gs 'PortNightTryShowGirlLink', 'lizette'
+
+            if LocationGirlShown = 1:
+                *pl ' '
+            end
+
+            gs 'PortNightAlleyCanShow'
+
+            if PortNightAlleyOpen = 1:
+                act '<b>Заглянуть в переулок</b>', 'images/common/ui/actions/look.png':
+                    gt 'PortNightAlleyPeekStart'
+                end
+            end
+
+            killvar 'PortNightAlleyOpen'
+        end
+
+        killvar 'PortNightActive'
     else:
-        gs 'ShowGirlInLocation', 'amanda', 'Port'
-        gs 'ShowGirlInLocation', 'lizette', 'Port'
-    end
+        gs 'PortAmandaLizetteSceneActive'
 
-    killvar 'PortAmandaSceneActive'
+        if PortAmandaSceneActive = 1:
+            *pl ' '
+            gs 'PortAmandaLizettePrintPortScene'
+            *p $PortAmandaSceneLine
+            killvar '$PortAmandaSceneLine'
+            LocationGirlShown = 1
+        else:
+            gs 'ShowGirlInLocation', 'amanda', 'Port'
+            gs 'ShowGirlInLocation', 'lizette', 'Port'
+        end
 
-    if LocationGirlShown = 1:
-        *pl ' '
+        killvar 'PortAmandaSceneActive'
+
+        if LocationGirlShown = 1:
+            *pl ' '
+        end
     end
 
     killvar 'LocationGirlShown'
@@ -70,26 +112,6 @@
         end
 
         killvar 'PortCapitalShipAvailable'
-    end
-
-    if time = 5:
-        gs 'PortProstNightCanEnter'
-
-        if PortProstNightOpen = 1:
-            act '<b>Ночной причал (Жоржетта и Лизетта)</b>', 'images/common/ui/actions/intim.png':
-                gt 'PortProstNightMenu', 'Port'
-            end
-        else:
-            gs 'GeorgettePortNightCanEnter'
-
-            if GeorgettePortNightOpen = 1:
-                gs 'NpcNavLink', 'Жоржетта', 'intim', 'gt ''GeorgettePortNightMenu'', ''Port'''
-            end
-
-            killvar 'GeorgettePortNightOpen'
-        end
-
-        killvar 'PortProstNightOpen'
     end
 
     if Friends['eddie'] >= 8 and LOC('PortAlley') = 1:
