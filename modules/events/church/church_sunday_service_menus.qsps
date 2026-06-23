@@ -14,6 +14,16 @@
     gt 'ChurchSundayServiceInspect'
 ---
 
+#ChurchSundayServiceMenuRunTalk
+    $ChurchServiceActiveMenuTarget = $ChurchServiceMenuTargetCache
+
+    if $ChurchServiceActiveMenuTarget = '':
+        gt 'ChurchSundayService'
+    end
+
+    gt 'ChurchSundayServiceTalk'
+---
+
 #ChurchSundayServiceEmbedMenuLink
     $ChurchServiceLinkLabel = $ARGS[0]
     $ChurchServiceLinkId = LCASE($ARGS[1])
@@ -60,24 +70,9 @@
 
     if ChurchServiceTalkAllowed = 1:
         gs 'MenuUiAdd', 'ChurchServiceNpcMenu', 'Поговорить', 'talk'
-
-        if $ChurchServiceActiveMenuTarget = 'family':
-            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
-                gt 'ChurchSundayServiceTalkFamily'
-            }
-        elseif $ChurchServiceActiveMenuTarget = 'legare':
-            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
-                gt 'ChurchSundayServiceTalkLegare'
-            }
-        elseif $ChurchServiceActiveMenuTarget = 'becky':
-            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
-                gt 'ChurchSundayServiceTalkBecky'
-            }
-        elseif $ChurchServiceActiveMenuTarget = 'georgette':
-            gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
-                gt 'ChurchSundayServiceTalkGeorgette'
-            }
-        end
+        gs 'Menu.AddModule', 'ChurchServiceNpcMenu', {
+            gt 'ChurchSundayServiceMenuRunTalk'
+        }
     end
 
     if $ChurchServiceActiveMenuTarget = 'georgette':
@@ -98,26 +93,26 @@
 
 #ChurchSundayServiceTalkAllowed
     ChurchServiceTalkAllowed = 0
-    $ChurchServiceTalkTarget = LCASE($ARGS[0])
+    $ChurchServiceTalkAllowTarget = LCASE($ARGS[0])
 
     if ChurchServiceTalkDoneDay = day:
-        killvar '$ChurchServiceTalkTarget'
+        killvar '$ChurchServiceTalkAllowTarget'
         exit
     end
 
-    if $ChurchServiceTalkTarget = 'becky':
+    if $ChurchServiceTalkAllowTarget = 'becky':
         ChurchServiceTalkAllowed = 1
-    elseif $ChurchServiceTalkTarget = 'legare':
+    elseif $ChurchServiceTalkAllowTarget = 'legare':
         ChurchServiceTalkAllowed = 1
-    elseif $ChurchServiceTalkTarget = 'family':
+    elseif $ChurchServiceTalkAllowTarget = 'family':
         ChurchServiceTalkAllowed = 1
-    elseif $ChurchServiceTalkTarget = 'georgette':
+    elseif $ChurchServiceTalkAllowTarget = 'georgette':
         if GeorgetteKnown = 1 and (GeorgetteChurchAlone = 1 or LizetteChurchWithGeorgette = 1):
             ChurchServiceTalkAllowed = 1
         end
     end
 
-    killvar '$ChurchServiceTalkTarget'
+    killvar '$ChurchServiceTalkAllowTarget'
 ---
 
 #ChurchSundayServiceShowNpcImage
@@ -180,13 +175,13 @@
         $ChurchServiceActiveMenuTarget = $ChurchServiceMenuTargetCache
     end
 
-    $ChurchServiceTalkTarget = $ChurchServiceActiveMenuTarget
-
     gs 'ChurchSundayServiceTalkAllowed', $ChurchServiceActiveMenuTarget
 
     if ChurchServiceTalkAllowed = 0:
         gt 'ChurchSundayService'
     end
+
+    $ChurchServiceTalkTarget = $ChurchServiceActiveMenuTarget
 
     cls
 
