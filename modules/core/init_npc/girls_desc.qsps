@@ -3,11 +3,28 @@
 ! Полное описание девушки с улучшенными описаниями навыков
 ! ================================================
 
+#GirlsDescShowPortrait
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlsDescGirl = $GirlKey
+
+    if $GirlsDescGirl = '':
+        exit
+    end
+
+    if LOC('ShowGirlPortraitImage') = 1:
+        gs 'ShowGirlPortraitImage', $GirlsDescGirl
+    elseif LOC('ShowImage') = 1:
+        gs 'ShowImage', 'portrait', $GirlsDescGirl, 'portrait1', '', 'webp', 'large'
+    end
+
+    killvar '$GirlsDescGirl'
+---
+
 #GirlsDesc
     $GirlName = $Args[0]
 
     *clr
-    gs 'ShowImage', $GirlName, 'portraits', 'portrait' + Rand(1,2)
+    gs 'GirlsDescShowPortrait', $GirlName
 
     *pl '══════════════════════════════════════════════'
     *pl '       ОПИСАНИЕ: <<$RealName[$GirlName]>>'

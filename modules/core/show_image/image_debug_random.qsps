@@ -29,17 +29,17 @@
 
     ! Широкие локации: зал, рынок, церковь, улица
     if $ImageWidthLocation = '':
-        $ImageWidthLocation = '55%'
+        $ImageWidthLocation = '60%'
     end
 
-    ! Обычные сюжетные события
+    ! Обычные сюжетные события (горизонтальные кадры)
     if $ImageWidthEvent = '':
-        $ImageWidthEvent = '70%'
+        $ImageWidthEvent = '65%'
     end
 
-    ! Вертикальные события
+    ! Вертикальные события, портретные сцены, spy
     if $ImageWidthEventVertical = '':
-        $ImageWidthEventVertical = '50%'
+        $ImageWidthEventVertical = '55%'
     end
 
     ! Портреты девушек
@@ -49,17 +49,30 @@
 
     ! Интимные горизонтальные сцены
     if $ImageWidthSexHorizontal = '':
-        $ImageWidthSexHorizontal = '70%'
+        $ImageWidthSexHorizontal = '65%'
     end
 
     ! Интимные вертикальные сцены
     if $ImageWidthSexVertical = '':
-        $ImageWidthSexVertical = '60%'
+        $ImageWidthSexVertical = '58%'
     end
 
     ! Всё остальное
     if $ImageWidthDefault = '':
-        $ImageWidthDefault = '75%'
+        $ImageWidthDefault = '55%'
+    end
+
+    ! Явные размеры ShowImage: small / large / full
+    if $ImageWidthSmall = '':
+        $ImageWidthSmall = '38%'
+    end
+
+    if $ImageWidthLarge = '':
+        $ImageWidthLarge = '68%'
+    end
+
+    if $ImageWidthFull = '':
+        $ImageWidthFull = '75%'
     end
 
     ! 1 — показывать тип и ширину изображения в debug_images
@@ -579,6 +592,34 @@
         *pl 'sex_horizontal: ' + $ImageWidthSexHorizontal
         *pl 'sex_vertical: ' + $ImageWidthSexVertical
         *pl 'default: ' + $ImageWidthDefault
+        *pl 'small: ' + $ImageWidthSmall
+        *pl 'large: ' + $ImageWidthLarge
+        *pl 'full: ' + $ImageWidthFull
         *pl ' '
     end
+---
+
+#ResolveShowImageWidth
+    $ResolveImageSize = LCASE($ARGS[0])
+    $ResolveImageType = LCASE($ARGS[1])
+
+    gs 'InitImageDebug'
+
+    if $ResolveImageSize = 'small':
+        $ImageResolvedDisplayWidth = $ImageWidthSmall
+    elseif $ResolveImageSize = 'large':
+        $ImageResolvedDisplayWidth = $ImageWidthLarge
+    elseif $ResolveImageSize = 'full':
+        $ImageResolvedDisplayWidth = $ImageWidthFull
+    else:
+        gs 'GetImageWidthByType', $ResolveImageType
+        $ImageResolvedDisplayWidth = $ImageSmartWidth
+    end
+
+    if $ImageResolvedDisplayWidth = '':
+        $ImageResolvedDisplayWidth = $ImageWidthDefault
+    end
+
+    killvar '$ResolveImageSize'
+    killvar '$ResolveImageType'
 ---

@@ -21,14 +21,27 @@
     gt 'ChurchSpyLizetteStep'
 ---
 
+#ChurchSpyLizetteShowImage
+    if ChurchSpyWindowMechanismFound = 0:
+        gs 'ShowImage', 'church', 'general', 'normal'
+        exit
+    end
+
+    if ChurchSpyLizetteAct = 2 and ChurchSpyLizetteStep = 4:
+        gs 'ShowImage', 'lizette', 'ispoved', 'ispovedstep4'
+    elseif ChurchSpyLizetteAct = 2 and ChurchSpyLizetteStep = 5:
+        gs 'ShowImage', 'lizette', 'ispoved', 'ispovedstep5'
+    elseif ChurchSpyLizetteAct = 2 and ChurchSpyLizetteStep = 6:
+        gs 'ShowImage', 'lizette', 'ispoved', 'ispovedstep6'
+    else:
+        gs 'ShowImage', 'lizette', 'normal', 'normal'
+    end
+---
+
 #ChurchSpyLizetteStep
     cls
 
-    if ChurchSpyWindowMechanismFound = 1:
-        gs 'ShowImage', 'lizette', 'normal', 'normal'
-    else:
-        gs 'ShowImage', 'church', 'general', 'normal'
-    end
+    gs 'ChurchSpyLizetteShowImage'
 
     *pl '══════════════════════════════════════════════'
 
@@ -61,10 +74,11 @@
             gt 'ChurchWalkAroundStart'
         end
     elseif ChurchSpyLizetteAct = 1:
-        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
-            gt 'ChurchSpyLizetteFinishAct1'
+        act '<b>Обход собора</b>', 'images/common/ui/actions/return.png':
+            gs 'ChurchSpyLizetteFinishAct1'
+            gt 'ChurchWalkAroundStart'
         end
-    elseif ChurchSpyLizetteAct = 2 and ChurchSpyLizetteStep < 2:
+    elseif ChurchSpyLizetteAct = 2 and ChurchSpyLizetteStep < 6:
         act '<b>Смотреть дальше</b>', 'images/common/ui/actions/look.png':
             ChurchSpyLizetteStep += 1
             gt 'ChurchSpyLizetteStep'
@@ -74,8 +88,9 @@
             gt 'ChurchWalkAroundStart'
         end
     else:
-        act '<b>Вернуться в зал</b>', 'images/common/ui/actions/return.png':
-            gt 'ChurchSpyLizetteFinishAct2'
+        act '<b>Обход собора</b>', 'images/common/ui/actions/return.png':
+            gs 'ChurchSpyLizetteFinishAct2'
+            gt 'ChurchWalkAroundStart'
         end
     end
 
@@ -91,16 +106,6 @@
     otkroven['lizette'] += 1
     Friends['lizette'] += 1
 
-    gs 'ChurchSpyLizetteText', 'after_act1'
-    *p $ChurchSpyLizetteText
-
-    *pl ' '
-
-    act '<b>В зал</b>', 'images/common/ui/actions/return.png':
-        gt 'ChurchWalkAroundStart'
-    end
-
-    killvar '$ChurchSpyLizetteText'
     killvar 'ChurchSpyLizetteAct'
     killvar 'ChurchSpyLizetteStep'
 ---
@@ -109,7 +114,6 @@
     LizettePriestSpyStage = 2
     LizettePriestSpySeen = 1
     LizetteSexUnlocked = 1
-    LizetteProstPort = 1
 
     gs 'ChurchSpyMarkDoneToday'
 
@@ -117,16 +121,6 @@
     sluttiness['lizette'] += 1
     PriestConfessionCorruption += 1
 
-    gs 'ChurchSpyLizetteText', 'after_act2'
-    *p $ChurchSpyLizetteText
-
-    *pl ' '
-
-    act '<b>В зал</b>', 'images/common/ui/actions/return.png':
-        gt 'ChurchWalkAroundStart'
-    end
-
-    killvar '$ChurchSpyLizetteText'
     killvar 'ChurchSpyLizetteAct'
     killvar 'ChurchSpyLizetteStep'
 ---
