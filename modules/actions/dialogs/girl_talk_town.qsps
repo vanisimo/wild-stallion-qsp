@@ -4,50 +4,7 @@
 ! Меню разговоров с городскими девушками
 ! ================================================
 
-#GirlTalkBuildLizetteMainMenu
-    gs 'Menu.Destroy', 'GirlTalkMainMenu'
-    gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    if LizetteKnown = 1 or PortMeetWitnessed = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О корабле и столице', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'port_talk'
-        }
-    end
-
-    if LizetteTalkPortDone = 1 and (AmandaMetLizette = 1 or PortMeetWitnessed = 1):
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и Аманде', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_amanda'
-        }
-    end
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', 'talk'
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
-    }
-
-    if Friends['lizette'] >= 12 or love['lizette'] >= 10 or otkroven['lizette'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
-        }
-    end
-
-    if $TalkReturnLoc = 'Port' and time = 5 and LizettePortNightGone = 0 and LizetteSexUnlocked = 1:
-        gs 'PortNightGirlVisible', 'lizette'
-
-        if PortNightGirlVisible = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Снять Лизетту (10 мараведи)', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'PortProstNightHire', 'Port', 'lizette'
-            }
-        end
-
-        killvar 'PortNightGirlVisible'
-    end
-
----
 
 #GirlTalkBuildIrmaMainMenu
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
@@ -148,29 +105,7 @@
     killvar '$TownTalkGirl'
 ---
 
-#GirlTalkPortTalkRun
-    gs 'GirlTalkPortTalkPrintText', 'intro'
-    gs 'GirlTalkPortTalkPrintText', 'context'
 
-    LizetteTalkPortDone = 1
-    Friends['lizette'] += 1
-    trading += 1
----
-
-#GirlTalkLizetteAmandaRun
-    gs 'GirlTalkLizetteAmandaPrintText', 'intro'
-    gs 'GirlTalkLizetteAmandaPrintText', 'context'
-
-    LizetteTalkAmandaDone = 1
-    Friends['lizette'] += 1
-    AmandaLizaInfluence += 1
-
-    if AmandaLizaInfluence > 100:
-        AmandaLizaInfluence = 100
-    end
-
-    gs 'ClampGirlSocialStats', 'lizette'
----
 
 #GirlTalkIrmaShopRun
     gs 'GirlTalkIrmaShopPrintText', 'intro'
@@ -211,25 +146,7 @@
     killvar '$TownTalkGirl'
 ---
 
-#GirlTalkPortTalkPrintText
-    gs 'GirlTalkPortTalkText', $ARGS[0]
 
-    if $GirlTalkPortTalkText <> '':
-        *p $GirlTalkPortTalkText
-    end
-
-    killvar '$GirlTalkPortTalkText'
----
-
-#GirlTalkLizetteAmandaPrintText
-    gs 'GirlTalkLizetteAmandaText', $ARGS[0]
-
-    if $GirlTalkLizetteAmandaText <> '':
-        *p $GirlTalkLizetteAmandaText
-    end
-
-    killvar '$GirlTalkLizetteAmandaText'
----
 
 #GirlTalkIrmaShopPrintText
     gs 'GirlTalkIrmaShopText', $ARGS[0]

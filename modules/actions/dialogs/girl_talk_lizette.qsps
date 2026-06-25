@@ -1,0 +1,177 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_lizette.qsps
+! MODULE: actions/dialogs
+! Меню разговоров Лизетты (лор-пулы)
+! ================================================
+
+#GirlTalkLizetteLoreBump
+    $GirlTalkLizetteLoreCounter = $ARGS[0]
+
+    if $GirlTalkLizetteLoreCounter = 'port':
+        GirlTalkLizetteLoreSlot = LizetteTalkPortStory
+        LizetteTalkPortStory += 1
+        if LizetteTalkPortStory >= 4:
+            LizetteTalkPortStory = 0
+        end
+    elseif $GirlTalkLizetteLoreCounter = 'bio':
+        GirlTalkLizetteLoreSlot = LizetteTalkBioStory
+        LizetteTalkBioStory += 1
+        if LizetteTalkBioStory >= 3:
+            LizetteTalkBioStory = 0
+        end
+    elseif $GirlTalkLizetteLoreCounter = 'gifts':
+        GirlTalkLizetteLoreSlot = LizetteTalkGiftsStory
+        LizetteTalkGiftsStory += 1
+        if LizetteTalkGiftsStory >= 3:
+            LizetteTalkGiftsStory = 0
+        end
+    elseif $GirlTalkLizetteLoreCounter = 'amanda':
+        GirlTalkLizetteLoreSlot = LizetteTalkAmandaStory
+        LizetteTalkAmandaStory += 1
+        if LizetteTalkAmandaStory >= 3:
+            LizetteTalkAmandaStory = 0
+        end
+    elseif $GirlTalkLizetteLoreCounter = 'mother':
+        GirlTalkLizetteLoreSlot = LizetteTalkMotherStory
+        LizetteTalkMotherStory += 1
+        if LizetteTalkMotherStory >= 3:
+            LizetteTalkMotherStory = 0
+        end
+    else:
+        GirlTalkLizetteLoreSlot = 0
+    end
+
+    killvar '$GirlTalkLizetteLoreCounter'
+---
+
+#GirlTalkBuildLizetteMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    if LizetteKnown = 1 or PortMeetWitnessed = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О корабле и столице', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'port_talk'
+        }
+    end
+
+    if LizetteTalkPortDone = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О себе', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_bio'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и блеске', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_gifts'
+        }
+    end
+
+    if LizetteTalkPortDone = 1 and (AmandaMetLizette = 1 or PortMeetWitnessed = 1):
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и Аманде', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_amanda'
+        }
+    end
+
+    if LizetteTalkPortDone = 1 and GeorgetteKnown = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О матери', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_mother'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', 'talk'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if Friends['lizette'] >= 12 or love['lizette'] >= 10 or otkroven['lizette'] >= 12:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    if $TalkReturnLoc = 'Port' and time = 5 and LizettePortNightGone = 0 and LizetteSexUnlocked = 1:
+        gs 'PortNightGirlVisible', 'lizette'
+
+        if PortNightGirlVisible = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Снять Лизетту (10 мараведи)', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'PortProstNightHire', 'Port', 'lizette'
+            }
+        end
+
+        killvar 'PortNightGirlVisible'
+    end
+---
+
+#GirlTalkLizettePortRun
+    gs 'GirlTalkLizetteLoreBump', 'port'
+    gs 'GirlTalkLizettePrintText', 'lizette_port', 'intro'
+    gs 'GirlTalkLizettePrintText', 'lizette_port', 'context'
+
+    LizetteTalkPortDone = 1
+    Friends['lizette'] += 1
+    trading += 1
+---
+
+#GirlTalkLizetteBioRun
+    gs 'GirlTalkLizetteLoreBump', 'bio'
+    gs 'GirlTalkLizettePrintText', 'lizette_bio', 'intro'
+    gs 'GirlTalkLizettePrintText', 'lizette_bio', 'context'
+
+    LizetteTalkBioDone = 1
+    Friends['lizette'] += 1
+    otkroven['lizette'] += 1
+
+    gs 'ClampGirlSocialStats', 'lizette'
+---
+
+#GirlTalkLizetteGiftsRun
+    gs 'GirlTalkLizetteLoreBump', 'gifts'
+    gs 'GirlTalkLizettePrintText', 'lizette_gifts', 'intro'
+    gs 'GirlTalkLizettePrintText', 'lizette_gifts', 'context'
+
+    LizetteTalkGiftsDone = 1
+    Friends['lizette'] += 1
+    trading += 1
+---
+
+#GirlTalkLizetteAmandaRun
+    gs 'GirlTalkLizetteLoreBump', 'amanda'
+    gs 'GirlTalkLizettePrintText', 'lizette_amanda', 'intro'
+    gs 'GirlTalkLizettePrintText', 'lizette_amanda', 'context'
+
+    LizetteTalkAmandaDone = 1
+    Friends['lizette'] += 1
+    AmandaLizaInfluence += 1
+
+    if AmandaLizaInfluence > 100:
+        AmandaLizaInfluence = 100
+    end
+
+    gs 'ClampGirlSocialStats', 'lizette'
+---
+
+#GirlTalkLizetteMotherRun
+    gs 'GirlTalkLizetteLoreBump', 'mother'
+    gs 'GirlTalkLizettePrintText', 'lizette_mother', 'intro'
+    gs 'GirlTalkLizettePrintText', 'lizette_mother', 'context'
+
+    LizetteTalkMotherDone = 1
+    Friends['lizette'] += 1
+
+    gs 'ClampGirlSocialStats', 'lizette'
+---
+
+#GirlTalkLizettePrintText
+    gs 'GirlTalkLizetteText', $ARGS[0], $ARGS[1]
+
+    if $GirlTalkLizetteText <> '':
+        *p $GirlTalkLizetteText
+    end
+
+    killvar '$GirlTalkLizetteText'
+---
