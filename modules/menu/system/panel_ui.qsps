@@ -2,8 +2,9 @@
 ! FILE: modules/menu/system/panel_ui.qsps
 ! Оформление панели предметов и панели действий
 ! Классический QSP 5.90:
-! - addobj 'Имя', 'images/...png' — иконка предмета
-! - act '<b>Текст</b>', 'images/...png': — иконка действия
+! - addobj 'Имя', 'images/...png' — иконка предмета (32×32)
+! - act '<b>Текст</b>', 'images/...png': — иконка действия (32×32)
+! - gs 'ActUiPrepare', 'Текст', 'ключ' → $ActUiLabel + $ActUiIconPath для act
 ! Не вставлять <img> в имя предмета — ломает ItemPanelClick
 ! ================================================
 
@@ -77,6 +78,8 @@
             $PanelUiIconPath = 'images/common/ui/tavern.png'
         elseif $PanelUiIconKey = 'debug':
             $PanelUiIconPath = 'images/common/ui/debug.png'
+        elseif $PanelUiIconKey = 'generic' or $PanelUiIconKey = 'default' or $PanelUiIconKey = 'other':
+            $PanelUiIconPath = 'images/common/ui/actions/generic.png'
         end
     elseif $PanelUiIconGroup = 'menu':
         if $PanelUiIconKey = 'sandra':
@@ -302,4 +305,28 @@
     end
 
     killvar '$ActUiLabelText'
+---
+
+#ActUiPrepare
+    $ActUiPrepareLabel = $ARGS[0]
+    $ActUiPrepareKey = LCASE($ARGS[1])
+
+    gs 'ActUiLabel', $ActUiPrepareLabel
+    $ActUiLabel = $ActUiLabelOut
+    killvar '$ActUiLabelOut'
+
+    if INSTR($ActUiPrepareKey, '/') > 0 or INSTR($ActUiPrepareKey, '\') > 0:
+        $ActUiIconPath = $ActUiPrepareKey
+    else:
+        gs 'PanelUiIconPath', 'act', $ActUiPrepareKey
+        $ActUiIconPath = $PanelUiIconPath
+        killvar '$PanelUiIconPath'
+
+        if $ActUiIconPath = '':
+            $ActUiIconPath = 'images/common/ui/actions/generic.png'
+        end
+    end
+
+    killvar '$ActUiPrepareLabel'
+    killvar '$ActUiPrepareKey'
 ---

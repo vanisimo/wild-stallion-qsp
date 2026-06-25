@@ -153,6 +153,12 @@ Current core design constraints:
   - **Lore pool** — button stays; each visit rotates `GeorgetteTalk*Story` counter and picks the next text (port, clients, sex, family, children, bio).
   - **Georgette church** — single button «О церкви и отце Герхарде»: intro once, after first spy E once, then weekly recap after Sunday spy scenes 2–7 (`GeorgetteChurchRecapPending`), night port only for recap.
 - Game calendar week: `week` 1 = Monday … 7 = Sunday (`get_date_time_names.qsps`).
+- **Action panel (`act`) and item panel (`addobj`):**
+  - Every `act` must have an icon (second argument). Prefer `gs 'ActUiPrepare', 'Label', 'key'` then `act $ActUiLabel, $ActUiIconPath:` — keys via `#PanelUiIconPath` group `act`; unknown → `generic`.
+  - Item panel buttons (`addobj`) must use an icon — via `#PanelUiAddGlobalButton` / `#PanelUiIconPath` group `item`, not bare `addobj` without image.
+  - Icon assets: `images/common/ui/actions/*.png` and `images/common/ui/*.png` (items) — **32×32 px** (was 48×48).
+  - Dropdown `MenuUiAdd` menus are **not** covered by this rule (they already use menu icons separately).
+  - After talk text screens may keep `act` «Вернуться» via `#GirlTalkAddReturnButton` (`return` icon).
 - Work assignment:
   - maximum 2 jobs per girl
   - efficiency drops when a girl has 2 jobs
