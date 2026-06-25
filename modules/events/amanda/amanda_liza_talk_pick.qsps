@@ -1,0 +1,286 @@
+! ================================================
+! FILE: modules/events/amanda/amanda_liza_talk_pick.qsps
+! MODULE: events/amanda
+! Выбор фразы AmandaLizaTalk по условиям и уровню (legacy MaxLevel)
+! ================================================
+
+#AmandaLizaTalkPhraseEligible
+    $AmandaLizaTalkPhraseId = LCASE($ARGS[0])
+    AmandaLizaTalkPhraseOk = 0
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'EnsureGirlData', 'lizette'
+
+    if $AmandaLizaTalkPhraseId = 'naive_children':
+        if sluttiness['amanda'] <= 8 and sexacts['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'naive_hole':
+        if sluttiness['amanda'] <= 8 and sexacts['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'naive_not_only_kiss':
+        if sluttiness['amanda'] <= 8 and sexacts['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'naive_mother_many_kids':
+        if sluttiness['amanda'] <= 8 and sexacts['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'curious_stefan':
+        if sluttiness['amanda'] > 8 and sexacts['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'curious_oral':
+        if sluttiness['amanda'] > 8 and sexacts['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'curious_first_time':
+        if sluttiness['amanda'] > 8 and sexacts['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'curious_before_wedding':
+        if sluttiness['amanda'] > 8 and sexacts['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'bed_deflower_talk':
+        if AmandaHomeSex = 1 and sexacts['amanda'] < 20:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'ban_legare_low':
+        if sluttiness['amanda'] < 25 and AmandaLegareInstruction >= 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'ban_legare_high':
+        if sluttiness['amanda'] >= 25 and AmandaLegareInstruction >= 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'ban_lizette':
+        if LizetteBanned = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'ban_guys':
+        if AmandaProhibitGuys = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'legare_deflower':
+        if AmandaLegareFirstSexDone = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'legare_suck_advice':
+        if AmandaLegareInterest >= 8 and AmandaLegareFirstSexDone = 0 and oralacts['amanda'] > 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'legare_give_him':
+        if AmandaLegareInterest >= 10 and AmandaLegareFirstSexDone = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'oral_but_virgin':
+        if sexacts['amanda'] > 0 and virginity['amanda'] = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'whore_joy':
+        if sluttiness['amanda'] >= 50 and virginity['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'marriage_worry':
+        if sluttiness['amanda'] < 50 and virginity['amanda'] = 0:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'stefan_brother_fuck':
+        if AmandaHomeSex = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'legare_married_rumors':
+        if AmandaLegareFirstSexDone = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    end
+
+    killvar '$AmandaLizaTalkPhraseId'
+---
+
+#AmandaLizaTalkPoolTry
+    $AmandaLizaTalkPoolPhrase = LCASE($ARGS[0])
+    AmandaLizaTalkPoolLevel = $ARGS[1]
+
+    if AmandaLizaTalkPoolLevel <= 0:
+        AmandaLizaTalkPoolLevel = 1
+    end
+
+    gs 'AmandaLizaTalkPhraseEligible', $AmandaLizaTalkPoolPhrase
+
+    if AmandaLizaTalkPhraseOk = 0:
+        killvar '$AmandaLizaTalkPoolPhrase'
+        killvar 'AmandaLizaTalkPoolLevel'
+        exit
+    end
+
+    if AmandaLizaTalkPoolLevel > AmandaLizaTalkPoolMax:
+        AmandaLizaTalkPoolMax = AmandaLizaTalkPoolLevel
+        AmandaLizaTalkPoolSize = 0
+    end
+
+    if AmandaLizaTalkPoolLevel = AmandaLizaTalkPoolMax:
+        AmandaLizaTalkPoolSize += 1
+        $AmandaLizaTalkPool[AmandaLizaTalkPoolSize] = $AmandaLizaTalkPoolPhrase
+    end
+
+    killvar '$AmandaLizaTalkPoolPhrase'
+    killvar 'AmandaLizaTalkPoolLevel'
+---
+
+#AmandaLizaTalkBuildPool
+    AmandaLizaTalkPoolMax = 0
+    AmandaLizaTalkPoolSize = 0
+
+    gs 'AmandaLizaTalkPoolTry', 'stefan_brother_fuck', 5
+    gs 'AmandaLizaTalkPoolTry', 'whore_joy', 5
+    gs 'AmandaLizaTalkPoolTry', 'bed_deflower_talk', 5
+    gs 'AmandaLizaTalkPoolTry', 'ban_guys', 5
+    gs 'AmandaLizaTalkPoolTry', 'legare_deflower', 5
+    gs 'AmandaLizaTalkPoolTry', 'legare_married_rumors', 4
+    gs 'AmandaLizaTalkPoolTry', 'legare_suck_advice', 4
+    gs 'AmandaLizaTalkPoolTry', 'legare_give_him', 4
+    gs 'AmandaLizaTalkPoolTry', 'oral_but_virgin', 4
+    gs 'AmandaLizaTalkPoolTry', 'marriage_worry', 4
+    gs 'AmandaLizaTalkPoolTry', 'ban_legare_high', 3
+    gs 'AmandaLizaTalkPoolTry', 'ban_legare_low', 3
+    gs 'AmandaLizaTalkPoolTry', 'ban_lizette', 3
+    gs 'AmandaLizaTalkPoolTry', 'curious_stefan', 2
+    gs 'AmandaLizaTalkPoolTry', 'curious_oral', 2
+    gs 'AmandaLizaTalkPoolTry', 'curious_first_time', 2
+    gs 'AmandaLizaTalkPoolTry', 'curious_before_wedding', 2
+    gs 'AmandaLizaTalkPoolTry', 'naive_children', 1
+    gs 'AmandaLizaTalkPoolTry', 'naive_hole', 1
+    gs 'AmandaLizaTalkPoolTry', 'naive_not_only_kiss', 1
+    gs 'AmandaLizaTalkPoolTry', 'naive_mother_many_kids', 1
+---
+
+#AmandaLizaTalkPickPhrase
+    $AmandaLizaTalkPickedId = ''
+    AmandaLizaTalkPickOk = 0
+
+    gs 'AmandaLizaTalkBuildPool'
+
+    if AmandaLizaTalkPoolSize <= 0:
+        exit
+    end
+
+    AmandaLizaTalkPickRoll = RAND(1, AmandaLizaTalkPoolSize)
+    $AmandaLizaTalkPickedId = $AmandaLizaTalkPool[AmandaLizaTalkPickRoll]
+    AmandaLizaTalkPickOk = 1
+
+    killvar 'AmandaLizaTalkPickRoll'
+---
+
+#AmandaLizaTalkApplyInfluence
+    AmandaLizaInfluenceGain = $ARGS[0]
+    AmandaLizaSlutCap = $ARGS[1]
+    AmandaLizaOtkCap = $ARGS[2]
+
+    if AmandaLizaInfluenceGain <= 0:
+        AmandaLizaInfluenceGain = 3
+    end
+
+    AmandaLizaInfluence += AmandaLizaInfluenceGain
+
+    if AmandaLizaInfluence > 100:
+        AmandaLizaInfluence = 100
+    end
+
+    if sluttiness['amanda'] < AmandaLizaSlutCap:
+        gs 'CorruptionProgress', 'amanda', 'talk'
+    end
+
+    if otkroven['amanda'] < AmandaLizaOtkCap:
+        otkroven['amanda'] += 1
+
+        if otkroven['amanda'] > 50:
+            otkroven['amanda'] = 50
+        end
+    end
+
+    Friends['lizette'] += 1
+
+    if Friends['lizette'] > 100:
+        Friends['lizette'] = 100
+    end
+
+    AmandaSecretiveness += 1
+
+    if AmandaSecretiveness > 100:
+        AmandaSecretiveness = 100
+    end
+
+    killvar 'AmandaLizaInfluenceGain'
+    killvar 'AmandaLizaSlutCap'
+    killvar 'AmandaLizaOtkCap'
+---
+
+#AmandaLizaTalkApplyPhraseEffects
+    $AmandaLizaTalkEffectId = LCASE($ARGS[0])
+
+    if $AmandaLizaTalkEffectId = 'naive_children':
+        gs 'AmandaLizaTalkApplyInfluence', 5, 4, 10
+    elseif $AmandaLizaTalkEffectId = 'naive_hole':
+        gs 'AmandaLizaTalkApplyInfluence', 5, 4, 10
+    elseif $AmandaLizaTalkEffectId = 'naive_not_only_kiss':
+        gs 'AmandaLizaTalkApplyInfluence', 5, 4, 10
+    elseif $AmandaLizaTalkEffectId = 'naive_mother_many_kids':
+        gs 'AmandaLizaTalkApplyInfluence', 5, 4, 10
+    elseif $AmandaLizaTalkEffectId = 'curious_stefan':
+        gs 'AmandaLizaTalkApplyInfluence', 16, 9, 19
+    elseif $AmandaLizaTalkEffectId = 'curious_oral':
+        gs 'AmandaLizaTalkApplyInfluence', 16, 9, 19
+    elseif $AmandaLizaTalkEffectId = 'curious_first_time':
+        gs 'AmandaLizaTalkApplyInfluence', 16, 9, 19
+    elseif $AmandaLizaTalkEffectId = 'curious_before_wedding':
+        gs 'AmandaLizaTalkApplyInfluence', 16, 9, 19
+    elseif $AmandaLizaTalkEffectId = 'bed_deflower_talk':
+        gs 'AmandaLizaTalkApplyInfluence', 40, 24, 32
+    elseif $AmandaLizaTalkEffectId = 'ban_legare_low':
+        gs 'AmandaLizaTalkApplyInfluence', 20, 10, 14
+    elseif $AmandaLizaTalkEffectId = 'ban_legare_high':
+        gs 'AmandaLizaTalkApplyInfluence', 25, 16, 20
+    elseif $AmandaLizaTalkEffectId = 'ban_lizette':
+        gs 'AmandaLizaTalkApplyInfluence', 15, 10, 14
+    elseif $AmandaLizaTalkEffectId = 'ban_guys':
+        gs 'AmandaLizaTalkApplyInfluence', 45, 20, 46
+    elseif $AmandaLizaTalkEffectId = 'legare_suck_advice':
+        gs 'AmandaLizaTalkApplyInfluence', 35, 20, 26
+    elseif $AmandaLizaTalkEffectId = 'legare_give_him':
+        gs 'AmandaLizaTalkApplyInfluence', 35, 14, 20
+    elseif $AmandaLizaTalkEffectId = 'oral_but_virgin':
+        gs 'AmandaLizaTalkApplyInfluence', 40, 14, 30
+    elseif $AmandaLizaTalkEffectId = 'marriage_worry':
+        gs 'AmandaLizaTalkApplyInfluence', 35, 20, 32
+    elseif $AmandaLizaTalkEffectId = 'stefan_brother_fuck':
+        gs 'AmandaLizaTalkApplyInfluence', 55, 20, 44
+    elseif $AmandaLizaTalkEffectId = 'legare_married_rumors':
+        gs 'AmandaLizaTalkApplyInfluence', 40, 20, 35
+    end
+
+    killvar '$AmandaLizaTalkEffectId'
+---

@@ -1,0 +1,458 @@
+! ================================================
+! FILE: modules/events/amanda/amanda_liza_overhear.qsps
+! MODULE: events/amanda
+! Подслушивание разговоров Аманда + Лизетта (порт EventAmandaLizettTalk)
+! ================================================
+
+#AmandaLizaTalkGetPartKey
+    $AmandaLizaTalkPartKey = STR(day) + '_' + STR(time)
+---
+
+#AmandaLizaTalkCanTrigger
+    AmandaLizaTalkCanTrigger = 0
+
+    if AmandaMetLizette = 0 and LizetteKnown = 0:
+        exit
+    end
+
+    gs 'AmandaLizaTalkGetPartKey'
+
+    if $AmandaLizaTalkPartKey = $AmandaLizaTalkUsedKey:
+        killvar '$AmandaLizaTalkPartKey'
+        exit
+    end
+
+    $AmandaLizaTalkCheckLoc = LCASE($ARGS[0])
+
+    if $AmandaLizaTalkCheckLoc = 'tavernmain':
+        gs 'IsTavernOpen'
+
+        if TavernOpen = 0:
+            killvar '$AmandaLizaTalkCheckLoc'
+            killvar '$AmandaLizaTalkPartKey'
+            exit
+        end
+
+        if $GirlLocation['amanda'] <> 'TavernMain':
+            killvar '$AmandaLizaTalkCheckLoc'
+            killvar '$AmandaLizaTalkPartKey'
+            exit
+        end
+
+    elseif $AmandaLizaTalkCheckLoc = 'amandaroom':
+        if $GirlLocation['amanda'] <> 'AmandaRoom':
+            killvar '$AmandaLizaTalkCheckLoc'
+            killvar '$AmandaLizaTalkPartKey'
+            exit
+        end
+
+        if $GirlLocation['lizette'] <> 'AmandaRoom':
+            killvar '$AmandaLizaTalkCheckLoc'
+            killvar '$AmandaLizaTalkPartKey'
+            exit
+        end
+
+        if time < 2 or time > 4:
+            killvar '$AmandaLizaTalkCheckLoc'
+            killvar '$AmandaLizaTalkPartKey'
+            exit
+        end
+
+    else:
+        killvar '$AmandaLizaTalkCheckLoc'
+        killvar '$AmandaLizaTalkPartKey'
+        exit
+    end
+
+    AmandaLizaTalkCanTrigger = 1
+
+    killvar '$AmandaLizaTalkCheckLoc'
+    killvar '$AmandaLizaTalkPartKey'
+---
+
+#AmandaLizaTalkTryStart
+    $AmandaLizaTalkReturnLoc = $ARGS[0]
+    AmandaLizaTalkTryStarted = 0
+
+    if $AmandaLizaTalkReturnLoc = '':
+        $AmandaLizaTalkReturnLoc = 'TavernMain'
+    end
+
+    $AmandaLizaTalkTriggerLoc = LCASE($AmandaLizaTalkReturnLoc)
+
+    if $AmandaLizaTalkTriggerLoc = 'amandaroom':
+        gs 'AmandaLizaTalkCanTrigger', 'amandaroom'
+    else:
+        gs 'AmandaLizaTalkCanTrigger', 'tavernmain'
+    end
+
+    if AmandaLizaTalkCanTrigger = 0:
+        killvar '$AmandaLizaTalkReturnLoc'
+        killvar '$AmandaLizaTalkTriggerLoc'
+        exit
+    end
+
+    AmandaLizaTalkRoll = RAND(1, 100)
+
+    if $AmandaLizaTalkTriggerLoc = 'amandaroom':
+        if AmandaLizaTalkRoll > 55:
+            killvar 'AmandaLizaTalkRoll'
+            killvar '$AmandaLizaTalkReturnLoc'
+            killvar '$AmandaLizaTalkTriggerLoc'
+            exit
+        end
+    else:
+        if AmandaLizaTalkRoll > 28:
+            killvar 'AmandaLizaTalkRoll'
+            killvar '$AmandaLizaTalkReturnLoc'
+            killvar '$AmandaLizaTalkTriggerLoc'
+            exit
+        end
+    end
+
+    killvar 'AmandaLizaTalkRoll'
+
+    gs 'AmandaLizaTalkGetPartKey'
+    $AmandaLizaTalkUsedKey = $AmandaLizaTalkPartKey
+    killvar '$AmandaLizaTalkPartKey'
+
+    AmandaLizaTalkTryStarted = 1
+    gt 'AmandaLizaTalkOverhearStart', $AmandaLizaTalkReturnLoc
+
+    killvar '$AmandaLizaTalkReturnLoc'
+    killvar '$AmandaLizaTalkTriggerLoc'
+---
+
+#AmandaLizaTalkOverhearStart
+    $AmandaLizaTalkReturnLoc = $ARGS[0]
+
+    if $AmandaLizaTalkReturnLoc = '':
+        $AmandaLizaTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'AmandaLizetteEnsureVars'
+    gs 'EnsureGirlData', 'amanda'
+
+    AmandaLizaTalkNotSpeaking = 0
+    AmandaLizaTalkIntroMode = 0
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' АМАНДА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LizetteBanStrict = 1:
+        AmandaLizaTalkIntroMode = 2
+        *p 'Проходя по трактиру, вы вдруг слышите, как ваша младшая сестрёнка Аманда говорит Лизетте:<br>«Ой, ты что, знаешь как мастер Стефан ругаться будет, если узнает, что мы с тобой болтаем!»'
+
+        AmandaLizaTalkRiskMax = 20 - AmandaLizaInfluence / 5
+
+        if AmandaLizaTalkRiskMax < 4:
+            AmandaLizaTalkRiskMax = 4
+        end
+
+        AmandaLizaTalkRiskRoll = RAND(1, AmandaLizaTalkRiskMax)
+
+        if AmandaLizaTalkRiskRoll = 1:
+            *p '<br>«Ну ладно, его нет, а с тобой болтать интересно, так что рискнём!» — добавляет она после секундных раздумий.'
+        else:
+            *p '<br>И девицы расходятся по своим делам.'
+            AmandaLizaTalkNotSpeaking = 1
+        end
+
+        killvar 'AmandaLizaTalkRiskRoll'
+        killvar 'AmandaLizaTalkRiskMax'
+
+    elseif LizetteBanned = 1:
+        AmandaLizaTalkIntroMode = 1
+        *p 'Проходя по трактиру, вы вдруг слышите, как ваша младшая сестрёнка Аманда говорит Лизетте:<br>«Ой, нельзя мне с тобой говорить, мастер Стефан запретил!»'
+
+        AmandaLizaTalkRiskMax = 10 - AmandaLizaInfluence / 7
+
+        if AmandaLizaTalkRiskMax < 2:
+            AmandaLizaTalkRiskMax = 2
+        end
+
+        AmandaLizaTalkRiskRoll = RAND(1, AmandaLizaTalkRiskMax)
+
+        if AmandaLizaTalkRiskRoll = 1:
+            *p '<br>«Ну да ладно», добавляет она, «его вроде здесь нет, так что давай немножко поболтаем!»'
+        else:
+            *p '<br>И девицы расходятся по своим делам.'
+            AmandaLizaTalkNotSpeaking = 1
+        end
+
+        killvar 'AmandaLizaTalkRiskRoll'
+        killvar 'AmandaLizaTalkRiskMax'
+
+    else:
+        if sluttiness['amanda'] <= 5 and RAND(1, 2) = 1:
+            *p 'Проходя по трактиру, вы вдруг слышите, как ваша младшая сестрёнка Аманда говорит Лизетте:<br>«Не хочу я с тобой болтать, ты такая распущенная и такие пошлые вещи рассказываешь!»'
+            AmandaLizaTalkNotSpeaking = 1
+        elseif sluttiness['amanda'] <= 10 and sluttiness['amanda'] > 5 and RAND(1, 4) = 1:
+            *p 'Проходя по трактиру, вы вдруг слышите, как ваша младшая сестрёнка Аманда говорит Лизетте:<br>«Не хочу я с тобой болтать, ты такая распущенная и такие пошлые вещи рассказываешь!»'
+            AmandaLizaTalkNotSpeaking = 1
+        else:
+            *p 'Проходя по трактиру, вы вдруг слышите, как Лизетта весело болтает с вашей младшей сестрёнкой Амандой.'
+        end
+    end
+
+    if $AmandaLizaTalkReturnLoc = 'AmandaRoom':
+        *p 'Из комнаты Аманды доносятся приглушённые голоса — она болтает с Лизеттой.'
+    end
+
+    *pl ' '
+
+    if AmandaLizaTalkNotSpeaking = 1:
+        gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $AmandaLizaTalkReturnLoc
+        end
+    else:
+        if LizetteBanned = 1 and AmandaLizaTalkIntroMode = 1:
+            gs 'ActUiPrepare', 'Похвалить Аманду, что не болтает с Лизеттой', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'praise_obedient'
+            end
+        end
+
+        if LizetteBanned = 1 and AmandaLizaTalkNotSpeaking = 0:
+            gs 'ActUiPrepare', 'Строго отчитать Аманду', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'scold_strict'
+            end
+        end
+
+        if LizetteBanned = 0 and AmandaLizaTalkNotSpeaking = 0:
+            gs 'ActUiPrepare', 'Запретить болтать с Лизеттой', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'forbid_soft'
+            end
+        end
+
+        if LizetteBanned = 0 and AmandaLizaTalkNotSpeaking = 1:
+            gs 'ActUiPrepare', 'Похвалить, что не болтает с Лизеттой', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'praise_refused'
+            end
+        end
+
+        if LizetteBanned = 1 and AmandaLizaTalkNotSpeaking = 1:
+            gs 'ActUiPrepare', 'Сказать, что погорячился с запретом', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'lift_ban'
+            end
+        end
+
+        if AmandaLizaTalkNotSpeaking = 0:
+            gs 'ActUiPrepare', 'Подслушать', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaLizaTalkListenScene', $AmandaLizaTalkReturnLoc
+            end
+        end
+
+        gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $AmandaLizaTalkReturnLoc
+        end
+    end
+
+    killvar 'AmandaLizaTalkNotSpeaking'
+    killvar 'AmandaLizaTalkIntroMode'
+---
+
+#AmandaLizaTalkOverhearAction
+    $AmandaLizaTalkReturnLoc = $ARGS[0]
+    $AmandaLizaTalkActionId = LCASE($ARGS[1])
+
+    if $AmandaLizaTalkReturnLoc = '':
+        $AmandaLizaTalkReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' АМАНДА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $AmandaLizaTalkActionId = 'praise_obedient':
+        *p 'Вы похвалили сестрёнку за то, что она послушалась вас и не стала болтать с Лизеттой. На её лице читалось явное облегчение от того, что она не попалась.'
+
+    elseif $AmandaLizaTalkActionId = 'praise_refused':
+        LizetteBanned = 1
+        *p 'Вы подошли к сестрёнке и сказали, что случайно слышали её разговор с Лизеттой. Вы отметили, что она абсолютно правильно не стала с ней болтать и что вы тоже не советуете ей трепаться с юной шлюхой. При слове «шлюха» Аманда зарделась и пообещала с Лизеттой больше не говорить.'
+
+    elseif $AmandaLizaTalkActionId = 'scold_strict':
+        LizetteBanned = 1
+        LizetteBanStrict = 1
+        AmandaRebellion += 1
+        AmandaTrustStefan -= 2
+
+        if AmandaTrustStefan < 0:
+            AmandaTrustStefan = 0
+        end
+
+        *p 'Вы подошли к болтушкам и начали сурово отчитывать сестрёнку за то, что она не выполнила вашего наказа. Аманда расплакалась и убежала в слезах.'
+        gs 'CorruptionProgress', 'amanda', 'talk'
+
+    elseif $AmandaLizaTalkActionId = 'forbid_soft':
+        LizetteBanned = 1
+        LizetteBanStrict = 0
+        *p 'Вы подошли к болтушкам и вмешались в их разговор, отозвав сестрёнку в сторону, якобы по неотложному делу. Как только вы остались вдвоём, сказали Аманде, чтобы она не болтала с Лизеттой — та распущенная девчонка и хорошему не научит. Аманда выслушала вас и пообещала с Лизеттой не говорить.'
+
+    elseif $AmandaLizaTalkActionId = 'lift_ban':
+        LizetteBanned = 0
+        LizetteBanStrict = 0
+        AmandaTrustStefan += 1
+
+        if AmandaTrustStefan > 100:
+            AmandaTrustStefan = 100
+        end
+
+        *p 'Вы подошли к сестрёнке и сказали, что погорячились: не хотите на неё давить, и она имеет полное право говорить с кем хочет. Аманда поблагодарила вас за доверие и пошла по своим делам.'
+
+        if Friends['amanda'] < 50 and RAND(1, 4) = 1:
+            *p 'Ей очень понравилось, что вы ей так доверяете.'
+            Friends['amanda'] += 1
+        end
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AmandaLizaTalkReturnLoc
+    end
+
+    killvar '$AmandaLizaTalkReturnLoc'
+    killvar '$AmandaLizaTalkActionId'
+---
+
+#AmandaLizaTalkListenScene
+    $AmandaLizaTalkReturnLoc = $ARGS[0]
+
+    if $AmandaLizaTalkReturnLoc = '':
+        $AmandaLizaTalkReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ПОДСЛУШИВАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы решили подслушать, что будет дальше.'
+    *pl ' '
+
+    gs 'AmandaLizaTalkPickPhrase'
+
+    if AmandaLizaTalkPickOk = 0:
+        *p 'Сегодня разговор так и не дошёл до откровенных тем — девушки перешепнулись и разошлись.'
+    else:
+        gs 'AmandaLizaTalkText', $AmandaLizaTalkPickedId
+        *p $AmandaLizaTalkText
+        killvar '$AmandaLizaTalkText'
+
+        gs 'AmandaLizaTalkApplyPhraseEffects', $AmandaLizaTalkPickedId
+        AmandaLizaTalkHeardCount += 1
+    end
+
+    killvar '$AmandaLizaTalkPickedId'
+
+    *pl ' '
+    *p 'После разговора Аманда с Лизеттой разошлись. Намеренны ли вы что-то сказать проходящей мимо Аманде?'
+    *pl ' '
+
+    if LizetteBanned = 1:
+        gs 'ActUiPrepare', 'Строго отчитать Аманду', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLizaTalkAfterListenAction', $AmandaLizaTalkReturnLoc, 'scold_strict'
+        end
+    end
+
+    if LizetteBanned = 0:
+        gs 'ActUiPrepare', 'Запретить болтать с Лизеттой', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLizaTalkAfterListenAction', $AmandaLizaTalkReturnLoc, 'forbid_soft'
+        end
+    end
+
+    if LizetteBanned = 1:
+        gs 'ActUiPrepare', 'Сказать, что погорячился с запретом', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLizaTalkAfterListenAction', $AmandaLizaTalkReturnLoc, 'lift_ban'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AmandaLizaTalkReturnLoc
+    end
+
+    killvar '$AmandaLizaTalkReturnLoc'
+---
+
+#AmandaLizaTalkAfterListenAction
+    $AmandaLizaTalkReturnLoc = $ARGS[0]
+    $AmandaLizaTalkActionId = LCASE($ARGS[1])
+
+    if $AmandaLizaTalkReturnLoc = '':
+        $AmandaLizaTalkReturnLoc = 'TavernMain'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' АМАНДА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $AmandaLizaTalkActionId = 'scold_strict':
+        LizetteBanned = 1
+        LizetteBanStrict = 1
+        AmandaRebellion += 1
+        AmandaTrustStefan -= 2
+
+        if AmandaTrustStefan < 0:
+            AmandaTrustStefan = 0
+        end
+
+        *p 'Вы поймали проходящую мимо сестрёнку и строго её отчитали за то, что она болтала с Лизеттой, несмотря на запрет. Аманда расплакалась и убежала в слезах.'
+        gs 'CorruptionProgress', 'amanda', 'talk'
+
+    elseif $AmandaLizaTalkActionId = 'forbid_soft':
+        LizetteBanned = 1
+        LizetteBanStrict = 0
+        *p 'Вы поймали проходящую мимо сестрёнку и сказали ей, чтобы она не болтала с Лизеттой — та распущенная девчонка и хорошему не научит. Аманда выслушала вас и пообещала с Лизеттой не говорить.'
+
+    elseif $AmandaLizaTalkActionId = 'lift_ban':
+        LizetteBanned = 0
+        LizetteBanStrict = 0
+        AmandaTrustStefan += 1
+
+        if AmandaTrustStefan > 100:
+            AmandaTrustStefan = 100
+        end
+
+        *p 'Вы поймали проходящую мимо сестрёнку и сказали, что погорячились: не хотите на неё давить, и она имеет полное право говорить с кем хочет. Аманда поблагодарила вас за доверие и пошла по своим делам.'
+
+        if Friends['amanda'] < 50 and RAND(1, 4) = 1:
+            *p 'Ей очень понравилось, что вы ей так доверяете.'
+            Friends['amanda'] += 1
+        end
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AmandaLizaTalkReturnLoc
+    end
+
+    killvar '$AmandaLizaTalkReturnLoc'
+    killvar '$AmandaLizaTalkActionId'
+---

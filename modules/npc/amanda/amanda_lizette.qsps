@@ -123,6 +123,14 @@
     if AmandaWorkDiscipline < 0:
         AmandaWorkDiscipline = 0
     end
+
+    if LizetteBanStrict < 0:
+        LizetteBanStrict = 0
+    end
+
+    if AmandaLizaTalkHeardCount < 0:
+        AmandaLizaTalkHeardCount = 0
+    end
 ---
 
 ! ================================================
@@ -173,6 +181,12 @@
         gt 'AmandaLizetteSecretVisit', $AmandaLizetteReturnLoc
     end
 
+    gs 'ActUiPrepare', 'Подслушать болтовню (AmandaLizaTalk)', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        $AmandaLizaTalkUsedKey = ''
+        gt 'AmandaLizaTalkOverhearStart', $AmandaLizetteReturnLoc
+    end
+
     gs 'ActUiPrepare', 'Сбросить ветку Лизетты для теста', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         LizetteKnown = 0
@@ -209,6 +223,9 @@
         *pl '[DEBUG LIZETTE] AmandaTrustStefan: ' + STR(AmandaTrustStefan)
         *pl '[DEBUG LIZETTE] AmandaPublicAttention: ' + STR(AmandaPublicAttention)
         *pl '[DEBUG LIZETTE] AmandaScandalLevel: ' + STR(AmandaScandalLevel)
+        *pl '[DEBUG LIZETTE] LizetteBanStrict: ' + STR(LizetteBanStrict)
+        *pl '[DEBUG LIZETTE] AmandaLizaTalkHeardCount: ' + STR(AmandaLizaTalkHeardCount)
+        *pl '[DEBUG LIZETTE] AmandaLizaTalkUsedKey: ' + $AmandaLizaTalkUsedKey
     end
 ---
 
@@ -502,6 +519,7 @@
         gs 'AmandaLizettePrintText', 'ban_hard'
 
         LizetteBanned = 1
+        LizetteBanStrict = 1
         AmandaRebellion += 3
         AmandaSecretiveness += 2
         AmandaTrustStefan -= 2
@@ -510,6 +528,7 @@
         gs 'AmandaLizettePrintText', 'ban_soft_allow'
 
         LizetteBanned = 0
+        LizetteBanStrict = 0
         AmandaTrustStefan += 2
         AmandaRebellion -= 1
         AmandaSecretiveness -= 1
@@ -518,6 +537,7 @@
         gs 'AmandaLizettePrintText', 'ban_freedom'
 
         LizetteBanned = 0
+        LizetteBanStrict = 0
         AmandaTrustStefan += 1
         AmandaRebellion -= 1
         AmandaLizaInfluence += 2
