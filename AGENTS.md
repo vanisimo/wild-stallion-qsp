@@ -147,6 +147,12 @@ Current core design constraints:
   - maximum 3 important conversations with one NPC per day
   - normal small talk remains available
 - NPC menu should not use a manual “Close” button; it closes on cursor leave.
+- Dropdown `GirlTalk*Menu` lists must not include a manual «Вернуться» / «Закрыть» item; exit is cursor-leave only (`GirlTalkSessionEnd`).
+- NPC talk buttons fall into three classes:
+  - **Arc one-shot** — story beat fires once (`*Done = 1`), button hidden afterward (example: Lizette spy talks, Eddie).
+  - **Lore pool** — button stays; each visit rotates `GeorgetteTalk*Story` counter and picks the next text (port, clients, sex, family, children, bio).
+  - **Georgette church** — single button «О церкви и отце Герхарде»: intro once, after first spy E once, then weekly recap after Sunday spy scenes 2–7 (`GeorgetteChurchRecapPending`), night port only for recap.
+- Game calendar week: `week` 1 = Monday … 7 = Sunday (`get_date_time_names.qsps`).
 - Work assignment:
   - maximum 2 jobs per girl
   - efficiency drops when a girl has 2 jobs

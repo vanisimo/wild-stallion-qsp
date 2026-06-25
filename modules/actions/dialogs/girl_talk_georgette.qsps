@@ -4,6 +4,86 @@
 ! Отдельное меню разговоров Жоржетты (не generic town)
 ! ================================================
 
+#GirlTalkGeorgetteChurchMenuReady
+    GeorgetteChurchMenuReady = 0
+
+    if GeorgettePortSexDone = 0 or GeorgetteTalkBioDone = 0:
+        exit
+    end
+
+    if GeorgettePriestSpySeen = 0 and GeorgetteChurchIntroDone = 0:
+        GeorgetteChurchMenuReady = 1
+        exit
+    end
+
+    if GeorgettePriestSpySeen = 1 and GeorgetteChurchAfterSpy1Done = 0:
+        GeorgetteChurchMenuReady = 1
+        exit
+    end
+
+    if GeorgetteChurchRecapPending = 1 and $TalkReturnLoc = 'Port' and time = 5:
+        GeorgetteChurchMenuReady = 1
+    end
+---
+
+#GirlTalkGeorgetteChurchResolvePhase
+    GirlTalkGeorgetteChurchPhase = 0
+
+    if GeorgetteTalkPriestSpyDone = 1 and GeorgetteChurchAfterSpy1Done = 0:
+        GeorgetteChurchAfterSpy1Done = 1
+    end
+
+    if GeorgetteTalkChurchDone = 1 and GeorgettePriestSpySeen = 0 and GeorgetteChurchIntroDone = 0:
+        GeorgetteChurchIntroDone = 1
+    end
+
+    if GeorgettePriestSpySeen = 0 and GeorgetteChurchIntroDone = 0:
+        GirlTalkGeorgetteChurchPhase = 1
+    elseif GeorgettePriestSpySeen = 1 and GeorgetteChurchAfterSpy1Done = 0:
+        GirlTalkGeorgetteChurchPhase = 2
+    elseif GeorgetteChurchRecapPending = 1:
+        GirlTalkGeorgetteChurchPhase = 3
+    end
+
+    if GirlTalkGeorgetteChurchPhase = 3:
+        if GeorgettePriestSpyLastScene < 1:
+            GeorgettePriestSpyLastScene = 1
+        end
+
+        if GeorgettePriestSpyLastScene > 7:
+            GeorgettePriestSpyLastScene = 7
+        end
+    end
+---
+
+#GirlTalkGeorgetteLoreBump
+    $GirlTalkGeorgetteLoreCounter = $ARGS[0]
+
+    if $GirlTalkGeorgetteLoreCounter = 'port':
+        GirlTalkGeorgetteLoreSlot = GeorgetteTalkPortStory
+        GeorgetteTalkPortStory += 1
+    elseif $GirlTalkGeorgetteLoreCounter = 'bio':
+        GirlTalkGeorgetteLoreSlot = GeorgetteTalkBioStory
+        GeorgetteTalkBioStory += 1
+    elseif $GirlTalkGeorgetteLoreCounter = 'clients':
+        GirlTalkGeorgetteLoreSlot = GeorgetteTalkClientsStory
+        GeorgetteTalkClientsStory += 1
+    elseif $GirlTalkGeorgetteLoreCounter = 'sex':
+        GirlTalkGeorgetteLoreSlot = GeorgetteTalkSexStory
+        GeorgetteTalkSexStory += 1
+    elseif $GirlTalkGeorgetteLoreCounter = 'family':
+        GirlTalkGeorgetteLoreSlot = GeorgetteTalkFamilyStory
+        GeorgetteTalkFamilyStory += 1
+    elseif $GirlTalkGeorgetteLoreCounter = 'children':
+        GirlTalkGeorgetteLoreSlot = GeorgetteTalkChildrenStory
+        GeorgetteTalkChildrenStory += 1
+    else:
+        GirlTalkGeorgetteLoreSlot = 0
+    end
+
+    killvar '$GirlTalkGeorgetteLoreCounter'
+---
+
 #GirlTalkBuildGeorgetteMainMenu
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
@@ -12,19 +92,6 @@
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поздороваться', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GeorgetteFirstMeet', $TalkReturnLoc
-        }
-
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            if $TalkReturnLoc = 'Port':
-                gs 'GirlTalkSessionEnd'
-                gt 'Port'
-            elseif $TalkReturnLoc = 'ChurchSundayServiceMenu':
-                gs 'GirlTalkSessionEnd'
-                gt 'ChurchSundayServiceMenu'
-            else:
-                gt 'GirlTalkMenuReturn'
-            end
         }
         exit
     end
@@ -43,54 +110,51 @@
         }
     end
 
-    if GeorgetteTalkPortDone = 1 and (LizetteMentionedByGeorgette = 1 or PortMeetWitnessed = 1):
+    if GeorgetteTalkPortDone = 1 and (LizetteMentionedByGeorgette = 1 or PortMeetWitnessed = 1) and GeorgetteTalkLizetteDone = 0:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О дочери Лизетте', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_lizette'
         }
     end
 
-    if GeorgettePortSexDone = 1 and GeorgetteTalkPortDone = 1 and Friends['georgett'] >= 12 and GeorgetteTalkClientsDone = 0:
+    if GeorgetteTalkClientsDone = 1 or (GeorgettePortSexDone = 1 and GeorgetteTalkPortDone = 1 and Friends['georgett'] >= 12):
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О клиентах и городе', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_clients'
         }
     end
 
-    if GeorgetteTalkClientsDone = 1 and GeorgettePortSexDone = 1 and GeorgetteTalkSexDone = 0:
+    if GeorgetteTalkSexDone = 1 or (GeorgetteTalkClientsDone = 1 and GeorgettePortSexDone = 1):
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О сексе', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_sex'
         }
     end
 
-    if GeorgetteTalkSexDone = 1 and GeorgetteTalkFamilyDone = 0:
+    if GeorgetteTalkFamilyDone = 1 or GeorgetteTalkSexDone = 1:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О семье', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_family'
         }
     end
 
-    if GeorgetteTalkFamilyDone = 1 and GeorgetteTalkChildrenDone = 0:
+    if GeorgetteTalkChildrenDone = 1 or GeorgetteTalkFamilyDone = 1:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О детях', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_children'
         }
     end
 
-    if GeorgettePriestSpySeen = 1 and GeorgetteTalkPriestSpyDone = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О комнате чистых сердец', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_priest_spy'
-        }
-    end
+    gs 'GirlTalkGeorgetteChurchMenuReady'
 
-    if GeorgettePortSexDone = 1 and GeorgetteTalkBioDone = 1:
+    if GeorgetteChurchMenuReady = 1:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О церкви и отце Герхарде', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_church'
         }
     end
+
+    killvar 'GeorgetteChurchMenuReady'
 
     if LizettePriestSpyStage >= 1 and GeorgetteTalkLizetteSpy1Done = 0:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Лизетке у отца Герхарда', 'talk'
@@ -142,22 +206,10 @@
 
         killvar 'PortNightGirlVisible'
     end
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вернуться', 'return'
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        if $TalkReturnLoc = 'Port':
-            gs 'GirlTalkSessionEnd'
-            gt 'Port'
-        elseif $TalkReturnLoc = 'ChurchSundayServiceMenu':
-            gs 'GirlTalkSessionEnd'
-            gt 'ChurchSundayServiceMenu'
-        else:
-            gt 'GirlTalkMenuReturn'
-        end
-    }
 ---
 
 #GirlTalkGeorgettePortRun
+    gs 'GirlTalkGeorgetteLoreBump', 'port'
     gs 'GirlTalkGeorgettePrintText', 'georgette_port', 'intro'
     gs 'GirlTalkGeorgettePrintText', 'georgette_port', 'context'
 
@@ -167,6 +219,7 @@
 ---
 
 #GirlTalkGeorgetteBioRun
+    gs 'GirlTalkGeorgetteLoreBump', 'bio'
     gs 'GirlTalkGeorgettePrintText', 'georgette_bio', 'intro'
     gs 'GirlTalkGeorgettePrintText', 'georgette_bio', 'context'
 
@@ -193,10 +246,14 @@
 ---
 
 #GirlTalkGeorgetteClientsRun
+    if GeorgetteTalkClientsDone = 0:
+        GeorgetteTalkClientsDone = 1
+    end
+
+    gs 'GirlTalkGeorgetteLoreBump', 'clients'
     gs 'GirlTalkGeorgettePrintText', 'georgette_clients', 'intro'
     gs 'GirlTalkGeorgettePrintText', 'georgette_clients', 'context'
 
-    GeorgetteTalkClientsDone = 1
     Friends['georgett'] += 1
     otkroven['georgett'] += 2
 
@@ -204,10 +261,14 @@
 ---
 
 #GirlTalkGeorgetteSexRun
+    if GeorgetteTalkSexDone = 0:
+        GeorgetteTalkSexDone = 1
+    end
+
+    gs 'GirlTalkGeorgetteLoreBump', 'sex'
     gs 'GirlTalkGeorgettePrintText', 'georgette_sex', 'intro'
     gs 'GirlTalkGeorgettePrintText', 'georgette_sex', 'context'
 
-    GeorgetteTalkSexDone = 1
     Friends['georgett'] += 1
     otkroven['georgett'] += 2
 
@@ -215,10 +276,14 @@
 ---
 
 #GirlTalkGeorgetteFamilyRun
+    if GeorgetteTalkFamilyDone = 0:
+        GeorgetteTalkFamilyDone = 1
+    end
+
+    gs 'GirlTalkGeorgetteLoreBump', 'family'
     gs 'GirlTalkGeorgettePrintText', 'georgette_family', 'intro'
     gs 'GirlTalkGeorgettePrintText', 'georgette_family', 'context'
 
-    GeorgetteTalkFamilyDone = 1
     Friends['georgett'] += 1
     otkroven['georgett'] += 2
 
@@ -226,21 +291,14 @@
 ---
 
 #GirlTalkGeorgetteChildrenRun
+    if GeorgetteTalkChildrenDone = 0:
+        GeorgetteTalkChildrenDone = 1
+    end
+
+    gs 'GirlTalkGeorgetteLoreBump', 'children'
     gs 'GirlTalkGeorgettePrintText', 'georgette_children', 'intro'
     gs 'GirlTalkGeorgettePrintText', 'georgette_children', 'context'
 
-    GeorgetteTalkChildrenDone = 1
-    Friends['georgett'] += 1
-    otkroven['georgett'] += 2
-
-    gs 'ClampGirlSocialStats', 'georgett'
----
-
-#GirlTalkGeorgettePriestSpyRun
-    gs 'GirlTalkGeorgettePrintText', 'georgette_priest_spy', 'intro'
-    gs 'GirlTalkGeorgettePrintText', 'georgette_priest_spy', 'context'
-
-    GeorgetteTalkPriestSpyDone = 1
     Friends['georgett'] += 1
     otkroven['georgett'] += 2
 
@@ -248,14 +306,30 @@
 ---
 
 #GirlTalkGeorgetteChurchRun
+    gs 'GirlTalkGeorgetteChurchResolvePhase'
+
+    if GirlTalkGeorgetteChurchPhase = 0:
+        exit
+    end
+
     gs 'GirlTalkGeorgettePrintText', 'georgette_church', 'intro'
     gs 'GirlTalkGeorgettePrintText', 'georgette_church', 'context'
 
-    GeorgetteTalkChurchDone = 1
+    if GirlTalkGeorgetteChurchPhase = 1:
+        GeorgetteChurchIntroDone = 1
+    elseif GirlTalkGeorgetteChurchPhase = 2:
+        GeorgetteChurchAfterSpy1Done = 1
+        GeorgetteTalkPriestSpyDone = 1
+    elseif GirlTalkGeorgetteChurchPhase = 3:
+        GeorgetteChurchRecapPending = 0
+    end
+
     Friends['georgett'] += 1
     otkroven['georgett'] += 1
 
     gs 'ClampGirlSocialStats', 'georgett'
+
+    killvar 'GirlTalkGeorgetteChurchPhase'
 ---
 
 #GirlTalkGeorgetteLizetteSpy1Run
