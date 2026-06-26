@@ -36,27 +36,14 @@
     AmandaLizetteCanStart = 0
     $AmandaLizetteNextEvent = ''
 
-    ! ====================== ПЕРВЫЙ СЛЕД ЛИЗЕТТЫ ======================
-
-    if LizetteKnown = 0:
-        if HallEventDiscussed['amanda'] = 1:
-            AmandaLizetteCanStart = 1
-            $AmandaLizetteNextEvent = 'first_talk'
-        elseif AmandaPublicAttention >= 2:
-            AmandaLizetteCanStart = 1
-            $AmandaLizetteNextEvent = 'first_talk'
-        elseif AmandaScandalLevel >= 2:
-            AmandaLizetteCanStart = 1
-            $AmandaLizetteNextEvent = 'first_talk'
-        end
-    end
-
     ! ====================== ВИЗИТ В КОМНАТУ АМАНДЫ ======================
 
     if AmandaLizetteCanStart = 0:
-        if LizetteKnown = 1 and LizetteVisitStage = 1 and time = 5:
-            AmandaLizetteCanStart = 1
-            $AmandaLizetteNextEvent = 'room_visit'
+        if LizetteKnown = 1 and LizetteVisitStage = 1 and week = 7 and time >= 3 and time <= 4:
+            if $GirlLocation['amanda'] = 'AmandaRoom' and $GirlLocation['lizette'] = 'AmandaRoom':
+                AmandaLizetteCanStart = 1
+                $AmandaLizetteNextEvent = 'room_visit'
+            end
         end
     end
 
@@ -76,9 +63,7 @@
         exit
     end
 
-    if $AmandaLizetteNextEvent = 'first_talk':
-        gt 'AmandaLizetteFirstTalk', $AmandaLizetteReturnLoc
-    elseif $AmandaLizetteNextEvent = 'room_visit':
+    if $AmandaLizetteNextEvent = 'room_visit':
         gt 'AmandaLizetteRoomVisit', $AmandaLizetteReturnLoc
     elseif $AmandaLizetteNextEvent = 'secret_visit':
         gt 'AmandaLizetteSecretVisit', $AmandaLizetteReturnLoc
@@ -265,8 +250,19 @@
 
     gs 'AmandaLizettePrintText', 'first_talk_intro'
 
-    LizetteKnown = 1
-    LizetteVisitStage = 1
+    if AmandaMetLizette = 0 and PortMeetWitnessed = 0:
+        if debug = 1:
+            *pl '[DEBUG LIZETTE] first_talk без witness — только тест.'
+        end
+    end
+
+    if LizetteKnown = 0:
+        LizetteKnown = 1
+    end
+
+    if LizetteVisitStage < 1:
+        LizetteVisitStage = 1
+    end
     AmandaLizaInfluence += 1
     AmandaPublicAttention += 1
 
