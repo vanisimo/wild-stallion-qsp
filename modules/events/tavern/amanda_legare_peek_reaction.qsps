@@ -1,0 +1,188 @@
+! ================================================
+! FILE: modules/events/tavern/amanda_legare_peek_reaction.qsps
+! Реакция на подглядывание: Аманда + Легаре
+! Вызывается после sneak/watch в major_risk и friday_race
+! ================================================
+
+#AmandaLegarePeekReactionShouldStart
+    AmandaLegarePeekReactionShouldStart = 0
+
+    if $ARGS[0] = 'major_risk':
+        if $MajorRiskChoice = 'sneak' and AmandaLegareMajorRiskResult = 2:
+            AmandaLegarePeekReactionShouldStart = 1
+        end
+    elseif $ARGS[0] = 'friday_race':
+        if $FridayRaceChoice = 'watch':
+            if Fact_AmandaLegareFridayAlley = 1:
+                AmandaLegarePeekReactionShouldStart = 1
+            elseif sluttiness['amanda'] >= 38:
+                AmandaLegarePeekReactionShouldStart = 1
+            end
+        end
+    end
+---
+
+#AmandaLegarePeekReactionStart
+    $AmandaLegarePeekContext = $ARGS[0]
+    $AmandaLegarePeekReturnLoc = $ARGS[1]
+
+    if $AmandaLegarePeekReturnLoc = '':
+        if $AmandaLegarePeekContext = 'friday_race':
+            $AmandaLegarePeekReturnLoc = 'MarketDance'
+        else
+            $AmandaLegarePeekReturnLoc = 'TavernMain'
+        end
+    end
+
+    gs 'AmandaLegarePeekReactionShouldStart', $AmandaLegarePeekContext
+
+    if AmandaLegarePeekReactionShouldStart = 0:
+        exit
+    end
+
+    AmandaLegarePeekDefiant = 0
+
+    if AmandaRebellion > AmandaTrustStefan or AmandaRebellion >= 6:
+        AmandaLegarePeekDefiant = 1
+    elseif sluttiness['amanda'] >= 48:
+        AmandaLegarePeekDefiant = 1
+    end
+
+    *pl ' '
+
+    if LOC('AmandaLegarePeekReactionPromptText') = 1:
+        gs 'AmandaLegarePeekReactionPromptText'
+    end
+
+    *pl ' '
+
+    gs 'AmandaLegarePeekReactionBuildMenu'
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegarePeekReactionMenu''">делать</a>?'
+---
+
+#AmandaLegarePeekReactionBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegarePeekReactionMenu'
+    gs 'Menu.Create', 'AmandaLegarePeekReactionMenu'
+
+    gs 'MenuUiAdd', 'AmandaLegarePeekReactionMenu', 'Прервать — крикнуть', ''
+    gs 'Menu.AddModule', 'AmandaLegarePeekReactionMenu', {
+        gt 'AmandaLegarePeekReactionAction', 'interrupt'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegarePeekReactionMenu', 'Дать понять, что смотрю', ''
+    gs 'Menu.AddModule', 'AmandaLegarePeekReactionMenu', {
+        gt 'AmandaLegarePeekReactionAction', 'reveal'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegarePeekReactionMenu', 'Молчать и смотреть дальше', ''
+    gs 'Menu.AddModule', 'AmandaLegarePeekReactionMenu', {
+        gt 'AmandaLegarePeekReactionAction', 'keep_watch'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegarePeekReactionMenu', 'Хватит — уйти', ''
+    gs 'Menu.AddModule', 'AmandaLegarePeekReactionMenu', {
+        gt 'AmandaLegarePeekReactionAction', 'leave'
+    }
+---
+
+#AmandaLegarePeekReactionAction
+    *clr
+    clr
+    cla
+
+    $AmandaLegarePeekChoice = LCASE($ARGS[0])
+
+    AmandaLegareKnowsStefanWatches = 0
+    AmandaLegarePeekReactionDone = 1
+
+    if $AmandaLegarePeekChoice = 'interrupt':
+        if AmandaLegarePeekDefiant = 1:
+            if LOC('AmandaLegarePeekReactionInterruptDefiantText') = 1:
+                gs 'AmandaLegarePeekReactionInterruptDefiantText'
+            end
+            AmandaRebellion += 2
+            AmandaNpcPath += 2
+            sluttiness['amanda'] += 1
+            TavernScandal += 1
+            AmandaLegareKnowsStefanWatches = 1
+            PlayerKnows_AmandaLegarePeekDefiant = 1
+
+            if $AmandaLegarePeekContext = 'major_risk':
+                AmandaLegareMajorRiskResult = 2
+            end
+        else
+            if LOC('AmandaLegarePeekReactionInterruptText') = 1:
+                gs 'AmandaLegarePeekReactionInterruptText'
+            end
+            AmandaTrustStefan += 1
+            Friends['amanda'] += 1
+            AmandaSecretiveness += 1
+            AmandaRebellion += 1
+            LegareConflictStage += 1
+            LegareSupplyPressureReady = 1
+
+            if $AmandaLegarePeekContext = 'major_risk':
+                AmandaLegareMajorRiskResult = 0
+            end
+        end
+
+    elseif $AmandaLegarePeekChoice = 'reveal':
+        AmandaLegareKnowsStefanWatches = 1
+        PlayerKnows_AmandaLegarePeekDefiant = 1
+
+        if LOC('AmandaLegarePeekReactionRevealText') = 1:
+            gs 'AmandaLegarePeekReactionRevealText'
+        end
+
+        if sluttiness['amanda'] >= 45 or AmandaRebellion > AmandaTrustStefan:
+            AmandaLegarePeekDefiant = 1
+            AmandaNpcPath += 2
+            AmandaPublicAttention += 1
+            TavernScandal += 1
+            AmandaRebellion += 1
+        else
+            AmandaSecretiveness += 2
+            AmandaLegareInterest += 1
+            AmandaRebellion += 1
+        end
+
+    elseif $AmandaLegarePeekChoice = 'keep_watch':
+        PlayerKnows_AmandaLegarePeekDefiant = 1
+
+        if LOC('AmandaLegarePeekReactionKeepWatchText') = 1:
+            gs 'AmandaLegarePeekReactionKeepWatchText'
+        end
+
+        AmandaNpcPath += 1
+        AmandaSecretiveness += 1
+        TavernScandal += 1
+
+        if AmandaLegarePeekDefiant = 1:
+            AmandaRebellion += 1
+            AmandaPublicAttention += 1
+            sluttiness['amanda'] += 1
+        end
+
+    elseif $AmandaLegarePeekChoice = 'leave':
+        if LOC('AmandaLegarePeekReactionLeaveText') = 1:
+            gs 'AmandaLegarePeekReactionLeaveText'
+        end
+
+        AmandaSecretiveness += 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Дальше', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AmandaLegarePeekReturnLoc
+    end
+
+    killvar '$AmandaLegarePeekChoice'
+---

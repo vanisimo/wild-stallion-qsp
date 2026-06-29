@@ -147,11 +147,7 @@
     ! ====================== ПЕРЕХОДЫ ======================
 
     act '<b>Второй этаж</b>', 'images/common/ui/actions/floor.png':
-        if LOC('TavernSecondFloor') = 1:
-            gt 'TavernSecondFloor'
-        else:
-            msg 'Локация "TavernSecondFloor" пока не найдена.'
-        end
+        gt 'TavernSecondFloor'
     end
 
     act '<b>Кухня</b>', 'images/common/ui/actions/kitchen.png':
@@ -174,6 +170,69 @@
     killvar '$TavernMainClosedReason'
     killvar 'TavernMainWorkLookMode'
     killvar '$TavernMainResolvedImageMode'
+---
+
+#TavernSecondFloor
+    cls
+
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/locations/tavern/second_floor', 'jpg'
+    else:
+        gs 'ShowLocationImage', 'tavern_second_floor', 'full', 'jpg'
+    end
+    gs 'AddGlobalButtons'
+    gs 'GetDateTimeNames'
+    gs 'UpdateGirlLocations'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВТОРОЙ ЭТАЖ ТРАКТИРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    *p 'Вы поднимаетесь по скрипучей деревянной лестнице на второй этаж трактира.'
+    *p 'Здесь заметно тише, чем внизу. Шум главного зала доносится приглушённо, а узкий коридор пахнет старым деревом, тканью и свечным воском.'
+    *p 'По обе стороны коридора расположены личные комнаты семьи.'
+
+    *pl ' '
+
+    if time = 1:
+        *p 'Утренний свет ложится на половицы, и коридор кажется спокойным и прохладным.'
+    elseif time = 5:
+        *p 'Ночью второй этаж почти погружён в тишину. За дверями личных комнат слышны только редкие шорохи.'
+    else:
+        *p 'Днём коридор выглядит простым и обжитым, но основная жизнь всё равно кипит внизу.'
+    end
+
+    *pl ' '
+
+    *pl 'Где сейчас девушки:'
+    *pl ' '
+
+    gs 'ShowGirlSecondFloorLine', 'sandra'
+    gs 'ShowGirlSecondFloorLine', 'melissa'
+    gs 'ShowGirlSecondFloorLine', 'amanda'
+
+    *pl ' '
+
+    act '<b>Комната Стефана</b>', 'images/common/ui/actions/travel.png':
+        gt 'PlayerRoom'
+    end
+
+    act '<b>Комната Сандры</b>', 'images/common/ui/family.png':
+        gt 'SandraRoom'
+    end
+
+    act '<b>Комната Мелиссы</b>', 'images/common/ui/family.png':
+        gt 'MelissaRoom'
+    end
+
+    act '<b>Комната Аманды</b>', 'images/common/ui/family.png':
+        gt 'AmandaRoom'
+    end
+
+    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
+        gt 'TavernMain'
+    end
 ---
 
 ! ================================================
@@ -310,6 +369,22 @@
         gs 'AmandaNeighborBoysTryStart'
 
         if AmandaNeighborBoysStarted = 1:
+            exit
+        end
+    end
+
+    if LOC('AmandaLegareAnalTryStart') = 1:
+        gs 'AmandaLegareAnalTryStart', 'TavernMain'
+
+        if AmandaLegareAnalStarted = 1:
+            exit
+        end
+    end
+
+    if $GirlLocation['amanda'] = 'TavernMain' and LOC('AmandaNeighborBoysAnalTryStart') = 1:
+        gs 'AmandaNeighborBoysAnalTryStart'
+
+        if AmandaNeighborBoysAnalStarted = 1:
             exit
         end
     end

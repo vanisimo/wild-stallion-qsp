@@ -175,58 +175,186 @@
     gs 'Menu.Destroy', 'GirlIntimMainMenu'
     gs 'Menu.Create', 'GirlIntimMainMenu'
 
-    gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Нежно поцеловать', 'intim'
-    gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-        gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'kiss'
-    }
-
-    gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Ласково прижать к себе', 'intim'
-    gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-        gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'caress'
-    }
-
-    if Friends[$IntimGirl] >= 10 or love[$IntimGirl] >= 8 or sluttiness[$IntimGirl] >= 15 or HadSex[$IntimGirl] > 0:
-        gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Ручные ласки', 'intim'
-        gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-            gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'hand'
-        }
+    if $IntimGirl = 'amanda' and $IntimSessionLoc = 'AmandaRoom':
+        gs 'GirlIntimAddAmandaHomeMenu'
+    elseif $IntimGirl = 'melissa' and $IntimSessionLoc = 'MelissaRoom':
+        gs 'GirlIntimAddMelissaHomeMenu'
+    elseif $IntimGirl = 'sandra' and $IntimSessionLoc = 'SandraRoom':
+        gs 'GirlIntimAddSandraHomeMenu'
+    else
+        gs 'GirlIntimAddGenericSexMenu'
     end
+---
 
-    if sluttiness[$IntimGirl] >= 20 or otkroven[$IntimGirl] >= 15 or love[$IntimGirl] >= 15 or HadSex[$IntimGirl] > 0:
-        gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Оральные ласки', 'intim'
-        gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-            gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'oral'
-        }
-    end
+#GirlIntimAddAmandaHomeMenu
+    if AmandaHomeUnlocked = 1:
+        gs 'AmandaHomeCanAdvance'
 
-    if virginity[$IntimGirl] = 1:
-        gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первый раз', 'intim'
-        gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-            gt 'GirlFirstSex', $IntimGirl, $IntimReturnLoc
-        }
-    else:
-        gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Вагинальная близость', 'intim'
-        gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-            gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'vaginal'
-        }
-    end
-
-    if analvirgin[$IntimGirl] = 1:
-        if HadSex[$IntimGirl] > 0 and sluttiness[$IntimGirl] >= 45 and otkroven[$IntimGirl] >= 25:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первый анальный опыт', 'intim'
+        if AmandaHomeCanAdvance = 1 and AmandaHomeStage < 6:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести время наедине', 'intim'
             gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-                gt 'GirlFirstAnal', $IntimGirl, $IntimReturnLoc
+                gt 'AmandaHomeStep'
             }
         end
-    else:
-        if HadSex[$IntimGirl] > 0 or sluttiness[$IntimGirl] >= 35:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Анальная близость', 'intim'
+
+        if AmandaHomeStage >= 6 and AmandaHomeSex = 0 and AmandaHomeStepToday = 0 and time >= 3:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первая близость', 'intim'
             gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-                gt 'IntimScene', $IntimGirl, $IntimReturnLoc, 'anal'
+                gt 'AmandaHomeFirstSexLaunch'
             }
         end
-    end
 
+        if AmandaHomeSex = 1 and LOC('SexSceneStart') = 1 and time >= 3:
+            gs 'CanStartSexScene', 'amanda'
+
+            if SexSceneAllowed = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести вечер', 'intim'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'SexSceneStart', 'amanda', $IntimReturnLoc, 'amanda_repeat'
+                }
+            end
+
+            killvar 'SexSceneAllowed'
+            killvar '$SexSceneDenyReason'
+        end
+
+        if LOC('AmandaLizetteAnalTalkCanStart') = 1:
+            gs 'AmandaLizetteAnalTalkCanStart'
+
+            if AmandaLizetteAnalTalkCanStart = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Поговорить с Лизеттой', 'talk'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'AmandaLizetteAnalTalkStart'
+                }
+            end
+        end
+
+        if LOC('AmandaHomeAnalCanStart') = 1:
+            gs 'AmandaHomeAnalCanStart'
+
+            if AmandaHomeAnalCanStart = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Близость — иначе', 'intim'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'AmandaHomeAnalStart'
+                }
+            end
+        end
+
+        if MelissaHomeSex = 1 and LOC('AmandaMelissaThreesomeCanStart') = 1:
+            gs 'AmandaMelissaThreesomeCanStart'
+
+            if AmandaMelissaThreesomeCanStart = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Вечер с Мелиссой', 'intim'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'GroupSexAmandaMelissaStefanStart'
+                }
+            end
+        end
+    end
+---
+
+#GirlIntimAddMelissaHomeMenu
+    if MelissaHomeUnlocked = 1:
+        gs 'MelissaHomeCanAdvance'
+
+        if MelissaHomeCanAdvance = 1 and MelissaHomeStage < 6:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести время наедине', 'intim'
+            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gt 'MelissaHomeStep'
+            }
+        end
+
+        if MelissaHomeStage >= 6 and MelissaHomeSex = 0 and MelissaHomeStepToday = 0 and time >= 3:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первая близость', 'intim'
+            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gt 'MelissaHomeFirstSexLaunch'
+            }
+        end
+
+        if MelissaHomeSex = 1 and LOC('SexSceneStart') = 1 and time >= 3:
+            gs 'CanStartSexScene', 'melissa'
+
+            if SexSceneAllowed = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести вечер', 'intim'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'SexSceneStart', 'melissa', $IntimReturnLoc, 'melissa_repeat'
+                }
+            end
+
+            killvar 'SexSceneAllowed'
+            killvar '$SexSceneDenyReason'
+        end
+
+        if LOC('MelissaAnalDiscoveryCanAdvance') = 1:
+            gs 'MelissaAnalDiscoveryCanAdvance'
+
+            if MelissaAnalDiscoveryCanAdvance = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Поговорить о тайном', 'talk'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'MelissaAnalDiscoveryStep'
+                }
+            end
+        end
+
+        if LOC('MelissaAnalWithGgCanStart') = 1:
+            gs 'MelissaAnalWithGgCanStart'
+
+            if MelissaAnalWithGgCanStart = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Близость — сзади', 'intim'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'MelissaAnalWithGgStart'
+                }
+            end
+        end
+
+        if AmandaHomeSex = 1 and LOC('AmandaMelissaThreesomeCanStart') = 1:
+            gs 'AmandaMelissaThreesomeCanStart'
+
+            if AmandaMelissaThreesomeCanStart = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Вечер с Амандой', 'intim'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'GroupSexAmandaMelissaStefanStart'
+                }
+            end
+        end
+    end
+---
+
+#GirlIntimAddSandraHomeMenu
+    if SandraHomeUnlocked = 1:
+        gs 'SandraHomeCanAdvance'
+
+        if SandraHomeCanAdvance = 1 and SandraHomeStage < 12:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести время наедине', 'intim'
+            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gt 'SandraHomeStep'
+            }
+        end
+
+        if SandraHomeStage >= 12 and SandraHomeSex = 0 and SandraHomeStepToday = 0 and time >= 4:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первая близость', 'intim'
+            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gt 'SandraHomeFirstSexLaunch'
+            }
+        end
+
+        if SandraHomeSex = 1 and LOC('SexSceneStart') = 1 and time >= 4:
+            gs 'CanStartSexScene', 'sandra'
+
+            if SexSceneAllowed = 1:
+                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести вечер', 'intim'
+                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                    gt 'SexSceneStart', 'sandra', $IntimReturnLoc, 'sandra_repeat'
+                }
+            end
+
+            killvar 'SexSceneAllowed'
+            killvar '$SexSceneDenyReason'
+        end
+    end
+---
+
+#GirlIntimAddGenericSexMenu
     if LOC('SexSceneStart') = 1:
         gs 'CanStartSexScene', $IntimGirl
 
@@ -240,16 +368,6 @@
         killvar 'SexSceneAllowed'
         killvar '$SexSceneDenyReason'
     end
-
-    gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Закончить', 'return'
-    gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-        gt 'IntimEnd', $IntimGirl, $IntimReturnLoc
-    }
-
-    gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Вернуться', 'return'
-    gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-        gt 'GirlIntimMenuReturn'
-    }
 ---
 
 #GirlIntimRefreshMenuIfAllowed

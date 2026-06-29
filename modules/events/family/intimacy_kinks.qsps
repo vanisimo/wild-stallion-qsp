@@ -1,0 +1,910 @@
+! ================================================
+! FILE: modules/events/family/intimacy_kinks.qsps
+! MODULE: events/family
+! Sex kinks: гейты и сцены (§ design-character-intimacy-arc.md)
+! ================================================
+
+! ---------- Аманда: анал с Легаре ----------
+
+#AmandaLegareAnalCanStart
+    AmandaLegareAnalCanStart = 0
+
+    if AmandaLegareFirstSexDone = 0:
+        exit
+    end
+
+    if AmandaLegareAnalDone = 1:
+        exit
+    end
+
+    if AmandaLegareAnalToday = 1:
+        exit
+    end
+
+    if AmandaProhibitGuys = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    AmandaLegareAnalSlutNeed = 38
+
+    if AmandaLizaInfluence >= 3:
+        AmandaLegareAnalSlutNeed = 33
+    end
+
+    if sluttiness['amanda'] < AmandaLegareAnalSlutNeed and AmandaLegareInterest < 12:
+        exit
+    end
+
+    if Fact_AmandaLegareFridayAlley = 0 and Fact_AmandaLegareMajorRisk = 0 and PlayerKnows_AmandaLegareFridayRace = 0:
+        exit
+    end
+
+    AmandaLegareAnalCanStart = 1
+    killvar 'AmandaLegareAnalSlutNeed'
+---
+
+#AmandaLegareAnalTryStart
+    AmandaLegareAnalStarted = 0
+
+    if LOC('AmandaLegareAnalCanStart') = 1:
+        gs 'AmandaLegareAnalCanStart'
+
+        if AmandaLegareAnalCanStart = 1:
+            LegareAnalRoll = RAND(1, 100)
+
+            if LegareAnalRoll <= 22:
+                AmandaLegareAnalStarted = 1
+                gt 'AmandaLegareAnalStart', $ARGS[0]
+            end
+
+            killvar 'LegareAnalRoll'
+        end
+    end
+---
+
+#AmandaLegareAnalStart
+    $AmandaLegareAnalReturnLoc = $ARGS[0]
+
+    if $AmandaLegareAnalReturnLoc = '':
+        $AmandaLegareAnalReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareAnalReturnLoc) = 0:
+        $AmandaLegareAnalReturnLoc = 'TavernMain'
+    end
+
+    gs 'AmandaLegareAnalCanStart'
+
+    if AmandaLegareAnalCanStart = 0:
+        gt $AmandaLegareAnalReturnLoc
+    end
+
+    AmandaLegareAnalToday = 1
+
+    gs 'IntimacyKinksText', 'amanda_legare_anal'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛЕГАРЕ — ЗА БОЧКАМИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    gs 'AmandaLegareAnalBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareAnalMenu''">делать</a>?'
+---
+
+#AmandaLegareAnalBuildMenu
+    gs 'Menu.Destroy', 'AmandaLegareAnalMenu'
+    gs 'Menu.Create', 'AmandaLegareAnalMenu'
+
+    gs 'MenuUiAdd', 'AmandaLegareAnalMenu', 'Наблюдать', ''
+    gs 'Menu.AddModule', 'AmandaLegareAnalMenu', {
+        gt 'AmandaLegareAnalAction', 'watch', $AmandaLegareAnalReturnLoc
+    }
+
+    if AmandaWatchNpcPath = 1 or FamilyCorruptionStage >= 2:
+        gs 'MenuUiAdd', 'AmandaLegareAnalMenu', 'Дать понять, что смотришь', ''
+        gs 'Menu.AddModule', 'AmandaLegareAnalMenu', {
+            gt 'AmandaLegareAnalAction', 'show', $AmandaLegareAnalReturnLoc
+        }
+    end
+
+    gs 'MenuUiAdd', 'AmandaLegareAnalMenu', 'Уйти', ''
+    gs 'Menu.AddModule', 'AmandaLegareAnalMenu', {
+        gt 'AmandaLegareAnalAction', 'leave', $AmandaLegareAnalReturnLoc
+    }
+---
+
+#AmandaLegareAnalAction
+    *clr
+    clr
+    cla
+
+    $AmandaLegareAnalChoice = LCASE($ARGS[0])
+    $AmandaLegareAnalReturnLoc = $ARGS[1]
+
+    if $AmandaLegareAnalReturnLoc = '':
+        $AmandaLegareAnalReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLegareAnalReturnLoc) = 0:
+        $AmandaLegareAnalReturnLoc = 'TavernMain'
+    end
+
+    if $AmandaLegareAnalChoice = 'watch' or $AmandaLegareAnalChoice = 'show':
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 2
+        AmandaSecretiveness += 1
+        sluttiness['amanda'] += 2
+        otkroven['amanda'] += 1
+        AmandaLegareInterest += 1
+        LegareAmandaInterest += 1
+        TavernScandal += 1
+
+        AmandaLegareAnalDone = 1
+        analvirgin['amanda'] = 0
+        gs 'RegisterSex', 'amanda', 'anal', 0, 0
+        analacts['amanda'] += 1
+
+        if $AmandaLegareAnalChoice = 'show':
+            AmandaLegareKnowsStefanWatches = 1
+            PlayerKnows_AmandaLegarePeekDefiant = 1
+        end
+
+        gs 'IntimacyKinksText', 'amanda_legare_anal_after', $AmandaLegareAnalChoice
+    else:
+        gs 'IntimacyKinksText', 'amanda_legare_anal_leave'
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AmandaLegareAnalReturnLoc
+    end
+
+    killvar '$AmandaLegareAnalChoice'
+---
+
+! ---------- Аманда: анал с соседскими парнями ----------
+
+#AmandaNeighborBoysAnalCanStart
+    AmandaNeighborBoysAnalCanStart = 0
+
+    if AmandaLegareAnalDone = 0:
+        exit
+    end
+
+    if AmandaNeighborBoysAnalDone = 1:
+        exit
+    end
+
+    if AmandaNeighborBoysStage < 3:
+        exit
+    end
+
+    if AmandaProhibitGuys = 1:
+        exit
+    end
+
+    if AmandaNeighborBoysAnalToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if sluttiness['amanda'] < 42:
+        exit
+    end
+
+    AmandaNeighborBoysAnalCanStart = 1
+---
+
+#AmandaNeighborBoysAnalTryStart
+    AmandaNeighborBoysAnalStarted = 0
+
+    if LOC('AmandaNeighborBoysAnalCanStart') = 1:
+        gs 'AmandaNeighborBoysAnalCanStart'
+
+        if AmandaNeighborBoysAnalCanStart = 1:
+            NeighborAnalRoll = RAND(1, 100)
+
+            if NeighborAnalRoll <= 24:
+                AmandaNeighborBoysAnalStarted = 1
+                gt 'AmandaNeighborBoysAnalEvent'
+            end
+
+            killvar 'NeighborAnalRoll'
+        end
+    end
+---
+
+#AmandaNeighborBoysAnalEvent
+    *clr
+    clr
+    cla
+
+    $CurrentGirl = 'amanda'
+    AmandaNeighborBoysAnalToday = 1
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $AmandaNeighborBoyName = '':
+        NeighborBoyRoll = RAND(1, 3)
+
+        if NeighborBoyRoll = 1:
+            $AmandaNeighborBoyName = 'Ханс'
+        elseif NeighborBoyRoll = 2:
+            $AmandaNeighborBoyName = 'Курт'
+        else:
+            $AmandaNeighborBoyName = 'Феликс'
+        end
+
+        killvar 'NeighborBoyRoll'
+    end
+
+    gs 'IntimacyKinksText', 'amanda_neighbor_anal'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СОСЕДСКИЕ ПАРНИ — ЗА САРАЕМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    gs 'AmandaNeighborBoysAnalBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaNeighborBoysAnalMenu''">делать</a>?'
+---
+
+#AmandaNeighborBoysAnalBuildMenu
+    gs 'Menu.Destroy', 'AmandaNeighborBoysAnalMenu'
+    gs 'Menu.Create', 'AmandaNeighborBoysAnalMenu'
+
+    gs 'MenuUiAdd', 'AmandaNeighborBoysAnalMenu', 'Прогнать', ''
+    gs 'Menu.AddModule', 'AmandaNeighborBoysAnalMenu', {
+        gt 'AmandaNeighborBoysAnalAction', 'send_away'
+    }
+
+    if AmandaWatchNpcPath = 1 or FamilyCorruptionStage >= 2:
+        gs 'MenuUiAdd', 'AmandaNeighborBoysAnalMenu', 'Наблюдать', ''
+        gs 'Menu.AddModule', 'AmandaNeighborBoysAnalMenu', {
+            gt 'AmandaNeighborBoysAnalAction', 'watch'
+        }
+    end
+
+    gs 'MenuUiAdd', 'AmandaNeighborBoysAnalMenu', 'Сделать вид, что не видели', ''
+    gs 'Menu.AddModule', 'AmandaNeighborBoysAnalMenu', {
+        gt 'AmandaNeighborBoysAnalAction', 'ignore'
+    }
+---
+
+#AmandaNeighborBoysAnalAction
+    *clr
+    clr
+    cla
+
+    $NeighborBoysAnalChoice = LCASE($ARGS[0])
+
+    if $NeighborBoysAnalChoice = 'send_away':
+        AmandaTrustStefan += 1
+        AmandaRebellion += 1
+
+    elseif $NeighborBoysAnalChoice = 'watch':
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 2
+        sluttiness['amanda'] += 2
+        TavernScandal += 1
+
+        AmandaNeighborBoysAnalDone = 1
+        gs 'RegisterSex', 'amanda', 'anal', 0, 0
+        analacts['amanda'] += 1
+
+        gs 'IntimacyKinksText', 'amanda_neighbor_anal_after'
+    else:
+        AmandaNpcPath += 1
+        AmandaSecretiveness += 1
+        gs 'IntimacyKinksText', 'amanda_neighbor_anal_ignore'
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+
+    killvar '$NeighborBoysAnalChoice'
+---
+
+! ---------- Аманда: talk Лизетты → анал с ГГ ----------
+
+#AmandaLizetteAnalTalkCanStart
+    AmandaLizetteAnalTalkCanStart = 0
+
+    if AmandaLizetteAnalTalkDone = 1:
+        exit
+    end
+
+    if AmandaHomeSex = 0:
+        exit
+    end
+
+    if AmandaLizaInfluence < 4:
+        exit
+    end
+
+    if AmandaLizetteAnalTalkCount < 2:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    AmandaLizetteAnalTalkCanStart = 1
+---
+
+#AmandaLizetteAnalTalkStart
+    gs 'AmandaLizetteAnalTalkCanStart'
+
+    if AmandaLizetteAnalTalkCanStart = 0:
+        gt 'AmandaRoom'
+    end
+
+    gs 'IntimacyKinksText', 'amanda_lizette_anal_talk'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ЛИЗЕТТА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    AmandaLizetteAnalTalkDone = 1
+    AmandaLizaInfluence += 1
+    otkroven['amanda'] += 2
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaLizetteAnalTalkBump
+    if AmandaLizetteAnalTalkDone = 1:
+        exit
+    end
+
+    if AmandaLizaInfluence < 3:
+        exit
+    end
+
+    if AmandaLegareAnalDone = 0 and sluttiness['amanda'] < 35:
+        exit
+    end
+
+    AmandaLizetteAnalTalkCount += 1
+
+    if AmandaLizetteAnalTalkCount > 5:
+        AmandaLizetteAnalTalkCount = 5
+    end
+---
+
+#AmandaHomeAnalCanStart
+    AmandaHomeAnalCanStart = 0
+
+    if AmandaHomeSex = 0:
+        exit
+    end
+
+    if AmandaLizetteAnalTalkDone = 0:
+        exit
+    end
+
+    if AmandaHomeAnalDone = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'AmandaRoom':
+        exit
+    end
+
+    AmandaHomeAnalCanStart = 1
+---
+
+#AmandaHomeAnalStart
+    gs 'AmandaHomeAnalCanStart'
+
+    if AmandaHomeAnalCanStart = 0:
+        gt 'AmandaRoom'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        *p 'Сегодня вы слишком устали.'
+        gt 'AmandaRoom'
+    end
+
+    gs 'IntimacyKinksText', 'amanda_home_anal'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА — АНАЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    AmandaHomeAnalActive = 1
+
+    if IntimStage['amanda'] < 5:
+        IntimStage['amanda'] = 5
+    end
+
+    if otkroven['amanda'] < 20:
+        otkroven['amanda'] = 20
+    end
+
+    gt 'SexSceneStart', 'amanda', 'AmandaRoom', 'amanda_home_anal'
+---
+
+! ---------- Мелисса: открытие анала ----------
+
+#MelissaAnalDiscoveryCanAdvance
+    MelissaAnalDiscoveryCanAdvance = 0
+
+    if MelissaAnalDiscoveryStage >= 4:
+        exit
+    end
+
+    if MelissaAnalDiscoveryToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if MelissaAnalDiscoveryStage = 0:
+        if SandraHomeStage < 8:
+            exit
+        end
+    elseif MelissaAnalDiscoveryStage = 1:
+        if Friends['melissa'] < 12:
+            exit
+        end
+    elseif MelissaAnalDiscoveryStage = 2:
+        if MelissaHomeStage < 4:
+            exit
+        end
+    elseif MelissaAnalDiscoveryStage = 3:
+        if MelissaHomeSex = 0:
+            exit
+        end
+    end
+
+    MelissaAnalDiscoveryCanAdvance = 1
+---
+
+#MelissaAnalDiscoveryStep
+    gs 'MelissaAnalDiscoveryCanAdvance'
+
+    if MelissaAnalDiscoveryCanAdvance = 0:
+        gt 'MelissaRoom'
+    end
+
+    MelissaAnalDiscoveryToday = 1
+    MelissaAnalDiscoveryStage += 1
+
+    if MelissaAnalDiscoveryStage = 1:
+        $MelissaKinkStepKey = 'dildo'
+    elseif MelissaAnalDiscoveryStage = 2:
+        $MelissaKinkStepKey = 'vegetables'
+    elseif MelissaAnalDiscoveryStage = 3:
+        $MelissaKinkStepKey = 'rim'
+    elseif MelissaAnalDiscoveryStage = 4:
+        $MelissaKinkStepKey = 'ready'
+    else:
+        gt 'MelissaRoom'
+    end
+
+    gs 'IntimacyKinksText', 'melissa_discovery', $MelissaKinkStepKey
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА — ТАЙНОЕ ОТКРЫТИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    if $MelissaKinkStepKey = 'rim':
+        sluttiness['melissa'] += 2
+        otkroven['melissa'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+    killvar '$MelissaKinkStepKey'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaRoom'
+    end
+---
+
+#MelissaAnalWithGgCanStart
+    MelissaAnalWithGgCanStart = 0
+
+    if MelissaHomeSex = 0:
+        exit
+    end
+
+    if MelissaAnalDiscoveryStage < 3:
+        exit
+    end
+
+    if MelissaAnalWithGgDone = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if $GirlLocation['melissa'] <> 'MelissaRoom':
+        exit
+    end
+
+    MelissaAnalWithGgCanStart = 1
+---
+
+#MelissaAnalWithGgStart
+    gs 'MelissaAnalWithGgCanStart'
+
+    if MelissaAnalWithGgCanStart = 0:
+        gt 'MelissaRoom'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        gt 'MelissaRoom'
+    end
+
+    gs 'IntimacyKinksText', 'melissa_anal_gg'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА — АНАЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    MelissaAnalWithGgActive = 1
+
+    if IntimStage['melissa'] < 5:
+        IntimStage['melissa'] = 5
+    end
+
+    if otkroven['melissa'] < 20:
+        otkroven['melissa'] = 20
+    end
+
+    gt 'SexSceneStart', 'melissa', 'MelissaRoom', 'melissa_anal_gg'
+---
+
+#MelissaMinstrelAnalCanStart
+    MelissaMinstrelAnalCanStart = 0
+
+    if MelissaAnalWithGgDone = 0:
+        exit
+    end
+
+    if MelissaMinstrelFirstSexDone = 0 and Fact_MelissaMinstrelBackroomSex = 0:
+        exit
+    end
+
+    if MelissaMinstrelAnalDone = 1:
+        exit
+    end
+
+    if sluttiness['melissa'] < 45:
+        exit
+    end
+
+    if MelissaNpcPath < 10:
+        exit
+    end
+
+    MelissaMinstrelAnalCanStart = 1
+---
+
+#MelissaMinstrelAnalStart
+    gs 'MelissaMinstrelAnalCanStart'
+
+    if MelissaMinstrelAnalCanStart = 0:
+        gt 'TavernMain'
+    end
+
+    gs 'IntimacyKinksText', 'melissa_minstrel_anal'
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА И МЕНЕСТРЕЛЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    MelissaMinstrelAnalDone = 1
+    gs 'RegisterSex', 'melissa', 'anal', 0, 0
+    analacts['melissa'] += 1
+    MelissaNpcPath += 2
+    sluttiness['melissa'] += 2
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#MelissaDoubleAnalCanStart
+    MelissaDoubleAnalCanStart = 0
+
+    if MelissaAnalWithGgDone = 0:
+        exit
+    end
+
+    if MelissaMinstrelAnalDone = 0:
+        exit
+    end
+
+    if MelissaDoubleAnalDone = 1:
+        exit
+    end
+
+    if MelissaMinstrelThreesomeDone = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 4:
+        exit
+    end
+
+    if sluttiness['melissa'] < 55:
+        exit
+    end
+
+    MelissaDoubleAnalCanStart = 1
+---
+
+#MelissaDoubleAnalStart
+    gs 'MelissaDoubleAnalCanStart'
+
+    if MelissaDoubleAnalCanStart = 0:
+        gt 'TavernMain'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        gt 'TavernMain'
+    end
+
+    gt 'GroupSexMelissaDoubleAnalScene'
+---
+
+! ---------- Кларисса: двойной вагинал ----------
+
+#ClarissaDoubleVaginalCanStart
+    ClarissaDoubleVaginalCanStart = 0
+
+    if ClarissaIntimSex = 0:
+        exit
+    end
+
+    if ClarissaDoubleVaginalDone = 1:
+        exit
+    end
+
+    if ClarissaLegareReconcileDone = 0:
+        exit
+    end
+
+    if ClarissaMmfLegareDone = 0:
+        exit
+    end
+
+    if ClarissaVaginalSexCount < 5:
+        exit
+    end
+
+    if sluttiness['clarissa'] < 40:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    ClarissaDoubleVaginalCanStart = 1
+---
+
+#ClarissaDoubleVaginalStart
+    gs 'ClarissaDoubleVaginalCanStart'
+
+    if ClarissaDoubleVaginalCanStart = 0:
+        gt 'WineShop'
+    end
+
+    gs 'CanCumToday'
+
+    if Result = 0 and debug = 0:
+        gt 'WineShop'
+    end
+
+    gt 'GroupSexClarissaDoubleVaginalScene'
+---
+
+! ---------- Инга: oral-лестница ----------
+
+#IngaOralCanAdvance
+    IngaOralCanAdvance = 0
+
+    if IngaRomanceUnlocked = 0:
+        exit
+    end
+
+    if IngaOralStage >= 6:
+        exit
+    end
+
+    if IngaOralStepToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if IngaOralStage = 0:
+        if IngaRomanceStage < 2:
+            exit
+        end
+    elseif IngaOralStage = 1:
+        if Friends['inga'] < 16:
+            exit
+        end
+    elseif IngaOralStage = 2:
+        if Friends['inga'] < 18:
+            exit
+        end
+    elseif IngaOralStage = 3:
+        if sluttiness['inga'] < 22:
+            exit
+        end
+    elseif IngaOralStage = 4:
+        if IngaBackroomSex = 0 and IngaRomanceStage < 3:
+            exit
+        end
+    elseif IngaOralStage = 5:
+        if IngaOralOrgasmDone = 0:
+            exit
+        end
+    end
+
+    IngaOralCanAdvance = 1
+---
+
+#IngaOralStep
+    gs 'IngaOralCanAdvance'
+
+    if IngaOralCanAdvance = 0:
+        gt 'BeckyShop'
+    end
+
+    IngaOralStepToday = 1
+    IngaOralStage += 1
+
+    if IngaOralStage = 1:
+        $IngaOralStepKey = 'deep'
+    elseif IngaOralStage = 2:
+        $IngaOralStepKey = 'balls'
+    elseif IngaOralStage = 3:
+        $IngaOralStepKey = 'rim'
+    elseif IngaOralStage = 4:
+        $IngaOralStepKey = 'taste'
+    elseif IngaOralStage = 5:
+        $IngaOralStepKey = 'orgasm'
+    elseif IngaOralStage = 6:
+        $IngaOralStepKey = 'master'
+    else:
+        gt 'BeckyShop'
+    end
+
+    gs 'IntimacyKinksText', 'inga_oral', $IngaOralStepKey
+
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИНГА — МИНЕТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $IntimacyKinksText
+    *pl ' '
+
+    if $IngaOralStepKey = 'deep':
+        gs 'RegisterDeepOral', 'inga', 1
+    elseif $IngaOralStepKey = 'balls' or $IngaOralStepKey = 'rim':
+        OralCount['inga'] += 1
+        sluttiness['inga'] += 1
+    elseif $IngaOralStepKey = 'orgasm':
+        IngaOralOrgasmDone = 1
+        GiveOrgasms['inga'] += 1
+        sluttiness['inga'] += 2
+        otkroven['inga'] += 2
+    elseif $IngaOralStepKey = 'master':
+        BlowjobCount['inga'] += 1
+        sluttiness['inga'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'inga'
+    killvar '$IngaOralStepKey'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
+---

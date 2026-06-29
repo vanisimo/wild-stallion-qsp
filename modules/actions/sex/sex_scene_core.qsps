@@ -16,6 +16,11 @@
     $SexGirl = $GirlKey
     $SexReturnLoc = $ARGS[1]
     $SexMode = LCASE($ARGS[2])
+    $SexDenyReturnLoc = $CURLOC
+
+    if $SexDenyReturnLoc = '':
+        $SexDenyReturnLoc = 'TavernMain'
+    end
 
     if $SexReturnLoc = '':
         $SexReturnLoc = $CURLOC
@@ -67,7 +72,7 @@
 
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
-            gt $SexReturnLoc
+            gt $SexDenyReturnLoc
         end
         exit
     end
@@ -91,24 +96,6 @@
     if $SexCheckGirl = '':
         SexSceneAllowed = 0
         $SexSceneDenyReason = 'Ошибка: девушка не выбрана.'
-        exit
-    end
-
-    if IntimStage[$SexCheckGirl] < 1:
-        SexSceneAllowed = 0
-        $SexSceneDenyReason = $RealName[$SexCheckGirl] + ' пока не готова к такой близости.'
-        exit
-    end
-
-    if Friends[$SexCheckGirl] < 20 and love[$SexCheckGirl] < 15:
-        SexSceneAllowed = 0
-        $SexSceneDenyReason = 'Сейчас между вами недостаточно доверия для такой близости.'
-        exit
-    end
-
-    if otkroven[$SexCheckGirl] < 10:
-        SexSceneAllowed = 0
-        $SexSceneDenyReason = $RealName[$SexCheckGirl] + ' пока слишком смущена для такой близости.'
         exit
     end
 
@@ -136,11 +123,19 @@
         exit
     end
 
+    if $SexCheckGirl = 'amanda' and AmandaHomeAnalActive = 1:
+        exit
+    end
+
     if $SexCheckGirl = 'melissa' and MelissaHomeFirstSexActive = 1:
         exit
     end
 
     if $SexCheckGirl = 'melissa' and MelissaHomeSex = 1:
+        exit
+    end
+
+    if $SexCheckGirl = 'melissa' and MelissaAnalWithGgActive = 1:
         exit
     end
 
@@ -165,6 +160,24 @@
     end
 
     if $SexCheckGirl = 'clarissa' and ClarissaIntimSex = 1:
+        exit
+    end
+
+    if IntimStage[$SexCheckGirl] < 1:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = $RealName[$SexCheckGirl] + ' пока не готова к такой близости.'
+        exit
+    end
+
+    if Friends[$SexCheckGirl] < 20 and love[$SexCheckGirl] < 15:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = 'Сейчас между вами недостаточно доверия для такой близости.'
+        exit
+    end
+
+    if otkroven[$SexCheckGirl] < 10:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = $RealName[$SexCheckGirl] + ' пока слишком смущена для такой близости.'
         exit
     end
 
@@ -229,13 +242,16 @@
 
     SexMainStarted = 0
     SexSceneHadVaginal = 0
+    SexSceneHadBlowjob = 0
+    SexSceneHadRim = 0
+    SexSceneHadAnal = 0
     SexSceneHadPlayerCum = 0
 
-    SexPlayerArousal = 20
-    SexGirlArousal = 15 + sluttiness[$SexGirl] / 5 + love[$SexGirl] / 10
+    SexPlayerArousal = 5
+    SexGirlArousal = 5 + sluttiness[$SexGirl] / 8 + love[$SexGirl] / 15
 
-    if SexGirlArousal > 60:
-        SexGirlArousal = 60
+    if SexGirlArousal > 18:
+        SexGirlArousal = 18
     end
 
     SexPlayerCameInScene = 0
@@ -246,8 +262,29 @@
     SexPlayerOut = 0
     SexSimultaneousOrgasm = 0
 
-    $SexPose = 'intro'
+    SexSceneKissCount = 0
+    SexSceneGropeCount = 0
+    SexSceneBlowjobCount = 0
+    SexSceneVaginalCount = 0
+    SexSceneCuniCount = 0
+
+    SexKissGirlCap = 38
+    SexKissPlayerCap = 35
+    SexGropeGirlCap = 58
+    SexGropePlayerCap = 52
+    SexCuniPlayerCap = 48
+    SexPlayerOrgasmFromGirlThreshold = 90
+    SexPlayerFinishThreshold = 88
+
+    SexGirlTriggeredPlayerOrgasm = 0
+    SexSceneNextPlayerGain = 0
+    SexSceneCuniUseCount = 0
+
+    $SexPose = 'missionary'
     $SexActType = 'intro'
+    SexSceneReverseCowgirlSlutMin = 40
+    SexSceneShowChangePose = 0
+    SexSceneAnalCount = 0
     $SexFinishPlace = ''
     $SexLastText = ''
 
@@ -308,7 +345,31 @@
 ! ================================================
 
 #SexSceneShowStatusPanel
+    PanelCustomActive = 1
+
     clr
+
+    gs 'EnsureGirlData', $SexGirl
+
+    if $RealName[$SexGirl] <> '':
+        gs 'PanelUiHeader', 'БЛИЗОСТЬ: ' + $RealName[$SexGirl]
+    else
+        gs 'PanelUiHeader', 'БЛИЗОСТЬ'
+    end
+
+    gs 'PanelUiDivider'
+    pl ' '
+
+    pl 'Возбуждение Стефана: ' + STR(SexPlayerArousal) + ' / 100'
+    pl 'Возбуждение ' + $RealName[$SexGirl] + ': ' + STR(SexGirlArousal) + ' / 100'
+
+    if $SexActType = 'vaginal' or $SexActType = 'anal':
+        gs 'SexScenePoseStatusLabel'
+        pl 'Поза: ' + $SexPoseStatusLabel
+        killvar '$SexPoseStatusLabel'
+    end
+
+    pl ' '
 
     SexDailyMax = can_cum_daily
 
@@ -320,49 +381,8 @@
         SexDailyMax = 2
     end
 
-    if SexPlayerOut = 1:
-        pl 'Стефан вымотан за сегодня.'
-    elseif SexPlayerArousal < 20:
-        pl 'Стефан спокоен.'
-    elseif SexPlayerArousal < 40:
-        pl 'Стефан возбуждён. У него хороший стояк.'
-    elseif SexPlayerArousal < 65:
-        pl 'Стефан сильно возбуждён.'
-    elseif SexPlayerArousal < 85:
-        pl 'Стефан очень близок к финалу.'
-    elseif SexPlayerArousal < 100:
-        pl 'Стефан на грани. Он едва сдерживается.'
-    else:
-        pl 'Стефан уже не может сдерживаться.'
-    end
-
-    if SexGirlArousal < 20:
-        pl $RealName[$SexGirl] + ' пока держится спокойно.'
-    elseif SexGirlArousal < 40:
-        pl $RealName[$SexGirl] + ' начинает отвечать на ваши ласки.'
-    elseif SexGirlArousal < 65:
-        pl $RealName[$SexGirl] + ' заметно возбуждена.'
-    elseif SexGirlArousal < 85:
-        pl $RealName[$SexGirl] + ' близка к оргазму.'
-    elseif SexGirlArousal < 100:
-        pl $RealName[$SexGirl] + ' почти теряет самообладание.'
-    else:
-        pl $RealName[$SexGirl] + ' уже на грани.'
-    end
-
-    pl ' '
-
-    if SexClothesStage = 0:
-        pl 'Одежда: на месте.'
-    elseif SexClothesStage = 1:
-        pl 'Одежда: сбита и мешает всё меньше.'
-    else:
-        pl 'Одежда: уже не мешает близости.'
-    end
-
-    if $SexActType <> '':
-        pl 'Текущее действие: ' + $SexActType + '.'
-    end
+    gs 'SexSceneCalcMenuUnlocks'
+    gs 'SexSceneStatusText'
 
     if SexGirlCameInScene > 0:
         pl $RealName[$SexGirl] + ' получила удовольствие: ' + STR(SexGirlCameInScene) + ' раз.'
@@ -383,6 +403,17 @@
 #SexSceneBuildMenu
     gs 'Menu.Destroy', 'SexSceneMenu'
     gs 'Menu.Create', 'SexSceneMenu'
+    gs 'SexSceneCalcMenuUnlocks'
+
+    SexSceneShowChangePose = 0
+
+    if $SexActType = 'vaginal' or $SexActType = 'anal':
+        gs 'SexSceneCalcChangePoseAvailable'
+
+        if SexSceneChangePoseAvailable = 1:
+            SexSceneShowChangePose = 1
+        end
+    end
 
     if SexSceneMode = 1:
         gs 'SexSceneBuildFinishMenu'
@@ -394,48 +425,60 @@
         exit
     end
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Осмотреть', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Осмотреть', 'look'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionLook'
     }
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Целовать', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Целовать', 'flirt'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionKiss'
     }
     gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=1,-1,0)"
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Ласкать', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Лапать', 'flirt'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionCaress'
     }
     gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=2,-1,0)"
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Ласкать грудь', ''
-    gs 'Menu.AddModule', 'SexSceneMenu', {
-        gt 'SexSceneActionBreastCaress'
-    }
-    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=3,-1,0)"
-
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Кунилингус', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Лизать киску', 'intim'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionCuni'
     }
-    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4,-1,0)"
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4 and SexClothesStage>=2,-1,0)"
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Минет', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Минет', 'intim'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionBlowjob'
     }
     gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4,-1,0)"
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Вагинальный секс', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Анилингус', 'intim'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionRim'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneRimUnlocked=1,-1,0)"
+
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Трахать', 'intim'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionVaginal'
     }
-    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=5,-1,0)"
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=5 and SexScenePenetrationReady=1,-1,0)"
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Попрощаться и уйти', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Анал', 'intim'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionAnal'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneAnalUnlocked=1,-1,0)"
+
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Сменить позу', 'flirt'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionChangePose'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneShowChangePose=1,-1,0)"
+
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Уйти', 'return'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneEnd'
     }
@@ -448,53 +491,68 @@
 
 #SexSceneBuildFinishMenu
     if $SexActType = 'blowjob':
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить в рот', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить в рот', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'mouth'
         }
 
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на лицо', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на лицо', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'face'
         }
 
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на грудь', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на грудь', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'chest'
         }
     elseif $SexActType = 'vaginal':
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить внутри', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить в киску', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'inside'
         }
 
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Вынуть и завершить снаружи', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Вынуть и кончить снаружи', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'outside'
         }
 
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на живот', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на живот', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'belly'
         }
 
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на грудь', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на грудь', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'chest'
         }
+    elseif $SexActType = 'anal':
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить внутрь', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'inside'
+        }
+
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Вынуть и кончить снаружи', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'outside'
+        }
+
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на ягодицы', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'belly'
+        }
     else
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на тело', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на тело', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'body'
         }
 
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Отстраниться и завершить снаружи', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить снаружи', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionFinish', 'outside'
         }
     end
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Попытаться сдержаться', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Сдержаться', 'return'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionHoldBack'
     }
@@ -509,21 +567,70 @@
     gs 'CanCumToday'
 
     if Result = 1 or debug = 1:
-        gs 'MenuUiAdd', 'SexSceneMenu', 'Передохнуть и продолжить', ''
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Передохнуть', 'sleep'
         gs 'Menu.AddModule', 'SexSceneMenu', {
             gt 'SexSceneActionRest'
         }
     end
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Обнять и поговорить', ''
-    gs 'Menu.AddModule', 'SexSceneMenu', {
-        gt 'SexSceneActionAfterTalk'
-    }
-
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Попрощаться и уйти', ''
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Уйти', 'return'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneEnd'
     }
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Расчёт видимости пунктов меню
+! ================================================
+
+#SexSceneCalcMenuUnlocks
+    SexSceneRimUnlocked = 0
+    SexSceneAnalUnlocked = 0
+    SexSceneAnalWarmed = 0
+    SexScenePenetrationReady = 0
+
+    if SexGirlArousal >= 40 and SexPlayerArousal >= 40 and SexClothesStage >= 2:
+        SexScenePenetrationReady = 1
+    end
+
+    if SexSceneHadBlowjob = 1 or SexSceneHadVaginal = 1 or SexSceneHadRim = 1:
+        SexSceneAnalWarmed = 1
+    end
+
+    if IntimStage[$SexGirl] >= 4:
+        if $SexGirl = 'amanda' and AmandaLizetteAnalTalkDone = 1:
+            SexSceneRimUnlocked = 1
+        elseif $SexGirl = 'melissa' and MelissaAnalDiscoveryStage >= 3:
+            SexSceneRimUnlocked = 1
+        elseif $SexGirl <> 'amanda' and $SexGirl <> 'melissa':
+            if otkroven[$SexGirl] >= 25 or sluttiness[$SexGirl] >= 35:
+                SexSceneRimUnlocked = 1
+            end
+        end
+    end
+
+    if SexScenePenetrationReady = 1 and SexSceneAnalWarmed = 1:
+        if AmandaHomeAnalActive = 1 or MelissaAnalWithGgActive = 1:
+            SexSceneAnalUnlocked = 1
+        elseif $SexGirl = 'amanda':
+            if AmandaHomeSex = 1 and AmandaLizetteAnalTalkDone = 1:
+                SexSceneAnalUnlocked = 1
+            end
+        elseif $SexGirl = 'melissa':
+            if MelissaHomeSex = 1 and MelissaAnalDiscoveryStage >= 3:
+                SexSceneAnalUnlocked = 1
+            end
+        elseif $SexGirl = 'sandra':
+            if HadSex[$SexGirl] > 0 and analvirgin[$SexGirl] = 0:
+                SexSceneAnalUnlocked = 1
+            end
+        elseif analvirgin[$SexGirl] = 0:
+            SexSceneAnalUnlocked = 1
+        elseif HadSex[$SexGirl] > 0 and sluttiness[$SexGirl] >= 45 and otkroven[$SexGirl] >= 30:
+            SexSceneAnalUnlocked = 1
+        end
+    end
 ---
 
 ! ================================================
@@ -540,23 +647,90 @@
 
 ! ================================================
 ! FILE: modules/actions/sex/sex_scene_core.qsps
+! Прирост возбуждения ГГ с замедлением на грани
+! ================================================
+
+#SexSceneApplyPlayerGain
+    SexScenePlayerGain = SexSceneNextPlayerGain
+    SexSceneNextPlayerGain = 0
+
+    if SexScenePlayerGain <= 0:
+        killvar 'SexScenePlayerGain'
+        exit
+    end
+
+    if SexPlayerArousal >= 90:
+        SexScenePlayerGainHalf = SexScenePlayerGain / 2
+
+        if SexScenePlayerGainHalf < 1:
+            SexScenePlayerGainHalf = 1
+        end
+
+        SexScenePlayerGain = SexScenePlayerGainHalf
+        killvar 'SexScenePlayerGainHalf'
+    end
+
+    if SexPlayerArousal < 100:
+        SexPlayerArousal += SexScenePlayerGain
+
+        if SexPlayerArousal > 100:
+            SexPlayerArousal = 100
+        end
+    end
+
+    killvar 'SexScenePlayerGain'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
 ! Действие: целовать
 ! ================================================
 
 #SexSceneActionKiss
     $SexPose = 'kiss'
     $SexActType = 'kiss'
+    SexSceneKissArousalGain = 0
 
-    SexPlayerArousal += 8
-    SexGirlArousal += 8
+    if SexPlayerArousal < SexKissPlayerCap:
+        SexPlayerArousal += 9
+
+        if SexPlayerArousal > SexKissPlayerCap:
+            SexPlayerArousal = SexKissPlayerCap
+        end
+
+        SexSceneKissArousalGain = 1
+    end
+
+    if SexGirlArousal < SexKissGirlCap:
+        SexGirlArousal += 14
+
+        if SexGirlArousal > SexKissGirlCap:
+            SexGirlArousal = SexKissGirlCap
+        end
+
+        SexSceneKissArousalGain = 1
+    end
+
+    SexSceneKissCount += 1
+
+    if SexSceneKissCount > 4:
+        SexSceneKissCount = 1
+    end
+
     KissCount[$SexGirl] += 1
     Friends[$SexGirl] += 1
 
-    if SexClothesStage < 1 and KissCount[$SexGirl] >= 2:
+    if SexClothesStage < 1 and KissCount[$SexGirl] >= 3:
         SexClothesStage = 1
     end
 
     gs 'SexSceneTextAction', 'kiss'
+
+    if SexSceneKissArousalGain = 0:
+        $SexLastText += '<br><br>Поцелуи уже почти не разогревают — нужно что-то смелее.'
+    end
+
+    killvar 'SexSceneKissArousalGain'
     gs 'SexSceneAfterAction'
 ---
 
@@ -566,41 +740,53 @@
 ! ================================================
 
 #SexSceneActionCaress
-    $SexPose = 'caress'
-    $SexActType = 'caress'
+    $SexPose = 'grope'
+    $SexActType = 'grope'
+    SexSceneGropeArousalGain = 0
 
-    SexPlayerArousal += 12
-    SexGirlArousal += 14
-    CaressCount[$SexGirl] += 1
-    otkroven[$SexGirl] += 1
+    if SexPlayerArousal < SexGropePlayerCap:
+        SexPlayerArousal += 10
 
-    if SexClothesStage < 1:
-        SexClothesStage = 1
+        if SexPlayerArousal > SexGropePlayerCap:
+            SexPlayerArousal = SexGropePlayerCap
+        end
+
+        SexSceneGropeArousalGain = 1
     end
 
-    gs 'SexSceneTextAction', 'caress'
-    gs 'SexSceneAfterAction'
----
+    if SexGirlArousal < SexGropeGirlCap:
+        SexGirlArousal += 12
 
-! ================================================
-! FILE: modules/actions/sex/sex_scene_core.qsps
-! Действие: ласкать грудь
-! ================================================
+        if SexGirlArousal > SexGropeGirlCap:
+            SexGirlArousal = SexGropeGirlCap
+        end
 
-#SexSceneActionBreastCaress
-    $SexPose = 'breast_caress'
-    $SexActType = 'breast_caress'
+        SexSceneGropeArousalGain = 1
+    end
 
-    SexPlayerArousal += 14
-    SexGirlArousal += 18
+    SexSceneGropeCount += 1
+
+    if SexSceneGropeCount > 4:
+        SexSceneGropeCount = 1
+    end
+
+    CaressCount[$SexGirl] += 1
     DeepCaressCount[$SexGirl] += 1
     otkroven[$SexGirl] += 1
 
     if SexClothesStage < 1:
         SexClothesStage = 1
+    elseif SexClothesStage < 2 and SexGirlArousal >= 35:
+        SexClothesStage = 2
     end
 
-    gs 'SexSceneTextAction', 'breast_caress'
+    gs 'SexSceneTextAction', 'grope'
+
+    if SexSceneGropeArousalGain = 0:
+        $SexLastText += '<br><br>Ласки руками больше почти не поднимают жар — пора переходить к делу.'
+    end
+
+    killvar 'SexSceneGropeArousalGain'
     gs 'SexSceneAfterAction'
 ---
 
@@ -612,9 +798,42 @@
 #SexSceneActionCuni
     $SexPose = 'cuni'
     $SexActType = 'cuni'
+    SexSceneCuniArousalGain = 0
 
-    SexPlayerArousal += 10
-    SexGirlArousal += 30
+    if SexPlayerArousal < SexCuniPlayerCap:
+        SexPlayerArousal += 7
+
+        if SexPlayerArousal > SexCuniPlayerCap:
+            SexPlayerArousal = SexCuniPlayerCap
+        end
+
+        SexSceneCuniArousalGain = 1
+    end
+
+    SexSceneCuniUseCount += 1
+
+    if SexSceneCuniUseCount = 1:
+        SexSceneCuniGirlGain = 22
+    elseif SexSceneCuniUseCount = 2:
+        SexSceneCuniGirlGain = 20
+    elseif SexSceneCuniUseCount = 3:
+        SexSceneCuniGirlGain = 18
+    elseif SexSceneCuniUseCount = 4:
+        SexSceneCuniGirlGain = 15
+    else
+        SexSceneCuniGirlGain = 12
+    end
+
+    if SexGirlArousal < 100:
+        SexGirlArousal += SexSceneCuniGirlGain
+
+        if SexGirlArousal > 100:
+            SexGirlArousal = 100
+        end
+    end
+
+    killvar 'SexSceneCuniGirlGain'
+
     CuniCount[$SexGirl] += 1
     OralCount[$SexGirl] += 1
     otkroven[$SexGirl] += 1
@@ -624,7 +843,19 @@
         SexClothesStage = 2
     end
 
+    SexSceneCuniCount += 1
+
+    if SexSceneCuniCount > 3:
+        SexSceneCuniCount = 1
+    end
+
     gs 'SexSceneTextAction', 'cuni'
+
+    if SexSceneCuniArousalGain = 0:
+        $SexLastText += '<br><br>Ты сосредоточен на ней — сам почти не возбуждаешься сильнее.'
+    end
+
+    killvar 'SexSceneCuniArousalGain'
     gs 'SexSceneAfterAction'
 ---
 
@@ -637,7 +868,9 @@
     $SexPose = 'blowjob'
     $SexActType = 'blowjob'
 
-    SexPlayerArousal += 32
+    SexSceneHadBlowjob = 1
+    SexSceneNextPlayerGain = 24
+    gs 'SexSceneApplyPlayerGain'
     SexGirlArousal += 10
     BlowjobCount[$SexGirl] += 1
     OralCount[$SexGirl] += 1
@@ -645,6 +878,12 @@
 
     if SexClothesStage < 2:
         SexClothesStage = 2
+    end
+
+    SexSceneBlowjobCount += 1
+
+    if SexSceneBlowjobCount > 5:
+        SexSceneBlowjobCount = 2
     end
 
     gs 'SexSceneTextAction', 'blowjob'
@@ -657,14 +896,31 @@
 ! ================================================
 
 #SexSceneActionVaginal
-    $SexPose = 'vaginal'
     $SexActType = 'vaginal'
+    gs 'SexSceneNormalizePoseForAct'
+
+    SexVaginalFirstStroke = 0
+
+    if SexSceneHadVaginal = 0:
+        SexVaginalFirstStroke = 1
+        SexSceneVaginalCount = 1
+    else
+        SexSceneVaginalCount += 1
+
+        if SexSceneVaginalCount > 5:
+            SexSceneVaginalCount = 2
+        end
+    end
 
     SexMainStarted = 1
     SexSceneHadVaginal = 1
 
-    SexPlayerArousal += 26
-    SexGirlArousal += 24
+    SexSceneNextPlayerGain = 22
+    gs 'SexSceneApplyPlayerGain'
+
+    if SexGirlArousal < 100:
+        SexGirlArousal += 20
+    end
     VaginalCount[$SexGirl] += 1
     love[$SexGirl] += 1
     sluttiness[$SexGirl] += 1
@@ -689,6 +945,81 @@
     end
 
     gs 'SexSceneTextAction', 'vaginal'
+    killvar 'SexVaginalFirstStroke'
+
+    if SexPlayerArousal >= 85:
+        gs 'SexSceneTextHighArousalVaginal'
+    end
+
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: анилингус ей
+! ================================================
+
+#SexSceneActionRim
+    $SexPose = 'rim'
+    $SexActType = 'rim'
+
+    SexSceneHadRim = 1
+    SexSceneNextPlayerGain = 14
+    gs 'SexSceneApplyPlayerGain'
+    SexGirlArousal += 28
+    OralCount[$SexGirl] += 1
+    otkroven[$SexGirl] += 1
+    sluttiness[$SexGirl] += 1
+
+    if SexClothesStage < 2:
+        SexClothesStage = 2
+    end
+
+    gs 'SexSceneTextAction', 'rim'
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: анальный секс
+! ================================================
+
+#SexSceneActionAnal
+    $SexActType = 'anal'
+    gs 'SexSceneNormalizePoseForAct'
+
+    SexAnalFirstStroke = 0
+
+    if SexSceneHadAnal = 0:
+        SexAnalFirstStroke = 1
+        SexSceneAnalCount = 1
+    else
+        SexSceneAnalCount += 1
+
+        if SexSceneAnalCount > 4:
+            SexSceneAnalCount = 2
+        end
+    end
+
+    SexMainStarted = 1
+    SexSceneHadAnal = 1
+
+    SexSceneNextPlayerGain = 28
+    gs 'SexSceneApplyPlayerGain'
+    SexGirlArousal += 26
+    love[$SexGirl] += 1
+    sluttiness[$SexGirl] += 2
+
+    if SexClothesStage < 2:
+        SexClothesStage = 2
+    end
+
+    if analvirgin[$SexGirl] = 1:
+        analvirgin[$SexGirl] = 0
+    end
+
+    gs 'SexSceneTextAction', 'anal'
+    killvar 'SexAnalFirstStroke'
     gs 'SexSceneAfterAction'
 ---
 
@@ -704,12 +1035,28 @@
     gs 'SexSceneCheckGirlOrgasm'
     gs 'SexSceneClampValues'
 
-    if SexPlayerArousal >= 100:
-        SexPlayerArousal = 100
+    if SexPlayerArousal >= SexPlayerFinishThreshold:
+        if SexPlayerArousal > 100:
+            SexPlayerArousal = 100
+        end
+
         SexSceneMode = 1
-        $SexLastText += '<br><br>Стефан уже не может сдерживаться. Нужно решить, как завершить этот момент.'
+
+        if SexGirlTriggeredPlayerOrgasm = 1:
+            $SexLastText += '<br><br>Её оргазм добил Стефана до предела. Нужно решить, как завершить этот момент.'
+            killvar 'SexGirlTriggeredPlayerOrgasm'
+        else
+            $SexLastText += '<br><br>Стефан уже не может сдерживаться. Нужно решить, как завершить этот момент.'
+
+            if SexGirlArousal >= 85 and ($SexActType = 'vaginal' or $SexActType = 'anal'):
+                $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' тоже на грани — если кончить внутрь, она может сорваться вместе с вами.'
+            end
+        end
+
         gs 'ClampGirlSocialStats', $SexGirl
         gt 'SexSceneMain'
+    elseif SexPlayerArousal >= 90:
+        $SexLastText += '<br><br>Напряжение нарастает — Стефан уже близок к пределу.'
     end
 
     gs 'ClampGirlSocialStats', $SexGirl
@@ -746,13 +1093,43 @@
             else:
                 $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' достигает пика почти одновременно с вами.'
             end
+        elseif ($SexActType = 'vaginal' or $SexActType = 'anal') and SexPlayerArousal >= SexPlayerOrgasmFromGirlThreshold:
+            SexGirlTriggeredPlayerOrgasm = 1
+            SexPlayerArousal = 100
+            gs 'SexSceneTextGirlOrgasmTriggersPlayer', $SexActType
         else
             if $SexGirl = 'amanda':
-                $SexLastText += '<br><br>Аманда больше не выдерживает. Её дыхание сбивается, она дрожит и на несколько мгновений забывает обо всём вокруг.'
+                if $SexActType = 'vaginal':
+                    $SexLastText += '<br><br>Аманда вскрикивает, всё тело выгибается дугой — она кончает на вашем члене, и мокрая киска судорожно сжимает ствол.'
+                elseif $SexActType = 'anal':
+                    $SexLastText += '<br><br>Аманда кончает сзади — её анус судорожно сжимает ваш член, она стонет в подушку и долго не может отдышаться.'
+                else:
+                    $SexLastText += '<br><br>Аманда вскрикивает и кончает у вас в руках — дыхание сбивается, ноги дрожат, она долго не может отдышаться.'
+                end
             elseif $SexGirl = 'melissa':
-                $SexLastText += '<br><br>Мелисса больше не может сдерживаться. Она дрожит в ваших руках и потом смущённо отворачивается.'
+                if $SexActType = 'anal':
+                    $SexLastText += '<br><br>Мелисса взрывается — голос срывается, тело трясётся, она кончает бурно и долго, потом прячет лицо: «Не смотри…»'
+                else:
+                    $SexLastText += '<br><br>Мелисса больше не может сдерживаться. Она дрожит в ваших руках и потом смущённо отворачивается.'
+                end
             elseif $SexGirl = 'sandra':
-                $SexLastText += '<br><br>Сандра на мгновение теряет привычную сдержанность, а потом медленно приходит в себя.'
+                if $SexActType = 'cuni':
+                    $SexLastText += '<br><br>Сандра сдаётся целиком — сильный клиторальный оргазм сотрясает её, и она долго не может вымолвить ни слова.'
+                else:
+                    $SexLastText += '<br><br>Сандра на мгновение теряет привычную сдержанность, а потом медленно приходит в себя.'
+                end
+            elseif $SexGirl = 'clarissa':
+                if $SexActType = 'vaginal':
+                    $SexLastText += '<br><br>Кларисса кончает от плотного трения внутри — сдавленный стон, всё тело напрягается и медленно отпускает.'
+                else:
+                    $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' получает удовольствие и некоторое время приходит в себя.'
+                end
+            elseif $SexGirl = 'inga':
+                if $SexActType = 'blowjob':
+                    $SexLastText += '<br><br>Инга вздрагивает сама — кончает от минета, не раздеваясь, и тут же зло шепчет: «Никому.»'
+                else:
+                    $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' получает удовольствие и некоторое время приходит в себя.'
+                end
             elseif $SexGirl = 'becky':
                 $SexLastText += '<br><br>Бекки больше не выдерживает. Она кусает губу, чтобы не застонать слишком громко, и долго не может отдышаться.'
             else:
@@ -785,7 +1162,13 @@
     end
 
     if $SexFinishPlace = 'inside':
-        SexGirlArousal += 25
+        if SexGirlArousal >= 85:
+            SexGirlArousal += 30
+        elseif SexGirlArousal >= 70:
+            SexGirlArousal += 25
+        else
+            SexGirlArousal += 18
+        end
     elseif $SexFinishPlace = 'mouth':
         SexGirlArousal += 15
     elseif $SexFinishPlace = 'face':
@@ -1093,22 +1476,69 @@
         SexUsedToday[$SexGirl] = 1
     end
 
-    if SexSceneHadPlayerCum = 1:
-        if SexGirlCameInScene > 0:
-            *p $RealName[$SexGirl] + ' выглядит уставшей, но довольной. На сегодня ей явно нужно прийти в себя.'
-            Friends[$SexGirl] += 1
-            love[$SexGirl] += 1
-        else
-            *p $RealName[$SexGirl] + ' поправляет одежду и молчит чуть дольше обычного. Кажется, ей хотелось бы большего внимания.'
-            Friends[$SexGirl] -= 1
+    SexSceneAnalRegistered = 0
+
+    if $SexGirl = 'amanda' and AmandaHomeAnalActive = 1:
+        AmandaHomeAnalActive = 0
+
+        if SexSceneHadAnal = 1:
+            AmandaHomeAnalDone = 1
+            analvirgin['amanda'] = 0
+            gs 'RegisterSex', 'amanda', 'anal', 1, 1
+            sluttiness['amanda'] += 2
+            AmandaPlayerPath += 1
+            SexSceneAnalRegistered = 1
         end
-    else
-        *p 'Вы решаете остановиться, пока всё не зашло дальше.'
-        *p $RealName[$SexGirl] + ' принимает это спокойно.'
+    end
+
+    if $SexGirl = 'melissa' and MelissaAnalWithGgActive = 1:
+        MelissaAnalWithGgActive = 0
+
+        if SexSceneHadAnal = 1:
+            MelissaAnalWithGgDone = 1
+            analvirgin['melissa'] = 0
+            gs 'RegisterSex', 'melissa', 'anal', 1, 1
+            sluttiness['melissa'] += 2
+            MelissaPlayerPath += 2
+            SexSceneAnalRegistered = 1
+        end
+    end
+
+    if SexSceneHadAnal = 1 and SexSceneAnalRegistered = 0:
+        gs 'RegisterSex', $SexGirl, 'anal', 0, 1
+    end
+
+    killvar 'SexSceneAnalRegistered'
+
+    gs 'SexSceneGoodbyeText'
+
+    *p $SexGoodbyeText
+
+    if SexSceneHadPlayerCum = 0:
+        Friends[$SexGirl] += 1
+    elseif SexGirlCameInScene = 0:
+        SexGoodbyeFriendsDelta = -1
+
+        if $SexGirl = 'amanda' and SexPlayerCameInScene > 0:
+            SexGoodbyeFriendsDelta = -2
+        end
+
+        Friends[$SexGirl] += SexGoodbyeFriendsDelta
+    elseif SexGirlCameInScene >= 4:
+        Friends[$SexGirl] += 2
+        love[$SexGirl] += 1
+        otkroven[$SexGirl] += 1
+    elseif SexGirlCameInScene >= 2:
+        Friends[$SexGirl] += 1
+        love[$SexGirl] += 1
+    elseif SexGirlCameInScene = 1:
         Friends[$SexGirl] += 1
     end
 
     gs 'ClampGirlSocialStats', $SexGirl
+
+    killvar '$SexGoodbyeText'
+    killvar 'SexGoodbyeFriendsDelta'
 
     SexSceneActive = 0
     SexPlayerArousal = 0
@@ -1134,6 +1564,8 @@
 ! ================================================
 
 #SexSceneClampValues
+    SexPlayerArousal = SexPlayerArousal + 0
+
     if SexPlayerArousal < 0:
         SexPlayerArousal = 0
     end
@@ -1141,6 +1573,8 @@
     if SexPlayerArousal > 100:
         SexPlayerArousal = 100
     end
+
+    SexGirlArousal = SexGirlArousal + 0
 
     if SexGirlArousal < 0:
         SexGirlArousal = 0

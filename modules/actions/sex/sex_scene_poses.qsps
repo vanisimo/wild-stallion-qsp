@@ -1,0 +1,215 @@
+! ================================================
+! FILE: modules/actions/sex/sex_scene_poses.qsps
+! Позы в универсальной интимной сцене
+! Смена: одна кнопка, случайная другая поза из доступного пула
+! ================================================
+
+#SexScenePosePoolReset
+    SexScenePosePoolCount = 0
+    $SexScenePoseSlot1 = ''
+    $SexScenePoseSlot2 = ''
+    $SexScenePoseSlot3 = ''
+    $SexScenePoseSlot4 = ''
+    $SexScenePoseSlot5 = ''
+---
+
+#SexScenePosePoolAdd
+    if $SexScenePoseAddKey = '':
+        exit
+    end
+
+    SexScenePosePoolCount += 1
+
+    if SexScenePosePoolCount = 1:
+        $SexScenePoseSlot1 = $SexScenePoseAddKey
+    elseif SexScenePosePoolCount = 2:
+        $SexScenePoseSlot2 = $SexScenePoseAddKey
+    elseif SexScenePosePoolCount = 3:
+        $SexScenePoseSlot3 = $SexScenePoseAddKey
+    elseif SexScenePosePoolCount = 4:
+        $SexScenePoseSlot4 = $SexScenePoseAddKey
+    else
+        $SexScenePoseSlot5 = $SexScenePoseAddKey
+    end
+---
+
+#SexSceneBuildPosePool
+    gs 'SexScenePosePoolReset'
+
+    if $SexActType <> 'vaginal' and $SexActType <> 'anal':
+        exit
+    end
+
+    $SexScenePoseAddKey = 'missionary'
+    gs 'SexScenePosePoolAdd'
+
+    if IntimStage[$SexGirl] >= 3:
+        $SexScenePoseAddKey = 'side'
+        gs 'SexScenePosePoolAdd'
+    end
+
+    if IntimStage[$SexGirl] >= 4:
+        $SexScenePoseAddKey = 'doggy'
+        gs 'SexScenePosePoolAdd'
+    end
+
+    if $SexActType = 'vaginal':
+        SexScenePoseCowgirlOk = 0
+
+        if IntimStage[$SexGirl] >= 4 and otkroven[$SexGirl] >= 25:
+            SexScenePoseCowgirlOk = 1
+        end
+
+        if $SexGirl = 'melissa' and IntimStage[$SexGirl] < 5:
+            SexScenePoseCowgirlOk = 0
+        end
+
+        if SexScenePoseCowgirlOk = 1:
+            $SexScenePoseAddKey = 'cowgirl'
+            gs 'SexScenePosePoolAdd'
+        end
+
+        killvar 'SexScenePoseCowgirlOk'
+    end
+
+    if $SexActType = 'anal':
+        if sluttiness[$SexGirl] >= SexSceneReverseCowgirlSlutMin:
+            $SexScenePoseAddKey = 'reverse_cowgirl'
+            gs 'SexScenePosePoolAdd'
+        end
+    end
+
+    killvar '$SexScenePoseAddKey'
+---
+
+#SexScenePosePickTryAdd
+    if $SexScenePosePickCandidate = '':
+        exit
+    end
+
+    if $SexScenePosePickCandidate = $SexPose:
+        exit
+    end
+
+    SexScenePosePickCount += 1
+
+    if SexScenePosePickCount = 1:
+        $SexScenePosePick1 = $SexScenePosePickCandidate
+    elseif SexScenePosePickCount = 2:
+        $SexScenePosePick2 = $SexScenePosePickCandidate
+    elseif SexScenePosePickCount = 3:
+        $SexScenePosePick3 = $SexScenePosePickCandidate
+    elseif SexScenePosePickCount = 4:
+        $SexScenePosePick4 = $SexScenePosePickCandidate
+    else
+        $SexScenePosePick5 = $SexScenePosePickCandidate
+    end
+---
+
+#SexSceneBuildPosePickList
+    SexScenePosePickCount = 0
+    $SexScenePosePick1 = ''
+    $SexScenePosePick2 = ''
+    $SexScenePosePick3 = ''
+    $SexScenePosePick4 = ''
+    $SexScenePosePick5 = ''
+
+    $SexScenePosePickCandidate = $SexScenePoseSlot1
+    gs 'SexScenePosePickTryAdd'
+    $SexScenePosePickCandidate = $SexScenePoseSlot2
+    gs 'SexScenePosePickTryAdd'
+    $SexScenePosePickCandidate = $SexScenePoseSlot3
+    gs 'SexScenePosePickTryAdd'
+    $SexScenePosePickCandidate = $SexScenePoseSlot4
+    gs 'SexScenePosePickTryAdd'
+    $SexScenePosePickCandidate = $SexScenePoseSlot5
+    gs 'SexScenePosePickTryAdd'
+
+    killvar '$SexScenePosePickCandidate'
+---
+
+#SexScenePickRandomPose
+    gs 'SexSceneBuildPosePool'
+    gs 'SexSceneBuildPosePickList'
+
+    if SexScenePosePickCount <= 0:
+        exit
+    end
+
+    SexScenePosePickRoll = Rand(1, SexScenePosePickCount)
+
+    if SexScenePosePickRoll = 1:
+        $SexPose = $SexScenePosePick1
+    elseif SexScenePosePickRoll = 2:
+        $SexPose = $SexScenePosePick2
+    elseif SexScenePosePickRoll = 3:
+        $SexPose = $SexScenePosePick3
+    elseif SexScenePosePickRoll = 4:
+        $SexPose = $SexScenePosePick4
+    else
+        $SexPose = $SexScenePosePick5
+    end
+
+    killvar 'SexScenePosePickRoll'
+---
+
+#SexSceneCalcChangePoseAvailable
+    SexSceneChangePoseAvailable = 0
+
+    if $SexActType <> 'vaginal' and $SexActType <> 'anal':
+        exit
+    end
+
+    gs 'SexSceneBuildPosePool'
+    gs 'SexSceneBuildPosePickList'
+
+    if SexScenePosePickCount >= 1:
+        SexSceneChangePoseAvailable = 1
+    end
+---
+
+#SexSceneNormalizePoseForAct
+    if $SexActType = 'vaginal':
+        if $SexPose = 'reverse_cowgirl' or $SexPose = 'anal' or $SexPose = 'rim' or $SexPose = 'kiss' or $SexPose = 'grope' or $SexPose = 'cuni' or $SexPose = 'blowjob' or $SexPose = 'look' or $SexPose = 'intro' or $SexPose = '':
+            $SexPose = 'missionary'
+        end
+    elseif $SexActType = 'anal':
+        if $SexPose = 'cowgirl' or $SexPose = 'anal' or $SexPose = 'rim' or $SexPose = 'kiss' or $SexPose = 'grope' or $SexPose = 'cuni' or $SexPose = 'blowjob' or $SexPose = 'look' or $SexPose = 'intro' or $SexPose = '':
+            $SexPose = 'doggy'
+        end
+
+        if $SexPose = 'reverse_cowgirl' and sluttiness[$SexGirl] < SexSceneReverseCowgirlSlutMin:
+            $SexPose = 'doggy'
+        end
+    end
+---
+
+#SexSceneActionChangePose
+    gs 'SexScenePickRandomPose'
+
+    if $SexPose = '':
+        $SexLastText = 'Сейчас не получается сменить позу.'
+        gt 'SexSceneMain'
+    end
+
+    gs 'SexSceneText', 'pose_change'
+    gt 'SexSceneMain'
+---
+
+#SexScenePoseStatusLabel
+    $SexPoseStatusLabel = ''
+
+    if $SexPose = 'missionary':
+        $SexPoseStatusLabel = 'миссионерская'
+    elseif $SexPose = 'doggy':
+        $SexPoseStatusLabel = 'раком'
+    elseif $SexPose = 'side':
+        $SexPoseStatusLabel = 'боком'
+    elseif $SexPose = 'cowgirl':
+        $SexPoseStatusLabel = 'сверху'
+    elseif $SexPose = 'reverse_cowgirl':
+        $SexPoseStatusLabel = 'обратная наездница'
+    else
+        $SexPoseStatusLabel = '—'
+    end
+---
