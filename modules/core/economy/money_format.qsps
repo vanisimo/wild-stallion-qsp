@@ -1,0 +1,33 @@
+! ================================================
+! FILE: modules/core/economy/money_format.qsps
+! MODULE: core/economy
+! Спинтрия — игровая валюта (склонение для UI и текстов)
+! ================================================
+
+#SpintryWord
+    SpintryAmount = $ARGS[0]
+
+    if SpintryAmount < 0:
+        SpintryAmount = 0 - SpintryAmount
+    end
+
+    SpintryMod100 = SpintryAmount - (SpintryAmount / 100) * 100
+    SpintryMod10 = SpintryAmount - (SpintryAmount / 10) * 10
+    $SpintryWord = 'спинтарий'
+
+    if SpintryMod10 = 1 and SpintryMod100 <> 11:
+        $SpintryWord = 'спинтрия'
+    elseif SpintryMod10 >= 2 and SpintryMod10 <= 4 and (SpintryMod100 < 12 or SpintryMod100 > 14):
+        $SpintryWord = 'спинтрии'
+    end
+
+    killvar 'SpintryAmount'
+    killvar 'SpintryMod100'
+    killvar 'SpintryMod10'
+---
+
+#FormatSpintry
+    gs 'SpintryWord', $ARGS[0]
+    $FormatSpintry = STR($ARGS[0]) + ' ' + $SpintryWord
+    killvar '$SpintryWord'
+---
