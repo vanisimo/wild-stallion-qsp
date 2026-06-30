@@ -284,7 +284,9 @@
     $SexActType = 'intro'
     SexSceneReverseCowgirlSlutMin = 40
     SexSceneShowChangePose = 0
+    SexScenePenetrationActive = 0
     SexSceneAnalCount = 0
+    SexScenePlayerEdgeHintShown = 0
     $SexFinishPlace = ''
     $SexLastText = ''
 
@@ -363,7 +365,7 @@
     pl 'Возбуждение Стефана: ' + STR(SexPlayerArousal) + ' / 100'
     pl 'Возбуждение ' + $RealName[$SexGirl] + ': ' + STR(SexGirlArousal) + ' / 100'
 
-    if $SexActType = 'vaginal' or $SexActType = 'anal':
+    if SexScenePenetrationActive = 1 and ($SexActType = 'vaginal' or $SexActType = 'anal'):
         gs 'SexScenePoseStatusLabel'
         pl 'Поза: ' + $SexPoseStatusLabel
         killvar '$SexPoseStatusLabel'
@@ -407,7 +409,7 @@
 
     SexSceneShowChangePose = 0
 
-    if $SexActType = 'vaginal' or $SexActType = 'anal':
+    if SexScenePenetrationActive = 1 and ($SexActType = 'vaginal' or $SexActType = 'anal'):
         gs 'SexSceneCalcChangePoseAvailable'
 
         if SexSceneChangePoseAvailable = 1:
@@ -639,7 +641,7 @@
 ! ================================================
 
 #SexSceneActionLook
-    $SexPose = 'look'
+    SexScenePenetrationActive = 0
     $SexActType = 'look'
     gs 'SexSceneTextAction', 'look'
     gt 'SexSceneMain'
@@ -687,7 +689,7 @@
 ! ================================================
 
 #SexSceneActionKiss
-    $SexPose = 'kiss'
+    SexScenePenetrationActive = 0
     $SexActType = 'kiss'
     SexSceneKissArousalGain = 0
 
@@ -740,7 +742,7 @@
 ! ================================================
 
 #SexSceneActionCaress
-    $SexPose = 'grope'
+    SexScenePenetrationActive = 0
     $SexActType = 'grope'
     SexSceneGropeArousalGain = 0
 
@@ -796,7 +798,7 @@
 ! ================================================
 
 #SexSceneActionCuni
-    $SexPose = 'cuni'
+    SexScenePenetrationActive = 0
     $SexActType = 'cuni'
     SexSceneCuniArousalGain = 0
 
@@ -865,7 +867,7 @@
 ! ================================================
 
 #SexSceneActionBlowjob
-    $SexPose = 'blowjob'
+    SexScenePenetrationActive = 0
     $SexActType = 'blowjob'
 
     SexSceneHadBlowjob = 1
@@ -896,7 +898,19 @@
 ! ================================================
 
 #SexSceneActionVaginal
+    if SexSceneMode = 1:
+        $SexLastText = 'Стефан уже на грани — нужно решить, как завершить этот момент.'
+        gt 'SexSceneMain'
+    end
+
+    if SexPlayerArousal >= SexPlayerFinishThreshold:
+        SexSceneMode = 1
+        $SexLastText = 'Стефан уже на грани — нужно решить, как завершить этот момент.'
+        gt 'SexSceneMain'
+    end
+
     $SexActType = 'vaginal'
+    SexScenePenetrationActive = 1
     gs 'SexSceneNormalizePoseForAct'
 
     SexVaginalFirstStroke = 0
@@ -947,7 +961,8 @@
     gs 'SexSceneTextAction', 'vaginal'
     killvar 'SexVaginalFirstStroke'
 
-    if SexPlayerArousal >= 85:
+    if SexPlayerArousal >= 85 and SexPlayerArousal < SexPlayerFinishThreshold and SexScenePlayerEdgeHintShown = 0:
+        SexScenePlayerEdgeHintShown = 1
         gs 'SexSceneTextHighArousalVaginal'
     end
 
@@ -960,7 +975,7 @@
 ! ================================================
 
 #SexSceneActionRim
-    $SexPose = 'rim'
+    SexScenePenetrationActive = 0
     $SexActType = 'rim'
 
     SexSceneHadRim = 1
@@ -985,7 +1000,19 @@
 ! ================================================
 
 #SexSceneActionAnal
+    if SexSceneMode = 1:
+        $SexLastText = 'Стефан уже на грани — нужно решить, как завершить этот момент.'
+        gt 'SexSceneMain'
+    end
+
+    if SexPlayerArousal >= SexPlayerFinishThreshold:
+        SexSceneMode = 1
+        $SexLastText = 'Стефан уже на грани — нужно решить, как завершить этот момент.'
+        gt 'SexSceneMain'
+    end
+
     $SexActType = 'anal'
+    SexScenePenetrationActive = 1
     gs 'SexSceneNormalizePoseForAct'
 
     SexAnalFirstStroke = 0
@@ -1097,21 +1124,13 @@
             SexGirlTriggeredPlayerOrgasm = 1
             SexPlayerArousal = 100
             gs 'SexSceneTextGirlOrgasmTriggersPlayer', $SexActType
+        elseif $SexActType = 'vaginal' or $SexActType = 'anal':
+            gs 'SexSceneTextGirlOrgasm', $SexActType
         else
             if $SexGirl = 'amanda':
-                if $SexActType = 'vaginal':
-                    $SexLastText += '<br><br>Аманда вскрикивает, всё тело выгибается дугой — она кончает на вашем члене, и мокрая киска судорожно сжимает ствол.'
-                elseif $SexActType = 'anal':
-                    $SexLastText += '<br><br>Аманда кончает сзади — её анус судорожно сжимает ваш член, она стонет в подушку и долго не может отдышаться.'
-                else:
-                    $SexLastText += '<br><br>Аманда вскрикивает и кончает у вас в руках — дыхание сбивается, ноги дрожат, она долго не может отдышаться.'
-                end
+                $SexLastText += '<br><br>Аманда вскрикивает и кончает у вас в руках — дыхание сбивается, ноги дрожат, она долго не может отдышаться.'
             elseif $SexGirl = 'melissa':
-                if $SexActType = 'anal':
-                    $SexLastText += '<br><br>Мелисса взрывается — голос срывается, тело трясётся, она кончает бурно и долго, потом прячет лицо: «Не смотри…»'
-                else:
-                    $SexLastText += '<br><br>Мелисса больше не может сдерживаться. Она дрожит в ваших руках и потом смущённо отворачивается.'
-                end
+                $SexLastText += '<br><br>Мелисса больше не может сдерживаться. Она дрожит в ваших руках и потом смущённо отворачивается.'
             elseif $SexGirl = 'sandra':
                 if $SexActType = 'cuni':
                     $SexLastText += '<br><br>Сандра сдаётся целиком — сильный клиторальный оргазм сотрясает её, и она долго не может вымолвить ни слова.'
@@ -1234,6 +1253,7 @@
     if Rand(1, 100) <= 40:
         SexPlayerArousal = 90
         SexSceneMode = 0
+        SexScenePlayerEdgeHintShown = 0
         $SexLastText = 'Стефану удаётся на несколько мгновений взять себя в руки. Напряжение не исчезло, но вы получили ещё немного времени.'
     else
         SexSceneMode = 1
@@ -1249,6 +1269,7 @@
 ! ================================================
 
 #SexSceneActionRest
+    SexScenePenetrationActive = 0
     gs 'CanCumToday'
 
     if Result = 0 and debug = 0:
@@ -1261,6 +1282,7 @@
 
     SexRound += 1
     SexSceneMode = 0
+    SexScenePlayerEdgeHintShown = 0
     SexPlayerRest = 0
     SexPlayerArousal = 18
 

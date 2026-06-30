@@ -1,0 +1,58 @@
+! ================================================
+! FILE: modules/core/girls/girl_room_outfit.qsps
+! MODULE: core/girls
+! Образ девушки в личной комнате (ночнушка / голая / casual)
+! Картинки: images/sex/{girl}/room/{outfit} или {outfit}_{pose}
+! ================================================
+
+#ResolveGirlRoomOutfit
+    $OutfitGirl = LCASE($ARGS[0])
+    $GirlRoomOutfit = 'casual'
+
+    if $OutfitGirl = '':
+        killvar '$OutfitGirl'
+        exit
+    end
+
+    if $OutfitGirl = 'amanda' or $OutfitGirl = 'melissa' or $OutfitGirl = 'sandra':
+        if GirlUniformLevel[$OutfitGirl] = 1:
+            $GirlRoomOutfit = 'naked'
+        elseif time >= 3:
+            $GirlRoomOutfit = 'nightgown'
+        end
+    end
+
+    killvar '$OutfitGirl'
+---
+
+#ShowGirlRoomScene
+    $RoomSceneGirl = LCASE($ARGS[0])
+    $RoomScenePose = LCASE($ARGS[1])
+    $RoomSceneSize = $ARGS[2]
+
+    if $RoomSceneGirl = '':
+        exit
+    end
+
+    if $RoomSceneSize = '':
+        $RoomSceneSize = 'large'
+    end
+
+    gs 'ResolveGirlRoomOutfit', $RoomSceneGirl
+
+    $RoomSceneImagePose = $GirlRoomOutfit
+
+    if $RoomScenePose <> '':
+        $RoomSceneImagePose = $GirlRoomOutfit + '_' + $RoomScenePose
+    end
+
+    if LOC('ShowSex') = 1:
+        gs 'ShowSex', $RoomSceneGirl, 'room', $RoomSceneImagePose, $RoomSceneSize
+    end
+
+    killvar '$RoomSceneGirl'
+    killvar '$RoomScenePose'
+    killvar '$RoomSceneSize'
+    killvar '$RoomSceneImagePose'
+    killvar '$GirlRoomOutfit'
+---

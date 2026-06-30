@@ -7,18 +7,37 @@
 #AmandaRoom
     cls
 
-    gs 'ShowLocationImage', 'amanda_room', 'full', 'png'
     gs 'AddGlobalButtons'
     gs 'UpdateGirlLocations'
+
+    LocationGirlShown = 0
+    gs 'ShowGirlInLocation', 'amanda', 'AmandaRoom'
+
+    RoomShowLocationImage = 1
+    RoomShowGirlScene = 0
+
+    if LocationGirlShown = 1 and time >= 3:
+        gs 'AmandaHomeCanAdvance'
+
+        if AmandaHomeCanAdvance = 1 and AmandaHomeStage < 6:
+            RoomShowLocationImage = 0
+            RoomShowGirlScene = 0
+        else
+            RoomShowLocationImage = 0
+            RoomShowGirlScene = 1
+        end
+    end
+
+    if RoomShowLocationImage = 1:
+        gs 'ShowLocationImage', 'amanda_room', 'full', 'png'
+    end
 
     *pl '══════════════════════════════════════════════'
     *pl ' КОМНАТА АМАНДЫ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    *p 'Комната Аманды небольшая и светлая.'
-    *p 'Здесь стоит простая кровать, небольшой сундук и несколько аккуратно сложенных вещей.'
-    *p 'В комнате чувствуется мягкость и осторожность, будто Аманда старается занимать как можно меньше места в большом доме.'
+    *p 'Комната Аманды небольшая и светлая.<br><br>Здесь стоит простая кровать, небольшой сундук и несколько аккуратно сложенных вещей.<br><br>В комнате чувствуется мягкость и осторожность, будто Аманда старается занимать как можно меньше места в большом доме.'
 
     *pl ' '
 
@@ -32,8 +51,24 @@
 
     *pl ' '
 
-    LocationGirlShown = 0
-    gs 'ShowGirlInLocation', 'amanda', 'AmandaRoom'
+    if LocationGirlShown = 1 and time >= 3:
+        if RoomShowGirlScene = 1:
+            if time = 5 and GirlUniformLevel['amanda'] = 1:
+                *p 'Аманда спит голая — с откровенной формой на смене она давно перестала надевать что-либо и на ночь.'
+                gs 'ShowGirlRoomScene', 'amanda', 'sleep'
+            else
+                if GirlUniformLevel['amanda'] = 0:
+                    *p 'Аманда в простой ночной сорочке — скромной, но в полумраке комнаты уже не кажется такой робкой, как днём в зале.'
+                end
+                gs 'ShowGirlRoomScene', 'amanda', 'idle'
+            end
+        elseif RoomShowLocationImage = 0 and RoomShowGirlScene = 0:
+            if GirlUniformLevel['amanda'] = 0:
+                *p 'Аманда в ночной сорочке сидит на кровати и ждёт — вечер только начался.'
+            end
+        end
+        *pl ' '
+    end
 
     if LocationGirlShown = 1 and (AmandaMetLizette = 1 or LizetteKnown = 1):
         if time = 5 or (week = 7 and time >= 3 and time <= 4):
@@ -53,6 +88,8 @@
     end
 
     killvar 'LocationGirlShown'
+    killvar 'RoomShowLocationImage'
+    killvar 'RoomShowGirlScene'
 
     *pl ' '
 

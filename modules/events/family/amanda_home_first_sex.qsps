@@ -1,0 +1,436 @@
+! ================================================
+! FILE: modules/events/family/amanda_home_first_sex.qsps
+! MODULE: events/family
+! Линейная первая близость Аманды (5 вечеров, act + ShowSex-заглушки)
+! До полного unlock SexScene
+! ================================================
+
+#AmandaHomeFirstSexCanStart
+    AmandaHomeFirstSexCanStart = 0
+
+    if AmandaHomeUnlocked = 0:
+        exit
+    end
+
+    if AmandaHomeSex = 1:
+        exit
+    end
+
+    if AmandaHomeStepToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'AmandaRoom':
+        exit
+    end
+
+    if AmandaHomeStage < 6:
+        exit
+    end
+
+    if AmandaHomeStage > 10:
+        exit
+    end
+
+    AmandaHomeFirstSexCanStart = 1
+---
+
+#AmandaHomeFirstSexFinishStep
+    AmandaHomeStepToday = 1
+    AmandaPlayerPath += 1
+    gs 'ClampGirlSocialStats', 'amanda'
+---
+
+#AmandaHomeFirstSexRegisterFirstVaginal
+    if AmandaHomeFirstVaginalRegistered = 1:
+        exit
+    end
+
+    AmandaHomeFirstVaginalRegistered = 1
+    SexMainStarted = 1
+
+    gs 'RegisterSex', 'amanda', 'vaginal', 0, 1
+    VaginalCount['amanda'] += 1
+    love['amanda'] += 1
+    sluttiness['amanda'] += 1
+
+    if HadVaginalWithPlayer['amanda'] = 0:
+        HadVaginalWithPlayer['amanda'] = 1
+
+        if PlayerVirgin = 1:
+            PlayerVirgin = 0
+        end
+
+        PlayerSexCount += 1
+
+        if virginity['amanda'] = 1:
+            virginity['amanda'] = 0
+            $FirstVaginalPartner['amanda'] = 'stefan'
+        end
+    end
+---
+
+#AmandaHomeFirstSexLaunch
+    if AmandaHomeUnlocked = 0 or AmandaHomeStage < 6:
+        gt 'AmandaRoom'
+    end
+
+    if AmandaHomeSex = 1:
+        gt 'AmandaRoom'
+    end
+
+    gs 'AmandaHomeFirstSexCanStart'
+
+    if AmandaHomeFirstSexCanStart = 0:
+        gt 'AmandaRoom'
+    end
+
+    if AmandaHomeStage = 6:
+        gt 'AmandaHomeFirstSexTalk'
+    elseif AmandaHomeStage = 7:
+        gt 'AmandaHomeFirstSexNight1'
+    elseif AmandaHomeStage = 8:
+        gt 'AmandaHomeFirstSexEvening3'
+    elseif AmandaHomeStage = 9:
+        gt 'AmandaHomeFirstSexDoggy'
+    elseif AmandaHomeStage = 10:
+        gt 'AmandaHomeFirstSexSideUnlock'
+    else
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaHomeFirstSexTalk
+    gs 'AmandaHomeFirstSexTalkText'
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — ПЕРЕД ПЕРВЫМ РАЗОМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeShowStepImage', 'talk'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Говорить нежно', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        AmandaFirstSexTalkTone = 1
+        gs 'AmandaHomeFirstSexTalkChoiceText', 'gentle'
+        gt 'AmandaHomeFirstSexTalkDone'
+    end
+
+    gs 'ActUiPrepare', 'Подколоть', 'flirt'
+    act $ActUiLabel, $ActUiIconPath:
+        AmandaFirstSexTalkTone = 2
+        gs 'AmandaHomeFirstSexTalkChoiceText', 'tease'
+        gt 'AmandaHomeFirstSexTalkDone'
+    end
+---
+
+#AmandaHomeFirstSexTalkDone
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeShowStepImage', 'talk_done'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    AmandaHomeStage = 7
+    gs 'AmandaHomeFirstSexFinishStep'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaHomeFirstSexNight1
+    gs 'AmandaHomeFirstSexNight1Text'
+    gt 'AmandaHomeFirstSexNightShow', 1
+---
+
+#AmandaHomeFirstSexNight2
+    gs 'AmandaHomeFirstSexNight2Text'
+    gt 'AmandaHomeFirstSexNightShow', 2
+---
+
+#AmandaHomeFirstSexNight3
+    gs 'AmandaHomeFirstSexNight3Text'
+    gs 'AmandaHomeFirstSexRegisterFirstVaginal'
+    gt 'AmandaHomeFirstSexNightShow', 3
+---
+
+#AmandaHomeFirstSexNight4
+    gs 'AmandaHomeFirstSexNight4Text'
+    gt 'AmandaHomeFirstSexNightShow', 4
+---
+
+#AmandaHomeFirstSexNight5
+    gs 'AmandaHomeFirstSexNight5Text'
+    GiveOrgasms['amanda'] += 1
+    gt 'AmandaHomeFirstSexNightShow', 5
+---
+
+#AmandaHomeFirstSexNightFinishPrompt
+    gs 'AmandaHomeFirstSexNightFinishPromptText'
+    gt 'AmandaHomeFirstSexNightShow', 6
+---
+
+#AmandaHomeFirstSexNightShow
+    AmandaHomeFirstSexNightStep = $ARGS[0]
+
+    if AmandaHomeFirstSexNightStep = '':
+        AmandaHomeFirstSexNightStep = 1
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВАЯ НОЧЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if AmandaHomeFirstSexNightStep = 1:
+        gs 'AmandaHomeShowStepImage', 'foreplay_undress'
+    elseif AmandaHomeFirstSexNightStep = 2:
+        gs 'AmandaHomeShowStepImage', 'foreplay_touch'
+    elseif AmandaHomeFirstSexNightStep = 3:
+        gs 'AmandaHomeShowStepImage', 'missionary_enter'
+    elseif AmandaHomeFirstSexNightStep = 4:
+        gs 'AmandaHomeShowStepImage', 'missionary_slow'
+    elseif AmandaHomeFirstSexNightStep = 5:
+        gs 'AmandaHomeShowStepImage', 'missionary_orgasm'
+    else
+        gs 'AmandaHomeShowStepImage', 'finish_prompt'
+    end
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    if AmandaHomeFirstSexNightStep = 1:
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaHomeFirstSexNight2'
+        end
+    elseif AmandaHomeFirstSexNightStep = 2:
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaHomeFirstSexNight3'
+        end
+    elseif AmandaHomeFirstSexNightStep = 3:
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaHomeFirstSexNight4'
+        end
+    elseif AmandaHomeFirstSexNightStep = 4:
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaHomeFirstSexNight5'
+        end
+    elseif AmandaHomeFirstSexNightStep = 5:
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaHomeFirstSexNightFinishPrompt'
+        end
+    else
+        gs 'ActUiPrepare', 'Кончить внутрь', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaHomeFirstSexNightFinishInside'
+        end
+
+        gs 'ActUiPrepare', 'Вынуть и кончить снаружи', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaHomeFirstSexNightFinishOutside'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+
+    killvar 'AmandaHomeFirstSexNightStep'
+---
+
+#AmandaHomeFirstSexNightFinishInside
+    gs 'CanCumToday'
+
+    if Result = 1 or debug = 1:
+        gs 'RegisterPlayerCum'
+        cuminside['amanda'] += 1
+    end
+
+    gs 'AmandaHomeFirstSexNightFinishInsideText'
+    AmandaFirstSexFinishKind = 1
+    AmandaFirstNightDone = 1
+    AmandaHomeStage = 8
+    gs 'AmandaHomeFirstSexFinishStep'
+    gt 'AmandaHomeFirstSexNightFinishDone'
+---
+
+#AmandaHomeFirstSexNightFinishOutside
+    gs 'AmandaHomeFirstSexNightFinishOutsideText'
+    AmandaFirstSexFinishKind = 2
+    AmandaFirstNightDone = 1
+    AmandaHomeStage = 8
+    gs 'AmandaHomeFirstSexFinishStep'
+    gt 'AmandaHomeFirstSexNightFinishDone'
+---
+
+#AmandaHomeFirstSexNightFinishDone
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ПЕРВОЙ НОЧИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if AmandaFirstSexFinishKind = 1:
+        gs 'AmandaHomeShowStepImage', 'finish_inside'
+    else
+        gs 'AmandaHomeShowStepImage', 'finish_outside'
+    end
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaHomeFirstSexEvening3
+    gs 'AmandaHomeFirstSexEvening3IntroText'
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — ВЕЧЕР ВМЕСТЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeShowStepImage', 'evening_talk'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Продолжить', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaHomeFirstSexEvening3Repeat'
+    end
+---
+
+#AmandaHomeFirstSexEvening3Repeat
+    gs 'AmandaHomeFirstSexEvening3RepeatText'
+    gs 'RegisterSex', 'amanda', 'vaginal', 0, 1
+    VaginalCount['amanda'] += 1
+
+    cls
+
+    gs 'AmandaHomeShowStepImage', 'missionary_repeat'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    AmandaHomeStage = 9
+    gs 'AmandaHomeFirstSexFinishStep'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaHomeFirstSexDoggy
+    gs 'AmandaHomeFirstSexDoggyText'
+    gs 'RegisterSex', 'amanda', 'vaginal', 0, 1
+    VaginalCount['amanda'] += 1
+    AmandaPoseDoggyOk = 1
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — СЗАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeShowStepImage', 'doggy_learn'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    AmandaHomeStage = 10
+    gs 'AmandaHomeFirstSexFinishStep'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaHomeFirstSexSideUnlock
+    gs 'AmandaHomeFirstSexSideText'
+    gs 'RegisterSex', 'amanda', 'vaginal', 0, 1
+    VaginalCount['amanda'] += 1
+    AmandaPoseSideOk = 1
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — БОКОМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeShowStepImage', 'side_learn'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    gs 'AmandaHomeFirstSexUnlockText'
+
+    *pl ' '
+
+    gs 'AmandaHomeShowStepImage', 'unlock'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    AmandaHomeStage = 12
+    AmandaHomeSex = 1
+    AmandaSexSceneUnlocked = 1
+    AmandaFirstNightTalkDone = 1
+
+    if IntimStage['amanda'] < 5:
+        IntimStage['amanda'] = 5
+    end
+
+    if otkroven['amanda'] < 15:
+        otkroven['amanda'] = 15
+    end
+
+    AmandaPlayerPath += 2
+    gs 'AmandaHomeFirstSexFinishStep'
+
+    gs 'ActUiPrepare', 'Вернуться в коридор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+
+    gs 'ActUiPrepare', 'Остаться в комнате', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
