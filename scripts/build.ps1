@@ -65,6 +65,14 @@ foreach ($file in $files) {
 
 [System.IO.File]::WriteAllText($combined, $sb.ToString(), [System.Text.UTF8Encoding]::new($false))
 
+$verifyScript = Join-Path $PSScriptRoot 'verify_qsps_compile.py'
+if (Test-Path $verifyScript) {
+    & python $verifyScript $combined
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Combined QSPS failed qsp-cli parse verification. Fix string/--- syntax before building.'
+    }
+}
+
 Push-Location $buildDir
 try {
     & $qspCli.Source 'game.qsps' --directory 'out'
