@@ -1,8 +1,8 @@
 ! ================================================
 ! FILE: modules/core/girls/girl_room_outfit.qsps
 ! MODULE: core/girls
-! Образ девушки в личной комнате (ночнушка / голая / casual)
-! Картинки: images/sex/{girl}/room/{outfit} или {outfit}_{pose}
+! Сцена девушки в личной комнате (ночнушка / голая на кровати)
+! Картинки: images/locations/{girl}_room_{time}_{outfit}_{pose}.webp
 ! ================================================
 
 #ResolveGirlRoomOutfit
@@ -35,24 +35,24 @@
     end
 
     if $RoomSceneSize = '':
-        $RoomSceneSize = 'large'
+        $RoomSceneSize = 'full'
+    end
+
+    if $RoomScenePose = '':
+        $RoomScenePose = 'idle'
     end
 
     gs 'ResolveGirlRoomOutfit', $RoomSceneGirl
+    gs 'GetLocationTimeSuffix'
 
-    $RoomSceneImagePose = $GirlRoomOutfit
+    $RoomSceneImageId = $RoomSceneGirl + '_room_' + $LocImageTimeSuffix + '_' + $GirlRoomOutfit + '_' + $RoomScenePose
 
-    if $RoomScenePose <> '':
-        $RoomSceneImagePose = $GirlRoomOutfit + '_' + $RoomScenePose
-    end
-
-    if LOC('ShowSex') = 1:
-        gs 'ShowSex', $RoomSceneGirl, 'room', $RoomSceneImagePose, $RoomSceneSize
-    end
+    gs 'ShowImage', 'location', $RoomSceneImageId, '', '', '', $RoomSceneSize
 
     killvar '$RoomSceneGirl'
     killvar '$RoomScenePose'
     killvar '$RoomSceneSize'
-    killvar '$RoomSceneImagePose'
+    killvar '$RoomSceneImageId'
     killvar '$GirlRoomOutfit'
+    killvar '$LocImageTimeSuffix'
 ---
