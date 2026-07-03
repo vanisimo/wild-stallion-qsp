@@ -13,22 +13,16 @@
     LocationGirlShown = 0
     gs 'ShowGirlInLocation', 'amanda', 'AmandaRoom'
 
-    RoomShowLocationImage = 1
-    RoomShowGirlScene = 0
+    if LocationGirlShown = 1:
+        $AmandaRoomPose = 'idle'
 
-    if LocationGirlShown = 1 and time >= 3:
-        gs 'AmandaHomeCanAdvance'
-
-        if AmandaHomeCanAdvance = 1 and AmandaHomeStage < 6:
-            RoomShowLocationImage = 0
-            RoomShowGirlScene = 0
-        else
-            RoomShowLocationImage = 0
-            RoomShowGirlScene = 1
+        if time = 5 and GirlUniformLevel['amanda'] = 1:
+            $AmandaRoomPose = 'sleep'
         end
-    end
 
-    if RoomShowLocationImage = 1:
+        gs 'ShowGirlRoomScene', 'amanda', $AmandaRoomPose
+        killvar '$AmandaRoomPose'
+    else:
         gs 'ShowLocationImage', 'amanda_room', 'full', 'png'
     end
 
@@ -51,21 +45,17 @@
 
     *pl ' '
 
-    if LocationGirlShown = 1 and time >= 3:
-        if RoomShowGirlScene = 1:
-            if time = 5 and GirlUniformLevel['amanda'] = 1:
-                *p 'Аманда спит голая — с откровенной формой на смене она давно перестала надевать что-либо и на ночь.'
-                gs 'ShowGirlRoomScene', 'amanda', 'sleep'
-            else
-                if GirlUniformLevel['amanda'] = 0:
-                    *p 'Аманда в простой ночной сорочке — скромной, но в полумраке комнаты уже не кажется такой робкой, как днём в зале.'
-                end
-                gs 'ShowGirlRoomScene', 'amanda', 'idle'
+    if LocationGirlShown = 1:
+        if time = 5 and GirlUniformLevel['amanda'] = 1:
+            *p 'Аманда спит голая — с откровенной формой на смене она давно перестала надевать что-либо и на ночь.'
+        elseif GirlUniformLevel['amanda'] = 0:
+            if time >= 3:
+                *p 'Аманда в простой ночной сорочке сидит на кровати — скромной, но в полумраке комнаты уже не кажется такой робкой, как днём в зале.'
+            else:
+                *p 'Аманда в ночной сорочке отдыхает на кровати.'
             end
-        elseif RoomShowLocationImage = 0 and RoomShowGirlScene = 0:
-            if GirlUniformLevel['amanda'] = 0:
-                *p 'Аманда в ночной сорочке сидит на кровати и ждёт — вечер только начался.'
-            end
+        else:
+            *p 'Аманда лежит на кровати без одежды — в комнате тепло и безлюдно.'
         end
         *pl ' '
     end
@@ -88,8 +78,6 @@
     end
 
     killvar 'LocationGirlShown'
-    killvar 'RoomShowLocationImage'
-    killvar 'RoomShowGirlScene'
 
     *pl ' '
 
