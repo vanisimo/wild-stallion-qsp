@@ -27,6 +27,31 @@
     killvar '$OutfitGirl'
 ---
 
+#GetGirlRoomImageId
+    $RoomIdGirl = LCASE($ARGS[0])
+    $RoomIdPose = LCASE($ARGS[1])
+
+    $GirlRoomImageId = ''
+
+    if $RoomIdGirl = '':
+        exit
+    end
+
+    if $RoomIdPose = '':
+        $RoomIdPose = 'idle'
+    end
+
+    gs 'ResolveGirlRoomOutfit', $RoomIdGirl
+    gs 'GetLocationTimeSuffix'
+
+    $GirlRoomImageId = $RoomIdGirl + '_room_' + $LocImageTimeSuffix + '_' + $GirlRoomOutfit + '_' + $RoomIdPose
+
+    killvar '$RoomIdGirl'
+    killvar '$RoomIdPose'
+    killvar '$GirlRoomOutfit'
+    killvar '$LocImageTimeSuffix'
+---
+
 #ShowGirlRoomScene
     $RoomSceneGirl = LCASE($ARGS[0])
     $RoomScenePose = LCASE($ARGS[1])
@@ -44,10 +69,13 @@
         $RoomScenePose = 'idle'
     end
 
-    gs 'ResolveGirlRoomOutfit', $RoomSceneGirl
-    gs 'GetLocationTimeSuffix'
+    gs 'GetGirlRoomImageId', $RoomSceneGirl, $RoomScenePose
+    $RoomSceneImageId = $GirlRoomImageId
+    killvar '$GirlRoomImageId'
 
-    $RoomSceneImageId = $RoomSceneGirl + '_room_' + $LocImageTimeSuffix + '_' + $GirlRoomOutfit + '_' + $RoomScenePose
+    if debug = 1:
+        *pl '[DEBUG] GirlRoomScene: images/locations/' + $RoomSceneImageId + '.webp'
+    end
 
     gs 'ShowImage', 'location', $RoomSceneImageId, '', '', 'webp', $RoomSceneSize
 
@@ -55,6 +83,4 @@
     killvar '$RoomScenePose'
     killvar '$RoomSceneSize'
     killvar '$RoomSceneImageId'
-    killvar '$GirlRoomOutfit'
-    killvar '$LocImageTimeSuffix'
 ---
