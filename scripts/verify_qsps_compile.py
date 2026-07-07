@@ -12,8 +12,14 @@ qsps_path = Path(sys.argv[1])
 text = qsps_path.read_text(encoding="utf-8")
 regex_names = [m.group(1) for m in re.finditer(r"^#(\S+)", text, re.M)]
 
-node = r"""
-const {readQsps}=require('C:/Users/SlavID/AppData/Roaming/npm/node_modules/@qsp/cli/node_modules/@qsp/converters/dist/index.cjs');
+converters = subprocess.check_output(
+    [sys.executable, str(Path(__file__).with_name("resolve_qsp_converters.py"))],
+    text=True,
+).strip()
+converters = converters.replace("\\", "/")
+
+node = f"""
+const {{readQsps}}=require('{converters}');
 const fs=require('fs');
 const parsed=readQsps(fs.readFileSync(process.argv[1],'utf8'));
 console.log(JSON.stringify(parsed.map(l=>l.name)));
