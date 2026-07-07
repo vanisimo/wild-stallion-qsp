@@ -2,20 +2,28 @@
 ! FILE: modules/locations/sandra_room.qsps
 ! Комната Сандры
 ! Личная комната Сандры на втором этаже трактира
-! Все взаимодействия с девушкой идут через кликабельное имя
+! Порядок: заголовок → имя девушки → картинка → текст
 ! ================================================
 
 #SandraRoom
     cls
 
-    gs 'ShowLocationImage', 'sandra_room', 'full', 'png'
     gs 'AddGlobalButtons'
     gs 'UpdateGirlLocations'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' КОМНАТА САНДРЫ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'КОМНАТА САНДРЫ'
+
+    LocationGirlShown = 0
+    gs 'CheckGirlInLocation', 'sandra', 'SandraRoom'
+
+    if GirlInLocation = 1:
+        gs 'ShowGirlNpcLinks', 'sandra', 'SandraRoom'
+        LocationGirlShown = 1
+    end
+
+    killvar 'GirlInLocation'
+
+    gs 'ShowLocationImage', 'sandra_room', 'full', 'png'
 
     *p 'Комната Сандры выглядит аккуратнее остальных.'
     *p 'Здесь стоит широкая кровать, небольшой столик, сундук с одеждой и несколько заботливо сложенных вещей.'
@@ -32,9 +40,6 @@
     end
 
     *pl ' '
-
-    LocationGirlShown = 0
-    gs 'ShowGirlInLocation', 'sandra', 'SandraRoom'
 
     if LocationGirlShown = 0:
         *p 'Сандры сейчас нет в комнате.'
@@ -76,4 +81,3 @@
         gt 'TavernSecondFloor'
     end
 ---
-

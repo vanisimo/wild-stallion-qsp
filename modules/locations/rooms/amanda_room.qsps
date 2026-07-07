@@ -2,6 +2,7 @@
 ! FILE: modules/locations/amanda_room.qsps
 ! Комната Аманды
 ! Личная комната Аманды на втором этаже трактира
+! Порядок: имя девушки → заголовок → картинка → текст
 ! ================================================
 
 #AmandaRoom
@@ -11,7 +12,16 @@
     gs 'UpdateGirlLocations'
 
     LocationGirlShown = 0
-    gs 'ShowGirlInLocation', 'amanda', 'AmandaRoom'
+    gs 'CheckGirlInLocation', 'amanda', 'AmandaRoom'
+
+    if GirlInLocation = 1:
+        gs 'ShowGirlNpcLinks', 'amanda', 'AmandaRoom'
+        LocationGirlShown = 1
+    end
+
+    killvar 'GirlInLocation'
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА АМАНДЫ'
 
     if LocationGirlShown = 1:
         $AmandaRoomPose = 'idle'
@@ -25,11 +35,6 @@
     else:
         gs 'ShowLocationImage', 'amanda_room', 'full', 'png'
     end
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' КОМНАТА АМАНДЫ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
 
     *p 'Комната Аманды небольшая и светлая.<br><br>Здесь стоит простая кровать, небольшой сундук и несколько аккуратно сложенных вещей.<br><br>В комнате чувствуется мягкость и осторожность, будто Аманда старается занимать как можно меньше места в большом доме.'
 

@@ -76,6 +76,31 @@
 ! Имя появляется только если девушка сейчас находится здесь
 ! ================================================
 
+#CheckGirlInLocation
+    $LocGirl = LCASE($ARGS[0])
+    $LocName = $ARGS[1]
+    GirlInLocation = 0
+
+    if $LocGirl = '':
+        killvar '$LocGirl'
+        killvar '$LocName'
+        exit
+    end
+
+    if $LocName = '':
+        killvar '$LocGirl'
+        killvar '$LocName'
+        exit
+    end
+
+    if $GirlLocation[$LocGirl] = $LocName:
+        GirlInLocation = 1
+    end
+
+    killvar '$LocGirl'
+    killvar '$LocName'
+---
+
 #ShowGirlInLocation
     $LocGirl = LCASE($ARGS[0])
     $LocName = $ARGS[1]
@@ -88,13 +113,16 @@
         exit
     end
 
-    if $GirlLocation[$LocGirl] = $LocName:
+    gs 'CheckGirlInLocation', $LocGirl, $LocName
+
+    if GirlInLocation = 1:
         gs 'ShowGirlNpcLinks', $LocGirl, $LocName
         LocationGirlShown = 1
     end
 
     killvar '$LocGirl'
     killvar '$LocName'
+    killvar 'GirlInLocation'
 ---
 
 ! ================================================
@@ -164,19 +192,29 @@
     killvar '$LocationLineGirl'
 ---
 
-#ShowGirlSecondFloorLine
-    $SecondFloorGirl = LCASE($ARGS[0])
+#ShowSecondFloorRoomStatus
+    $RoomStatusGirl = LCASE($ARGS[0])
+    $RoomStatusLoc = $ARGS[1]
+    $RoomStatusLabel = $ARGS[2]
 
-    if $SecondFloorGirl = '':
+    if $RoomStatusGirl = '' or $RoomStatusLoc = '' or $RoomStatusLabel = '':
+        killvar '$RoomStatusGirl'
+        killvar '$RoomStatusLoc'
+        killvar '$RoomStatusLabel'
         exit
     end
 
-    if $GirlLocation[$SecondFloorGirl] = 'SandraRoom' or $GirlLocation[$SecondFloorGirl] = 'MelissaRoom' or $GirlLocation[$SecondFloorGirl] = 'AmandaRoom':
-        gs 'ShowGirlNpcLinkLine', $SecondFloorGirl, $GirlLocation[$SecondFloorGirl], 'main', 'TavernSecondFloor'
+    if $GirlLocation[$RoomStatusGirl] = $RoomStatusLoc:
+        $RoomStatusText = 'занята'
     else:
-        gs 'ShowGirlLocationLine', $SecondFloorGirl
+        $RoomStatusText = 'пусто'
     end
 
-    killvar '$SecondFloorGirl'
+    *pl $RoomStatusLabel + ': ' + $RoomStatusText
+
+    killvar '$RoomStatusGirl'
+    killvar '$RoomStatusLoc'
+    killvar '$RoomStatusLabel'
+    killvar '$RoomStatusText'
 ---
 

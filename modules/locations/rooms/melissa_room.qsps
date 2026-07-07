@@ -2,20 +2,28 @@
 ! FILE: modules/locations/melissa_room.qsps
 ! Комната Мелиссы
 ! Личная комната Мелиссы на втором этаже трактира
-! Все взаимодействия с девушкой идут через кликабельное имя
+! Порядок: заголовок → имя девушки → картинка → текст
 ! ================================================
 
 #MelissaRoom
     cls
 
-    gs 'ShowLocationImage', 'melissa_room', 'full', 'png'
     gs 'AddGlobalButtons'
     gs 'UpdateGirlLocations'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' КОМНАТА МЕЛИССЫ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'КОМНАТА МЕЛИССЫ'
+
+    LocationGirlShown = 0
+    gs 'CheckGirlInLocation', 'melissa', 'MelissaRoom'
+
+    if GirlInLocation = 1:
+        gs 'ShowGirlNpcLinks', 'melissa', 'MelissaRoom'
+        LocationGirlShown = 1
+    end
+
+    killvar 'GirlInLocation'
+
+    gs 'ShowLocationImage', 'melissa_room', 'full', 'png'
 
     *p 'Комната Мелиссы выглядит немного беспорядочно, но в этом беспорядке есть своя живая естественность.'
     *p 'На кровати лежит покрывало, возле стены стоит сундук, а на небольшом столике можно заметить гребень и несколько личных мелочей.'
@@ -32,9 +40,6 @@
     end
 
     *pl ' '
-
-    LocationGirlShown = 0
-    gs 'ShowGirlInLocation', 'melissa', 'MelissaRoom'
 
     if LocationGirlShown = 0:
         *p 'Мелиссы сейчас нет в комнате.'
@@ -64,4 +69,3 @@
         gt 'TavernSecondFloor'
     end
 ---
-
