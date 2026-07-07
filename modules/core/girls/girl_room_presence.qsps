@@ -77,17 +77,17 @@
     GirlNpcLineIntimReady = GirlIntimMenuReady
     killvar 'GirlIntimMenuReady'
 
-    gs 'FormatTextByStyle', $RealName[$RoomPresenceGirl], 'npc_link'
-
     if GirlNpcLineTalkReady = 1:
-        $RoomPresenceHref = '<a href="exec:gs ''GirlTalkOpenNpcMenu'', ''' + $RoomPresenceGirl + ''', ''' + $RoomPresenceLoc + ''', ''' + $RoomPresenceLoc + '''">' + $FormattedText + '</a>'
+        gs 'NpcMenuTalkOpenLink', $RealName[$RoomPresenceGirl], $RoomPresenceGirl, $RoomPresenceLoc, 'main', $RoomPresenceLoc
+        $RoomPresenceNameChunk = $NpcTalkOpenLine
+        killvar '$NpcTalkOpenLine'
     else:
-        $RoomPresenceHref = '<a href="exec:gt ''GirlTalkClosedScreen'', ''' + $RoomPresenceGirl + ''', ''' + $RoomPresenceLoc + '''">' + $FormattedText + '</a>'
+        gs 'FormatNpcTalkLink', $RoomPresenceGirl, 'gt ''GirlTalkClosedScreen'', ''' + $RoomPresenceGirl + ''', ''' + $RoomPresenceLoc + ''''
+        $RoomPresenceNameChunk = $NpcTalkLink
+        killvar '$NpcTalkLink'
     end
 
-    killvar '$FormattedText'
-
-    $RoomPresenceLine = $RoomPresenceBefore + $RoomPresenceHref + $RoomPresenceAfter
+    $RoomPresenceLine = $RoomPresenceBefore + $RoomPresenceNameChunk + $RoomPresenceAfter
 
     if GirlNpcLineIntimReady = 1:
         gs 'NpcMenuIntimOpenIconLink', $RoomPresenceGirl, $RoomPresenceLoc, 'main', $RoomPresenceLoc
@@ -95,16 +95,14 @@
         killvar '$NpcIntimOpenIconLine'
     end
 
-    gs 'NpcTalkIconInline'
-    *p $NpcTalkIconInline + ' ' + $RoomPresenceLine
+    *p $RoomPresenceLine
 
     killvar '$RoomPresenceGirl'
     killvar '$RoomPresenceLoc'
     killvar '$RoomPresenceBefore'
     killvar '$RoomPresenceAfter'
-    killvar '$RoomPresenceHref'
+    killvar '$RoomPresenceNameChunk'
     killvar '$RoomPresenceLine'
-    killvar '$NpcTalkIconInline'
     killvar 'GirlNpcLineTalkReady'
     killvar 'GirlNpcLineIntimReady'
 ---
