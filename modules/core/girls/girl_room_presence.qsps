@@ -1,0 +1,129 @@
+! ================================================
+! FILE: modules/core/girls/girl_room_presence.qsps
+! MODULE: core/girls
+! Подпись под картинкой комнаты: сцена + кликабельное имя в тексте
+! ================================================
+
+#GetGirlRoomPresenceCaption
+    $PresenceCaptionGirl = LCASE($ARGS[0])
+    $GirlRoomPresenceBefore = ''
+    $GirlRoomPresenceAfter = '.'
+
+    if $PresenceCaptionGirl = 'amanda':
+        if time = 5 and GirlUniformLevel['amanda'] = 1:
+            $GirlRoomPresenceBefore = 'На кровати голая спит '
+        elseif GirlUniformLevel['amanda'] = 0:
+            if time >= 3:
+                $GirlRoomPresenceBefore = 'На кровати в ночной сорочке сидит '
+            else:
+                $GirlRoomPresenceBefore = 'На кровати в ночнушке отдыхает '
+            end
+        else:
+            $GirlRoomPresenceBefore = 'На кровати без одежды лежит '
+        end
+    elseif $PresenceCaptionGirl = 'melissa':
+        if time = 5:
+            $GirlRoomPresenceBefore = 'На кровати под светом лампы отдыхает '
+        elseif time = 1:
+            $GirlRoomPresenceBefore = 'У окна у столика сидит '
+        else:
+            $GirlRoomPresenceBefore = 'На кровати под светом лампы читает '
+        end
+    elseif $PresenceCaptionGirl = 'sandra':
+        if time = 5:
+            $GirlRoomPresenceBefore = 'На кровати под одеялом тихо лежит '
+        elseif time = 1:
+            $GirlRoomPresenceBefore = 'У зеркала стоит '
+        else:
+            $GirlRoomPresenceBefore = 'На кровати сидит '
+        end
+    else:
+        $GirlRoomPresenceBefore = 'Здесь находится '
+    end
+
+    killvar '$PresenceCaptionGirl'
+---
+
+#PrintGirlRoomPresenceP
+    $RoomPresenceGirl = LCASE($ARGS[0])
+    $RoomPresenceLoc = $ARGS[1]
+    $RoomPresenceBefore = $ARGS[2]
+    $RoomPresenceAfter = $ARGS[3]
+
+    if $RoomPresenceGirl = '' or $RoomPresenceLoc = '':
+        killvar '$RoomPresenceGirl'
+        killvar '$RoomPresenceLoc'
+        killvar '$RoomPresenceBefore'
+        killvar '$RoomPresenceAfter'
+        exit
+    end
+
+    if $RoomPresenceAfter = '':
+        $RoomPresenceAfter = '.'
+    end
+
+    if $RealName[$RoomPresenceGirl] = '':
+        gs 'EnsureGirlData', $RoomPresenceGirl
+    end
+
+    GirlNpcLineTalkReady = 0
+    GirlNpcLineIntimReady = 0
+
+    gs 'GirlTalkCheckNpcLinkAvailable', $RoomPresenceGirl, $RoomPresenceLoc
+    GirlNpcLineTalkReady = GirlTalkMenuReady
+    killvar 'GirlTalkMenuReady'
+
+    gs 'GirlIntimCheckNpcLinkAvailable', $RoomPresenceGirl, $RoomPresenceLoc
+    GirlNpcLineIntimReady = GirlIntimMenuReady
+    killvar 'GirlIntimMenuReady'
+
+    gs 'FormatTextByStyle', $RealName[$RoomPresenceGirl], 'npc_link'
+
+    if GirlNpcLineTalkReady = 1:
+        $RoomPresenceHref = '<a href="exec:gs ''GirlTalkOpenNpcMenu'', ''' + $RoomPresenceGirl + ''', ''' + $RoomPresenceLoc + ''', ''' + $RoomPresenceLoc + '''">' + $FormattedText + '</a>'
+    else:
+        $RoomPresenceHref = '<a href="exec:gt ''GirlTalkClosedScreen'', ''' + $RoomPresenceGirl + ''', ''' + $RoomPresenceLoc + '''">' + $FormattedText + '</a>'
+    end
+
+    killvar '$FormattedText'
+
+    $RoomPresenceLine = $RoomPresenceBefore + $RoomPresenceHref + $RoomPresenceAfter
+
+    if GirlNpcLineIntimReady = 1:
+        gs 'NpcMenuIntimOpenIconLink', $RoomPresenceGirl, $RoomPresenceLoc, 'main', $RoomPresenceLoc
+        $RoomPresenceLine = $RoomPresenceLine + ' ' + $NpcIntimOpenIconLine
+        killvar '$NpcIntimOpenIconLine'
+    end
+
+    gs 'NpcTalkIconInline'
+    *p $NpcTalkIconInline + ' ' + $RoomPresenceLine
+
+    killvar '$RoomPresenceGirl'
+    killvar '$RoomPresenceLoc'
+    killvar '$RoomPresenceBefore'
+    killvar '$RoomPresenceAfter'
+    killvar '$RoomPresenceHref'
+    killvar '$RoomPresenceLine'
+    killvar '$NpcTalkIconInline'
+    killvar 'GirlNpcLineTalkReady'
+    killvar 'GirlNpcLineIntimReady'
+---
+
+#ShowGirlRoomPresence
+    $RoomPresenceGirl = LCASE($ARGS[0])
+    $RoomPresenceLoc = $ARGS[1]
+
+    if $RoomPresenceGirl = '' or $RoomPresenceLoc = '':
+        killvar '$RoomPresenceGirl'
+        killvar '$RoomPresenceLoc'
+        exit
+    end
+
+    gs 'GetGirlRoomPresenceCaption', $RoomPresenceGirl
+    gs 'PrintGirlRoomPresenceP', $RoomPresenceGirl, $RoomPresenceLoc, $GirlRoomPresenceBefore, $GirlRoomPresenceAfter
+
+    killvar '$RoomPresenceGirl'
+    killvar '$RoomPresenceLoc'
+    killvar '$GirlRoomPresenceBefore'
+    killvar '$GirlRoomPresenceAfter'
+---

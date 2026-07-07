@@ -1,8 +1,7 @@
 ! ================================================
 ! FILE: modules/locations/amanda_room.qsps
 ! Комната Аманды
-! Личная комната Аманды на втором этаже трактира
-! Порядок: имя девушки → заголовок → картинка → текст
+! Порядок: заголовок → картинка → сцена с именем → текст
 ! ================================================
 
 #AmandaRoom
@@ -15,7 +14,6 @@
     gs 'CheckGirlInLocation', 'amanda', 'AmandaRoom'
 
     if GirlInLocation = 1:
-        gs 'ShowGirlNpcLinks', 'amanda', 'AmandaRoom'
         LocationGirlShown = 1
     end
 
@@ -32,6 +30,8 @@
 
         gs 'ShowGirlRoomScene', 'amanda', $AmandaRoomPose
         killvar '$AmandaRoomPose'
+
+        gs 'ShowGirlRoomPresence', 'amanda', 'AmandaRoom'
     else:
         gs 'ShowLocationImage', 'amanda_room', 'full', 'png'
     end
@@ -49,21 +49,6 @@
     end
 
     *pl ' '
-
-    if LocationGirlShown = 1:
-        if time = 5 and GirlUniformLevel['amanda'] = 1:
-            *p 'Аманда спит голая — с откровенной формой на смене она давно перестала надевать что-либо и на ночь.'
-        elseif GirlUniformLevel['amanda'] = 0:
-            if time >= 3:
-                *p 'Аманда в простой ночной сорочке сидит на кровати — скромной, но в полумраке комнаты уже не кажется такой робкой, как днём в зале.'
-            else:
-                *p 'Аманда в ночной сорочке отдыхает на кровати.'
-            end
-        else:
-            *p 'Аманда лежит на кровати без одежды — в комнате тепло и безлюдно.'
-        end
-        *pl ' '
-    end
 
     if LocationGirlShown = 1 and (AmandaMetLizette = 1 or LizetteKnown = 1):
         if time = 5 or (week = 7 and time >= 3 and time <= 4):
