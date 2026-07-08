@@ -1,0 +1,475 @@
+! ================================================
+! FILE: modules/debug/debug_amanda_arc.qsps
+! MODULE: debug
+! Отдельная debug-панель арки Аманды (акт 1)
+! ================================================
+
+#DebugAmandaArcPanel
+    if debug = 0:
+        exit
+    end
+
+    gs 'PanelDebugToolsHeader'
+
+    pl '<b>DEBUG: АМАНДА — INTIMACY-АРКА</b>'
+    pl ' '
+
+    gs 'DebugAmandaPrintContext'
+    pl ' '
+
+    gs 'DebugAmandaPrintHomeArc'
+    pl ' '
+
+    gs 'DebugAmandaPrintDanceBlock'
+    pl ' '
+
+    gs 'DebugAmandaPrintLegareBlock'
+    pl ' '
+
+    gs 'DebugAmandaPrintKinksBlock'
+    pl ' '
+
+    gs 'DebugAmandaPrintSocialBlock'
+    pl ' '
+
+    gs 'DebugAmandaPrintNextHint'
+    pl ' '
+
+    gs 'DebugAmandaPrintPresets'
+    pl ' '
+
+    pl '<a href="exec:gs ''DebugAmandaArcReset'' & gs ''DebugAmandaArcPanel''">Сброс флагов Аманды</a>'
+    pl ' '
+    pl '<a href="exec:gs ''DebugIntimacyArcPanel''">← Intimacy-арки (все персонажи)</a>'
+    pl '<a href="exec:gs ''PanelDebugToolsMain''">← Главная debug-панель</a>'
+    pl ' '
+---
+
+#DebugAmandaPrintContext
+    gs 'GetCitySchedulePhase'
+
+    pl '<b>Контекст</b>'
+    pl 'День: ' + STR(day) + ' | неделя: ' + STR(week) + ' | время: ' + STR(time) + ' (' + $CitySchedulePhase + ')'
+    pl 'Локация Аманды: ' + $GirlLocation['amanda']
+
+    gs 'AmandaHomeCanAdvance'
+    gs 'AmandaHomeFirstSexCanStart'
+
+    if AmandaHomeCanAdvance = 1:
+        pl 'Лестница сегодня: <font color="#008000"><b>можно</b></font>'
+    else
+        pl 'Лестница сегодня: <font color="#888888">нельзя</font>'
+    end
+
+    if AmandaHomeFirstSexCanStart = 1:
+        pl 'Первая близость сегодня: <font color="#008000"><b>можно</b></font>'
+    else
+        pl 'Первая близость сегодня: <font color="#888888">нельзя</font>'
+    end
+
+    killvar '$CitySchedulePhase'
+    killvar 'AmandaHomeCanAdvance'
+    killvar 'AmandaHomeFirstSexCanStart'
+---
+
+#DebugAmandaHomeStageLabel
+    $DebugAmandaStageLabel = 'неизвестно'
+    DebugAmandaStageCode = AmandaHomeStage
+
+    if AmandaHomeUnlocked = 0:
+        $DebugAmandaStageLabel = 'дом закрыт'
+    elseif AmandaHomeSex = 1:
+        $DebugAmandaStageLabel = 'SexScene разблокирован (свободные вечера)'
+    elseif DebugAmandaStageCode = 0:
+        $DebugAmandaStageLabel = '0 — следующий: обнимашки'
+    elseif DebugAmandaStageCode = 1:
+        $DebugAmandaStageLabel = '1 — следующий: поцелуй'
+    elseif DebugAmandaStageCode = 2:
+        $DebugAmandaStageLabel = '2 — следующий: ласки'
+    elseif DebugAmandaStageCode = 3:
+        $DebugAmandaStageLabel = '3 — следующий: ручная'
+    elseif DebugAmandaStageCode = 4:
+        $DebugAmandaStageLabel = '4 — следующий: минет'
+    elseif DebugAmandaStageCode = 5:
+        $DebugAmandaStageLabel = '5 — следующий: куни'
+    elseif DebugAmandaStageCode = 6:
+        $DebugAmandaStageLabel = '6 — разговор перед первым разом'
+    elseif DebugAmandaStageCode = 7:
+        $DebugAmandaStageLabel = '7 — первая ночь (линейная сцена)'
+    elseif DebugAmandaStageCode = 8:
+        $DebugAmandaStageLabel = '8 — вечер вместе (2-й вечер)'
+    elseif DebugAmandaStageCode = 9:
+        $DebugAmandaStageLabel = '9 — поза сзади'
+    elseif DebugAmandaStageCode = 10:
+        $DebugAmandaStageLabel = '10 — боком + unlock'
+    elseif DebugAmandaStageCode >= 11:
+        $DebugAmandaStageLabel = STR(DebugAmandaStageCode) + ' — финал арки'
+    end
+
+    killvar 'DebugAmandaStageCode'
+---
+
+#DebugAmandaPrintHomeArc
+    gs 'DebugAmandaHomeStageLabel'
+
+    pl '<b>Дом — лестница и первая близость</b>'
+    pl 'Стадия: <b>' + $DebugAmandaStageLabel + '</b>'
+    killvar '$DebugAmandaStageLabel'
+
+    gs 'DebugAmandaPrintBool', 'Дом открыт (AmandaHomeUnlocked)', AmandaHomeUnlocked
+    gs 'DebugAmandaPrintBool', 'Полный unlock (AmandaHomeSex)', AmandaHomeSex
+    gs 'DebugAmandaPrintBool', 'Шаг уже сегодня (AmandaHomeStepToday)', AmandaHomeStepToday
+    gs 'DebugAmandaPrintBool', 'Первая ночь пройдена (AmandaFirstNightDone)', AmandaFirstNightDone
+    gs 'DebugAmandaPrintBool', 'Первый вагинал зарегистрирован', AmandaHomeFirstVaginalRegistered
+    gs 'DebugAmandaPrintBool', 'SexScene unlock', AmandaSexSceneUnlocked
+    gs 'DebugAmandaPrintBool', 'Поза doggy OK', AmandaPoseDoggyOk
+    gs 'DebugAmandaPrintBool', 'Поза side OK', AmandaPoseSideOk
+
+    gs 'ResolveGirlRoomOutfit', 'amanda'
+    gs 'GetLocationTimeSuffix'
+
+    pl 'Комната: uniform=' + STR(GirlUniformLevel['amanda']) + ' (' + $GirlRoomOutfit + '), картинка idle: amanda_room_' + $LocImageTimeSuffix + '_' + $GirlRoomOutfit + '_idle.webp'
+
+    killvar '$GirlRoomOutfit'
+    killvar '$LocImageTimeSuffix'
+---
+
+#DebugAmandaPrintDanceBlock
+    pl '<b>Танцы и платье</b>'
+    gs 'DebugAmandaPrintBool', 'Платье готово', AmandaDanceDressReady
+    gs 'DebugAmandaPrintBool', 'Купила сама', AmandaDanceDressSelfBought
+    gs 'DebugAmandaPrintBool', 'Купил игрок', AmandaDanceDressPlayerBought
+    pl 'Пятничных танцев: ' + STR(AmandaFridayDanceCount)
+    gs 'DebugAmandaPrintBool', 'Окно гонки Легаре', AmandaLegareRaceWindowOpen
+    gs 'DebugAmandaPrintBool', 'Гонка Легаре сыграна', AmandaLegareFridayRaceDone
+    pl 'Результат гонки Легаре: ' + STR(AmandaLegareFridayRaceResult)
+---
+
+#DebugAmandaPrintLegareBlock
+    pl '<b>Легаре и выбор пути</b>'
+    gs 'DebugAmandaPrintBool', 'Первый секс с Легаре', AmandaLegareFirstSexDone
+    gs 'DebugAmandaPrintBool', 'Игрок знает про гонку', PlayerKnows_AmandaLegareFridayRace
+    gs 'DebugAmandaPrintBool', 'Факт: переулок в пятницу', Fact_AmandaLegareFridayAlley
+    gs 'DebugAmandaPrintBool', 'Выбор path готов', AmandaPathChoiceReady
+    gs 'DebugAmandaPrintBool', 'Выбор path сделан', AmandaPathChoiceDone
+    pl 'AmandaPathChoice: ' + STR(AmandaPathChoice) + ' | запрет парней: ' + STR(AmandaProhibitGuys)
+    pl 'NpcPath / PlayerPath: ' + STR(AmandaNpcPath) + ' / ' + STR(AmandaPlayerPath)
+    pl 'Интерес Легаре: ' + STR(AmandaLegareInterest)
+---
+
+#DebugAmandaPrintKinksBlock
+    pl '<b>Кинки и Лизетта</b>'
+    pl 'Соседские парни — стадия: ' + STR(AmandaNeighborBoysStage)
+    gs 'DebugAmandaPrintBool', 'Анал Легаре', AmandaLegareAnalDone
+    gs 'DebugAmandaPrintBool', 'Анал соседи', AmandaNeighborBoysAnalDone
+    gs 'DebugAmandaPrintBool', 'Talk Лизетта (анал)', AmandaLizetteAnalTalkDone
+    gs 'DebugAmandaPrintBool', 'Домашний анал с ГГ', AmandaHomeAnalDone
+    pl 'Lizette talk count / влияние: ' + STR(AmandaLizetteAnalTalkCount) + ' / ' + STR(AmandaLizaInfluence)
+    gs 'DebugAmandaPrintBool', 'ЖЖМ Аманда+Мелисса', AmandaMelissaThreesomeDone
+    gs 'DebugAmandaPrintBool', 'ММЖ Аманда+Легаре', AmandaLegareMmfDone
+---
+
+#DebugAmandaPrintSocialBlock
+    pl '<b>Социальные шкалы</b>'
+    pl 'Дружба / любовь: ' + STR(Friends['amanda']) + ' / ' + STR(love['amanda'])
+    pl 'Откровенность / развращённость: ' + STR(otkroven['amanda']) + ' / ' + STR(sluttiness['amanda'])
+    pl 'IntimStage: ' + STR(IntimStage['amanda'])
+    pl 'Девственность: ' + STR(virginity['amanda']) + ' | вагинал с ГГ: ' + STR(HadVaginalWithPlayer['amanda'])
+    pl 'Вагинал count: ' + STR(VaginalCount['amanda']) + ' | кончил внутрь: ' + STR(cuminside['amanda'])
+---
+
+#DebugAmandaPrintBool
+    $DebugAmandaBoolLabel = $ARGS[0]
+    DebugAmandaBoolValue = ARGS[1]
+
+    if $DebugAmandaBoolLabel = '':
+        killvar '$DebugAmandaBoolLabel'
+        exit
+    end
+
+    if DebugAmandaBoolValue = 1:
+        pl $DebugAmandaBoolLabel + ': <b><font color="#008000">да</font></b>'
+    else
+        pl $DebugAmandaBoolLabel + ': <font color="#888888">нет</font>'
+    end
+
+    killvar '$DebugAmandaBoolLabel'
+    killvar 'DebugAmandaBoolValue'
+---
+
+#DebugAmandaPrintNextHint
+    $DebugAmandaNextHint = '—'
+
+    if AmandaHomeUnlocked = 0:
+        $DebugAmandaNextHint = 'Открыть дом — увести с танцев (AmandaDanceLeaveHome) или debug-прыжок'
+    elseif AmandaHomeSex = 1:
+        $DebugAmandaNextHint = 'Арка завершена — «Провести вечер» (SexScene) в комнате, вечер, time>=3'
+    else
+        gs 'AmandaHomeCanAdvance'
+        gs 'AmandaHomeFirstSexCanStart'
+
+        if AmandaHomeCanAdvance = 1 and AmandaHomeStage < 6:
+            $DebugAmandaNextHint = 'Лестница: NPC → интим → «Провести время наедине» (stage ' + STR(AmandaHomeStage) + ')'
+        elseif AmandaHomeFirstSexCanStart = 1:
+            gs 'AmandaHomeFirstSexMenuLabel'
+            $DebugAmandaNextHint = 'Меню интима: «' + $AmandaFirstSexMenuLabel + '»'
+            killvar '$AmandaFirstSexMenuLabel'
+        elseif AmandaHomeStepToday = 1 and AmandaHomeStage >= 6 and AmandaHomeStage <= 11:
+            $DebugAmandaNextHint = 'Сегодня шаг уже сделан — дождаться следующего вечера (time 3–4)'
+        elseif AmandaHomeStage < 6:
+            $DebugAmandaNextHint = 'Лестница: вечер (time>=3), Аманда в AmandaRoom, шаг сегодня ещё не брали'
+        else
+            $DebugAmandaNextHint = 'Проверь time, локацию и AmandaHomeStage'
+        end
+
+        killvar 'AmandaHomeCanAdvance'
+        killvar 'AmandaHomeFirstSexCanStart'
+    end
+
+    pl '<b>Следующий шаг:</b> ' + $DebugAmandaNextHint
+    killvar '$DebugAmandaNextHint'
+---
+
+#DebugAmandaPrintPresets
+    pl '<b>Прыжки в комнату</b>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaHome'', ''0'' & gt ''AmandaRoom''">stage 0 → обнимашки</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaHome'', ''1'' & gt ''AmandaRoom''">stage 1 → поцелуй</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaHome'', ''2'' & gt ''AmandaRoom''">stage 2 → ласки</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaHome'', ''3'' & gt ''AmandaRoom''">stage 3 → ручная</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaHome'', ''4'' & gt ''AmandaRoom''">stage 4 → минет</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaHome'', ''5'' & gt ''AmandaRoom''">stage 5 → куни</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaHome'', ''6'' & gt ''AmandaRoom''">stage 6 → разговор</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmanda'' & gt ''AmandaRoom''">stage 6 (быстрый)</a>'
+    pl ' '
+    pl '<b>Первая близость (линейная арка)</b>'
+    pl '<a href="exec:gs ''DebugAmandaJumpFirstSex'', ''7'' & gt ''AmandaRoom''">stage 7 — первая ночь</a>'
+    pl '<a href="exec:gs ''DebugAmandaJumpFirstSex'', ''8'' & gt ''AmandaRoom''">stage 8 — вечер вместе</a>'
+    pl '<a href="exec:gs ''DebugAmandaJumpFirstSex'', ''8'', ''1'' & gt ''AmandaRoom''">после 1-й ночи, та же ночь (after_night)</a>'
+    pl '<a href="exec:gs ''DebugAmandaJumpFirstSex'', ''9'' & gt ''AmandaRoom''">stage 9 — сзади</a>'
+    pl '<a href="exec:gs ''DebugAmandaJumpFirstSex'', ''10'' & gt ''AmandaRoom''">stage 10 — боком + unlock</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaRepeat'' & gt ''AmandaRoom''">полный unlock (SexScene)</a>'
+    pl ' '
+    pl '<b>Танцы / Легаре / кинки</b>'
+    pl '<a href="exec:AmandaDanceDressReady = 1 & gs ''DebugAmandaArcPanel''">платье готово</a>'
+    pl '<a href="exec:AmandaFridayDanceCount = 5 & day = 33 & week = 5 & time = 4 & AmandaDanceDressReady = 1 & AmandaLegareAfterDanceResolved = 1 & AmandaLegareAfterDanceResult = 2 & gs ''DebugAmandaArcPanel''">5-я пт, гонка Легаре</a>'
+    pl '<a href="exec:AmandaLegareFirstSexDone = 1 & AmandaPathChoiceReady = 1 & gs ''DebugAmandaArcPanel''">выбор path</a>'
+    pl '<a href="exec:AmandaLegareFirstSexDone = 1 & AmandaNeighborBoysStage = 0 & AmandaProhibitGuys = 0 & sluttiness[''amanda''] = 25 & time = 4 & gs ''DebugAmandaArcPanel''">соседские парни (гейт)</a>'
+    pl '<a href="exec:AmandaLegareFirstSexDone = 1 & Fact_AmandaLegareFridayAlley = 1 & sluttiness[''amanda''] = 40 & AmandaLegareInterest = 12 & time = 4 & gs ''DebugAmandaArcPanel''">анал Легаре (гейт)</a>'
+    pl '<a href="exec:AmandaLegareAnalDone = 1 & AmandaNeighborBoysStage = 3 & sluttiness[''amanda''] = 45 & time = 4 & gs ''DebugAmandaArcPanel''">анал парни (гейт)</a>'
+    pl '<a href="exec:AmandaHomeSex = 1 & AmandaLizetteAnalTalkCount = 3 & AmandaLizaInfluence = 5 & AmandaLizetteAnalTalkDone = 0 & time = 4 & gs ''DebugAmandaArcPanel''">talk Лизетта → анал ГГ</a>'
+    pl '<a href="exec:day = 28 & AmandaDanceDressReady = 0 & AmandaDanceDressSelfBought = 0 & gs ''ProcessIntimacyDressSelfBuy'' & gs ''DebugAmandaArcPanel''">тест самопокупки (д.28)</a>'
+---
+
+#DebugAmandaArcReset
+    AmandaDanceDressReady = 0
+    AmandaDanceDressSelfBought = 0
+    AmandaDanceDressPlayerBought = 0
+    AmandaHomeUnlocked = 0
+    AmandaHomeStage = 0
+    AmandaHomeSex = 0
+    AmandaHomeFirstSexActive = 0
+    AmandaHomeStepToday = 0
+    AmandaHomeCanAdvance = 0
+    AmandaHomeFirstVaginalRegistered = 0
+    AmandaSexSceneUnlocked = 0
+    AmandaPoseDoggyOk = 0
+    AmandaPoseSideOk = 0
+    AmandaFirstNightDone = 0
+    AmandaFirstNightTalkDone = 0
+    AmandaFirstSexTalkTone = 0
+    AmandaFirstSexFinishKind = 0
+    AmandaFridayDanceCount = 0
+    AmandaFridayDanceCountDay = 0
+    AmandaLegareRaceWindowOpen = 0
+    AmandaLegareFirstSexDone = 0
+    AmandaLegareFridayRaceDone = 0
+    AmandaLegareFridayRaceResult = 0
+    PlayerKnows_AmandaLegareFridayRace = 0
+    Fact_AmandaLegareFridayAlley = 0
+    AmandaPathChoiceDone = 0
+    AmandaPathChoiceReady = 0
+    AmandaPathChoice = 0
+    AmandaProhibitGuys = 0
+    AmandaWatchNpcPath = 0
+    AmandaNeighborBoysStage = 0
+    AmandaNeighborBoysToday = 0
+    $AmandaNeighborBoyName = ''
+    AmandaLegareAnalDone = 0
+    AmandaNeighborBoysAnalDone = 0
+    AmandaLizetteAnalTalkDone = 0
+    AmandaHomeAnalDone = 0
+    AmandaLizetteAnalTalkCount = 0
+    AmandaMelissaThreesomeDone = 0
+    AmandaMelissaThreesomeReady = 0
+    AmandaLegareMmfDone = 0
+    GirlUniformLevel['amanda'] = 0
+---
+
+#DebugAmandaJumpFirstSex
+    DebugAmandaFirstSexStage = $ARGS[0]
+    DebugAmandaFirstSexNightMode = $ARGS[1]
+
+    if DebugAmandaFirstSexStage = '':
+        DebugAmandaFirstSexStage = 7
+    end
+
+    if DebugAmandaFirstSexStage < 7:
+        DebugAmandaFirstSexStage = 7
+    end
+
+    if DebugAmandaFirstSexStage > 12:
+        DebugAmandaFirstSexStage = 12
+    end
+
+    AmandaDanceDressReady = 1
+    AmandaHomeUnlocked = 1
+    AmandaHomeSex = 0
+    AmandaHomeFirstSexActive = 0
+    AmandaHomeStepToday = 0
+    AmandaHomeCanAdvance = 0
+    AmandaSexSceneUnlocked = 0
+    AmandaPoseDoggyOk = 0
+    AmandaPoseSideOk = 0
+    AmandaHomeFirstVaginalRegistered = 0
+    AmandaFirstSexTalkTone = 0
+    AmandaFirstSexFinishKind = 0
+    Friends['amanda'] = 14
+    love['amanda'] = 12
+    otkroven['amanda'] = 14
+    sluttiness['amanda'] = 10
+    IntimStage['amanda'] = 4
+    $GirlLocation['amanda'] = 'AmandaRoom'
+
+    if DebugAmandaFirstSexNightMode = '1':
+        AmandaHomeStage = 8
+        AmandaFirstNightDone = 1
+        AmandaHomeFirstVaginalRegistered = 1
+        AmandaHomeStepToday = 1
+        GirlUniformLevel['amanda'] = 1
+        time = 5
+        HadVaginalWithPlayer['amanda'] = 1
+        virginity['amanda'] = 0
+        VaginalCount['amanda'] = 1
+        PlayerSexCount = 1
+    elseif DebugAmandaFirstSexStage = 7:
+        AmandaHomeStage = 7
+        AmandaFirstNightDone = 0
+        GirlUniformLevel['amanda'] = 0
+        time = 4
+    elseif DebugAmandaFirstSexStage = 8:
+        AmandaHomeStage = 8
+        AmandaFirstNightDone = 1
+        AmandaHomeFirstVaginalRegistered = 1
+        GirlUniformLevel['amanda'] = 1
+        time = 4
+    elseif DebugAmandaFirstSexStage = 9:
+        AmandaHomeStage = 9
+        AmandaFirstNightDone = 1
+        AmandaHomeFirstVaginalRegistered = 1
+        AmandaPoseDoggyOk = 0
+        GirlUniformLevel['amanda'] = 1
+        time = 4
+    elseif DebugAmandaFirstSexStage = 10:
+        AmandaHomeStage = 10
+        AmandaFirstNightDone = 1
+        AmandaHomeFirstVaginalRegistered = 1
+        AmandaPoseDoggyOk = 1
+        GirlUniformLevel['amanda'] = 1
+        time = 4
+    else
+        AmandaHomeStage = DebugAmandaFirstSexStage
+        AmandaFirstNightDone = 1
+        GirlUniformLevel['amanda'] = 1
+        time = 4
+    end
+
+    killvar 'DebugAmandaFirstSexStage'
+    killvar 'DebugAmandaFirstSexNightMode'
+---
+
+#DebugIntimacyJumpAmandaHome
+    DebugAmandaHomeStage = $ARGS[0]
+
+    if DebugAmandaHomeStage = '':
+        DebugAmandaHomeStage = 0
+    end
+
+    if DebugAmandaHomeStage < 0:
+        DebugAmandaHomeStage = 0
+    end
+
+    if DebugAmandaHomeStage > 6:
+        DebugAmandaHomeStage = 6
+    end
+
+    AmandaDanceDressReady = 1
+    AmandaHomeUnlocked = 1
+    GirlUniformLevel['amanda'] = 0
+    AmandaHomeStage = DebugAmandaHomeStage
+    AmandaHomeSex = 0
+    AmandaHomeFirstSexActive = 0
+    AmandaHomeFirstVaginalRegistered = 0
+    AmandaSexSceneUnlocked = 0
+    AmandaPoseDoggyOk = 0
+    AmandaPoseSideOk = 0
+    AmandaFirstNightDone = 0
+    AmandaFirstNightTalkDone = 0
+    AmandaFirstSexTalkTone = 0
+    AmandaFirstSexFinishKind = 0
+    AmandaHomeStepToday = 0
+    AmandaHomeCanAdvance = 0
+
+    Friends['amanda'] = 14
+    love['amanda'] = 10 + DebugAmandaHomeStage
+    otkroven['amanda'] = 6 + DebugAmandaHomeStage * 2
+    sluttiness['amanda'] = 4 + DebugAmandaHomeStage
+
+    if DebugAmandaHomeStage >= 4:
+        sluttiness['amanda'] = 8 + DebugAmandaHomeStage
+    end
+
+    IntimStage['amanda'] = 2
+
+    if DebugAmandaHomeStage >= 3:
+        IntimStage['amanda'] = 3
+    end
+
+    if DebugAmandaHomeStage >= 5:
+        IntimStage['amanda'] = 4
+    end
+
+    if DebugAmandaHomeStage >= 6:
+        IntimStage['amanda'] = 4
+    end
+
+    $GirlLocation['amanda'] = 'AmandaRoom'
+    time = 4
+
+    killvar 'DebugAmandaHomeStage'
+---
+
+#DebugIntimacyJumpAmanda
+    gs 'DebugIntimacyJumpAmandaHome', '6'
+---
+
+#DebugIntimacyJumpAmandaRepeat
+    AmandaDanceDressReady = 1
+    AmandaHomeUnlocked = 1
+    AmandaHomeStage = 12
+    AmandaHomeSex = 1
+    AmandaSexSceneUnlocked = 1
+    AmandaPoseDoggyOk = 1
+    AmandaPoseSideOk = 1
+    AmandaFirstNightDone = 1
+    AmandaHomeFirstVaginalRegistered = 1
+    AmandaHomeFirstSexActive = 0
+    AmandaHomeStepToday = 0
+    GirlUniformLevel['amanda'] = 1
+    Friends['amanda'] = 14
+    love['amanda'] = 12
+    otkroven['amanda'] = 15
+    sluttiness['amanda'] = 12
+    IntimStage['amanda'] = 5
+    $GirlLocation['amanda'] = 'AmandaRoom'
+    time = 4
+---
