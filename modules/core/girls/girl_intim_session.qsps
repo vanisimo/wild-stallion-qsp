@@ -187,6 +187,8 @@
 ---
 
 #GirlIntimAddAmandaHomeMenu
+    AmandaHomeIntimMenuAdded = 0
+
     if AmandaHomeUnlocked = 1:
         gs 'AmandaHomeCanAdvance'
 
@@ -195,6 +197,7 @@
             gs 'Menu.AddModule', 'GirlIntimMainMenu', {
                 gt 'AmandaHomeStep'
             }
+            AmandaHomeIntimMenuAdded = 1
         end
 
         gs 'AmandaHomeFirstSexCanStart'
@@ -206,6 +209,7 @@
                 gt 'AmandaHomeFirstSexLaunch'
             }
             killvar '$AmandaFirstSexMenuLabel'
+            AmandaHomeIntimMenuAdded = 1
         end
 
         if AmandaHomeSex = 1 and LOC('SexSceneStart') = 1 and time >= 3:
@@ -216,10 +220,20 @@
                 gs 'Menu.AddModule', 'GirlIntimMainMenu', {
                     gt 'SexSceneStart', 'amanda', $IntimReturnLoc, 'amanda_repeat'
                 }
+                AmandaHomeIntimMenuAdded = 1
             end
 
             killvar 'SexSceneAllowed'
             killvar '$SexSceneDenyReason'
+        end
+
+        if AmandaHomeIntimMenuAdded = 0 and AmandaHomeSex = 0 and AmandaHomeStage >= 6 and AmandaHomeStage <= 11 and AmandaHomeStepToday = 1:
+            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'На сегодня достаточно', 'talk'
+            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'AmandaHomeAfterFirstSexTonightText'
+                *p $AmandaHomeText
+            }
+            AmandaHomeIntimMenuAdded = 1
         end
 
         if LOC('AmandaLizetteAnalTalkCanStart') = 1:
@@ -230,6 +244,7 @@
                 gs 'Menu.AddModule', 'GirlIntimMainMenu', {
                     gt 'AmandaLizetteAnalTalkStart'
                 }
+                AmandaHomeIntimMenuAdded = 1
             end
         end
 
@@ -241,6 +256,7 @@
                 gs 'Menu.AddModule', 'GirlIntimMainMenu', {
                     gt 'AmandaHomeAnalStart'
                 }
+                AmandaHomeIntimMenuAdded = 1
             end
         end
 
@@ -252,9 +268,12 @@
                 gs 'Menu.AddModule', 'GirlIntimMainMenu', {
                     gt 'GroupSexAmandaMelissaStefanStart'
                 }
+                AmandaHomeIntimMenuAdded = 1
             end
         end
     end
+
+    killvar 'AmandaHomeIntimMenuAdded'
 ---
 
 #GirlIntimAddMelissaHomeMenu

@@ -108,6 +108,10 @@ def make_room_scene_placeholder(
     img.save(path, format="WEBP", quality=82)
     print(path.relative_to(ROOT))
 
+    png_path = path.with_suffix(".png")
+    img.save(png_path, format="PNG")
+    print(png_path.relative_to(ROOT))
+
 
 def make_empty_room_png(path: Path, time_key: str):
     path.parent.mkdir(parents=True, exist_ok=True)
