@@ -4,6 +4,36 @@
 ! Домашняя лестница Аманды (player-path)
 ! ================================================
 
+#AmandaHomeIsRestingAfterIntim
+    AmandaHomeRestingAfterIntim = 0
+
+    if AmandaHomeUnlocked = 0:
+        exit
+    end
+
+    if AmandaHomeSex = 1:
+        exit
+    end
+
+    if AmandaHomeStepToday = 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if AmandaHomeStage < 7:
+        exit
+    end
+
+    if AmandaFirstNightDone = 0 and AmandaHomeStage < 8:
+        exit
+    end
+
+    AmandaHomeRestingAfterIntim = 1
+---
+
 #AmandaHomeCanAdvance
     AmandaHomeCanAdvance = 0
 
@@ -88,6 +118,7 @@
     elseif $AmandaHomeStepKey = 'blowjob':
         BlowjobCount['amanda'] += 1
         OralCount['amanda'] += 1
+        oralacts['amanda'] += 1
         sluttiness['amanda'] += 1
     elseif $AmandaHomeStepKey = 'cuni':
         CuniCount['amanda'] += 1
@@ -104,7 +135,29 @@
     end
 ---
 
+#AmandaHomePreSex
+    gs 'AmandaHomeFirstSexCanStart'
 
+    if AmandaHomeFirstSexCanStart = 0:
+        gt 'AmandaRoom'
+    end
+
+    gs 'AmandaHomeStepText', 'presex'
+
+    cls
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА АМАНДЫ — ПЕРЕД ПЕРВЫМ РАЗОМ'
+
+    gs 'AmandaHomeShowStepImage', 'presex'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Продолжить', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaHomeFirstSexTalk'
+    end
+---
 
 #AmandaHomeAfterSex
     gs 'AmandaHomeAfterSexText'

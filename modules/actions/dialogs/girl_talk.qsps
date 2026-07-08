@@ -339,6 +339,19 @@
         exit
     end
 
+    if $TalkGirl = 'amanda' and $TalkReturnLoc = 'AmandaRoom':
+        gs 'AmandaHomeIsRestingAfterIntim'
+
+        if AmandaHomeRestingAfterIntim = 1:
+            killvar 'AmandaHomeRestingAfterIntim'
+            killvar '$TalkGirl'
+            killvar '$TalkReturnLoc'
+            exit
+        end
+
+        killvar 'AmandaHomeRestingAfterIntim'
+    end
+
     GirlTalkMenuReady = 1
 ---
 
@@ -916,6 +929,23 @@
         gs 'ShowGirlTalkContextImage', $TalkClosedGirl, 'large'
     end
 
+    if $TalkClosedGirl = 'amanda' and $TalkClosedReturnLoc = 'AmandaRoom':
+        gs 'AmandaHomeIsRestingAfterIntim'
+
+        if AmandaHomeRestingAfterIntim = 1:
+            *p 'Аманда лежит на боку, укрытая одеялом, и спит так крепко, что даже не шевелится, когда вы входите.'
+            *p 'Сегодня разговор не получится — она совсем выбилась из сил после вашей ночи.'
+
+            gs 'GirlTalkAddReturnButton'
+            killvar 'AmandaHomeRestingAfterIntim'
+            killvar '$TalkClosedGirl'
+            killvar '$TalkClosedReturnLoc'
+            exit
+        end
+
+        killvar 'AmandaHomeRestingAfterIntim'
+    end
+
     if GirlTalkIrritatedUntilDay[$TalkClosedGirl] >= day:
         if $GirlTalkPendingNotice[$TalkClosedGirl] <> '':
             *p $GirlTalkPendingNotice[$TalkClosedGirl]
@@ -1078,6 +1108,9 @@
 
     elseif $TalkTopic = 'lizette_amanda':
         gs 'GirlTalkLizetteAmandaRun', $TalkGirl
+
+    elseif $TalkTopic = 'lizette_intim':
+        gs 'GirlTalkLizetteIntimRun', $TalkGirl
 
     elseif $TalkTopic = 'lizette_bio':
         gs 'GirlTalkLizetteBioRun', $TalkGirl

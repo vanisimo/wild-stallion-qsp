@@ -37,6 +37,12 @@
         if LizetteTalkMotherStory >= 3:
             LizetteTalkMotherStory = 0
         end
+    elseif $GirlTalkLizetteLoreCounter = 'intim':
+        GirlTalkLizetteLoreSlot = LizetteTalkIntimStory
+        LizetteTalkIntimStory += 1
+        if LizetteTalkIntimStory >= 6:
+            LizetteTalkIntimStory = 0
+        end
     else:
         GirlTalkLizetteLoreSlot = 0
     end
@@ -71,6 +77,13 @@
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и Аманде', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_amanda'
+        }
+    end
+
+    if LizetteTalkPortDone = 1 and AmandaLizaInfluence >= 2:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том, чему она учит девочек', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_intim'
         }
     end
 
@@ -162,6 +175,22 @@
 
     LizetteTalkMotherDone = 1
     Friends['lizette'] += 1
+
+    gs 'ClampGirlSocialStats', 'lizette'
+---
+
+#GirlTalkLizetteIntimRun
+    gs 'GirlTalkLizetteLoreBump', 'intim'
+    gs 'GirlTalkLizettePrintText', 'lizette_intim', 'intro'
+    gs 'GirlTalkLizettePrintText', 'lizette_intim', 'context'
+
+    LizetteTalkIntimDone = 1
+    Friends['lizette'] += 1
+    otkroven['lizette'] += 1
+
+    if AmandaLizaInfluence < 100:
+        AmandaLizaInfluence += 1
+    end
 
     gs 'ClampGirlSocialStats', 'lizette'
 ---

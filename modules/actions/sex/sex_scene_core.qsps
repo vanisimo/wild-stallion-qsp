@@ -287,6 +287,7 @@
     SexScenePenetrationActive = 0
     SexSceneAnalCount = 0
     SexScenePlayerEdgeHintShown = 0
+    SexSceneAtmShown = 0
     $SexFinishPlace = ''
     $SexLastText = ''
 
@@ -583,6 +584,180 @@
 
 ! ================================================
 ! FILE: modules/actions/sex/sex_scene_core.qsps
+! Стадии реакции на финал и ATM (коррупция + опыт)
+! ================================================
+
+#SexSceneCalcCumPlayStage
+    gs 'EnsureGirlData', $SexGirl
+    gs 'SexSceneEnsureIntimStage', $SexGirl
+
+    SexCumPlayStage = 0
+
+    if oralswallow[$SexGirl] >= 1 or oralcum[$SexGirl] >= 1:
+        SexCumPlayStage = 1
+    elseif sluttiness[$SexGirl] >= 18 or IntimStage[$SexGirl] >= 2:
+        SexCumPlayStage = 1
+    end
+
+    if $SexGirl = 'becky':
+        if SexCumPlayStage < 1:
+            SexCumPlayStage = 1
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 1:
+        if SexCumPlayStage < 1:
+            SexCumPlayStage = 1
+        end
+    end
+
+    if oralswallow[$SexGirl] >= 2 or sluttiness[$SexGirl] >= 26 or IntimStage[$SexGirl] >= 3:
+        if SexCumPlayStage < 2:
+            SexCumPlayStage = 2
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 3:
+        if SexCumPlayStage < 2:
+            SexCumPlayStage = 2
+        end
+    end
+
+    if $SexGirl = 'amanda' and AmandaLizaInfluence >= 3 and sluttiness['amanda'] >= 14:
+        if SexCumPlayStage < 2:
+            SexCumPlayStage = 2
+        end
+    end
+
+    if oralswallow[$SexGirl] >= 3 or sluttiness[$SexGirl] >= 34 or cuminside[$SexGirl] >= 2 or IntimStage[$SexGirl] >= 4:
+        if SexCumPlayStage < 3:
+            SexCumPlayStage = 3
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 4:
+        if SexCumPlayStage < 3:
+            SexCumPlayStage = 3
+        end
+    end
+
+    if oralswallow[$SexGirl] >= 4 or sluttiness[$SexGirl] >= 42 or cuminside[$SexGirl] >= 3:
+        if SexCumPlayStage < 4:
+            SexCumPlayStage = 4
+        end
+    end
+
+    if otkroven[$SexGirl] >= 28 and sluttiness[$SexGirl] >= 38 and oralswallow[$SexGirl] >= 2:
+        if SexCumPlayStage < 4:
+            SexCumPlayStage = 4
+        end
+    end
+
+    if $SexGirl = 'amanda' and AmandaLizaInfluence >= 5 and sluttiness['amanda'] >= 32:
+        if SexCumPlayStage < 4:
+            SexCumPlayStage = 4
+        end
+    end
+
+    if oralswallow[$SexGirl] >= 6 or sluttiness[$SexGirl] >= 50 or cuminside[$SexGirl] >= 5 or IntimStage[$SexGirl] >= 5:
+        if SexCumPlayStage < 5:
+            SexCumPlayStage = 5
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 6:
+        if SexCumPlayStage < 5:
+            SexCumPlayStage = 5
+        end
+    end
+
+    if $SexGirl = 'melissa' and sluttiness['melissa'] < 32 and SexCumPlayStage > 0:
+        SexCumPlayStage -= 1
+    end
+
+    if $SexGirl = 'sandra' and sluttiness['sandra'] < 36 and SexCumPlayStage > 1:
+        SexCumPlayStage -= 1
+    end
+
+    if SexCumPlayStage < 0:
+        SexCumPlayStage = 0
+    end
+
+    if SexCumPlayStage > 5:
+        SexCumPlayStage = 5
+    end
+---
+
+#SexSceneCalcAtmStage
+    gs 'EnsureGirlData', $SexGirl
+
+    SexAtmStage = 0
+
+    if analacts[$SexGirl] = 0 and analfromyou[$SexGirl] = 0:
+        exit
+    end
+
+    if analfromyou[$SexGirl] >= 1:
+        SexAtmStage = 1
+    elseif analacts[$SexGirl] >= 1 and sluttiness[$SexGirl] >= 22:
+        SexAtmStage = 1
+    end
+
+    if $SexGirl = 'amanda' and AmandaLizaInfluence >= 2 and analacts['amanda'] >= 1:
+        if SexAtmStage < 1:
+            SexAtmStage = 1
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 4:
+        if SexAtmStage < 1:
+            SexAtmStage = 1
+        end
+    end
+
+    if analfromyou[$SexGirl] >= 2 or (oralswallow[$SexGirl] >= 2 and analacts[$SexGirl] >= 2):
+        if SexAtmStage < 2:
+            SexAtmStage = 2
+        end
+    end
+
+    if sluttiness[$SexGirl] >= 38 and analacts[$SexGirl] >= 2:
+        if SexAtmStage < 2:
+            SexAtmStage = 2
+        end
+    end
+
+    if $SexGirl = 'becky' and analacts['becky'] >= 1:
+        if SexAtmStage < 2:
+            SexAtmStage = 2
+        end
+    end
+
+    if $SexGirl = 'melissa' and MelissaAnalWithGgDone = 1 and oralswallow['melissa'] >= 2:
+        if SexAtmStage < 2:
+            SexAtmStage = 2
+        end
+    end
+
+    if sluttiness[$SexGirl] >= 44 and oralswallow[$SexGirl] >= 4 and analfromyou[$SexGirl] >= 2:
+        SexAtmStage = 3
+    end
+
+    if $SexGirl = 'amanda' and AmandaLizaInfluence >= 5 and sluttiness['amanda'] >= 38 and analfromyou['amanda'] >= 1:
+        SexAtmStage = 3
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 5 and analacts['inga'] >= 1:
+        SexAtmStage = 3
+    end
+
+    if SexAtmStage > 3:
+        SexAtmStage = 3
+    end
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
 ! Расчёт видимости пунктов меню
 ! ================================================
 
@@ -867,6 +1042,27 @@
 ! ================================================
 
 #SexSceneActionBlowjob
+    SexSceneAtmPending = 0
+
+    if SexSceneHadAnal = 1 and SexSceneAtmShown = 0:
+        gs 'SexSceneCalcAtmStage'
+
+        if SexAtmStage = 0:
+            if $SexGirl = 'amanda':
+                $SexLastText = 'Аманда отшатывается, когда вы предлагаете ей взять в рот после попы: «Нет. Даже не думай. …Сначала вымойся.»'
+            elseif $SexGirl = 'melissa':
+                $SexLastText = 'Мелисса бледнеет и твёрдо качает головой: «Нет. Я не настолько… ещё нет.»'
+            else
+                $SexLastText = $RealName[$SexGirl] + ' отказывается брать вас в рот сразу после анала — слишком рано для неё.'
+            end
+
+            gt 'SexSceneMain'
+        end
+
+        SexSceneAtmShown = 1
+        SexSceneAtmPending = 1
+    end
+
     SexScenePenetrationActive = 0
     $SexActType = 'blowjob'
 
@@ -889,6 +1085,12 @@
     end
 
     gs 'SexSceneTextAction', 'blowjob'
+
+    if SexSceneAtmPending = 1:
+        gs 'SexSceneTextAtmBlowjob'
+    end
+
+    killvar 'SexSceneAtmPending'
     gs 'SexSceneAfterAction'
 ---
 
@@ -1165,6 +1367,24 @@
 ! Беременность пока не обрабатывается
 ! ================================================
 
+#SexSceneRegisterFinish
+    $SexFinishPlace = LCASE($ARGS[0])
+
+    if $SexFinishPlace = 'inside':
+        if $SexActType = 'anal':
+            gs 'RegisterAnal', $SexGirl, 1, 1
+        else
+            gs 'RegisterVaginal', $SexGirl, 1, 1
+        end
+    elseif $SexFinishPlace = 'mouth':
+        gs 'RegisterOral', $SexGirl, 1, 1
+    elseif $SexFinishPlace = 'face':
+        gs 'RegisterFacial', $SexGirl, 1
+    end
+
+    killvar '$SexFinishPlace'
+---
+
 #SexSceneActionFinish
     $SexFinishPlace = LCASE($ARGS[0])
     SexSimultaneousOrgasm = 0
@@ -1202,8 +1422,37 @@
         SexGirlArousal += 5
     end
 
+    SexGirlArousalBeforeFinish = SexGirlArousal
+    $SexActTypeAtFinish = $SexActType
+
     gs 'SexSceneTextFinish', $SexFinishPlace
+    gs 'SexSceneRegisterFinish', $SexFinishPlace
     gs 'SexSceneCheckGirlOrgasm'
+
+    if $SexFinishPlace = 'mouth' and SexGirlOrgasmNow = 0 and $SexActTypeAtFinish = 'blowjob':
+        gs 'SexSceneCalcCumPlayStage'
+
+        SexMouthFinishOrgasmReady = 0
+
+        if SexCumPlayStage >= 5 and SexGirlArousalBeforeFinish >= 62:
+            SexMouthFinishOrgasmReady = 1
+        elseif SexCumPlayStage >= 4 and SexGirlArousalBeforeFinish >= 78:
+            SexMouthFinishOrgasmReady = 1
+        elseif $SexGirl = 'inga' and IngaOralOrgasmDone = 1 and IngaOralStage >= 5 and SexCumPlayStage >= 3 and SexGirlArousalBeforeFinish >= 72:
+            SexMouthFinishOrgasmReady = 1
+        end
+
+        if SexMouthFinishOrgasmReady = 1:
+            gs 'SexSceneTextMouthFinishOrgasm'
+            SexGirlCameInScene += 1
+            GiveOrgasms[$SexGirl] += 1
+        end
+
+        killvar 'SexMouthFinishOrgasmReady'
+    end
+
+    killvar '$SexActTypeAtFinish'
+    killvar 'SexGirlArousalBeforeFinish'
 
     SexCumBefore = daily_cum_count
 
