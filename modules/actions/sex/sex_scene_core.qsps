@@ -244,6 +244,7 @@
     SexSceneHadVaginal = 0
     SexSceneHadBlowjob = 0
     SexSceneHadRim = 0
+    SexSceneHadRimjob = 0
     SexSceneHadAnal = 0
     SexSceneHadPlayerCum = 0
 
@@ -267,6 +268,10 @@
     SexSceneBlowjobCount = 0
     SexSceneVaginalCount = 0
     SexSceneCuniCount = 0
+    SexSceneRimCount = 0
+    SexSceneRimjobCount = 0
+    SexSceneRimjobUnlocked = 0
+    SexSceneCalmAtmDone = 0
 
     SexKissGirlCap = 38
     SexKissPlayerCap = 35
@@ -462,6 +467,12 @@
         gt 'SexSceneActionRim'
     }
     gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneRimUnlocked=1,-1,0)"
+
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Римминг Стефану', 'intim'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionRimjob'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneRimjobUnlocked=1,-1,0)"
 
     gs 'MenuUiAdd', 'SexSceneMenu', 'Трахать', 'intim'
     gs 'Menu.AddModule', 'SexSceneMenu', {
@@ -1088,6 +1099,12 @@
 
     if SexSceneAtmPending = 1:
         gs 'SexSceneTextAtmBlowjob'
+        gs 'SexSceneCalcAtmStage'
+
+        if SexAtmStage >= 2:
+            SexSceneCalmAtmDone = 1
+            SexSceneRimjobUnlocked = 1
+        end
     end
 
     killvar 'SexSceneAtmPending'
@@ -1181,10 +1198,17 @@
     $SexActType = 'rim'
 
     SexSceneHadRim = 1
+    SexSceneRimCount += 1
+
+    if SexSceneRimCount > 4:
+        SexSceneRimCount = 2
+    end
+
     SexSceneNextPlayerGain = 14
     gs 'SexSceneApplyPlayerGain'
     SexGirlArousal += 28
     OralCount[$SexGirl] += 1
+    gs 'RegisterAnilingus', $SexGirl, 1
     otkroven[$SexGirl] += 1
     sluttiness[$SexGirl] += 1
 
@@ -1193,6 +1217,47 @@
     end
 
     gs 'SexSceneTextAction', 'rim'
+    gs 'SexSceneAfterAction'
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
+! Действие: римминг Стефану (после спокойного ATM, стадия 2+)
+! ================================================
+
+#SexSceneActionRimjob
+    if SexSceneRimjobUnlocked = 0:
+        if $SexGirl = 'amanda':
+            $SexLastText = 'Аманда качает головой: «Сначала… из попы в рот. Без этого — нет.»'
+        else
+            $SexLastText = $RealName[$SexGirl] + ' пока не готова на такое.'
+        end
+
+        gt 'SexSceneMain'
+    end
+
+    SexScenePenetrationActive = 0
+    $SexActType = 'rimjob'
+
+    SexSceneHadRimjob = 1
+    SexSceneRimjobCount += 1
+
+    if SexSceneRimjobCount > 4:
+        SexSceneRimjobCount = 2
+    end
+
+    SexSceneNextPlayerGain = 26
+    gs 'SexSceneApplyPlayerGain'
+    SexGirlArousal += 14
+    gs 'RegisterRimjob', $SexGirl, 1
+    sluttiness[$SexGirl] += 1
+    otkroven[$SexGirl] += 1
+
+    if SexClothesStage < 2:
+        SexClothesStage = 2
+    end
+
+    gs 'SexSceneTextAction', 'rimjob'
     gs 'SexSceneAfterAction'
 ---
 
