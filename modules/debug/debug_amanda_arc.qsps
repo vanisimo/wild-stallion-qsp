@@ -135,19 +135,27 @@
 ---
 
 #DebugAmandaPrintDanceBlock
+    if LOC('AmandaLegareRaceWindowOpen') = 1:
+        gs 'AmandaLegareRaceWindowOpen'
+    end
+
     pl '<b>Танцы и платье</b>'
     gs 'DebugAmandaPrintBool', 'Платье готово', AmandaDanceDressReady
     gs 'DebugAmandaPrintBool', 'Купила сама', AmandaDanceDressSelfBought
     gs 'DebugAmandaPrintBool', 'Купил игрок', AmandaDanceDressPlayerBought
-    pl 'Пятничных танцев: ' + STR(AmandaFridayDanceCount)
-    gs 'DebugAmandaPrintBool', 'Окно гонки Легаре', AmandaLegareRaceWindowOpen
+    pl 'Пятничных танцев: ' + STR(AmandaFridayDanceCount) + ' (гонка с 5-й пт или д.33+пт)'
+    gs 'DebugAmandaPrintBool', 'Окно гонки Легаре сейчас', AmandaLegareRaceWindowOpen
     gs 'DebugAmandaPrintBool', 'Гонка Легаре сыграна', AmandaLegareFridayRaceDone
-    pl 'Результат гонки Легаре: ' + STR(AmandaLegareFridayRaceResult)
+    pl 'Результат гонки: 0=стоп / 1=claim / 2=watch / 3=отошёл → ' + STR(AmandaLegareFridayRaceResult)
 ---
 
 #DebugAmandaPrintLegareBlock
+    gs 'AmandaHomeFirstSexResolveContext'
+
     pl '<b>Легаре и выбор пути</b>'
-    gs 'DebugAmandaPrintBool', 'Первый секс с Легаре', AmandaLegareFirstSexDone
+    pl 'Контекст первой ночи: <b>' + $AmandaFirstSexContext + '</b> (pure / legare_hidden / legare_known)'
+    gs 'DebugAmandaPrintBool', 'Сцена в переулке (LegareFirstSexDone)', AmandaLegareFirstSexDone
+    pl '<font color="#888888">флаг ≠ вагинал: в гонке чаще oral, virginity может остаться 1</font>'
     gs 'DebugAmandaPrintBool', 'Игрок знает про гонку', PlayerKnows_AmandaLegareFridayRace
     gs 'DebugAmandaPrintBool', 'Факт: переулок в пятницу', Fact_AmandaLegareFridayAlley
     gs 'DebugAmandaPrintBool', 'Выбор path готов', AmandaPathChoiceReady
@@ -155,6 +163,16 @@
     pl 'AmandaPathChoice: ' + STR(AmandaPathChoice) + ' | запрет парней: ' + STR(AmandaProhibitGuys)
     pl 'NpcPath / PlayerPath: ' + STR(AmandaNpcPath) + ' / ' + STR(AmandaPlayerPath)
     pl 'Интерес Легаре: ' + STR(AmandaLegareInterest)
+
+    if AmandaLegareFirstSexDone = 1 and AmandaLegareFridayRaceDone = 0:
+        pl '<font color="#c06000"><b>⚠ LegareFirstSex без гонки</b> — вероятно debug-пресет; тексты: legare_hidden, без плевы при virginity=1</font>'
+    end
+
+    if AmandaLegareFirstSexDone = 1 and PlayerKnows_AmandaLegareFridayRace = 0 and AmandaLegareFridayRaceDone = 0:
+        pl '<font color="#c06000">⚠ Нет PlayerKnows и гонки — для legare_known используй пресет «гонка watch»</font>'
+    end
+
+    killvar '$AmandaFirstSexContext'
 ---
 
 #DebugAmandaPrintKinksBlock
@@ -251,13 +269,60 @@
     pl ' '
     pl '<b>Танцы / Легаре / кинки</b>'
     pl '<a href="exec:AmandaDanceDressReady = 1 & gs ''DebugAmandaArcPanel''">платье готово</a>'
-    pl '<a href="exec:AmandaFridayDanceCount = 5 & day = 33 & week = 5 & time = 4 & AmandaDanceDressReady = 1 & AmandaLegareAfterDanceResolved = 1 & AmandaLegareAfterDanceResult = 2 & gs ''DebugAmandaArcPanel''">5-я пт, гонка Легаре</a>'
-    pl '<a href="exec:AmandaLegareFirstSexDone = 1 & AmandaPathChoiceReady = 1 & gs ''DebugAmandaArcPanel''">выбор path</a>'
+    pl '<a href="exec:gs ''DebugAmandaPresetLegareRaceGate'' & gs ''DebugAmandaArcPanel''">5-я пт — окно гонки (площадь)</a>'
+    pl '<a href="exec:gs ''DebugAmandaPresetLegareRaceWatch'' & gs ''DebugAmandaArcPanel''">гонка watch + Legare (legare_known)</a>'
+    pl '<a href="exec:gs ''DebugAmandaPresetLegareRaceWatchHidden'' & gs ''DebugAmandaArcPanel''">гонка step_aside + Legare (legare_hidden)</a>'
+    pl '<a href="exec:AmandaLegareFirstSexDone = 1 & AmandaPathChoiceReady = 1 & PlayerKnows_AmandaLegareFridayRace = 1 & Fact_AmandaLegareFridayAlley = 1 & AmandaLegareFridayRaceDone = 1 & AmandaLegareFridayRaceResult = 2 & AmandaNpcPath = 4 & AmandaLegareInterest = 8 & gs ''DebugAmandaArcPanel''">выбор path (согласованные флаги)</a>'
     pl '<a href="exec:AmandaLegareFirstSexDone = 1 & AmandaNeighborBoysStage = 0 & AmandaProhibitGuys = 0 & sluttiness[''amanda''] = 25 & time = 4 & gs ''DebugAmandaArcPanel''">соседские парни (гейт)</a>'
     pl '<a href="exec:AmandaLegareFirstSexDone = 1 & Fact_AmandaLegareFridayAlley = 1 & sluttiness[''amanda''] = 40 & AmandaLegareInterest = 12 & time = 4 & gs ''DebugAmandaArcPanel''">анал Легаре (гейт)</a>'
     pl '<a href="exec:AmandaLegareAnalDone = 1 & AmandaNeighborBoysStage = 3 & sluttiness[''amanda''] = 45 & time = 4 & gs ''DebugAmandaArcPanel''">анал парни (гейт)</a>'
     pl '<a href="exec:AmandaHomeSex = 1 & AmandaLizetteAnalTalkCount = 3 & AmandaLizaInfluence = 5 & AmandaLizetteAnalTalkDone = 0 & time = 4 & gs ''DebugAmandaArcPanel''">talk Лизетта → анал ГГ</a>'
     pl '<a href="exec:day = 28 & AmandaDanceDressReady = 0 & AmandaDanceDressSelfBought = 0 & gs ''ProcessIntimacyDressSelfBuy'' & gs ''DebugAmandaArcPanel''">тест самопокупки (д.28)</a>'
+---
+
+#DebugAmandaPresetLegareRaceGate
+    AmandaDanceDressReady = 1
+    AmandaFridayDanceCount = 5
+    day = 33
+    week = 5
+    time = 4
+    AmandaLegareFridayRaceDone = 0
+    AmandaLegareFridayRaceResult = 0
+    AmandaLegareFirstSexDone = 0
+    AmandaPathChoiceReady = 0
+    PlayerKnows_AmandaLegareFridayRace = 0
+    Fact_AmandaLegareFridayAlley = 0
+    $GirlLocation['amanda'] = 'MarketDance'
+---
+
+#DebugAmandaPresetLegareRaceWatch
+    gs 'DebugAmandaPresetLegareRaceGate'
+    AmandaLegareFridayRaceDone = 1
+    AmandaLegareFridayRaceResult = 2
+    AmandaLegareFirstSexDone = 1
+    AmandaPathChoiceReady = 1
+    PlayerKnows_AmandaLegareFridayRace = 1
+    Fact_AmandaLegareFridayAlley = 1
+    AmandaNpcPath = 4
+    GirlNpcPath['amanda'] = 4
+    AmandaLegareInterest = 8
+    LegareAmandaInterest = 8
+    oralacts['amanda'] += 1
+---
+
+#DebugAmandaPresetLegareRaceWatchHidden
+    gs 'DebugAmandaPresetLegareRaceGate'
+    AmandaLegareFridayRaceDone = 1
+    AmandaLegareFridayRaceResult = 3
+    AmandaLegareFirstSexDone = 1
+    AmandaPathChoiceReady = 1
+    PlayerKnows_AmandaLegareFridayRace = 0
+    Fact_AmandaLegareFridayAlley = 1
+    AmandaNpcPath = 6
+    GirlNpcPath['amanda'] = 6
+    AmandaLegareInterest = 10
+    LegareAmandaInterest = 10
+    oralacts['amanda'] += 1
 ---
 
 #DebugAmandaArcReset
