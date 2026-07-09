@@ -4,6 +4,26 @@
 ! Используется панелью времени
 ! ================================================
 
+#PrepareSkipDays
+    SkipPrepareCount = ARGS[0]
+
+    if SkipPrepareCount < 1:
+        SkipPrepareCount = 1
+    end
+
+    if SkipPrepareCount > 30:
+        SkipPrepareCount = 30
+    end
+
+    $SkipDaysReturnLoc = $CURLOC
+
+    if $SkipDaysReturnLoc = '' or $SkipDaysReturnLoc = 'ConfirmSkipDays' or $SkipDaysReturnLoc = 'SkipDaysFromPanel' or $SkipDaysReturnLoc = 'NextDay':
+        $SkipDaysReturnLoc = 'TavernMain'
+    end
+
+    gt 'ConfirmSkipDays', SkipPrepareCount
+---
+
 #ConfirmSkipDays
     SkipConfirmCount = ARGS[0]
 
@@ -38,7 +58,11 @@
 
     gs 'ActUiPrepare', 'Отмена', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'TavernMain'
+        if $SkipDaysReturnLoc = '' or $SkipDaysReturnLoc = 'ConfirmSkipDays' or $SkipDaysReturnLoc = 'SkipDaysFromPanel':
+            gt 'TavernMain'
+        else
+            gt $SkipDaysReturnLoc
+        end
     end
 ---
 
@@ -59,9 +83,7 @@
         SkipDaysCount = 30
     end
 
-    $SkipDaysReturnLoc = $CURLOC
-
-    if $SkipDaysReturnLoc = '':
+    if $SkipDaysReturnLoc = '' or $SkipDaysReturnLoc = 'ConfirmSkipDays' or $SkipDaysReturnLoc = 'SkipDaysFromPanel' or $SkipDaysReturnLoc = 'NextDay':
         $SkipDaysReturnLoc = 'TavernMain'
     end
 
@@ -162,10 +184,17 @@
     *pl ' '
 
     act '<b>Продолжить</b>', 'images/common/ui/actions/return.png':
-        gt $SkipDaysReturnLoc
-    end
+        $PanelRestoreAfterRefresh = 'time'
+        $SkipDaysContinueLoc = $SkipDaysReturnLoc
 
-    ! $SkipDaysReturnLoc не очищаем, она нужна кнопке act
+        if $SkipDaysContinueLoc = '' or $SkipDaysContinueLoc = 'ConfirmSkipDays' or $SkipDaysContinueLoc = 'SkipDaysFromPanel':
+            $SkipDaysContinueLoc = 'TavernMain'
+        end
+
+        killvar '$SkipDaysReturnLoc'
+        gt $SkipDaysContinueLoc
+        killvar '$SkipDaysContinueLoc'
+    end
 ---
 
 ! ================================================
@@ -175,31 +204,7 @@
 ! ================================================
 
 #AdvanceOneDaySilent
-    day += 1
-    time = 1
-
-    week += 1
-
-    if week > 7:
-        week = 1
-    end
-
-    gs 'AdvanceMonthIfNeeded'
-
-    daily_cum_count = 0
-    cametoday = 0
-    ChurchDonatedToday = 0
-
-    gs 'GirlsResetDailyFlags'
-
-    TavernHallEventDay = 0
-    TavernHallEventTime = 0
-
-    HallHarassmentDay = 0
-    HallHarassmentTime = 0
-
-    gs 'CanCumToday'
-    gs 'TavernDailyUpdate'
+    gs 'AdvanceCalendarOneDay'
     gs 'GetDateTimeNames'
     gs 'UpdateGirlLocations'
 ---

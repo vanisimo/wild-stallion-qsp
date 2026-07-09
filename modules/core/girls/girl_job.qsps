@@ -180,7 +180,7 @@
 ! Уборку девушки не делают
 ! ================================================
 
-#ApplyFamilyTavernJobs
+#SetFamilyTavernJobs
     jobkitchen['sandra'] = 1
     jobwaitress['sandra'] = 0
     jobcleaning['sandra'] = 0
@@ -192,6 +192,28 @@
     jobkitchen['melissa'] = 0
     jobwaitress['melissa'] = 1
     jobcleaning['melissa'] = 0
+---
+
+#EnsureFamilyTavernJobs
+    FamilyTavernJobsNeedSync = 0
+
+    if jobkitchen['sandra'] <> 1 or jobwaitress['sandra'] <> 0 or jobcleaning['sandra'] <> 0:
+        FamilyTavernJobsNeedSync = 1
+    elseif jobkitchen['amanda'] <> 0 or jobwaitress['amanda'] <> 1 or jobcleaning['amanda'] <> 0:
+        FamilyTavernJobsNeedSync = 1
+    elseif jobkitchen['melissa'] <> 0 or jobwaitress['melissa'] <> 1 or jobcleaning['melissa'] <> 0:
+        FamilyTavernJobsNeedSync = 1
+    end
+
+    if FamilyTavernJobsNeedSync = 1:
+        gs 'SetFamilyTavernJobs'
+    end
+
+    killvar 'FamilyTavernJobsNeedSync'
+---
+
+#ApplyFamilyTavernJobs
+    gs 'SetFamilyTavernJobs'
 
     if LOC('UpdateGirlLocations') = 1:
         gs 'UpdateGirlLocations'

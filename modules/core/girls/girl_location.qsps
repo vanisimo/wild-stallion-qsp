@@ -113,16 +113,23 @@
         exit
     end
 
-    gs 'CheckGirlInLocation', $LocGirl, $LocName
+    if $GirlLocation[$LocGirl] <> $LocName:
+        killvar '$LocGirl'
+        killvar '$LocName'
+        exit
+    end
 
-    if GirlInLocation = 1:
-        gs 'ShowGirlNpcLinks', $LocGirl, $LocName
+    $GirlLocationNpcLine = ''
+    gs 'BuildGirlLocationNpcLine', $LocGirl, $LocName, 'main', $LocName
+
+    if $GirlLocationNpcLine <> '':
+        *pl $GirlLocationNpcLine
         LocationGirlShown = 1
     end
 
+    killvar '$GirlLocationNpcLine'
     killvar '$LocGirl'
     killvar '$LocName'
-    killvar 'GirlInLocation'
 ---
 
 ! ================================================

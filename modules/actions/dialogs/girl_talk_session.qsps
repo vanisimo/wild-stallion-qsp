@@ -182,17 +182,19 @@
     killvar '$GirlTalkLinkOutput'
 ---
 
-#ShowGirlNpcLinkLine
+#BuildGirlLocationNpcLine
     gs 'NormalizeGirlKey', $ARGS[0]
     $GirlNpcLineGirl = $GirlKey
     $GirlNpcLineLoc = $ARGS[1]
     $GirlNpcLineOutput = LCASE($ARGS[2])
     $GirlNpcLineReturnLoc = $ARGS[3]
+    $GirlLocationNpcLine = ''
 
     if $GirlNpcLineGirl = '':
         killvar '$GirlNpcLineGirl'
         killvar '$GirlNpcLineLoc'
         killvar '$GirlNpcLineOutput'
+        killvar '$GirlNpcLineReturnLoc'
         exit
     end
 
@@ -232,7 +234,9 @@
         gs 'NpcMenuTalkOpenLink', $RealName[$GirlNpcLineGirl], $GirlNpcLineGirl, $GirlNpcLineLoc, $GirlNpcLineOutput, $GirlNpcLineReturnLoc
         $GirlNpcLineText = $NpcTalkOpenLine
         killvar '$NpcTalkOpenLine'
-    elseif $GirlNpcLineOutput <> 'panel':
+    end
+
+    if $GirlNpcLineText = '' and $GirlNpcLineOutput <> 'panel':
         gs 'FormatNpcTalkLink', $GirlNpcLineGirl, 'gt ''GirlTalkClosedScreen'', ''' + $GirlNpcLineGirl + ''', ''' + $GirlNpcLineLoc + ''''
         $GirlNpcLineText = $NpcTalkLink
         killvar '$NpcTalkLink'
@@ -250,13 +254,7 @@
         killvar '$NpcIntimOpenIconLine'
     end
 
-    if $GirlNpcLineText <> '':
-        if $GirlNpcLineOutput = 'panel':
-            pl $GirlNpcLineText
-        else:
-            *pl $GirlNpcLineText
-        end
-    end
+    $GirlLocationNpcLine = $GirlNpcLineText
 
     killvar '$GirlNpcLineText'
     killvar 'GirlNpcLineTalkReady'
@@ -265,4 +263,27 @@
     killvar '$GirlNpcLineLoc'
     killvar '$GirlNpcLineOutput'
     killvar '$GirlNpcLineReturnLoc'
+---
+
+#ShowGirlNpcLinkLine
+    $GirlNpcLinkOutput = LCASE($ARGS[2])
+
+    if $GirlNpcLinkOutput = '':
+        $GirlNpcLinkOutput = 'main'
+    end
+
+    gs 'BuildGirlLocationNpcLine', $ARGS[0], $ARGS[1], $GirlNpcLinkOutput, $ARGS[3]
+
+    if $GirlLocationNpcLine <> '':
+        if $GirlNpcLinkOutput = 'panel':
+            pl $GirlLocationNpcLine
+        else:
+            *pl $GirlLocationNpcLine
+        end
+
+        GirlLocationLineShown = 1
+    end
+
+    killvar '$GirlLocationNpcLine'
+    killvar '$GirlNpcLinkOutput'
 ---

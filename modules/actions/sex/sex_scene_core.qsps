@@ -292,6 +292,8 @@
     SexScenePenetrationActive = 0
     SexSceneAnalCount = 0
     SexScenePlayerEdgeHintShown = 0
+    SexSceneRimjobEdgeHintShown = 0
+    SexSceneHoldBackUsed = 0
     SexSceneAtmShown = 0
     $SexFinishPlace = ''
     $SexLastText = ''
@@ -344,6 +346,19 @@
         *pl '[DEBUG] SexSceneHadPlayerCum: ' + STR(SexSceneHadPlayerCum)
         *pl '[DEBUG] SexUsedToday: ' + STR(SexUsedToday[$SexGirl])
         *pl '[DEBUG] daily_cum_count: ' + STR(daily_cum_count)
+
+        *pl '[DEBUG] HoldBack used: ' + STR(SexSceneHoldBackUsed) + ' | endurance: ' + STR(sexual_endurance)
+
+        if SexSceneMode = 1:
+            gs 'SexSceneCalcHoldBackChance'
+            *pl '[DEBUG] HoldBack chance: ' + STR(SexHoldBackChance) + '%'
+        end
+
+        if $SexGirl = 'amanda':
+            gs 'SexSceneCalcAmandaBlowjobCap'
+            *pl '[DEBUG] Amanda oral: ' + STR(AmandaOralStage) + ' | blowjob cap: ' + STR(AmandaBlowjobCap) + ' | count: ' + STR(SexSceneBlowjobCount) + ' | hadAnal: ' + STR(SexSceneHadAnal)
+            killvar 'AmandaBlowjobCap'
+        end
     end
 ---
 
@@ -460,7 +475,7 @@
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionBlowjob'
     }
-    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4,-1,0)"
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4 and SexSceneBlowjobMenuOk=1,-1,0)"
 
     gs 'MenuUiAdd', 'SexSceneMenu', 'Анилингус', 'intim'
     gs 'Menu.AddModule', 'SexSceneMenu', {
@@ -566,10 +581,12 @@
         }
     end
 
-    gs 'MenuUiAdd', 'SexSceneMenu', 'Сдержаться', 'return'
-    gs 'Menu.AddModule', 'SexSceneMenu', {
-        gt 'SexSceneActionHoldBack'
-    }
+    if SexSceneHoldBackUsed = 0:
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Сдержаться', 'return'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionHoldBack'
+        }
+    end
 ---
 
 ! ================================================
@@ -833,6 +850,25 @@
             SexSceneRimjobUnlocked = 1
         end
     end
+
+    SexSceneBlowjobMenuOk = 1
+
+    if $SexGirl = 'amanda':
+        gs 'SexSceneCalcAmandaBlowjobCap'
+
+        SexSceneNextBlowjobMenu = SexSceneBlowjobCount + 1
+
+        if SexSceneNextBlowjobMenu > 5:
+            SexSceneNextBlowjobMenu = 2
+        end
+
+        if SexSceneNextBlowjobMenu > AmandaBlowjobCap:
+            SexSceneBlowjobMenuOk = 0
+        end
+
+        killvar 'SexSceneNextBlowjobMenu'
+        killvar 'AmandaBlowjobCap'
+    end
 ---
 
 ! ================================================
@@ -1074,7 +1110,7 @@
 
         if SexAtmStage = 0:
             if $SexGirl = 'amanda':
-                $SexLastText = 'Аманда отшатывается, когда ты предлагаешь ей взять в рот после жопки: «Нет. Даже не думай. Лизетта сказала — сначала вымойся. И вообще… рано ещё.»'
+                $SexLastText = 'Аманда отводит твою руку, когда ты предлагаешь сразу в рот после попки: «Нет. Рано ещё. Лизетта сказала — сначала помыться, потом рот. Я не против… просто не сейчас.»'
             elseif $SexGirl = 'melissa':
                 $SexLastText = 'Мелисса бледнеет и твёрдо качает головой: «Нет. Я не настолько… ещё нет.»'
             else
@@ -1118,7 +1154,7 @@
 
         if SexSceneNextBlowjobCount > AmandaBlowjobCap:
             if SexSceneNextBlowjobCount = 3:
-                $SexLastText = 'Аманда отстраняется и качает головой: «Ниже… Лизетта ещё не доучила. И вообще — сначала помойся, если там было что-то…»'
+                $SexLastText = 'Аманда отстраняется и качает головой: «Ниже… пока рано. Лизетта ещё не доучила — только так, как мы уже умеем.»<br><br>Базовый минет на сегодня исчерпан. Попробуй куни или трах — или прокачай oral через Лизетту.'
             else
                 $SexLastText = 'Аманда упрямо сжимает губы: «Нет. Пока рано.»'
             end
@@ -1306,6 +1342,12 @@
     end
 
     gs 'SexSceneTextAction', 'rimjob'
+
+    if SexPlayerArousal >= 85 and SexPlayerArousal < SexPlayerFinishThreshold and SexSceneRimjobEdgeHintShown = 0:
+        SexSceneRimjobEdgeHintShown = 1
+        gs 'SexSceneTextRimjobHighArousal'
+    end
+
     gs 'SexSceneAfterAction'
 ---
 
@@ -1385,10 +1427,13 @@
         SexSceneMode = 1
 
         if SexGirlTriggeredPlayerOrgasm = 1:
-            $SexLastText += '<br><br>Её оргазм добил Стефана до предела. Нужно решить, как завершить этот момент.'
+            $SexLastText += '<br><br>Её оргазм добил тебя до предела. Нужно решить, как завершить этот момент.'
             killvar 'SexGirlTriggeredPlayerOrgasm'
+        elseif $SexActType = 'rimjob':
+            gs 'SexSceneTextRimjobTriggersPlayer'
+            $SexLastText += '<br><br>Ты больше не можешь сдерживаться. Нужно решить, как завершить этот момент.'
         else
-            $SexLastText += '<br><br>Стефан уже не может сдерживаться. Нужно решить, как завершить этот момент.'
+            $SexLastText += '<br><br>Ты больше не можешь сдерживаться. Нужно решить, как завершить этот момент.'
 
             if SexGirlArousal >= 85 and ($SexActType = 'vaginal' or $SexActType = 'anal'):
                 $SexLastText += '<br><br>' + $RealName[$SexGirl] + ' тоже на грани — если кончить внутрь, она может сорваться вместе с вами.'
@@ -1439,6 +1484,8 @@
             SexGirlTriggeredPlayerOrgasm = 1
             SexPlayerArousal = 100
             gs 'SexSceneTextGirlOrgasmTriggersPlayer', $SexActType
+        elseif $SexActType = 'rim':
+            gs 'SexSceneTextGirlOrgasm', 'rim'
         elseif $SexActType = 'vaginal' or $SexActType = 'anal':
             gs 'SexSceneTextGirlOrgasm', $SexActType
         else
@@ -1591,6 +1638,7 @@
     SexPlayerCameInScene += 1
     SexPlayerArousal = 0
     SexPlayerRest = 1
+    SexSceneHoldBackUsed = 0
 
     gs 'SexSceneCleanupText', $SexFinishPlace
     gs 'CanCumToday'
@@ -1608,18 +1656,74 @@
 
 ! ================================================
 ! FILE: modules/actions/sex/sex_scene_core.qsps
+! Шанс сдержаться на грани оргазма
+! База 28% + sexual_endurance/5 + IntimStage*2 − штрафы, клип 8–75%
+! Одна попытка до оргазма ГГ; после неё кнопка до кончины не возвращается
+! ================================================
+
+#SexSceneCalcHoldBackChance
+    gs 'EnsureGirlData', $SexGirl
+
+    SexHoldBackChance = 28
+    SexHoldBackChance += sexual_endurance / 5
+    SexHoldBackChance += IntimStage[$SexGirl] * 2
+
+    if SexGirlArousal >= 85:
+        if SexScenePenetrationActive = 1 and ($SexActType = 'vaginal' or $SexActType = 'anal'):
+            SexHoldBackChance -= 22
+        elseif $SexActType = 'blowjob' or $SexActType = 'rimjob':
+            SexHoldBackChance -= 12
+        else
+            SexHoldBackChance -= 8
+        end
+    end
+
+    if SexHoldBackChance < 8:
+        SexHoldBackChance = 8
+    end
+
+    if SexHoldBackChance > 75:
+        SexHoldBackChance = 75
+    end
+---
+
+! ================================================
+! FILE: modules/actions/sex/sex_scene_core.qsps
 ! Попытка сдержаться
 ! ================================================
 
 #SexSceneActionHoldBack
-    if Rand(1, 100) <= 40:
-        SexPlayerArousal = 90
+    if SexSceneHoldBackUsed = 1:
+        gt 'SexSceneMain'
+    end
+
+    SexSceneHoldBackUsed = 1
+
+    gs 'SexSceneCalcHoldBackChance'
+
+    if Rand(1, 100) <= SexHoldBackChance:
+        SexPlayerArousal = 80 - sexual_endurance / 25
+
+        if SexPlayerArousal < 76:
+            SexPlayerArousal = 76
+        end
+
         SexSceneMode = 0
         SexScenePlayerEdgeHintShown = 0
-        $SexLastText = 'Стефану удаётся на несколько мгновений взять себя в руки. Напряжение не исчезло, но вы получили ещё немного времени.'
+        SexSceneRimjobEdgeHintShown = 0
+        $SexLastText = 'Тебе удаётся на мгновение взять себя в руки. Напряжение не ушло, но ещё немного времени есть — пока не кончишь.'
     else
         SexSceneMode = 1
-        $SexLastText = 'Стефан пытается сдержаться, но тело уже почти не слушается.'
+
+        if SexPlayerArousal < 100:
+            SexPlayerArousal += 3
+        end
+
+        if SexPlayerArousal > 100:
+            SexPlayerArousal = 100
+        end
+
+        $SexLastText = 'Ты пытаешься сдержаться, но тело уже почти не слушается.'
     end
 
     gt 'SexSceneMain'
@@ -1644,7 +1748,9 @@
 
     SexRound += 1
     SexSceneMode = 0
+    SexSceneHoldBackUsed = 0
     SexScenePlayerEdgeHintShown = 0
+    SexSceneRimjobEdgeHintShown = 0
     SexPlayerRest = 0
     SexPlayerArousal = 18
 
