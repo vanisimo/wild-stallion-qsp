@@ -765,6 +765,12 @@
     if SexAtmStage > 3:
         SexAtmStage = 3
     end
+
+    if $SexGirl = 'amanda':
+        if AmandaOralStage < 5 or AmandaLizetteAnalTalkDone = 0:
+            SexAtmStage = 0
+        end
+    end
 ---
 
 ! ================================================
@@ -817,6 +823,14 @@
             SexSceneAnalUnlocked = 1
         elseif HadSex[$SexGirl] > 0 and sluttiness[$SexGirl] >= 45 and otkroven[$SexGirl] >= 30:
             SexSceneAnalUnlocked = 1
+        end
+    end
+
+    if $SexGirl = 'amanda':
+        SexSceneRimjobUnlocked = 0
+
+        if AmandaOralStage >= 6:
+            SexSceneRimjobUnlocked = 1
         end
     end
 ---
@@ -1060,7 +1074,7 @@
 
         if SexAtmStage = 0:
             if $SexGirl = 'amanda':
-                $SexLastText = 'Аманда отшатывается, когда вы предлагаете ей взять в рот после попы: «Нет. Даже не думай. …Сначала вымойся.»'
+                $SexLastText = 'Аманда отшатывается, когда ты предлагаешь ей взять в рот после жопки: «Нет. Даже не думай. Лизетта сказала — сначала вымойся. И вообще… рано ещё.»'
             elseif $SexGirl = 'melissa':
                 $SexLastText = 'Мелисса бледнеет и твёрдо качает головой: «Нет. Я не настолько… ещё нет.»'
             else
@@ -1085,15 +1099,39 @@
     OralCount[$SexGirl] += 1
     sluttiness[$SexGirl] += 1
 
+    if $SexGirl = 'amanda' and AmandaOralStage = 2:
+        gs 'AmandaOralBumpTo', 3
+    end
+
     if SexClothesStage < 2:
         SexClothesStage = 2
     end
 
-    SexSceneBlowjobCount += 1
+    SexSceneNextBlowjobCount = SexSceneBlowjobCount + 1
 
-    if SexSceneBlowjobCount > 5:
-        SexSceneBlowjobCount = 2
+    if SexSceneNextBlowjobCount > 5:
+        SexSceneNextBlowjobCount = 2
     end
+
+    if $SexGirl = 'amanda':
+        gs 'SexSceneCalcAmandaBlowjobCap'
+
+        if SexSceneNextBlowjobCount > AmandaBlowjobCap:
+            if SexSceneNextBlowjobCount = 3:
+                $SexLastText = 'Аманда отстраняется и качает головой: «Ниже… Лизетта ещё не доучила. И вообще — сначала помойся, если там было что-то…»'
+            else
+                $SexLastText = 'Аманда упрямо сжимает губы: «Нет. Пока рано.»'
+            end
+
+            killvar 'SexSceneNextBlowjobCount'
+            killvar 'AmandaBlowjobCap'
+            gt 'SexSceneMain'
+        end
+    end
+
+    SexSceneBlowjobCount = SexSceneNextBlowjobCount
+    killvar 'SexSceneNextBlowjobCount'
+    killvar 'AmandaBlowjobCap'
 
     gs 'SexSceneTextAction', 'blowjob'
 
@@ -1103,7 +1141,12 @@
 
         if SexAtmStage >= 2:
             SexSceneCalmAtmDone = 1
-            SexSceneRimjobUnlocked = 1
+
+            if $SexGirl = 'amanda':
+                AmandaOralAtmCalmDone = 1
+            else
+                SexSceneRimjobUnlocked = 1
+            end
         end
     end
 
@@ -1226,9 +1269,14 @@
 ! ================================================
 
 #SexSceneActionRimjob
+    if $SexGirl = 'amanda' and AmandaOralStage < 6:
+        $SexLastText = 'Аманда краснеет и отводит взгляд: «Лизетта болтала… но я ещё не готова. Потом, ладно?»'
+        gt 'SexSceneMain'
+    end
+
     if SexSceneRimjobUnlocked = 0:
         if $SexGirl = 'amanda':
-            $SexLastText = 'Аманда качает головой: «Сначала… из попы в рот. Без этого — нет.»'
+            $SexLastText = 'Аманда качает головой: «Сначала выслушай Лизетту и… ну, сам знаешь. Без этого — нет.»'
         else
             $SexLastText = $RealName[$SexGirl] + ' пока не готова на такое.'
         end

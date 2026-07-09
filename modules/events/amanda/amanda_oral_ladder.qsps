@@ -1,0 +1,118 @@
+! ================================================
+! FILE: modules/events/amanda/amanda_oral_ladder.qsps
+! MODULE: events/amanda
+! Лестница продвинутого орального разврата Аманды (через Лизетту)
+! ================================================
+
+#AmandaOralEnsureVars
+    if AmandaOralStage < 0:
+        AmandaOralStage = 0
+    end
+
+    if AmandaOralStage > 6:
+        AmandaOralStage = 6
+    end
+---
+
+#AmandaOralBumpTo
+    gs 'AmandaOralEnsureVars'
+
+    AmandaOralBumpTarget = $ARGS[0]
+
+    if AmandaOralBumpTarget < 0:
+        AmandaOralBumpTarget = 0
+    end
+
+    if AmandaOralBumpTarget > 6:
+        AmandaOralBumpTarget = 6
+    end
+
+    if AmandaOralStage < AmandaOralBumpTarget:
+        AmandaOralStage = AmandaOralBumpTarget
+    end
+
+    killvar 'AmandaOralBumpTarget'
+---
+
+#AmandaLizaTalkOralSlutTier
+    gs 'EnsureGirlData', 'amanda'
+
+    AmandaLizaTalkOralSlutTier = 1
+
+    if sluttiness['amanda'] >= 38:
+        AmandaLizaTalkOralSlutTier = 3
+    elseif sluttiness['amanda'] >= 22:
+        AmandaLizaTalkOralSlutTier = 2
+    end
+---
+
+#AmandaOralTryAdvanceFromLizette
+    gs 'AmandaOralEnsureVars'
+
+    AmandaOralLizetteSlot = $ARGS[0]
+
+    if AmandaLizaInfluence < 2:
+        killvar 'AmandaOralLizetteSlot'
+        exit
+    end
+
+    if AmandaOralLizetteSlot = 0:
+        gs 'AmandaOralBumpTo', 1
+    elseif AmandaOralLizetteSlot = 2:
+        if AmandaOralStage >= 2 and AmandaLizaInfluence >= 3:
+            gs 'AmandaOralBumpTo', 3
+        end
+    elseif AmandaOralLizetteSlot = 3:
+        if AmandaOralStage >= 3 and AmandaLizaInfluence >= 5 and AmandaLizetteAnalTalkDone = 1:
+            gs 'AmandaOralBumpTo', 5
+        end
+    end
+
+    killvar 'AmandaOralLizetteSlot'
+---
+
+#AmandaOralOnOverhearPhrase
+    gs 'AmandaOralEnsureVars'
+
+    $AmandaOralOverhearId = LCASE($ARGS[0])
+
+    if $AmandaOralOverhearId = 'lizette_oral_practice':
+        if AmandaOralStage >= 1:
+            gs 'AmandaOralBumpTo', 2
+        end
+
+    elseif $AmandaOralOverhearId = 'lizette_balls_hint':
+        if AmandaOralStage >= 2 and AmandaLizaInfluence >= 3:
+            gs 'AmandaOralBumpTo', 3
+        end
+
+    elseif $AmandaOralOverhearId = 'lizette_atm_clean':
+        if AmandaOralStage >= 3 and AmandaLizaInfluence >= 5 and AmandaLizetteAnalTalkDone = 1:
+            gs 'AmandaOralBumpTo', 5
+        end
+
+    elseif $AmandaOralOverhearId = 'lizette_rim_fair':
+        if AmandaOralStage >= 5:
+            if AmandaOralAtmCalmDone = 1 or analfromyou['amanda'] >= 2:
+                gs 'AmandaOralBumpTo', 6
+            end
+        end
+    end
+
+    killvar '$AmandaOralOverhearId'
+---
+
+#SexSceneCalcAmandaBlowjobCap
+    AmandaBlowjobCap = 2
+
+    if $SexGirl <> 'amanda':
+        AmandaBlowjobCap = 5
+        exit
+    end
+
+    gs 'AmandaOralEnsureVars'
+
+    if AmandaOralStage >= 3:
+        AmandaBlowjobCap = 3
+    end
+---
