@@ -6,7 +6,7 @@
 ! СТРУКТУРА:
 !   #SexSceneText              — роутер по $SexGirl и действию
 !   #SexSceneTextAmanda*       — ПОЛНЫЙ набор (приоритет, шлифуем сейчас)
-!   #SexSceneTextMelissa/Sandra — семья, базовый набор
+!   sex_scene_text_sister.qsps — Мелисса + Сандра (общий модуль)
 !   #SexSceneTextBecky/Inga/Clarissa — заглушки, дополняем при тестах
 !   #SexSceneTextDefault*      — fallback для остальных NPC
 !   #SexSceneTextFinish*       — финал, ATM, оргазмы, прощание
@@ -32,10 +32,8 @@
     if $SexTextAction = 'pose_change':
         if $SexGirl = 'amanda':
             gs 'SexSceneTextAmandaPoseChange'
-        elseif $SexGirl = 'melissa':
-            gs 'SexSceneTextMelissaPoseChange'
-        elseif $SexGirl = 'sandra':
-            gs 'SexSceneTextSandraPoseChange'
+        elseif $SexGirl = 'melissa' or $SexGirl = 'sandra':
+            gs 'SexSceneTextSisterPoseChange'
         else
             gs 'SexSceneTextDefaultPoseChange'
         end
@@ -46,10 +44,8 @@
 
     if $SexGirl = 'amanda':
         gs 'SexSceneTextAmanda', $SexTextAction
-    elseif $SexGirl = 'melissa':
-        gs 'SexSceneTextMelissa', $SexTextAction
-    elseif $SexGirl = 'sandra':
-        gs 'SexSceneTextSandra', $SexTextAction
+    elseif $SexGirl = 'melissa' or $SexGirl = 'sandra':
+        gs 'SexSceneTextSister', $SexTextAction
     elseif $SexGirl = 'becky':
         gs 'SexSceneTextBecky', $SexTextAction
     elseif $SexGirl = 'inga':
@@ -146,152 +142,6 @@
 
     else
         $SexLastText = 'Аманда смотрит на тебя — губы припухли, ночнушка сбита, между ног блестит. «Ну? Трахать будешь или опять только пальцами?» — шепчет с дерзкой улыбкой.'
-    end
-
-    killvar '$SexTextAction'
----
-
-! ================================================
-! FILE: modules/actions/sex/sex_scene_text.qsps
-! Тексты Мелиссы
-! ================================================
-
-#SexSceneTextMelissa
-    $SexTextAction = LCASE($ARGS[0])
-
-    if $SexTextAction = 'intro':
-        $SexLastText = 'Мелисса стоит рядом чуть напряжённо. Она явно волнуется, но не уходит, внимательно следя за каждым вашим движением.'
-    elseif $SexTextAction = 'kiss':
-        if SexSceneKissCount = 1:
-            $SexLastText = 'Вы осторожно целуете Мелиссу. Она отвечает не сразу, но затем её плечи расслабляются, и поцелуй становится теплее.'
-        elseif SexSceneKissCount = 2:
-            $SexLastText = 'Поцелуй затягивается — Мелисса касается вашей щеки, дышит чаще и шепчет: «Только… тише.»'
-        elseif SexSceneKissCount = 3:
-            $SexLastText = 'Вы целуете Мелиссу глубже. Она отвечает смелее, цепляется за вашу рубаху и краснеет до кончиков ушей.'
-        else
-            $SexLastText = 'Мелисса снова тянется к вашим губам — уже без прежней робости, с тихим стоном в поцелуе.'
-        end
-    elseif $SexTextAction = 'grope' or $SexTextAction = 'caress' or $SexTextAction = 'breast_caress':
-        if SexSceneGropeCount = 1:
-            $SexLastText = 'Вы гладите грудь Мелиссы, теребите соски и спускаетесь ниже — пальцы скользят по мокреющей киске. Она краснеет, но не отталкивает вас.'
-        elseif SexSceneGropeCount = 2:
-            $SexLastText = 'Ваши ладони скользят по талии Мелиссы, поднимаются к груди — она вздрагивает и прикусывает губу, чтобы не застонать.'
-        elseif SexSceneGropeCount = 3:
-            $SexLastText = 'Пальцы находят влажную щель — Мелисса раздвигает ноги чуть шире, смущённо отводя взгляд.'
-        else
-            $SexLastText = 'Вы снова ласкаете Мелиссу: грудь, бёдра, киска — она дрожит и тихо выдыхает вам в шею.'
-        end
-    elseif $SexTextAction = 'cuni':
-        if SexSceneCuniCount = 1:
-            $SexLastText = 'Вы раздвинули ножки Мелиссы и лижете её киску — она пытается сохранить тишину, но дыхание быстро сбивается.'
-        elseif SexSceneCuniCount = 2:
-            $SexLastText = 'Язык кружит клитор Мелиссы — она вцепилась в простыню, стонет в подушку, бёдра дёргаются.'
-        else
-            $SexLastText = 'Вы снова лижете её снизу — Мелисса выгибается, шепчет «тише» и не отпускает вашу голову.'
-        end
-    elseif $SexTextAction = 'blowjob':
-        if SexSceneBlowjobCount = 1:
-            $SexLastText = 'Мелисса долго не решается, но опускается на колени, расстегивает вам штаны и осторожно берёт член в рот. Смущение заметно, но в движениях — осторожная нежность.'
-        elseif SexSceneBlowjobCount = 2:
-            $SexLastText = 'Мелисса сосёт ритмично, облизывает головку — краснеет, но не останавливается, стараясь не шуметь.'
-        elseif SexSceneBlowjobCount = 3:
-            $SexLastText = 'Она заглатывает чуть глубже, давится, отводит взгляд — и снова берёт вас в рот упорнее.'
-        elseif SexSceneBlowjobCount = 4:
-            $SexLastText = 'Минет становится увереннее: Мелисса ускоряется, рука помогает у основания, дыхание сбитое.'
-        else
-            $SexLastText = 'Мелисса снова сосёт вас — уже привычнее, с тихим постаныванием и влажным чавканьем.'
-        end
-    elseif $SexTextAction = 'rim':
-        $SexLastText = 'В полумраке она позволяет большего, чем когда-либо: от одного прикосновения языка Мелисса теряет «корону» быстрее, чем от любых ласк спереди.'
-    elseif $SexTextAction = 'anal':
-        gs 'SexSceneTextMelissaAnal'
-    elseif $SexTextAction = 'vaginal':
-        gs 'SexSceneTextMelissaVaginal'
-    elseif $SexTextAction = 'girl_finish':
-        $SexLastText = 'Мелисса больше не может сдерживаться. Она дрожит в ваших руках, а потом долго приходит в себя, не сразу решаясь посмотреть вам в глаза.'
-    elseif $SexTextAction = 'player_finish_good':
-        $SexLastText = 'Стефан завершает, и Мелисса остаётся рядом, тихая, смущённая, но явно довольная тем, что вы не забыли о ней.'
-    elseif $SexTextAction = 'player_finish_bad':
-        $SexLastText = 'Стефан завершает раньше, чем Мелисса успевает получить удовольствие. Она ничего не говорит, но её молчание получается красноречивее слов.'
-    elseif $SexTextAction = 'player_out':
-        $SexLastText = 'Стефан слишком устал, чтобы продолжать. Мелисса замечает это и мягко касается вашей руки, словно говоря, что на сегодня достаточно.'
-    elseif $SexTextAction = 'rest':
-        $SexLastText = 'Вы даёте себе время отдышаться. Мелисса остаётся рядом и смущённо улыбается, не решаясь первой нарушить тишину.'
-    else:
-        $SexLastText = 'Мелисса смотрит на вас с тихим волнением, ожидая вашего следующего шага.'
-    end
-
-    killvar '$SexTextAction'
----
-
-! ================================================
-! FILE: modules/actions/sex/sex_scene_text.qsps
-! Тексты Сандры
-! ================================================
-
-#SexSceneTextSandra
-    $SexTextAction = LCASE($ARGS[0])
-
-    if $SexTextAction = 'intro':
-        $SexLastText = 'Сандра смотрит на вас спокойно, но внимательно. В её взгляде нет девичьей растерянности — скорее осторожная оценка того, насколько далеко вы готовы зайти.'
-    elseif $SexTextAction = 'kiss':
-        if SexSceneKissCount = 1:
-            $SexLastText = 'Вы целуете Сандру. Она отвечает сдержанно, без лишней суеты, будто заранее знала, что всё к этому и идёт.'
-        elseif SexSceneKissCount = 2:
-            $SexLastText = 'Поцелуй затягивается — Сандра касается вашей щеки, дышит глубже, но лицо всё ещё держит спокойным.'
-        elseif SexSceneKissCount = 3:
-            $SexLastText = 'Вы целуете Сандру настойчивее. Она отвечает увереннее, цепляется за ваши плечи — выдержка трескается.'
-        else
-            $SexLastText = 'Сандра снова тянется к вашим губам — уже без прежней дистанции, с тихим выдохом в поцелуе.'
-        end
-    elseif $SexTextAction = 'grope' or $SexTextAction = 'caress' or $SexTextAction = 'breast_caress':
-        if SexSceneGropeCount = 1:
-            $SexLastText = 'Вы ласкаете грудь Сандры, спускаетесь ниже и гладите её киску — она дышит глубже, но всё ещё держит лицо спокойным.'
-        elseif SexSceneGropeCount = 2:
-            $SexLastText = 'Ваши ладони скользят по талии Сандры, поднимаются к груди — она вздрагивает и сжимает губы, чтобы не выдать возбуждение.'
-        elseif SexSceneGropeCount = 3:
-            $SexLastText = 'Пальцы находят влажную щель — Сандра раздвигает бёдра чуть шире, взгляд становится тяжелее.'
-        else
-            $SexLastText = 'Вы снова ласкаете Сандру: грудь, бёдра, киска — она дышит неровно, но всё ещё пытается сохранить видимое спокойствие.'
-        end
-    elseif $SexTextAction = 'cuni':
-        if SexSceneCuniCount = 1:
-            $SexLastText = 'Вы раздвинули ножки Сандры и лижете её киску — она пытается сохранить спокойствие, но выдержка начинает давать трещину.'
-        elseif SexSceneCuniCount = 2:
-            $SexLastText = 'Язык кружит клитор Сандры — она вцепилась в простыню, стонет в подушку, бёдра дёргаются.'
-        else
-            $SexLastText = 'Вы снова лижете её снизу — Сандра выгибается, выдыхает сквозь зубы и не отпускает вашу голову.'
-        end
-    elseif $SexTextAction = 'blowjob':
-        if SexSceneBlowjobCount = 1:
-            $SexLastText = 'Сандра опускается на колени, расстегивает вам штаны и берёт член в рот без лишних слов. В движениях — странное, почти пугающее спокойствие.'
-        elseif SexSceneBlowjobCount = 2:
-            $SexLastText = 'Сандра сосёт ритмично, облизывает головку — дышит носом, не отрывая взгляда от ваших глаз.'
-        elseif SexSceneBlowjobCount = 3:
-            $SexLastText = 'Она заглатывает чуть глубже, не спеша — рука помогает у основания, лицо чуть краснеет.'
-        elseif SexSceneBlowjobCount = 4:
-            $SexLastText = 'Минет становится увереннее: Сандра ускоряется, сжимает губы плотнее, дыхание сбитое.'
-        else
-            $SexLastText = 'Сандра снова берёт вас в рот — уже привычнее, с тихим постаныванием и влажным чавканьем.'
-        end
-    elseif $SexTextAction = 'rim':
-        $SexLastText = 'Сандра замирает на мгновение, но не отстраняется. Её дыхание становится глубже — будто она давно знала, что такое тоже возможно.'
-    elseif $SexTextAction = 'anal':
-        gs 'SexSceneTextSandraAnal'
-    elseif $SexTextAction = 'vaginal':
-        gs 'SexSceneTextSandraVaginal'
-    elseif $SexTextAction = 'girl_finish':
-        $SexLastText = 'Сандра наконец теряет привычное самообладание. Лишь спустя несколько мгновений она снова собирается и смотрит на вас с довольной, чуть усталой улыбкой.'
-    elseif $SexTextAction = 'player_finish_good':
-        $SexLastText = 'Стефан завершает, и Сандра остаётся рядом, довольная тем, что вы сумели доставить удовольствие не только себе.'
-    elseif $SexTextAction = 'player_finish_bad':
-        $SexLastText = 'Стефан завершает слишком рано. Сандра смотрит на него с лёгкой насмешкой, но без настоящей злости.'
-    elseif $SexTextAction = 'player_out':
-        $SexLastText = 'Стефан слишком вымотан, чтобы продолжать. Сандра замечает это сразу и спокойно даёт понять, что на сегодня хватит.'
-    elseif $SexTextAction = 'rest':
-        $SexLastText = 'Вы переводите дыхание. Сандра остаётся рядом, терпеливо ожидая, появятся ли у вас силы на продолжение.'
-    else:
-        $SexLastText = 'Сандра внимательно смотрит на вас, ожидая вашего следующего решения.'
     end
 
     killvar '$SexTextAction'
@@ -491,270 +341,6 @@
         end
     end
 ---
-#SexSceneTextMelissaPoseChange
-    if $SexPose = 'missionary':
-        if $SexActType = 'anal':
-            $SexLastText = 'Вы укладываете Мелиссу на спину, осторожно раздвигаете бёдра и медленно входите в зад. Она вжимает лицо в подушку и шепчет: «Только… тише…»'
-        else
-            $SexLastText = 'Мелисса ложится на спину, робко раздвигает ножки. Вы нависаете над ней, снова входите в мокрую киску лицом к лицу — она краснеет и прикрывает рот ладонью.'
-        end
-    elseif $SexPose = 'doggy':
-        if $SexActType = 'anal':
-            $SexLastText = 'Мелисса встаёт на четвереньки, опускает голову в подушку. Вы входите в её зад сзади — она вздрагивает и шепчет срывающимся голосом: «Я… не такая…»'
-        else
-            $SexLastText = 'Мелисса переворачивается на четвереньки, выгибает спину. Вы становитесь сзади и снова входите — она стонет в подушку и шепчет: «Тише…»'
-        end
-    elseif $SexPose = 'side':
-        if $SexActType = 'anal':
-            $SexLastText = 'Вы укладываете Мелиссу на бок, прижимаетесь сзади и осторожно входите в зад. Тихо, близко — она вцепляется в вашу руку.'
-        else
-            $SexLastText = 'На боку, в обнимку, вы снова скользите в её киску. Мелисса прижимается к вам спиной и выдыхает вам в шею.'
-        end
-    elseif $SexPose = 'cowgirl':
-        $SexLastText = 'Мелисса смущённо перебирается на вас сверху и медленно опускается на член. Она краснеет до кончиков ушей и шепчет: «Не смотри так…»'
-    elseif $SexPose = 'reverse_cowgirl':
-        $SexLastText = 'Мелисса разворачивается спиной, краснея, и осторожно насаживается на вас в зад. Она опускает голову и шепчет: «Только никому…»'
-    else
-        $SexLastText = 'Мелисса подстраивается под новое положение — дышит сбито, краснеет и ждёт вашего ритма.'
-    end
----
-
-#SexSceneTextMelissaVaginal
-    if $SexPose = 'doggy':
-        if SexVaginalFirstStroke = 1:
-            $SexLastText = 'Мелисса встаёт на четвереньки, опускает лицо в подушку. Вы входите сзади в её мокрую киску — она охнула и зашептала: «Тише…»'
-        elseif SexSceneVaginalCount = 2:
-            $SexLastText = 'Раком вы вгоняете в Мелиссу снова и снова. Она стонет в подушку, бёдра подмахивают, стараясь не шуметь.'
-        elseif SexSceneVaginalCount = 3:
-            $SexLastText = 'Сзади ритм ускоряется — Мелисса крепче вцепляется в простыню, киска жмёт ваш ствол на каждом толчке.'
-        elseif SexSceneVaginalCount = 4:
-            $SexLastText = 'На четвереньках она выгибает спину сильнее — стоны приглушены подушкой, но тело отвечает жарче.'
-        else
-            $SexLastText = 'Жёстче сзади — Мелисса дрожит, шепчет «тише» и подставляется глубже, хотя голос срывается.'
-        end
-    elseif $SexPose = 'side':
-        if SexVaginalFirstStroke = 1:
-            $SexLastText = 'Вы переворачиваете Мелиссу на бок и входите сзади в киску. Она прижимается к вам и тихо выдыхает.'
-        elseif SexSceneVaginalCount = 2:
-            $SexLastText = 'Боком вы двигаетесь медленно и глубоко — Мелисса прикрывает рот ладонью, бёдра еле подмахивают.'
-        elseif SexSceneVaginalCount = 3:
-            $SexLastText = 'В ложечке ритм настойчивее — она вцепилась в вашу руку, дыхание сбитое, стоны почти беззвучны.'
-        elseif SexSceneVaginalCount = 4:
-            $SexLastText = 'Сбоку вы вгоняете до конца — Мелисса дрожит у вас на груди, лицо в подушке.'
-        else
-            $SexLastText = 'Тихо, боком — Мелисса шепчет ваше имя и не отпускает вашу руку.'
-        end
-    elseif $SexPose = 'cowgirl':
-        if SexVaginalFirstStroke = 1:
-            $SexLastText = 'Мелисса перебирается на вас сверху и осторожно насаживается. Она краснеет, опускает взгляд и шепчет: «Только… не смотри…»'
-        elseif SexSceneVaginalCount = 2:
-            $SexLastText = 'Сверху Мелисса скачет неровно, но ритмично — грудь вздымается, бёдра работают, стоны срываются в подушку.'
-        elseif SexSceneVaginalCount = 3:
-            $SexLastText = 'Наездница ускоряется — она опирается на вашу грудь, киска скользит по стволу, смущение смешивается с жаром.'
-        elseif SexSceneVaginalCount = 4:
-            $SexLastText = 'Она садится глубже, крутит бёдрами — Мелисса уже не может скрыть, как сильно это на неё действует.'
-        else
-            $SexLastText = 'Мелисса сверху берёт смелее — движения увереннее, дыхание рваное, взгляд влажный.'
-        end
-    else
-        if SexVaginalFirstStroke = 1:
-            $SexLastText = 'Мелисса ложится на спину, раздвигает ножки. Вы входите лицом к лицу в её мокрую киску — она охнула и вжала лицо в подушку.'
-        elseif SexSceneVaginalCount = 2:
-            $SexLastText = 'В миссионерской вы вгоняете снова и снова — Мелисса стонет в подушку, бёдра обхватывают вашу талию.'
-        elseif SexSceneVaginalCount = 3:
-            $SexLastText = 'Лицом к лицу ритм ускоряется — она крепче вцепляется в простыню, стараясь заглушить стоны.'
-        elseif SexSceneVaginalCount = 4:
-            $SexLastText = 'Глубокие толчки сверху — Мелисса выгибается, киска жмёт ваш ствол, дыхание сбитое.'
-        else
-            $SexLastText = 'Жёстче в миссионерской — Мелисса давит лицо в подушку, тело дрожит от каждого входа.'
-        end
-    end
----
-
-#SexSceneTextMelissaAnal
-    if $SexPose = 'reverse_cowgirl':
-        if SexAnalFirstStroke = 1:
-            $SexLastText = 'Мелисса разворачивается спиной и осторожно насаживается на вас в зад. Она опускает голову и шепчет: «Я не такая… повтори… тише…»'
-        elseif SexSceneAnalCount = 2:
-            $SexLastText = 'Спиной к вам она скачет в зад — стоны в подушку, ягодицы двигаются неровно, но настойчиво.'
-        elseif SexSceneAnalCount = 3:
-            $SexLastText = 'Обратная наездница жарче — Мелисса опускается глубже, зад жмёт ствол, лицо красное от стыда и возбуждения.'
-        elseif SexSceneAnalCount = 4:
-            $SexLastText = 'Она садится на вас до конца — Мелисса дрожит, шепчет «тише» и не останавливается.'
-        else
-            $SexLastText = 'Мелисса сверху, спиной к вам, двигается смелее — голос срывается, но она не выталкивает вас.'
-        end
-    elseif $SexPose = 'doggy':
-        if SexAnalFirstStroke = 1:
-            $SexLastText = 'Мелисса на четвереньках, лицо в подушке. Вы входите в её зад сзади — она взрывается шёпотом: «Я не такая… тише…»'
-        elseif SexSceneAnalCount = 2:
-            $SexLastText = 'Раком в зад — Мелисса стонет в подушку, подмахивает, зад принимает вас с каждым толчком.'
-        elseif SexSceneAnalCount = 3:
-            $SexLastText = 'Сзади ритм ускоряется — она вцепилась в простыню, тело дрожит, стыд уже не останавливает.'
-        elseif SexSceneAnalCount = 4:
-            $SexLastText = 'На четвереньках Мелисса выгибает спину — зад сжимает вас сильнее, дыхание рваное.'
-        else
-            $SexLastText = 'Жёстче сзади в зад — она шепчет ваше имя и прячет лицо в подушку.'
-        end
-    elseif $SexPose = 'side':
-        if SexAnalFirstStroke = 1:
-            $SexLastText = 'Боком вы осторожно входите в зад — Мелисса прикрывает рот, прижимается к вам спиной и тихо охает.'
-        elseif SexSceneAnalCount = 2:
-            $SexLastText = 'В ложечке движения глубокие и тихие — её зад принимает вас медленно, дыхание сбитое.'
-        elseif SexSceneAnalCount = 3:
-            $SexLastText = 'Сбоку ритм настойчивее — Мелисса вцепилась в вашу руку, стонет едва слышно.'
-        elseif SexSceneAnalCount = 4:
-            $SexLastText = 'Боком вы вгоняете в зад до конца — она дрожит у вас на груди.'
-        else
-            $SexLastText = 'Тихо, сбоку, в зад — Мелисса теряет «корону» быстрее, чем от любых ласк спереди.'
-        end
-    else
-        if SexAnalFirstStroke = 1:
-            $SexLastText = 'Мелисса на спине, ножки раздвинуты. Вы медленно входите в зад лицом к лицу — она вжимает лицо в подушку: «Только… тише…»'
-        elseif SexSceneAnalCount = 2:
-            $SexLastText = 'В миссионерской вы двигаетесь в зад — Мелисса стонет в подушку, ноги обхватывают вашу талию.'
-        elseif SexSceneAnalCount = 3:
-            $SexLastText = 'Лицом к лицу ритм ускоряется — она краснеет, киска мокрая, хотя вы в её зад.'
-        elseif SexSceneAnalCount = 4:
-            $SexLastText = 'Глубокие толчки в зад сверху — Мелисса выгибается, зад жмёт ствол.'
-        else
-            $SexLastText = 'Жёстче, лицом к лицу, в зад — она шепчет «повтори» и не отпускает вас.'
-        end
-    end
----
-
-#SexSceneTextSandraPoseChange
-    if $SexPose = 'missionary':
-        if $SexActType = 'anal':
-            $SexLastText = 'Вы укладываете Сандру на спину и медленно входите в зад. Она смотрит вам в глаза, дышит глубже — выдержка трескается с первого толчка.'
-        else
-            $SexLastText = 'Сандра ложится на спину, спокойно раздвигает бёдра. Вы снова входите в неё лицом к лицу — её взгляд тяжелеет, но она не отводит глаз.'
-        end
-    elseif $SexPose = 'doggy':
-        if $SexActType = 'anal':
-            $SexLastText = 'Сандра встаёт на четвереньки, выгибает спину. Вы входите в её зад сзади — она выдыхает сквозь зубы, пальцы вцепляются в простыню.'
-        else
-            $SexLastText = 'Сандра переворачивается на четвереньки. Вы становитесь сзади и снова входите — она держит лицо спокойным, но бёдра подмахивают.'
-        end
-    elseif $SexPose = 'side':
-        if $SexActType = 'anal':
-            $SexLastText = 'На боку вы прижимаетесь сзади и входите в зад. Сандра замирает на миг, потом тихо выдыхает в вашу руку.'
-        else
-            $SexLastText = 'Вы укладываете Сандру на бок и снова скользите в киску. Близко, размеренно — она прижимается к вам спиной.'
-        end
-    elseif $SexPose = 'cowgirl':
-        $SexLastText = 'Сандра перебирается на вас сверху и опускается на член без лишней суеты. Она смотрит вам в глаза и сама задаёт ритм.'
-    elseif $SexPose = 'reverse_cowgirl':
-        $SexLastText = 'Сандра разворачивается спиной и медленно насаживается на вас в зад. Спокойное лицо, но бёдра выдают, как туго она принимает вас.'
-    else
-        $SexLastText = 'Сандра меняет положение без лишних слов — взгляд внимательный, тело готово продолжать.'
-    end
----
-
-#SexSceneTextSandraVaginal
-    if $SexPose = 'doggy':
-        if SexVaginalFirstStroke = 1:
-            $SexLastText = 'Сандра встаёт на четвереньки, выгибает спину. Вы входите сзади в её влажную киску — она выдохнула и крепче сжала простыню.'
-        elseif SexSceneVaginalCount = 2:
-            $SexLastText = 'Раком вы вгоняете в Сандру снова и снова. Она стонет в подушку тише, чем хотелось бы её выдержке.'
-        elseif SexSceneVaginalCount = 3:
-            $SexLastText = 'Сзади ритм ускоряется — Сандра крепче вцепляется в простыню, попа подмахивает навстречу.'
-        elseif SexSceneVaginalCount = 4:
-            $SexLastText = 'На четвереньках выдержка трескается — она выгибает спину, киска жмёт ваш ствол.'
-        else
-            $SexLastText = 'Жёстче сзади — Сандра давит лицо в подушку, тело отвечает на каждый толчок.'
-        end
-    elseif $SexPose = 'side':
-        if SexVaginalFirstStroke = 1:
-            $SexLastText = 'Вы переворачиваете Сандру на бок и входите сзади. Она прижимается к вам, дышит глубже, но молчит.'
-        elseif SexSceneVaginalCount = 2:
-            $SexLastText = 'Боком вы двигаетесь размеренно и глубоко — Сандра сжимает вашу руку, стоны едва слышны.'
-        elseif SexSceneVaginalCount = 3:
-            $SexLastText = 'В ложечке ритм настойчивее — её тело дрожит у вас на груди, выдержка даёт трещину.'
-        elseif SexSceneVaginalCount = 4:
-            $SexLastText = 'Сбоку вы вгоняете до конца — Сандра выдыхает сквозь зубы, не отпуская вашу руку.'
-        else
-            $SexLastText = 'Тихо, боком — Сандра подмахивает навстречу, взгляд тяжелеет.'
-        end
-    elseif $SexPose = 'cowgirl':
-        if SexVaginalFirstStroke = 1:
-            $SexLastText = 'Сандра перебирается на вас сверху и опускается на член. Она смотрит вам в глаза и сама задаёт первый ритм.'
-        elseif SexSceneVaginalCount = 2:
-            $SexLastText = 'Сверху Сандра скачет размеренно — грудь вздымается, бёдра работают, лицо спокойное, но дыхание сбитое.'
-        elseif SexSceneVaginalCount = 3:
-            $SexLastText = 'Наездница ускоряется — она опирается на вашу грудь, киска скользит по стволу, взгляд стеклянный.'
-        elseif SexSceneVaginalCount = 4:
-            $SexLastText = 'Она садится глубже — Сандра крутит бёдрами, выдержка окончательно трескается.'
-        else
-            $SexLastText = 'Сандра сверху берёт жёстче — спокойное лицо не выдаёт, как сильно она сжимает вас внутри.'
-        end
-    else
-        if SexVaginalFirstStroke = 1:
-            $SexLastText = 'Сандра ложится на спину, раздвигает бёдра. Вы входите лицом к лицу в её влажную киску — она выдохнула и вжала лицо в подушку.'
-        elseif SexSceneVaginalCount = 2:
-            $SexLastText = 'В миссионерской вы вгоняете снова и снова — Сандра стонет в подушку, бёдра подмахивают.'
-        elseif SexSceneVaginalCount = 3:
-            $SexLastText = 'Лицом к лицу ритм ускоряется — она крепче вцепляется в простыню, стараясь не выдать себя громким стоном.'
-        elseif SexSceneVaginalCount = 4:
-            $SexLastText = 'Глубокие толчки сверху — Сандра выгибается, киска жмёт ствол, взгляд влажный.'
-        else
-            $SexLastText = 'Жёстче в миссионерской — выдержка рушится, тело отвечает на каждый вход.'
-        end
-    end
----
-
-#SexSceneTextSandraAnal
-    if $SexPose = 'reverse_cowgirl':
-        if SexAnalFirstStroke = 1:
-            $SexLastText = 'Сандра разворачивается спиной и медленно насаживается на вас в зад. Спокойное лицо, но бёдра выдают, как туго она принимает вас.'
-        elseif SexSceneAnalCount = 2:
-            $SexLastText = 'Спиной к вам она двигается в зад — размеренно, глубоко, без лишнего шума.'
-        elseif SexSceneAnalCount = 3:
-            $SexLastText = 'Обратная наездница настойчивее — зад жмёт ствол, Сандра дышит носом, не отрывая взгляда от простыни.'
-        elseif SexSceneAnalCount = 4:
-            $SexLastText = 'Она садится до конца — выдержка трескается, плечи дрожат, но лицо всё ещё держит.'
-        else
-            $SexLastText = 'Сандра сверху, спиной к вам, в зад — жёстче, глубже, спокойствие только на вид.'
-        end
-    elseif $SexPose = 'doggy':
-        if SexAnalFirstStroke = 1:
-            $SexLastText = 'Сандра на четвереньках. Вы входите в её зад сзади — она замирает, потом выдыхает сквозь зубы.'
-        elseif SexSceneAnalCount = 2:
-            $SexLastText = 'Раком в зад — Сандра стонет в подушку тише, чем хотелось бы её выдержке, и подмахивает.'
-        elseif SexSceneAnalCount = 3:
-            $SexLastText = 'Сзади ритм ускоряется — ладони на её бёдрах, зад принимает вас до упора.'
-        elseif SexSceneAnalCount = 4:
-            $SexLastText = 'На четвереньках выдержка рушится — она выгибает спину, зад сжимает вас сильнее.'
-        else
-            $SexLastText = 'Жёстче сзади в зад — Сандра давит лицо в подушку, тело отвечает на каждый толчок.'
-        end
-    elseif $SexPose = 'side':
-        if SexAnalFirstStroke = 1:
-            $SexLastText = 'Боком вы осторожно входите в зад — Сандра прижимается к вам, дышит глубже, молчит.'
-        elseif SexSceneAnalCount = 2:
-            $SexLastText = 'В ложечке движения глубокие и тихие — её зад принимает вас с каждым толчком.'
-        elseif SexSceneAnalCount = 3:
-            $SexLastText = 'Сбоку ритм настойчивее — Сандра сжимает вашу руку, стоны едва слышны.'
-        elseif SexSceneAnalCount = 4:
-            $SexLastText = 'Боком вы вгоняете в зад до конца — выдержка окончательно трескается.'
-        else
-            $SexLastText = 'Тихо, сбоку, в зад — Сандра теряет привычное самообладание на миг.'
-        end
-    else
-        if SexAnalFirstStroke = 1:
-            $SexLastText = 'Сандра на спине, бёдра раздвинуты. Вы входите в зад лицом к лицу — она смотрит вам в глаза, дыхание сбивается.'
-        elseif SexSceneAnalCount = 2:
-            $SexLastText = 'В миссионерской вы двигаетесь в зад — Сандра стонет в подушку, ноги обхватывают талию.'
-        elseif SexSceneAnalCount = 3:
-            $SexLastText = 'Лицом к лицу ритм ускоряется — зад жмёт ствол, взгляд тяжелеет.'
-        elseif SexSceneAnalCount = 4:
-            $SexLastText = 'Глубокие толчки в зад сверху — Сандра выгибается, пальцы в простыне.'
-        else
-            $SexLastText = 'Жёстче, лицом к лицу, в зад — спокойствие только маска.'
-        end
-    end
----
-
 #SexSceneTextDefaultPoseChange
     if $SexPose = 'doggy':
         $SexLastText = 'Вы меняете положение — ' + $RealName[$SexGirl] + ' встаёт на четвереньки, и вы снова входите сзади.'
@@ -1271,10 +857,8 @@
 
     if $SexGirl = 'amanda':
         gs 'SexSceneTextGirlOrgasmAmanda', $SexOrgasmAct
-    elseif $SexGirl = 'melissa':
-        gs 'SexSceneTextGirlOrgasmMelissa', $SexOrgasmAct
-    elseif $SexGirl = 'sandra':
-        gs 'SexSceneTextGirlOrgasmSandra', $SexOrgasmAct
+    elseif $SexGirl = 'melissa' or $SexGirl = 'sandra':
+        gs 'SexSceneTextGirlOrgasmSister', $SexOrgasmAct
     elseif $SexGirl = 'becky':
         if $SexOrgasmAct = 'anal':
             $SexLastText += '<br><br>Бекки кончает сзади — тело трясётся, она кусает губу, чтобы дети внизу не услышали.'
@@ -1313,54 +897,6 @@
         $SexLastText += '<br><br>Аманда сверху замирает, потом дрожит на вашем члене — кончает, насаживаясь до конца, и шипит: «Тише…»'
     else
         $SexLastText += '<br><br>Лицом к лицу Аманда кончает на вашем члене — тело выгибается, ножки сжимают вашу талию, киска доит ствол.'
-    end
-
-    killvar '$SexOrgasmAct'
----
-
-#SexSceneTextGirlOrgasmMelissa
-    $SexOrgasmAct = LCASE($ARGS[0])
-
-    if $SexOrgasmAct = 'anal':
-        if $SexPose = 'reverse_cowgirl':
-            $SexLastText += '<br><br>Мелисса спиной к вам кончает в зад — тело трясётся, она прячет лицо в подушку: «Не смотри…»'
-        elseif $SexPose = 'doggy':
-            $SexLastText += '<br><br>На четвереньках Мелисса срывается — кончает сзади, голос уходит в подушку.'
-        else
-            $SexLastText += '<br><br>Мелисса кончает от анала — дрожит, краснеет и долго не поднимает глаз.'
-        end
-    elseif $SexPose = 'doggy':
-        $SexLastText += '<br><br>Раком Мелисса кончает — стон в подушку, киска жмёт ваш ствол, плечи дрожат.'
-    elseif $SexPose = 'side':
-        $SexLastText += '<br><br>Боком Мелисса кончает у вас на груди — тихо, смущённо, не отпуская вашу руку.'
-    elseif $SexPose = 'cowgirl':
-        $SexLastText += '<br><br>Мелисса сверху замирает и кончает на вас — краснеет, опускает взгляд, но не слезает.'
-    else
-        $SexLastText += '<br><br>Лицом к лицу Мелисса кончает — вжимает лицо в подушку, киска пульсирует вокруг члена.'
-    end
-
-    killvar '$SexOrgasmAct'
----
-
-#SexSceneTextGirlOrgasmSandra
-    $SexOrgasmAct = LCASE($ARGS[0])
-
-    if $SexOrgasmAct = 'anal':
-        if $SexPose = 'reverse_cowgirl':
-            $SexLastText += '<br><br>Сандра спиной к вам кончает в зад — выдержка ломается, плечи дрожат, лицо в подушке.'
-        elseif $SexPose = 'doggy':
-            $SexLastText += '<br><br>На четвереньках Сандра кончает сзади — зад сжимает ствол, стон едва слышен.'
-        else
-            $SexLastText += '<br><br>Сандра кончает от анала — на миг теряет самообладание и медленно отдышивается.'
-        end
-    elseif $SexPose = 'doggy':
-        $SexLastText += '<br><br>Раком Сандра кончает — выгибает спину, киска жмёт ствол, выдержка окончательно трескается.'
-    elseif $SexPose = 'side':
-        $SexLastText += '<br><br>Боком Сандра кончает у вас на груди — тихо, глубоко, сжимает вашу руку.'
-    elseif $SexPose = 'cowgirl':
-        $SexLastText += '<br><br>Сандра сверху замирает и кончает — садится до конца, дыхание сбитое, взгляд влажный.'
-    else
-        $SexLastText += '<br><br>Лицом к лицу Сандра кончает — тело выгибается, киска пульсирует, потом она снова собирается.'
     end
 
     killvar '$SexOrgasmAct'
