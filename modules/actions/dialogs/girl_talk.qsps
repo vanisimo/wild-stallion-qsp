@@ -1065,6 +1065,27 @@
         gt 'GirlTalkHallEventReaction', $TalkGirl, $TalkReturnLoc
     end
 
+    if $TalkTopic = 'family' or $TalkTopic = 'daughters':
+        gs 'AmandaFirstSexFamilyTalkCanStart', $TalkGirl, $TalkTopic
+
+        if AmandaFirstSexFamilyTalkCanStart = 1:
+            gs 'GirlTalkTopicIsUseful', $TalkTopic
+
+            if TalkTopicUseful = 1:
+                gs 'UsefulTalkCheck', $TalkGirl, $TalkTopic
+
+                if UsefulTalkResult = 0:
+                    gt 'GirlTalkBlockedUsefulTopic', $TalkGirl, $TalkReturnLoc
+                end
+            end
+
+            gs 'UsefulTalkRegister', $TalkGirl, $TalkTopic
+            gt 'AmandaFirstSexFamilyTalkStart', $TalkGirl, $TalkReturnLoc, $TalkTopic
+        end
+
+        killvar 'AmandaFirstSexFamilyTalkCanStart'
+    end
+
     cls
 
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
