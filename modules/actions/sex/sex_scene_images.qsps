@@ -1,0 +1,170 @@
+! ================================================
+! FILE: modules/actions/sex/sex_scene_images.qsps
+! MODULE: actions/sex
+! Картинки универсальной SexScene — свой кадр на каждое действие
+! ================================================
+
+#SexSceneShowActionImage
+    if LOC('ShowImage') = 0:
+        exit
+    end
+
+    gs 'SexSceneResolveActionImage'
+
+    if $SexImageCategory = '' or $SexImagePose = '':
+        killvar '$SexImageCategory'
+        killvar '$SexImagePose'
+        exit
+    end
+
+    gs 'ShowSex', $SexGirl, $SexImageCategory, $SexImagePose, 'small'
+
+    killvar '$SexImageCategory'
+    killvar '$SexImagePose'
+---
+
+#SexSceneResolveActionImage
+    $SexImageCategory = ''
+    $SexImagePose = ''
+
+    if $SexGirl = 'amanda':
+        gs 'SexSceneResolveAmandaImage'
+    else
+        gs 'SexSceneResolveGenericSexImage'
+    end
+---
+
+#SexSceneResolveAmandaImage
+    $SexImageCategory = 'room'
+    $SexImageOutfit = 'nightgown'
+
+    if SexClothesStage >= 2 or SexScenePhase >= 2:
+        $SexImageOutfit = 'naked'
+    elseif SexClothesStage = 1 and SexScenePhase = 1:
+        $SexImageOutfit = 'naked'
+    end
+
+    if $SexActType = 'intro':
+        if $SexImageOutfit = 'naked':
+            $SexImagePose = 'naked_sleep'
+            $SexImageCategory = 'room'
+        else
+            $SexImagePose = 'nightgown_idle'
+            $SexImageCategory = 'room'
+        end
+    elseif $SexActType = 'kiss':
+        if $SexImageOutfit = 'naked':
+            $SexImagePose = 'naked_kiss'
+        else
+            $SexImagePose = 'nightgown_kiss'
+        end
+    elseif $SexActType = 'grope':
+        if $SexImageOutfit = 'naked':
+            $SexImagePose = 'naked_petting'
+        else
+            $SexImagePose = 'nightgown_petting'
+        end
+    elseif $SexActType = 'undress_her':
+        $SexImageCategory = 'foreplay'
+        $SexImagePose = 'undress'
+    elseif $SexActType = 'undress_gg':
+        $SexImageCategory = 'room'
+        $SexImagePose = 'naked_idle'
+    elseif $SexActType = 'look':
+        $SexImageCategory = 'room'
+        $SexImagePose = 'naked_idle'
+    elseif $SexActType = 'cuni':
+        $SexImageCategory = 'room'
+        $SexImagePose = 'naked_cuni'
+    elseif $SexActType = 'blowjob':
+        $SexImageCategory = 'room'
+        $SexImagePose = 'naked_blowjob'
+    elseif $SexActType = 'vaginal':
+        $SexImageCategory = 'vaginal'
+
+        if $SexPose = 'doggy':
+            $SexImagePose = 'doggy_learn'
+        elseif $SexPose = 'side':
+            $SexImagePose = 'side_learn'
+        elseif SexSceneVaginalCount <= 1:
+            $SexImagePose = 'missionary_enter'
+        elseif SexSceneVaginalCount = 2:
+            $SexImagePose = 'missionary_slow'
+        else
+            $SexImagePose = 'missionary_repeat'
+        end
+    elseif $SexActType = 'anal':
+        $SexImageCategory = 'anal'
+
+        if SexSceneAnalCount <= 1:
+            $SexImagePose = 'enter'
+        else
+            $SexImagePose = 'slow'
+        end
+    elseif $SexActType = 'rim' or $SexActType = 'rimjob':
+        $SexImageCategory = 'room'
+        $SexImagePose = 'naked_cuni'
+    elseif $SexActType = 'rest':
+        $SexImageCategory = 'room'
+        $SexImagePose = 'naked_idle'
+    end
+
+    killvar '$SexImageOutfit'
+---
+
+#SexSceneResolveGenericSexImage
+    $SexImageCategory = 'foreplay'
+    $SexImageClothedSuffix = '_clothed'
+
+    if SexClothesStage >= 2 or SexScenePhase >= 2:
+        $SexImageClothedSuffix = '_nude'
+    elseif SexClothesStage = 1:
+        $SexImageClothedSuffix = '_nude'
+    end
+
+    if $SexActType = 'intro':
+        if $SexImageClothedSuffix = '_nude':
+            $SexImagePose = 'intro_nude'
+        else
+            $SexImagePose = 'intro_clothed'
+        end
+    elseif $SexActType = 'kiss':
+        $SexImagePose = 'kiss_' + STR(SexSceneKissCount) + $SexImageClothedSuffix
+    elseif $SexActType = 'grope':
+        $SexImagePose = 'grope_' + STR(SexSceneGropeCount) + $SexImageClothedSuffix
+    elseif $SexActType = 'undress_her':
+        $SexImagePose = 'undress_her'
+    elseif $SexActType = 'undress_gg':
+        $SexImagePose = 'undress_gg'
+    elseif $SexActType = 'cuni':
+        $SexImageCategory = 'oral'
+        $SexImagePose = 'cuni'
+    elseif $SexActType = 'blowjob':
+        $SexImageCategory = 'oral'
+        $SexImagePose = 'blowjob'
+    elseif $SexActType = 'vaginal':
+        $SexImageCategory = 'vaginal'
+        $SexImagePose = $SexPose
+
+        if $SexImagePose = '':
+            $SexImagePose = 'missionary'
+        end
+    elseif $SexActType = 'anal':
+        $SexImageCategory = 'anal'
+        $SexImagePose = $SexPose
+
+        if $SexImagePose = '':
+            $SexImagePose = 'doggy'
+        end
+    elseif $SexActType = 'look':
+        if $SexImageClothedSuffix = '_nude':
+            $SexImagePose = 'intro_nude'
+        else
+            $SexImagePose = 'intro_clothed'
+        end
+    elseif $SexActType = 'rest':
+        $SexImagePose = 'intro_nude'
+    end
+
+    killvar '$SexImageClothedSuffix'
+---

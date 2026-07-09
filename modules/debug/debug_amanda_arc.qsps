@@ -129,6 +129,7 @@
     gs 'GetLocationTimeSuffix'
 
     pl 'Комната: uniform=' + STR(GirlUniformLevel['amanda']) + ' (' + $GirlRoomOutfit + '), картинка idle: amanda_room_' + $LocImageTimeSuffix + '_' + $GirlRoomOutfit + '_idle.webp'
+    pl '<small>SexScene всегда стартует в ночнушке (nightgown_idle) — голая только после «Снять ночнушку» в сцене.</small>'
 
     killvar '$GirlRoomOutfit'
     killvar '$LocImageTimeSuffix'
@@ -183,18 +184,28 @@
     gs 'DebugAmandaPrintBool', 'Talk Лизетта (анал)', AmandaLizetteAnalTalkDone
     gs 'DebugAmandaPrintBool', 'Домашний анал с ГГ', AmandaHomeAnalDone
     pl 'Lizette talk count / влияние: ' + STR(AmandaLizetteAnalTalkCount) + ' / ' + STR(AmandaLizaInfluence)
-    pl 'Oral stage / ATM calm: ' + STR(AmandaOralStage) + ' / ' + STR(AmandaOralAtmCalmDone)
+    gs 'AmandaOralEnsureVars'
+    pl 'Oral stage: ' + STR(AmandaOralStage) + ' / 6 | calm ' + STR(AmandaOralAtmCalmDone) + ' | <a href="exec:gs ''AmandaOralEnsureVars'' & AmandaOralStage += 1 & gs ''AmandaOralEnsureVars'' & gs ''DebugAmandaArcPanel''">+1 oral</a> | <a href="exec:AmandaOralStage = 5 & gs ''AmandaOralEnsureVars'' & gs ''DebugAmandaArcPanel''">oral=5</a>'
 
     $SexGirl = 'amanda'
     gs 'SexSceneCalcAmandaBlowjobCap'
-    pl 'SexScene минет cap: ' + STR(AmandaBlowjobCap) + ' (1–2 база, 3 яйца при oral≥3, 4–5 позже)'
+    pl 'SexScene минет cap: ' + STR(AmandaBlowjobCap) + ' (1-2 база, 3 яйца при oral>=3)'
     killvar 'AmandaBlowjobCap'
 
     gs 'SexSceneCalcAtmStage'
-    pl 'ATM stage (попка→рот): ' + STR(SexAtmStage) + ' | analacts: ' + STR(analacts['amanda']) + ' | analfromyou: ' + STR(analfromyou['amanda'])
-    killvar '$SexGirl'
+    pl 'ATM stage (попка-рот): ' + STR(SexAtmStage) + ' | analacts: ' + STR(analacts['amanda']) + ' | analfromyou: ' + STR(analfromyou['amanda'])
 
-    pl '<a href="exec:gs ''AmandaOralBumpTo'', AmandaOralStage + 1 & gs ''DebugAmandaArcPanel''">Oral stage +1</a>'
+    if AmandaOralStage < 5:
+        pl 'ATM гейт: oral stage < 5 (сейчас ' + STR(AmandaOralStage) + ', нужно >=5)'
+    elseif AmandaLizetteAnalTalkDone = 0:
+        pl 'ATM гейт: нет talk Лизетта (анал)'
+    elseif analacts['amanda'] = 0 and analfromyou['amanda'] = 0:
+        pl 'ATM гейт: в статистике еще не было анала'
+    end
+
+    pl '<a href="exec:AmandaLizetteAnalTalkDone = 1 & analfromyou[''amanda''] = 1 & gs ''DebugAmandaArcPanel''">ATM тест: talk + analfromyou=1</a>'
+
+    killvar '$SexGirl'
     gs 'DebugAmandaPrintBool', 'ЖЖМ Аманда+Мелисса', AmandaMelissaThreesomeDone
     gs 'DebugAmandaPrintBool', 'ММЖ Аманда+Легаре', AmandaLegareMmfDone
 ---
@@ -277,7 +288,7 @@
     pl '<a href="exec:gs ''DebugAmandaJumpFirstSex'', ''8'', ''1'' & gt ''AmandaRoom''">после 1-й ночи, та же ночь (after_night)</a>'
     pl '<a href="exec:gs ''DebugAmandaJumpFirstSex'', ''9'' & gt ''AmandaRoom''">stage 9 — сзади</a>'
     pl '<a href="exec:gs ''DebugAmandaJumpFirstSex'', ''10'' & gt ''AmandaRoom''">stage 10 — боком + unlock</a>'
-    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaRepeat'' & gt ''AmandaRoom''">полный unlock (SexScene)</a>'
+    pl '<a href="exec:gs ''DebugIntimacyJumpAmandaRepeat'' & gt ''AmandaRoom''">SexScene: повторный вечер (с ночнушки)</a>'
     pl ' '
     pl '<b>Танцы / Легаре / кинки</b>'
     pl '<a href="exec:AmandaDanceDressReady = 1 & gs ''DebugAmandaArcPanel''">платье готово</a>'
@@ -546,7 +557,7 @@
     AmandaHomeFirstVaginalRegistered = 1
     AmandaHomeFirstSexActive = 0
     AmandaHomeStepToday = 0
-    GirlUniformLevel['amanda'] = 1
+    GirlUniformLevel['amanda'] = 0
     Friends['amanda'] = 14
     love['amanda'] = 12
     otkroven['amanda'] = 15

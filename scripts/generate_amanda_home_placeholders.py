@@ -136,6 +136,32 @@ def make_empty_room_png(path: Path, time_key: str):
     print(path.relative_to(ROOT))
 
 
+def make_sex_room_stub(path: Path, outfit: str, pose: str, accent: tuple[int, int, int]):
+    """Compact landscape stub for SexScene (images/sex/amanda/room/*)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    size = (1024, 576)
+    img = Image.new("RGB", size, (22, 20, 30))
+    draw = ImageDraw.Draw(img)
+    draw_vertical_gradient(draw, size, (28, 24, 36), (44, 36, 52))
+
+    draw.rectangle((0, 430, 1024, 576), fill=(58, 48, 40))
+    draw.polygon([(120, 430), (904, 430), (960, 380), (64, 380)], fill=(72, 60, 52))
+    draw.rectangle((180, 280, 860, 430), fill=(86, 72, 64))
+    draw.rectangle((220, 310, 820, 410), fill=(98, 82, 72))
+    draw.ellipse((430, 210, 570, 310), fill=(112, 88, 96) if outfit == "naked" else (92, 108, 128))
+
+    title_font = load_font(30)
+    sub_font = load_font(22)
+    small_font = load_font(16)
+
+    draw.text((512, 52), "AMANDA · room", fill=accent, font=title_font, anchor="mm")
+    draw.text((512, 92), f"{outfit} / {pose}", fill=(245, 240, 230), font=sub_font, anchor="mm")
+    draw.text((512, 548), "PLACEHOLDER", fill=(110, 105, 120), font=small_font, anchor="mm")
+
+    img.save(path, format="WEBP", quality=82)
+    print(path.relative_to(ROOT))
+
+
 def make_sex_placeholder(path: Path, title: str, subtitle: str, accent: tuple[int, int, int]):
     """Sex-step stub for first-night arc (separate from room location scenes)."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -188,6 +214,12 @@ def main():
             pose,
             (130, 175, 210),
         )
+
+    room_dir = sex_dir / "room"
+    for pose in ROOM_NIGHTGOWN:
+        make_sex_room_stub(room_dir / f"nightgown_{pose}.webp", "nightgown", pose, (210, 180, 130))
+    for pose in ROOM_NAKED:
+        make_sex_room_stub(room_dir / f"naked_{pose}.webp", "naked", pose, (210, 130, 158))
 
 
 if __name__ == "__main__":
