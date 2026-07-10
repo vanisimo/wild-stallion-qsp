@@ -4,6 +4,17 @@
 ! Выбор фразы AmandaLizaTalk по условиям и уровню (legacy MaxLevel)
 ! ================================================
 
+#AmandaLizaTalkPhraseOneShotOpen
+    $AmandaLizaTalkOneShotId = LCASE($ARGS[0])
+    AmandaLizaTalkOneShotOpen = 1
+
+    if AmandaLizaTalkPhraseHeard[$AmandaLizaTalkOneShotId] = 1:
+        AmandaLizaTalkOneShotOpen = 0
+    end
+
+    killvar '$AmandaLizaTalkOneShotId'
+---
+
 #AmandaLizaTalkPhraseEligible
     $AmandaLizaTalkPhraseId = LCASE($ARGS[0])
     AmandaLizaTalkPhraseOk = 0
@@ -11,7 +22,110 @@
     gs 'EnsureGirlData', 'amanda'
     gs 'EnsureGirlData', 'lizette'
 
-    if $AmandaLizaTalkPhraseId = 'naive_children':
+    if $AmandaLizaTalkPhraseId = 'ambient_dress_new':
+        if uniform_purchased['amanda'] = 1 or GirlUniformLevel['amanda'] = 1 or revealing_uniform_all_bought = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'ambient_no_panties':
+        if GirlNoPantiesWork['amanda'] = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'ambient_sleep_naked':
+        if AmandaHomeSex = 1 and AmandaHomeStage >= 8:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'witness_legare_hall':
+        gs 'AmandaLizaTalkPhraseOneShotOpen', 'witness_legare_hall'
+
+        if AmandaLizaTalkOneShotOpen = 1:
+            if PlayerKnows_AmandaLegareMajorRisk = 1 or PlayerKnows_AmandaLegareFridayRace = 1:
+                AmandaLizaTalkPhraseOk = 1
+            end
+        end
+
+        killvar 'AmandaLizaTalkOneShotOpen'
+
+    elseif $AmandaLizaTalkPhraseId = 'witness_neighbors':
+        gs 'AmandaLizaTalkPhraseOneShotOpen', 'witness_neighbors'
+
+        if AmandaLizaTalkOneShotOpen = 1:
+            if AmandaNeighborBoysStage >= 1 and sluttiness['amanda'] >= 20:
+                AmandaLizaTalkPhraseOk = 1
+            end
+        end
+
+        killvar 'AmandaLizaTalkOneShotOpen'
+
+    elseif $AmandaLizaTalkPhraseId = 'witness_lewd_hall':
+        gs 'AmandaLizaTalkPhraseOneShotOpen', 'witness_lewd_hall'
+
+        if AmandaLizaTalkOneShotOpen = 1:
+            if $LastGirlChoiceEvent['amanda'] = 'hall_lewd':
+                if $LastGirlChoiceChoice['amanda'] = 'watch' or $LastGirlChoiceChoice['amanda'] = 'encourage':
+                    AmandaLizaTalkPhraseOk = 1
+                end
+            end
+        end
+
+        killvar 'AmandaLizaTalkOneShotOpen'
+
+    elseif $AmandaLizaTalkPhraseId = 'stefan_stairs':
+        gs 'AmandaLizaTalkPhraseOneShotOpen', 'stefan_stairs'
+
+        if AmandaLizaTalkOneShotOpen = 1:
+            if AmandaHomeStage >= 5:
+                AmandaLizaTalkPhraseOk = 1
+            end
+        end
+
+        killvar 'AmandaLizaTalkOneShotOpen'
+
+    elseif $AmandaLizaTalkPhraseId = 'stefan_anal':
+        if AmandaHomeSex = 1 and analfromyou['amanda'] >= 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'stefan_atm':
+        if AmandaHomeSex = 1:
+            if AmandaOralAtmCalmDone = 1 or analfromyou['amanda'] >= 2:
+                AmandaLizaTalkPhraseOk = 1
+            end
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'stefan_rim_him':
+        if AmandaHomeSex = 1:
+            if rimjob['amanda'] >= 1 or AmandaOralStage >= 6:
+                AmandaLizaTalkPhraseOk = 1
+            end
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'stefan_rim_her':
+        if AmandaHomeSex = 1 and anilingus['amanda'] >= 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'legare_same_things':
+        gs 'AmandaLizaTalkPhraseOneShotOpen', 'legare_same_things'
+
+        if AmandaLizaTalkOneShotOpen = 1:
+            if AmandaLegareFirstSexDone = 1 and AmandaHomeSex = 1:
+                AmandaLizaTalkPhraseOk = 1
+            end
+        end
+
+        killvar 'AmandaLizaTalkOneShotOpen'
+
+    elseif $AmandaLizaTalkPhraseId = 'lizette_to_amanda_advice':
+        if AmandaMetLizette = 1 or LizetteKnown = 1:
+            if sluttiness['amanda'] <= 22 and AmandaLizaInfluence >= 3:
+                AmandaLizaTalkPhraseOk = 1
+            end
+        end
+
+    elseif $AmandaLizaTalkPhraseId = 'naive_children':
         if sluttiness['amanda'] <= 8 and sexacts['amanda'] = 0:
             AmandaLizaTalkPhraseOk = 1
         end
@@ -77,9 +191,15 @@
         end
 
     elseif $AmandaLizaTalkPhraseId = 'legare_deflower':
-        if AmandaLegareFirstSexDone = 1:
-            AmandaLizaTalkPhraseOk = 1
+        gs 'AmandaLizaTalkPhraseOneShotOpen', 'legare_deflower'
+
+        if AmandaLizaTalkOneShotOpen = 1:
+            if AmandaLegareFirstSexDone = 1:
+                AmandaLizaTalkPhraseOk = 1
+            end
         end
+
+        killvar 'AmandaLizaTalkOneShotOpen'
 
     elseif $AmandaLizaTalkPhraseId = 'legare_suck_advice':
         if AmandaLegareInterest >= 8 and AmandaLegareFirstSexDone = 0 and oralacts['amanda'] > 0:
@@ -151,6 +271,11 @@
             end
         end
 
+    elseif $AmandaLizaTalkPhraseId = 'marathon_exhausted':
+        if SexMarathonGossipPending['amanda'] = 1:
+            AmandaLizaTalkPhraseOk = 1
+        end
+
     end
 
     killvar '$AmandaLizaTalkPhraseId'
@@ -190,24 +315,38 @@
     AmandaLizaTalkPoolMax = 0
     AmandaLizaTalkPoolSize = 0
 
+    gs 'AmandaLizaTalkPoolTry', 'marathon_exhausted', 7
     gs 'AmandaLizaTalkPoolTry', 'lizette_rim_fair', 6
     gs 'AmandaLizaTalkPoolTry', 'lizette_atm_clean', 6
+    gs 'AmandaLizaTalkPoolTry', 'stefan_rim_him', 6
+    gs 'AmandaLizaTalkPoolTry', 'stefan_rim_her', 6
+    gs 'AmandaLizaTalkPoolTry', 'stefan_atm', 6
     gs 'AmandaLizaTalkPoolTry', 'lizette_balls_hint', 5
     gs 'AmandaLizaTalkPoolTry', 'lizette_oral_practice', 5
     gs 'AmandaLizaTalkPoolTry', 'lizette_anal_hint', 5
     gs 'AmandaLizaTalkPoolTry', 'stefan_brother_fuck', 5
+    gs 'AmandaLizaTalkPoolTry', 'stefan_anal', 5
+    gs 'AmandaLizaTalkPoolTry', 'legare_same_things', 5
     gs 'AmandaLizaTalkPoolTry', 'whore_joy', 5
     gs 'AmandaLizaTalkPoolTry', 'bed_deflower_talk', 5
     gs 'AmandaLizaTalkPoolTry', 'ban_guys', 5
     gs 'AmandaLizaTalkPoolTry', 'legare_deflower', 5
+    gs 'AmandaLizaTalkPoolTry', 'witness_legare_hall', 4
+    gs 'AmandaLizaTalkPoolTry', 'witness_neighbors', 4
+    gs 'AmandaLizaTalkPoolTry', 'witness_lewd_hall', 4
+    gs 'AmandaLizaTalkPoolTry', 'stefan_stairs', 4
     gs 'AmandaLizaTalkPoolTry', 'legare_married_rumors', 4
     gs 'AmandaLizaTalkPoolTry', 'legare_suck_advice', 4
     gs 'AmandaLizaTalkPoolTry', 'legare_give_him', 4
     gs 'AmandaLizaTalkPoolTry', 'oral_but_virgin', 4
     gs 'AmandaLizaTalkPoolTry', 'marriage_worry', 4
+    gs 'AmandaLizaTalkPoolTry', 'ambient_sleep_naked', 3
+    gs 'AmandaLizaTalkPoolTry', 'ambient_no_panties', 3
     gs 'AmandaLizaTalkPoolTry', 'ban_legare_high', 3
     gs 'AmandaLizaTalkPoolTry', 'ban_legare_low', 3
     gs 'AmandaLizaTalkPoolTry', 'ban_lizette', 3
+    gs 'AmandaLizaTalkPoolTry', 'ambient_dress_new', 2
+    gs 'AmandaLizaTalkPoolTry', 'lizette_to_amanda_advice', 2
     gs 'AmandaLizaTalkPoolTry', 'curious_stefan', 2
     gs 'AmandaLizaTalkPoolTry', 'curious_oral', 2
     gs 'AmandaLizaTalkPoolTry', 'curious_first_time', 2
@@ -318,8 +457,42 @@
         gs 'AmandaLizaTalkApplyInfluence', 35, 20, 32
     elseif $AmandaLizaTalkEffectId = 'stefan_brother_fuck':
         gs 'AmandaLizaTalkApplyInfluence', 55, 20, 44
+    elseif $AmandaLizaTalkEffectId = 'legare_deflower':
+        gs 'AmandaLizaTalkApplyInfluence', 45, 22, 38
+        AmandaLizaTalkPhraseHeard['legare_deflower'] = 1
     elseif $AmandaLizaTalkEffectId = 'legare_married_rumors':
         gs 'AmandaLizaTalkApplyInfluence', 40, 20, 35
+    elseif $AmandaLizaTalkEffectId = 'ambient_dress_new':
+        gs 'AmandaLizaTalkApplyInfluence', 8, 6, 12
+    elseif $AmandaLizaTalkEffectId = 'ambient_no_panties':
+        gs 'AmandaLizaTalkApplyInfluence', 22, 14, 18
+    elseif $AmandaLizaTalkEffectId = 'ambient_sleep_naked':
+        gs 'AmandaLizaTalkApplyInfluence', 18, 12, 16
+    elseif $AmandaLizaTalkEffectId = 'witness_legare_hall':
+        gs 'AmandaLizaTalkApplyInfluence', 28, 16, 22
+        AmandaLizaTalkPhraseHeard['witness_legare_hall'] = 1
+    elseif $AmandaLizaTalkEffectId = 'witness_neighbors':
+        gs 'AmandaLizaTalkApplyInfluence', 30, 18, 24
+        AmandaLizaTalkPhraseHeard['witness_neighbors'] = 1
+    elseif $AmandaLizaTalkEffectId = 'witness_lewd_hall':
+        gs 'AmandaLizaTalkApplyInfluence', 26, 16, 20
+        AmandaLizaTalkPhraseHeard['witness_lewd_hall'] = 1
+    elseif $AmandaLizaTalkEffectId = 'stefan_stairs':
+        gs 'AmandaLizaTalkApplyInfluence', 32, 18, 26
+        AmandaLizaTalkPhraseHeard['stefan_stairs'] = 1
+    elseif $AmandaLizaTalkEffectId = 'stefan_anal':
+        gs 'AmandaLizaTalkApplyInfluence', 42, 24, 34
+    elseif $AmandaLizaTalkEffectId = 'stefan_atm':
+        gs 'AmandaLizaTalkApplyInfluence', 38, 26, 36
+    elseif $AmandaLizaTalkEffectId = 'stefan_rim_him':
+        gs 'AmandaLizaTalkApplyInfluence', 40, 28, 38
+    elseif $AmandaLizaTalkEffectId = 'stefan_rim_her':
+        gs 'AmandaLizaTalkApplyInfluence', 38, 26, 36
+    elseif $AmandaLizaTalkEffectId = 'legare_same_things':
+        gs 'AmandaLizaTalkApplyInfluence', 44, 24, 36
+        AmandaLizaTalkPhraseHeard['legare_same_things'] = 1
+    elseif $AmandaLizaTalkEffectId = 'lizette_to_amanda_advice':
+        gs 'AmandaLizaTalkApplyInfluence', 10, 8, 14
     elseif $AmandaLizaTalkEffectId = 'lizette_anal_hint':
         gs 'AmandaLizaTalkApplyInfluence', 30, 18, 28
     elseif $AmandaLizaTalkEffectId = 'lizette_oral_practice':
@@ -334,6 +507,15 @@
     elseif $AmandaLizaTalkEffectId = 'lizette_rim_fair':
         gs 'AmandaLizaTalkApplyInfluence', 40, 28, 40
         gs 'AmandaOralOnOverhearPhrase', 'lizette_rim_fair'
+    elseif $AmandaLizaTalkEffectId = 'marathon_exhausted':
+        AmandaLizaInfluence += 1
+
+        if AmandaLizaInfluence > 100:
+            AmandaLizaInfluence = 100
+        end
+
+        SexMarathonGossipPending['amanda'] = 0
+        SexMarathonGossipLastDay['amanda'] = day
     end
 
     killvar '$AmandaLizaTalkEffectId'

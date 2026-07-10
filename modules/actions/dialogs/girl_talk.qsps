@@ -79,6 +79,12 @@
         $GirlTalkPendingNotice[$TalkGirl] = ''
     end
 
+    if GirlTalkOpenPersonalMenu = 1:
+        GirlTalkOpenPersonalMenu = 0
+        gs 'GirlTalkPersonalBuildMainMenu'
+        gs 'Menu.Show', 'GirlTalkMainMenu'
+    end
+
     *pl ' '
 
     if $TalkGirl = 'amanda' or $TalkGirl = 'melissa':
@@ -352,6 +358,10 @@
         killvar 'AmandaHomeRestingAfterIntim'
     end
 
+    if SexUsedToday[$TalkGirl] = 1:
+        exit
+    end
+
     GirlTalkMenuReady = 1
 ---
 
@@ -509,8 +519,8 @@
     if GirlTalkPersonalAvailable = 1:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Личный разговор', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gs 'GirlTalkPersonalBuildMenu'
-            gs 'Menu.Show', 'GirlTalkPersonalMenu'
+            gs 'GirlTalkPersonalBuildMainMenu'
+            gs 'Menu.Show', 'GirlTalkMainMenu'
         }
     end
 
@@ -946,6 +956,20 @@
         killvar 'AmandaHomeRestingAfterIntim'
     end
 
+    if SexUsedToday[$TalkClosedGirl] = 1:
+        if $TalkClosedGirl = 'amanda' and $TalkClosedReturnLoc = 'AmandaRoom':
+            *p 'Аманда лежит на боку, укрытая одеялом, и спит так крепко, что даже не шевелится, когда вы входите.'
+            *p 'Сегодня разговор не получится — она совсем выбилась из сил после вашей ночи.'
+        else
+            *p $RealName[$TalkClosedGirl] + ' уже была с вами сегодня. Ей нужно время прийти в себя.'
+        end
+
+        gs 'GirlTalkAddReturnButton'
+        killvar '$TalkClosedGirl'
+        killvar '$TalkClosedReturnLoc'
+        exit
+    end
+
     if GirlTalkIrritatedUntilDay[$TalkClosedGirl] >= day:
         if $GirlTalkPendingNotice[$TalkClosedGirl] <> '':
             *p $GirlTalkPendingNotice[$TalkClosedGirl]
@@ -1028,8 +1052,8 @@
     end
 
     if $TalkTopic = 'personal':
-        gs 'GirlTalkPersonalBuildMenu'
-        gs 'Menu.Show', 'GirlTalkPersonalMenu'
+        gs 'GirlTalkPersonalBuildMainMenu'
+        gs 'Menu.Show', 'GirlTalkMainMenu'
         exit
     end
 

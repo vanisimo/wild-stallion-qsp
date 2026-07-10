@@ -1,0 +1,390 @@
+! ================================================
+! FILE: modules/debug/debug_amanda_liza.qsps
+! MODULE: debug
+! Аманда + Лизетта: визиты, подслушивание, пул сплетен
+! ================================================
+
+#DebugAmandaLizaPanel
+    if debug = 0:
+        exit
+    end
+
+    gs 'PanelDebugToolsHeader'
+
+    pl '<b>DEBUG: АМАНДА + ЛИЗЕТТА</b>'
+    pl 'Сплетни (AmandaLizaTalk), визиты в зал/комнату, сюжетные ивенты.'
+    pl ' '
+
+    gs 'DebugAmandaLizaPrintContext'
+    pl ' '
+
+    gs 'DebugAmandaLizaPrintFlags'
+    pl ' '
+
+    gs 'DebugAmandaLizaPrintGates'
+    pl ' '
+
+    gs 'DebugAmandaLizaPrintPresets'
+    pl ' '
+
+    gs 'DebugAmandaLizaPrintJumps'
+    pl ' '
+
+    pl '<a href="exec:gs ''DebugAmandaLizaReset'' & gs ''DebugAmandaLizaPanel''">Сброс ветки Лизетты</a>'
+    pl '<a href="exec:gs ''DebugAmandaArcPanel''">→ Панель intimacy-арки Аманды</a>'
+
+    gs 'PanelDebugToolsBack'
+---
+
+#DebugAmandaLizaPrintContext
+    gs 'GetDateTimeNames'
+    gs 'GetCitySchedulePhase'
+    gs 'UpdateGirlLocations'
+
+    pl '<b>Контекст</b>'
+    pl 'День ' + STR(day) + ' | неделя ' + STR(week) + ' (' + $WeekDay + ') | время ' + STR(time) + ' (' + $TimeOfDay + ')'
+    pl 'Фаза: <b>' + $CitySchedulePhase + '</b>'
+    pl 'Локации: Аманда → ' + $GirlLocation['amanda'] + ' | Лизетта → ' + $GirlLocation['lizette']
+
+    gs 'IsTavernOpen'
+    pl 'Трактир открыт: ' + STR(TavernOpen)
+
+    killvar '$CitySchedulePhase'
+---
+
+#DebugAmandaLizaPrintBool
+    $DebugAmandaLizaBoolLabel = $ARGS[0]
+    DebugAmandaLizaBoolValue = ARGS[1]
+
+    if $DebugAmandaLizaBoolLabel = '':
+        killvar '$DebugAmandaLizaBoolLabel'
+        exit
+    end
+
+    if DebugAmandaLizaBoolValue = 1:
+        pl $DebugAmandaLizaBoolLabel + ': <b><font color="#008000">да</font></b>'
+    else
+        pl $DebugAmandaLizaBoolLabel + ': <font color="#888888">нет</font>'
+    end
+
+    killvar '$DebugAmandaLizaBoolLabel'
+    killvar 'DebugAmandaLizaBoolValue'
+---
+
+#DebugAmandaLizaPrintFlags
+    gs 'AmandaLizetteEnsureVars'
+
+    pl '<b>Знакомство и визиты</b>'
+    gs 'DebugAmandaLizaPrintBool', 'Порт witness (PortMeetWitnessed)', PortMeetWitnessed
+    gs 'DebugAmandaLizaPrintBool', 'Аманда встретила (AmandaMetLizette)', AmandaMetLizette
+    gs 'DebugAmandaLizaPrintBool', 'Лизетта известна (LizetteKnown)', LizetteKnown
+    pl 'LizetteVisitStage: ' + STR(LizetteVisitStage) + ' (1=ждёт room_visit, 2=после)'
+    pl 'Hall visits нед / ready: ' + STR(AmandaLizaHallVisitsWeek) + ' / ' + STR(AmandaLizaHallVisitReady) + ' (день ' + STR(AmandaLizaHallVisitDay[day]) + ')'
+    pl 'Room talks неделя: ' + STR(AmandaLizaRoomTalksWeek) + ' | schedule week: ' + STR(AmandaLizaScheduleWeek)
+    pl 'Подслушано всего / ключ части дня: ' + STR(AmandaLizaTalkHeardCount) + ' / «' + $AmandaLizaTalkUsedKey + '»'
+
+    pl ' '
+    pl '<b>Запреты и влияние</b>'
+    gs 'DebugAmandaLizaPrintBool', 'Запрет (LizetteBanned)', LizetteBanned
+    gs 'DebugAmandaLizaPrintBool', 'Строгий запрет (LizetteBanStrict)', LizetteBanStrict
+    gs 'DebugAmandaLizaPrintBool', 'Тайный визит был (LizetteSecretVisit)', LizetteSecretVisit
+    pl 'AmandaLizaInfluence: ' + STR(AmandaLizaInfluence) + ' | Rebellion: ' + STR(AmandaRebellion) + ' | slut: ' + STR(sluttiness['amanda'])
+
+    pl ' '
+    pl '<b>Анал / oral / marathon</b>'
+    gs 'DebugAmandaLizaPrintBool', 'AmandaHomeSex', AmandaHomeSex
+    gs 'DebugAmandaLizaPrintBool', 'Talk Лизетта анал (AnalTalkDone)', AmandaLizetteAnalTalkDone
+    pl 'AnalTalkCount: ' + STR(AmandaLizetteAnalTalkCount)
+    gs 'AmandaOralEnsureVars'
+    pl 'AmandaOralStage: ' + STR(AmandaOralStage) + ' / 6'
+    pl 'GiveOrgasms amanda: ' + STR(GiveOrgasms['amanda'])
+    pl 'Marathon pending: ' + STR(SexMarathonGossipPending['amanda']) + ' | last day: ' + STR(SexMarathonGossipLastDay['amanda'])
+---
+
+#DebugAmandaLizaPrintGates
+    pl '<b>Гейты сейчас</b>'
+
+    gs 'AmandaLizetteInAmandaRoomNow'
+    pl 'Лизетта в комнате Аманды (вс день/вечер): ' + STR(AmandaLizetteInAmandaRoomNow)
+    killvar 'AmandaLizetteInAmandaRoomNow'
+
+    gs 'AmandaLizaRoomDoorCanShow'
+    pl 'Сцена закрытой двери (AmandaLizaRoomDoor): ' + STR(AmandaLizaRoomDoorCanShow)
+    killvar 'AmandaLizaRoomDoorCanShow'
+
+    gs 'AmandaLizaTalkCanTrigger', 'tavernmain'
+    pl 'Подслушать в зале (CanTrigger): ' + STR(AmandaLizaTalkCanTrigger)
+    killvar 'AmandaLizaTalkCanTrigger'
+
+    gs 'AmandaLizaTalkCanTrigger', 'amandaroom'
+    pl 'Пул болтовни в комнате (CanTrigger): ' + STR(AmandaLizaTalkCanTrigger)
+    killvar 'AmandaLizaTalkCanTrigger'
+
+    AmandaLizetteCanStart = 0
+    $AmandaLizetteNextEvent = ''
+    gs 'AmandaLizetteEnsureVars'
+
+    if LizetteKnown = 1 and LizetteVisitStage = 1 and week = 7 and time >= 3 and time <= 4:
+        if $GirlLocation['amanda'] = 'AmandaRoom' and $GirlLocation['lizette'] = 'AmandaRoom':
+            AmandaLizetteCanStart = 1
+            $AmandaLizetteNextEvent = 'room_visit'
+        end
+    end
+
+    if AmandaLizetteCanStart = 0:
+        if LizetteBanned = 1 and LizetteSecretVisit = 0 and AmandaRebellion >= 3 and time = 5:
+            AmandaLizetteCanStart = 1
+            $AmandaLizetteNextEvent = 'secret_visit'
+        end
+    end
+
+    if AmandaLizetteCanStart = 1:
+        pl 'Сюжетный ивент AmandaLizetteTryEvent: <font color="#008000"><b>' + $AmandaLizetteNextEvent + '</b></font>'
+    else
+        pl 'Сюжетный ивент AmandaLizetteTryEvent: <font color="#888888">нет</font>'
+    end
+
+    killvar 'AmandaLizetteCanStart'
+    killvar '$AmandaLizetteNextEvent'
+
+    gs 'DebugAmandaLizaPrintPool'
+---
+
+#DebugAmandaLizaPrintPool
+    gs 'AmandaLizaTalkBuildPool'
+
+    pl 'Пул сплетен сейчас: <b>' + STR(AmandaLizaTalkPoolSize) + '</b> фраз (max tier ' + STR(AmandaLizaTalkPoolMax) + ')'
+
+    if AmandaLizaTalkPoolSize >= 1:
+        pl '  [1] ' + $AmandaLizaTalkPool[1]
+    end
+
+    if AmandaLizaTalkPoolSize >= 2:
+        pl '  [2] ' + $AmandaLizaTalkPool[2]
+    end
+
+    if AmandaLizaTalkPoolSize >= 3:
+        pl '  [3] ' + $AmandaLizaTalkPool[3]
+    end
+
+    if AmandaLizaTalkPoolSize >= 4:
+        pl '  [4] ' + $AmandaLizaTalkPool[4]
+    end
+
+    if AmandaLizaTalkPoolSize >= 5:
+        pl '  [5] ' + $AmandaLizaTalkPool[5]
+    end
+
+    if AmandaLizaTalkPoolSize > 5:
+        pl '  … ещё ' + STR(AmandaLizaTalkPoolSize - 5) + ' в пуле'
+    end
+
+    if AmandaLizaTalkPoolSize = 0:
+        pl '<font color="#CC6600">Пул пуст — фразы не проходят гейты (slut, home sex, oral…).</font>'
+    end
+---
+
+#DebugAmandaLizaPrintPresets
+    pl '<b>Как поймать болтовню в зале</b>'
+    pl '1) Не воскресенье, трактир открыт, Аманда в TavernMain.'
+    pl '2) Нужен визит Лизетты: AmandaLizaHallVisitReady = 1 (пресет или 25% при входе в зал).'
+    pl '3) Ключ части дня: $AmandaLizaTalkUsedKey пустой для текущих day+time.'
+    pl '4) Вход в активность зала → roll 40% → иначе кнопка «сразу в сцену» ниже.'
+    pl ' '
+
+    pl '<b>Пресеты</b>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetAfterPort'' & gs ''DebugAmandaLizaPanel''">После порта: witness + знакомство</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetHallVisit'' & gs ''DebugAmandaLizaPanel''">Рабочий день: визит Лизетты в зал (ready)</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetSundayRoom'' & gs ''DebugAmandaLizaPanel''">Воскресенье: обе в AmandaRoom, дверь</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetRoomVisitStory'' & gs ''DebugAmandaLizaPanel''">Воскресенье: сюжет room_visit (stage 1)</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetGossipRich'' & gs ''DebugAmandaLizaPanel''">Богатый пул сплетен (home sex, slut, oral)</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetMarathon8AndGossip'' & gs ''DebugAmandaLizaPanel''"><b>8 оргазмов (cap) + marathon pending + флаги Лизетты</b></a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetMarathon8AndGossip'' & gs ''DebugAmandaLizaForceHallTalk''"><b>То же + сразу подслушать в зале</b></a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetAnalTalkPath'' & gs ''DebugAmandaLizaPanel''">Путь к AnalTalk unlock (count 2)</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetSecretVisit'' & gs ''DebugAmandaLizaPanel''">Тайный визит после запрета</a>'
+    pl '<a href="exec:AmandaLizaHallVisitReady = 1 & AmandaLizaHallVisitDay[day] = 1 & gs ''DebugAmandaLizaPanel''">Только форс hall ready (без смены дня)</a>'
+    pl '<a href="exec:$AmandaLizaTalkUsedKey = '''' & gs ''DebugAmandaLizaPanel''">Сбросить ключ части дня (повтор overhear)</a>'
+    pl '<a href="exec:SexMarathonGossipPending[''amanda''] = 1 & gs ''DebugAmandaLizaPanel''">Marathon gossip pending</a>'
+---
+
+#DebugAmandaLizaPrintJumps
+    pl '<b>Запуск сцен (без roll)</b>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetHallVisit'' & gs ''DebugAmandaLizaForceHallTalk''">Подслушать в зале → сцена</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetSundayRoom'' & gt ''AmandaLizaRoomDoor''">Закрытая дверь (вс)</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetSundayRoom'' & gt ''AmandaRoom''">AmandaRoom (редирект на дверь)</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetRoomVisitStory'' & gt ''AmandaRoom''">Сюжет: room_visit из комнаты</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaPresetSecretVisit'' & gt ''AmandaRoom''">Сюжет: secret_visit (ночь)</a>'
+    pl ' '
+    pl '<b>Локации</b>'
+    pl '<a href="exec:gt ''TavernMain''">Зал трактира</a> | <a href="exec:gt ''TavernSecondFloor''">2-й этаж</a> | <a href="exec:gt ''AmandaRoom''">Комната Аманды</a>'
+    pl '<a href="exec:gt ''Port''">Порт</a> | <a href="exec:gs ''DebugPortChurchArcPresetAfterWitness'' & gt ''Port''">Порт после witness</a>'
+---
+
+#DebugAmandaLizaPresetBaseKnown
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    PortMeetWitnessed = 1
+
+    if LizetteVisitStage < 1:
+        LizetteVisitStage = 1
+    end
+
+    if AmandaLizaInfluence < 3:
+        AmandaLizaInfluence = 3
+    end
+
+    Friends['lizette'] = 10
+    Friends['amanda'] = 12
+---
+
+#DebugAmandaLizaPresetAfterPort
+    gs 'DebugAmandaLizaPresetBaseKnown'
+    LizetteVisitStage = 1
+    LizetteBanned = 0
+    LizetteBanStrict = 0
+    week = 3
+    time = 3
+    gs 'UpdateGirlLocations'
+---
+
+#DebugAmandaLizaPresetHallVisit
+    gs 'DebugAmandaLizaPresetBaseKnown'
+
+    if week = 7:
+        week = 3
+    end
+
+    time = 3
+    AmandaLizaHallVisitsWeek = 0
+    AmandaLizaHallVisitReady = 1
+    AmandaLizaHallVisitDay[day] = 1
+    $AmandaLizaTalkUsedKey = ''
+
+    $GirlLocation['amanda'] = 'TavernMain'
+    gs 'UpdateGirlLocations'
+---
+
+#DebugAmandaLizaPresetSundayRoom
+    gs 'DebugAmandaLizaPresetBaseKnown'
+
+    week = 7
+    time = 3
+    AmandaLizaRoomTalksWeek = 0
+    $AmandaLizaTalkUsedKey = ''
+
+    gs 'SetGirlHomeLocation', 'amanda'
+    gs 'UpdateGirlLocations'
+
+    $GirlLocation['amanda'] = 'AmandaRoom'
+    $GirlLocation['lizette'] = 'AmandaRoom'
+---
+
+#DebugAmandaLizaPresetRoomVisitStory
+    gs 'DebugAmandaLizaPresetSundayRoom'
+    LizetteVisitStage = 1
+---
+
+#DebugAmandaLizaPresetGossipRich
+    gs 'DebugAmandaLizaPresetBaseKnown'
+    AmandaHomeUnlocked = 1
+    AmandaHomeSex = 1
+    AmandaHomeStage = 12
+    AmandaSexSceneUnlocked = 1
+    sluttiness['amanda'] = 45
+    otkroven['amanda'] = 35
+    AmandaLizaInfluence = 6
+    AmandaOralStage = 4
+    gs 'AmandaOralEnsureVars'
+    sexacts['amanda'] = 12
+    HadVaginalWithPlayer['amanda'] = 1
+    virginity['amanda'] = 0
+---
+
+#DebugAmandaLizaPresetMarathon8AndGossip
+    gs 'DebugAmandaLizaPresetGossipRich'
+    gs 'DebugAmandaLizaPresetHallVisit'
+
+    GiveOrgasms['amanda'] = 8
+    SexMarathonGossipPending['amanda'] = 1
+    SexMarathonGossipLastDay['amanda'] = 0
+
+    LizetteBanned = 0
+    LizetteBanStrict = 0
+    AmandaLizetteAnalTalkDone = 1
+    AmandaLizetteAnalTalkCount = 2
+    AmandaLegareFirstSexDone = 0
+    AmandaLegareInterest = 0
+    AmandaProhibitGuys = 0
+
+    oralacts['amanda'] = 3
+    AmandaOralStage = 4
+    gs 'AmandaOralEnsureVars'
+
+    $AmandaLizaTalkUsedKey = ''
+    AmandaLizaRoomTalksWeek = 0
+    AmandaLizaTalkHeardCount = 0
+---
+
+#DebugAmandaLizaPresetAnalTalkPath
+    gs 'DebugAmandaLizaPresetGossipRich'
+    AmandaLizetteAnalTalkDone = 0
+    AmandaLizetteAnalTalkCount = 2
+    AmandaLegareAnalDone = 1
+    AmandaLizaInfluence = 5
+---
+
+#DebugAmandaLizaPresetSecretVisit
+    gs 'DebugAmandaLizaPresetBaseKnown'
+    LizetteBanned = 1
+    LizetteBanStrict = 1
+    LizetteSecretVisit = 0
+    AmandaRebellion = 5
+    week = 3
+    time = 5
+
+    gs 'SetGirlHomeLocation', 'amanda'
+    gs 'UpdateGirlLocations'
+
+    $GirlLocation['amanda'] = 'AmandaRoom'
+---
+
+#DebugAmandaLizaForceHallTalk
+    if AmandaLizaHallVisitReady <> 1:
+        AmandaLizaHallVisitReady = 1
+    end
+
+    if $GirlLocation['amanda'] <> 'TavernMain':
+        $GirlLocation['amanda'] = 'TavernMain'
+    end
+
+    $AmandaLizaTalkUsedKey = ''
+    gt 'AmandaLizaTalkOverhearStart', 'TavernMain'
+---
+
+#DebugAmandaLizaReset
+    AmandaMetLizette = 0
+    LizetteKnown = 0
+    PortMeetWitnessed = 0
+    LizetteVisitStage = 0
+    LizetteBanned = 0
+    LizetteBanStrict = 0
+    LizetteSecretVisit = 0
+
+    AmandaLizaInfluence = 0
+    AmandaLizaHallVisitsWeek = 0
+    AmandaLizaRoomTalksWeek = 0
+    AmandaLizaHallVisitReady = 0
+    AmandaLizaScheduleWeek = 0
+    AmandaLizaTalkHeardCount = 0
+    $AmandaLizaTalkUsedKey = ''
+    AmandaLizaHallVisitDay[day] = 0
+
+    AmandaLizetteAnalTalkDone = 0
+    AmandaLizetteAnalTalkCount = 0
+
+    SexMarathonGossipPending['amanda'] = 0
+    SexMarathonGossipLastDay['amanda'] = 0
+
+    PlayerKnows_LizetteInfluence = 0
+    PlayerKnows_LizetteSecretVisit = 0
+---

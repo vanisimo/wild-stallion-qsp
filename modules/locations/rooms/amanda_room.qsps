@@ -10,6 +10,34 @@
     gs 'AddGlobalButtons'
     gs 'UpdateGirlLocations'
 
+    gs 'AmandaLizetteInAmandaRoomNow'
+
+    if AmandaLizetteInAmandaRoomNow = 1:
+        killvar 'AmandaLizetteInAmandaRoomNow'
+        gs 'AmandaLizaRoomDoorCanShow'
+
+        if AmandaLizaRoomDoorCanShow = 1:
+            killvar 'AmandaLizaRoomDoorCanShow'
+            gt 'AmandaLizaRoomDoor'
+        end
+
+        killvar 'AmandaLizaRoomDoorCanShow'
+
+        gs 'ShowLocationScreenTitle', 'КОМНАТА АМАНДЫ'
+        gs 'ShowLocationImage', 'amanda_room_door_closed', 'full', 'png'
+
+        *p 'Дверь закрыта. За ней всё ещё слышны голоса Аманды и Лизетты — сегодня туда лучше не входить.'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Назад в коридор', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernSecondFloor'
+        end
+        exit
+    end
+
+    killvar 'AmandaLizetteInAmandaRoomNow'
+
     LocationGirlShown = 0
     gs 'CheckGirlInLocation', 'amanda', 'AmandaRoom'
 
@@ -55,13 +83,10 @@
     *pl ' '
 
     if LocationGirlShown = 1 and (AmandaMetLizette = 1 or LizetteKnown = 1):
-        if time = 5 or (week = 7 and time >= 3 and time <= 4):
+        if week = 7 and time >= 3 and time <= 4:
             gs 'AmandaLizetteTryEvent', 'AmandaRoom'
-        end
-
-        if time >= 2 and time <= 4:
-            gs 'AmandaLizaTalkTryStart', 'AmandaRoom'
-            killvar 'AmandaLizaTalkTryStarted'
+        elseif time = 5 and LizetteBanned = 1 and LizetteSecretVisit = 0 and AmandaRebellion >= 3:
+            gs 'AmandaLizetteTryEvent', 'AmandaRoom'
         end
     end
 

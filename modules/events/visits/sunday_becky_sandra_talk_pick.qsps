@@ -1,0 +1,215 @@
+! ================================================
+! FILE: modules/events/visits/sunday_becky_sandra_talk_pick.qsps
+! MODULE: events/visits
+! Пул фраз подслушивания Сандра + Бекки (воскресенье)
+! ================================================
+
+#SundayVisitBeckySandraPhraseOneShotOpen
+    $SundayVisitBeckySandraOneShotId = LCASE($ARGS[0])
+    SundayVisitBeckySandraOneShotOpen = 1
+
+    if SandraBeckyTalkPhraseHeard[$SundayVisitBeckySandraOneShotId] = 1:
+        SundayVisitBeckySandraOneShotOpen = 0
+    end
+
+    killvar '$SundayVisitBeckySandraOneShotId'
+---
+
+#SundayVisitBeckySandraPhraseEligible
+    $SundayVisitBeckySandraPhraseId = LCASE($ARGS[0])
+    SundayVisitBeckySandraPhraseOk = 0
+
+    gs 'EnsureGirlData', 'sandra'
+    gs 'EnsureGirlData', 'becky'
+
+    if $SundayVisitBeckySandraPhraseId = 'ambient_family_tavern':
+        SundayVisitBeckySandraPhraseOk = 1
+
+    elseif $SundayVisitBeckySandraPhraseId = 'ambient_sunday_church':
+        if week = 7:
+            SundayVisitBeckySandraPhraseOk = 1
+        end
+
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_reverse_comfort':
+        if SandraBeckyBond >= 5 and BeckyHomeSex = 0:
+            SundayVisitBeckySandraPhraseOk = 1
+        end
+
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_two_men':
+        gs 'SundayVisitBeckySandraPhraseOneShotOpen', 'becky_two_men'
+
+        if SundayVisitBeckySandraOneShotOpen = 1:
+            if FactHappened['becky_two_men'] = 1:
+                if EventWitnessed['becky_two_men'] = 1 or PlayerKnows['becky_two_men'] = 1:
+                    SundayVisitBeckySandraPhraseOk = 1
+                end
+            end
+        end
+
+        killvar 'SundayVisitBeckySandraOneShotOpen'
+
+    elseif $SundayVisitBeckySandraPhraseId = 'sandra_lewd_hall':
+        if $LastGirlChoiceEvent['sandra'] = 'hall_lewd':
+            if $LastGirlChoiceChoice['sandra'] = 'watch' or $LastGirlChoiceChoice['sandra'] = 'encourage':
+                SundayVisitBeckySandraPhraseOk = 1
+            end
+        elseif GirlNoPantiesWork['sandra'] = 1:
+            SundayVisitBeckySandraPhraseOk = 1
+        elseif GirlUniformLevel['sandra'] = 1 and sluttiness['sandra'] >= 40:
+            SundayVisitBeckySandraPhraseOk = 1
+        end
+
+    elseif $SundayVisitBeckySandraPhraseId = 'sandra_gnome_friday':
+        gs 'SundayVisitBeckySandraPhraseOneShotOpen', 'sandra_gnome_friday'
+
+        if SundayVisitBeckySandraOneShotOpen = 1:
+            if PlayerKnows_SandraDraupnirFriday = 1 or SandraDraupnirAffairStage >= 3:
+                SundayVisitBeckySandraPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitBeckySandraOneShotOpen'
+
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_stefan_gossip':
+        if BeckyHomeSex = 1:
+            if SandraBeckySundayScandalHeard = 0:
+                SundayVisitBeckySandraPhraseOk = 1
+            end
+        end
+
+    elseif $SundayVisitBeckySandraPhraseId = 'sandra_stefan_first':
+        gs 'SundayVisitBeckySandraPhraseOneShotOpen', 'sandra_stefan_first'
+
+        if SundayVisitBeckySandraOneShotOpen = 1:
+            if SandraHomeSex = 1:
+                SundayVisitBeckySandraPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitBeckySandraOneShotOpen'
+
+    elseif $SundayVisitBeckySandraPhraseId = 'sandra_stefan_marathon':
+        if SexMarathonGossipPending['sandra'] = 1:
+            if SandraHomeSex = 1 and SandraBeckyBond >= 12:
+                SundayVisitBeckySandraMarathonCooldownLeft = day - SexMarathonGossipLastDay['sandra']
+
+                if SexMarathonGossipLastDay['sandra'] = 0 or SundayVisitBeckySandraMarathonCooldownLeft >= 7:
+                    SundayVisitBeckySandraPhraseOk = 1
+                end
+
+                killvar 'SundayVisitBeckySandraMarathonCooldownLeft'
+            end
+        end
+
+    end
+
+    killvar '$SundayVisitBeckySandraPhraseId'
+---
+
+#SundayVisitBeckySandraPoolTry
+    $SundayVisitBeckySandraPoolPhrase = LCASE($ARGS[0])
+    SundayVisitBeckySandraPoolLevel = $ARGS[1]
+
+    if SundayVisitBeckySandraPoolLevel <= 0:
+        SundayVisitBeckySandraPoolLevel = 1
+    end
+
+    gs 'SundayVisitBeckySandraPhraseEligible', $SundayVisitBeckySandraPoolPhrase
+
+    if SundayVisitBeckySandraPhraseOk = 0:
+        killvar '$SundayVisitBeckySandraPoolPhrase'
+        killvar 'SundayVisitBeckySandraPoolLevel'
+        exit
+    end
+
+    if SundayVisitBeckySandraPoolLevel > SundayVisitBeckySandraPoolMax:
+        SundayVisitBeckySandraPoolMax = SundayVisitBeckySandraPoolLevel
+        SundayVisitBeckySandraPoolSize = 0
+    end
+
+    if SundayVisitBeckySandraPoolLevel = SundayVisitBeckySandraPoolMax:
+        SundayVisitBeckySandraPoolSize += 1
+        $SundayVisitBeckySandraPool[SundayVisitBeckySandraPoolSize] = $SundayVisitBeckySandraPoolPhrase
+    end
+
+    killvar '$SundayVisitBeckySandraPoolPhrase'
+    killvar 'SundayVisitBeckySandraPoolLevel'
+---
+
+#SundayVisitBeckySandraBuildPool
+    SundayVisitBeckySandraPoolMax = 0
+    SundayVisitBeckySandraPoolSize = 0
+
+    gs 'SundayVisitBeckySandraPoolTry', 'sandra_stefan_marathon', 3
+    gs 'SundayVisitBeckySandraPoolTry', 'sandra_stefan_first', 2
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_stefan_gossip', 2
+    gs 'SundayVisitBeckySandraPoolTry', 'sandra_gnome_friday', 2
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_two_men', 1
+    gs 'SundayVisitBeckySandraPoolTry', 'sandra_lewd_hall', 1
+    gs 'SundayVisitBeckySandraPoolTry', 'ambient_family_tavern', 0
+    gs 'SundayVisitBeckySandraPoolTry', 'ambient_sunday_church', 0
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_reverse_comfort', 0
+---
+
+#SundayVisitBeckySandraPickPhrase
+    $SundayVisitBeckySandraPickedId = ''
+    SundayVisitBeckySandraPickOk = 0
+
+    gs 'SundayVisitBeckySandraBuildPool'
+
+    if SundayVisitBeckySandraPoolSize <= 0:
+        exit
+    end
+
+    SundayVisitBeckySandraPickRoll = RAND(1, SundayVisitBeckySandraPoolSize)
+    $SundayVisitBeckySandraPickedId = $SundayVisitBeckySandraPool[SundayVisitBeckySandraPickRoll]
+    SundayVisitBeckySandraPickOk = 1
+
+    killvar 'SundayVisitBeckySandraPickRoll'
+---
+
+#SundayVisitBeckySandraApplyPhraseEffects
+    $SundayVisitBeckySandraEffectId = LCASE($ARGS[0])
+
+    if $SundayVisitBeckySandraEffectId = '':
+        killvar '$SundayVisitBeckySandraEffectId'
+        exit
+    end
+
+    SandraBeckyBond += 1
+
+    if SandraBeckyBond > 100:
+        SandraBeckyBond = 100
+    end
+
+    if $SundayVisitBeckySandraEffectId = 'becky_two_men':
+        SandraBeckyTalkPhraseHeard['becky_two_men'] = 1
+        FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_stefan_gossip':
+        FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'sandra_stefan_marathon':
+        SexMarathonGossipPending['sandra'] = 0
+        SexMarathonGossipLastDay['sandra'] = day
+        FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'sandra_stefan_first':
+        SandraBeckyTalkPhraseHeard['sandra_stefan_first'] = 1
+        FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'sandra_lewd_hall':
+        FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'sandra_gnome_friday':
+        SandraSundayGossipHeard = 1
+        SandraBeckyTalkPhraseHeard['sandra_gnome_friday'] = 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_reverse_comfort':
+        if FamilyTension > 0:
+            FamilyTension -= 1
+        end
+    end
+
+    killvar '$SundayVisitBeckySandraEffectId'
+---

@@ -86,6 +86,61 @@
         exit
     end
 
+    if $IntimGirl = 'amanda' and $IntimReturnLoc = 'AmandaRoom':
+        GirlIntimAmandaRoomOption = 0
+
+        gs 'AmandaLizaRoomDoorCanShow'
+
+        if AmandaLizaRoomDoorCanShow = 1:
+            killvar 'AmandaLizaRoomDoorCanShow'
+            exit
+        end
+
+        killvar 'AmandaLizaRoomDoorCanShow'
+
+        gs 'AmandaHomeCanAdvance'
+
+        if AmandaHomeCanAdvance = 1 and AmandaHomeStage < 6:
+            GirlIntimAmandaRoomOption = 1
+        end
+
+        gs 'AmandaHomeFirstSexCanStart'
+
+        if AmandaHomeFirstSexCanStart = 1:
+            GirlIntimAmandaRoomOption = 1
+        end
+
+        if AmandaHomeSex = 1 and LOC('SexSceneStart') = 1 and time = 5:
+            gs 'CanStartSexScene', 'amanda'
+
+            if SexSceneAllowed = 1:
+                GirlIntimAmandaRoomOption = 1
+            end
+
+            killvar 'SexSceneAllowed'
+            killvar '$SexSceneDenyReason'
+        end
+
+        if MelissaHomeSex = 1 and LOC('AmandaMelissaThreesomeCanStart') = 1:
+            gs 'AmandaMelissaThreesomeCanStart'
+
+            if AmandaMelissaThreesomeCanStart = 1:
+                GirlIntimAmandaRoomOption = 1
+            end
+        end
+
+        if GirlIntimAmandaRoomOption = 0:
+            killvar 'GirlIntimAmandaRoomOption'
+            killvar 'AmandaHomeCanAdvance'
+            killvar 'AmandaHomeFirstSexCanStart'
+            exit
+        end
+
+        killvar 'GirlIntimAmandaRoomOption'
+        killvar 'AmandaHomeCanAdvance'
+        killvar 'AmandaHomeFirstSexCanStart'
+    end
+
     GirlIntimMenuReady = 1
 ---
 
@@ -211,7 +266,7 @@
             AmandaHomeIntimMenuAdded = 1
         end
 
-        if AmandaHomeSex = 1 and LOC('SexSceneStart') = 1 and time >= 3:
+        if AmandaHomeSex = 1 and LOC('SexSceneStart') = 1 and time = 5:
             gs 'CanStartSexScene', 'amanda'
 
             if SexSceneAllowed = 1:
@@ -233,30 +288,6 @@
                 *p $AmandaHomeText
             }
             AmandaHomeIntimMenuAdded = 1
-        end
-
-        if LOC('AmandaLizetteAnalTalkCanStart') = 1:
-            gs 'AmandaLizetteAnalTalkCanStart'
-
-            if AmandaLizetteAnalTalkCanStart = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Поговорить с Лизеттой', 'talk'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-                    gt 'AmandaLizetteAnalTalkStart'
-                }
-                AmandaHomeIntimMenuAdded = 1
-            end
-        end
-
-        if LOC('AmandaHomeAnalCanStart') = 1:
-            gs 'AmandaHomeAnalCanStart'
-
-            if AmandaHomeAnalCanStart = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Близость — иначе', 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
-                    gt 'AmandaHomeAnalStart'
-                }
-                AmandaHomeIntimMenuAdded = 1
-            end
         end
 
         if MelissaHomeSex = 1 and LOC('AmandaMelissaThreesomeCanStart') = 1:

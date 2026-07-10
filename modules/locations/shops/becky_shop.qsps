@@ -72,6 +72,18 @@
 
         killvar 'SundayVisitBeckySandraCanEavesdrop'
 
+        gs 'BeckyShopBackroomPeekTryOffer', 'closed'
+
+        if BeckyShopBackroomPeekOffer = 1:
+            gs 'ActUiPrepare', 'Подсмотреть в заднюю', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                killvar '$BeckyShopHoldTab'
+                gt 'BeckyShopBackroomPeek', 'Market'
+            end
+        end
+
+        killvar 'BeckyShopBackroomPeekOffer'
+
         act '<b>Назад</b>', 'images/common/ui/actions/return.png':
             killvar '$BeckyShopHoldTab'
             gt 'Market'
@@ -84,6 +96,8 @@
         *pl '[DEBUG BECKY SHOP] OPEN | week=' + STR(week) + ' | time=' + STR(time) + ' | tab=' + $BeckyShopTab
         *pl ' '
     end
+
+    gs 'BeckyShopBackroomPeekTryOffer', 'open'
 
     gs 'BeckyShopResolveSeller'
     gs 'BeckyShopRenderCommonHeader'
@@ -359,6 +373,17 @@
 ---
 
 #BeckyShopRenderMainExtraActions
+    if BeckyShopBackroomPeekOffer = 1:
+        *pl ' '
+
+        gs 'PrintMainP', 'Из задней комнаты доносится приглушённый смех и скрип ящика — будто мать ушла не на склад, а к кому-то ещё.'
+
+        gs 'ActUiPrepare', 'Заглянуть в заднюю', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyShopBackroomPeek', 'BeckyShop'
+        end
+    end
+
     if $CurrentSeller = 'becky' and Friends['becky'] < 20:
         gs 'BeckyShopRenderChildrenFoodBuy'
     end

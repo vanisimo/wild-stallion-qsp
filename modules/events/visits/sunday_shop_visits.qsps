@@ -118,10 +118,16 @@
 
     SundayBeckySandraVisitSeen[day] = 1
     PlayerKnows_SandraBeckySundayTalk = 1
-    SandraBeckyBond += 1
 
-    if SandraSundayGossipHeard = 0 and (PlayerKnows_SandraDraupnirFriday = 1 or SandraDraupnirAffairStage >= 3):
-        SandraSundayGossipHeard = 1
+    if $SundayVisitBeckySandraPickedId <> '':
+        gs 'SundayVisitBeckySandraApplyPhraseEffects', $SundayVisitBeckySandraPickedId
+        killvar '$SundayVisitBeckySandraPickedId'
+    else:
+        SandraBeckyBond += 1
+
+        if SandraBeckyBond > 100:
+            SandraBeckyBond = 100
+        end
     end
 
     if SandraBeckySundayScandalCanHear = 1:
@@ -260,6 +266,54 @@
     gs 'ActUiPrepare', 'Тест: Бекки и Сандра', 'debug'
     act $ActUiLabel, $ActUiIconPath:
         gt 'SundayVisitBeckySandra'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (Сандра home sex)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        SandraHomeSex = 1
+        SandraBeckyBond = 14
+        SundayBeckySandraVisitSeen[day] = 0
+        ChurchSpyWindowGearGossipHeard = 1
+        gt 'SundayVisitBeckySandra'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (матросы witness)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        FactHappened['becky_two_men'] = 1
+        EventWitnessed['becky_two_men'] = 1
+        SandraBeckyBond = 14
+        SundayBeckySandraVisitSeen[day] = 0
+        ChurchSpyWindowGearGossipHeard = 1
+        gt 'SundayVisitBeckySandra'
+    end
+
+    gs 'ActUiPrepare', 'Тест: задняя (Лукас)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        sluttiness['becky'] = 40
+        IngaGuardProblem = 1
+        IngaLucasInviteDone = 0
+        BeckyShopBackroomPeekSeen[day] = 0
+        BeckyShopBackroomPeekOffer = 1
+        time = 3
+        gt 'BeckyShop', 'main'
+    end
+
+    gs 'ActUiPrepare', 'Тест: задняя (Эдди у прилавка)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        sluttiness['becky'] = 40
+        BeckyShopBackroomPeekSeen[day] = 0
+        BeckyShopBackroomPeekOffer = 1
+        time = 2
+        gt 'BeckyShop', 'main'
+    end
+
+    gs 'ActUiPrepare', 'Тест: задняя (закрыта)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        sluttiness['becky'] = 40
+        BeckyShopBackroomPeekSeen[day] = 0
+        BeckyShopBackroomPeekOffer = 1
+        time = 5
+        gt 'BeckyShop', 'main'
     end
 
     gs 'ActUiPrepare', 'Тест: Кларисса и Мелисса', 'debug'

@@ -1,0 +1,361 @@
+! ================================================
+! FILE: modules/events/shops/becky_shop_backroom_peek.qsps
+! MODULE: events/shops
+! Подглядывание в заднюю комнату лавки Бекки (окно)
+! ================================================
+
+#BeckyShopBackroomPeekBaseEligible
+    BeckyShopBackroomPeekBaseOk = 0
+
+    if sluttiness['becky'] < 30 and BeckyHomeSex = 0:
+        exit
+    end
+
+    if BeckyShopBackroomPeekSeen[day] = 1:
+        exit
+    end
+
+    gs 'GetCitySchedulePhase'
+
+    if $CitySchedulePhase = 'friday_dance':
+        exit
+    end
+
+    BeckyShopBackroomPeekBaseOk = 1
+---
+
+#BeckyShopBackroomPeekTryOffer
+    $BeckyShopPeekOfferMode = LCASE($ARGS[0])
+    BeckyShopBackroomPeekOffer = 0
+
+    gs 'BeckyShopBackroomPeekBaseEligible'
+
+    if BeckyShopBackroomPeekBaseOk = 0:
+        killvar 'BeckyShopBackroomPeekBaseOk'
+        killvar '$BeckyShopPeekOfferMode'
+        exit
+    end
+
+    killvar 'BeckyShopBackroomPeekBaseOk'
+
+    if $BeckyShopPeekOfferMode = 'open':
+        if week = 7:
+            killvar '$BeckyShopPeekOfferMode'
+            exit
+        end
+
+        if time < 2 or time > 4:
+            killvar '$BeckyShopPeekOfferMode'
+            exit
+        end
+
+        BeckyShopBackroomPeekChance = 12
+    elseif $BeckyShopPeekOfferMode = 'closed':
+        if week = 7 and time >= 3:
+            gs 'SundayVisitBeckySandraCanEavesdrop'
+
+            if SundayVisitBeckySandraCanEavesdrop = 1:
+                killvar 'SundayVisitBeckySandraCanEavesdrop'
+                killvar '$BeckyShopPeekOfferMode'
+                exit
+            end
+
+            killvar 'SundayVisitBeckySandraCanEavesdrop'
+        end
+
+        if time = 5:
+            BeckyShopBackroomPeekChance = 10
+        elseif time >= 2 and time <= 4:
+            BeckyShopBackroomPeekChance = 15
+        else:
+            killvar '$BeckyShopPeekOfferMode'
+            exit
+        end
+    else:
+        killvar '$BeckyShopPeekOfferMode'
+        exit
+    end
+
+    BeckyShopBackroomPeekRoll = RAND(1, 100)
+
+    if BeckyShopBackroomPeekRoll > BeckyShopBackroomPeekChance:
+        killvar 'BeckyShopBackroomPeekRoll'
+        killvar 'BeckyShopBackroomPeekChance'
+        killvar '$BeckyShopPeekOfferMode'
+        exit
+    end
+
+    killvar 'BeckyShopBackroomPeekRoll'
+    killvar 'BeckyShopBackroomPeekChance'
+
+    BeckyShopBackroomPeekOffer = 1
+    killvar '$BeckyShopPeekOfferMode'
+---
+
+#BeckyShopBackroomPeekClientEligible
+    $BeckyShopBackroomPeekClientCheck = LCASE($ARGS[0])
+    BeckyShopBackroomPeekClientOk = 0
+
+    if $BeckyShopBackroomPeekClientCheck = 'neighbor_husband':
+        BeckyShopBackroomPeekClientOk = 1
+
+    elseif $BeckyShopBackroomPeekClientCheck = 'guard_grun':
+        BeckyShopBackroomPeekClientOk = 1
+
+    elseif $BeckyShopBackroomPeekClientCheck = 'mayor_clerk':
+        BeckyShopBackroomPeekClientOk = 1
+
+    elseif $BeckyShopBackroomPeekClientCheck = 'old_widower':
+        BeckyShopBackroomPeekClientOk = 1
+
+    elseif $BeckyShopBackroomPeekClientCheck = 'lucas':
+        if IngaGuardProblem = 1:
+            if IngaLucasInviteDone = 0 and IngaLucasThreesomeCount = 0:
+                BeckyShopBackroomPeekClientOk = 1
+            end
+        end
+
+    elseif $BeckyShopBackroomPeekClientCheck = 'eddie_at_shop':
+        if time = 2:
+            BeckyShopBackroomPeekClientOk = 1
+        end
+
+    end
+
+    killvar '$BeckyShopBackroomPeekClientCheck'
+---
+
+#BeckyShopBackroomPeekPickClient
+    $BeckyShopBackroomPeekClientId = ''
+
+    gs 'PortCapitalShipCheck'
+
+    if PortCapitalShipAvailable = 1 and FactHappened['becky_two_men'] = 0:
+        $BeckyShopBackroomPeekClientId = 'sailors_two'
+        killvar 'PortCapitalShipAvailable'
+        exit
+    end
+
+    killvar 'PortCapitalShipAvailable'
+
+    BeckyShopBackroomPeekPoolMax = 0
+    BeckyShopBackroomPeekPoolSize = 0
+
+    gs 'BeckyShopBackroomPeekPoolTry', 'neighbor_husband', 2
+    gs 'BeckyShopBackroomPeekPoolTry', 'guard_grun', 2
+    gs 'BeckyShopBackroomPeekPoolTry', 'mayor_clerk', 2
+    gs 'BeckyShopBackroomPeekPoolTry', 'old_widower', 2
+    gs 'BeckyShopBackroomPeekPoolTry', 'lucas', 2
+    gs 'BeckyShopBackroomPeekPoolTry', 'eddie_at_shop', 2
+
+    if IngaGuardProblem > 0 and GuardBribed = 0:
+        gs 'BeckyShopBackroomPeekPoolTry', 'guard_grun', 3
+    end
+
+    if IngaGuardProblem = 1 and IngaLucasInviteDone = 0:
+        gs 'BeckyShopBackroomPeekPoolTry', 'lucas', 3
+    end
+
+    if BeckyShopBackroomPeekPoolSize <= 0:
+        $BeckyShopBackroomPeekClientId = 'old_widower'
+        exit
+    end
+
+    BeckyShopBackroomPeekPickRoll = RAND(1, BeckyShopBackroomPeekPoolSize)
+    $BeckyShopBackroomPeekClientId = $BeckyShopBackroomPeekPool[$BeckyShopBackroomPeekPickRoll]
+
+    killvar 'BeckyShopBackroomPeekPickRoll'
+    killvar 'BeckyShopBackroomPeekPoolMax'
+    killvar 'BeckyShopBackroomPeekPoolSize'
+---
+
+#BeckyShopBackroomPeekPoolTry
+    $BeckyShopBackroomPeekPoolClient = LCASE($ARGS[0])
+    BeckyShopBackroomPeekPoolLevel = $ARGS[1]
+
+    if BeckyShopBackroomPeekPoolLevel <= 0:
+        BeckyShopBackroomPeekPoolLevel = 1
+    end
+
+    gs 'BeckyShopBackroomPeekClientEligible', $BeckyShopBackroomPeekPoolClient
+
+    if BeckyShopBackroomPeekClientOk = 0:
+        killvar 'BeckyShopBackroomPeekClientOk'
+        killvar '$BeckyShopBackroomPeekPoolClient'
+        killvar 'BeckyShopBackroomPeekPoolLevel'
+        exit
+    end
+
+    killvar 'BeckyShopBackroomPeekClientOk'
+
+    if BeckyShopBackroomPeekPoolLevel > BeckyShopBackroomPeekPoolMax:
+        BeckyShopBackroomPeekPoolMax = BeckyShopBackroomPeekPoolLevel
+        BeckyShopBackroomPeekPoolSize = 0
+    end
+
+    if BeckyShopBackroomPeekPoolLevel = BeckyShopBackroomPeekPoolMax:
+        BeckyShopBackroomPeekPoolSize += 1
+        $BeckyShopBackroomPeekPool[BeckyShopBackroomPeekPoolSize] = $BeckyShopBackroomPeekPoolClient
+    end
+
+    killvar '$BeckyShopBackroomPeekPoolClient'
+    killvar 'BeckyShopBackroomPeekPoolLevel'
+---
+
+#BeckyShopBackroomPeek
+    *clr
+    clr
+    cla
+
+    $BeckyShopPeekReturnLoc = $ARGS[0]
+
+    if $BeckyShopPeekReturnLoc = '':
+        $BeckyShopPeekReturnLoc = 'Market'
+    end
+
+    gs 'BeckyShopBackroomPeekBaseEligible'
+
+    if BeckyShopBackroomPeekBaseOk = 0:
+        killvar 'BeckyShopBackroomPeekBaseOk'
+        gt $BeckyShopPeekReturnLoc
+    end
+
+    killvar 'BeckyShopBackroomPeekBaseOk'
+
+    BeckyShopBackroomPeekOffer = 0
+
+    gs 'BeckyShopBackroomPeekPickClient'
+    gs 'BeckyShopBackroomPeekText', $BeckyShopBackroomPeekClientId
+
+    gs 'ShowImage', 'becky', 'shop', 'closed', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ЗАДНЕЕ ОКНО ЛАВКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PrintMainP', 'Вы обходите угол здания к задней комнате. В щели между ставней и рамой — узкая полоска света, стоны и шёпот, которых с улицы не слышно.'
+
+    *pl ' '
+
+    *p $BeckyShopBackroomPeekText
+    *pl ' '
+
+    BeckyShopBackroomPeekSeen[day] = 1
+
+    gs 'BeckyShopBackroomPeekApplyEffects', $BeckyShopBackroomPeekClientId
+
+    killvar '$BeckyShopBackroomPeekClientId'
+    killvar '$BeckyShopBackroomPeekText'
+
+    gs 'ActUiPrepare', 'Назад', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $BeckyShopPeekReturnLoc
+    end
+
+    killvar '$BeckyShopPeekReturnLoc'
+---
+
+#BeckyShopBackroomPeekApplyEffects
+    $BeckyShopBackroomPeekEffectId = LCASE($ARGS[0])
+
+    if $BeckyShopBackroomPeekEffectId = 'sailors_two':
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'becky_two_men'
+        end
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'becky_two_men', 'peek'
+        end
+    elseif $BeckyShopBackroomPeekEffectId = 'guard_grun':
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'becky_backroom_guard'
+        end
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'becky_backroom_guard', 'peek'
+        end
+    elseif $BeckyShopBackroomPeekEffectId = 'neighbor_husband':
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'becky_backroom_neighbor'
+        end
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'becky_backroom_neighbor', 'peek'
+        end
+    elseif $BeckyShopBackroomPeekEffectId = 'mayor_clerk':
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'becky_backroom_clerk'
+        end
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'becky_backroom_clerk', 'peek'
+        end
+    elseif $BeckyShopBackroomPeekEffectId = 'old_widower':
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'becky_backroom_old_client'
+        end
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'becky_backroom_old_client', 'peek'
+        end
+    elseif $BeckyShopBackroomPeekEffectId = 'lucas':
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'becky_backroom_lucas'
+        end
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'becky_backroom_lucas', 'peek'
+        end
+    elseif $BeckyShopBackroomPeekEffectId = 'eddie_at_shop':
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'becky_backroom_eddie_near'
+        end
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'becky_backroom_eddie_near', 'peek'
+        end
+    end
+
+    if $BeckyShopBackroomPeekEffectId <> '':
+        sluttiness['becky'] += 1
+
+        if sluttiness['becky'] > 100:
+            sluttiness['becky'] = 100
+        end
+    end
+
+    killvar '$BeckyShopBackroomPeekEffectId'
+---
+
+#BeckyShopBackroomPeekText
+    $BeckyShopBackroomPeekTextId = LCASE($ARGS[0])
+    $BeckyShopBackroomPeekText = ''
+
+    if $BeckyShopBackroomPeekTextId = 'sailors_two':
+        $BeckyShopBackroomPeekText = 'За мешками с мукой — Бекки и двое матросов с корабля. Крепкие, ром на дыхании. Она сама завела их в заднюю и не стала выбирать: сразу вдвоём, в оба ствола, без очереди. На прилавке в это время кто-то из детей считает монеты — и никто не спрашивает, куда делась мать.'
+
+    elseif $BeckyShopBackroomPeekTextId = 'neighbor_husband':
+        $BeckyShopBackroomPeekText = 'Сосед с верхней улицы — тот, что женат и на рынке вечно жалуется на цены. Сейчас он не жалуется. Бекки прижала его к ящику с солью, сама заперла дверь на щеколду и шепчет: «Тихо, Эдди внизу». Муж соседки старается не скрипеть — и всё равно слишком громко дышит.'
+
+    elseif $BeckyShopBackroomPeekTextId = 'guard_grun':
+        $BeckyShopBackroomPeekText = 'Сержант Грюн — крупный, в потёртом кожаном. Бекки не торгуется: снимает фартук, откидывает мешок и садится на него, будто это его пост, а не её лавка. «За проверку взятки,» — бормочет он. Она смеётся тихо: «Тогда проверяй до конца». Снаружи на площади звенит кольчуга — никто не заглядывает в щель.'
+
+    elseif $BeckyShopBackroomPeekTextId = 'mayor_clerk':
+        $BeckyShopBackroomPeekText = 'Клерк из мэрии — сухой, в чистом камзоле, папка прижата к груди. Бекки улыбается так, будто это не долги, а давний знакомый. «В книге спишем по-другому,» — шепчет она и запирает дверь. Он кашляет, краснеет и всё равно остаётся — слишком охотно принимает «альтернативную оплату» за лавку.'
+
+    elseif $BeckyShopBackroomPeekTextId = 'old_widower':
+        $BeckyShopBackroomPeekText = 'Старый вдовец с нижнего ряда — тот, что каждую неделю берёт соль и долго задерживается у прилавка. В задней он уже не торгуется: Бекки знает его ритм, он знает её. «Два года без жены,» — бормочет он. Она отвечает шёпотом: «Я тоже вдовая. Только не святая». Скрип ящика ровный, будто расписание.'
+
+    elseif $BeckyShopBackroomPeekTextId = 'lucas':
+        $BeckyShopBackroomPeekText = 'Лукас — с синяком на щеке, после стражника. Он входит в заднюю сутулившись, будто стыдно просить. Бекки не читает нотации: «Инга не дала — не значит, что тебе нельзя дышать». Он шепчет про морду от Грюна, она затихает его губами. «Тише. Эдди внизу, а ты всё равно мальчик, который хотел быть мужчиной».'
+
+    elseif $BeckyShopBackroomPeekTextId = 'eddie_at_shop':
+        $BeckyShopBackroomPeekText = 'В задней — Бекки и мужчина, лицо в тени. Спереди за прилавком Эдди насвистывает и пересчитывает монеты, довольный сменой. «Мам, сколько за ящик?» — кричит он. Бекки не останавливается: «Сто двадцать! Не мешай!» — и снова стон, сдержанный, пока сын не догадался заглянуть в щель.'
+
+    else:
+        $BeckyShopBackroomPeekText = 'В задней комнате кто-то есть — но в щели слишком мало света, чтобы разобрать лицо. Бекки всё равно смеётся тихо, будто это обычный дневной заказ.'
+    end
+
+    killvar '$BeckyShopBackroomPeekTextId'
+---

@@ -117,7 +117,41 @@
         AmandaLizaTalkHeardCount = 0
     end
 
+    if AmandaLizaHallVisitsWeek < 0:
+        AmandaLizaHallVisitsWeek = 0
+    end
+
+    if AmandaLizaRoomTalksWeek < 0:
+        AmandaLizaRoomTalksWeek = 0
+    end
+
+    if AmandaLizaScheduleWeek < 0:
+        AmandaLizaScheduleWeek = 0
+    end
+
     gs 'AmandaOralEnsureVars'
+---
+
+#AmandaLizetteInAmandaRoomNow
+    AmandaLizetteInAmandaRoomNow = 0
+
+    if AmandaMetLizette = 0 and LizetteKnown = 0:
+        exit
+    end
+
+    if week <> 7:
+        exit
+    end
+
+    if time < 3 or time > 4:
+        exit
+    end
+
+    gs 'UpdateGirlLocations'
+
+    if $GirlLocation['amanda'] = 'AmandaRoom' and $GirlLocation['lizette'] = 'AmandaRoom':
+        AmandaLizetteInAmandaRoomNow = 1
+    end
 ---
 
 ! ================================================
@@ -141,78 +175,19 @@
         $AmandaLizetteReturnLoc = 'TavernMain'
     end
 
-    cls
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' DEBUG: ЛИЗЕТТА И АМАНДА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    gs 'AmandaLizetteEnsureVars'
-    gs 'AmandaLizetteDebugPanel'
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Запустить первое появление Лизетты', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'AmandaLizetteFirstTalk', $AmandaLizetteReturnLoc
-    end
-
-    gs 'ActUiPrepare', 'Запустить визит Лизетты в комнату Аманды', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'AmandaLizetteRoomVisit', $AmandaLizetteReturnLoc
-    end
-
-    gs 'ActUiPrepare', 'Запустить тайный визит после запрета', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'AmandaLizetteSecretVisit', $AmandaLizetteReturnLoc
-    end
-
-    gs 'ActUiPrepare', 'Подслушать болтовню (AmandaLizaTalk)', 'look'
-    act $ActUiLabel, $ActUiIconPath:
-        $AmandaLizaTalkUsedKey = ''
-        gt 'AmandaLizaTalkOverhearStart', $AmandaLizetteReturnLoc
-    end
-
-    gs 'ActUiPrepare', 'Сбросить ветку Лизетты для теста', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        LizetteKnown = 0
-        LizetteVisitStage = 0
-        LizetteBanned = 0
-        LizetteSecretVisit = 0
-        AmandaLizaInfluence = 0
-        AmandaRebellion = 0
-        AmandaSecretiveness = 0
-        AmandaTrustStefan = 0
-        gt 'AmandaLizetteDebugMenu', $AmandaLizetteReturnLoc
-    end
-
-    gs 'ActUiPrepare', 'Вернуться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
+    if debug = 0:
         gt $AmandaLizetteReturnLoc
+        exit
     end
----
 
-! ================================================
-! FILE: modules/events/amanda/amanda_lizette.qsps
-! Debug-панель текущих переменных ветки
-! ================================================
+    gs 'DebugAmandaLizaPanel'
+    gt $AmandaLizetteReturnLoc
+---
 
 #AmandaLizetteDebugPanel
     if debug = 1:
-        *pl '[DEBUG LIZETTE] LizetteKnown: ' + STR(LizetteKnown)
-        *pl '[DEBUG LIZETTE] LizetteVisitStage: ' + STR(LizetteVisitStage)
-        *pl '[DEBUG LIZETTE] LizetteBanned: ' + STR(LizetteBanned)
-        *pl '[DEBUG LIZETTE] LizetteSecretVisit: ' + STR(LizetteSecretVisit)
-        *pl '[DEBUG LIZETTE] AmandaLizaInfluence: ' + STR(AmandaLizaInfluence)
-        *pl '[DEBUG LIZETTE] AmandaRebellion: ' + STR(AmandaRebellion)
-        *pl '[DEBUG LIZETTE] AmandaSecretiveness: ' + STR(AmandaSecretiveness)
-        *pl '[DEBUG LIZETTE] AmandaTrustStefan: ' + STR(AmandaTrustStefan)
-        *pl '[DEBUG LIZETTE] AmandaPublicAttention: ' + STR(AmandaPublicAttention)
-        *pl '[DEBUG LIZETTE] AmandaScandalLevel: ' + STR(AmandaScandalLevel)
-        *pl '[DEBUG LIZETTE] LizetteBanStrict: ' + STR(LizetteBanStrict)
-        *pl '[DEBUG LIZETTE] AmandaLizaTalkHeardCount: ' + STR(AmandaLizaTalkHeardCount)
-        *pl '[DEBUG LIZETTE] AmandaLizaTalkUsedKey: ' + $AmandaLizaTalkUsedKey
+        gs 'AmandaLizetteEnsureVars'
+        *pl '[DEBUG LIZETTE] known=' + STR(LizetteKnown) + ' stage=' + STR(LizetteVisitStage) + ' infl=' + STR(AmandaLizaInfluence) + ' hall=' + STR(AmandaLizaHallVisitReady) + ' roomW=' + STR(AmandaLizaRoomTalksWeek)
     end
 ---
 

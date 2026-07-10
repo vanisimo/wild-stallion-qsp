@@ -8,6 +8,191 @@
     $AmandaLizaTalkPartKey = STR(day) + '_' + STR(time)
 ---
 
+#AmandaLizaTalkShowHallImage
+    gs 'ShowLocationImage', 'tavern_hall_amanda_lizette', 'full', 'png'
+---
+
+#AmandaLizaTalkGotoReturn
+    $AmandaLizaTalkGotoLoc = $AmandaLizaTalkReturnLoc
+
+    if $AmandaLizaTalkGotoLoc = '':
+        $AmandaLizaTalkGotoLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaLizaTalkGotoLoc) = 0:
+        $AmandaLizaTalkGotoLoc = 'TavernMain'
+    end
+
+    killvar '$AmandaLizaTalkReturnLoc'
+
+    gt $AmandaLizaTalkGotoLoc
+    killvar '$AmandaLizaTalkGotoLoc'
+---
+
+#AmandaLizaTalkResetWeeklyCounters
+    if AmandaLizaScheduleWeek = week:
+        exit
+    end
+
+    AmandaLizaScheduleWeek = week
+    AmandaLizaHallVisitsWeek = 0
+    AmandaLizaRoomTalksWeek = 0
+    AmandaLizaHallVisitReady = 0
+---
+
+#AmandaLizaRoomDoorCanShow
+    AmandaLizaRoomDoorCanShow = 0
+
+    gs 'AmandaLizetteInAmandaRoomNow'
+
+    if AmandaLizetteInAmandaRoomNow = 0:
+        killvar 'AmandaLizetteInAmandaRoomNow'
+        exit
+    end
+
+    killvar 'AmandaLizetteInAmandaRoomNow'
+
+    if AmandaLizaRoomTalksWeek >= 1:
+        exit
+    end
+
+    gs 'AmandaLizaTalkGetPartKey'
+
+    if $AmandaLizaTalkPartKey = $AmandaLizaTalkUsedKey:
+        killvar '$AmandaLizaTalkPartKey'
+        exit
+    end
+
+    killvar '$AmandaLizaTalkPartKey'
+
+    AmandaLizaRoomDoorCanShow = 1
+---
+
+#AmandaLizaRoomDoor
+    cls
+
+    gs 'AddGlobalButtons'
+    gs 'UpdateGirlLocations'
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА АМАНДЫ'
+
+    gs 'ShowLocationImage', 'amanda_room_door_closed', 'full', 'png'
+
+    *p 'Дверь в комнату Аманды закрыта. За деревянной створкой слышны приглушённые голоса — одна точно её, вторая звучит слишком бойко и уверенно, чтобы быть сестрой.<br><br>Лизетта, похоже, снова нашла способ затащить разговор туда, где вас не ждут.'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Подслушать', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLizaRoomDoorPeek'
+    end
+
+    gs 'ActUiPrepare', 'Назад', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+---
+
+#AmandaLizaRoomDoorPeek
+    cls
+
+    gs 'AmandaLizetteEnsureVars'
+    gs 'EnsureGirlData', 'amanda'
+
+    gs 'ShowLocationScreenTitle', 'ПОДСЛУШИВАНИЕ'
+    gs 'ShowLocationImage', 'amanda_room_lizette_visit', 'full', 'png'
+
+    *p 'Вы прижимаетесь к двери и различаете обрывки фраз. Внутри Аманда и Лизетта болтают так, будто весь остальной дом исчез.'
+    *pl ' '
+
+    gs 'AmandaLizaTalkGetPartKey'
+    $AmandaLizaTalkUsedKey = $AmandaLizaTalkPartKey
+    killvar '$AmandaLizaTalkPartKey'
+
+    gs 'AmandaLizaTalkPickPhrase'
+
+    if AmandaLizaTalkPickOk = 0:
+        *p 'Сегодня разговор так и не дошёл до откровенных тем — девушки перешепнулись и замолчали, услышав шаги в коридоре.'
+    else:
+        gs 'AmandaLizaTalkText', $AmandaLizaTalkPickedId
+        *p $AmandaLizaTalkText
+        killvar '$AmandaLizaTalkText'
+
+        gs 'AmandaLizaTalkApplyPhraseEffects', $AmandaLizaTalkPickedId
+        AmandaLizaTalkHeardCount += 1
+        AmandaLizaRoomTalksWeek += 1
+
+        if $AmandaLizaTalkPickedId = 'lizette_anal_hint':
+            if LOC('AmandaLizetteAnalTalkBump') = 1:
+                gs 'AmandaLizetteAnalTalkBump'
+            end
+        end
+
+        gs 'AmandaLizetteAnalTalkTryUnlock'
+    end
+
+    killvar '$AmandaLizaTalkPickedId'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Назад в коридор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+---
+
+#AmandaLizaTalkPrepareHallVisit
+    gs 'AmandaLizetteEnsureVars'
+
+    if AmandaLizaHallVisitReady = 1:
+        exit
+    end
+
+    if AmandaMetLizette = 0 and LizetteKnown = 0:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    gs 'PortCapitalShipCheck'
+
+    if PortCapitalShipAvailable = 1:
+        exit
+    end
+
+    if AmandaLizaHallVisitsWeek >= 2:
+        exit
+    end
+
+    if AmandaLizaHallVisitDay[day] = 1:
+        exit
+    end
+
+    gs 'IsTavernOpen'
+
+    if TavernOpen = 0:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'TavernMain':
+        exit
+    end
+
+    AmandaLizaHallVisitRoll = RAND(1, 100)
+
+    if AmandaLizaHallVisitRoll > 25:
+        killvar 'AmandaLizaHallVisitRoll'
+        exit
+    end
+
+    killvar 'AmandaLizaHallVisitRoll'
+
+    AmandaLizaHallVisitReady = 1
+    AmandaLizaHallVisitDay[day] = 1
+    AmandaLizaHallVisitsWeek += 1
+---
+
 #AmandaLizaTalkCanTrigger
     AmandaLizaTalkCanTrigger = 0
 
@@ -39,7 +224,25 @@
             exit
         end
 
+        if AmandaLizaHallVisitReady <> 1:
+            killvar '$AmandaLizaTalkCheckLoc'
+            killvar '$AmandaLizaTalkPartKey'
+            exit
+        end
+
     elseif $AmandaLizaTalkCheckLoc = 'amandaroom':
+        if week <> 7:
+            killvar '$AmandaLizaTalkCheckLoc'
+            killvar '$AmandaLizaTalkPartKey'
+            exit
+        end
+
+        if AmandaLizaRoomTalksWeek >= 1:
+            killvar '$AmandaLizaTalkCheckLoc'
+            killvar '$AmandaLizaTalkPartKey'
+            exit
+        end
+
         if $GirlLocation['amanda'] <> 'AmandaRoom':
             killvar '$AmandaLizaTalkCheckLoc'
             killvar '$AmandaLizaTalkPartKey'
@@ -102,7 +305,7 @@
             exit
         end
     else:
-        if AmandaLizaTalkRoll > 28:
+        if AmandaLizaTalkRoll > 40:
             killvar 'AmandaLizaTalkRoll'
             killvar '$AmandaLizaTalkReturnLoc'
             killvar '$AmandaLizaTalkTriggerLoc'
@@ -138,10 +341,15 @@
 
     cls
 
-    *pl '══════════════════════════════════════════════'
-    gs 'PrintTitleLine', ' АМАНДА И ЛИЗЕТТА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    if $AmandaLizaTalkReturnLoc = 'TavernMain':
+        gs 'ShowLocationScreenTitle', 'АМАНДА И ЛИЗЕТТА'
+        gs 'AmandaLizaTalkShowHallImage'
+    else
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' АМАНДА И ЛИЗЕТТА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+    end
 
     if LizetteBanStrict = 1:
         AmandaLizaTalkIntroMode = 2
@@ -208,127 +416,22 @@
     if AmandaLizaTalkNotSpeaking = 1:
         gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
         act $ActUiLabel, $ActUiIconPath:
-            gt $AmandaLizaTalkReturnLoc
+            gt 'AmandaLizaTalkGotoReturn'
         end
     else:
-        if LizetteBanned = 1 and AmandaLizaTalkIntroMode = 1:
-            gs 'ActUiPrepare', 'Похвалить Аманду, что не болтает с Лизеттой', 'generic'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'praise_obedient'
-            end
-        end
-
-        if LizetteBanned = 1 and AmandaLizaTalkNotSpeaking = 0:
-            gs 'ActUiPrepare', 'Строго отчитать Аманду', 'generic'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'scold_strict'
-            end
-        end
-
-        if LizetteBanned = 0 and AmandaLizaTalkNotSpeaking = 0:
-            gs 'ActUiPrepare', 'Запретить болтать с Лизеттой', 'generic'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'forbid_soft'
-            end
-        end
-
-        if LizetteBanned = 0 and AmandaLizaTalkNotSpeaking = 1:
-            gs 'ActUiPrepare', 'Похвалить, что не болтает с Лизеттой', 'generic'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'praise_refused'
-            end
-        end
-
-        if LizetteBanned = 1 and AmandaLizaTalkNotSpeaking = 1:
-            gs 'ActUiPrepare', 'Сказать, что погорячился с запретом', 'generic'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLizaTalkOverhearAction', $AmandaLizaTalkReturnLoc, 'lift_ban'
-            end
-        end
-
-        if AmandaLizaTalkNotSpeaking = 0:
-            gs 'ActUiPrepare', 'Подслушать', 'look'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLizaTalkListenScene', $AmandaLizaTalkReturnLoc
-            end
+        gs 'ActUiPrepare', 'Подслушать', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLizaTalkListenScene', $AmandaLizaTalkReturnLoc
         end
 
         gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
         act $ActUiLabel, $ActUiIconPath:
-            gt $AmandaLizaTalkReturnLoc
+            gt 'AmandaLizaTalkGotoReturn'
         end
     end
 
     killvar 'AmandaLizaTalkNotSpeaking'
     killvar 'AmandaLizaTalkIntroMode'
----
-
-#AmandaLizaTalkOverhearAction
-    $AmandaLizaTalkReturnLoc = $ARGS[0]
-    $AmandaLizaTalkActionId = LCASE($ARGS[1])
-
-    if $AmandaLizaTalkReturnLoc = '':
-        $AmandaLizaTalkReturnLoc = 'TavernMain'
-    end
-
-    cls
-
-    *pl '══════════════════════════════════════════════'
-    gs 'PrintTitleLine', ' АМАНДА И ЛИЗЕТТА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if $AmandaLizaTalkActionId = 'praise_obedient':
-        *p 'Вы похвалили сестрёнку за то, что она послушалась вас и не стала болтать с Лизеттой. На её лице читалось явное облегчение от того, что она не попалась.'
-
-    elseif $AmandaLizaTalkActionId = 'praise_refused':
-        LizetteBanned = 1
-        *p 'Вы подошли к сестрёнке и сказали, что случайно слышали её разговор с Лизеттой. Вы отметили, что она абсолютно правильно не стала с ней болтать и что вы тоже не советуете ей трепаться с юной шлюхой. При слове «шлюха» Аманда зарделась и пообещала с Лизеттой больше не говорить.'
-
-    elseif $AmandaLizaTalkActionId = 'scold_strict':
-        LizetteBanned = 1
-        LizetteBanStrict = 1
-        AmandaRebellion += 1
-        AmandaTrustStefan -= 2
-
-        if AmandaTrustStefan < 0:
-            AmandaTrustStefan = 0
-        end
-
-        *p 'Вы подошли к болтушкам и начали сурово отчитывать сестрёнку за то, что она не выполнила вашего наказа. Аманда расплакалась и убежала в слезах.'
-        gs 'CorruptionProgress', 'amanda', 'talk'
-
-    elseif $AmandaLizaTalkActionId = 'forbid_soft':
-        LizetteBanned = 1
-        LizetteBanStrict = 0
-        *p 'Вы подошли к болтушкам и вмешались в их разговор, отозвав сестрёнку в сторону, якобы по неотложному делу. Как только вы остались вдвоём, сказали Аманде, чтобы она не болтала с Лизеттой — та распущенная девчонка и хорошему не научит. Аманда выслушала вас и пообещала с Лизеттой не говорить.'
-
-    elseif $AmandaLizaTalkActionId = 'lift_ban':
-        LizetteBanned = 0
-        LizetteBanStrict = 0
-        AmandaTrustStefan += 1
-
-        if AmandaTrustStefan > 100:
-            AmandaTrustStefan = 100
-        end
-
-        *p 'Вы подошли к сестрёнке и сказали, что погорячились: не хотите на неё давить, и она имеет полное право говорить с кем хочет. Аманда поблагодарила вас за доверие и пошла по своим делам.'
-
-        if Friends['amanda'] < 50 and RAND(1, 4) = 1:
-            *p 'Ей очень понравилось, что вы ей так доверяете.'
-            Friends['amanda'] += 1
-        end
-    end
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $AmandaLizaTalkReturnLoc
-    end
-
-    killvar '$AmandaLizaTalkReturnLoc'
-    killvar '$AmandaLizaTalkActionId'
 ---
 
 #AmandaLizaTalkListenScene
@@ -338,12 +441,17 @@
         $AmandaLizaTalkReturnLoc = 'TavernMain'
     end
 
+    if LOC($AmandaLizaTalkReturnLoc) = 0:
+        $AmandaLizaTalkReturnLoc = 'TavernMain'
+    end
+
     cls
 
-    *pl '══════════════════════════════════════════════'
-    gs 'PrintTitleLine', ' ПОДСЛУШИВАНИЕ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ПОДСЛУШИВАНИЕ'
+
+    if $AmandaLizaTalkReturnLoc = 'TavernMain':
+        gs 'AmandaLizaTalkShowHallImage'
+    end
 
     *p 'Вы решили подслушать, что будет дальше.'
     *pl ' '
@@ -360,105 +468,29 @@
         gs 'AmandaLizaTalkApplyPhraseEffects', $AmandaLizaTalkPickedId
         AmandaLizaTalkHeardCount += 1
 
+        if $AmandaLizaTalkReturnLoc = 'AmandaRoom':
+            AmandaLizaRoomTalksWeek += 1
+        end
+
+        if $AmandaLizaTalkReturnLoc = 'TavernMain':
+            AmandaLizaHallVisitReady = 0
+        end
+
         if $AmandaLizaTalkPickedId = 'lizette_anal_hint':
             if LOC('AmandaLizetteAnalTalkBump') = 1:
                 gs 'AmandaLizetteAnalTalkBump'
             end
         end
+
+        gs 'AmandaLizetteAnalTalkTryUnlock'
     end
 
     killvar '$AmandaLizaTalkPickedId'
 
     *pl ' '
-    *p 'После разговора Аманда с Лизеттой разошлись. Намеренны ли вы что-то сказать проходящей мимо Аманде?'
-    *pl ' '
-
-    if LizetteBanned = 1:
-        gs 'ActUiPrepare', 'Строго отчитать Аманду', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'AmandaLizaTalkAfterListenAction', $AmandaLizaTalkReturnLoc, 'scold_strict'
-        end
-    end
-
-    if LizetteBanned = 0:
-        gs 'ActUiPrepare', 'Запретить болтать с Лизеттой', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'AmandaLizaTalkAfterListenAction', $AmandaLizaTalkReturnLoc, 'forbid_soft'
-        end
-    end
-
-    if LizetteBanned = 1:
-        gs 'ActUiPrepare', 'Сказать, что погорячился с запретом', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'AmandaLizaTalkAfterListenAction', $AmandaLizaTalkReturnLoc, 'lift_ban'
-        end
-    end
 
     gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt $AmandaLizaTalkReturnLoc
+        gt 'AmandaLizaTalkGotoReturn'
     end
-
-    killvar '$AmandaLizaTalkReturnLoc'
----
-
-#AmandaLizaTalkAfterListenAction
-    $AmandaLizaTalkReturnLoc = $ARGS[0]
-    $AmandaLizaTalkActionId = LCASE($ARGS[1])
-
-    if $AmandaLizaTalkReturnLoc = '':
-        $AmandaLizaTalkReturnLoc = 'TavernMain'
-    end
-
-    cls
-
-    *pl '══════════════════════════════════════════════'
-    gs 'PrintTitleLine', ' АМАНДА И ЛИЗЕТТА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if $AmandaLizaTalkActionId = 'scold_strict':
-        LizetteBanned = 1
-        LizetteBanStrict = 1
-        AmandaRebellion += 1
-        AmandaTrustStefan -= 2
-
-        if AmandaTrustStefan < 0:
-            AmandaTrustStefan = 0
-        end
-
-        *p 'Вы поймали проходящую мимо сестрёнку и строго её отчитали за то, что она болтала с Лизеттой, несмотря на запрет. Аманда расплакалась и убежала в слезах.'
-        gs 'CorruptionProgress', 'amanda', 'talk'
-
-    elseif $AmandaLizaTalkActionId = 'forbid_soft':
-        LizetteBanned = 1
-        LizetteBanStrict = 0
-        *p 'Вы поймали проходящую мимо сестрёнку и сказали ей, чтобы она не болтала с Лизеттой — та распущенная девчонка и хорошему не научит. Аманда выслушала вас и пообещала с Лизеттой не говорить.'
-
-    elseif $AmandaLizaTalkActionId = 'lift_ban':
-        LizetteBanned = 0
-        LizetteBanStrict = 0
-        AmandaTrustStefan += 1
-
-        if AmandaTrustStefan > 100:
-            AmandaTrustStefan = 100
-        end
-
-        *p 'Вы поймали проходящую мимо сестрёнку и сказали, что погорячились: не хотите на неё давить, и она имеет полное право говорить с кем хочет. Аманда поблагодарила вас за доверие и пошла по своим делам.'
-
-        if Friends['amanda'] < 50 and RAND(1, 4) = 1:
-            *p 'Ей очень понравилось, что вы ей так доверяете.'
-            Friends['amanda'] += 1
-        end
-    end
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Вернуться к своим делам', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $AmandaLizaTalkReturnLoc
-    end
-
-    killvar '$AmandaLizaTalkReturnLoc'
-    killvar '$AmandaLizaTalkActionId'
 ---
