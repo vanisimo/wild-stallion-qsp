@@ -15,6 +15,19 @@
     killvar '$AmandaLizaTalkOneShotId'
 ---
 
+#AmandaLizaTalkPhraseFactWitness
+    $AmandaLizaTalkFactId = LCASE($ARGS[0])
+    AmandaLizaTalkFactWitnessOk = 0
+
+    if FactHappened[$AmandaLizaTalkFactId] = 1:
+        if EventWitnessed[$AmandaLizaTalkFactId] = 1 or PlayerKnows[$AmandaLizaTalkFactId] = 1:
+            AmandaLizaTalkFactWitnessOk = 1
+        end
+    end
+
+    killvar '$AmandaLizaTalkFactId'
+---
+
 #AmandaLizaTalkPhraseEligible
     $AmandaLizaTalkPhraseId = LCASE($ARGS[0])
     AmandaLizaTalkPhraseOk = 0
@@ -43,6 +56,72 @@
         if AmandaLizaTalkOneShotOpen = 1:
             if PlayerKnows_AmandaLegareMajorRisk = 1 or PlayerKnows_AmandaLegareFridayRace = 1:
                 AmandaLizaTalkPhraseOk = 1
+            else
+                gs 'AmandaLizaTalkPhraseFactWitness', 'amanda_legare_peek_hall'
+
+                if AmandaLizaTalkFactWitnessOk = 1:
+                    AmandaLizaTalkPhraseOk = 1
+                end
+
+                killvar 'AmandaLizaTalkFactWitnessOk'
+
+                if AmandaLizaTalkPhraseOk = 0:
+                    gs 'AmandaLizaTalkPhraseFactWitness', 'amanda_legare_peek_friday'
+
+                    if AmandaLizaTalkFactWitnessOk = 1:
+                        AmandaLizaTalkPhraseOk = 1
+                    end
+
+                    killvar 'AmandaLizaTalkFactWitnessOk'
+                end
+            end
+        end
+
+        killvar 'AmandaLizaTalkOneShotOpen'
+
+    elseif $AmandaLizaTalkPhraseId = 'witness_legare_friday':
+        gs 'AmandaLizaTalkPhraseOneShotOpen', 'witness_legare_friday'
+
+        if AmandaLizaTalkOneShotOpen = 1:
+            if Fact_AmandaLegareFridayAlley = 1 or PlayerKnows_AmandaLegareFridayRace = 1:
+                AmandaLizaTalkPhraseOk = 1
+            else
+                gs 'AmandaLizaTalkPhraseFactWitness', 'amanda_legare_peek_friday'
+
+                if AmandaLizaTalkFactWitnessOk = 1:
+                    AmandaLizaTalkPhraseOk = 1
+                end
+
+                killvar 'AmandaLizaTalkFactWitnessOk'
+            end
+        end
+
+        killvar 'AmandaLizaTalkOneShotOpen'
+
+    elseif $AmandaLizaTalkPhraseId = 'witness_alley_player':
+        gs 'AmandaLizaTalkPhraseOneShotOpen', 'witness_alley_player'
+
+        if AmandaLizaTalkOneShotOpen = 1:
+            if AmandaPlayerAlleySexEver = 1:
+                AmandaLizaTalkPhraseOk = 1
+            else
+                gs 'AmandaLizaTalkPhraseFactWitness', 'amanda_alley_player'
+
+                if AmandaLizaTalkFactWitnessOk = 1:
+                    AmandaLizaTalkPhraseOk = 1
+                end
+
+                killvar 'AmandaLizaTalkFactWitnessOk'
+
+                if AmandaLizaTalkPhraseOk = 0:
+                    gs 'AmandaLizaTalkPhraseFactWitness', 'amanda_alley_mmf'
+
+                    if AmandaLizaTalkFactWitnessOk = 1:
+                        AmandaLizaTalkPhraseOk = 1
+                    end
+
+                    killvar 'AmandaLizaTalkFactWitnessOk'
+                end
             end
         end
 
@@ -54,6 +133,14 @@
         if AmandaLizaTalkOneShotOpen = 1:
             if AmandaNeighborBoysStage >= 1 and sluttiness['amanda'] >= 20:
                 AmandaLizaTalkPhraseOk = 1
+            else:
+                gs 'AmandaLizaTalkPhraseFactWitness', 'amanda_neighbors_peek'
+
+                if AmandaLizaTalkFactWitnessOk = 1:
+                    AmandaLizaTalkPhraseOk = 1
+                end
+
+                killvar 'AmandaLizaTalkFactWitnessOk'
             end
         end
 
@@ -67,6 +154,16 @@
                 if $LastGirlChoiceChoice['amanda'] = 'watch' or $LastGirlChoiceChoice['amanda'] = 'encourage':
                     AmandaLizaTalkPhraseOk = 1
                 end
+            end
+
+            if AmandaLizaTalkPhraseOk = 0:
+                gs 'AmandaLizaTalkPhraseFactWitness', 'amanda_hall_lewd_witness'
+
+                if AmandaLizaTalkFactWitnessOk = 1:
+                    AmandaLizaTalkPhraseOk = 1
+                end
+
+                killvar 'AmandaLizaTalkFactWitnessOk'
             end
         end
 
@@ -332,6 +429,8 @@
     gs 'AmandaLizaTalkPoolTry', 'ban_guys', 5
     gs 'AmandaLizaTalkPoolTry', 'legare_deflower', 5
     gs 'AmandaLizaTalkPoolTry', 'witness_legare_hall', 4
+    gs 'AmandaLizaTalkPoolTry', 'witness_legare_friday', 4
+    gs 'AmandaLizaTalkPoolTry', 'witness_alley_player', 4
     gs 'AmandaLizaTalkPoolTry', 'witness_neighbors', 4
     gs 'AmandaLizaTalkPoolTry', 'witness_lewd_hall', 4
     gs 'AmandaLizaTalkPoolTry', 'stefan_stairs', 4
@@ -471,6 +570,12 @@
     elseif $AmandaLizaTalkEffectId = 'witness_legare_hall':
         gs 'AmandaLizaTalkApplyInfluence', 28, 16, 22
         AmandaLizaTalkPhraseHeard['witness_legare_hall'] = 1
+    elseif $AmandaLizaTalkEffectId = 'witness_legare_friday':
+        gs 'AmandaLizaTalkApplyInfluence', 32, 18, 24
+        AmandaLizaTalkPhraseHeard['witness_legare_friday'] = 1
+    elseif $AmandaLizaTalkEffectId = 'witness_alley_player':
+        gs 'AmandaLizaTalkApplyInfluence', 26, 14, 20
+        AmandaLizaTalkPhraseHeard['witness_alley_player'] = 1
     elseif $AmandaLizaTalkEffectId = 'witness_neighbors':
         gs 'AmandaLizaTalkApplyInfluence', 30, 18, 24
         AmandaLizaTalkPhraseHeard['witness_neighbors'] = 1

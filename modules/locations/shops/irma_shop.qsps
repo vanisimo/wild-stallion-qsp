@@ -9,6 +9,10 @@
     clr
     cla
 
+    if MayorClerkAdviceGiven = 1 and Act1MoralUnlocked = 0:
+        Act1SurveySuit = 1
+    end
+
     $IrmaShopTabIncoming = LCASE($ARGS[0])
     $IrmaShopReturnIncoming = $ARGS[1]
 
@@ -80,6 +84,17 @@
         *p 'Лавка закрыта. Причина: ' + $ClosedReason + '.'
 
         *pl ' '
+
+        gs 'SundayVisitIrmaIngaCanEavesdrop'
+
+        if SundayVisitIrmaIngaCanEavesdrop = 1:
+            act '<b>Подслушать</b>', 'images/common/ui/actions/look.png':
+                killvar '$IrmaShopHoldTab'
+                gt 'SundayVisitIrmaInga'
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaCanEavesdrop'
 
         act '<b>Квартал ремесленников</b>', 'images/common/ui/actions/craftsmen.png':
             killvar '$IrmaShopHoldTab'

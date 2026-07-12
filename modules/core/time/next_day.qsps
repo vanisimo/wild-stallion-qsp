@@ -45,20 +45,28 @@
         end
     end
 
+    if MayorFirstTalkDone = 0:
+        gs 'UpdateMayorCityTaxStreak'
+    end
+
     ! ====================== ПЕРЕХОД ДАТЫ ======================
 
     gs 'AdvanceCalendarOneDay'
 
-    ! ====================== ПАНЕЛЬ ПРЕДМЕТОВ И ОПИСАНИЕ ГГ ======================
+    if week = 5 and FridayDanceSponsorDay <> day:
+        gt 'FridayDanceSponsorPrompt'
+    end
 
+    gt 'NextDaySummary'
+---
+
+#NextDaySummary
     gs 'AddGlobalButtons'
 
     $PanelRestoreAfterRefresh = ''
     PanelCustomActive = 0
 
     gs 'PanelPlayerStatus'
-
-    ! ====================== ВЫВОД ИТОГА ======================
 
     *pl '══════════════════════════════════════════════'
     *pl ' НАСТУПИЛ НОВЫЙ ДЕНЬ'
@@ -85,8 +93,7 @@
         gs 'DailyAftermathPrintMorning'
     end
 
-
-     if $LastDayTavernEventText <> '':
+    if $LastDayTavernEventText <> '':
         *pl 'Событие дня:'
         *pl $LastDayTavernEventText
 
@@ -178,6 +185,14 @@
     *pl 'Пиво: ' + STR(LastDayBeerUsed)
     *pl ' '
 
+    if LastDayDanceSponsorWine > 0 or LastDayDanceSponsorBeer > 0 or LastDayDanceSponsorFood > 0:
+        *pl 'Спонсорство пятничных танцев:'
+        *pl 'Вино: ' + STR(LastDayDanceSponsorWine)
+        *pl 'Пиво: ' + STR(LastDayDanceSponsorBeer)
+        *pl 'Продукты: ' + STR(LastDayDanceSponsorFood)
+        *pl ' '
+    end
+
     *pl 'Остатки:'
     *pl 'Продукты: ' + STR(productnum)
     *pl 'Вино: ' + STR(winenum)
@@ -203,8 +218,16 @@
     *pl 'Репутация таверны: ' + STR(tavern_reputation) + ' / 100'
     *pl ' '
 
+    if LOC('Act1SurveyMarkIncome') = 1:
+        gs 'Act1SurveyMarkIncome'
+    end
+
     act '<b>Продолжить</b>', 'images/common/ui/actions/return.png':
-        gt 'TavernMain'
+        if LOC('Act1MoralUnlockTryAfterSummary') = 1:
+            gs 'Act1MoralUnlockTryAfterSummary'
+        else:
+            gt 'TavernMain'
+        end
     end
 ---
 
@@ -232,6 +255,14 @@
 
     if week > 7:
         week = 1
+    end
+
+    if week = 6:
+        FridayDanceSponsored = 0
+        FridayDanceSponsorBoostApplied = 0
+        LastDayDanceSponsorWine = 0
+        LastDayDanceSponsorBeer = 0
+        LastDayDanceSponsorFood = 0
     end
 
     gs 'AmandaLizaTalkResetWeeklyCounters'
@@ -298,6 +329,7 @@
     SandraDraupnirFridayToday = 0
     ClarissaIntimStepToday = 0
     AmandaLizaHallVisitReady = 0
+    AmandaDanceBlockedTonight = 0
 
     TavernHallEventDay = 0
     TavernHallEventTime = 0

@@ -63,23 +63,51 @@
 
     *pl ' '
 
-    if LOC('BirthCertificateCanSearchSandraChest') = 1:
-        gs 'BirthCertificateCanSearchSandraChest'
-    end
-
     act '<b>Осмотреть комнату</b>', 'images/common/ui/actions/look.png':
-        *pl ' '
-        *p 'Вы осматриваете комнату Сандры внимательнее.'
-        *p 'Вещи лежат аккуратно, кровать застелена, а возле стены стоит сундук, в котором она хранит одежду и личные мелочи.'
-    end
-
-    if BirthCertificateCanSearch = 1:
-        act '<b>Осмотреть сундук внимательнее</b>', 'images/common/ui/actions/look.png':
-            gt 'BirthCertificateSearchSandraChest'
-        end
+        gt 'SandraRoomInspect'
     end
 
     act '<b>Выйти в коридор</b>', 'images/common/ui/actions/floor.png':
         gt 'TavernSecondFloor'
+    end
+---
+
+#SandraRoomInspect
+    cls
+
+    gs 'AddGlobalButtons'
+    gs 'UpdateGirlLocations'
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА САНДРЫ'
+
+    gs 'ShowLocationImage', 'sandra_room', 'full', 'png'
+
+    *p 'Вы осматриваете комнату Сандры внимательнее.'
+    *p 'Вещи лежат аккуратно, кровать застелена ровно, на столике — расчёска и узелок сушёных трав.'
+
+    *pl ' '
+
+    if LOC('SandraLermontLetterCanSearch') = 1:
+        gs 'SandraLermontLetterCanSearch'
+    end
+
+    if SandraLermontLetterCanSearch = 1:
+        gs 'SandraRoomInspectLetterHintText'
+    else:
+        *p 'Возле стены стоит сундук с одеждой и личными мелочами — всё на своих местах, без намёка на чужое любопытство.'
+    end
+
+    *pl ' '
+
+    if SandraLermontLetterCanSearch = 1:
+        gs 'ActUiPrepare', 'Осмотреть сундук', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraLermontLetterSearchChest'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraRoom'
     end
 ---

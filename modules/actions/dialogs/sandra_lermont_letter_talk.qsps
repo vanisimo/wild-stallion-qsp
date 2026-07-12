@@ -1,0 +1,90 @@
+! ================================================
+! FILE: modules/actions/dialogs/sandra_lermont_letter_talk.qsps
+! MODULE: actions/dialogs
+! Разговор с Сандрой о письме в сундуке (arc one-shot)
+! ================================================
+
+#SandraLermontLetterCanTalk
+    SandraLermontLetterCanTalk = 0
+
+    if SandraLermontLetterRead <> 1:
+        exit
+    end
+
+    if SandraLermontLetterTalkDone = 1:
+        exit
+    end
+
+    if SandraBirthRevealTalkDone = 1:
+        exit
+    end
+
+    SandraLermontLetterCanTalk = 1
+---
+
+#SandraTalkAboutLermontLetter
+    *clr
+    clr
+    cla
+
+    $SandraLermontLetterTalkReturnLoc = $ARGS[0]
+
+    if $SandraLermontLetterTalkReturnLoc = '':
+        $SandraLermontLetterTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($SandraLermontLetterTalkReturnLoc) = 0:
+        $SandraLermontLetterTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'sandra'
+    gs 'MenuGirlCalcConditions', 'sandra', $SandraLermontLetterTalkReturnLoc
+
+    if MenuCanTalk = 0:
+        gs 'GirlTalkClosedScreen', 'sandra', $SandraLermontLetterTalkReturnLoc
+        exit
+    end
+
+    gs 'SandraLermontLetterCanTalk'
+
+    if SandraLermontLetterCanTalk = 0:
+        gt 'GirlTalk', 'sandra', $SandraLermontLetterTalkReturnLoc
+        exit
+    end
+
+    gs 'ShowGirlSidebar', 'sandra'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' САНДРА О ПИСЬМЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ShowGirlTalkContextImage') = 1:
+        gs 'ShowGirlTalkContextImage', 'sandra', 'large'
+    end
+
+    gs 'SandraLermontLetterTalkIntroText'
+    *pl ' '
+    gs 'SandraLermontLetterTalkStoryText'
+    *pl ' '
+    gs 'SandraLermontLetterTalkClosingText'
+
+    SandraLermontLetterTalkDone = 1
+
+    Friends['sandra'] += 1
+    otkroven['sandra'] += 1
+    SandraFamilyConcern += 1
+
+    gs 'ClampGirlSocialStats', 'sandra'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поговорить ещё', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlTalk', 'sandra', $SandraLermontLetterTalkReturnLoc
+    end
+
+    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        gt $SandraLermontLetterTalkReturnLoc
+    end
+---

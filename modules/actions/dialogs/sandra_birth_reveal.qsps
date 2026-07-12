@@ -15,15 +15,30 @@
         exit
     end
 
-    if Friends['sandra'] < 16 and otkroven['sandra'] < 20:
-        exit
-    end
-
-    if FamilyTrust < 35:
-        exit
+    if SandraBirthRevealTiming = 1:
+        if SandraBirthRevealNightPending = 1:
+            exit
+        end
     end
 
     SandraBirthRevealCanTalk = 1
+---
+
+#SandraBirthRevealNightScene
+    cls
+
+    gs 'EnsureGirlData', 'sandra'
+    gs 'SandraBirthRevealNightComfortText'
+
+    SandraBirthRevealNightPending = 0
+    SandraBirthRevealTiming = 0
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Слушать дальше', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraTalkAboutBirthSecret', 'PlayerRoom'
+    end
 ---
 
 #SandraTalkAboutBirthSecret
@@ -53,13 +68,6 @@
 
     if SandraBirthRevealCanTalk = 0:
         gt 'GirlTalk', 'sandra', $SandraBirthRevealReturnLoc
-        exit
-    end
-
-    gs 'UsefulTalkCheck', 'sandra', 'family'
-
-    if UsefulTalkResult = 0:
-        gt 'GirlTalkBlockedUsefulTopic', 'sandra', $SandraBirthRevealReturnLoc
         exit
     end
 
@@ -98,7 +106,6 @@
     Fact_SandraBirthSecretRevealed = 1
     PlayerKnowsIllegitimateNoble = 1
 
-    gs 'UsefulTalkRegister', 'sandra', 'family'
     gs 'ClampGirlSocialStats', 'sandra'
 
     *pl ' '

@@ -124,12 +124,23 @@
     $AmandaLizetteNextEvent = ''
     gs 'AmandaLizetteEnsureVars'
 
-    if LizetteKnown = 1 and LizetteVisitStage = 1 and week = 7 and time >= 3 and time <= 4:
+    gs 'GetCitySchedulePhase'
+    DebugAmandaLizaRoomVisitPhaseOk = 0
+
+    if week = 7 and time >= 3 and time <= 4 and $CitySchedulePhase = 'sunday_visits':
+        DebugAmandaLizaRoomVisitPhaseOk = 1
+    end
+
+    killvar '$CitySchedulePhase'
+
+    if LizetteKnown = 1 and LizetteVisitStage = 1 and DebugAmandaLizaRoomVisitPhaseOk = 1:
         if $GirlLocation['amanda'] = 'AmandaRoom' and $GirlLocation['lizette'] = 'AmandaRoom':
             AmandaLizetteCanStart = 1
             $AmandaLizetteNextEvent = 'room_visit'
         end
     end
+
+    killvar 'DebugAmandaLizaRoomVisitPhaseOk'
 
     if AmandaLizetteCanStart = 0:
         if LizetteBanned = 1 and LizetteSecretVisit = 0 and AmandaRebellion >= 3 and time = 5:

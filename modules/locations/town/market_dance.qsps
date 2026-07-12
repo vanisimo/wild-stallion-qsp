@@ -59,6 +59,13 @@
     *pl ' '
     *p 'Пятничный вечер. Лавки закрыты, на площади горят фонари, музыканты настраивают инструменты, а горожане собираются небольшими кругами.'
     *p 'Здесь можно услышать больше, чем за целую неделю обычных разговоров.'
+
+    if FridayDanceSponsored = 1:
+        gs 'FridayDanceSponsorStallText'
+        *p $FridayDanceSponsorStallText
+        killvar '$FridayDanceSponsorStallText'
+    end
+
     *pl ' '
 
     if FridayDancesCount >= 5:
@@ -169,12 +176,6 @@
         gt 'FridayDanceNpcTalkMenu', 'MarketDance'
     end
 
-    if LOC('FridayDanceTreatMenu') = 1:
-        act '<b>Угостить</b>', 'images/common/ui/tavern.png':
-            gt 'FridayDanceTreatMenu'
-        end
-    end
-
     if $GirlLocation['becky'] = 'DanceHall' and LOC('BeckyDance') = 1:
         act '<b>Бекки</b>', 'images/common/ui/actions/dance.png':
             gt 'BeckyDance'
@@ -191,7 +192,7 @@
         end
     end
 
-    if $GirlLocation['amanda'] = 'DanceHall' and LOC('AmandaDance') = 1:
+    if $GirlLocation['amanda'] = 'DanceHall' and LOC('AmandaDance') = 1 and AmandaDanceBlockedTonight = 0:
         act '<b>Аманда</b>', 'images/common/ui/actions/dance.png':
             if AmandaDanceDressReady = 0:
                 gt 'FridayDanceSisterLimited', 'amanda'

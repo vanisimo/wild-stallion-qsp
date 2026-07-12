@@ -15,6 +15,24 @@
     killvar '$SundayVisitBeckySandraOneShotId'
 ---
 
+#SundayVisitBeckySandraPhraseFactWitness
+    $SundayVisitBeckySandraFactId = LCASE($ARGS[0])
+    SundayVisitBeckySandraPhraseOk = 0
+
+    gs 'SundayVisitBeckySandraPhraseOneShotOpen', $SundayVisitBeckySandraFactId
+
+    if SundayVisitBeckySandraOneShotOpen = 1:
+        if FactHappened[$SundayVisitBeckySandraFactId] = 1:
+            if EventWitnessed[$SundayVisitBeckySandraFactId] = 1 or PlayerKnows[$SundayVisitBeckySandraFactId] = 1:
+                SundayVisitBeckySandraPhraseOk = 1
+            end
+        end
+    end
+
+    killvar 'SundayVisitBeckySandraOneShotOpen'
+    killvar '$SundayVisitBeckySandraFactId'
+---
+
 #SundayVisitBeckySandraPhraseEligible
     $SundayVisitBeckySandraPhraseId = LCASE($ARGS[0])
     SundayVisitBeckySandraPhraseOk = 0
@@ -36,17 +54,25 @@
         end
 
     elseif $SundayVisitBeckySandraPhraseId = 'becky_two_men':
-        gs 'SundayVisitBeckySandraPhraseOneShotOpen', 'becky_two_men'
+        gs 'SundayVisitBeckySandraPhraseFactWitness', 'becky_two_men'
 
-        if SundayVisitBeckySandraOneShotOpen = 1:
-            if FactHappened['becky_two_men'] = 1:
-                if EventWitnessed['becky_two_men'] = 1 or PlayerKnows['becky_two_men'] = 1:
-                    SundayVisitBeckySandraPhraseOk = 1
-                end
-            end
-        end
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_backroom_guard':
+        gs 'SundayVisitBeckySandraPhraseFactWitness', 'becky_backroom_guard'
 
-        killvar 'SundayVisitBeckySandraOneShotOpen'
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_backroom_neighbor':
+        gs 'SundayVisitBeckySandraPhraseFactWitness', 'becky_backroom_neighbor'
+
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_backroom_clerk':
+        gs 'SundayVisitBeckySandraPhraseFactWitness', 'becky_backroom_clerk'
+
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_backroom_old_client':
+        gs 'SundayVisitBeckySandraPhraseFactWitness', 'becky_backroom_old_client'
+
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_backroom_lucas':
+        gs 'SundayVisitBeckySandraPhraseFactWitness', 'becky_backroom_lucas'
+
+    elseif $SundayVisitBeckySandraPhraseId = 'becky_backroom_eddie_near':
+        gs 'SundayVisitBeckySandraPhraseFactWitness', 'becky_backroom_eddie_near'
 
     elseif $SundayVisitBeckySandraPhraseId = 'sandra_lewd_hall':
         if $LastGirlChoiceEvent['sandra'] = 'hall_lewd':
@@ -65,6 +91,10 @@
         if SundayVisitBeckySandraOneShotOpen = 1:
             if PlayerKnows_SandraDraupnirFriday = 1 or SandraDraupnirAffairStage >= 3:
                 SundayVisitBeckySandraPhraseOk = 1
+            elseif FactHappened['sandra_draupnir_friday_peek'] = 1:
+                if EventWitnessed['sandra_draupnir_friday_peek'] = 1 or PlayerKnows['sandra_draupnir_friday_peek'] = 1:
+                    SundayVisitBeckySandraPhraseOk = 1
+                end
             end
         end
 
@@ -145,6 +175,12 @@
     gs 'SundayVisitBeckySandraPoolTry', 'becky_stefan_gossip', 2
     gs 'SundayVisitBeckySandraPoolTry', 'sandra_gnome_friday', 2
     gs 'SundayVisitBeckySandraPoolTry', 'becky_two_men', 1
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_backroom_guard', 1
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_backroom_neighbor', 1
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_backroom_clerk', 1
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_backroom_old_client', 1
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_backroom_lucas', 1
+    gs 'SundayVisitBeckySandraPoolTry', 'becky_backroom_eddie_near', 1
     gs 'SundayVisitBeckySandraPoolTry', 'sandra_lewd_hall', 1
     gs 'SundayVisitBeckySandraPoolTry', 'ambient_family_tavern', 0
     gs 'SundayVisitBeckySandraPoolTry', 'ambient_sunday_church', 0
@@ -185,6 +221,33 @@
     if $SundayVisitBeckySandraEffectId = 'becky_two_men':
         SandraBeckyTalkPhraseHeard['becky_two_men'] = 1
         FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_backroom_guard':
+        SandraBeckyTalkPhraseHeard['becky_backroom_guard'] = 1
+        FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_backroom_neighbor':
+        SandraBeckyTalkPhraseHeard['becky_backroom_neighbor'] = 1
+        FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_backroom_clerk':
+        SandraBeckyTalkPhraseHeard['becky_backroom_clerk'] = 1
+        FamilyTension += 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_backroom_old_client':
+        SandraBeckyTalkPhraseHeard['becky_backroom_old_client'] = 1
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_backroom_lucas':
+        SandraBeckyTalkPhraseHeard['becky_backroom_lucas'] = 1
+        FamilyTension += 1
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'becky_backroom_lucas', 'rumor'
+        end
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_backroom_eddie_near':
+        SandraBeckyTalkPhraseHeard['becky_backroom_eddie_near'] = 1
+        FamilyTension += 2
 
     elseif $SundayVisitBeckySandraEffectId = 'becky_stefan_gossip':
         FamilyTension += 1

@@ -16,6 +16,50 @@
 ! через локатор #AmandaDanceAlleyEvent
 ! ================================================
 
+#AmandaDanceAlleyCanOffer
+    AmandaDanceAlleyCanOffer = 0
+
+    if AmandaHomeStage < 1:
+        exit
+    end
+
+    if AmandaDanceKiss = 0:
+        exit
+    end
+
+    if AmandaDanceAlley = 1:
+        exit
+    end
+
+    AmandaDanceAlleyCanOffer = 1
+---
+
+#AmandaDanceAlleyMmfCanStart
+    AmandaDanceAlleyMmfCanStart = 0
+
+    if AmandaAlleyMmfDone = 1:
+        exit
+    end
+
+    if AmandaAlleyCaught < 2:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    if AmandaAlleyClose = 0:
+        exit
+    end
+
+    if AmandaHomeSex = 0:
+        exit
+    end
+
+    AmandaDanceAlleyMmfCanStart = 1
+---
+
 #AmandaDanceAlleyEvent
     *clr
     clr
@@ -123,6 +167,17 @@
     end
 
     if AmandaAlleyClose = 1:
+        gs 'AmandaDanceAlleyMmfCanStart'
+
+        if AmandaDanceAlleyMmfCanStart = 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Принять компанию прохожего', ''
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleyMmfScene'
+            }
+        end
+
+        killvar 'AmandaDanceAlleyMmfCanStart'
+
         gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Продолжить близость', ''
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gt 'AmandaDanceAlleyToSexScene'
@@ -289,8 +344,17 @@
     end
 
     AmandaAlleyAfterSex = 1
+    AmandaPlayerAlleySexEver = 1
     AmandaSecretiveness += 1
     AmandaScandalLevel += 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'amanda_alley_player'
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'amanda_alley_player', 'witness'
+    end
 
     if LOC('AmandaDanceAlleyBeforeSexText') = 1:
         gs 'AmandaDanceAlleyBeforeSexText'
@@ -316,6 +380,57 @@
 ! Завершение подворотни и возврат на танцы
 ! ================================================
 
+#AmandaDanceAlleyMmfScene
+    *clr
+    clr
+    cla
+
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    AmandaAlleyMmfDone = 1
+    AmandaAlleyAfterSex = 1
+    AmandaPlayerAlleySexEver = 1
+    AmandaScandalLevel += 2
+    TavernScandal += 2
+    sluttiness['amanda'] += 2
+    AmandaNpcPath += 1
+    AmandaPlayerPath += 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'amanda_alley_mmf'
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'amanda_alley_mmf', 'witness'
+    end
+
+    gs 'RegisterSex', 'amanda', 'group', 0, 1
+    vaginalacts['amanda'] += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ — ТРОЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyMmfText') = 1:
+        gs 'AmandaDanceAlleyMmfText'
+    else:
+        *p 'Из тени выходит пьяный горожанин — слишком смелый для своего ранга, но слишком пьян, чтобы стесняться.'
+        *p 'Аманда вздрагивает, потом смотрит на вас: не «спаси», а «решай».'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyEnd'
+    end
+
+    killvar '$AmandaAlleyGirl'
+---
+
 #AmandaDanceAlleyEnd
     *clr
     clr
@@ -324,6 +439,10 @@
     $AmandaAlleyGirl = 'amanda'
 
     gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    if AmandaAlleyAfterSex = 1:
+        AmandaPlayerAlleySexEver = 1
+    end
 
     *pl '══════════════════════════════════════════════'
     *pl ' ВОЗВРАЩЕНИЕ НА ПЛОЩАДЬ'

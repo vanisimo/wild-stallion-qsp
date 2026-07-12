@@ -39,12 +39,23 @@
     ! ====================== ВИЗИТ В КОМНАТУ АМАНДЫ ======================
 
     if AmandaLizetteCanStart = 0:
-        if LizetteKnown = 1 and LizetteVisitStage = 1 and week = 7 and time >= 3 and time <= 4:
+        gs 'GetCitySchedulePhase'
+        AmandaLizetteRoomVisitPhaseOk = 0
+
+        if week = 7 and time >= 3 and time <= 4 and $CitySchedulePhase = 'sunday_visits':
+            AmandaLizetteRoomVisitPhaseOk = 1
+        end
+
+        killvar '$CitySchedulePhase'
+
+        if LizetteKnown = 1 and LizetteVisitStage = 1 and AmandaLizetteRoomVisitPhaseOk = 1:
             if $GirlLocation['amanda'] = 'AmandaRoom' and $GirlLocation['lizette'] = 'AmandaRoom':
                 AmandaLizetteCanStart = 1
                 $AmandaLizetteNextEvent = 'room_visit'
             end
         end
+
+        killvar 'AmandaLizetteRoomVisitPhaseOk'
     end
 
     ! ====================== ТАЙНЫЙ ВИЗИТ ПОСЛЕ ЗАПРЕТА ======================
@@ -146,6 +157,15 @@
     if time < 3 or time > 4:
         exit
     end
+
+    gs 'GetCitySchedulePhase'
+
+    if $CitySchedulePhase <> 'sunday_visits':
+        killvar '$CitySchedulePhase'
+        exit
+    end
+
+    killvar '$CitySchedulePhase'
 
     gs 'UpdateGirlLocations'
 

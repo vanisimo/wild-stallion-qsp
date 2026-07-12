@@ -23,11 +23,134 @@
         FridayDanceMayorSpeechSeen = 0
         FridayDanceRumorCount = 0
         FridayDanceNpcTalkCount = 0
-        FridayDanceTreatWineUsed = 0
-        FridayDanceTreatBeerUsed = 0
-        FridayDanceTreatFoodUsed = 0
+        FridayDanceSponsorBoostApplied = 0
         BeckyFridayContactToday = 0
     end
+
+    if FridayDanceSponsored = 1 and FridayDanceSponsorBoostApplied = 0:
+        gs 'FridayDanceSponsorApplyGirlBoost'
+        FridayDanceSponsorBoostApplied = 1
+    end
+---
+
+! ================================================
+! FILE: modules/events/dance/friday_dance_core.qsps
+! Вопрос Сандры при смене дня на пятницу
+! ================================================
+
+#FridayDanceSponsorPrompt
+    cls
+
+    gs 'AddGlobalButtons'
+
+    $PanelRestoreAfterRefresh = ''
+    PanelCustomActive = 0
+
+    gs 'PanelPlayerStatus'
+
+    *clr
+    clr
+    cla
+
+    gs 'FridayDanceSponsorPromptText'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЯТНИЧНЫЕ ТАНЦЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceSponsorPromptText
+    *pl ' '
+    *pl 'Нужно из запасов: вино ' + STR(FridayDanceSponsorWineCost) + ', пиво ' + STR(FridayDanceSponsorBeerCost) + ', еда ' + STR(FridayDanceSponsorFoodCost)
+    *pl 'Сейчас: вино ' + STR(winenum) + ', пиво ' + STR(beernum) + ', еда ' + STR(productnum)
+    *pl ' '
+
+    gs 'FridayDanceSponsorCanAfford'
+
+    if FridayDanceSponsorCanAfford = 1:
+        gs 'ActUiPrepare', 'Спонсировать танцы', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FridayDanceSponsorApply', 'yes'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Не спонсировать', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FridayDanceSponsorApply', 'no'
+    end
+
+    killvar 'FridayDanceSponsorCanAfford'
+---
+
+#FridayDanceSponsorCanAfford
+    FridayDanceSponsorCanAfford = 0
+
+    if winenum >= FridayDanceSponsorWineCost and beernum >= FridayDanceSponsorBeerCost and productnum >= FridayDanceSponsorFoodCost:
+        FridayDanceSponsorCanAfford = 1
+    end
+---
+
+#FridayDanceSponsorApply
+    $FridayDanceSponsorChoice = LCASE($ARGS[0])
+
+    FridayDanceSponsorDay = day
+    LastDayDanceSponsorWine = 0
+    LastDayDanceSponsorBeer = 0
+    LastDayDanceSponsorFood = 0
+    FridayDanceSponsored = 0
+
+    if $FridayDanceSponsorChoice = 'yes':
+        gs 'FridayDanceSponsorCanAfford'
+
+        if FridayDanceSponsorCanAfford = 1:
+            winenum -= FridayDanceSponsorWineCost
+            beernum -= FridayDanceSponsorBeerCost
+            productnum -= FridayDanceSponsorFoodCost
+
+            FridayDanceSponsored = 1
+            LastDayDanceSponsorWine = FridayDanceSponsorWineCost
+            LastDayDanceSponsorBeer = FridayDanceSponsorBeerCost
+            LastDayDanceSponsorFood = FridayDanceSponsorFoodCost
+        end
+
+        killvar 'FridayDanceSponsorCanAfford'
+    end
+
+    killvar '$FridayDanceSponsorChoice'
+
+    gt 'NextDaySummary'
+---
+
+#FridayDanceSponsorApplyGirlBoost
+    gs 'UpdateGirlLocations'
+    gs 'FridayDanceSponsorBoostGirl', 'amanda'
+    gs 'FridayDanceSponsorBoostGirl', 'melissa'
+    gs 'FridayDanceSponsorBoostGirl', 'becky'
+    gs 'FridayDanceSponsorBoostGirl', 'clarissa'
+    gs 'FridayDanceSponsorBoostGirl', 'inga'
+---
+
+#FridayDanceSponsorBoostGirl
+    $FridayDanceSponsorGirl = LCASE($ARGS[0])
+
+    if $FridayDanceSponsorGirl = '':
+        exit
+    end
+
+    if $GirlLocation[$FridayDanceSponsorGirl] <> 'DanceHall':
+        killvar '$FridayDanceSponsorGirl'
+        exit
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $FridayDanceSponsorGirl
+    end
+
+    sluttiness[$FridayDanceSponsorGirl] += 2
+    otkroven[$FridayDanceSponsorGirl] += 2
+
+    gs 'ClampGirlSocialStats', $FridayDanceSponsorGirl
+
+    killvar '$FridayDanceSponsorGirl'
 ---
 
 ! ================================================
@@ -52,7 +175,10 @@
 
     FridayDanceMayorSpeechSeen = 1
     MayorSpeechSeenCount += 1
-    CityValue += 1
+
+    if FridayDanceSponsored = 1:
+        CityValue += 1
+    end
 
     if debug = 1:
         *pl '[DEBUG DANCE] CityValue: ' + STR(CityValue)
@@ -309,150 +435,6 @@
     if FridayDancesCount > 5:
         FridayDancesCount = 5
     end
----
-
-! ================================================
-! FILE: modules/events/dance/friday_dance_core.qsps
-! Угощения на площади (вино / пиво / еда из запасов трактира)
-! ================================================
-
-#FridayDanceTreatMenu
-    *clr
-    clr
-    cla
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' УГОЩЕНИЕ НА ПЛОЩАДИ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-    *p 'Из запасов трактира можно угостить знакомых на танцах. Праздничная атмосфера быстро снимает дневную сдержанность.'
-    *pl ' '
-    *pl 'Запасы: вино ' + STR(winenum) + ', пиво ' + STR(beernum) + ', еда ' + STR(productnum)
-    *pl ' '
-
-    if FridayDanceTreatWineUsed = 0 and winenum >= 3:
-        gs 'ActUiPrepare', 'Угостить вином (3 ед.)', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceTreatApply', 'wine'
-        end
-    end
-
-    if FridayDanceTreatBeerUsed = 0 and beernum >= 3:
-        gs 'ActUiPrepare', 'Угостить пивом (3 ед.)', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceTreatApply', 'beer'
-        end
-    end
-
-    if FridayDanceTreatFoodUsed = 0 and productnum >= 3:
-        gs 'ActUiPrepare', 'Угостить закусками (3 ед.)', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceTreatApply', 'food'
-        end
-    end
-
-    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MarketDance'
-    end
----
-
-#FridayDanceTreatApply
-    $FridayDanceTreatType = LCASE($ARGS[0])
-
-    if $FridayDanceTreatType = 'wine':
-        if FridayDanceTreatWineUsed = 1 or winenum < 3:
-            gt 'FridayDanceTreatMenu'
-        end
-
-        winenum -= 3
-        FridayDanceTreatWineUsed = 1
-        FridayDanceTreatSlutGain = 2
-        FridayDanceTreatOtkrovenGain = 2
-        FridayDanceTreatCorruptionGain = 1
-    elseif $FridayDanceTreatType = 'beer':
-        if FridayDanceTreatBeerUsed = 1 or beernum < 3:
-            gt 'FridayDanceTreatMenu'
-        end
-
-        beernum -= 3
-        FridayDanceTreatBeerUsed = 1
-        FridayDanceTreatSlutGain = 1
-        FridayDanceTreatOtkrovenGain = 1
-        FridayDanceTreatCorruptionGain = 1
-    elseif $FridayDanceTreatType = 'food':
-        if FridayDanceTreatFoodUsed = 1 or productnum < 3:
-            gt 'FridayDanceTreatMenu'
-        end
-
-        productnum -= 3
-        FridayDanceTreatFoodUsed = 1
-        FridayDanceTreatSlutGain = 1
-        FridayDanceTreatOtkrovenGain = 2
-        FridayDanceTreatCorruptionGain = 1
-    else:
-        killvar '$FridayDanceTreatType'
-        gt 'FridayDanceTreatMenu'
-    end
-
-    *clr
-    clr
-    cla
-
-    gs 'FridayDanceTreatText', $FridayDanceTreatType
-    gs 'FridayDanceTreatApplyToGirls'
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' УГОЩЕНИЕ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-    *p $FridayDanceTreatText
-    *pl ' '
-
-    FamilyCorruptionPoints += FridayDanceTreatCorruptionGain
-
-    gs 'FridayDanceAdvanceRound'
-
-    killvar '$FridayDanceTreatType'
-    killvar 'FridayDanceTreatSlutGain'
-    killvar 'FridayDanceTreatOtkrovenGain'
-    killvar 'FridayDanceTreatCorruptionGain'
-
-    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MarketDance'
-    end
----
-
-#FridayDanceTreatApplyToGirls
-    gs 'UpdateGirlLocations'
-    gs 'FridayDanceTreatBoostGirl', 'amanda'
-    gs 'FridayDanceTreatBoostGirl', 'melissa'
-    gs 'FridayDanceTreatBoostGirl', 'becky'
-    gs 'FridayDanceTreatBoostGirl', 'clarissa'
-    gs 'FridayDanceTreatBoostGirl', 'inga'
----
-
-#FridayDanceTreatBoostGirl
-    $FridayDanceTreatGirl = LCASE($ARGS[0])
-
-    if $FridayDanceTreatGirl = '':
-        exit
-    end
-
-    if $GirlLocation[$FridayDanceTreatGirl] <> 'DanceHall':
-        killvar '$FridayDanceTreatGirl'
-        exit
-    end
-
-    if LOC('EnsureGirlData') = 1:
-        gs 'EnsureGirlData', $FridayDanceTreatGirl
-    end
-
-    sluttiness[$FridayDanceTreatGirl] += FridayDanceTreatSlutGain
-    otkroven[$FridayDanceTreatGirl] += FridayDanceTreatOtkrovenGain
-
-    killvar '$FridayDanceTreatGirl'
 ---
 
 ! ================================================

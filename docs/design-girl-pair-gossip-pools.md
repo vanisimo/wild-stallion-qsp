@@ -20,7 +20,7 @@
 
 **Правило:** в **комнате** подслушивание и сюжетный `room_visit` — **только** `week = 7` и фаза `sunday_visits` (`time` 3–4). В остальное время Аманда не «сидит в комнате с Лизеттой» — она в зале / порту / дома без гостьи.
 
-**Расхождение с кодом (исправить при реализации):** `AmandaLizaTalkCanTrigger` для `amandaroom` сейчас не требует `week = 7`; фактически Лизетта в `AmandaRoom` только в воскресенье — но лучше зафиксировать явно в гейте.
+**Гейты в коде:** `AmandaLizaTalkCanTrigger` (`amandaroom`), `AmandaLizaRoomDoorCanShow`, `AmandaLizetteInAmandaRoomNow`, `AmandaLizetteTryEvent` (`room_visit`) — все требуют `week = 7` + `sunday_visits`.
 
 ### Два типа контента в комнате (воскресенье)
 

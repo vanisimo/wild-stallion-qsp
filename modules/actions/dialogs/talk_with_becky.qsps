@@ -216,6 +216,16 @@
     }
     gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(GeorgMention=0 and BeckyHomeStage<5 and Talked[$GirlName]<2,-1,0)"
 
+    gs 'MenuUiAdd', 'MenuBeckyTalk', 'Спросить про клерка из мэрии', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gs 'BeckyTalkMayorClerkText'
+        *p $BeckyTalkBlock
+        BeckyMayorClerkTalkDone = 1
+        gs 'CorruptionProgress', $GirlName, 'talk'
+        Talked[$GirlName] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(BeckyMayorClerkTalkDone=0 and (PlayerKnows['becky_backroom_clerk']=1 or EventWitnessed['becky_backroom_clerk']=1) and Friends[$GirlName]>=10 and Talked[$GirlName]<3,-1,0)"
+
     gs 'MenuUiAdd', 'MenuBeckyTalk', 'Вернуться в лавку', ''
     gs 'Menu.AddModule', 'MenuBeckyTalk', {
         gt 'BeckyShop'

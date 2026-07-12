@@ -70,6 +70,11 @@
     gs 'GirlTalkShowNpcMenuAnchor', 'main'
     *pl ' '
 
+    if GirlTalkAutoOpenTalkMenu = 1:
+        GirlTalkAutoOpenTalkMenu = 0
+        gs 'Menu.Show', 'GirlTalkMainMenu'
+    end
+
     gs 'GirlTalkIntroText', $TalkGirl
     gs 'UsefulTalkDebugPanel', $TalkGirl
 
@@ -77,12 +82,6 @@
         *pl ' '
         *p $GirlTalkPendingNotice[$TalkGirl]
         $GirlTalkPendingNotice[$TalkGirl] = ''
-    end
-
-    if GirlTalkOpenPersonalMenu = 1:
-        GirlTalkOpenPersonalMenu = 0
-        gs 'GirlTalkPersonalBuildMainMenu'
-        gs 'Menu.Show', 'GirlTalkMainMenu'
     end
 
     *pl ' '
@@ -293,17 +292,6 @@
         end
     end
 
-    if $TalkGirl = 'sandra' and LOC('SandraBirthRevealCanTalk') = 1:
-        gs 'SandraBirthRevealCanTalk'
-
-        if SandraBirthRevealCanTalk = 1:
-            gs 'ActUiPrepare', 'Поговорить о том, что случилось в зале', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'SandraTalkAboutBirthSecret', $TalkReturnLoc
-            end
-        end
-    end
-
     gs 'GirlTalkAddReturnButton'
 
 ---
@@ -397,6 +385,7 @@
 
     $TalkReturnLoc = $TalkOpenReturnLoc
     gs 'GirlTalkSessionBegin'
+    GirlTalkPersonalMenuActive = 0
     gs 'GirlTalkBuildTopicsMenu'
     gs 'Menu.Show', 'GirlTalkMainMenu'
 
@@ -417,9 +406,38 @@
 ---
 
 #GirlTalkBuildTopicsMenu
-    gs 'GirlTalkHasHallTopics', $TalkGirl
-    gs 'GirlTalkPersonalCheckAvailable', $TalkGirl
-    gs 'GirlTalkBuildMainMenu'
+    if GirlTalkPersonalMenuActive = 1:
+        gs 'GirlTalkPersonalBuildMainMenu'
+    else
+        gs 'GirlTalkPersonalCheckAvailable', $TalkGirl
+        gs 'GirlTalkBuildMainMenu'
+    end
+---
+
+#GirlTalkReopenTalkMenu
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkGirl = '':
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = $CURLOC
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($TalkReturnLoc) = 0:
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    GirlTalkPersonalMenuActive = 1
+    GirlTalkAutoOpenTalkMenu = 1
+    gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
 ---
 
 ! ================================================
@@ -508,21 +526,7 @@
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
     }
 
-    if GirlTalkHallTopicsAvailable = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О событиях в зале', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gs 'GirlTalkBuildHallTopicsMenu'
-            gs 'Menu.Show', 'GirlTalkHallTopicsMenu'
-        }
-    end
-
-    if GirlTalkPersonalAvailable = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Личный разговор', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gs 'GirlTalkPersonalBuildMainMenu'
-            gs 'Menu.Show', 'GirlTalkMainMenu'
-        }
-    end
+    gs 'GirlTalkRootAppendPersonalMenu'
 
     if LOC('SandraStaffGirlsReactionCanTalk') = 1:
         gs 'SandraStaffGirlsReactionCanTalk', $TalkGirl
@@ -619,93 +623,18 @@
     end
 
     gs 'EnsureGirlData', $TalkGirl
+    gs 'GirlTalkPersonalCheckAvailable', $TalkGirl
 
-    cls
-    gs 'ShowGirlSidebar', $TalkGirl
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' РАЗГОВОР О ЗАЛЕ: ' + $RealName[$TalkGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if LOC('ShowGirlTalkContextImage') = 1:
-        gs 'ShowGirlTalkContextImage', $TalkGirl, 'large'
-    end
-
-    gs 'UsefulTalkCheck', $TalkGirl, 'hall_recent'
-
-    if UsefulTalkResult = 0:
-        gt 'GirlTalkBlockedUsefulTopic', $TalkGirl, $TalkReturnLoc
+    if GirlTalkPersonalAvailable = 0:
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
         exit
     end
 
-    *p 'Сейчас лучше обсудить самое важное.'
-    *pl ' '
-
-    gs 'GirlTalkBuildHallTopicsMenu'
-    gs 'Menu.Show', 'GirlTalkHallTopicsMenu'
-
-    gs 'GirlTalkAddReturnButton', 'Вернуться к выбору тем', 'topics'
+    gs 'GirlTalkPersonalOpenSubmenu'
 ---
 
 #GirlTalkBuildHallTopicsMenu
-    gs 'Menu.Destroy', 'GirlTalkHallTopicsMenu'
-    gs 'Menu.Create', 'GirlTalkHallTopicsMenu'
-    GirlTalkHallTopicAdded = 0
-
-    if GirlTalkHallTopicAdded = 0 and $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
-        gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Что случилось в зале', ''
-        gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-            gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_event'
-        }
-        GirlTalkHallTopicAdded = 1
-    end
-
-    if GirlTalkHallTopicAdded = 0 and LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
-        gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
-        if GirlPolicyResponseTalkAvailable = 1:
-            gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Как она выполнила правило', ''
-            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_policy'
-            }
-            GirlTalkHallTopicAdded = 1
-        end
-    end
-
-    if GirlTalkHallTopicAdded = 0 and LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
-        gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
-        if HallChoiceFamilyTalkAvailable = 1:
-            gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Моё решение в зале', ''
-            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_choice'
-            }
-            GirlTalkHallTopicAdded = 1
-        end
-    end
-
-    if GirlTalkHallTopicAdded = 0 and LOC('HallFamilyReactionCanDiscuss') = 1:
-        gs 'HallFamilyReactionCanDiscuss', $TalkGirl
-        if HallFamilyReactionAvailable = 1:
-            gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Реакция семьи', ''
-            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_family'
-            }
-            GirlTalkHallTopicAdded = 1
-        end
-    end
-
-    if GirlTalkHallTopicAdded = 0 and LOC('HallRecentTalkCanDiscuss') = 1:
-        gs 'HallRecentTalkCanDiscuss', $TalkGirl
-        if HallRecentTalkAvailable = 1:
-            gs 'MenuUiAdd', 'GirlTalkHallTopicsMenu', 'Недавний случай в зале', ''
-            gs 'Menu.AddModule', 'GirlTalkHallTopicsMenu', {
-                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_recent'
-            }
-            GirlTalkHallTopicAdded = 1
-        end
-    end
-
-    killvar 'GirlTalkHallTopicAdded'
+    gs 'GirlTalkPersonalOpenSubmenu'
 ---
 
 ! ================================================
@@ -1052,9 +981,9 @@
     end
 
     if $TalkTopic = 'personal':
-        gs 'GirlTalkPersonalBuildMainMenu'
-        gs 'Menu.Show', 'GirlTalkMainMenu'
-        exit
+        GirlTalkPersonalMenuActive = 1
+        GirlTalkAutoOpenTalkMenu = 1
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
     end
 
     if $TalkTopic = 'dance_dress':

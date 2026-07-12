@@ -1,0 +1,190 @@
+! ================================================
+! FILE: modules/events/visits/sunday_irma_inga_talk_pick.qsps
+! MODULE: events/visits
+! Пул фраз подслушивания Ирма + Инга (воскресенье, лавка закрыта)
+! ================================================
+
+#SundayVisitIrmaIngaPhraseOneShotOpen
+    $SundayVisitIrmaIngaOneShotId = LCASE($ARGS[0])
+    SundayVisitIrmaIngaOneShotOpen = 1
+
+    if IngaIrmaTalkPhraseHeard[$SundayVisitIrmaIngaOneShotId] = 1:
+        SundayVisitIrmaIngaOneShotOpen = 0
+    end
+
+    killvar '$SundayVisitIrmaIngaOneShotId'
+---
+
+#SundayVisitIrmaIngaPhraseEligible
+    $SundayVisitIrmaIngaPhraseId = LCASE($ARGS[0])
+    SundayVisitIrmaIngaPhraseOk = 0
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'EnsureGirlData', 'irma'
+
+    if IrmaMet < 1:
+        killvar '$SundayVisitIrmaIngaPhraseId'
+        exit
+    end
+
+    if $SundayVisitIrmaIngaPhraseId = 'ambient_sewing_order':
+        SundayVisitIrmaIngaPhraseOk = 1
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'ambient_sunday_rest':
+        if week = 7:
+            SundayVisitIrmaIngaPhraseOk = 1
+        end
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'ambient_tavern_dress':
+        if AmandaDanceDressReady = 1 or revealing_uniform_all_bought = 1 or IrmaUniformOfferUnlocked = 1:
+            SundayVisitIrmaIngaPhraseOk = 1
+        end
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_irma_reverse_comfort':
+        if IngaIrmaBond >= 5 and IngaBackroomSex = 0:
+            SundayVisitIrmaIngaPhraseOk = 1
+        end
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_sewing_machine':
+        if Friends['inga'] >= 10 or IngaIrmaBond >= 6:
+            SundayVisitIrmaIngaPhraseOk = 1
+        end
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'irma_uniform_gossip':
+        if IrmaUniformOfferUnlocked = 1 or scandal >= 25 or reputation >= 40:
+            SundayVisitIrmaIngaPhraseOk = 1
+        end
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_guard_grun':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_guard_grun'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if IngaGuardProblem >= 1 or IngaGuardThanksDone = 1:
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_lucas_corner':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_lucas_corner'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if IngaLucasWindowSeen = 1 or IngaLucasRelation >= 1:
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_eddie_counter':
+        if Friends['inga'] >= 8:
+            SundayVisitIrmaIngaPhraseOk = 1
+        end
+
+    end
+
+    killvar '$SundayVisitIrmaIngaPhraseId'
+---
+
+#SundayVisitIrmaIngaPoolTry
+    $SundayVisitIrmaIngaPoolPhrase = LCASE($ARGS[0])
+    SundayVisitIrmaIngaPoolLevel = $ARGS[1]
+
+    if SundayVisitIrmaIngaPoolLevel <= 0:
+        SundayVisitIrmaIngaPoolLevel = 1
+    end
+
+    gs 'SundayVisitIrmaIngaPhraseEligible', $SundayVisitIrmaIngaPoolPhrase
+
+    if SundayVisitIrmaIngaPhraseOk = 0:
+        killvar '$SundayVisitIrmaIngaPoolPhrase'
+        killvar 'SundayVisitIrmaIngaPoolLevel'
+        exit
+    end
+
+    if SundayVisitIrmaIngaPoolLevel > SundayVisitIrmaIngaPoolMax:
+        SundayVisitIrmaIngaPoolMax = SundayVisitIrmaIngaPoolLevel
+        SundayVisitIrmaIngaPoolSize = 0
+    end
+
+    if SundayVisitIrmaIngaPoolLevel = SundayVisitIrmaIngaPoolMax:
+        SundayVisitIrmaIngaPoolSize += 1
+        $SundayVisitIrmaIngaPool[SundayVisitIrmaIngaPoolSize] = $SundayVisitIrmaIngaPoolPhrase
+    end
+
+    killvar '$SundayVisitIrmaIngaPoolPhrase'
+    killvar 'SundayVisitIrmaIngaPoolLevel'
+---
+
+#SundayVisitIrmaIngaBuildPool
+    SundayVisitIrmaIngaPoolMax = 0
+    SundayVisitIrmaIngaPoolSize = 0
+
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_guard_grun', 1
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_lucas_corner', 1
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_sewing_machine', 1
+    gs 'SundayVisitIrmaIngaPoolTry', 'irma_uniform_gossip', 1
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_eddie_counter', 1
+    gs 'SundayVisitIrmaIngaPoolTry', 'ambient_sewing_order', 0
+    gs 'SundayVisitIrmaIngaPoolTry', 'ambient_sunday_rest', 0
+    gs 'SundayVisitIrmaIngaPoolTry', 'ambient_tavern_dress', 0
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_irma_reverse_comfort', 0
+---
+
+#SundayVisitIrmaIngaPickPhrase
+    $SundayVisitIrmaIngaPickedId = ''
+    SundayVisitIrmaIngaPickOk = 0
+
+    gs 'SundayVisitIrmaIngaBuildPool'
+
+    if SundayVisitIrmaIngaPoolSize <= 0:
+        exit
+    end
+
+    SundayVisitIrmaIngaPickRoll = RAND(1, SundayVisitIrmaIngaPoolSize)
+    $SundayVisitIrmaIngaPickedId = $SundayVisitIrmaIngaPool[SundayVisitIrmaIngaPickRoll]
+    SundayVisitIrmaIngaPickOk = 1
+
+    killvar 'SundayVisitIrmaIngaPickRoll'
+---
+
+#SundayVisitIrmaIngaApplyPhraseEffects
+    $SundayVisitIrmaIngaEffectId = LCASE($ARGS[0])
+
+    if $SundayVisitIrmaIngaEffectId = '':
+        killvar '$SundayVisitIrmaIngaEffectId'
+        exit
+    end
+
+    IngaIrmaBond += 1
+
+    if IngaIrmaBond > 100:
+        IngaIrmaBond = 100
+    end
+
+    if $SundayVisitIrmaIngaEffectId = 'inga_guard_grun':
+        IngaIrmaTalkPhraseHeard['inga_guard_grun'] = 1
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_lucas_corner':
+        IngaIrmaTalkPhraseHeard['inga_lucas_corner'] = 1
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_irma_reverse_comfort':
+        if FamilyTension > 0:
+            FamilyTension -= 1
+        end
+
+    elseif $SundayVisitIrmaIngaEffectId = 'irma_uniform_gossip':
+        if Friends['irma'] < 100:
+            Friends['irma'] += 1
+        end
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_sewing_machine':
+        if Friends['inga'] < 100:
+            Friends['inga'] += 1
+        end
+
+    end
+
+    killvar '$SundayVisitIrmaIngaEffectId'
+---

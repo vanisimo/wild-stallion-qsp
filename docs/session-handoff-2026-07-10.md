@@ -6,7 +6,6 @@
 
 ```powershell
 powershell -File scripts/build.ps1 -Profile dev
-# или: powershell -Command "& 'E:\TraKtir\scripts\build.ps1' -SkipCheck"
 ```
 
 `game.qsp` в `.gitignore` — собрать после `git pull`.
@@ -15,118 +14,86 @@ powershell -File scripts/build.ps1 -Profile dev
 
 ## Сделано в этой сессии
 
-### A. Sex cap + marathon gossip (этап A дизайна)
-- Лимит оргазмов девушки за сцену (8/7/6 по tier).
-- `SexMarathonGossipPending[girl]`, cooldown 7 дней для пула сплетен.
+### A–D (ранее)
+- Sex cap + marathon gossip, Lizette limits, Amanda pool + overhear UI, Sandra+Becky Sunday pool.
 
-### B. Лимиты Lizette (этап B)
-- Визиты в зал / комнату по неделе; гейт `week=7` для room talk.
+### E — Melissa + Clarissa pool ✅
+- `sunday_clarissa_melissa_talk_pick.qsps`, тексты, визит, кнопка в `wine_shop.qsps`.
 
-### C. Amanda + Lizette pool (этап C)
-- Новые id в `amanda_liza_talk_pick.qsps` / `amanda_liza_talk_text.qsps`.
-- `marathon_exhausted` tier 7, `legare_deflower`, witness-фразы.
-- **Overhear UI:** только «Подслушать» + «Вернуться»; убраны forbid/lift/scold и вся похвала.
-- **Личные разговоры:** баны Lizette/Legare/guys в `girl_talk_personal.qsps`; перерисовка `GirlTalkMainMenu` без второго dropdown.
+### F — Inga + Irma (воскресенье) ✅
+- `sunday_irma_inga_talk_pick.qsps`, визит у закрытой `IrmaShop`.
 
-### D. Sandra + Becky Sunday pool (этап D)
-- Новый файл `sunday_becky_sandra_talk_pick.qsps` (BuildPool, gates, effects).
-- Тексты в `sunday_shop_visits_text.qsps`; цепочка gear → scandal → pool → fallback.
-- **Канон в текстах:**
-  - Сандра **ходит к мэру**, не наоборот.
-  - Драупнир **коренастый**, молот по **наковальне** (не «маленький» в постели).
-  - Бекки: **задняя комната**, матросы **сразу вдвоём / в два ствола**, **регулярные** гости.
-  - Стефан **подглядывает** в щель (в текстах и в геймплее).
-
-### Becky backroom peek (новая механика)
+### Becky backroom peek ✅
 - Файл: `modules/events/shops/becky_shop_backroom_peek.qsps`
-- **Открытая лавка:** 12% при входе → строка «из задней…» + «Заглянуть в заднюю».
-- **Закрытая лавка:** 15% (10% ночью) → «Подсмотреть в заднюю» (не мешает воскресному подслушиванию Сандры).
-- Условия: `sluttiness['becky']≥30` или `BeckyHomeSex=1`; 1 раз/день.
-- Кнопка с рынка **убрана** — только через лавку.
+- **Открытая лавка:** 12% при входе → «Заглянуть в заднюю».
+- **Закрытая лавка:** 15% (10% ночью) → «Подсмотреть в заднюю».
+- Условия: `sluttiness['becky']≥30` или `BeckyHomeSex=1`.
+- **Повтор:** 1 раз/день **на тип клиента** (`BeckyShopBackroomPeekClientSeenDay[id]`).
+- **Эдди:** только open + `time=2` (полдень), не в closed peek.
+- Картинка: `becky/shop/backroom_peek` (placeholder до арта).
+- Debug: `BeckyShopBackroomPeekDebugPanel` (sim 100×, force 100%, статистика).
 
-#### Пул клиентов в задней (согласовано)
+#### Пул клиентов
 
-| id | Кто | Гейт |
-|----|-----|------|
-| `sailors_two` | Двое матросов | день корабля, пока нет `becky_two_men` |
-| `neighbor_husband` | Муж соседки | всегда |
-| `guard_grun` | Сержант Грюн | +вес при `IngaGuardProblem` |
-| `mayor_clerk` | Клерк мэрии | всегда |
-| `old_widower` | Старый вдовец-постоянный | всегда |
-| `lucas` | Лукас | `IngaGuardProblem=1`, `IngaLucasInviteDone=0` (побои от Грюна, Инга не пустила) |
-| `eddie_at_shop` | Эдди у прилавка | только `time=2`: в задней гость, спереди сын считает монеты |
+| id | Гейт |
+|----|------|
+| `sailors_two` | день корабля, нет `becky_two_men` |
+| `neighbor_husband`, `guard_grun`, `mayor_clerk`, `old_widower` | всегда |
+| `lucas` | `IngaGuardProblem`, до `IngaLucasInviteDone` |
+| `eddie_at_shop` | open-лавка, `time=2`, не воскресенье |
 
-**Убрано из пула:** купец, пьяный из трактира, налоговый инспектор.
+### Sandra+Becky — фразы peek ✅
+- Все `becky_backroom_*` в `sunday_becky_sandra_talk_pick.qsps` + тексты.
+- Слух Лукаса регистрирует `PlayerKnows` (rumor).
 
-#### Факты witness (для пулов сплетен)
+### Прочие хуки сессии ✅
+- Amanda witness facts (`amanda_neighbors_peek`, `amanda_hall_lewd_witness`).
+- Sandra+Draupnir Friday peek (`sandra_draupnir_friday_peek`).
+- Клерк мэрии ↔ арка мэра + talk Бекки.
+- **Инга + Лукас в задней:** one-shot `IngaBeckyLucasGossipTalk`, тексты по peek/слуху, хвост в Lucas arc.
+- Playtest peek: debug-панель + фикс Эдди/offer.
 
-- `becky_two_men` — матросы
-- `becky_backroom_guard`, `becky_backroom_neighbor`, `becky_backroom_clerk`
-- `becky_backroom_old_client`, `becky_backroom_lucas`, `becky_backroom_eddie_near`
+### Изображения (частично) ✅
+- `GetLocationTimeSuffix`: `time=4` → `evening` (2-й этаж и др.).
+- Placeholder: `becky/shop/backroom_peek.png`, `church/window/ajar.png`.
+- Брифы: `ASSET-*.txt` — остальные без PNG.
 
-### Прочее в diff (та же сессия / смежные правки)
-- Sex scene texts/poses, intimacy kinks, amanda room/lizette, tavern hall, debug panels.
-- `docs/design-girl-pair-gossip-pools.md` — дизайн этапов A–F.
-- Asset-заглушки изображений (`images/locations/ASSET-*.txt`, evening jpg/png).
+### Lizette room gate ✅
+- Явные гейты `week=7` + `sunday_visits` в `AmandaLizaTalkCanTrigger` (`amandaroom`), `AmandaLizaRoomDoorCanShow`, `AmandaLizetteInAmandaRoomNow`, `AmandaLizetteTryEvent` (`room_visit`).
+- Дизайн-док обновлён (`design-girl-pair-gossip-pools.md`).
 
 ---
 
-## НЕ доделано (следующие шаги)
-
-### Этап E — Melissa + Clarissa pool
-- По `docs/design-girl-pair-gossip-pools.md` §6.
-- Расширить `SundayVisitClarissaMelissaText` паттерном `BuildPool` (как Sandra+Becky).
-- Уже есть вставка `MelissaHomeSex` + bond≥12 — обернуть в полноценный пул.
-
-### Этап F — Inga + Irma (воскресенье)
-- Задел в дизайне §7; файлов кода нет.
-
-### Пул Sandra+Becky — фразы на новые факты peek
-- `becky_backroom_lucas`, `becky_backroom_clerk`, `becky_backroom_guard` и т.д. **не** добавлены в `sunday_becky_sandra_talk_pick.qsps`.
-- Сейчас в пуле только `becky_two_men` с жёстким witness; остальные факты регистрируются, но Бекки о них **не болтает** Сандре.
-
-### Playtest / баланс
-- Шансы peek (12%/15%/10%) не калибровались в игре.
-- Не проверено: конфликт `eddie_at_shop` только при открытой лавке в полдень vs peek с закрытой.
-
-### Lizette room gate (из дизайна)
-- Явный `week=7` в `AmandaLizaTalkCanTrigger` для `amandaroom` — помечено в дизайне, уточнить в коде.
+## НЕ доделано / на потом
 
 ### Изображения
-- `ASSET-*.txt` и `tavern/second_floor/evening.*` — заглушки/черновики, не подключены в `ShowImage`.
+- Финальный арт вместо placeholder для backroom_peek, church/window/ajar, прочие `ASSET-*.txt`.
 
----
-
-## Идеи на потом (не в коде)
-
-1. **Сплетни Бекки→Сандра** по каждому `becky_backroom_*` (одношоты, tier 1–2).
-2. **Melissa+Clarissa:** брат, музыканты, ревность Легаре — таблица в дизайне v2.
-3. **Amanda pool:** больше witness id (`amanda_neighbors_peek_*`, `amanda_hall_lewd_witness`) — регистрация при подгляде.
-4. **Пятничный Sandra+Draupnir** (`SandraDraupnirFridayVisit`) + подглядывание у мастерской — параллель peek-системе Бекки.
-5. **Клерк в задней** — связать с аркой мэра (`MayorClerkAdviceGiven`, налоги) в talk, не только в тексте peek.
-6. **Лукас в задней** — реакция Инги, если `PlayerKnows['becky_backroom_lucas']` через слух/подслушивание.
-7. **Повторяемый peek** — сейчас 1/день; можно разделить «видел сегодня» по типу клиента, не глобально.
+### Идеи (не в коде)
+- Melissa+Clarissa v2 (брат, музыканты, Легаре).
+- Больше Amanda witness id.
+- Повторяемый peek по части дня (сейчас — по типу клиента/день).
 
 ---
 
 ## Debug-точки входа
 
-- `SundayShopVisitsDebugMenu` — воскресные визиты, пул Sandra, матросы witness, задняя (Лукас / Эдди).
-- `panel_debug_tools` / `debug_amanda_liza` — Amanda+Lizette.
-- `debug_intimacy_arc` — Becky/Eddie/Sandra+Becky пресеты.
+- `SundayShopVisitsDebugMenu` — воскресные визиты, peek debug panel.
+- `debug_intimacy_arc` — Инга/Lucas gossip, Becky/Eddie.
+- `debug_mayor_arc` — клерк, налоги.
 
 ---
 
-## Ключевые файлы сессии
+## Ключевые файлы
 
 | Область | Файлы |
 |---------|--------|
-| Дизайн | `docs/design-girl-pair-gossip-pools.md` |
-| Amanda overhear / personal | `amanda_liza_overhear.qsps`, `girl_talk_personal.qsps` |
-| Amanda pool | `amanda_liza_talk_pick.qsps`, `amanda_liza_talk_text.qsps` |
+| Peek | `becky_shop_backroom_peek.qsps`, `becky_shop.qsps` |
 | Sandra+Becky | `sunday_becky_sandra_talk_pick.qsps`, `sunday_shop_visits*.qsps` |
-| Becky peek | `becky_shop_backroom_peek.qsps`, `becky_shop.qsps` |
-| Sex/marathon | `sex_scene_core.qsps`, `sex_register.qsps`, `next_day.qsps` |
+| Melissa+Clarissa | `sunday_clarissa_melissa_talk_pick.qsps` |
+| Inga+Irma | `sunday_irma_inga_talk_pick.qsps` |
+| Инга+Лукас talk | `girl_talk_inga*.qsps`, `inga_lucas_arc_text.qsps` |
+| Мэрия/Бекки | `mayor_office*.qsps`, `talk_with_becky.qsps` |
 
 ---
 
@@ -138,6 +105,7 @@ powershell -File scripts/build.ps1 -Profile dev
 | B Lizette visit limits | ✅ |
 | C Amanda pool + overhear UI | ✅ |
 | D Sandra+Becky pool + canon | ✅ |
-| E Melissa+Clarissa | ❌ следующий |
-| F Inga+Irma | ❌ |
-| Becky backroom peek | ✅ (без сплетен по новым фактам) |
+| E Melissa+Clarissa | ✅ |
+| F Inga+Irma | ✅ |
+| Becky backroom peek + сплетни | ✅ |
+| Инга реакция на Lucas peek | ✅ |

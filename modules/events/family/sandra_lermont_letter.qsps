@@ -1,0 +1,135 @@
+! ================================================
+! FILE: modules/events/family/sandra_lermont_letter.qsps
+! MODULE: events/family
+! Письмо Лермонта в сундуке Сандры (лор, без влияния на сюжет)
+! ================================================
+
+#InitSandraLermontLetter
+    if SandraLermontLetterSearchMinDay <= 0:
+        SandraLermontLetterSearchMinDay = 3
+    end
+---
+
+#SandraLermontLetterCanSearch
+    SandraLermontLetterCanSearch = 0
+
+    if SandraLermontLetterFound = 1:
+        exit
+    end
+
+    if day < SandraLermontLetterSearchMinDay:
+        exit
+    end
+
+    if $GirlLocation['sandra'] = 'SandraRoom':
+        exit
+    end
+
+    if time = 5:
+        exit
+    end
+
+    SandraLermontLetterCanSearch = 1
+---
+
+#SandraLermontLetterShowChestImage
+    gs 'ShowLocationImage', 'rooms/sandra/chest', 'full', 'png'
+---
+
+#SandraLermontLetterShowLetterImage
+    gs 'ShowImagePath', 'images/events/sandra/lermont_letter', '', 'event', 'png'
+---
+
+#SandraLermontLetterSearchChest
+    gs 'InitSandraLermontLetter'
+    gs 'SandraLermontLetterCanSearch'
+
+    if SandraLermontLetterCanSearch = 0:
+        gt 'SandraRoom'
+    end
+
+    cls
+
+    gs 'ShowLocationScreenTitle', 'СУНДУК САНДРЫ'
+
+    gs 'SandraLermontLetterShowChestImage'
+
+    gs 'SandraLermontLetterChestText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Осмотреть внимательнее', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraLermontLetterInspectCloser'
+    end
+
+    gs 'ActUiPrepare', 'Закрыть сундук', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraRoomInspect'
+    end
+---
+
+#SandraLermontLetterInspectCloser
+    gs 'InitSandraLermontLetter'
+    gs 'SandraLermontLetterCanSearch'
+
+    if SandraLermontLetterCanSearch = 0:
+        gt 'SandraRoom'
+    end
+
+    cls
+
+    gs 'ShowLocationScreenTitle', 'СУНДУК САНДРЫ'
+
+    gs 'SandraLermontLetterShowChestImage'
+
+    gs 'SandraLermontLetterInspectCloserText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Прочитать письмо', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraLermontLetterReadScene'
+    end
+
+    gs 'ActUiPrepare', 'Закрыть сундук', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraRoomInspect'
+    end
+---
+
+#SandraLermontLetterReadScene
+    cls
+
+    gs 'ShowLocationScreenTitle', 'ПИСЬМО'
+
+    gs 'SandraLermontLetterShowLetterImage'
+
+    gs 'SandraLermontLetterReadText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Сложить обратно и закрыть сундук', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraLermontLetterPutBackClose'
+    end
+---
+
+#SandraLermontLetterPutBackClose
+    cls
+
+    gs 'SandraLermontLetterShowChestImage'
+
+    gs 'SandraLermontLetterPutBackText'
+
+    SandraLermontLetterFound = 1
+    SandraLermontLetterRead = 1
+    SandraLermontLetterSearched = 1
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Выйти из комнаты', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraRoom'
+    end
+---

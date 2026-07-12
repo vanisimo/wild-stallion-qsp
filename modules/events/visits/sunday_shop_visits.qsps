@@ -6,6 +6,7 @@
 ! - воскресенье день/вечер (sunday_visits): у лавки Бекки подслушивание
 ! - слух про шестерёнку — первый визит, до скандала и прочих тем
 ! - у лавки Легаре можно подслушать Клариссу и Мелиссу
+! - у закрытой лавки Ирмы (воскресенье день/вечер): Инга и Ирма
 ! Большие тексты берутся из:
 ! modules/events/visits/sunday_shop_visits_text.qsps
 ! ================================================
@@ -71,6 +72,30 @@
     end
 
     SundayVisitClarissaMelissaCanEavesdrop = 1
+---
+
+#SundayVisitIrmaIngaCanEavesdrop
+    SundayVisitIrmaIngaCanEavesdrop = 0
+
+    if week <> 7:
+        exit
+    end
+
+    gs 'GetCitySchedulePhase'
+
+    if $CitySchedulePhase <> 'sunday_visits':
+        exit
+    end
+
+    if IrmaMet < 1:
+        exit
+    end
+
+    if SundayIrmaIngaVisitSeen[day] = 1:
+        exit
+    end
+
+    SundayVisitIrmaIngaCanEavesdrop = 1
 ---
 
 #SundayVisitBeckySandra
@@ -201,10 +226,16 @@
 
     SundayClarissaMelissaVisitSeen[day] = 1
     PlayerKnows_ClarissaMelissaSundayTalk = 1
-    MelissaClarissaBond += 1
 
-    if PlayerKnows_MelissaClarissaBrotherGossip = 0 and MelissaHomeSex = 1 and MelissaClarissaBond >= 12:
-        PlayerKnows_MelissaClarissaBrotherGossip = 1
+    if $SundayVisitClarissaMelissaPickedId <> '':
+        gs 'SundayVisitClarissaMelissaApplyPhraseEffects', $SundayVisitClarissaMelissaPickedId
+        killvar '$SundayVisitClarissaMelissaPickedId'
+    else:
+        MelissaClarissaBond += 1
+
+        if MelissaClarissaBond > 100:
+            MelissaClarissaBond = 100
+        end
     end
 
     if MelissaClarissaBond > 100:
@@ -214,11 +245,71 @@
     if debug = 1:
         *pl '[DEBUG VISIT] MelissaClarissaBond: ' + STR(MelissaClarissaBond)
         *pl '[DEBUG VISIT] PlayerKnows_ClarissaMelissaSundayTalk: ' + STR(PlayerKnows_ClarissaMelissaSundayTalk)
+        *pl '[DEBUG VISIT] PlayerKnows_MelissaClarissaBrotherGossip: ' + STR(PlayerKnows_MelissaClarissaBrotherGossip)
         *pl ' '
     end
 
     act '<b>Назад</b>', 'images/common/ui/actions/return.png':
         gt 'Market'
+    end
+---
+
+#SundayVisitIrmaInga
+    *clr
+    clr
+    cla
+
+    gs 'SundayVisitIrmaIngaCanEavesdrop'
+
+    if SundayVisitIrmaIngaCanEavesdrop = 0:
+        killvar 'SundayVisitIrmaIngaCanEavesdrop'
+        gt 'CraftsmenQuarter'
+    end
+
+    killvar 'SundayVisitIrmaIngaCanEavesdrop'
+
+    gs 'SundayVisitIrmaIngaText'
+
+    gs 'ShowImage', 'irma', 'shop', 'closed', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' У ЗАКРЫТОЙ ЛАВКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PrintMainP', 'Вы обходите фасад и задерживаетесь у приоткрытой двери — оттуда доносятся голоса.'
+
+    *pl ' '
+
+    *p $SundayVisitText
+    *pl ' '
+
+    SundayIrmaIngaVisitSeen[day] = 1
+    PlayerKnows_IrmaIngaSundayTalk = 1
+
+    if $SundayVisitIrmaIngaPickedId <> '':
+        gs 'SundayVisitIrmaIngaApplyPhraseEffects', $SundayVisitIrmaIngaPickedId
+        killvar '$SundayVisitIrmaIngaPickedId'
+    else:
+        IngaIrmaBond += 1
+
+        if IngaIrmaBond > 100:
+            IngaIrmaBond = 100
+        end
+    end
+
+    if IngaIrmaBond > 100:
+        IngaIrmaBond = 100
+    end
+
+    if debug = 1:
+        *pl '[DEBUG VISIT] IngaIrmaBond: ' + STR(IngaIrmaBond)
+        *pl '[DEBUG VISIT] PlayerKnows_IrmaIngaSundayTalk: ' + STR(PlayerKnows_IrmaIngaSundayTalk)
+        *pl ' '
+    end
+
+    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
+        gt 'CraftsmenQuarter'
     end
 ---
 
@@ -287,13 +378,45 @@
         gt 'SundayVisitBeckySandra'
     end
 
+    gs 'ActUiPrepare', 'Тест: пул (Грюн в задней)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        FactHappened['becky_backroom_guard'] = 1
+        EventWitnessed['becky_backroom_guard'] = 1
+        SandraBeckyBond = 14
+        SundayBeckySandraVisitSeen[day] = 0
+        ChurchSpyWindowGearGossipHeard = 1
+        gt 'SundayVisitBeckySandra'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (клерк в задней)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        FactHappened['becky_backroom_clerk'] = 1
+        PlayerKnows['becky_backroom_clerk'] = 1
+        SandraBeckyBond = 14
+        SundayBeckySandraVisitSeen[day] = 0
+        ChurchSpyWindowGearGossipHeard = 1
+        gt 'SundayVisitBeckySandra'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (Лукас в задней)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        FactHappened['becky_backroom_lucas'] = 1
+        PlayerKnows['becky_backroom_lucas'] = 1
+        SandraBeckyBond = 14
+        SundayBeckySandraVisitSeen[day] = 0
+        ChurchSpyWindowGearGossipHeard = 1
+        gt 'SundayVisitBeckySandra'
+    end
+
     gs 'ActUiPrepare', 'Тест: задняя (Лукас)', 'debug'
     act $ActUiLabel, $ActUiIconPath:
         sluttiness['becky'] = 40
         IngaGuardProblem = 1
         IngaLucasInviteDone = 0
-        BeckyShopBackroomPeekSeen[day] = 0
-        BeckyShopBackroomPeekOffer = 1
+        week = 3
+        BeckyShopBackroomPeekClientSeenDay['lucas'] = 0
+        BeckyShopBackroomPeekActiveModeOpen = 1
+        BeckyShopBackroomPeekDebugForce = 1
         time = 3
         gt 'BeckyShop', 'main'
     end
@@ -301,17 +424,26 @@
     gs 'ActUiPrepare', 'Тест: задняя (Эдди у прилавка)', 'debug'
     act $ActUiLabel, $ActUiIconPath:
         sluttiness['becky'] = 40
-        BeckyShopBackroomPeekSeen[day] = 0
-        BeckyShopBackroomPeekOffer = 1
+        week = 3
+        BeckyShopBackroomPeekClientSeenDay['eddie_at_shop'] = 0
+        BeckyShopBackroomPeekActiveModeOpen = 1
+        BeckyShopBackroomPeekDebugForce = 1
         time = 2
         gt 'BeckyShop', 'main'
+    end
+
+    gs 'ActUiPrepare', 'DEBUG: peek шансы/баланс', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShopBackroomPeekDebugPanel'
     end
 
     gs 'ActUiPrepare', 'Тест: задняя (закрыта)', 'debug'
     act $ActUiLabel, $ActUiIconPath:
         sluttiness['becky'] = 40
-        BeckyShopBackroomPeekSeen[day] = 0
-        BeckyShopBackroomPeekOffer = 1
+        week = 3
+        BeckyShopBackroomPeekClientSeenDay['old_widower'] = 0
+        BeckyShopBackroomPeekActiveModeOpen = 0
+        BeckyShopBackroomPeekDebugForce = 1
         time = 5
         gt 'BeckyShop', 'main'
     end
@@ -319,6 +451,69 @@
     gs 'ActUiPrepare', 'Тест: Кларисса и Мелисса', 'debug'
     act $ActUiLabel, $ActUiIconPath:
         gt 'SundayVisitClarissaMelissa'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (Мелисса home sex)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        MelissaHomeSex = 1
+        MelissaClarissaBond = 14
+        SundayClarissaMelissaVisitSeen[day] = 0
+        gt 'SundayVisitClarissaMelissa'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (marathon)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        MelissaHomeSex = 1
+        MelissaClarissaBond = 14
+        SexMarathonGossipPending['melissa'] = 1
+        SexMarathonGossipLastDay['melissa'] = 0
+        SundayClarissaMelissaVisitSeen[day] = 0
+        gt 'SundayVisitClarissaMelissa'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (ревность Легаре)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        MelissaLegareWarningSeen = 1
+        MelissaJealousy = 5
+        MelissaClarissaBond = 10
+        SundayClarissaMelissaVisitSeen[day] = 0
+        gt 'SundayVisitClarissaMelissa'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Ирма и Инга', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        IrmaMet = 1
+        SundayIrmaIngaVisitSeen[day] = 0
+        gt 'SundayVisitIrmaInga'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (Грюн)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        IrmaMet = 1
+        IngaGuardProblem = 1
+        IngaIrmaBond = 10
+        Friends['inga'] = 14
+        SundayIrmaIngaVisitSeen[day] = 0
+        gt 'SundayVisitIrmaInga'
+    end
+
+    gs 'ActUiPrepare', 'Тест: пул (Лукас)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        IrmaMet = 1
+        IngaLucasWindowSeen = 1
+        IngaIrmaBond = 10
+        Friends['inga'] = 14
+        SundayIrmaIngaVisitSeen[day] = 0
+        gt 'SundayVisitIrmaInga'
     end
 
     gs 'ActUiPrepare', 'Вернуться', 'return'

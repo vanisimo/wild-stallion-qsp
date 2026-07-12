@@ -102,6 +102,12 @@ Follow the existing project style:
 - For one-line combined commands, use `&` only when it matches the existing style.
 - Avoid unnecessary inline comments in QSP code.
 - Big text blocks should usually go into separate `*_text.qsps` files.
+- **Narrative output: `*p` vs `*pl` (no glued text):**
+  - `*pl` — new line in the main text window. Use for separate paragraphs, each line of a document/record, dialogue lines, and any block that must not stick to the previous line.
+  - `*p` — continues on the **same line** as the previous `*p` (no line break). Multiple `*p` in a row glue together; without a trailing space you get `читаемый:— Родился`, `ЛермонтЗасвидетельствовал`, etc.
+  - Default for `*_text.qsps` and multi-sentence scenes: **`*pl` per paragraph**.
+  - Use consecutive `*p` only for intentional inline flow (one long paragraph); then end each `*p` string with a **trailing space** before the next `*p`.
+  - After a colon that introduces a quoted block or list (e.g. certificate text), add `*pl ' '` or switch following lines to `*pl`.
 - Preserve existing variable naming conventions.
 - Avoid renaming existing variables, locations, or files unless the user explicitly asks for a refactor.
 - Always check that every `if` has its matching `end`.

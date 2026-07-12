@@ -12,7 +12,9 @@
         $GirlTalkShopText = '— О лавке? Спрашивайте. Только быстро.'
 
     elseif $GirlTalkShopTextId = 'context':
-        if IngaGuardProblem = 1 and GuardBribed = 0:
+        if IngaBeckyLucasGossipTalkDone = 1 and IngaKnowsLucasBeckyBackroom = 1:
+            $GirlTalkShopText = 'Инга работает у прилавка ровно, но после разговора о Лукасе и задней между вами повисла тихая договорённость — не поднимать это при матери. На весах дрожат руки чуть сильнее обычного.'
+        elseif IngaGuardProblem = 1 and GuardBribed = 0:
             $GirlTalkShopText = '— С тех пор как у ворот появился этот стражник, — говорит она тише обычного, — в лавке стало не по себе. Мама делает вид, что всё в порядке, а я слышу, как она вздыхает, когда думает, что никто не видит.'
         elseif IngaGuardThanksDone = 1 and IngaRomanceUnlocked = 0:
             $GirlTalkShopText = '— Спасибо, что не прошёл мимо, — говорит Инга. — После того разговора со стражей в лавке хоть немного легче дышать. Хотя я всё ещё оглядываюсь, когда кто-то долго стоит у двери.'
@@ -36,7 +38,9 @@
         $GirlTalkBeckyFamilyText = '— О нашей семье? — тихо. — Ладно. Спрашивайте.'
 
     elseif $GirlTalkBeckyFamilyTextId = 'context':
-        if IngaGuardProblem = 1 and IngaGuardComplaintAccepted = 1:
+        if IngaBeckyLucasGossipTalkDone = 1 and IngaKnowsLucasBeckyBackroom = 1:
+            $GirlTalkBeckyFamilyText = '— Ты уже знаешь, как у нас устроено, — говорит она тихо. — Мать живёт иначе. Я только учусь не ломаться каждый раз, когда кто-то шепчет про заднюю или про Лукаса.'
+        elseif IngaGuardProblem = 1 and IngaGuardComplaintAccepted = 1:
             $GirlTalkBeckyFamilyText = '— Мама сказала не поднимать шум, — признаётся Инга. — Но я устала делать вид, что страж у двери — это просто «порядок». Дом должен быть местом, где нас не пугают, а не где мы молчим из страха.'
         elseif IngaPlayerRouteOpen = 1 and IngaLucasThreesomeCount >= 1:
             $GirlTalkBeckyFamilyText = '— Мама всё чувствует, — говорит Инга с неловкой паузой. — Она не дура. Просто иногда делает вид, что не видит, лишь бы дом не развалился на крик и стыд. Мне от этого не легче.'
@@ -50,4 +54,55 @@
     end
 
     killvar '$GirlTalkBeckyFamilyTextId'
+---
+
+#IngaBeckyLucasGossipText
+    $IngaBeckyLucasGossipTextId = LCASE($ARGS[0])
+    $IngaBeckyLucasGossipText = ''
+
+    if $IngaBeckyLucasGossipTextId = 'intro':
+        if IngaBeckyLucasGossipFromPeek = 1:
+            $IngaBeckyLucasGossipText = '— Про Лукаса… и заднюю? — Инга бледнеет и смотрит на щель у полок, будто там всё ещё кто-то стоит. — Ты же… видел через щель. Откуда ещё.'
+        elseif IngaBeckyLucasGossipFromRumor = 1:
+            $IngaBeckyLucasGossipText = '— Про Лукаса… — голос срывается. — Ты слышал, как мать болтала с Сандрой у окна? Я думала, воскресенье тихое. А вы все знаете больше меня.'
+        else:
+            $IngaBeckyLucasGossipText = '— Про Лукаса… и заднюю? — Инга бледнеет. — Откуда ты… Ладно. Раз спрашиваешь — значит, уже слышал что-то.'
+        end
+
+    elseif $IngaBeckyLucasGossipTextId = 'context':
+        if IngaLucasThreesomeCount >= 1:
+            if IngaBeckyLucasGossipFromPeek = 1:
+                $IngaBeckyLucasGossipText = '— Ты знаешь про заднюю, — не вопрос. — Да, мать приняла его раньше, чем я решилась впустить в жизнь. Потом окно, потом мы… втроём. Стыдно говорить у прилавка. Но хуже, когда ты всё равно видел, как она затихала его губами, пока я делала вид, что не слышу.'
+            else:
+                $IngaBeckyLucasGossipText = '— Ты знаешь про заднюю, — не вопрос. — Да, мать приняла его раньше, чем я решилась впустить в жизнь. Потом окно, потом мы… втроём. Стыдно говорить у прилавка. Но хуже, когда слухи обгоняют правду — а ты всё равно смотришь на меня, будто видел своими глазами.'
+            end
+        elseif IngaLucasInviteDone = 1 or IngaLucasRelation >= 1:
+            $IngaBeckyLucasGossipText = '— Он пришёл с синяком после Грюна, — шепчет она. — Я не пустила в комнату. Думала, хотя бы мать… — пауза. — Она затихала его в задней. Теперь он смотрит в моё окно, и я уже не знаю, кого из нас он ищет — меня или её.'
+        elseif IngaGuardProblem = 1:
+            $IngaBeckyLucasGossipText = '— Грюн отбил ему щёку у ворот, — говорит она сжато. — Лукас не плакал — стоял, как столб. Я не пустила. Мать сказала: «Не значит, что мальчику нельзя дышать» — и увела в заднюю. Эдди внизу считал монеты. Я слышала шёпот и делала вид, что вешаю фартук.'
+        else:
+            $IngaBeckyLucasGossipText = '— Он пришёл избитый, — тихо. — Я не пустила в комнату. Думала, мать хотя бы поймёт. Она затихала его в задней, как будто это лекарство. Я стояла у лестницы и кусала губу, пока брат внизу не спросил цену на муку.'
+        end
+
+    elseif $IngaBeckyLucasGossipTextId = 'support_reply':
+        if IngaBeckyLucasGossipFromPeek = 1:
+            $IngaBeckyLucasGossipText = 'Инга долго молчит, потом выдыхает: «Спасибо, что не смеёшься. Мать… она такая. Я не хочу быть как она — и всё равно живу в её доме». Она поправляет узел на прилавке: «Только не заглядывай снова в щель — мне и так тесно между ящиками и чужими глазами».'
+        elseif IngaBeckyLucasGossipFromRumor = 1:
+            $IngaBeckyLucasGossipText = 'Инга долго молчит, потом выдыхает: «Спасибо, что не разносишь по рынку. Мать… она такая. Я не хочу быть как она — и всё равно живу в её доме». Она поправляет узел на прилавке: «Только не говори Лукасу, что мы говорили. Он и так краснеет, когда я рядом».'
+        else:
+            $IngaBeckyLucasGossipText = 'Инга долго молчит, потом выдыхает: «Спасибо, что не смеёшься. Мать… она такая. Я не хочу быть как она — и всё равно живу в её доме». Она поправляет узел на прилавке, будто этим можно стянуть стыд.'
+        end
+
+    elseif $IngaBeckyLucasGossipTextId = 'confront_reply':
+        if IngaBeckyLucasGossipFromPeek = 1:
+            $IngaBeckyLucasGossipText = '— Не смей читать мне мораль через мать, — режет она шёпотом. — Ты видел её заднюю — значит, тебе там тоже не чуждо. Лукас пришёл битый, а я… я хотела, чтобы хоть кто-то в этом доме не использовал боль как дверь. Мать открыла. Я запомнила.'
+        elseif IngaBeckyLucasGossipFromRumor = 1:
+            $IngaBeckyLucasGossipText = '— Не смей читать мне мораль через мать, — режет она шёпотом. — Ты слышал про заднюю — значит, в этом городе сплетни доходят быстрее, чем я успеваю стыдиться. Лукас пришёл битый, а я… я хотела, чтобы хоть кто-то в этом доме не использовал боль как дверь. Мать открыла. Я запомнила.'
+        else:
+            $IngaBeckyLucasGossipText = '— Не смей читать мне мораль через мать, — режет она шёпотом. — Ты копаешь там, где мне и так больно. Лукас пришёл битый, а я… я хотела, чтобы хоть кто-то в этом доме не использовал боль как дверь. Мать открыла. Я запомнила.'
+        end
+
+    end
+
+    killvar '$IngaBeckyLucasGossipTextId'
 ---

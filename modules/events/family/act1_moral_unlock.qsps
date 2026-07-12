@@ -1,0 +1,77 @@
+! ================================================
+! FILE: modules/events/family/act1_moral_unlock.qsps
+! MODULE: events/family
+! Два утренних экрана мыслей → Act1MoralUnlocked
+! ================================================
+
+#Act1MoralUnlockTryAfterSummary
+    gs 'Act1MoralThoughtsEvaluate'
+
+    if Act1MoralThoughtsReady = 1:
+        gt 'Act1MoralUnlockMorning1'
+        exit
+    end
+
+    gt 'TavernMain'
+---
+
+#Act1MoralUnlockShowPortrait
+    if LOC('ShowImagePath') = 1:
+        gs 'ShowImagePath', 'images/portraits/stefan/thought_morning', 'Стефан', 'portrait', 'webp'
+    end
+---
+
+#Act1MoralUnlockMorning1
+    cls
+    clr
+    cla
+
+    gs 'InitTavernUpgrades'
+    gs 'InitSandraStaffHire'
+    gs 'GetDateTimeNames'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УТРО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'Act1MoralUnlockShowPortrait'
+
+    *pl ' '
+
+    gs 'Act1MoralUnlockMoneyThoughts'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Далее', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Act1MoralUnlockMorning2'
+    end
+---
+
+#Act1MoralUnlockMorning2
+    cls
+    clr
+    cla
+
+    gs 'Act1MoralUnlockShowPortrait'
+
+    *pl ' '
+
+    gs 'Act1MoralUnlockFamilyThoughts'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Далее', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Act1MoralUnlockFinish'
+    end
+---
+
+#Act1MoralUnlockFinish
+    Act1MoralUnlocked = 1
+    Act1MoralThoughtsDone = 1
+    Act1MoralThoughtsReady = 0
+
+    gt 'TavernMain'
+---

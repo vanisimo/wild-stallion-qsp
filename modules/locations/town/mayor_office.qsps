@@ -5,9 +5,7 @@
 ! ================================================
 
 #MayorOfficeInit
-    if MayorCityTaxGate <= 0:
-        MayorCityTaxGate = 600
-    end
+    gs 'MayorCityTaxGateInit'
 
     if MayorAudienceBribe <= 0:
         MayorAudienceBribe = 180
@@ -16,6 +14,18 @@
     if TaxPercent <= 0:
         TaxPercent = 10
     end
+---
+
+#MayorOfficeShowClerkImage
+    gs 'ShowImagePath', 'images/locations/mayor/office/clerk', '', 'location', 'png'
+---
+
+#MayorOfficeShowClerkMoneyImage
+    gs 'ShowImagePath', 'images/locations/mayor/office/clerk_money', '', 'location', 'png'
+---
+
+#MayorOfficeShowMayorImage
+    gs 'ShowImagePath', 'images/locations/mayor/office/mayor', '', 'location', 'png'
 ---
 
 #MayorOffice
@@ -44,6 +54,7 @@
         exit
     end
 
+    gs 'MayorOfficeShowClerkImage'
     gs 'MayorOfficeIntroText'
 
     *pl ' '
@@ -52,14 +63,14 @@
         gt 'MayorOfficeCityTaxTalk'
     end
 
-    if BirthCertificateFound = 1 and BirthCertificateRead = 1:
-        act '<b>Свидетельство о рождении</b>', 'images/common/ui/actions/policy.png':
-            gt 'MayorOfficeBirthCertificateClerk'
+    if BirthCertificateFound = 1 and BirthCertificateRead = 1 and MayorFirstTalkDone = 0 and BirthCertificateMagistrateConfirmed = 0:
+        act '<b>Подать свидетельство</b>', 'images/common/ui/actions/policy.png':
+            gt 'MayorOfficeSubmitCertificate'
         end
     end
 
     if MayorBribePaid = 1 and MayorAudienceRefused = 1 and MayorClerkAdviceGiven = 0:
-        act '<b>Вернуть деньги за приём</b>', 'images/common/ui/actions/gift.png':
+        act '<b>Потребовать деньги</b>', 'images/common/ui/actions/gift.png':
             gt 'MayorOfficeClerkRefundTalk'
         end
     end
@@ -74,24 +85,6 @@
         gs 'BuildMayorOfficeTalkMenu'
         gs 'PrintMenuOpenLink', 'MayorOfficeTalkMenu', 'Разговоры в мэрии'
         *pl ' '
-    end
-
-    if MayorFirstTalkDone = 0 and MayorBribePaid = 0:
-        if BirthCertificateRead = 1:
-            act '<b>Приём у мэра</b>', 'images/common/ui/actions/mayor.png':
-                gt 'MayorOfficeAudienceGate'
-            end
-        end
-    elseif MayorFirstTalkDone = 0 and MayorBribePaid = 1 and MayorAudienceRefused = 0:
-        act '<b>Ждать ответа</b>', 'images/common/ui/wait.png':
-            gt 'MayorOfficeMayorRefused'
-        end
-    end
-
-    if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0 and MayorFirstTalkDone = 0:
-        act '<b>Подать свидетельство</b>', 'images/common/ui/actions/policy.png':
-            gt 'MayorOfficeMagistrateGate'
-        end
     end
 
     if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0 and MayorFirstTalkDone = 1:
@@ -115,15 +108,28 @@
     end
 ---
 
-#MayorOfficeBirthCertificateClerk
+#MayorOfficeSubmitCertificate
     cls
 
     gs 'MayorOfficeInit'
-    gs 'MayorOfficeBirthCertificateClerkText'
+    gs 'MayorOfficeShowClerkImage'
+    gs 'MayorOfficeSubmitCertificateText'
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
+    if MayorBribePaid = 0 and MayorAudienceRefused = 0:
+        gs 'ActUiPrepare', 'Приём у мэра', 'mayor'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOfficeAudienceGate'
+        end
+    elseif MayorBribePaid = 1 and MayorAudienceRefused = 0:
+        gs 'ActUiPrepare', 'Приём у мэра', 'mayor'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOfficeMayorCabinet'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'MayorOffice'
     end
@@ -133,7 +139,14 @@
     cls
 
     gs 'MayorOfficeInit'
+    gs 'MayorCityTaxGateIsReady'
+    gs 'MayorOfficeShowClerkImage'
     gs 'MayorOfficeCityTaxTalkText'
+
+    if PlayerKnows['becky_backroom_clerk'] = 1 or EventWitnessed['becky_backroom_clerk'] = 1:
+        *pl ' '
+        gs 'MayorOfficeCityTaxClerkPeekAddonText'
+    end
 
     *pl ' '
 
@@ -150,25 +163,13 @@
 
     MayorAudienceAttempted = 1
 
-    if TavernCityTaxTotal < MayorCityTaxGate:
-        gs 'MayorOfficeAudienceNeedTaxText'
-
-        *pl ' '
-
-        gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MayorOffice'
-        end
-
-        exit
-    end
-
     if MayorFirstTalkDone = 1:
+        gs 'MayorOfficeShowClerkImage'
         gs 'MayorOfficeAudienceAlreadyDoneText'
 
         *pl ' '
 
-        gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
+        gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'MayorOffice'
         end
@@ -177,19 +178,17 @@
     end
 
     if MayorBribePaid = 1 and MayorAudienceRefused = 1:
-        gs 'MayorOfficeAudienceRefusedDoneText'
-
-        *pl ' '
-
-        gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MayorOffice'
-        end
-
+        gt 'MayorOfficeReception'
         exit
     end
 
-    gs 'MayorOfficeBribeOfferText'
+    if MayorBribePaid = 1 and MayorAudienceRefused = 0:
+        gt 'MayorOfficeMayorCabinet'
+        exit
+    end
+
+    gs 'MayorOfficeShowClerkImage'
+    gs 'MayorOfficeAudienceBribeOfferText'
 
     *pl ' '
 
@@ -199,13 +198,13 @@
             gt 'MayorOfficeBribeNoMoney'
         end
     else:
-        gs 'ActUiPrepare', 'Заплатить и просить приём', 'mayor'
+        gs 'ActUiPrepare', 'Дать взятку', 'gift'
         act $ActUiLabel, $ActUiIconPath:
             gt 'MayorOfficeBribePay'
         end
     end
 
-    gs 'ActUiPrepare', 'Пока не буду платить', 'return'
+    gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'MayorOffice'
     end
@@ -214,17 +213,21 @@
 #MayorOfficeBribeNoMoney
     cls
 
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowClerkImage'
     gs 'MayorOfficeBribeNoMoneyText'
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
+    gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'MayorOffice'
     end
 ---
 
 #MayorOfficeBribePay
+    cls
+
     gs 'MayorOfficeInit'
 
     if money < MayorAudienceBribe:
@@ -235,27 +238,48 @@
     money -= MayorAudienceBribe
     MayorBribePaid = 1
 
-    gt 'MayorOfficeMayorRefused'
+    gs 'MayorOfficeShowClerkMoneyImage'
+    gs 'MayorOfficeBribePaidText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Приём у мэра', 'mayor'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeMayorCabinet'
+    end
 ---
 
-#MayorOfficeMayorRefused
+#MayorOfficeMayorCabinet
     cls
 
     gs 'MayorOfficeInit'
-    gs 'MayorOfficeMayorRefusedText'
+    gs 'MayorOfficeShowMayorImage'
+    gs 'MayorOfficeMayorCabinetRefusedText'
 
     MayorAudienceRefused = 1
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Требовать деньги назад у клерка', 'return'
+    gs 'ActUiPrepare', 'Выход', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'MayorOfficeClerkRefundTalk'
+        gt 'MayorOfficeReception'
     end
+---
 
-    gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MayorOffice'
+#MayorOfficeReception
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowClerkImage'
+    gs 'MayorOfficeReceptionText'
+
+    *pl ' '
+
+    if MayorClerkAdviceGiven = 0:
+        gs 'ActUiPrepare', 'Потребовать деньги', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOfficeClerkRefundTalk'
+        end
     end
 ---
 
@@ -263,6 +287,7 @@
     cls
 
     gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowClerkImage'
 
     if MayorClerkAdviceGiven = 1:
         gt 'MayorOfficeClerkAdviceReplay'
@@ -273,7 +298,32 @@
 
     *pl ' '
 
+    if MayorClerkBackroomMentioned = 0:
+        if PlayerKnows['becky_backroom_clerk'] = 1 or EventWitnessed['becky_backroom_clerk'] = 1:
+            gs 'ActUiPrepare', 'Намекнуть про заднюю лавки', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'MayorOfficeClerkBackroomMention'
+            end
+        end
+    end
+
     gs 'ActUiPrepare', 'Слушать дальше', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeClerkAdviceTalk'
+    end
+---
+
+#MayorOfficeClerkBackroomMention
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeClerkBackroomMentionText'
+
+    MayorClerkBackroomMentioned = 1
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Слушать совет', 'look'
     act $ActUiLabel, $ActUiIconPath:
         gt 'MayorOfficeClerkAdviceTalk'
     end
@@ -288,9 +338,16 @@
     cls
 
     gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowClerkImage'
     gs 'MayorOfficeClerkAdviceText'
 
+    if PlayerKnows['becky_backroom_clerk'] = 1 or EventWitnessed['becky_backroom_clerk'] = 1:
+        *pl ' '
+        gs 'MayorOfficeClerkAdvicePeekAddonText'
+    end
+
     MayorClerkAdviceGiven = 1
+    MayorClerkAdviceDay = day
     TavernCarpenterUpgradesUnlocked = 1
     MayorClerkMentionedStaff = 1
 
@@ -300,9 +357,8 @@
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MayorOffice'
+    act '<b>Улица Трипербан</b>', 'images/common/ui/actions/street.png':
+        gt 'Street'
     end
 ---
 
@@ -349,9 +405,23 @@
     cls
 
     gs 'MayorOfficeInit'
+    gs 'MayorCityTaxGateIsReady'
     gs 'MayorClerkWorkoffEvaluate'
 
     gs 'MayorOfficeWorkoffReportIntroText'
+
+    if MayorCityTaxGateReady = 0:
+        gs 'MayorOfficeWorkoffNeedTaxText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
 
     if MayorWorkoffReady = 0:
         if MayorWorkoffSignOk = 0:
@@ -591,6 +661,20 @@
     end
 ---
 
+#MayorOfficeClerkBackroomMenu
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeClerkBackroomMenuText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---
+
 #BuildMayorOfficeTalkMenu
     gs 'Menu.Destroy', 'MayorOfficeTalkMenu'
     gs 'Menu.Create', 'MayorOfficeTalkMenu'
@@ -613,6 +697,13 @@
         gs 'MenuUiAdd', 'MayorOfficeTalkMenu', 'Ход дела', 'talk'
         gs 'Menu.AddModule', 'MayorOfficeTalkMenu', {
             gt 'MayorOfficeMagistratePendingScreen'
+        }
+    end
+
+    if PlayerKnows['becky_backroom_clerk'] = 1 or EventWitnessed['becky_backroom_clerk'] = 1:
+        gs 'MenuUiAdd', 'MayorOfficeTalkMenu', 'Про долги и книгу', 'policy'
+        gs 'Menu.AddModule', 'MayorOfficeTalkMenu', {
+            gt 'MayorOfficeClerkBackroomMenu'
         }
     end
 

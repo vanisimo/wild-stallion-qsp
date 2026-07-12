@@ -1,0 +1,74 @@
+! ================================================
+! FILE: modules/events/family/act1_setup_core.qsps
+! MODULE: events/family
+! Act 1 завязка: гейты честной фазы до Act1MoralUnlocked
+! ================================================
+
+#Act1IsHonestPhase
+    Act1IsHonestPhase = 0
+
+    if Act1MoralUnlocked = 1:
+        exit
+    end
+
+    Act1IsHonestPhase = 1
+---
+
+#Act1MoralThoughtsEvaluate
+    Act1MoralThoughtsReady = 0
+
+    if Act1MoralUnlocked = 1:
+        exit
+    end
+
+    if Act1MoralThoughtsDone = 1:
+        exit
+    end
+
+    if MayorClerkAdviceGiven = 0:
+        exit
+    end
+
+    if MayorClerkAdviceDay <= 0:
+        exit
+    end
+
+    if day < MayorClerkAdviceDay + 1:
+        exit
+    end
+
+    Act1SurveyCount = 0
+
+    if Act1SurveyDraupnir = 1:
+        Act1SurveyCount += 1
+    end
+
+    if Act1SurveyStaff = 1:
+        Act1SurveyCount += 1
+    end
+
+    if Act1SurveySuit = 1:
+        Act1SurveyCount += 1
+    end
+
+    if Act1SurveyIncome = 1:
+        Act1SurveyCount += 1
+    end
+
+    if Act1SurveyCount >= 2:
+        Act1MoralThoughtsReady = 1
+        exit
+    end
+
+    if day >= MayorClerkAdviceDay + 2:
+        Act1MoralThoughtsReady = 1
+    end
+
+    killvar 'Act1SurveyCount'
+---
+
+#Act1SurveyMarkIncome
+    if MayorClerkAdviceGiven = 1 and Act1MoralUnlocked = 0:
+        Act1SurveyIncome = 1
+    end
+---

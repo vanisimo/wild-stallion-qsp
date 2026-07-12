@@ -1,9 +1,142 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_personal.qsps
 ! MODULE: actions/dialogs
-! Личные разговоры: приключения девушек вне дома
-! Пункт меню виден только при достаточном otkroven и наличии нерассказанной истории
+! Личные и важные разговоры: сюжет, зал, лор
+! Кнопка «Личный разговор» в корне — только если есть хотя бы один пункт внутри
 ! ================================================
+
+#GirlTalkPersonalOpenSubmenu
+    GirlTalkPersonalMenuActive = 1
+    GirlTalkAutoOpenTalkMenu = 1
+    gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+---
+
+#GirlTalkRootAppendPersonalMenu
+    if GirlTalkPersonalAvailable = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Личный разговор', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gs 'GirlTalkPersonalOpenSubmenu'
+        }
+    end
+---
+
+#GirlTalkPersonalCountHallTopics
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkPersonalHallGirl = $GirlKey
+    GirlTalkPersonalHallTopicsCount = 0
+
+    if $GirlTalkPersonalHallGirl = '':
+        killvar '$GirlTalkPersonalHallGirl'
+        exit
+    end
+
+    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $GirlTalkPersonalHallGirl and HallEventDiscussed[$GirlTalkPersonalHallGirl] = 0:
+        GirlTalkPersonalHallTopicsCount += 1
+    end
+
+    if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
+        gs 'GirlPolicyResponseTalkCanDiscuss', $GirlTalkPersonalHallGirl
+        if GirlPolicyResponseTalkAvailable = 1:
+            GirlTalkPersonalHallTopicsCount += 1
+        end
+    end
+
+    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
+        gs 'HallChoiceFamilyTalkCanDiscuss', $GirlTalkPersonalHallGirl
+        if HallChoiceFamilyTalkAvailable = 1:
+            GirlTalkPersonalHallTopicsCount += 1
+        end
+    end
+
+    if LOC('HallFamilyReactionCanDiscuss') = 1:
+        gs 'HallFamilyReactionCanDiscuss', $GirlTalkPersonalHallGirl
+        if HallFamilyReactionAvailable = 1:
+            GirlTalkPersonalHallTopicsCount += 1
+        end
+    end
+
+    if LOC('HallRecentTalkCanDiscuss') = 1:
+        gs 'HallRecentTalkCanDiscuss', $GirlTalkPersonalHallGirl
+        if HallRecentTalkAvailable = 1:
+            GirlTalkPersonalHallTopicsCount += 1
+        end
+    end
+
+    killvar '$GirlTalkPersonalHallGirl'
+---
+
+#GirlTalkPersonalAddHallTopicsToMenu
+    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Что случилось в зале', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_event'
+        }
+    end
+
+    if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
+        gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
+        if GirlPolicyResponseTalkAvailable = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Как она выполнила правило', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_policy'
+            }
+        end
+    end
+
+    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
+        gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
+        if HallChoiceFamilyTalkAvailable = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Моё решение в зале', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_choice'
+            }
+        end
+    end
+
+    if LOC('HallFamilyReactionCanDiscuss') = 1:
+        gs 'HallFamilyReactionCanDiscuss', $TalkGirl
+        if HallFamilyReactionAvailable = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Реакция семьи', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_family'
+            }
+        end
+    end
+
+    if LOC('HallRecentTalkCanDiscuss') = 1:
+        gs 'HallRecentTalkCanDiscuss', $TalkGirl
+        if HallRecentTalkAvailable = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Недавний случай в зале', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_recent'
+            }
+        end
+    end
+---
+
+#GirlTalkPersonalAddArcTopicsToMenu
+    if $TalkGirl = 'sandra' and LOC('SandraBirthRevealCanTalk') = 1:
+        gs 'SandraBirthRevealCanTalk'
+
+        if SandraBirthRevealCanTalk = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том, что случилось в зале', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'SandraTalkAboutBirthSecret', $TalkReturnLoc
+            }
+        end
+    end
+
+    if $TalkGirl = 'sandra' and LOC('SandraLermontLetterCanTalk') = 1:
+        gs 'SandraLermontLetterCanTalk'
+
+        if SandraLermontLetterCanTalk = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О письме в сундуке', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'SandraTalkAboutLermontLetter', $TalkReturnLoc
+            }
+        end
+    end
+---
 
 #GirlTalkPersonalCheckAvailable
     gs 'NormalizeGirlKey', $ARGS[0]
@@ -26,41 +159,58 @@
         GirlTalkPersonalMinOtkroven = 18
     end
 
-    if otkroven[$GirlTalkPersonalGirl] < GirlTalkPersonalMinOtkroven:
-        killvar '$GirlTalkPersonalGirl'
-        exit
+    gs 'GirlTalkPersonalCountHallTopics', $GirlTalkPersonalGirl
+    GirlTalkPersonalStoryCount += GirlTalkPersonalHallTopicsCount
+    killvar 'GirlTalkPersonalHallTopicsCount'
+
+    if $GirlTalkPersonalGirl = 'sandra':
+        if LOC('SandraBirthRevealCanTalk') = 1:
+            gs 'SandraBirthRevealCanTalk'
+            if SandraBirthRevealCanTalk = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+        end
+
+        if LOC('SandraLermontLetterCanTalk') = 1:
+            gs 'SandraLermontLetterCanTalk'
+            if SandraLermontLetterCanTalk = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+        end
     end
 
-    if $GirlTalkPersonalGirl = 'amanda':
-        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
-        if GirlTalkPersonalStoryReady = 1:
-            GirlTalkPersonalStoryCount += 1
-        end
+    if otkroven[$GirlTalkPersonalGirl] >= GirlTalkPersonalMinOtkroven:
+        if $GirlTalkPersonalGirl = 'amanda':
+            gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
+            if GirlTalkPersonalStoryReady = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
 
-        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_boys'
-        if GirlTalkPersonalStoryReady = 1:
-            GirlTalkPersonalStoryCount += 1
-        end
+            gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_boys'
+            if GirlTalkPersonalStoryReady = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
 
-        gs 'GirlTalkPersonalBanOptionsCount', 'amanda'
-        GirlTalkPersonalStoryCount += GirlTalkPersonalBanOptionsCount
-        killvar 'GirlTalkPersonalBanOptionsCount'
+            gs 'GirlTalkPersonalBanOptionsCount', 'amanda'
+            GirlTalkPersonalStoryCount += GirlTalkPersonalBanOptionsCount
+            killvar 'GirlTalkPersonalBanOptionsCount'
 
-    elseif $GirlTalkPersonalGirl = 'melissa':
-        gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
-        if GirlTalkPersonalStoryReady = 1:
-            GirlTalkPersonalStoryCount += 1
-        end
+        elseif $GirlTalkPersonalGirl = 'melissa':
+            gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
+            if GirlTalkPersonalStoryReady = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
 
-    elseif $GirlTalkPersonalGirl = 'sandra':
-        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_carpenter'
-        if GirlTalkPersonalStoryReady = 1:
-            GirlTalkPersonalStoryCount += 1
-        end
+        elseif $GirlTalkPersonalGirl = 'sandra':
+            gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_carpenter'
+            if GirlTalkPersonalStoryReady = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
 
-        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_priest'
-        if GirlTalkPersonalStoryReady = 1:
-            GirlTalkPersonalStoryCount += 1
+            gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_priest'
+            if GirlTalkPersonalStoryReady = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
         end
     end
 
@@ -221,10 +371,8 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', '← К темам разговора', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
-    }
+    gs 'GirlTalkPersonalAddArcTopicsToMenu'
+    gs 'GirlTalkPersonalAddHallTopicsToMenu'
 
     if $TalkGirl = 'amanda':
         gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
@@ -340,7 +488,8 @@
     gs 'GirlTalkSessionBegin'
     gs 'GirlTalkPersonalApplyBan', $GirlTalkPersonalBanKind
 
-    GirlTalkOpenPersonalMenu = 1
+    GirlTalkPersonalMenuActive = 1
+    GirlTalkAutoOpenTalkMenu = 1
     gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
 
     killvar '$GirlTalkPersonalBanKind'

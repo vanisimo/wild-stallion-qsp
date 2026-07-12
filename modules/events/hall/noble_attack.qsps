@@ -5,6 +5,12 @@
 ! Открывает арку Сандры и главный сюжет о происхождении Стефана
 ! ================================================
 
+#NobleAttackShowImage
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowImagePath', 'images/events/hall/noble_attack/poor_young_noble', '', 'event', 'png'
+    end
+---
+
 #NobleAttackCanStart
     NobleAttackCanStart = 0
 
@@ -30,7 +36,7 @@
         exit
     end
 
-    if day < 8:
+    if day < 6:
         exit
     end
 
@@ -68,6 +74,8 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
+    gs 'NobleAttackShowImage'
+
     gs 'NobleAttackIntroText'
 
     *pl ' '
@@ -89,25 +97,28 @@
 
     gs 'MenuUiAdd', 'NobleAttackMenu', 'Не отступать', ''
     gs 'Menu.AddModule', 'NobleAttackMenu', {
-        gt 'NobleAttackAction', 'stand_firm', $NobleAttackReturnLoc
+        gs 'NobleAttackPickChoice', 'stand_firm'
     }
 
-    gs 'MenuUiAdd', 'NobleAttackMenu', 'Успокоить зал и отвести конфликт', ''
+    gs 'MenuUiAdd', 'NobleAttackMenu', 'Отступить', ''
     gs 'Menu.AddModule', 'NobleAttackMenu', {
-        gt 'NobleAttackAction', 'calm_hall', $NobleAttackReturnLoc
+        gs 'NobleAttackPickChoice', 'retreat'
     }
 
-    if $GirlLocation['sandra'] = 'TavernMain' or $GirlLocation['sandra'] = 'Kitchen':
-        gs 'MenuUiAdd', 'NobleAttackMenu', 'Встать рядом с матерью', ''
-        gs 'Menu.AddModule', 'NobleAttackMenu', {
-            gt 'NobleAttackAction', 'sandra_shield', $NobleAttackReturnLoc
-        }
+    gs 'MenuUiAdd', 'NobleAttackMenu', 'Согнуться и извиниться', ''
+    gs 'Menu.AddModule', 'NobleAttackMenu', {
+        gs 'NobleAttackPickChoice', 'yield'
+    }
+---
+
+#NobleAttackPickChoice
+    $NobleAttackLastChoice = LCASE($ARGS[0])
+
+    if $NobleAttackLastChoice = '':
+        exit
     end
 
-    gs 'MenuUiAdd', 'NobleAttackMenu', 'Согнуться, чтобы избежать крови', ''
-    gs 'Menu.AddModule', 'NobleAttackMenu', {
-        gt 'NobleAttackAction', 'yield', $NobleAttackReturnLoc
-    }
+    gt 'NobleAttackAction', $NobleAttackReturnLoc
 ---
 
 #NobleAttackAction
@@ -115,8 +126,7 @@
     clr
     cla
 
-    $NobleAttackChoice = LCASE($ARGS[0])
-    $NobleAttackReturnLoc = $ARGS[1]
+    $NobleAttackReturnLoc = $ARGS[0]
 
     if $NobleAttackReturnLoc = '':
         $NobleAttackReturnLoc = 'TavernMain'
@@ -126,73 +136,86 @@
         $NobleAttackReturnLoc = 'TavernMain'
     end
 
+    $NobleAttackChoice = $NobleAttackLastChoice
+
+    if $NobleAttackChoice = '':
+        gt $NobleAttackReturnLoc
+        exit
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ДВОРЯНИН В ЗАЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'NobleAttackShowImage'
     gs 'NobleAttackChoiceText', $NobleAttackChoice
 
     *pl ' '
 
     if $NobleAttackChoice = 'stand_firm':
-        tavern_reputation += 2
-        FamilyTrust += 1
+        tavern_reputation += 1
         FamilyTension += 2
-        SandraFamilyConcern += 2
         TavernScandal += 2
+        gs 'NobleAttackApplyFine'
 
-    elseif $NobleAttackChoice = 'calm_hall':
-        tavern_reputation += 1
-        FamilyTrust += 1
-        FamilyTension += 1
-        management += 1
+        gs 'ActUiPrepare', 'Очнуться в комнате', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'NobleAttackKnockoutWake', $NobleAttackReturnLoc
+        end
 
-    elseif $NobleAttackChoice = 'sandra_shield':
-        tavern_reputation += 1
-        FamilyTrust += 2
-        FamilyTension += 3
-        SandraFamilyConcern += 1
-        GirlTrustStefan['sandra'] += 2
-        SandraTrustStefan += 1
-        Friends['sandra'] += 1
+        exit
+
+    elseif $NobleAttackChoice = 'retreat':
+        tavern_reputation -= 2
+        FamilyTension += 2
+        TavernScandal += 1
+
+        if tavern_reputation < 0:
+            tavern_reputation = 0
+        end
+
+        gs 'NobleAttackAftermathText'
+        gs 'NobleAttackMarkReveal', 1
+        gs 'NobleAttackRegisterMemory', $NobleAttackLastChoice
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться в главный зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $NobleAttackReturnLoc
+        end
+
+        exit
 
     elseif $NobleAttackChoice = 'yield':
-        tavern_reputation -= 3
-        FamilyTension += 4
-        FamilyTrust -= 1
-        TavernScandal += 3
+        tavern_reputation -= 1
+        FamilyTension += 3
+        FamilyTrust += 1
+        TavernScandal += 2
+        SandraTrustStefan += 1
 
-        if FamilyTrust < 0:
-            FamilyTrust = 0
+        if tavern_reputation < 0:
+            tavern_reputation = 0
         end
-    end
 
-    if tavern_reputation < 0:
-        tavern_reputation = 0
-    end
+        gs 'NobleAttackYieldAftermathText'
+        gs 'NobleAttackMarkReveal', 2
+        gs 'NobleAttackRegisterMemory', $NobleAttackLastChoice
 
-    if tavern_reputation > 100:
-        tavern_reputation = 100
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться в главный зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $NobleAttackReturnLoc
+        end
+
+        exit
     end
 
     gs 'NobleAttackAftermathText'
-
-    SandraBirthRevealTalkReady = 1
-    $LastHallEventType = 'noble_attack'
-    $LastHallEventGirl = 'sandra'
-    $LastHallEventText = 'В зале чуть не убили Стефана из-за слов о его происхождении. Дворянин ушёл, оставив зал в шоке.'
-    $LastHallEventReaction = $NobleAttackChoice
-
-    LastHallEventDay = day
-    LastHallEventTime = time
-    LastHallEventWeek = week
-    $LastHallChoiceType = $NobleAttackChoice
-    $LastHallChoiceGirl = 'sandra'
-    $LastHallChoiceEvent = 'noble_attack'
-    LastGirlChoiceDay['sandra'] = day
-    $LastGirlChoiceType['sandra'] = $NobleAttackChoice
-
-    if LOC('KnowledgeRegisterFact') = 1:
-        gs 'KnowledgeRegisterFact', 'Stefan_NobleAttack_1'
-    end
-
-    Fact_StefanNobleAttack = 1
+    gs 'NobleAttackMarkReveal', 0
+    gs 'NobleAttackRegisterMemory', $NobleAttackLastChoice
 
     *pl ' '
 
@@ -200,6 +223,117 @@
     act $ActUiLabel, $ActUiIconPath:
         gt $NobleAttackReturnLoc
     end
+---
 
-    killvar '$NobleAttackChoice'
+#NobleAttackApplyFine
+    NobleAttackFinePaid = NobleAttackFineAmount
+
+    if NobleAttackFinePaid <= 0:
+        NobleAttackFinePaid = 80
+    end
+
+    if money < 150:
+        NobleAttackFinePaid = 50
+    end
+
+    if money < NobleAttackFinePaid + 10:
+        NobleAttackFinePaid = money - 10
+
+        if NobleAttackFinePaid < 0:
+            NobleAttackFinePaid = 0
+        end
+    end
+
+    money -= NobleAttackFinePaid
+---
+
+#NobleAttackKnockoutWake
+    time += 1
+
+    if time > 5:
+        time = 5
+    end
+
+    gs 'NobleAttackKnockoutWakeText'
+
+    *p 'Стража списала ' + STR(NobleAttackFinePaid) + ' спинтарий — оскорбление дворянина.'
+
+    SandraBirthRevealTalkReady = 1
+    SandraBirthRevealTiming = 0
+    SandraBirthRevealNightPending = 0
+
+    gs 'NobleAttackRegisterMemory', 'stand_firm'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Слушать мать', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraTalkAboutBirthSecret', 'PlayerRoom'
+    end
+
+    gs 'ActUiPrepare', 'Пока отдохнуть', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PlayerRoom'
+    end
+---
+
+#NobleAttackMarkReveal
+    SandraBirthRevealTalkReady = 1
+    SandraBirthRevealTiming = ARGS[0]
+    SandraBirthRevealNightPending = 0
+
+    if SandraBirthRevealTiming = 1:
+        SandraBirthRevealNightPending = 1
+    end
+---
+
+#NobleAttackFinishHall
+    $NobleAttackFinishReturnLoc = $ARGS[0]
+
+    if $NobleAttackFinishReturnLoc = '':
+        $NobleAttackFinishReturnLoc = 'TavernMain'
+    end
+
+    if LOC($NobleAttackFinishReturnLoc) = 0:
+        $NobleAttackFinishReturnLoc = 'TavernMain'
+    end
+
+    gs 'NobleAttackRegisterMemory', $NobleAttackLastChoice
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в главный зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $NobleAttackFinishReturnLoc
+    end
+---
+
+#NobleAttackRegisterMemory
+    $NobleAttackMemoryChoice = LCASE($ARGS[0])
+
+    if $NobleAttackMemoryChoice = '':
+        $NobleAttackMemoryChoice = 'yield'
+    end
+
+    $LastHallEventType = 'noble_attack'
+    $LastHallEventGirl = 'sandra'
+    $LastHallEventText = 'В зале дворянин устроил сцену — Стефан прошёл мимо, не заметив его в углу.'
+    $LastHallEventReaction = $NobleAttackMemoryChoice
+
+    LastHallEventDay = day
+    LastHallEventTime = time
+    LastHallEventWeek = week
+    $LastHallChoiceType = $NobleAttackMemoryChoice
+    $LastHallChoiceGirl = 'sandra'
+    $LastHallChoiceEvent = 'noble_attack'
+    LastGirlChoiceDay['sandra'] = day
+    $LastGirlChoiceType['sandra'] = $NobleAttackMemoryChoice
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_NobleAttack_1'
+    end
+
+    Fact_StefanNobleAttack = 1
+
+    killvar '$NobleAttackMemoryChoice'
 ---

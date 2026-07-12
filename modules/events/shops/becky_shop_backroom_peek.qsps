@@ -6,14 +6,29 @@
 
 #BeckyShopBackroomPeekBaseEligible
     BeckyShopBackroomPeekBaseOk = 0
+    $BeckyShopBackroomPeekEligibilityMode = LCASE($ARGS[0])
+
+    if $BeckyShopBackroomPeekEligibilityMode = 'open':
+        BeckyShopBackroomPeekActiveModeOpen = 1
+    elseif $BeckyShopBackroomPeekEligibilityMode = 'closed':
+        BeckyShopBackroomPeekActiveModeOpen = 0
+    end
 
     if sluttiness['becky'] < 30 and BeckyHomeSex = 0:
+        killvar '$BeckyShopBackroomPeekEligibilityMode'
         exit
     end
 
-    if BeckyShopBackroomPeekSeen[day] = 1:
+    gs 'BeckyShopBackroomPeekAnyClientAvailable'
+
+    if BeckyShopBackroomPeekAnyClientAvailable = 0:
+        killvar 'BeckyShopBackroomPeekAnyClientAvailable'
+        killvar '$BeckyShopBackroomPeekEligibilityMode'
         exit
     end
+
+    killvar 'BeckyShopBackroomPeekAnyClientAvailable'
+    killvar '$BeckyShopBackroomPeekEligibilityMode'
 
     gs 'GetCitySchedulePhase'
 
@@ -26,9 +41,15 @@
 
 #BeckyShopBackroomPeekTryOffer
     $BeckyShopPeekOfferMode = LCASE($ARGS[0])
+
+    if BeckyShopBackroomPeekOffer = 1:
+        killvar '$BeckyShopPeekOfferMode'
+        exit
+    end
+
     BeckyShopBackroomPeekOffer = 0
 
-    gs 'BeckyShopBackroomPeekBaseEligible'
+    gs 'BeckyShopBackroomPeekBaseEligible', $BeckyShopPeekOfferMode
 
     if BeckyShopBackroomPeekBaseOk = 0:
         killvar 'BeckyShopBackroomPeekBaseOk'
@@ -76,20 +97,129 @@
         exit
     end
 
+    $BeckyShopBackroomPeekLastMode = $BeckyShopPeekOfferMode
+    BeckyShopBackroomPeekLastChance = BeckyShopBackroomPeekChance
     BeckyShopBackroomPeekRoll = RAND(1, 100)
+    BeckyShopBackroomPeekLastRoll = BeckyShopBackroomPeekRoll
+    BeckyShopBackroomPeekDebugRolls += 1
 
-    if BeckyShopBackroomPeekRoll > BeckyShopBackroomPeekChance:
-        killvar 'BeckyShopBackroomPeekRoll'
-        killvar 'BeckyShopBackroomPeekChance'
-        killvar '$BeckyShopPeekOfferMode'
-        exit
+    if BeckyShopBackroomPeekDebugForce = 0:
+        if BeckyShopBackroomPeekRoll > BeckyShopBackroomPeekChance:
+            BeckyShopBackroomPeekDebugMisses += 1
+            killvar 'BeckyShopBackroomPeekRoll'
+            killvar 'BeckyShopBackroomPeekChance'
+            killvar '$BeckyShopPeekOfferMode'
+            killvar '$BeckyShopBackroomPeekLastMode'
+            exit
+        end
     end
 
     killvar 'BeckyShopBackroomPeekRoll'
     killvar 'BeckyShopBackroomPeekChance'
-
+    BeckyShopBackroomPeekDebugHits += 1
     BeckyShopBackroomPeekOffer = 1
     killvar '$BeckyShopPeekOfferMode'
+---
+
+#BeckyShopBackroomPeekClientSeenToday
+    $BeckyShopBackroomPeekSeenClientId = LCASE($ARGS[0])
+    BeckyShopBackroomPeekClientSeenToday = 0
+
+    if BeckyShopBackroomPeekClientSeenDay[$BeckyShopBackroomPeekSeenClientId] = day:
+        BeckyShopBackroomPeekClientSeenToday = 1
+    end
+
+    killvar '$BeckyShopBackroomPeekSeenClientId'
+---
+
+#BeckyShopBackroomPeekAnyClientAvailable
+    BeckyShopBackroomPeekAnyClientAvailable = 0
+
+    gs 'PortCapitalShipCheck'
+
+    if PortCapitalShipAvailable = 1 and FactHappened['becky_two_men'] = 0:
+        gs 'BeckyShopBackroomPeekClientSeenToday', 'sailors_two'
+
+        if BeckyShopBackroomPeekClientSeenToday = 0:
+            BeckyShopBackroomPeekAnyClientAvailable = 1
+        end
+
+        killvar 'BeckyShopBackroomPeekClientSeenToday'
+    end
+
+    killvar 'PortCapitalShipAvailable'
+
+    if BeckyShopBackroomPeekAnyClientAvailable = 1:
+        exit
+    end
+
+    gs 'BeckyShopBackroomPeekClientEligible', 'neighbor_husband'
+
+    if BeckyShopBackroomPeekClientOk = 1:
+        BeckyShopBackroomPeekAnyClientAvailable = 1
+    end
+
+    killvar 'BeckyShopBackroomPeekClientOk'
+
+    if BeckyShopBackroomPeekAnyClientAvailable = 1:
+        exit
+    end
+
+    gs 'BeckyShopBackroomPeekClientEligible', 'guard_grun'
+
+    if BeckyShopBackroomPeekClientOk = 1:
+        BeckyShopBackroomPeekAnyClientAvailable = 1
+    end
+
+    killvar 'BeckyShopBackroomPeekClientOk'
+
+    if BeckyShopBackroomPeekAnyClientAvailable = 1:
+        exit
+    end
+
+    gs 'BeckyShopBackroomPeekClientEligible', 'mayor_clerk'
+
+    if BeckyShopBackroomPeekClientOk = 1:
+        BeckyShopBackroomPeekAnyClientAvailable = 1
+    end
+
+    killvar 'BeckyShopBackroomPeekClientOk'
+
+    if BeckyShopBackroomPeekAnyClientAvailable = 1:
+        exit
+    end
+
+    gs 'BeckyShopBackroomPeekClientEligible', 'old_widower'
+
+    if BeckyShopBackroomPeekClientOk = 1:
+        BeckyShopBackroomPeekAnyClientAvailable = 1
+    end
+
+    killvar 'BeckyShopBackroomPeekClientOk'
+
+    if BeckyShopBackroomPeekAnyClientAvailable = 1:
+        exit
+    end
+
+    gs 'BeckyShopBackroomPeekClientEligible', 'lucas'
+
+    if BeckyShopBackroomPeekClientOk = 1:
+        BeckyShopBackroomPeekAnyClientAvailable = 1
+    end
+
+    killvar 'BeckyShopBackroomPeekClientOk'
+
+    if BeckyShopBackroomPeekAnyClientAvailable = 1:
+        exit
+    end
+
+    gs 'BeckyShopBackroomPeekClientEligible', 'eddie_at_shop'
+
+    if BeckyShopBackroomPeekClientOk = 1:
+        BeckyShopBackroomPeekAnyClientAvailable = 1
+    end
+
+    killvar 'BeckyShopBackroomPeekClientOk'
 ---
 
 #BeckyShopBackroomPeekClientEligible
@@ -116,10 +246,20 @@
         end
 
     elseif $BeckyShopBackroomPeekClientCheck = 'eddie_at_shop':
-        if time = 2:
+        if BeckyShopBackroomPeekActiveModeOpen = 1 and time = 2 and week <> 7:
             BeckyShopBackroomPeekClientOk = 1
         end
 
+    end
+
+    if BeckyShopBackroomPeekClientOk = 1:
+        gs 'BeckyShopBackroomPeekClientSeenToday', $BeckyShopBackroomPeekClientCheck
+
+        if BeckyShopBackroomPeekClientSeenToday = 1:
+            BeckyShopBackroomPeekClientOk = 0
+        end
+
+        killvar 'BeckyShopBackroomPeekClientSeenToday'
     end
 
     killvar '$BeckyShopBackroomPeekClientCheck'
@@ -131,9 +271,18 @@
     gs 'PortCapitalShipCheck'
 
     if PortCapitalShipAvailable = 1 and FactHappened['becky_two_men'] = 0:
-        $BeckyShopBackroomPeekClientId = 'sailors_two'
+        gs 'BeckyShopBackroomPeekClientSeenToday', 'sailors_two'
+
+        if BeckyShopBackroomPeekClientSeenToday = 0:
+            $BeckyShopBackroomPeekClientId = 'sailors_two'
+        end
+
+        killvar 'BeckyShopBackroomPeekClientSeenToday'
         killvar 'PortCapitalShipAvailable'
-        exit
+
+        if $BeckyShopBackroomPeekClientId <> '':
+            exit
+        end
     end
 
     killvar 'PortCapitalShipAvailable'
@@ -157,7 +306,6 @@
     end
 
     if BeckyShopBackroomPeekPoolSize <= 0:
-        $BeckyShopBackroomPeekClientId = 'old_widower'
         exit
     end
 
@@ -213,7 +361,11 @@
         $BeckyShopPeekReturnLoc = 'Market'
     end
 
-    gs 'BeckyShopBackroomPeekBaseEligible'
+    if ShopOpen = 1:
+        gs 'BeckyShopBackroomPeekBaseEligible', 'open'
+    else:
+        gs 'BeckyShopBackroomPeekBaseEligible', 'closed'
+    end
 
     if BeckyShopBackroomPeekBaseOk = 0:
         killvar 'BeckyShopBackroomPeekBaseOk'
@@ -225,9 +377,19 @@
     BeckyShopBackroomPeekOffer = 0
 
     gs 'BeckyShopBackroomPeekPickClient'
+
+    if $BeckyShopBackroomPeekClientId = '':
+        gt $BeckyShopPeekReturnLoc
+    end
+
+    if debug = 1:
+        *pl '[DEBUG PEEK] mode open=' + STR(BeckyShopBackroomPeekActiveModeOpen) + ' | client=' + $BeckyShopBackroomPeekClientId
+        *pl ' '
+    end
+
     gs 'BeckyShopBackroomPeekText', $BeckyShopBackroomPeekClientId
 
-    gs 'ShowImage', 'becky', 'shop', 'closed', 'normal'
+    gs 'BeckyShopBackroomPeekShowImage'
 
     *pl '══════════════════════════════════════════════'
     gs 'PrintTitleLine', ' ЗАДНЕЕ ОКНО ЛАВКИ'
@@ -241,7 +403,7 @@
     *p $BeckyShopBackroomPeekText
     *pl ' '
 
-    BeckyShopBackroomPeekSeen[day] = 1
+    BeckyShopBackroomPeekClientSeenDay[$BeckyShopBackroomPeekClientId] = day
 
     gs 'BeckyShopBackroomPeekApplyEffects', $BeckyShopBackroomPeekClientId
 
@@ -358,4 +520,125 @@
     end
 
     killvar '$BeckyShopBackroomPeekTextId'
+---
+
+#BeckyShopBackroomPeekShowImage
+    gs 'ShowImage', 'becky', 'shop', 'backroom_peek', 'normal'
+---
+
+#BeckyShopBackroomPeekDebugSimulate
+    BeckyShopBackroomPeekDebugSimChance = $ARGS[1]
+    $BeckyShopBackroomPeekDebugSimMode = LCASE($ARGS[0])
+    BeckyShopBackroomPeekDebugSimTarget = 100
+    BeckyShopBackroomPeekDebugSimDone = 0
+    BeckyShopBackroomPeekDebugSimHits = 0
+
+    if BeckyShopBackroomPeekDebugSimChance <= 0:
+        BeckyShopBackroomPeekDebugSimChance = 12
+    end
+
+    :becky_peek_debug_sim_loop
+    BeckyShopBackroomPeekDebugSimRoll = RAND(1, 100)
+
+    if BeckyShopBackroomPeekDebugSimRoll <= BeckyShopBackroomPeekDebugSimChance:
+        BeckyShopBackroomPeekDebugSimHits += 1
+    end
+
+    BeckyShopBackroomPeekDebugSimDone += 1
+
+    if BeckyShopBackroomPeekDebugSimDone < BeckyShopBackroomPeekDebugSimTarget:
+        jump 'becky_peek_debug_sim_loop'
+    end
+
+    BeckyShopBackroomPeekDebugSimLastHits = BeckyShopBackroomPeekDebugSimHits
+    $BeckyShopBackroomPeekDebugSimLastMode = $BeckyShopBackroomPeekDebugSimMode
+    BeckyShopBackroomPeekDebugSimLastChance = BeckyShopBackroomPeekDebugSimChance
+
+    killvar 'BeckyShopBackroomPeekDebugSimRoll'
+    killvar 'BeckyShopBackroomPeekDebugSimDone'
+    killvar 'BeckyShopBackroomPeekDebugSimHits'
+    killvar 'BeckyShopBackroomPeekDebugSimChance'
+    killvar 'BeckyShopBackroomPeekDebugSimTarget'
+    killvar '$BeckyShopBackroomPeekDebugSimMode'
+
+    gt 'BeckyShopBackroomPeekDebugPanel'
+---
+
+#BeckyShopBackroomPeekDebugPanel
+    *clr
+    clr
+    cla
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: PEEK ЗАДНЕЙ ЛАВКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'day/time: ' + STR(day) + ' / ' + STR(time) + ' | sluttiness becky: ' + STR(sluttiness['becky'])
+    *pl 'force 100%: ' + STR(BeckyShopBackroomPeekDebugForce)
+    *pl 'rolls/hits/misses: ' + STR(BeckyShopBackroomPeekDebugRolls) + ' / ' + STR(BeckyShopBackroomPeekDebugHits) + ' / ' + STR(BeckyShopBackroomPeekDebugMisses)
+    *pl 'last offer: mode=' + $BeckyShopBackroomPeekLastMode + ' chance=' + STR(BeckyShopBackroomPeekLastChance) + ' roll=' + STR(BeckyShopBackroomPeekLastRoll)
+    *pl 'sim 100x last: mode=' + $BeckyShopBackroomPeekDebugSimLastMode + ' chance=' + STR(BeckyShopBackroomPeekDebugSimLastChance) + ' hits=' + STR(BeckyShopBackroomPeekDebugSimLastHits)
+    *pl 'seen today: lucas=' + STR(BeckyShopBackroomPeekClientSeenDay['lucas']) + ' eddie=' + STR(BeckyShopBackroomPeekClientSeenDay['eddie_at_shop']) + ' widower=' + STR(BeckyShopBackroomPeekClientSeenDay['old_widower'])
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Toggle force 100%', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        if BeckyShopBackroomPeekDebugForce = 1:
+            BeckyShopBackroomPeekDebugForce = 0
+        else:
+            BeckyShopBackroomPeekDebugForce = 1
+        end
+        gt 'BeckyShopBackroomPeekDebugPanel'
+    end
+
+    gs 'ActUiPrepare', 'Сбросить статистику', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        BeckyShopBackroomPeekDebugRolls = 0
+        BeckyShopBackroomPeekDebugHits = 0
+        BeckyShopBackroomPeekDebugMisses = 0
+        BeckyShopBackroomPeekDebugSimLastHits = 0
+        gt 'BeckyShopBackroomPeekDebugPanel'
+    end
+
+    gs 'ActUiPrepare', 'Sim 100x open 12%', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShopBackroomPeekDebugSimulate', 'open', 12
+    end
+
+    gs 'ActUiPrepare', 'Sim 100x closed 15%', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShopBackroomPeekDebugSimulate', 'closed_day', 15
+    end
+
+    gs 'ActUiPrepare', 'Sim 100x closed night 10%', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShopBackroomPeekDebugSimulate', 'closed_night', 10
+    end
+
+    gs 'ActUiPrepare', 'Тест: open + Эдди (полдень)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        sluttiness['becky'] = 40
+        week = 3
+        time = 2
+        BeckyShopBackroomPeekActiveModeOpen = 1
+        BeckyShopBackroomPeekClientSeenDay['eddie_at_shop'] = 0
+        BeckyShopBackroomPeekDebugForce = 1
+        gt 'BeckyShop', 'main'
+    end
+
+    gs 'ActUiPrepare', 'Тест: closed ночь (без Эдди)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        sluttiness['becky'] = 40
+        week = 3
+        time = 5
+        BeckyShopBackroomPeekActiveModeOpen = 0
+        BeckyShopBackroomPeekClientSeenDay['old_widower'] = 0
+        BeckyShopBackroomPeekDebugForce = 1
+        gt 'BeckyShop', 'main'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SundayShopVisitsDebugMenu'
+    end
 ---

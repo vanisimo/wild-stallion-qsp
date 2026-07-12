@@ -1,0 +1,196 @@
+! ================================================
+! FILE: modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps
+! MODULE: events/visits
+! Пул фраз подслушивания Кларисса + Мелисса (воскресенье)
+! ================================================
+
+#SundayVisitClarissaMelissaPhraseOneShotOpen
+    $SundayVisitClarissaMelissaOneShotId = LCASE($ARGS[0])
+    SundayVisitClarissaMelissaOneShotOpen = 1
+
+    if MelissaClarissaTalkPhraseHeard[$SundayVisitClarissaMelissaOneShotId] = 1:
+        SundayVisitClarissaMelissaOneShotOpen = 0
+    end
+
+    killvar '$SundayVisitClarissaMelissaOneShotId'
+---
+
+#SundayVisitClarissaMelissaPhraseEligible
+    $SundayVisitClarissaMelissaPhraseId = LCASE($ARGS[0])
+    SundayVisitClarissaMelissaPhraseOk = 0
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'EnsureGirlData', 'clarissa'
+
+    if $SundayVisitClarissaMelissaPhraseId = 'ambient_legare_supplies':
+        SundayVisitClarissaMelissaPhraseOk = 1
+
+    elseif $SundayVisitClarissaMelissaPhraseId = 'ambient_tavern_amanda':
+        SundayVisitClarissaMelissaPhraseOk = 1
+
+    elseif $SundayVisitClarissaMelissaPhraseId = 'clarissa_melissa_reverse_comfort':
+        if MelissaClarissaBond >= 5 and MelissaHomeSex = 0:
+            SundayVisitClarissaMelissaPhraseOk = 1
+        end
+
+    elseif $SundayVisitClarissaMelissaPhraseId = 'clarissa_legare_husband':
+        if MelissaClarissaBond >= 8:
+            SundayVisitClarissaMelissaPhraseOk = 1
+        end
+
+    elseif $SundayVisitClarissaMelissaPhraseId = 'melissa_legare_jealousy':
+        if MelissaJealousy >= 3 or MelissaLegareWarningSeen = 1 or AmandaLegareFirstSexDone = 1:
+            SundayVisitClarissaMelissaPhraseOk = 1
+        end
+
+    elseif $SundayVisitClarissaMelissaPhraseId = 'melissa_musician_interest':
+        if MelissaMusicianInterest >= 15 or MelissaMinstrelMet = 1:
+            SundayVisitClarissaMelissaPhraseOk = 1
+        end
+
+    elseif $SundayVisitClarissaMelissaPhraseId = 'melissa_clarissa_brother':
+        gs 'SundayVisitClarissaMelissaPhraseOneShotOpen', 'melissa_clarissa_brother'
+
+        if SundayVisitClarissaMelissaOneShotOpen = 1:
+            if MelissaHomeSex = 1 and MelissaClarissaBond >= 12:
+                SundayVisitClarissaMelissaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitClarissaMelissaOneShotOpen'
+
+    elseif $SundayVisitClarissaMelissaPhraseId = 'melissa_stefan_first':
+        gs 'SundayVisitClarissaMelissaPhraseOneShotOpen', 'melissa_stefan_first'
+
+        if SundayVisitClarissaMelissaOneShotOpen = 1:
+            if MelissaHomeSex = 1:
+                SundayVisitClarissaMelissaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitClarissaMelissaOneShotOpen'
+
+    elseif $SundayVisitClarissaMelissaPhraseId = 'melissa_stefan_marathon':
+        if SexMarathonGossipPending['melissa'] = 1:
+            if MelissaHomeSex = 1 and MelissaClarissaBond >= 12:
+                SundayVisitClarissaMelissaMarathonCooldownLeft = day - SexMarathonGossipLastDay['melissa']
+
+                if SexMarathonGossipLastDay['melissa'] = 0 or SundayVisitClarissaMelissaMarathonCooldownLeft >= 7:
+                    SundayVisitClarissaMelissaPhraseOk = 1
+                end
+
+                killvar 'SundayVisitClarissaMelissaMarathonCooldownLeft'
+            end
+        end
+
+    end
+
+    killvar '$SundayVisitClarissaMelissaPhraseId'
+---
+
+#SundayVisitClarissaMelissaPoolTry
+    $SundayVisitClarissaMelissaPoolPhrase = LCASE($ARGS[0])
+    SundayVisitClarissaMelissaPoolLevel = $ARGS[1]
+
+    if SundayVisitClarissaMelissaPoolLevel <= 0:
+        SundayVisitClarissaMelissaPoolLevel = 1
+    end
+
+    gs 'SundayVisitClarissaMelissaPhraseEligible', $SundayVisitClarissaMelissaPoolPhrase
+
+    if SundayVisitClarissaMelissaPhraseOk = 0:
+        killvar '$SundayVisitClarissaMelissaPoolPhrase'
+        killvar 'SundayVisitClarissaMelissaPoolLevel'
+        exit
+    end
+
+    if SundayVisitClarissaMelissaPoolLevel > SundayVisitClarissaMelissaPoolMax:
+        SundayVisitClarissaMelissaPoolMax = SundayVisitClarissaMelissaPoolLevel
+        SundayVisitClarissaMelissaPoolSize = 0
+    end
+
+    if SundayVisitClarissaMelissaPoolLevel = SundayVisitClarissaMelissaPoolMax:
+        SundayVisitClarissaMelissaPoolSize += 1
+        $SundayVisitClarissaMelissaPool[SundayVisitClarissaMelissaPoolSize] = $SundayVisitClarissaMelissaPoolPhrase
+    end
+
+    killvar '$SundayVisitClarissaMelissaPoolPhrase'
+    killvar 'SundayVisitClarissaMelissaPoolLevel'
+---
+
+#SundayVisitClarissaMelissaBuildPool
+    SundayVisitClarissaMelissaPoolMax = 0
+    SundayVisitClarissaMelissaPoolSize = 0
+
+    gs 'SundayVisitClarissaMelissaPoolTry', 'melissa_stefan_marathon', 3
+    gs 'SundayVisitClarissaMelissaPoolTry', 'melissa_clarissa_brother', 2
+    gs 'SundayVisitClarissaMelissaPoolTry', 'melissa_stefan_first', 2
+    gs 'SundayVisitClarissaMelissaPoolTry', 'melissa_musician_interest', 2
+    gs 'SundayVisitClarissaMelissaPoolTry', 'melissa_legare_jealousy', 1
+    gs 'SundayVisitClarissaMelissaPoolTry', 'clarissa_legare_husband', 1
+    gs 'SundayVisitClarissaMelissaPoolTry', 'ambient_legare_supplies', 0
+    gs 'SundayVisitClarissaMelissaPoolTry', 'ambient_tavern_amanda', 0
+    gs 'SundayVisitClarissaMelissaPoolTry', 'clarissa_melissa_reverse_comfort', 0
+---
+
+#SundayVisitClarissaMelissaPickPhrase
+    $SundayVisitClarissaMelissaPickedId = ''
+    SundayVisitClarissaMelissaPickOk = 0
+
+    gs 'SundayVisitClarissaMelissaBuildPool'
+
+    if SundayVisitClarissaMelissaPoolSize <= 0:
+        exit
+    end
+
+    SundayVisitClarissaMelissaPickRoll = RAND(1, SundayVisitClarissaMelissaPoolSize)
+    $SundayVisitClarissaMelissaPickedId = $SundayVisitClarissaMelissaPool[SundayVisitClarissaMelissaPickRoll]
+    SundayVisitClarissaMelissaPickOk = 1
+
+    killvar 'SundayVisitClarissaMelissaPickRoll'
+---
+
+#SundayVisitClarissaMelissaApplyPhraseEffects
+    $SundayVisitClarissaMelissaEffectId = LCASE($ARGS[0])
+
+    if $SundayVisitClarissaMelissaEffectId = '':
+        killvar '$SundayVisitClarissaMelissaEffectId'
+        exit
+    end
+
+    MelissaClarissaBond += 1
+
+    if MelissaClarissaBond > 100:
+        MelissaClarissaBond = 100
+    end
+
+    if $SundayVisitClarissaMelissaEffectId = 'melissa_clarissa_brother':
+        MelissaClarissaTalkPhraseHeard['melissa_clarissa_brother'] = 1
+        PlayerKnows_MelissaClarissaBrotherGossip = 1
+        FamilyTension += 1
+
+    elseif $SundayVisitClarissaMelissaEffectId = 'melissa_stefan_first':
+        MelissaClarissaTalkPhraseHeard['melissa_stefan_first'] = 1
+        FamilyTension += 1
+
+    elseif $SundayVisitClarissaMelissaEffectId = 'melissa_stefan_marathon':
+        SexMarathonGossipPending['melissa'] = 0
+        SexMarathonGossipLastDay['melissa'] = day
+        FamilyTension += 1
+
+    elseif $SundayVisitClarissaMelissaEffectId = 'melissa_legare_jealousy':
+        FamilyTension += 1
+
+    elseif $SundayVisitClarissaMelissaEffectId = 'melissa_musician_interest':
+        if MelissaMusicianInterest < 100:
+            MelissaMusicianInterest += 1
+        end
+
+    elseif $SundayVisitClarissaMelissaEffectId = 'clarissa_melissa_reverse_comfort':
+        if FamilyTension > 0:
+            FamilyTension -= 1
+        end
+    end
+
+    killvar '$SundayVisitClarissaMelissaEffectId'
+---

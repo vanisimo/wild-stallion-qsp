@@ -252,6 +252,52 @@
     end
 ---
 
+#MayorCityTaxGateInit
+    if MayorCityTaxDailyGate <= 0:
+        MayorCityTaxDailyGate = 55
+    end
+
+    if MayorCityTaxDailyGateDays <= 0:
+        MayorCityTaxDailyGateDays = 2
+    end
+
+    if TaxPercent <= 0:
+        TaxPercent = 10
+    end
+
+    MayorCityTaxGrossDailyGate = MayorCityTaxDailyGate * 100 / TaxPercent
+---
+
+#UpdateMayorCityTaxStreak
+    gs 'MayorCityTaxGateInit'
+
+    if MayorCityTaxGateReady = 1:
+        exit
+    end
+
+    if LastDayCityTax >= MayorCityTaxDailyGate:
+        MayorCityTaxStreak += 1
+    else:
+        MayorCityTaxStreak = 0
+    end
+
+    if MayorCityTaxStreak >= MayorCityTaxDailyGateDays:
+        MayorCityTaxGateReady = 1
+    end
+---
+
+#MayorCityTaxGateIsReady
+    gs 'MayorCityTaxGateInit'
+
+    if MayorCityTaxGateReady = 1:
+        exit
+    end
+
+    if MayorCityTaxStreak >= MayorCityTaxDailyGateDays:
+        MayorCityTaxGateReady = 1
+    end
+---
+
 ! ================================================
 ! FILE: modules/core/tavern_income.qsps
 ! Общие расходы на всех работников таверны

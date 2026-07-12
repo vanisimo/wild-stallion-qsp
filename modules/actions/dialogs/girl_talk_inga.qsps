@@ -30,6 +30,17 @@
         end
     end
 
+    if LOC('IngaBeckyLucasGossipCanStart') = 1:
+        gs 'IngaBeckyLucasGossipCanStart'
+
+        if IngaBeckyLucasGossipCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Спросить про Лукаса и заднюю', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'IngaBeckyLucasGossipStart'
+            }
+        end
+    end
+
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и торговле', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'shop'
@@ -95,4 +106,87 @@
     end
 
     killvar '$GirlTalkBeckyFamilyText'
+---
+
+#IngaBeckyLucasGossipResolveSource
+    IngaBeckyLucasGossipFromPeek = 0
+    IngaBeckyLucasGossipFromRumor = 0
+
+    if EventWitnessed['becky_backroom_lucas'] = 1:
+        IngaBeckyLucasGossipFromPeek = 1
+    elseif SandraBeckyTalkPhraseHeard['becky_backroom_lucas'] = 1 or PlayerKnows['becky_backroom_lucas'] = 1:
+        IngaBeckyLucasGossipFromRumor = 1
+    end
+---
+
+#IngaBeckyLucasGossipCanStart
+    IngaBeckyLucasGossipCanStart = 0
+
+    if IngaBeckyLucasGossipTalkDone = 1:
+        exit
+    end
+
+    if Friends['inga'] < 8:
+        exit
+    end
+
+    if PlayerKnows['becky_backroom_lucas'] = 1 or EventWitnessed['becky_backroom_lucas'] = 1 or SandraBeckyTalkPhraseHeard['becky_backroom_lucas'] = 1:
+        IngaBeckyLucasGossipCanStart = 1
+    end
+---
+
+#IngaBeckyLucasGossipStart
+    cls
+
+    gs 'EnsureGirlData', 'inga'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР: ИНГА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'inga', 'shop', 'stress', 'normal'
+    end
+
+    gs 'IngaBeckyLucasGossipResolveSource'
+    gs 'IngaBeckyLucasGossipPrintText', 'intro'
+    gs 'IngaBeckyLucasGossipPrintText', 'context'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поддержать Ингу', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        IngaBeckyLucasGossipTalkDone = 1
+        IngaKnowsLucasBeckyBackroom = 1
+        Friends['inga'] += 2
+        otkroven['inga'] += 1
+        gs 'ClampGirlSocialStats', 'inga'
+        gs 'IngaBeckyLucasGossipPrintText', 'support_reply'
+        *pl ' '
+        gs 'ActUiPrepare', 'Продолжить', 'return'
+        act $ActUiLabel, $ActUiIconPath: gt 'BeckyShop'
+    end
+
+    gs 'ActUiPrepare', 'Укорить мать вслух', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        IngaBeckyLucasGossipTalkDone = 1
+        IngaKnowsLucasBeckyBackroom = 1
+        Friends['inga'] -= 2
+        FamilyTension += 1
+        gs 'IngaBeckyLucasGossipPrintText', 'confront_reply'
+        *pl ' '
+        gs 'ActUiPrepare', 'Продолжить', 'return'
+        act $ActUiLabel, $ActUiIconPath: gt 'BeckyShop'
+    end
+---
+
+#IngaBeckyLucasGossipPrintText
+    gs 'IngaBeckyLucasGossipText', $ARGS[0]
+
+    if $IngaBeckyLucasGossipText <> '':
+        *p $IngaBeckyLucasGossipText
+    end
+
+    killvar '$IngaBeckyLucasGossipText'
 ---

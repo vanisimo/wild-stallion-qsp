@@ -103,6 +103,85 @@
     end
 ---
 
+#SandraDraupnirFridayPeekCanOffer
+    SandraDraupnirFridayPeekOffer = 0
+
+    if week <> 5 or time <> 4:
+        exit
+    end
+
+    if $GirlLocation['sandra'] <> 'DraupnirShop':
+        exit
+    end
+
+    if SandraDraupnirFridayToday = 1:
+        exit
+    end
+
+    if SandraDraupnirFridayPeekSeen[day] = 1:
+        exit
+    end
+
+    if SandraDraupnirAffairStage < 2 and SandraFridayDraupnirCount < 1:
+        exit
+    end
+
+    SandraDraupnirFridayPeekRoll = RAND(1, 100)
+
+    if SandraDraupnirFridayPeekRoll > 18:
+        killvar 'SandraDraupnirFridayPeekRoll'
+        exit
+    end
+
+    killvar 'SandraDraupnirFridayPeekRoll'
+
+    SandraDraupnirFridayPeekOffer = 1
+---
+
+#SandraDraupnirFridayPeek
+    *clr
+    clr
+    cla
+
+    gs 'InitDraupnir'
+    gs 'EnsureGirlData', 'sandra'
+
+    gs 'ShowImage', 'draupnir', 'shop', 'closed', 'normal'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' У ОКНА МАСТЕРСКОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PrintMainP', 'Вы обходите угол здания к боковому окну — оттуда доносятся голоса, слишком тихие для вечера пятницы.'
+
+    *pl ' '
+
+    gs 'SandraDraupnirFridayPeekText'
+    *p $SandraDraupnirFridayPeekText
+    killvar '$SandraDraupnirFridayPeekText'
+
+    *pl ' '
+
+    SandraDraupnirFridayPeekSeen[day] = 1
+    SandraDraupnirFridayPeekOffer = 0
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'sandra_draupnir_friday_peek'
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'sandra_draupnir_friday_peek', 'peek'
+    end
+
+    PlayerKnows_SandraDraupnirFriday = 1
+
+    gs 'ActUiPrepare', 'Назад', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DraupnirShop'
+    end
+---
+
 #DraupnirShop
     *clr
     clr
@@ -119,6 +198,19 @@
     gs 'SandraDraupnirFridayShopText'
     gs 'PrintMainP', $SandraDraupnirShopText
     killvar '$SandraDraupnirShopText'
+
+    *pl ' '
+
+    gs 'SandraDraupnirFridayPeekCanOffer'
+
+    if SandraDraupnirFridayPeekOffer = 1:
+        gs 'ActUiPrepare', 'Подслушать у окна', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraDraupnirFridayPeek'
+        end
+    end
+
+    killvar 'SandraDraupnirFridayPeekOffer'
 
     *pl ' '
 
@@ -319,6 +411,8 @@
     SandraDraupnirFridayResolved = 0
     SandraDraupnirAffairStage = 2
     SandraDraupnirFridayCanStart = 0
+    SandraDraupnirFridayPeekSeen[day] = 0
+    SandraDraupnirFridayPeekOffer = 0
     PlayerKnows_SandraDraupnirFriday = 0
     PlayerKnows_SandraDraupnirAffair = 0
     SandraWatchNpcPath = 0
