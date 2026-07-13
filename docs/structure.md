@@ -16,6 +16,12 @@
 - `images` - location images and portraits.
 - `archive` - old code kept for reference outside the active build.
 
+## Design docs (selected)
+
+- `docs/economy.md` - family profit shares, wallet goals, tips×sluttiness; uses existing FamilyCorruptionStage (no second ladder).
+- `docs/handoff.md` - session economy audit and mayor-path plan.
+- `docs/policy-flow.md` - hall/kitchen policy event flow.
+
 ## Event Subfolders
 
 - `modules/events/engine` - shared event engine and dispatch helpers.

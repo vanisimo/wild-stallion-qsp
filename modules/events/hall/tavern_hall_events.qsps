@@ -196,23 +196,23 @@
         *p $RealName[$TavernHallEventWorker] + ' задерживается у шумного стола дольше обычного. Клиент зовёт её присесть на край лавки, она смеётся, берёт монету и позволяет его руке задержаться на талии ровно настолько, чтобы соседние столы всё поняли.'
         *p 'Стефан видит: это ещё не бордельная сцена, но зал уже учится платить не только за пиво.'
 
-        money += 5
+        gs 'AwardGirlTipsFromBase', $TavernHallEventWorker, 5
         TavernScandal += 1
         TavernLewdFame += 1
 
         *pl ' '
-        *pl 'Получено лишних чаевых: 5 спинтарий.'
+        *pl $GirlTipsAwardLine
 
         gs 'SaveLastHallEvent', 'waitress_attention', $TavernHallEventWorker, 'Официантка удержала внимание клиента и получила лишние чаевые.', 'lewd_good'
     elseif sluttiness[$TavernHallEventWorker] >= 20 or GirlNpcPath[$TavernHallEventWorker] >= 20:
         *p $RealName[$TavernHallEventWorker] + ' принимает заказ у дальнего стола, когда старый хрен зовёт её ближе и кивает на свободное место рядом. Она не садится, но и не отходит сразу: улыбается криво, забирает монету и ловко переводит разговор обратно к вину.'
         *p 'Зал ухмыляется. Слухов будет немного, но они будут липкими.'
 
-        money += 3
+        gs 'AwardGirlTipsFromBase', $TavernHallEventWorker, 3
         TavernScandal += 1
 
         *pl ' '
-        *pl 'Получено лишних чаевых: 3 спинтарии.'
+        *pl $GirlTipsAwardLine
 
         gs 'SaveLastHallEvent', 'waitress_attention', $TavernHallEventWorker, 'Официантка удержала границу, но дала залу повод для шёпота.', 'lewd_neutral'
     else:
@@ -269,23 +269,23 @@
         *p $RealName[$TavernHallEventWorker] + ' моет пол у дальнего стола. Юбка натягивается на бёдрах, клиент за спиной шлёпает её по попе, и она не вскакивает сразу. Только поворачивает голову, смотрит на монету и говорит: "За такую наглость мало".'
         *p 'Стол смеётся, монета всё-таки падает рядом с тряпкой. Слух о такой уборке переживёт саму грязь на полу.'
 
-        money += 4
+        gs 'AwardGirlTipsFromBase', $TavernHallEventWorker, 4
         TavernScandal += 2
         TavernLewdFame += 1
 
         *pl ' '
-        *pl 'Получено лишних чаевых: 4 спинтарии.'
+        *pl $GirlTipsAwardLine
 
         gs 'SaveLastHallEvent', 'cleaning_attention', $TavernHallEventWorker, 'Уборщица обернула грязную вольность клиента в чаевые и слухи.', 'lewd_good'
     elseif sluttiness[$TavernHallEventWorker] >= 20 or GirlNpcPath[$TavernHallEventWorker] >= 20:
         *p $RealName[$TavernHallEventWorker] + ' вытирает пыль, стоя на лестнице. Клиент под ней якобы придерживает ступени, но смотрит совсем не туда. Она замечает взгляд, краснеет, но вместо крика сухо требует монету за "опасную работу".'
         *p 'Получается грубо, но действенно: клиент платит и отступает, а зал получает новую тему для шёпота.'
 
-        money += 2
+        gs 'AwardGirlTipsFromBase', $TavernHallEventWorker, 2
         TavernScandal += 1
 
         *pl ' '
-        *pl 'Получено лишних чаевых: 2 спинтарии.'
+        *pl $GirlTipsAwardLine
 
         gs 'SaveLastHallEvent', 'cleaning_attention', $TavernHallEventWorker, 'Уборщица поставила клиента на место, но не без грязных слухов.', 'lewd_neutral'
     else:
@@ -360,24 +360,39 @@
     *pl ' '
 
     if tavern_waitress_power >= 30:
-        TavernHallTips = 10 + RAND(5, 25)
+        gs 'PickFamilyWaitressForTips'
 
-        money += TavernHallTips
-
-        *p 'За одним из столов довольные гости оставляют несколько монет сверх счёта.'
-        *p 'Похоже, им понравилось обслуживание.'
-
-        *pl ' '
-        gs 'FormatSpintry', TavernHallTips
-        $FormatSpintry_TavernHallTips = $FormatSpintry
-        killvar '$FormatSpintry'
-        *pl 'Получено чаевых: ' + $FormatSpintry_TavernHallTips + '.'
-
-        if tavern_reputation < 100:
-            tavern_reputation += 1
+        if $FamilyTipsGirl = '':
+            gs 'TavernHallEventPickWorker', 'waitress'
+            $FamilyTipsGirl = $TavernHallEventWorker
         end
 
-        gs 'SaveLastHallEvent', 'tips', '', 'Гости оставили щедрые чаевые за хорошее обслуживание.', 'good'
+        if $FamilyTipsGirl <> '':
+            TavernHallTipsBase = 10 + RAND(5, 25)
+            gs 'AwardGirlTipsFromBase', $FamilyTipsGirl, TavernHallTipsBase
+
+            *p 'За одним из столов довольные гости оставляют несколько монет сверх счёта.'
+            *p 'Похоже, им понравилось обслуживание — и монеты идут не в общую кассу, а в руки той, кто держала зал.'
+
+            *pl ' '
+            *pl $GirlTipsAwardLine
+
+            if tavern_reputation < 100:
+                tavern_reputation += 1
+            end
+
+            gs 'SaveLastHallEvent', 'tips', $FamilyTipsGirl, 'Гости оставили щедрые чаевые за хорошее обслуживание.', 'good'
+        else:
+            *p 'Гости оставили чаевые на столе, но в зале не было своей официантки — монеты подобрал Стефан.'
+            TavernHallTipsBase = 10 + RAND(5, 25)
+            money += TavernHallTipsBase
+            gs 'FormatSpintry', TavernHallTipsBase
+            $FormatSpintry_TavernHallTipsBase = $FormatSpintry
+            killvar '$FormatSpintry'
+            *pl ' '
+            *pl 'В кассу хозяина: ' + $FormatSpintry_TavernHallTipsBase + '.'
+            gs 'SaveLastHallEvent', 'tips', '', 'Гости оставили чаевые, их забрал хозяин.', 'good'
+        end
     else:
         *p 'Один из гостей собирался оставить чаевые, но слишком долго ждал заказ.'
         *p 'В итоге он только недовольно буркнул что-то себе под нос и ушёл.'
@@ -392,7 +407,8 @@
         gt 'TavernMain'
     end
 
-    killvar 'TavernHallTips'
+    killvar 'TavernHallTipsBase'
+    killvar '$FamilyTipsGirl'
 ---
 
 ! ================================================

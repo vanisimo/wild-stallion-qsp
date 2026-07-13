@@ -1,0 +1,223 @@
+! ================================================
+! FILE: modules/core/economy/girl_wallet_spend.qsps
+! MODULE: core/economy
+! Пассивные траты с личных кошельков (мелочи)
+! После траты: GirlWalletPurchaseTalkSet → «Поболтать ни о чём»
+! docs/economy.md §4b / шаг 3
+! ================================================
+
+#ProcessFamilyWalletSpends
+    gs 'TryGirlWalletSpend', 'amanda'
+    gs 'TryGirlWalletSpend', 'melissa'
+    gs 'TryGirlWalletSpend', 'sandra'
+---
+
+! ARGS[0] — girl id
+#TryGirlWalletSpend
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $WalletSpendGirl = $GirlKey
+
+    if $WalletSpendGirl = '':
+        killvar '$WalletSpendGirl'
+        exit
+    end
+
+    if GirlWalletLastSpendDay[$WalletSpendGirl] > 0:
+        if day - GirlWalletLastSpendDay[$WalletSpendGirl] < 3:
+            killvar '$WalletSpendGirl'
+            exit
+        end
+    end
+
+    if $WalletSpendGirl = 'amanda':
+        WalletSpendBalance = AmandaMoney
+        WalletSpendFloor = 12
+        WalletSpendMinCost = 15
+        WalletSpendChance = 28
+    elseif $WalletSpendGirl = 'melissa':
+        WalletSpendBalance = MelissaMoney
+        WalletSpendFloor = 14
+        WalletSpendMinCost = 12
+        WalletSpendChance = 22
+    elseif $WalletSpendGirl = 'sandra':
+        WalletSpendBalance = SandraMoney
+        WalletSpendFloor = 16
+        WalletSpendMinCost = 10
+        WalletSpendChance = 20
+    else:
+        killvar '$WalletSpendGirl'
+        exit
+    end
+
+    if WalletSpendBalance < WalletSpendFloor + WalletSpendMinCost:
+        killvar '$WalletSpendGirl'
+        killvar 'WalletSpendBalance'
+        killvar 'WalletSpendFloor'
+        killvar 'WalletSpendMinCost'
+        killvar 'WalletSpendChance'
+        exit
+    end
+
+    if RAND(1, 100) > WalletSpendChance:
+        killvar '$WalletSpendGirl'
+        killvar 'WalletSpendBalance'
+        killvar 'WalletSpendFloor'
+        killvar 'WalletSpendMinCost'
+        killvar 'WalletSpendChance'
+        exit
+    end
+
+    gs 'BuildGirlWalletSpendOffer', $WalletSpendGirl
+
+    if WalletSpendCost <= 0:
+        killvar '$WalletSpendGirl'
+        killvar 'WalletSpendBalance'
+        killvar 'WalletSpendFloor'
+        killvar 'WalletSpendMinCost'
+        killvar 'WalletSpendChance'
+        killvar 'WalletSpendCost'
+        killvar '$WalletSpendTalk'
+        exit
+    end
+
+    if WalletSpendBalance - WalletSpendCost < WalletSpendFloor:
+        killvar '$WalletSpendGirl'
+        killvar 'WalletSpendBalance'
+        killvar 'WalletSpendFloor'
+        killvar 'WalletSpendMinCost'
+        killvar 'WalletSpendChance'
+        killvar 'WalletSpendCost'
+        killvar '$WalletSpendTalk'
+        exit
+    end
+
+    if $WalletSpendGirl = 'amanda':
+        AmandaMoney -= WalletSpendCost
+    elseif $WalletSpendGirl = 'melissa':
+        MelissaMoney -= WalletSpendCost
+    elseif $WalletSpendGirl = 'sandra':
+        SandraMoney -= WalletSpendCost
+    end
+
+    GirlWalletLastSpendDay[$WalletSpendGirl] = day
+    GirlWalletSpendCount[$WalletSpendGirl] += 1
+
+    if $WalletSpendGirl = 'sandra':
+        SandraKitchenExperimentCount += 1
+    end
+
+    gs 'GirlWalletPurchaseTalkSet', $WalletSpendGirl, $WalletSpendTalk
+
+    killvar '$WalletSpendGirl'
+    killvar 'WalletSpendBalance'
+    killvar 'WalletSpendFloor'
+    killvar 'WalletSpendMinCost'
+    killvar 'WalletSpendChance'
+    killvar 'WalletSpendCost'
+    killvar '$WalletSpendTalk'
+---
+
+! ARGS[0] — girl id
+! Результат: WalletSpendCost, $WalletSpendTalk
+#BuildGirlWalletSpendOffer
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $WalletOfferGirl = $GirlKey
+    WalletSpendCost = 0
+    $WalletSpendTalk = ''
+
+    if $WalletOfferGirl = 'amanda':
+        WalletSpendRoll = RAND(1, 4)
+
+        if WalletSpendRoll = 1:
+            WalletSpendCost = 15 + RAND(0, 12)
+            $WalletSpendTalk = '— Ой, Стефан, смотри, — Аманда показывает брошку. — Купила. Недорогая, но блестит. В зале хоть не как тряпка из подсобки.'
+        elseif WalletSpendRoll = 2:
+            WalletSpendCost = 12 + RAND(0, 10)
+            $WalletSpendTalk = '— Ленту взяла, — крутит в пальцах. — Столичная, говорят. Ну… почти. Всё равно красивее, чем старая.'
+        elseif WalletSpendRoll = 3:
+            WalletSpendCost = 18 + RAND(0, 15)
+            $WalletSpendTalk = '— Духи, — тихо. — Капля за ухом. Не спрашивай, сколько. Из моего. Хоть пахнуть не пивом.'
+        else:
+            WalletSpendCost = 16 + RAND(0, 14)
+            $WalletSpendTalk = '— Серьги, — качает головой, и они звякают. — Мелочь. Но когда наклоняюсь к столу — видно. Пусть смотрят.'
+        end
+
+    elseif $WalletOfferGirl = 'melissa':
+        WalletSpendRoll = RAND(1, 3)
+
+        if WalletSpendRoll = 1:
+            WalletSpendCost = 14 + RAND(0, 16)
+            $WalletSpendTalk = '— Купила том, — Мелисса почти не улыбается, но пальцы на обложке мягче. — Не Элеонору, конечно. Ту всё равно нигде нет. Зато это… своё, на вечер.'
+        elseif WalletSpendRoll = 2:
+            WalletSpendCost = 10 + RAND(0, 8)
+            $WalletSpendTalk = '— Бумага и чернила, — коротко. — Из моего. Не для трактира. Для… себя. Дальше не спрашивай.'
+        else:
+            WalletSpendCost = 12 + RAND(0, 12)
+            $WalletSpendTalk = '— Тонкая книжка с рынка, — пожимает плечом. — Стихи чужие. Читаю — и злюсь, что могла бы лучше. Потом остываю.'
+        end
+
+    elseif $WalletOfferGirl = 'sandra':
+        WalletSpendRoll = RAND(1, 3)
+
+        if WalletSpendRoll = 1:
+            WalletSpendCost = 10 + RAND(0, 12)
+            $WalletSpendTalk = '— Перец взяла, — Сандра, не отрываясь от дела. — Не тот, что у Бекки мешками. Редкий. На пробу. Из своего.'
+        elseif WalletSpendRoll = 2:
+            WalletSpendCost = 12 + RAND(0, 14)
+            $WalletSpendTalk = '— Масло хорошее, — кивает. — Не для гостей сразу. Сначала на сковороде проверю. Касса трактира пусть спит.'
+        else:
+            WalletSpendCost = 8 + RAND(0, 10)
+            $WalletSpendTalk = '— Травы сухие, — показывает свёрток. — Пахнут не как наш склад. Почти… как в тех «Рецептах», о которых болтают. Почти.'
+        end
+    end
+
+    killvar '$WalletOfferGirl'
+    killvar 'WalletSpendRoll'
+---
+
+! После трат: редко «новое блюдо» с кухни (Сандра экспериментировала)
+! +rep, +чаевые Сандре, бонус гостей на следующий день, smalltalk
+#ProcessSandraKitchenNewDish
+    LastDayKitchenDish = 0
+    $LastDayKitchenDishText = ''
+
+    if jobkitchen['sandra'] = 0:
+        exit
+    end
+
+    if SandraKitchenExperimentCount < 3:
+        exit
+    end
+
+    if SandraKitchenLastDishDay > 0:
+        if day - SandraKitchenLastDishDay < 5:
+            exit
+        end
+    end
+
+    if RAND(1, 100) > 40:
+        exit
+    end
+
+    SandraKitchenLastDishDay = day
+    SandraKitchenExperimentCount -= 2
+
+    if SandraKitchenExperimentCount < 0:
+        SandraKitchenExperimentCount = 0
+    end
+
+    LastDayKitchenDish = 1
+    $LastDayKitchenDishText = 'С кухни сегодня подали новое блюдо — гости оживились. Сандра экспериментировала из своего, не из кассы.'
+
+    tavern_reputation += 2
+
+    if tavern_reputation > 100:
+        tavern_reputation = 100
+    end
+
+    KitchenNewDishVisitorBonus = 4 + RAND(0, 4)
+
+    gs 'AwardGirlTipsFromBase', 'sandra', 8 + RAND(0, 6)
+
+    gs 'GirlWalletPurchaseTalkSet', 'sandra', '— Сегодня блюдо новое, — Сандра почти без улыбки, но голос теплее. — Из того, что брала на пробу. Гости ели. Чаевые — мне. Не из кассы трактира.'
+---

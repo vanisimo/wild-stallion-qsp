@@ -86,6 +86,13 @@
 
 5. **Без выбора вилки** — игрок уходит и действует сам.
 
+6. **После мыслей (канон порядка):**  
+   **семейное собрание** → и только потом **гейт на раскрепощение** зала/семьи.  
+   Не открывать «сознательный разврат ради денег» сразу из кабинета мэра.  
+   Подробнее: `docs/economy.md` §0 (доли/цели копилок уже крутятся к моменту собрания).
+
+Флаги (план): `MayorFirstTalkDone` → `StefanMayorPathThoughtsDone` → `FamilyCouncilDone` → `FamilyLiberationGateOpen` (имена уточнить при коде).
+
 ---
 
 ## Второй приём (опциональный)
@@ -407,7 +414,7 @@ Knowledge: `PlayerKnows_MayorIrmaAffair`, `PlayerKnows_SandraDraupnirAffair`, �
 | Файл | Что есть |
 |------|----------|
 | `modules/locations/town/mayor_office.qsps` | Отработка, `MayorFirstTalk` базовый |
-| `modules/events/family/amanda_cleaning_relief.qsps` | П.5 арки персонала |
+| ~~`amanda_cleaning_relief.qsps`~~ | **удалён** (уборки зала у девушек нет) |
 | `modules/events/family/sandra_staff_*` | П.3–4 |
 | `modules/core/tavern/tavern_upgrades.qsps` | Вывеска / Драупнир |
 | `modules/events/visits/sunday_shop_visits.qsps` | Воскресные визиты, Бекки+Сандра |

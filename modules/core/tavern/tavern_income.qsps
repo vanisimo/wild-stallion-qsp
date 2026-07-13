@@ -459,7 +459,7 @@
 
     gs 'AccumulateTavernCityTax'
 
-    money += tavern_expected_profit
+    gs 'DistributeFamilyProfitShares'
 
     gs 'ConsumeTavernStock'
     gs 'ApplyTavernReputationChange'
@@ -473,6 +473,37 @@
     if tavern_reputation < 0:
         tavern_reputation = 0
     end
+---
+
+! ================================================
+! FILE: modules/core/tavern_income.qsps
+! Доли семьи от дневной прибыли: 70% / 15% / 7.5% / 7.5%
+! Части 28/6/3/3 из 40; остаток от целочисленного деления — Стефану
+! Убыток (profit <= 0) целиком на money ГГ
+! docs/economy.md
+! ================================================
+
+#DistributeFamilyProfitShares
+    LastDayShareStefan = 0
+    LastDayShareSandra = 0
+    LastDayShareAmanda = 0
+    LastDayShareMelissa = 0
+
+    if tavern_expected_profit <= 0:
+        LastDayShareStefan = tavern_expected_profit
+        money += tavern_expected_profit
+        exit
+    end
+
+    LastDayShareSandra = tavern_expected_profit * 6 / 40
+    LastDayShareAmanda = tavern_expected_profit * 3 / 40
+    LastDayShareMelissa = tavern_expected_profit * 3 / 40
+    LastDayShareStefan = tavern_expected_profit - LastDayShareSandra - LastDayShareAmanda - LastDayShareMelissa
+
+    money += LastDayShareStefan
+    SandraMoney += LastDayShareSandra
+    AmandaMoney += LastDayShareAmanda
+    MelissaMoney += LastDayShareMelissa
 ---
 
 ! ================================================
@@ -506,7 +537,7 @@
 
     gs 'AccumulateTavernCityTax'
 
-    money += tavern_expected_profit
+    gs 'DistributeFamilyProfitShares'
 
     gs 'ConsumeTavernStock'
     gs 'ApplyTavernReputationChange'
@@ -566,10 +597,41 @@
     pl 'Пиво: ' + STR(beernum)
     pl ' '
 
+    pl 'Доли семьи (70/15/7.5/7.5):'
+    gs 'FormatSpintry', LastDayShareStefan
+    $FormatSpintry_LastDayShareStefan = $FormatSpintry
+    killvar '$FormatSpintry'
+    pl 'Стефан: ' + $FormatSpintry_LastDayShareStefan
+    gs 'FormatSpintry', LastDayShareSandra
+    $FormatSpintry_LastDayShareSandra = $FormatSpintry
+    killvar '$FormatSpintry'
+    pl 'Сандра: ' + $FormatSpintry_LastDayShareSandra
+    gs 'FormatSpintry', LastDayShareAmanda
+    $FormatSpintry_LastDayShareAmanda = $FormatSpintry
+    killvar '$FormatSpintry'
+    pl 'Аманда: ' + $FormatSpintry_LastDayShareAmanda
+    gs 'FormatSpintry', LastDayShareMelissa
+    $FormatSpintry_LastDayShareMelissa = $FormatSpintry
+    killvar '$FormatSpintry'
+    pl 'Мелисса: ' + $FormatSpintry_LastDayShareMelissa
+    pl ' '
+
     gs 'FormatSpintry', money
     $FormatSpintry_money = $FormatSpintry
     killvar '$FormatSpintry'
-    pl 'Деньги: ' + $FormatSpintry_money
+    pl 'Деньги Стефана: ' + $FormatSpintry_money
+    gs 'FormatSpintry', SandraMoney
+    $FormatSpintry_SandraMoney = $FormatSpintry
+    killvar '$FormatSpintry'
+    pl 'Кошелёк Сандры: ' + $FormatSpintry_SandraMoney
+    gs 'FormatSpintry', AmandaMoney
+    $FormatSpintry_AmandaMoney = $FormatSpintry
+    killvar '$FormatSpintry'
+    pl 'Кошелёк Аманды: ' + $FormatSpintry_AmandaMoney
+    gs 'FormatSpintry', MelissaMoney
+    $FormatSpintry_MelissaMoney = $FormatSpintry
+    killvar '$FormatSpintry'
+    pl 'Кошелёк Мелиссы: ' + $FormatSpintry_MelissaMoney
     pl 'Репутация: ' + STR(tavern_reputation) + ' / 100'
     pl ' '
 

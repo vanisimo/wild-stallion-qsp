@@ -2,7 +2,7 @@
 
 **Статус:** дизайн согласован (**Бекки → Инга**). QSP акт 1 — **реализован** в `f27d9fd` (PR-I6…I16); ручной QA — `docs/qa-checklist-intimacy-act1-weeks1-8.md`.  
 **Код:** smoke-test — Дебаг → **Intimacy smoke-test**; пресеты — **Intimacy-арки (акт 1)**.
-**Связанные документы:** `docs/handoff.md` (экономика), `docs/design-mayor-seal-corruption-arc.md` (снятие запретов), `docs/design-port-church-arc.md` (Лизетта), `AGENTS.md` (шкалы).
+**Связанные документы:** `docs/economy.md` (доли, цели копилок, чаевые; тон зала через `FamilyCorruptionStage`/policy/sluttiness), `docs/handoff.md` (аудит экономики), `docs/design-mayor-seal-corruption-arc.md` (снятие запретов), `docs/design-port-church-arc.md` (Лизетта), `AGENTS.md` (шкалы).
 
 ---
 

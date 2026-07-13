@@ -1,0 +1,434 @@
+! ================================================
+! FILE: modules/core/gifts/gift_shelf_shop.qsps
+! MODULE: core/gifts
+! Универсальные лавки полок подарков (карточка + покупка)
+! ================================================
+
+#GiftShelfCardText
+    $GiftShelfCardItemId = LCASE($ARGS[0])
+    $GiftShelfCardText = ''
+
+    gs 'GiftShelfResolve', $GiftShelfCardItemId
+
+    if $GiftShelfKey = 'cosmetic':
+        gs 'GiftAmandaCosmeticCardText', $GiftShelfCardItemId
+        $GiftShelfCardText = $GiftCosmeticCardText
+        killvar '$GiftCosmeticCardText'
+    elseif $GiftShelfKey = 'seed':
+        gs 'GiftBeckySeedCardText', $GiftShelfCardItemId
+        $GiftShelfCardText = $GiftSeedCardText
+        killvar '$GiftSeedCardText'
+    elseif $GiftShelfKey = 'sewing':
+        gs 'GiftIngaSewingCardText', $GiftShelfCardItemId
+        $GiftShelfCardText = $GiftSewingCardText
+        killvar '$GiftSewingCardText'
+    elseif $GiftShelfKey = 'aphrodisiac':
+        gs 'GiftClarissaAphrodisiacCardText', $GiftShelfCardItemId
+        $GiftShelfCardText = $GiftAphroCardText
+        killvar '$GiftAphroCardText'
+    elseif $GiftShelfKey = 'spice':
+        gs 'GiftExoticSpiceCardText', $GiftShelfCardItemId
+        $GiftShelfCardText = $GiftSpiceCardText
+        killvar '$GiftSpiceCardText'
+    elseif $GiftShelfKey = 'book':
+        gs 'GiftMelissaBookCardText', $GiftShelfCardItemId
+        $GiftShelfCardText = $GiftBookCardText
+        killvar '$GiftBookCardText'
+    elseif $GiftShelfKey = 'aromatic':
+        gs 'GiftIrmaAromaticCardText', $GiftShelfCardItemId
+        $GiftShelfCardText = $GiftAromaticCardText
+        killvar '$GiftAromaticCardText'
+    end
+
+    killvar '$GiftShelfCardItemId'
+    killvar 'GiftShelfKnown'
+    killvar '$GiftShelfOwner'
+    killvar '$GiftShelfKey'
+---
+
+#GiftShelfShopTitle
+    $GiftShelfShopTitleKey = LCASE($ARGS[0])
+    $GiftShelfShopTitle = ''
+
+    if $GiftShelfShopTitleKey = 'cosmetic':
+        $GiftShelfShopTitle = ' КОСМЕТИКА'
+    elseif $GiftShelfShopTitleKey = 'seed':
+        $GiftShelfShopTitle = ' РЕДКИЕ СЕМЕНА'
+    elseif $GiftShelfShopTitleKey = 'sewing':
+        $GiftShelfShopTitle = ' ШИТЬЁ И ВЫШИВКА'
+    elseif $GiftShelfShopTitleKey = 'aphrodisiac':
+        $GiftShelfShopTitle = ' АФРОДИЗИАКИ'
+    elseif $GiftShelfShopTitleKey = 'spice':
+        $GiftShelfShopTitle = ' ЗАМОРСКИЕ СПЕЦИИ'
+    elseif $GiftShelfShopTitleKey = 'book':
+        $GiftShelfShopTitle = ' ЗАПРЕТНЫЕ КНИГИ'
+    elseif $GiftShelfShopTitleKey = 'aromatic':
+        $GiftShelfShopTitle = ' АРОМАТИКА'
+    else:
+        $GiftShelfShopTitle = ' ПОДАРКИ'
+    end
+
+    killvar '$GiftShelfShopTitleKey'
+---
+
+#GiftShelfShopIntro
+    $GiftShelfShopIntroKey = LCASE($ARGS[0])
+    $GiftShelfShopIntro = ''
+
+    if $GiftShelfShopIntroKey = 'cosmetic':
+        $GiftShelfShopIntro = 'На прилавке у корабля — коробочки с зеркальцами и пудрами. Торговец не смотрит на покупателя: только на деньги и на этикетку.'
+    elseif $GiftShelfShopIntroKey = 'seed':
+        $GiftShelfShopIntro = 'Под прилавком — пакеты с семенами. Названия такие, что краснеешь быстрее, чем читаешь; торговец шепчет «для огорода» и не смотрит в глаза.'
+    elseif $GiftShelfShopIntroKey = 'sewing':
+        $GiftShelfShopIntro = 'На рынке в узкой лавке лежат мотки, выкройки и иглы. Торговец шепчет, что каждая вещь — для платья, которое нельзя носить в церкви.'
+    elseif $GiftShelfShopIntroKey = 'aphrodisiac':
+        $GiftShelfShopIntro = 'У борта корабля — флаконы без громких вывесок. Торговец показывает карточку шёпотом: эффект сильнее, чем вино, и опаснее сплетен.'
+    elseif $GiftShelfShopIntroKey = 'spice':
+        $GiftShelfShopIntro = 'В узком ящике у борта лежат баночки с этикетками, от которых краснеют даже матросы. Торговец не торгуется — только показывает карточку и называет цену.'
+    elseif $GiftShelfShopIntroKey = 'book':
+        $GiftShelfShopIntro = 'В узкой лавке на рынке — тома под серой обёрткой. Торговец не называет авторов: только показывает карточку и шепчет, что книгу лучше читать ночью и без свидетелей.'
+    elseif $GiftShelfShopIntroKey = 'aromatic':
+        $GiftShelfShopIntro = 'У борта корабля — флаконы и саше без громких вывесок. Запахи для ткани, кожи и запястий; торговец показывает карточку шёпотом — эффект сильнее, чем благовония в церкви.'
+    end
+
+    killvar '$GiftShelfShopIntroKey'
+---
+
+#GiftShelfShop
+    $GiftShelfShopReturn = $ARGS[0]
+    $GiftShelfShopKey = LCASE($ARGS[1])
+    $GiftShelfShopMenuLoc = $ARGS[2]
+
+    if $GiftShelfShopReturn = '':
+        $GiftShelfShopReturn = 'Port'
+    end
+
+    if $GiftShelfShopMenuLoc = '':
+        $GiftShelfShopMenuLoc = 'GiftShelfShop'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'GiftShelfShopTitle', $GiftShelfShopKey
+    gs 'PrintTitleLine', $GiftShelfShopTitle
+    killvar '$GiftShelfShopTitle'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GiftShelfShopIntro', $GiftShelfShopKey
+    *p $GiftShelfShopIntro
+    killvar '$GiftShelfShopIntro'
+
+    *pl ' '
+
+    gs 'FormatSpintry', money
+    $FormatSpintry_money = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Деньги: ' + $FormatSpintry_money + '.'
+
+    gs 'GiftInventoryTotal'
+
+    if GiftInventoryMaxCarry <= 0:
+        GiftInventoryMaxCarry = 12
+    end
+
+    *pl 'В сумке: ' + STR(GiftInventoryTotal) + ' / ' + STR(GiftInventoryMaxCarry)
+    *pl ' '
+
+    if $GiftShelfShopMessage <> '':
+        *p $GiftShelfShopMessage
+        *pl ' '
+        killvar '$GiftShelfShopMessage'
+    end
+
+    gs 'GiftShelfShopRenderTable', $GiftShelfShopKey
+    *pl ' '
+
+    if $GiftShelfShopKey = 'cosmetic':
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'pearl_lip_gloss', 'Жемчужный блеск для губ'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'rouge_sin_berries', 'Румяна «Ягоды греха»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'musk_eyelash_dye', 'Краска для ресниц с мускусом'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'silk_body_powder', 'Шёлковая пудра для тела'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'nymph_bath_oil', 'Масло для ванны «Нимфа у причала»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'mirror_kiss_balm', 'Бальзам для поцелуев у зеркала'
+    elseif $GiftShelfShopKey = 'seed':
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'stallion_cucumber_seeds', 'Семена огурца «Конский ствол»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'nightshade_tomato_seeds', 'Семена томата «Ночная тень»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'aphrodisiac_carrot_seeds', 'Семена моркови «Разжигатель»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'vine_pepper_cuttings', 'Черенки перца «Вьющийся огонь»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'garden_knife_set', 'Набор садовых ножей'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'moon_melon_seeds', 'Семена дыни «Лунная сладость»'
+    elseif $GiftShelfShopKey = 'sewing':
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'golden_thread_spool', 'Моток золотой нити'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'lace_collar_pattern', 'Выкройка кружевного воротника'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'hidden_pocket_kit', 'Набор для потайных карманов'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'dance_hem_weights', 'Грузы для подола танцевального платья'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'silk_lining_roll', 'Отрез шёлковой подкладки'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'embroidery_needle_set', 'Набор игл для вышивки'
+    elseif $GiftShelfShopKey = 'aphrodisiac':
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'widow_wine_drops', 'Капли «Вдовье терпение»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'barrel_musk_tincture', 'Настойка «Мускус бочонка»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'hidden_desire_candy', 'Леденцы «Скрытое желание»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'married_couple_syrup', 'Сироп «Супруги без сна»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'jealousy_root_powder', 'Порошок «Корень ревности»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'night_barrel_essence', 'Эссенция «Ночь у бочонков»'
+    elseif $GiftShelfShopKey = 'spice':
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'tentacle_seed_spice', 'Специи из семян тентаклей'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'mermaid_squirt_salt', 'Соль из сквирта русалок'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'dragon_fire_pepper', 'Перец «Огненная щель драконихи»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'harvest_sin_herbs', 'Травы «Выживший в свальном грехе»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'naughty_splash_oil', 'Масло шаловливых брызг'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'forgotten_caress_essence', 'Эссенция забытых ласк'
+    elseif $GiftShelfShopKey = 'book':
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'maiden_ten_knights_tale', '«Баллада о Деве и Десяти Рыцарских Копьях»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'gardener_pear_fable', '«Сказ о Юной Огороднице и Созревших Грушах»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'stable_lady_romance', '«Трактат о Смазке для Доспехов и Не Только»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'minstrel_thighs_story', '«Сонетник Вдовы-Распутницы»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'damp_seals_castle_cache', '«Житие Святой Блудницы из Портового Квартала»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'capital_cook_diary', '«Учебник Эльфийской Гимнастики для Гибкости в Браке»'
+    elseif $GiftShelfShopKey = 'aromatic':
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'silk_boudoir_sachet', 'Саше «Шёлковая будуар»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'neckline_musk_vial', 'Флакон мускуса для декольте'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'linen_sunset_perfume', 'Духи «Льняной закат»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'velvet_wrist_tincture', 'Настойка для запястий на бархате'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'hidden_lace_essence', 'Эссенция «Скрытое кружево»'
+        gs 'GiftShelfShopAddAct', $GiftShelfShopReturn, $GiftShelfShopKey, $GiftShelfShopMenuLoc, 'midnight_seamstress_oil', 'Масло «Ночная портниха»'
+    end
+
+    if $GiftShelfShopKey = 'cosmetic' or $GiftShelfShopKey = 'aphrodisiac' or $GiftShelfShopKey = 'spice' or $GiftShelfShopKey = 'aromatic':
+        act '<b>Назад к кораблю</b>', 'images/common/ui/actions/return.png':
+            gt 'PortCapitalShipMenu', $GiftShelfShopReturn
+        end
+    elseif $GiftShelfShopKey = 'seed' or $GiftShelfShopKey = 'sewing' or $GiftShelfShopKey = 'book':
+        act '<b>Назад в лавку</b>', 'images/common/ui/actions/return.png':
+            gt 'MarketGiftStall'
+        end
+    end
+
+    killvar '$GiftShelfShopReturn'
+    killvar '$GiftShelfShopKey'
+    killvar '$GiftShelfShopMenuLoc'
+---
+
+#GiftShelfShopAddAct
+    $GiftShelfActReturn = $ARGS[0]
+    $GiftShelfActKey = $ARGS[1]
+    $GiftShelfActMenuLoc = $ARGS[2]
+    $GiftShelfActItemId = $ARGS[3]
+    $GiftShelfActLabel = $ARGS[4]
+
+    act '<b>' + $GiftShelfActLabel + '</b>', 'images/common/ui/actions/gift.png':
+        gt 'GiftShelfCard', $GiftShelfActReturn, $GiftShelfActKey, $GiftShelfActMenuLoc, $GiftShelfActItemId
+    end
+
+    killvar '$GiftShelfActReturn'
+    killvar '$GiftShelfActKey'
+    killvar '$GiftShelfActMenuLoc'
+    killvar '$GiftShelfActItemId'
+    killvar '$GiftShelfActLabel'
+---
+
+#GiftShelfShopRenderTable
+    $GiftShelfTableKey = LCASE($ARGS[0])
+    $GiftShelfTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
+    $GiftShelfCellStyle = 'border:1px solid #555; padding:5px 10px;'
+    $GiftShelfThStyle = $GiftShelfCellStyle + ' text-align:left; font-weight:bold;'
+
+    $GiftShelfTableHtml = '<table style="' + $GiftShelfTableStyle + '"><tr>'
+    $GiftShelfTableHtml += '<th style="' + $GiftShelfThStyle + '">Товар</th>'
+    $GiftShelfTableHtml += '<th style="' + $GiftShelfThStyle + '">Цена</th></tr>'
+
+    if $GiftShelfTableKey = 'cosmetic':
+        gs 'GiftShelfShopAddPriceRow', 'pearl_lip_gloss'
+        gs 'GiftShelfShopAddPriceRow', 'rouge_sin_berries'
+        gs 'GiftShelfShopAddPriceRow', 'musk_eyelash_dye'
+        gs 'GiftShelfShopAddPriceRow', 'silk_body_powder'
+        gs 'GiftShelfShopAddPriceRow', 'nymph_bath_oil'
+        gs 'GiftShelfShopAddPriceRow', 'mirror_kiss_balm'
+    elseif $GiftShelfTableKey = 'seed':
+        gs 'GiftShelfShopAddPriceRow', 'stallion_cucumber_seeds'
+        gs 'GiftShelfShopAddPriceRow', 'nightshade_tomato_seeds'
+        gs 'GiftShelfShopAddPriceRow', 'aphrodisiac_carrot_seeds'
+        gs 'GiftShelfShopAddPriceRow', 'vine_pepper_cuttings'
+        gs 'GiftShelfShopAddPriceRow', 'garden_knife_set'
+        gs 'GiftShelfShopAddPriceRow', 'moon_melon_seeds'
+    elseif $GiftShelfTableKey = 'sewing':
+        gs 'GiftShelfShopAddPriceRow', 'golden_thread_spool'
+        gs 'GiftShelfShopAddPriceRow', 'lace_collar_pattern'
+        gs 'GiftShelfShopAddPriceRow', 'hidden_pocket_kit'
+        gs 'GiftShelfShopAddPriceRow', 'dance_hem_weights'
+        gs 'GiftShelfShopAddPriceRow', 'silk_lining_roll'
+        gs 'GiftShelfShopAddPriceRow', 'embroidery_needle_set'
+    elseif $GiftShelfTableKey = 'aphrodisiac':
+        gs 'GiftShelfShopAddPriceRow', 'widow_wine_drops'
+        gs 'GiftShelfShopAddPriceRow', 'barrel_musk_tincture'
+        gs 'GiftShelfShopAddPriceRow', 'hidden_desire_candy'
+        gs 'GiftShelfShopAddPriceRow', 'married_couple_syrup'
+        gs 'GiftShelfShopAddPriceRow', 'jealousy_root_powder'
+        gs 'GiftShelfShopAddPriceRow', 'night_barrel_essence'
+    elseif $GiftShelfTableKey = 'spice':
+        gs 'GiftShelfShopAddPriceRow', 'tentacle_seed_spice'
+        gs 'GiftShelfShopAddPriceRow', 'mermaid_squirt_salt'
+        gs 'GiftShelfShopAddPriceRow', 'dragon_fire_pepper'
+        gs 'GiftShelfShopAddPriceRow', 'harvest_sin_herbs'
+        gs 'GiftShelfShopAddPriceRow', 'naughty_splash_oil'
+        gs 'GiftShelfShopAddPriceRow', 'forgotten_caress_essence'
+    elseif $GiftShelfTableKey = 'book':
+        gs 'GiftShelfShopAddPriceRow', 'maiden_ten_knights_tale'
+        gs 'GiftShelfShopAddPriceRow', 'gardener_pear_fable'
+        gs 'GiftShelfShopAddPriceRow', 'stable_lady_romance'
+        gs 'GiftShelfShopAddPriceRow', 'minstrel_thighs_story'
+        gs 'GiftShelfShopAddPriceRow', 'damp_seals_castle_cache'
+        gs 'GiftShelfShopAddPriceRow', 'capital_cook_diary'
+    elseif $GiftShelfTableKey = 'aromatic':
+        gs 'GiftShelfShopAddPriceRow', 'silk_boudoir_sachet'
+        gs 'GiftShelfShopAddPriceRow', 'neckline_musk_vial'
+        gs 'GiftShelfShopAddPriceRow', 'linen_sunset_perfume'
+        gs 'GiftShelfShopAddPriceRow', 'velvet_wrist_tincture'
+        gs 'GiftShelfShopAddPriceRow', 'hidden_lace_essence'
+        gs 'GiftShelfShopAddPriceRow', 'midnight_seamstress_oil'
+    end
+
+    $GiftShelfTableHtml += '</table>'
+
+    *p $GiftShelfTableHtml
+
+    killvar '$GiftShelfTableHtml'
+    killvar '$GiftShelfTableStyle'
+    killvar '$GiftShelfCellStyle'
+    killvar '$GiftShelfThStyle'
+    killvar '$GiftShelfTableKey'
+---
+
+#GiftShelfShopAddPriceRow
+    $GiftShelfPriceRowId = LCASE($ARGS[0])
+
+    gs 'GiftRegistryResolve', $GiftShelfPriceRowId
+    gs 'FormatSpintry', GiftRegistryPrice
+    $FormatSpintry_GiftRegistryPrice = $FormatSpintry
+    killvar '$FormatSpintry'
+    $GiftShelfTableHtml += '<tr><td style="' + $GiftShelfCellStyle + '">' + $GiftRegistryLabel + '</td><td style="' + $GiftShelfCellStyle + '">' + $FormatSpintry_GiftRegistryPrice + '</td></tr>'
+    killvar 'GiftRegistryPrice'
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+    killvar '$GiftRegistryLabel'
+    killvar '$GiftShelfPriceRowId'
+---
+
+#GiftShelfCard
+    $GiftShelfCardReturn = $ARGS[0]
+    $GiftShelfCardKey = LCASE($ARGS[1])
+    $GiftShelfCardMenuLoc = $ARGS[2]
+    $GiftShelfCardItemId = LCASE($ARGS[3])
+
+    if $GiftShelfCardReturn = '':
+        $GiftShelfCardReturn = 'Port'
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' КАРТОЧКА ТОВАРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'GiftShelfCardText', $GiftShelfCardItemId
+    *p $GiftShelfCardText
+    killvar '$GiftShelfCardText'
+
+    *pl ' '
+
+    gs 'GiftRegistryResolve', $GiftShelfCardItemId
+    gs 'FormatSpintry', GiftRegistryPrice
+    $FormatSpintry_GiftRegistryPrice = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Цена: ' + $FormatSpintry_GiftRegistryPrice + '.'
+    killvar 'GiftRegistryPrice'
+    killvar 'GiftRegistryKnown'
+    killvar '$GiftRegistryAccusative'
+    killvar '$GiftRegistryLabel'
+
+    *pl ' '
+
+    act '<b>Купить</b>', 'images/common/ui/actions/shop.png':
+        gs 'GiftShelfBuyItem', $GiftShelfCardReturn, $GiftShelfCardKey, $GiftShelfCardMenuLoc, $GiftShelfCardItemId
+    end
+
+    act '<b>Назад к товарам</b>', 'images/common/ui/actions/return.png':
+        gt 'GiftShelfShop', $GiftShelfCardReturn, $GiftShelfCardKey, $GiftShelfCardMenuLoc
+    end
+---
+
+#GiftShelfBuyItem
+    $GiftShelfBuyReturn = $ARGS[0]
+    $GiftShelfBuyKey = LCASE($ARGS[1])
+    $GiftShelfBuyMenuLoc = $ARGS[2]
+    $GiftShelfBuyItemId = LCASE($ARGS[3])
+
+    if $GiftShelfBuyReturn = '':
+        $GiftShelfBuyReturn = 'Port'
+    end
+
+    gs 'GiftInventoryTryPurchase', $GiftShelfBuyItemId, $GiftShelfBuyMenuLoc
+
+    $GiftShelfShopMessage = $GiftPurchaseMessage
+
+    killvar 'GiftPurchaseOk'
+    killvar '$GiftPurchaseMessage'
+    killvar '$GiftShelfBuyItemId'
+
+    gt 'GiftShelfShop', $GiftShelfBuyReturn, $GiftShelfBuyKey, $GiftShelfBuyMenuLoc
+---
+
+#PortCosmeticShop
+    $PortReturnLoc = $ARGS[0]
+
+    if $PortReturnLoc = '':
+        $PortReturnLoc = 'Port'
+    end
+
+    gt 'GiftShelfShop', $PortReturnLoc, 'cosmetic', 'PortCosmeticShop'
+---
+
+#PortAphrodisiacShop
+    $PortReturnLoc = $ARGS[0]
+
+    if $PortReturnLoc = '':
+        $PortReturnLoc = 'Port'
+    end
+
+    gt 'GiftShelfShop', $PortReturnLoc, 'aphrodisiac', 'PortAphrodisiacShop'
+---
+
+#MarketGiftBookShop
+    gt 'GiftShelfShop', 'Market', 'book', 'MarketGiftBookShop'
+---
+
+#MarketGiftSeedShop
+    gt 'GiftShelfShop', 'Market', 'seed', 'MarketGiftSeedShop'
+---
+
+#MarketGiftSewingShop
+    gt 'GiftShelfShop', 'Market', 'sewing', 'MarketGiftSewingShop'
+---
+
+#PortAromaticShop
+    $PortReturnLoc = $ARGS[0]
+
+    if $PortReturnLoc = '':
+        $PortReturnLoc = 'Port'
+    end
+
+    gt 'GiftShelfShop', $PortReturnLoc, 'aromatic', 'PortAromaticShop'
+---
+
+#PortExoticSpiceShop
+    $PortReturnLoc = $ARGS[0]
+
+    if $PortReturnLoc = '':
+        $PortReturnLoc = 'Port'
+    end
+
+    gt 'GiftShelfShop', $PortReturnLoc, 'spice', 'PortExoticSpiceShop'
+---

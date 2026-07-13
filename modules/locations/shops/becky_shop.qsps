@@ -11,7 +11,7 @@
 
     $BeckyShopTabIncoming = LCASE($ARGS[0])
 
-    if $BeckyShopTabIncoming = 'main' or $BeckyShopTabIncoming = 'food' or $BeckyShopTabIncoming = 'gifts':
+    if $BeckyShopTabIncoming = 'main' or $BeckyShopTabIncoming = 'food':
         $BeckyShopTab = $BeckyShopTabIncoming
     elseif $BeckyShopTabIncoming = '':
         if $BeckyShopHoldTab <> '':
@@ -110,10 +110,6 @@
 
     if $BeckyShopTab = 'food':
         gs 'BeckyShopRenderFoodTab'
-        *pl ' '
-        gs 'BeckyShopRenderBackButton'
-    elseif $BeckyShopTab = 'gifts':
-        gs 'BeckyShopRenderGiftsTab'
         *pl ' '
         gs 'BeckyShopRenderBackButton'
     else:
@@ -274,43 +270,6 @@
     killvar '$BeckyShopThStyle'
 ---
 
-#BeckyShopRenderGiftsPriceTable
-    $BeckyShopTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
-    $BeckyShopCellStyle = 'border:1px solid #555; padding:5px 10px;'
-    $BeckyShopThStyle = $BeckyShopCellStyle + ' text-align:left; font-weight:bold;'
-
-    gs 'GiftRegistryResolve', 'herb_bundle'
-    $BeckyShopGiftHerbLabel = $GiftRegistryLabel
-    BeckyShopGiftHerbPrice = GiftRegistryPrice
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-
-    gs 'GiftRegistryResolve', 'rare_salt'
-    $BeckyShopGiftSaltLabel = $GiftRegistryLabel
-    BeckyShopGiftSaltPrice = GiftRegistryPrice
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-
-    $BeckyShopGiftsTableHtml = '<table style="' + $BeckyShopTableStyle + '"><tr>'
-    $BeckyShopGiftsTableHtml += '<th style="' + $BeckyShopThStyle + '">Подарок</th>'
-    $BeckyShopGiftsTableHtml += '<th style="' + $BeckyShopThStyle + '">Цена</th></tr>'
-    $BeckyShopGiftsTableHtml += '<tr><td style="' + $BeckyShopCellStyle + '">' + $BeckyShopGiftHerbLabel + '</td><td style="' + $BeckyShopCellStyle + '">' + STR(BeckyShopGiftHerbPrice) + ' монет</td></tr>'
-    $BeckyShopGiftsTableHtml += '<tr><td style="' + $BeckyShopCellStyle + '">' + $BeckyShopGiftSaltLabel + '</td><td style="' + $BeckyShopCellStyle + '">' + STR(BeckyShopGiftSaltPrice) + ' монет</td></tr>'
-    $BeckyShopGiftsTableHtml += '</table>'
-
-    *p $BeckyShopGiftsTableHtml
-
-    killvar '$BeckyShopGiftsTableHtml'
-    killvar '$BeckyShopTableStyle'
-    killvar '$BeckyShopCellStyle'
-    killvar '$BeckyShopThStyle'
-    killvar '$BeckyShopGiftHerbLabel'
-    killvar '$BeckyShopGiftSaltLabel'
-    killvar '$GiftRegistryLabel'
-    killvar 'BeckyShopGiftHerbPrice'
-    killvar 'BeckyShopGiftSaltPrice'
----
-
 #BeckyShopRenderChildrenFoodBuy
     *pl 'Дети Бекки готовы помочь, если у вас с ними хорошие отношения:'
     *pl ' '
@@ -330,34 +289,9 @@
     end
 ---
 
-#BeckyShopRenderGiftsTab
-    gs 'PrintMainLine', 'Подарки для девушек'
-    *pl ' '
-    gs 'BeckyShopRenderGiftsPriceTable'
-    *pl ' '
-
-    if $CurrentSeller = 'becky' and Friends['becky'] < 20:
-        *p 'Бекки не хочет продавать вам подарки, пока вы не помиритесь.'
-    else:
-        act '<b>Связка сушёных трав</b>', 'images/common/ui/actions/gift.png':
-            $BeckyShopTab = 'gifts'
-            gs 'BeckyShopBuyGift', 'herb_bundle'
-        end
-
-        act '<b>Мешочек редкой соли</b>', 'images/common/ui/actions/gift.png':
-            $BeckyShopTab = 'gifts'
-            gs 'BeckyShopBuyGift', 'rare_salt'
-        end
-    end
----
-
 #BeckyShopRenderMainNavButtons
     act '<b>Продовольствие</b>', 'images/common/ui/actions/shop.png':
         gt 'BeckyShop', 'food'
-    end
-
-    act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
-        gt 'BeckyShop', 'gifts'
     end
 
     act '<b>Назад</b>', 'images/common/ui/actions/return.png':

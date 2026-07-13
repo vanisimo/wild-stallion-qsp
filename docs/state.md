@@ -73,6 +73,14 @@ Daily calculation values:
 - `TavernCityTaxTotal` - cumulative city tax paid across the whole game.
 - `TaxPercent` - city tax rate on tavern gross income; default `10`, owner `InitBusinessSchedule`.
 - `tavern_expected_profit` - final expected daily profit after expenses and city tax.
+- `SandraMoney`, `AmandaMoney`, `MelissaMoney` - personal family wallets; filled from daily profit shares (70/15/7.5/7.5 with `money` for Stefan). See `docs/economy.md`.
+- `LastDayShareStefan`, `LastDayShareSandra`, `LastDayShareAmanda`, `LastDayShareMelissa` - last day share amounts after `DistributeFamilyProfitShares`.
+- `GirlTipsAmount`, `LastGirlTipsAmount`, `$LastGirlTipsGirl`, `$GirlTipsAwardLine` - last tips award via `CalcGirlTips` / `AwardGirlTips` (`modules/core/economy/girl_tips.qsps`). Tips go to personal wallets, not Stefan `money`.
+- `$GirlWalletPurchaseTalk[girl]` - pending smalltalk line after a wallet purchase; set via `GirlWalletPurchaseTalkSet`, consumed in `SmallTalkNpc` («Поболтать ни о чём»).
+- `ProcessFamilyWalletSpends` / `TryGirlWalletSpend` (`girl_wallet_spend.qsps`) - passive micro-spends after each work day; cooldown 3 days; floor on wallet; Amanda beauty / Melissa books / Sandra spices.
+- `GirlWalletLastSpendDay[girl]`, `GirlWalletSpendCount[girl]`, `SandraKitchenExperimentCount` - spend tracking.
+- `ProcessSandraKitchenNewDish` - after ≥3 experiments, chance for new dish: +rep, tips to Sandra, `KitchenNewDishVisitorBonus` next day, summary + smalltalk; cooldown `SandraKitchenLastDishDay`.
+- Dream items (not GirlTalk with GG): Sunday/room eavesdrop sets `DreamItemKnown[id]`, `PlayerKnows_Dream_FullLengthMirror` / `_EleanorVol3` / `_RecipeCodex` / `_StallionCucumber` / `_SewingMachine` / `_AncestralStaff` / `_GoldenWine`. Cucumber jokes always eligible. `DreamItemGiven[id]` drops most dream phrases (not cucumber). Full quest later.
 - `tavern_stock_penalty` - low stock penalty.
 - `tavern_food_used`, `tavern_wine_used`, `tavern_beer_used` - stock consumed by the previous work day.
 - `tavern_can_serve_food`, `tavern_can_serve_drinks` - service availability flags.
@@ -266,28 +274,10 @@ Girl reactions (`modules/events/family/sandra_staff_girls_reaction.qsps`):
 - `ProcessSandraStaffGirlsReaction` in `next_day` — morning notices via `GirlTalkPendingNotice`, `FamilyTrust += 1`.
 - `SandraStaffGirlsReactionDone = 1` after first morning processing.
 - `GirlTalkTavernUseStaffRelief` — tavern talk uses relief/praise text instead of overload complaints when `tavern_overload_penalty >= 10`.
-- Optional talk «После помощниц матери» in girl menus; once per girl via `GirlStaffPraiseTalkDone[girl]`.
+- Optional talk «О помощницах» in **Личный разговор** (not root menu); once per girl via `GirlStaffPraiseTalkDone[girl]`.
 - Panel tavern: softer overload warning when hired staff is active.
 
-## Amanda cleaning relief (point 5)
-
-Owner: `modules/events/family/amanda_cleaning_relief.qsps`.
-
-Gates (`AmandaCleaningReliefCanTalk`):
-
-- `SandraStaffGirlsReactionDone = 1`
-- `TavernHiredCleaning = 1`
-- `jobcleaning['amanda'] = 1`
-- `GirlTrustStefan['amanda'] >= 40` or `Friends['amanda'] >= 14`
-- `AmandaCleaningReliefDone = 0`
-
-Flow:
-
-- Talk topic «Руки портятся от воды» in Amanda menu; special action «Поговорить об уборке и руках».
-- Agree → `jobcleaning['amanda'] = 0`, cleaning stays on hired worker, `AmandaCleaningReliefDone = 1`.
-- Decline → topic remains available.
-
-Until unlock, hire buttons are hidden.
+~~Amanda cleaning relief~~ — **removed** (no hall cleaning job for girls; dead topic «Руки портятся от воды»).
 
 Flags:
 

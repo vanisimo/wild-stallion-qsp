@@ -16,7 +16,7 @@
     $IrmaShopTabIncoming = LCASE($ARGS[0])
     $IrmaShopReturnIncoming = $ARGS[1]
 
-    if $IrmaShopTabIncoming = 'main' or $IrmaShopTabIncoming = 'uniforms' or $IrmaShopTabIncoming = 'gifts':
+    if $IrmaShopTabIncoming = 'main' or $IrmaShopTabIncoming = 'uniforms':
         $IrmaShopTab = $IrmaShopTabIncoming
     elseif $IrmaShopTabIncoming = 'craftsmenquarter' or $IrmaShopTabIncoming = 'craftsmen_quarter':
         $IrmaShopReturnLoc = 'CraftsmenQuarter'
@@ -121,10 +121,6 @@
         gs 'IrmaShopRenderUniformsTab'
         *pl ' '
         gs 'IrmaShopRenderBackButton'
-    elseif $IrmaShopTab = 'gifts':
-        gs 'IrmaShopRenderGiftsTab'
-        *pl ' '
-        gs 'IrmaShopRenderBackButton'
     else:
         gs 'IrmaShopRenderMainTab'
         *pl ' '
@@ -169,7 +165,7 @@
 ---
 
 #IrmaShopRenderMainTab
-    *p 'На стенах — выкройки, на полках — катушки ниток. Здесь шьют платья для танцев, заказывают рабочую форму и покупают мелочи для подарков.'
+    *p 'На стенах — выкройки, на полках — катушки ниток. Здесь шьют платья для танцев и заказывают рабочую форму для трактира.'
 ---
 
 #IrmaShopRenderMainExtraActions
@@ -261,124 +257,9 @@
     end
 ---
 
-#IrmaShopRenderGiftsTab
-    gs 'PrintMainLine', 'Подарки и мелочи'
-    *pl ' '
-
-    if IrmaMet < 1:
-        *p 'Ирма ещё не знакома с вами — сначала поздоровайтесь.'
-    else:
-        *p 'Ирма отодвигает готовые платья и показывает отрезы, нитки и бисер. Такие вещи удобно купить здесь и потом подарить кому-то из знакомых девушек.'
-        *pl ' '
-        gs 'IrmaShopRenderGiftsPriceTable'
-        *pl ' '
-
-        act '<b>Бисер для вышивки</b>', 'images/common/ui/actions/gift.png':
-            $IrmaShopTab = 'gifts'
-            gs 'IrmaShopBuyGift', 'irma_seed_beads'
-        end
-
-        act '<b>Отрез добротной ткани</b>', 'images/common/ui/actions/gift.png':
-            $IrmaShopTab = 'gifts'
-            gs 'IrmaShopBuyGift', 'irma_fabric_roll'
-        end
-
-        act '<b>Моток шёлковой нити</b>', 'images/common/ui/actions/gift.png':
-            $IrmaShopTab = 'gifts'
-            gs 'IrmaShopBuyGift', 'irma_silk_spool'
-        end
-
-        if Friends['irma'] >= 12:
-            act '<b>Брошь с цветными камнями</b>', 'images/common/ui/actions/gift.png':
-                $IrmaShopTab = 'gifts'
-                gs 'IrmaShopBuyGift', 'irma_brooch'
-            end
-        end
-    end
----
-
-#IrmaShopRenderGiftsPriceTable
-    $IrmaShopTableStyle = 'border-collapse:collapse; width:100%; max-width:540px; margin:6px 0;'
-    $IrmaShopCellStyle = 'border:1px solid #555; padding:5px 10px;'
-    $IrmaShopThStyle = $IrmaShopCellStyle + ' text-align:left; font-weight:bold;'
-
-    gs 'GiftRegistryResolve', 'irma_seed_beads'
-    $IrmaShopGiftBeadsLabel = $GiftRegistryLabel
-    IrmaShopGiftBeadsPrice = GiftRegistryPrice
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-
-    gs 'GiftRegistryResolve', 'irma_fabric_roll'
-    $IrmaShopGiftFabricLabel = $GiftRegistryLabel
-    IrmaShopGiftFabricPrice = GiftRegistryPrice
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-
-    gs 'GiftRegistryResolve', 'irma_silk_spool'
-    $IrmaShopGiftSilkLabel = $GiftRegistryLabel
-    IrmaShopGiftSilkPrice = GiftRegistryPrice
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-
-    gs 'GiftRegistryResolve', 'irma_brooch'
-    $IrmaShopGiftBroochLabel = $GiftRegistryLabel
-    IrmaShopGiftBroochPrice = GiftRegistryPrice
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-
-    $IrmaShopGiftsTableHtml = '<table style="' + $IrmaShopTableStyle + '"><tr>'
-    $IrmaShopGiftsTableHtml += '<th style="' + $IrmaShopThStyle + '">Подарок</th>'
-    $IrmaShopGiftsTableHtml += '<th style="' + $IrmaShopThStyle + '">Цена</th></tr>'
-    $IrmaShopGiftsTableHtml += '<tr><td style="' + $IrmaShopCellStyle + '">' + $IrmaShopGiftBeadsLabel + '</td><td style="' + $IrmaShopCellStyle + '">' + STR(IrmaShopGiftBeadsPrice) + ' монет</td></tr>'
-    $IrmaShopGiftsTableHtml += '<tr><td style="' + $IrmaShopCellStyle + '">' + $IrmaShopGiftFabricLabel + '</td><td style="' + $IrmaShopCellStyle + '">' + STR(IrmaShopGiftFabricPrice) + ' монет</td></tr>'
-    $IrmaShopGiftsTableHtml += '<tr><td style="' + $IrmaShopCellStyle + '">' + $IrmaShopGiftSilkLabel + '</td><td style="' + $IrmaShopCellStyle + '">' + STR(IrmaShopGiftSilkPrice) + ' монет</td></tr>'
-
-    if Friends['irma'] >= 12:
-        $IrmaShopGiftsTableHtml += '<tr><td style="' + $IrmaShopCellStyle + '">' + $IrmaShopGiftBroochLabel + '</td><td style="' + $IrmaShopCellStyle + '">' + STR(IrmaShopGiftBroochPrice) + ' монет</td></tr>'
-    end
-
-    $IrmaShopGiftsTableHtml += '</table>'
-
-    *p $IrmaShopGiftsTableHtml
-
-    killvar '$IrmaShopGiftsTableHtml'
-    killvar '$IrmaShopTableStyle'
-    killvar '$IrmaShopCellStyle'
-    killvar '$IrmaShopThStyle'
-    killvar '$IrmaShopGiftBeadsLabel'
-    killvar '$IrmaShopGiftFabricLabel'
-    killvar '$IrmaShopGiftSilkLabel'
-    killvar '$IrmaShopGiftBroochLabel'
-    killvar '$GiftRegistryLabel'
-    killvar 'IrmaShopGiftBeadsPrice'
-    killvar 'IrmaShopGiftFabricPrice'
-    killvar 'IrmaShopGiftSilkPrice'
-    killvar 'IrmaShopGiftBroochPrice'
----
-
-#IrmaShopBuyGift
-    $IrmaShopGiftId = LCASE($ARGS[0])
-
-    gs 'GiftInventoryTryPurchase', $IrmaShopGiftId, ''
-
-    $IrmaShopMessage = $GiftPurchaseMessage
-
-    killvar 'GiftPurchaseOk'
-    killvar '$GiftPurchaseMessage'
-    killvar '$IrmaShopGiftId'
-
-    gt 'IrmaShop', 'gifts', $IrmaShopReturnLoc
----
-
 #IrmaShopRenderMainNavButtons
     act '<b>Рабочая форма</b>', 'images/common/ui/actions/shop.png':
         gt 'IrmaShop', 'uniforms', $IrmaShopReturnLoc
-    end
-
-    if IrmaMet >= 1:
-        act '<b>Подарки</b>', 'images/common/ui/actions/gift.png':
-            gt 'IrmaShop', 'gifts', $IrmaShopReturnLoc
-        end
     end
 
     act '<b>Квартал ремесленников</b>', 'images/common/ui/actions/craftsmen.png':

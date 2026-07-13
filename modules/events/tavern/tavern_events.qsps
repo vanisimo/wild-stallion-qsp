@@ -60,8 +60,22 @@
 
     elseif TavernEventRoll <= 80:
         if tavern_waitress_power >= 30:
-            $LastTavernEventText = 'Несколько гостей оставили щедрые чаевые за хорошее обслуживание.'
-            tavern_event_profit_bonus = 25
+            gs 'PickFamilyWaitressForTips'
+
+            if $FamilyTipsGirl <> '':
+                gs 'AwardGirlTipsFromBase', $FamilyTipsGirl, 15 + RAND(5, 15)
+
+                if $RealName[$FamilyTipsGirl] <> '':
+                    $LastTavernEventText = 'Несколько гостей оставили щедрые чаевые — ' + $RealName[$FamilyTipsGirl] + ' убрала их в свой кошелёк.'
+                else:
+                    $LastTavernEventText = 'Несколько гостей оставили щедрые чаевые за хорошее обслуживание — они достались работнице, а не общей кассе.'
+                end
+            else:
+                $LastTavernEventText = 'Несколько гостей оставили щедрые чаевые за хорошее обслуживание.'
+                tavern_event_profit_bonus = 25
+            end
+
+            killvar '$FamilyTipsGirl'
         else:
             $LastTavernEventText = 'Кто-то из гостей хотел оставить чаевые, но обслуживание оказалось слишком слабым.'
         end

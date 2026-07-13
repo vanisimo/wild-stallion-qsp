@@ -1,0 +1,179 @@
+! ================================================
+! FILE: modules/core/economy/girl_tips.qsps
+! MODULE: core/economy
+! Чаевые на личный кошелёк семьи (не в money ГГ)
+! docs/economy.md §5
+! ================================================
+
+! ARGS[0] — girl id
+! ARGS[1] — база (если <= 0 → 5)
+! Результат: GirlTipsAmount
+#CalcGirlTips
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TipsGirl = $GirlKey
+    TipsBase = ARGS[1]
+
+    GirlTipsAmount = 0
+
+    if $TipsGirl = '':
+        killvar '$TipsGirl'
+        killvar 'TipsBase'
+        exit
+    end
+
+    if TipsBase <= 0:
+        TipsBase = 5
+    end
+
+    TipsPolicyBonus = 0
+
+    if GirlWorkPolicy[$TipsGirl] = 3 or GirlKitchenPolicy[$TipsGirl] = 3:
+        TipsPolicyBonus = 6
+    elseif GirlWorkPolicy[$TipsGirl] = 2 or GirlKitchenPolicy[$TipsGirl] = 2:
+        TipsPolicyBonus = 3
+    end
+
+    TipsSlutBonus = sluttiness[$TipsGirl] / 10
+
+    if TipsSlutBonus < 0:
+        TipsSlutBonus = 0
+    end
+
+    GirlTipsAmount = TipsBase + TipsSlutBonus + TipsPolicyBonus
+
+    if FamilyCorruptionStage > 0:
+        GirlTipsAmount = GirlTipsAmount * (100 + FamilyCorruptionStage * 5) / 100
+    end
+
+    if GirlTipsAmount < 1:
+        GirlTipsAmount = 1
+    end
+
+    if GirlTipsAmount > 50:
+        GirlTipsAmount = 50
+    end
+
+    killvar '$TipsGirl'
+    killvar 'TipsBase'
+    killvar 'TipsPolicyBonus'
+    killvar 'TipsSlutBonus'
+---
+
+! ARGS[0] — girl id
+! ARGS[1] — сумма (уже посчитанная)
+! Кладёт на SandraMoney / AmandaMoney / MelissaMoney
+! Выставляет LastGirlTipsAmount, $LastGirlTipsGirl, $GirlTipsAwardLine
+#AwardGirlTips
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TipsGirl = $GirlKey
+    GirlTipsAmount = ARGS[1]
+
+    $GirlTipsAwardLine = ''
+    LastGirlTipsAmount = 0
+    $LastGirlTipsGirl = ''
+
+    if $TipsGirl = '' or GirlTipsAmount <= 0:
+        killvar '$TipsGirl'
+        exit
+    end
+
+    if $TipsGirl = 'sandra':
+        SandraMoney += GirlTipsAmount
+    elseif $TipsGirl = 'amanda':
+        AmandaMoney += GirlTipsAmount
+    elseif $TipsGirl = 'melissa':
+        MelissaMoney += GirlTipsAmount
+    else:
+        money += GirlTipsAmount
+        $GirlTipsAwardLine = 'Чаевые (' + $TipsGirl + '): ушли в кассу хозяина.'
+        LastGirlTipsAmount = GirlTipsAmount
+        $LastGirlTipsGirl = $TipsGirl
+        killvar '$TipsGirl'
+        exit
+    end
+
+    LastGirlTipsAmount = GirlTipsAmount
+    $LastGirlTipsGirl = $TipsGirl
+
+    gs 'FormatSpintry', GirlTipsAmount
+    $FormatSpintry_GirlTipsAmount = $FormatSpintry
+    killvar '$FormatSpintry'
+
+    if $RealName[$TipsGirl] <> '':
+        $GirlTipsAwardLine = $RealName[$TipsGirl] + ' получила чаевые: ' + $FormatSpintry_GirlTipsAmount + '.'
+    else:
+        $GirlTipsAwardLine = 'Чаевые на личный кошелёк: ' + $FormatSpintry_GirlTipsAmount + '.'
+    end
+
+    killvar '$FormatSpintry_GirlTipsAmount'
+    killvar '$TipsGirl'
+---
+
+! ARGS[0] — girl id
+! ARGS[1] — база для CalcGirlTips
+#AwardGirlTipsFromBase
+    gs 'CalcGirlTips', $ARGS[0], ARGS[1]
+    gs 'AwardGirlTips', $ARGS[0], GirlTipsAmount
+---
+
+! Выбрать девушку семьи на официантке (для общих чаевых зала)
+! Результат: $FamilyTipsGirl
+#PickFamilyWaitressForTips
+    $FamilyTipsGirl = ''
+
+    if jobwaitress['amanda'] = 1:
+        $FamilyTipsGirl = 'amanda'
+    end
+
+    if jobwaitress['melissa'] = 1:
+        if $FamilyTipsGirl = '':
+            $FamilyTipsGirl = 'melissa'
+        elseif sluttiness['melissa'] > sluttiness[$FamilyTipsGirl]:
+            $FamilyTipsGirl = 'melissa'
+        elseif sluttiness['melissa'] = sluttiness[$FamilyTipsGirl] and RAND(0, 1) = 1:
+            $FamilyTipsGirl = 'melissa'
+        end
+    end
+
+    if jobwaitress['sandra'] = 1:
+        if $FamilyTipsGirl = '':
+            $FamilyTipsGirl = 'sandra'
+        end
+    end
+
+    if $FamilyTipsGirl = '':
+        if jobkitchen['sandra'] = 1:
+            $FamilyTipsGirl = 'sandra'
+        elseif jobkitchen['melissa'] = 1:
+            $FamilyTipsGirl = 'melissa'
+        elseif jobkitchen['amanda'] = 1:
+            $FamilyTipsGirl = 'amanda'
+        elseif jobcleaning['amanda'] = 1:
+            $FamilyTipsGirl = 'amanda'
+        elseif jobcleaning['melissa'] = 1:
+            $FamilyTipsGirl = 'melissa'
+        elseif jobcleaning['sandra'] = 1:
+            $FamilyTipsGirl = 'sandra'
+        end
+    end
+---
+
+! ARGS[0] — girl id
+! ARGS[1] — текст для «Поболтать ни о чём» (покупка с кошелька)
+! При smalltalk: если строка не пуста — печатается и очищается
+#GirlWalletPurchaseTalkSet
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlWalletPurchaseTalkGirl = $GirlKey
+    $GirlWalletPurchaseTalkText = $ARGS[1]
+
+    if $GirlWalletPurchaseTalkGirl = '':
+        killvar '$GirlWalletPurchaseTalkGirl'
+        killvar '$GirlWalletPurchaseTalkText'
+        exit
+    end
+
+    $GirlWalletPurchaseTalk[$GirlWalletPurchaseTalkGirl] = $GirlWalletPurchaseTalkText
+
+    killvar '$GirlWalletPurchaseTalkGirl'
+    killvar '$GirlWalletPurchaseTalkText'
+---

@@ -83,7 +83,7 @@ Known structure of the project:
 - `modules/npc/girls/sandra/`
 - `modules/debug/`
 
-The folder `modules/old` is considered old/disabled material and should not be connected or reused without explicit instruction.
+The folder `archive/old` is considered old/disabled material and should not be connected or reused without explicit instruction.
 
 The folder `modules/images` is not currently connected in `qsp-project.json`; images are handled separately.
 

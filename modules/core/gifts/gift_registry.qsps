@@ -1,126 +1,107 @@
 ! ================================================
 ! FILE: modules/core/gifts/gift_registry.qsps
 ! MODULE: core/gifts
-! Реестр подарков: id, имена, цены, инвентарь
+! Упрощённые подарки: обычный и дорогой (только корабль)
 ! ================================================
 
 #InitGiftInventory
-    GiftInventory['capital_hair_ribbon'] = 0
-    GiftInventory['island_glass_beads'] = 0
-    GiftInventory['foreign_scarf'] = 0
-    GiftInventory['mammoth_ivory_box'] = 0
-    GiftInventory['southern_spices'] = 0
-    GiftInventory['spiced_oil'] = 0
-    GiftInventory['dance_fan'] = 0
-    GiftInventory['hand_mirror'] = 0
-    GiftInventory['seashell_necklace'] = 0
-    GiftInventory['sugared_fruits'] = 0
-    GiftInventory['draupnir_cutting_board'] = 0
-    GiftInventory['kitchen_knife_set'] = 0
-    GiftInventory['rare_salt'] = 0
-    GiftInventory['linen_apron'] = 0
-    GiftInventory['recipe_codex'] = 0
-    GiftInventory['herb_bundle'] = 0
-    GiftInventory['baking_oil'] = 0
-    GiftInventory['irma_fabric_roll'] = 0
-    GiftInventory['irma_silk_spool'] = 0
-    GiftInventory['irma_seed_beads'] = 0
-    GiftInventory['irma_brooch'] = 0
-    GiftInventory['lizette_bracelet'] = 0
+    GiftInventory['gift_cheap'] = 0
+    GiftInventory['gift_expensive'] = 0
+
+    GiftInventoryMaxCheap = 2
+    GiftInventoryMaxExpensive = 1
+    GiftCheapPrice = 42
+    GiftExpensivePrice = 78
+
+    GiftShipPurchaseWeek = 0
+    GiftShipWeekBoughtCheap = 0
+    GiftShipWeekBoughtExpensive = 0
 
     PortGiftBoughtTotal = 0
-    GiftInventoryMaxCarry = 12
-    GiftPortVisitMax = 2
-    PortGiftBoughtThisVisit = 0
-    PortGiftVisitWeek = 0
+---
+
+#GiftShipWeekEnsure
+    if GiftShipPurchaseWeek <> week:
+        GiftShipPurchaseWeek = week
+        GiftShipWeekBoughtCheap = 0
+        GiftShipWeekBoughtExpensive = 0
+    end
 ---
 
 #GiftInventoryTotal
-    GiftInventoryTotal = GiftInventory['capital_hair_ribbon'] + GiftInventory['island_glass_beads'] + GiftInventory['foreign_scarf'] + GiftInventory['mammoth_ivory_box'] + GiftInventory['southern_spices'] + GiftInventory['spiced_oil'] + GiftInventory['dance_fan'] + GiftInventory['hand_mirror'] + GiftInventory['seashell_necklace'] + GiftInventory['sugared_fruits'] + GiftInventory['draupnir_cutting_board'] + GiftInventory['kitchen_knife_set'] + GiftInventory['rare_salt'] + GiftInventory['linen_apron'] + GiftInventory['recipe_codex'] + GiftInventory['herb_bundle'] + GiftInventory['baking_oil'] + GiftInventory['irma_fabric_roll'] + GiftInventory['irma_silk_spool'] + GiftInventory['irma_seed_beads'] + GiftInventory['irma_brooch'] + GiftInventory['lizette_bracelet']
+    GiftInventoryTotal = GiftInventory['gift_cheap'] + GiftInventory['gift_expensive']
 ---
 
-#GiftPortVisitEnsureWeek
-    if PortGiftVisitWeek <> week:
-        PortGiftVisitWeek = week
-        PortGiftBoughtThisVisit = 0
+#GiftRegistryResolve
+    $GiftRegistryId = LCASE($ARGS[0])
+    GiftRegistryPrice = 0
+    GiftRegistryKnown = 0
+    $GiftRegistryAccusative = ''
+    $GiftRegistryLabel = ''
+
+    if $GiftRegistryId = 'gift_cheap':
+        GiftRegistryPrice = GiftCheapPrice
+        $GiftRegistryAccusative = 'обычный подарок'
+        $GiftRegistryLabel = 'Обычный подарок'
+        GiftRegistryKnown = 1
+    elseif $GiftRegistryId = 'gift_expensive':
+        GiftRegistryPrice = GiftExpensivePrice
+        $GiftRegistryAccusative = 'дорогой подарок'
+        $GiftRegistryLabel = 'Дорогой подарок'
+        GiftRegistryKnown = 1
     end
+
+    killvar '$GiftRegistryId'
 ---
 
-#GiftInventoryUsesPortVisitLimit
-    GiftInventoryUsesPortVisitLimit = 0
-    $GiftPortLimitMenuLoc = LCASE($ARGS[0])
+#GiftCanBuyCheap
+    GiftCanBuyCheap = 0
+    $GiftCanBuyReason = ''
 
-    if $GiftPortLimitMenuLoc = 'portgiftshop' or $GiftPortLimitMenuLoc = 'lizetteportgiftshop':
-        GiftInventoryUsesPortVisitLimit = 1
-    end
+    gs 'GiftShipWeekEnsure'
 
-    killvar '$GiftPortLimitMenuLoc'
----
-
-#GiftInventoryCanAdd
-    GiftInventoryCanAdd = 0
-    $GiftCanAddId = LCASE($ARGS[0])
-    $GiftCanAddMenuLoc = LCASE($ARGS[1])
-    $GiftCanAddReason = ''
-
-    if GiftInventoryMaxCarry <= 0:
-        GiftInventoryMaxCarry = 12
-    end
-
-    gs 'GiftInventoryTotal'
-
-    if GiftInventoryTotal >= GiftInventoryMaxCarry:
-        $GiftCanAddReason = 'В сумке уже ' + STR(GiftInventoryMaxCarry) + ' вещей — некуда девать новый подарок. Сначала вручите что-нибудь из накопленного.'
-        killvar '$GiftCanAddId'
-        killvar '$GiftCanAddMenuLoc'
+    if GiftInventory['gift_cheap'] >= GiftInventoryMaxCheap:
+        $GiftCanBuyReason = 'В сумке уже два обычных подарка — некуда класть новый.'
         exit
     end
 
-    if $GiftCanAddId = 'lizette_bracelet' and GiftInventory['lizette_bracelet'] > 0:
-        $GiftCanAddReason = 'Такой браслет у вас уже есть.'
-        killvar '$GiftCanAddId'
-        killvar '$GiftCanAddMenuLoc'
+    if GiftShipWeekBoughtCheap >= GiftInventoryMaxCheap:
+        $GiftCanBuyReason = 'На этой неделе вы уже купили два обычных подарка у корабля. Приходите, когда корабль снова пришвартован.'
         exit
     end
 
-    GiftInventoryCanAdd = 1
-    killvar '$GiftCanAddId'
-    killvar '$GiftCanAddMenuLoc'
+    GiftCanBuyCheap = 1
 ---
 
-#GiftInventoryRegisterPurchase
-    $GiftRegisterMenuLoc = LCASE($ARGS[0])
+#GiftCanBuyExpensive
+    GiftCanBuyExpensive = 0
+    $GiftCanBuyReason = ''
 
-    PortGiftBoughtTotal += 1
-    killvar '$GiftRegisterMenuLoc'
+    gs 'GiftShipWeekEnsure'
+
+    if GiftInventory['gift_expensive'] >= GiftInventoryMaxExpensive:
+        $GiftCanBuyReason = 'В сумке уже лежит дорогой подарок.'
+        exit
+    end
+
+    if GiftShipWeekBoughtExpensive >= GiftInventoryMaxExpensive:
+        $GiftCanBuyReason = 'На этой неделе дорогой подарок у корабля уже куплен. До следующего прихода корабля.'
+        exit
+    end
+
+    GiftCanBuyExpensive = 1
 ---
 
-#GiftInventoryTryPurchase
+#GiftTryPurchase
     GiftPurchaseOk = 0
     $GiftPurchaseId = LCASE($ARGS[0])
-    $GiftPurchaseMenuLoc = $ARGS[1]
     $GiftPurchaseMessage = ''
-
-    if $GiftPurchaseMenuLoc = '':
-        $GiftPurchaseMenuLoc = ''
-    end
 
     gs 'GiftRegistryResolve', $GiftPurchaseId
 
-    if GiftRegistryKnown = 0 or GiftRegistryPrice <= 0:
-        $GiftPurchaseMessage = 'Такого товара у продавца сейчас нет.'
+    if GiftRegistryKnown = 0:
+        $GiftPurchaseMessage = 'Такого товара у торговца нет.'
         killvar '$GiftPurchaseId'
-        killvar '$GiftPurchaseMenuLoc'
-        exit
-    end
-
-    gs 'GiftInventoryCanAdd', $GiftPurchaseId, $GiftPurchaseMenuLoc
-
-    if GiftInventoryCanAdd = 0:
-        $GiftPurchaseMessage = $GiftCanAddReason
-        killvar '$GiftCanAddReason'
-        killvar '$GiftPurchaseId'
-        killvar '$GiftPurchaseMenuLoc'
         killvar 'GiftRegistryPrice'
         killvar 'GiftRegistryKnown'
         killvar '$GiftRegistryAccusative'
@@ -128,24 +109,65 @@
         exit
     end
 
+    if $GiftPurchaseId = 'gift_cheap':
+        gs 'GiftCanBuyCheap'
+
+        if GiftCanBuyCheap = 0:
+            $GiftPurchaseMessage = $GiftCanBuyReason
+            killvar '$GiftCanBuyReason'
+            killvar '$GiftPurchaseId'
+            killvar 'GiftRegistryPrice'
+            killvar 'GiftRegistryKnown'
+            killvar '$GiftRegistryAccusative'
+            killvar '$GiftRegistryLabel'
+            exit
+        end
+    elseif $GiftPurchaseId = 'gift_expensive':
+        gs 'GiftCanBuyExpensive'
+
+        if GiftCanBuyExpensive = 0:
+            $GiftPurchaseMessage = $GiftCanBuyReason
+            killvar '$GiftCanBuyReason'
+            killvar '$GiftPurchaseId'
+            killvar 'GiftRegistryPrice'
+            killvar 'GiftRegistryKnown'
+            killvar '$GiftRegistryAccusative'
+            killvar '$GiftRegistryLabel'
+            exit
+        end
+    end
+
     if money < GiftRegistryPrice:
         $GiftPurchaseMessage = 'Вам не хватает денег на ' + $GiftRegistryAccusative + '.'
     else:
         money -= GiftRegistryPrice
         GiftInventory[$GiftPurchaseId] += 1
-        gs 'GiftInventoryRegisterPurchase', $GiftPurchaseMenuLoc
+        PortGiftBoughtTotal += 1
 
-        $GiftPurchaseMessage = 'Вы покупаете ' + $GiftRegistryAccusative + '. Продавец заворачивает покупку и отдаёт вам на вынос.'
+        if $GiftPurchaseId = 'gift_cheap':
+            GiftShipWeekBoughtCheap += 1
+        elseif $GiftPurchaseId = 'gift_expensive':
+            GiftShipWeekBoughtExpensive += 1
+        end
+
+        $GiftPurchaseMessage = 'Вы покупаете ' + $GiftRegistryAccusative + '. Торговец заворачивает покупку и отдаёт вам на вынос.'
         GiftPurchaseOk = 1
     end
 
-    killvar '$GiftCanAddReason'
+    killvar '$GiftCanBuyReason'
     killvar '$GiftPurchaseId'
-    killvar '$GiftPurchaseMenuLoc'
     killvar 'GiftRegistryPrice'
     killvar 'GiftRegistryKnown'
     killvar '$GiftRegistryAccusative'
     killvar '$GiftRegistryLabel'
+---
+
+#GiftHasAnyInInventory
+    GiftHasAny = 0
+
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        GiftHasAny = 1
+    end
 ---
 
 #GiftBagPanelLine
@@ -163,134 +185,27 @@
     killvar '$GiftBagLineId'
 ---
 
-#GiftHasAnyInInventory
-    GiftHasAny = 0
+#GiftGirlCanReceive
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftReceiveGirl = $GirlKey
+    GiftGirlCanReceive = 0
 
-    if GiftInventory['capital_hair_ribbon'] > 0 or GiftInventory['island_glass_beads'] > 0 or GiftInventory['foreign_scarf'] > 0 or GiftInventory['mammoth_ivory_box'] > 0 or GiftInventory['southern_spices'] > 0 or GiftInventory['spiced_oil'] > 0 or GiftInventory['dance_fan'] > 0 or GiftInventory['hand_mirror'] > 0 or GiftInventory['seashell_necklace'] > 0 or GiftInventory['sugared_fruits'] > 0 or GiftInventory['draupnir_cutting_board'] > 0 or GiftInventory['kitchen_knife_set'] > 0 or GiftInventory['rare_salt'] > 0 or GiftInventory['linen_apron'] > 0 or GiftInventory['recipe_codex'] > 0 or GiftInventory['herb_bundle'] > 0 or GiftInventory['baking_oil'] > 0 or GiftInventory['irma_fabric_roll'] > 0 or GiftInventory['irma_silk_spool'] > 0 or GiftInventory['irma_seed_beads'] > 0 or GiftInventory['irma_brooch'] > 0 or GiftInventory['lizette_bracelet'] > 0:
-        GiftHasAny = 1
+    if $GiftReceiveGirl = 'sandra' or $GiftReceiveGirl = 'amanda' or $GiftReceiveGirl = 'melissa' or $GiftReceiveGirl = 'becky' or $GiftReceiveGirl = 'inga' or $GiftReceiveGirl = 'irma' or $GiftReceiveGirl = 'clarissa':
+        GiftGirlCanReceive = 1
     end
+
+    killvar '$GiftReceiveGirl'
 ---
 
-#GiftRegistryResolve
-    $GiftRegistryId = LCASE($ARGS[0])
-    GiftRegistryPrice = 0
-    GiftRegistryKnown = 0
-    $GiftRegistryAccusative = ''
-    $GiftRegistryLabel = ''
+#MenuGirlGiftAddShelfActs
+    $MenuGiftShelfGirl = $ARGS[0]
+    $MenuGiftShelfReturn = $ARGS[1]
 
-    if $GiftRegistryId = 'capital_hair_ribbon':
-        GiftRegistryPrice = 25
-        $GiftRegistryAccusative = 'столичную ленту для волос'
-        $GiftRegistryLabel = 'Столичная лента для волос'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'island_glass_beads':
-        GiftRegistryPrice = 45
-        $GiftRegistryAccusative = 'стеклянные бусы с южных островов'
-        $GiftRegistryLabel = 'Стеклянные бусы с южных островов'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'foreign_scarf':
-        GiftRegistryPrice = 60
-        $GiftRegistryAccusative = 'тонкий заморский платок'
-        $GiftRegistryLabel = 'Тонкий заморский платок'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'mammoth_ivory_box':
-        GiftRegistryPrice = 80
-        $GiftRegistryAccusative = 'шкатулку из северной мамонтовой кости'
-        $GiftRegistryLabel = 'Шкатулка из северной мамонтовой кости'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'southern_spices':
-        GiftRegistryPrice = 35
-        $GiftRegistryAccusative = 'южные специи'
-        $GiftRegistryLabel = 'Южные специи'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'spiced_oil':
-        GiftRegistryPrice = 55
-        $GiftRegistryAccusative = 'масло с пряным запахом'
-        $GiftRegistryLabel = 'Масло с пряным запахом'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'dance_fan':
-        GiftRegistryPrice = 40
-        $GiftRegistryAccusative = 'веер для площади'
-        $GiftRegistryLabel = 'Веер для площади'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'hand_mirror':
-        GiftRegistryPrice = 50
-        $GiftRegistryAccusative = 'зеркальце в резной рамке'
-        $GiftRegistryLabel = 'Зеркальце в резной рамке'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'seashell_necklace':
-        GiftRegistryPrice = 30
-        $GiftRegistryAccusative = 'ожерелье из морской ракушки'
-        $GiftRegistryLabel = 'Морская ракушка на шнурке'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'sugared_fruits':
-        GiftRegistryPrice = 20
-        $GiftRegistryAccusative = 'засахаренные фрукты'
-        $GiftRegistryLabel = 'Засахаренные фрукты'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'draupnir_cutting_board':
-        GiftRegistryPrice = 65
-        $GiftRegistryAccusative = 'дубовую разделочную доску с гравировкой'
-        $GiftRegistryLabel = 'Дубовая разделочная доска'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'kitchen_knife_set':
-        GiftRegistryPrice = 90
-        $GiftRegistryAccusative = 'набор кухонных ножей в чехле'
-        $GiftRegistryLabel = 'Набор кухонных ножей в чехле'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'rare_salt':
-        GiftRegistryPrice = 18
-        $GiftRegistryAccusative = 'мешочек редкой соли'
-        $GiftRegistryLabel = 'Редкая соль'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'linen_apron':
-        GiftRegistryPrice = 22
-        $GiftRegistryAccusative = 'льняной фартук с карманами'
-        $GiftRegistryLabel = 'Льняной фартук с карманами'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'recipe_codex':
-        GiftRegistryPrice = 70
-        $GiftRegistryAccusative = 'тетрадь рецептов из столицы'
-        $GiftRegistryLabel = 'Тетрадь рецептов из столицы'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'herb_bundle':
-        GiftRegistryPrice = 15
-        $GiftRegistryAccusative = 'связку сушёных трав для бульона'
-        $GiftRegistryLabel = 'Связка сушёных трав'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'baking_oil':
-        GiftRegistryPrice = 28
-        $GiftRegistryAccusative = 'хорошее масло для выпечки'
-        $GiftRegistryLabel = 'Масло для выпечки'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'irma_fabric_roll':
-        GiftRegistryPrice = 28
-        $GiftRegistryAccusative = 'отрез добротной ткани'
-        $GiftRegistryLabel = 'Отрез добротной ткани'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'irma_silk_spool':
-        GiftRegistryPrice = 40
-        $GiftRegistryAccusative = 'моток шёлковой нити'
-        $GiftRegistryLabel = 'Моток шёлковой нити'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'irma_seed_beads':
-        GiftRegistryPrice = 18
-        $GiftRegistryAccusative = 'бисер для вышивки'
-        $GiftRegistryLabel = 'Бисер для вышивки'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'irma_brooch':
-        GiftRegistryPrice = 45
-        $GiftRegistryAccusative = 'брошь с цветными камнями'
-        $GiftRegistryLabel = 'Брошь с цветными камнями'
-        GiftRegistryKnown = 1
-    elseif $GiftRegistryId = 'lizette_bracelet':
-        GiftRegistryPrice = 55
-        $GiftRegistryAccusative = 'южный браслет'
-        $GiftRegistryLabel = 'Южный браслет у Лизетты'
-        GiftRegistryKnown = 1
-    end
+    gs 'MenuGirlGiftTryAct', 'gift_cheap', $MenuGiftShelfGirl, $MenuGiftShelfReturn
+    gs 'MenuGirlGiftTryAct', 'gift_expensive', $MenuGiftShelfGirl, $MenuGiftShelfReturn
 
-    killvar '$GiftRegistryId'
+    killvar '$MenuGiftShelfGirl'
+    killvar '$MenuGiftShelfReturn'
 ---
 
 #MenuGirlGiftTryAct
@@ -310,61 +225,69 @@
     killvar '$MenuGiftActReturn'
 ---
 
-#GiftShopBuy
-    $GiftShopReturnLoc = $ARGS[0]
-    $GiftShopId = LCASE($ARGS[1])
-    $GiftShopMenuLoc = $ARGS[2]
+#GiftDebugAddAll
+    GiftInventory['gift_cheap'] = GiftInventoryMaxCheap
+    GiftInventory['gift_expensive'] = GiftInventoryMaxExpensive
+---
 
-    if $GiftShopReturnLoc = '':
-        $GiftShopReturnLoc = 'Market'
+#PortCapitalShipGiftActs
+    $PortGiftReturnLoc = $ARGS[0]
+
+    if $PortGiftReturnLoc = '':
+        $PortGiftReturnLoc = 'Port'
     end
 
-    if $GiftShopMenuLoc = '':
-        $GiftShopMenuLoc = 'SweetsShop'
-    end
+    gs 'GiftShipWeekEnsure'
+    gs 'GiftInventoryTotal'
 
-    gs 'GiftRegistryResolve', $GiftShopId
-
-    cls
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПОКУПКА ПОДАРКА'
-    *pl '══════════════════════════════════════════════'
+    gs 'FormatSpintry', money
+    $FormatSpintry_money = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Деньги: ' + $FormatSpintry_money + '.'
+    *pl 'В сумке: обычных ' + STR(GiftInventory['gift_cheap']) + ' / ' + STR(GiftInventoryMaxCheap) + ', дорогих ' + STR(GiftInventory['gift_expensive']) + ' / ' + STR(GiftInventoryMaxExpensive) + '.'
+    *pl 'На этой неделе куплено у корабля: обычных ' + STR(GiftShipWeekBoughtCheap) + ' / ' + STR(GiftInventoryMaxCheap) + ', дорогих ' + STR(GiftShipWeekBoughtExpensive) + ' / ' + STR(GiftInventoryMaxExpensive) + '.'
     *pl ' '
 
-    gs 'GiftInventoryTryPurchase', $GiftShopId, $GiftShopMenuLoc
-
-    *p $GiftPurchaseMessage
-
-    if GiftPurchaseOk = 1:
-        *p 'Подарок добавлен в сумку.'
-    end
-
-    killvar 'GiftPurchaseOk'
-    killvar '$GiftPurchaseMessage'
-
-    if debug = 1:
+    if $PortGiftShopMessage <> '':
+        *p $PortGiftShopMessage
         *pl ' '
-        *pl '[DEBUG GIFT] ID: ' + $GiftShopId
-        *pl '[DEBUG GIFT] Количество: ' + STR(GiftInventory[$GiftShopId])
-        *pl '[DEBUG GIFT] Деньги: ' + STR(money)
+        killvar '$PortGiftShopMessage'
     end
 
-    *pl ' '
+    gs 'GiftCanBuyCheap'
 
-    gs 'ActUiPrepare', 'Купить ещё', 'shop'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $GiftShopMenuLoc, $GiftShopReturnLoc
+    if GiftCanBuyCheap = 1:
+        gs 'FormatSpintry', GiftCheapPrice
+        $FormatSpintry_GiftCheapPrice = $FormatSpintry
+        killvar '$FormatSpintry'
+        act '<b>Обычный подарок (' + $FormatSpintry_GiftCheapPrice + ')</b>', 'images/common/ui/actions/gift.png':
+            gs 'GiftTryPurchase', 'gift_cheap'
+            $PortGiftShopMessage = $GiftPurchaseMessage
+            killvar 'GiftPurchaseOk'
+            killvar '$GiftPurchaseMessage'
+            gt 'PortCapitalShipMenu', $PortGiftReturnLoc
+        end
     end
 
-    gs 'ActUiPrepare', 'Вернуться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $GiftShopReturnLoc
+    killvar 'GiftCanBuyCheap'
+    killvar '$GiftCanBuyReason'
+
+    gs 'GiftCanBuyExpensive'
+
+    if GiftCanBuyExpensive = 1:
+        gs 'FormatSpintry', GiftExpensivePrice
+        $FormatSpintry_GiftExpensivePrice = $FormatSpintry
+        killvar '$FormatSpintry'
+        act '<b>Дорогой подарок (' + $FormatSpintry_GiftExpensivePrice + ')</b>', 'images/common/ui/actions/gift.png':
+            gs 'GiftTryPurchase', 'gift_expensive'
+            $PortGiftShopMessage = $GiftPurchaseMessage
+            killvar 'GiftPurchaseOk'
+            killvar '$GiftPurchaseMessage'
+            gt 'PortCapitalShipMenu', $PortGiftReturnLoc
+        end
     end
 
-    killvar '$GiftShopId'
-    killvar 'GiftRegistryPrice'
-    killvar 'GiftRegistryKnown'
-    killvar '$GiftRegistryAccusative'
-    killvar '$GiftRegistryLabel'
+    killvar 'GiftCanBuyExpensive'
+    killvar '$GiftCanBuyReason'
+    killvar '$PortGiftReturnLoc'
 ---

@@ -84,33 +84,12 @@
 
     *pl ' '
 
-    gs 'MenuGirlGiftTryAct', 'capital_hair_ribbon', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'island_glass_beads', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'foreign_scarf', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'mammoth_ivory_box', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'southern_spices', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'spiced_oil', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'dance_fan', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'hand_mirror', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'seashell_necklace', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'sugared_fruits', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'draupnir_cutting_board', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'kitchen_knife_set', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'rare_salt', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'linen_apron', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'recipe_codex', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'herb_bundle', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'baking_oil', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'irma_fabric_roll', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'irma_silk_spool', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'irma_seed_beads', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'irma_brooch', $GirlActionName, $GirlReturnLoc
-    gs 'MenuGirlGiftTryAct', 'lizette_bracelet', $GirlActionName, $GirlReturnLoc
+    gs 'MenuGirlGiftAddShelfActs', $GirlActionName, $GirlReturnLoc
 
     gs 'GiftHasAnyInInventory'
 
     if GiftHasAny = 0:
-        *p 'У вас нет подарков. Их можно купить у корабля из столицы, на рынке, у Драупнира, Бекки и в лавке Ирмы. Содержимое сумки — кнопка «Сумка» в панели предметов.'
+        *p 'У вас нет подарков. Их можно купить у корабля из столицы в порту. Содержимое сумки — кнопка «Сумка» в панели предметов.'
     end
 
     killvar 'GiftHasAny'
@@ -138,8 +117,8 @@
     end
 
     gs 'EnsureGirlData', $GiftGirl
-    gs 'MenuGirlGiftName', $GiftId
     gs 'MenuGirlGiftValue', $GiftGirl, $GiftId
+    gs 'GiftGirlCanReceive', $GiftGirl
 
     cls
 
@@ -152,16 +131,20 @@
 
     if $GiftId = '' or GiftInventory[$GiftId] <= 0:
         *p 'Такого подарка у вас сейчас нет.'
+    elseif GiftGirlCanReceive = 0:
+        *p 'Этой девушке сейчас нечего дарить из вашей сумки.'
     else:
         GiftInventory[$GiftId] -= 1
         GirlGiftCount[$GiftGirl] += 1
 
-        *p 'Вы отдаёте ' + $RealName[$GiftGirl] + ' ' + $GiftName + '.'
+        gs 'GiftSimpleRegisterGive', $GiftGirl, $GiftId
+        gs 'GiftSimpleNarrative', $GiftGirl, $GiftId
+        *p $GiftNarrativeText
+        killvar '$GiftNarrativeText'
 
-        gs 'MenuGirlGiftReactionText', $GiftGirl, $GiftId, GiftValue
+        gs 'MenuGirlGiftReactionText', $GiftGirl, $GiftId, GiftCheapStreakToday
         *p $GiftReactionText
         gs 'MenuGirlGiftApplyReaction', $GiftGirl, GiftValue
-        gs 'MenuGirlGiftApplySpecial', $GiftGirl, $GiftId
 
         if hate[$GiftGirl] > 0:
             hate[$GiftGirl] -= GiftValue
@@ -170,6 +153,9 @@
         gs 'ClampGirlSocialStats', $GiftGirl
         gs 'MenuGirlGiftCanInvite', $GiftGirl, $GirlReturnLoc, GiftValue
     end
+
+    killvar 'GiftGirlCanReceive'
+    killvar 'GiftCheapStreakToday'
 
     *pl ' '
 
@@ -186,7 +172,6 @@
     end
 
     killvar '$GiftId'
-    killvar '$GiftName'
     killvar '$GiftReactionText'
     killvar 'GiftValue'
     killvar 'GiftInviteIntim'
@@ -199,197 +184,7 @@
     GiftReactionValue = ARGS[2]
     $GiftReactionText = ''
 
-    if $GiftReactionGirl = 'amanda':
-        if $GiftReactionId = 'capital_hair_ribbon':
-            $GiftReactionText = 'Аманда хватает ленту раньше, чем вы успеваете отпустить. Она примеряет её прямо на месте, поправляет волосы у зеркала и смеётся: "Теперь в зале точно посмотрят. Не думай, что купил меня… хотя почти".'
-        elseif $GiftReactionId = 'island_glass_beads':
-            $GiftReactionText = 'Аманда смеётся, хватает бусы и тут же просит надеть их сейчас. "Держи, Стефан, завяжи. Я хочу видеть, как они блестят, пока ты ещё рядом".'
-        elseif $GiftReactionId = 'foreign_scarf':
-            $GiftReactionText = 'Аманда оборачивает платок на плечи, как портовые девчонки, и крутится перед вами. "Вот так ходят те, кто видел море. А я хотя бы платок увидела".'
-        elseif $GiftReactionId = 'dance_fan':
-            $GiftReactionText = 'Аманда раскрывает веер и тут же начинает им веять, глядя на вас снизу вверх. "Для площади? Для танцев? Для того, чтобы ты смотрел и молчал?" — она щёлкает веером и хихикает.'
-        elseif $GiftReactionId = 'hand_mirror':
-            $GiftReactionText = 'Аманда долго смотрится в зеркальце, поправляет прядь и вдруг тихо говорит: "Лизетта бы одобрила. А ты… ты хоть знаешь, как выбирать красивые вещи".'
-        elseif $GiftReactionId = 'seashell_necklace':
-            $GiftReactionText = 'Аманда прижимает ракушку к груди, как в детстве, и тут же краснеет: "Я уже взрослая, честно. Просто… она красивая. Спасибо, Стефан".'
-        elseif $GiftReactionId = 'sugared_fruits':
-            $GiftReactionText = 'Аманда откусывает засахаренный фрукт прямо из ваших рук, облизывает пальцы и смеётся: "Вот это подарок. Можно есть и не притворяться, что я сдержанная".'
-        elseif $GiftReactionId = 'irma_brooch':
-            $GiftReactionText = 'Аманда прикалывает брошь к платку и расправляет плечи. "О, как на танцах у богатых. Только моя. Не думай, что теперь я буду слушаться".'
-        elseif $GiftReactionId = 'lizette_bracelet':
-            $GiftReactionText = 'Аманда застёгивает браслет на запястье и замирает, глядя на южный блеск металла. "Как у столицы… — шепчет она. — Опасная вещь, Стефан. Но красивая".'
-        elseif $GiftReactionId = 'southern_spices':
-            $GiftReactionText = 'Аманда принюхивается и морщит нос. "Маме отдашь? Ладно… оставь чуть-чуть. Только не говори, что я совсем не умею радоваться кухне".'
-        elseif $GiftReactionId = 'spiced_oil':
-            $GiftReactionText = 'Аманда нюхает масло, краснеет и смотрит на вас с двусмысленной улыбкой. "Для кожи, да? Конечно, Стефан. Конечно для кожи".'
-        elseif $GiftReactionId = 'mammoth_ivory_box':
-            $GiftReactionText = 'Аманда открывает шкатулку, проводит пальцем по кости и усмехается: "Красиво… как у Легаре, только моё. Не думай, что я сравниваю. Просто заметила".'
-        elseif $GiftReactionId = 'draupnir_cutting_board' or $GiftReactionId = 'kitchen_knife_set' or $GiftReactionId = 'linen_apron' or $GiftReactionId = 'rare_salt' or $GiftReactionId = 'herb_bundle' or $GiftReactionId = 'recipe_codex' or $GiftReactionId = 'baking_oil':
-            $GiftReactionText = 'Аманда принимает подарок вежливо, но без огня в глазах. "Для мамы, да? Ладно… спасибо. Только в следующий раз что-нибудь, что можно надеть, а не резать".'
-        elseif GiftReactionValue >= 3:
-            if GirlConflictUntilDay[$GiftReactionGirl] >= day:
-                $GiftReactionText = 'Аманда берёт подарок осторожно, будто боится слишком быстро показать, что он ей понравился. Сердитая складка между бровями держится ещё пару секунд, потом исчезает. "Стефан... старый ты хрен. Думаешь, красивой вещью всё исправишь?" Но пальцы уже прижимают подарок к груди.'
-            else:
-                $GiftReactionText = 'Аманда улыбается раньше, чем успевает спрятать улыбку. Подарок ей явно нравится: она вертит его в руках, краснеет и смотрит на вас так, будто между вами снова появилась та самая тёплая, опасная близость.'
-            end
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Аманда принимает подарок с неловкой благодарностью. Он не попал прямо в сердце, но всё же смягчил её: "Ладно... я вижу, что ты хотя бы пытался".'
-        else:
-            $GiftReactionText = 'Аманда берёт подарок, но радости почти не видно. Она благодарит тихо, из вежливости, и по её лицу ясно: настоящая обида так просто не уходит.'
-        end
-    elseif $GiftReactionGirl = 'melissa':
-        if $GiftReactionId = 'mammoth_ivory_box':
-            $GiftReactionText = 'Мелисса открывает шкатулку, задерживает взгляд на крышке и тихо закрывает. "Хорошее место для вещей, которые не для зала. Спасибо, Стефан — ты умеешь дарить без крика".'
-        elseif $GiftReactionId = 'irma_fabric_roll' or $GiftReactionId = 'irma_silk_spool':
-            $GiftReactionText = 'Мелисса разворачивает отрез и проводит пальцем по краю, будто уже видит вышивку или подкладку. "Вот это ближе к прекрасному, чем к шуму. Я запомню".'
-        elseif $GiftReactionId = 'hand_mirror':
-            $GiftReactionText = 'Мелисса смотрится в зеркальце дольше, чем хотела бы показать, потом отводит глаза. "Королева хоть иногда должна видеть себя не в отражении зала. Спасибо".'
-        elseif $GiftReactionId = 'irma_brooch' or $GiftReactionId = 'irma_seed_beads':
-            $GiftReactionText = 'Мелисса рассматривает работу Ирмы с уважением, не с детской суетой. "Камни сели бы аккуратнее… но вещь хорошая. Ты слушаешь, чем я живу, а не только чем блестит Аманда".'
-        elseif $GiftReactionId = 'island_glass_beads' or $GiftReactionId = 'foreign_scarf':
-            $GiftReactionText = 'Мелисса принимает украшение спокойно, без амандиного восторга. "Красиво. Я повешу — но не ради зала. Ради себя".'
-        elseif $GiftReactionId = 'dance_fan' or $GiftReactionId = 'capital_hair_ribbon' or $GiftReactionId = 'seashell_necklace':
-            $GiftReactionText = 'Мелисса кивает вежливо. "Мило. Аманде, наверное, понравится больше — ей такое к лицу. Я всё равно спасибо скажу".'
-        elseif $GiftReactionId = 'southern_spices' or $GiftReactionId = 'herb_bundle' or $GiftReactionId = 'rare_salt' or $GiftReactionId = 'baking_oil' or $GiftReactionId = 'linen_apron' or $GiftReactionId = 'draupnir_cutting_board' or $GiftReactionId = 'kitchen_knife_set' or $GiftReactionId = 'recipe_codex':
-            $GiftReactionText = 'Мелисса принимает практичный подарок без упрёка. "Для кухни или для мамы — ладно. Только в следующий раз подумай, что мне ближе книга, чем кастрюля".'
-        elseif GiftReactionValue >= 3:
-            if GirlConflictUntilDay[$GiftReactionGirl] >= day:
-                $GiftReactionText = 'Мелисса долго смотрит не на подарок, а на вас. "Хочешь купить прощение?" — спрашивает она сухо. Но вещь выбрана слишком точно, и это раздражает её почти сильнее самой ссоры. В конце концов она выдыхает и прячет подарок, уже без прежнего льда в голосе.'
-            else:
-                $GiftReactionText = 'Мелисса принимает подарок с видом женщины, которую трудно удивить. Потом всё-таки проводит пальцем по красивой вещи и чуть щурится: "Вот это уже похоже на внимание, а не на попытку отделаться".'
-            end
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Мелисса принимает подарок, но смотрит строго. "Неплохо. Только не думай, что теперь можно снова делать глупости и приносить красивые тряпки".'
-        else:
-            $GiftReactionText = 'Мелисса берёт подарок без особого восторга. "Спасибо", — говорит она так ровно, что становится понятно: оценку вы получили среднюю.'
-        end
-    elseif $GiftReactionGirl = 'clarissa':
-        if $GiftReactionId = 'mammoth_ivory_box' or $GiftReactionId = 'foreign_scarf':
-            $GiftReactionText = 'Кларисса принимает подарок аккуратно и прячет его под прилавок. "Спасибо. В лавке слишком много чужих глаз, чтобы радоваться вслух".'
-        elseif $GiftReactionId = 'southern_spices' or $GiftReactionId = 'rare_salt':
-            $GiftReactionText = 'Кларисса кивает с деловой улыбкой. "Для кухни, не для зала — правильно. Альбер оценит вкус, если не начнёт считать, откуда это взялось".'
-        elseif $GiftReactionId = 'capital_hair_ribbon' or $GiftReactionId = 'island_glass_beads' or $GiftReactionId = 'dance_fan' or $GiftReactionId = 'hand_mirror':
-            $GiftReactionText = 'Кларисса смотрит на блеск, потом на вас. "Красиво. Только не думай, что я буду носить это у бочонков, пока муж разглядывает ваш зал".'
-        elseif GiftReactionValue >= 3:
-            $GiftReactionText = 'Кларисса принимает подарок сдержанно, но благодарно. "Вы умеете выбирать без лишнего шума. Это редкость в этом городе".'
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Кларисса кивает: подарок принят, но в её взгляде читается — для неё важнее честность, чем красивая упаковка.'
-        else:
-            $GiftReactionText = 'Кларисса благодарит вежливо. "Спасибо, Стефан. Неплохо".'
-        end
-    elseif $GiftReactionGirl = 'lizette':
-        if $GiftReactionId = 'capital_hair_ribbon' or $GiftReactionId = 'island_glass_beads' or $GiftReactionId = 'dance_fan' or $GiftReactionId = 'hand_mirror':
-            $GiftReactionText = 'Лизетта смеётся и тут же примеряет. "Вот это уже похоже на столицу. Держи, завяжи… нет, сама. Но спасибо, Стефан".'
-        elseif $GiftReactionId = 'foreign_scarf' or $GiftReactionId = 'seashell_necklace':
-            $GiftReactionText = 'Лизетта оборачивает подарок и крутится. "Красиво. Аманде понравится ещё больше — если ты не против поделиться вниманием".'
-        elseif $GiftReactionId = 'southern_spices' or $GiftReactionId = 'herb_bundle':
-            $GiftReactionText = 'Лизетта принюхивается и пожимает плечами. "Мило. Только это маме в кастрюлю, не мне на шею".'
-        elseif GiftReactionValue >= 3:
-            $GiftReactionText = 'Лизетта загорается, как у корабля: "О, вот это подарок! Ты начинаешь понимать, как улыбаться деньгами".'
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Лизетта принимает подарок с игривой благодарностью. "Неплохо. В следующий раз что-нибудь поярче".'
-        else:
-            $GiftReactionText = 'Лизетта благодарит, но явно ждала большего блеска.'
-        end
-    elseif $GiftReactionGirl = 'irma':
-        if $GiftReactionId = 'irma_fabric_roll':
-            $GiftReactionText = 'Ирма разворачивает отрез и проводит ладонью по ткани. "Хорошая основа. Для платья — или для подарка тому, кого вы хотите удивить".'
-        elseif $GiftReactionId = 'irma_silk_spool':
-            $GiftReactionText = 'Ирма вертит моток между пальцами. "Шёлк ложится иначе — видно сразу. Спасибо, придумаю, куда пустить".'
-        elseif $GiftReactionId = 'irma_seed_beads':
-            $GiftReactionText = 'Ирма рассыпает бисер на ладонь и усмехается. "Для вышивки на воротнике — или чтобы кто-то сиял на площади. Хороший выбор".'
-        elseif $GiftReactionId = 'mammoth_ivory_box':
-            $GiftReactionText = 'Ирма проводит пальцем по крышке. "Хорошее место для мелочей, которые не должны лежать на виду. Спасибо".'
-        elseif $GiftReactionId = 'capital_hair_ribbon' or $GiftReactionId = 'hand_mirror' or $GiftReactionId = 'irma_brooch':
-            $GiftReactionText = 'Ирма рассматривает подарок профессионально. "Камни сели бы лучше на тёмный бархат… но вещь хорошая. Спасибо".'
-        elseif GiftReactionValue >= 3:
-            $GiftReactionText = 'Ирма принимает подарок спокойно. "Красиво. У каждой вещи должна быть история — теперь у этой есть".'
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Ирма кивает. "Приятный жест. Я запомню".'
-        else:
-            $GiftReactionText = 'Ирма благодарит ровно, без лишней суеты.'
-        end
-    elseif $GiftReactionGirl = 'georgett':
-        if $GiftReactionId = 'foreign_scarf' or $GiftReactionId = 'spiced_oil':
-            $GiftReactionText = 'Жоржетта усмехается. "Для работы, не для церкви — хоть кто-то думает головой. Спасибо, Стефан".'
-        elseif $GiftReactionId = 'southern_spices':
-            $GiftReactionText = 'Жоржетта кивает на кухню в сторону города. "В кастрюлю, не на шею. Мудрый выбор".'
-        elseif $GiftReactionId = 'sugared_fruits':
-            $GiftReactionText = 'Жоржетта откусывает фрукт и смеётся. "Вот подарок без проповеди. За это отдельное спасибо".'
-        elseif GiftReactionValue >= 3:
-            $GiftReactionText = 'Жоржетта принимает подарок без насмешки — на секунду видна простая радость, без стыда и без игры.'
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Жоржетта благодарит с лёгкой ухмылкой. "Неплохо. Не всё в этом городе надо покупать ночью".'
-        else:
-            $GiftReactionText = 'Жоржетта пожимает плечами. "Спасибо. Сойдёт".'
-        end
-    elseif $GiftReactionGirl = 'inga':
-        if $GiftReactionId = 'linen_apron' or $GiftReactionId = 'herb_bundle' or $GiftReactionId = 'rare_salt':
-            $GiftReactionText = 'Инга принимает практичный подарок с одобрением. "Полезно. Такие вещи не стыдно показать матери".'
-        elseif $GiftReactionId = 'island_glass_beads' or $GiftReactionId = 'hand_mirror' or $GiftReactionId = 'irma_brooch':
-            $GiftReactionText = 'Инга смотрит на украшение дольше обычного, потом прячет в ладонь. "Красиво… спасибо. Только не при всех".'
-        elseif GiftReactionValue >= 3:
-            $GiftReactionText = 'Инга краснеет, но не отстраняется. "Я… не привыкла к таким подаркам. Спасибо, Стефан".'
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Инга благодарит сдержанно. "Хороший жест".'
-        else:
-            $GiftReactionText = 'Инга кивает. "Спасибо".'
-        end
-    elseif $GiftReactionGirl = 'becky':
-        if $GiftReactionId = 'herb_bundle' or $GiftReactionId = 'rare_salt':
-            $GiftReactionText = 'Бекки смеётся и прижимает подарок к груди. "О, для кухни! Ты хоть иногда думаешь о деле, а не только о девчонках".'
-        elseif $GiftReactionId = 'sugared_fruits':
-            $GiftReactionText = 'Бекки откусывает сладость и хихикает. "Вот это я понимаю. Можно есть и не краснеть".'
-        elseif GiftReactionValue >= 3:
-            $GiftReactionText = 'Бекки обнимает вас одной рукой, другой прижимает подарок. "Ох, Стефан… ты умеешь сделать день теплее".'
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Бекки благодарит широко и просто. "Спасибо, милый".'
-        else:
-            $GiftReactionText = 'Бекки принимает подарок, но явно ждала чего-то веселее.'
-        end
-    elseif $GiftReactionGirl = 'sandra':
-        if $GiftReactionId = 'southern_spices':
-            $GiftReactionText = 'Сандра открывает мешочек, вдыхает аромат и впервые за долгое время улыбается без сдержанности. "Наконец кто-то думает о вкусе, а не о зале. Поставлю в кухне сегодня же".'
-        elseif $GiftReactionId = 'mammoth_ivory_box':
-            $GiftReactionText = 'Сандра принимает шкатулку, проводит пальцем по крышке и прячет её в комнату. Она не спрашивает цену — только кивает: "Спасибо. Это останется между нами".'
-        elseif $GiftReactionId = 'draupnir_cutting_board':
-            $GiftReactionText = 'Сандра проводит пальцем по краю доски, замечает гравировку и на секунду смущается. "Хорошая работа. Спасибо, Стефан". Голос ровный, но благодарность в нём настоящая.'
-        elseif $GiftReactionId = 'kitchen_knife_set':
-            $GiftReactionText = 'Сандра вынимает ножи, проверяет лезвие и кивает с сухой усмешкой. "Работают лучше половины зала. Ты хоть в счётах так же внимателен?"'
-        elseif $GiftReactionId = 'rare_salt':
-            $GiftReactionText = 'Сандра берёт соль, сразу представляя, куда поставит её на полке. "Полезно. Именно то, что нужно кухне, а не зеркалу".'
-        elseif $GiftReactionId = 'linen_apron':
-            $GiftReactionText = 'Сандра разворачивает фартук, проверяет карманы и накидывает на плечи. "Буду носить в кухне. Хотя бы один раз ты подарил вещь, которой я правда пользуюсь".'
-        elseif $GiftReactionId = 'recipe_codex':
-            $GiftReactionText = 'Сандра долго листает тетрадь, потом закрывает её чуть быстрее, чем хотела бы показать. "Спасибо. Это… очень ценно. Я не часто говорю такое, Стефан".'
-        elseif $GiftReactionId = 'herb_bundle':
-            $GiftReactionText = 'Сандра принюхивается к травам и тихо усмехается. "Бекки знает, что мне нужно. Хорошо, что ты тоже наконец догадался".'
-        elseif $GiftReactionId = 'baking_oil':
-            $GiftReactionText = 'Сандра принимает масло мягче обычного. "Для выпечки. Хороший выбор. Иногда полезно, когда кто-то думает о доме, а не только о зале".'
-        elseif $GiftReactionId = 'foreign_scarf' or $GiftReactionId = 'capital_hair_ribbon':
-            $GiftReactionText = 'Сандра разворачивает подарок и кивает спокойно. "Приятно. Повешу в комнате. Без лишней суеты — но спасибо".'
-        elseif $GiftReactionId = 'dance_fan' or $GiftReactionId = 'hand_mirror' or $GiftReactionId = 'seashell_necklace' or $GiftReactionId = 'irma_brooch' or $GiftReactionId = 'island_glass_beads':
-            $GiftReactionText = 'Сандра принимает украшение без упрёка, но и без восторга. "Красиво. Аманде, наверное, понравится больше. Я всё равно спасибо скажу — ты старался".'
-        elseif GiftReactionValue >= 3:
-            if GirlConflictUntilDay[$GiftReactionGirl] >= day:
-                $GiftReactionText = 'Сандра принимает подарок молча. Она не из тех, кто тает от красивой вещи, но выбор слишком разумный, слишком внимательный. "Хорошо, Стефан. Я вижу, что ты думал не только о себе. Но дальше смотри по поступкам".'
-            else:
-                $GiftReactionText = 'Сандра внимательно рассматривает подарок и кивает. В её благодарности нет девичьей суеты, зато есть уважение: вы выбрали то, что действительно может пригодиться, а не просто блестит в руках.'
-            end
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = 'Сандра благодарит спокойно. Подарок принят, но её взгляд напоминает: для неё важнее порядок в доме и честное слово, чем красивые жесты.'
-        else:
-            $GiftReactionText = 'Сандра принимает подарок вежливо, но без тепла. "Спасибо", — говорит она, и по тону ясно: лучше бы вы сначала исправили причину ссоры.'
-        end
-    else:
-        if GiftReactionValue >= 3:
-            $GiftReactionText = $RealName[$GiftReactionGirl] + ' принимает подарок, и в её взгляде становится меньше холода.'
-        elseif GiftReactionValue = 2:
-            $GiftReactionText = $RealName[$GiftReactionGirl] + ' принимает подарок сдержанно. Ссора ещё не забыта, но теперь с ней хотя бы можно будет говорить позже.'
-        else:
-            $GiftReactionText = $RealName[$GiftReactionGirl] + ' берёт подарок без особой радости. Не всякую обиду можно закрыть первой попавшейся вещью.'
-        end
-    end
+    gs 'GiftSimpleReactionText', $GiftReactionGirl, $GiftReactionId, GiftReactionValue
 
     killvar '$GiftReactionGirl'
     killvar '$GiftReactionId'
@@ -428,14 +223,6 @@
     $GiftSpecialGirl = $GirlKey
     $GiftSpecialId = LCASE($ARGS[1])
 
-    if $GiftSpecialGirl = 'amanda' and $GiftSpecialId = 'lizette_bracelet':
-        AmandaLizaInfluence += 2
-
-        if AmandaLizaInfluence > 100:
-            AmandaLizaInfluence = 100
-        end
-    end
-
     killvar '$GiftSpecialGirl'
     killvar '$GiftSpecialId'
 ---
@@ -455,82 +242,15 @@
 ---
 
 #MenuGirlGiftValue
-    gs 'NormalizeGirlKey', $ARGS[0]
-    $GiftValueGirl = $GirlKey
     $GiftValueId = LCASE($ARGS[1])
     GiftValue = 1
 
-    if $GiftValueGirl = 'amanda':
-        if $GiftValueId = 'capital_hair_ribbon' or $GiftValueId = 'island_glass_beads' or $GiftValueId = 'foreign_scarf' or $GiftValueId = 'dance_fan' or $GiftValueId = 'hand_mirror' or $GiftValueId = 'irma_brooch' or $GiftValueId = 'lizette_bracelet':
-            GiftValue = 3
-        elseif $GiftValueId = 'spiced_oil' or $GiftValueId = 'mammoth_ivory_box' or $GiftValueId = 'seashell_necklace' or $GiftValueId = 'sugared_fruits':
-            GiftValue = 2
-        elseif $GiftValueId = 'southern_spices':
-            GiftValue = 1
-        end
-    elseif $GiftValueGirl = 'melissa':
-        if $GiftValueId = 'mammoth_ivory_box' or $GiftValueId = 'irma_fabric_roll' or $GiftValueId = 'irma_silk_spool' or $GiftValueId = 'hand_mirror':
-            GiftValue = 3
-        elseif $GiftValueId = 'irma_brooch' or $GiftValueId = 'irma_seed_beads' or $GiftValueId = 'island_glass_beads' or $GiftValueId = 'foreign_scarf':
-            GiftValue = 2
-        elseif $GiftValueId = 'dance_fan' or $GiftValueId = 'capital_hair_ribbon' or $GiftValueId = 'southern_spices' or $GiftValueId = 'herb_bundle' or $GiftValueId = 'recipe_codex' or $GiftValueId = 'seashell_necklace' or $GiftValueId = 'sugared_fruits' or $GiftValueId = 'spiced_oil':
-            GiftValue = 1
-        end
-    elseif $GiftValueGirl = 'sandra':
-        if $GiftValueId = 'southern_spices' or $GiftValueId = 'mammoth_ivory_box' or $GiftValueId = 'draupnir_cutting_board' or $GiftValueId = 'kitchen_knife_set' or $GiftValueId = 'recipe_codex':
-            GiftValue = 3
-        elseif $GiftValueId = 'foreign_scarf' or $GiftValueId = 'capital_hair_ribbon' or $GiftValueId = 'rare_salt' or $GiftValueId = 'linen_apron' or $GiftValueId = 'herb_bundle' or $GiftValueId = 'baking_oil':
-            GiftValue = 2
-        elseif $GiftValueId = 'island_glass_beads' or $GiftValueId = 'spiced_oil':
-            GiftValue = 1
-        end
-    elseif $GiftValueGirl = 'clarissa':
-        if $GiftValueId = 'mammoth_ivory_box' or $GiftValueId = 'recipe_codex':
-            GiftValue = 3
-        elseif $GiftValueId = 'foreign_scarf' or $GiftValueId = 'southern_spices' or $GiftValueId = 'rare_salt' or $GiftValueId = 'capital_hair_ribbon':
-            GiftValue = 2
-        elseif $GiftValueId = 'dance_fan' or $GiftValueId = 'island_glass_beads':
-            GiftValue = 1
-        end
-    elseif $GiftValueGirl = 'lizette':
-        if $GiftValueId = 'capital_hair_ribbon' or $GiftValueId = 'island_glass_beads' or $GiftValueId = 'dance_fan' or $GiftValueId = 'hand_mirror' or $GiftValueId = 'foreign_scarf':
-            GiftValue = 3
-        elseif $GiftValueId = 'seashell_necklace' or $GiftValueId = 'sugared_fruits' or $GiftValueId = 'irma_brooch':
-            GiftValue = 2
-        elseif $GiftValueId = 'southern_spices' or $GiftValueId = 'herb_bundle':
-            GiftValue = 1
-        end
-    elseif $GiftValueGirl = 'irma':
-        if $GiftValueId = 'irma_fabric_roll' or $GiftValueId = 'irma_silk_spool' or $GiftValueId = 'irma_seed_beads' or $GiftValueId = 'mammoth_ivory_box' or $GiftValueId = 'hand_mirror':
-            GiftValue = 3
-        elseif $GiftValueId = 'irma_brooch' or $GiftValueId = 'capital_hair_ribbon' or $GiftValueId = 'foreign_scarf' or $GiftValueId = 'island_glass_beads':
-            GiftValue = 2
-        elseif $GiftValueId = 'linen_apron' or $GiftValueId = 'southern_spices':
-            GiftValue = 1
-        end
-    elseif $GiftValueGirl = 'georgett':
-        if $GiftValueId = 'foreign_scarf' or $GiftValueId = 'spiced_oil' or $GiftValueId = 'sugared_fruits':
-            GiftValue = 2
-        elseif $GiftValueId = 'southern_spices' or $GiftValueId = 'herb_bundle':
-            GiftValue = 1
-        end
-    elseif $GiftValueGirl = 'inga':
-        if $GiftValueId = 'island_glass_beads' or $GiftValueId = 'hand_mirror' or $GiftValueId = 'irma_brooch' or $GiftValueId = 'foreign_scarf':
-            GiftValue = 2
-        elseif $GiftValueId = 'linen_apron' or $GiftValueId = 'herb_bundle':
-            GiftValue = 1
-        end
-    elseif $GiftValueGirl = 'becky':
-        if $GiftValueId = 'herb_bundle' or $GiftValueId = 'sugared_fruits':
-            GiftValue = 3
-        elseif $GiftValueId = 'rare_salt' or $GiftValueId = 'baking_oil' or $GiftValueId = 'spiced_oil':
-            GiftValue = 2
-        elseif $GiftValueId = 'southern_spices':
-            GiftValue = 1
-        end
+    if $GiftValueId = 'gift_cheap':
+        GiftValue = 2
+    elseif $GiftValueId = 'gift_expensive':
+        GiftValue = 3
     end
 
-    killvar '$GiftValueGirl'
     killvar '$GiftValueId'
 ---
 
@@ -739,17 +459,6 @@
             gs 'ActUiPrepare', 'Поговорить после помощниц матери', 'talk'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'SandraStaffGirlsReactionTalk', 'amanda', $GirlReturnLoc
-            end
-        end
-    end
-
-    if LOC('AmandaCleaningReliefCanTalk') = 1:
-        gs 'AmandaCleaningReliefCanTalk'
-
-        if AmandaCleaningReliefCanTalk = 1:
-            gs 'ActUiPrepare', 'Поговорить об уборке и руках', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaCleaningReliefTalk', $GirlReturnLoc
             end
         end
     end

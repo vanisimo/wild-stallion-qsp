@@ -1,112 +1,21 @@
 ! ================================================
 ! FILE: modules/core/gifts/gift_shop_menus.qsps
 ! MODULE: core/gifts
-! Меню покупки подарков в разных локациях
+! Лавка подарков на рынке — заглушка (подарки только у корабля)
 ! ================================================
 
 #MarketGiftStall
-    gt 'SweetsShop', 'main'
----
-
-#BeckyShopGifts
-    gt 'BeckyShop', 'gifts'
----
-
-#DraupnirGiftShop
-    $GiftShopReturnLoc = $ARGS[0]
-
-    if $GiftShopReturnLoc = '':
-        $GiftShopReturnLoc = 'DraupnirShop'
-    end
-
-    cls
-
-    gs 'InitDraupnir'
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ДРАУПНИР — КУХОННЫЕ ВЕЩИ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-    *p 'Драупнир откладывает стружку и показывает доски и ножи, выточенные для трактирной кухни. На доске едва заметна гравировка «Л».'
-    *pl ' '
-    gs 'FormatSpintry', money
-    $FormatSpintry_money = $FormatSpintry
-    killvar '$FormatSpintry'
-    *pl 'Деньги: ' + $FormatSpintry_money + '.'
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Дубовая разделочная доска — 65 спинтарий', 'shop'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'GiftShopBuy', $GiftShopReturnLoc, 'draupnir_cutting_board', 'DraupnirGiftShop'
-    end
-
-    gs 'ActUiPrepare', 'Набор кухонных ножей в чехле — 90 спинтарий', 'shop'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'GiftShopBuy', $GiftShopReturnLoc, 'kitchen_knife_set', 'DraupnirGiftShop'
-    end
-
-    gs 'ActUiPrepare', 'Вернуться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $GiftShopReturnLoc
-    end
----
-
-#IrmaShopGifts
-    $GiftShopReturnLoc = $ARGS[0]
-
-    if $GiftShopReturnLoc = '':
-        $GiftShopReturnLoc = 'CraftsmenQuarter'
-    end
-
-    gt 'IrmaShop', 'gifts', $GiftShopReturnLoc
----
-
-#LizettePortGiftShop
-    $GiftShopReturnLoc = $ARGS[0]
-
-    if $GiftShopReturnLoc = '':
-        $GiftShopReturnLoc = 'Port'
-    end
-
     cls
 
     *pl '══════════════════════════════════════════════'
-    *pl ' ЛИЗЕТТА У КОРАБЛЯ'
+    gs 'PrintTitleLine', ' ЛАВКА ПОДАРКОВ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if AmandaMetLizette = 0 or LizetteKnown = 0:
-        *p 'Лизетта ещё не знакома с вами и Амандой — покупать у неё нечего.'
-    else:
-        *p 'Лизетта поправляет на запястье тонкий южный браслет и улыбается так, будто продаёт не металл, а обещание более широкого мира.'
-        *pl ' '
-        gs 'FormatSpintry', money
-        $FormatSpintry_money = $FormatSpintry
-        killvar '$FormatSpintry'
-        *pl 'Деньги: ' + $FormatSpintry_money + '.'
-        *pl ' '
-
-        gs 'GiftInventoryCanAdd', 'lizette_bracelet', 'LizettePortGiftShop'
-
-        if GiftInventoryCanAdd = 0:
-            *p $GiftCanAddReason
-            killvar '$GiftCanAddReason'
-            killvar 'GiftInventoryCanAdd'
-        else:
-            killvar '$GiftCanAddReason'
-            killvar 'GiftInventoryCanAdd'
-
-            gs 'ActUiPrepare', 'Купить южный браслет — 55 спинтарий', 'shop'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'GiftShopBuy', $GiftShopReturnLoc, 'lizette_bracelet', 'LizettePortGiftShop'
-            end
-        end
-    end
-
+    *p 'Прилавок пустует: торговец переехал к кораблю из столицы. Подарки покупают только у причала, когда столица пришвартована.'
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться к кораблю', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'PortCapitalShipMenu', $GiftShopReturnLoc
+    act '<b>Назад на рынок</b>', 'images/common/ui/actions/return.png':
+        gt 'Market'
     end
 ---

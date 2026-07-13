@@ -12,6 +12,14 @@
 
     gs 'ProcessTavernWorkDay'
 
+    if LOC('ProcessFamilyWalletSpends') = 1:
+        gs 'ProcessFamilyWalletSpends'
+    end
+
+    if LOC('ProcessSandraKitchenNewDish') = 1:
+        gs 'ProcessSandraKitchenNewDish'
+    end
+
     ! ====================== СОХРАНЯЕМ ИТОГИ ДЛЯ ВЫВОДА ======================
 
     LastDayProfit = tavern_expected_profit
@@ -211,11 +219,52 @@
 
     *pl ' '
 
+    *pl 'Доли семьи (70/15/7.5/7.5):'
+    gs 'FormatSpintry', LastDayShareStefan
+    $FormatSpintry_LastDayShareStefan = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Стефан: ' + $FormatSpintry_LastDayShareStefan
+    gs 'FormatSpintry', LastDayShareSandra
+    $FormatSpintry_LastDayShareSandra = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Сандра: ' + $FormatSpintry_LastDayShareSandra
+    gs 'FormatSpintry', LastDayShareAmanda
+    $FormatSpintry_LastDayShareAmanda = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Аманда: ' + $FormatSpintry_LastDayShareAmanda
+    gs 'FormatSpintry', LastDayShareMelissa
+    $FormatSpintry_LastDayShareMelissa = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Мелисса: ' + $FormatSpintry_LastDayShareMelissa
+    *pl ' '
+
     gs 'FormatSpintry', money
     $FormatSpintry_money = $FormatSpintry
     killvar '$FormatSpintry'
-    *pl 'Деньги: ' + $FormatSpintry_money
+    *pl 'Деньги Стефана: ' + $FormatSpintry_money
+    gs 'FormatSpintry', SandraMoney
+    $FormatSpintry_SandraMoney = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Кошелёк Сандры: ' + $FormatSpintry_SandraMoney
+    gs 'FormatSpintry', AmandaMoney
+    $FormatSpintry_AmandaMoney = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Кошелёк Аманды: ' + $FormatSpintry_AmandaMoney
+    gs 'FormatSpintry', MelissaMoney
+    $FormatSpintry_MelissaMoney = $FormatSpintry
+    killvar '$FormatSpintry'
+    *pl 'Кошелёк Мелиссы: ' + $FormatSpintry_MelissaMoney
     *pl 'Репутация таверны: ' + STR(tavern_reputation) + ' / 100'
+
+    if LastDayKitchenDish = 1:
+        *pl ' '
+        *pl $LastDayKitchenDishText
+
+        if $GirlTipsAwardLine <> '':
+            *pl $GirlTipsAwardLine
+        end
+    end
+
     *pl ' '
 
     if LOC('Act1SurveyMarkIncome') = 1:
@@ -456,8 +505,17 @@
         gs 'ApplyTavernUpgradeVisitorBonuses'
     end
 
+    if KitchenNewDishVisitorBonus > 0:
+        tavernvisitors += KitchenNewDishVisitorBonus
+        KitchenNewDishVisitorBonus = 0
+    end
+
     if tavernvisitors > 80:
         tavernvisitors = 80
+    end
+
+    if tavernvisitors < 5:
+        tavernvisitors = 5
     end
 
     gs 'TavernDayEventRoll'

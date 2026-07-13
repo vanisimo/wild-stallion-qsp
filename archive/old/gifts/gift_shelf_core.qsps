@@ -1,0 +1,247 @@
+! ================================================
+! FILE: modules/core/gifts/gift_shelf_core.qsps
+! MODULE: core/gifts
+! Полки простых подарков: владелец, отказ чужого типа
+! ================================================
+
+#GiftShelfResolve
+    $GiftShelfResolveId = LCASE($ARGS[0])
+    GiftShelfKnown = 0
+    $GiftShelfOwner = ''
+    $GiftShelfKey = ''
+
+    if $GiftShelfResolveId = 'tentacle_seed_spice' or $GiftShelfResolveId = 'mermaid_squirt_salt' or $GiftShelfResolveId = 'dragon_fire_pepper' or $GiftShelfResolveId = 'harvest_sin_herbs' or $GiftShelfResolveId = 'naughty_splash_oil' or $GiftShelfResolveId = 'forgotten_caress_essence':
+        GiftShelfKnown = 1
+        $GiftShelfOwner = 'sandra'
+        $GiftShelfKey = 'spice'
+    elseif $GiftShelfResolveId = 'pearl_lip_gloss' or $GiftShelfResolveId = 'rouge_sin_berries' or $GiftShelfResolveId = 'musk_eyelash_dye' or $GiftShelfResolveId = 'silk_body_powder' or $GiftShelfResolveId = 'nymph_bath_oil' or $GiftShelfResolveId = 'mirror_kiss_balm':
+        GiftShelfKnown = 1
+        $GiftShelfOwner = 'amanda'
+        $GiftShelfKey = 'cosmetic'
+    elseif $GiftShelfResolveId = 'stallion_cucumber_seeds' or $GiftShelfResolveId = 'nightshade_tomato_seeds' or $GiftShelfResolveId = 'aphrodisiac_carrot_seeds' or $GiftShelfResolveId = 'vine_pepper_cuttings' or $GiftShelfResolveId = 'garden_knife_set' or $GiftShelfResolveId = 'moon_melon_seeds':
+        GiftShelfKnown = 1
+        $GiftShelfOwner = 'becky'
+        $GiftShelfKey = 'seed'
+    elseif $GiftShelfResolveId = 'golden_thread_spool' or $GiftShelfResolveId = 'lace_collar_pattern' or $GiftShelfResolveId = 'hidden_pocket_kit' or $GiftShelfResolveId = 'dance_hem_weights' or $GiftShelfResolveId = 'silk_lining_roll' or $GiftShelfResolveId = 'embroidery_needle_set':
+        GiftShelfKnown = 1
+        $GiftShelfOwner = 'inga'
+        $GiftShelfKey = 'sewing'
+    elseif $GiftShelfResolveId = 'widow_wine_drops' or $GiftShelfResolveId = 'barrel_musk_tincture' or $GiftShelfResolveId = 'hidden_desire_candy' or $GiftShelfResolveId = 'married_couple_syrup' or $GiftShelfResolveId = 'jealousy_root_powder' or $GiftShelfResolveId = 'night_barrel_essence':
+        GiftShelfKnown = 1
+        $GiftShelfOwner = 'clarissa'
+        $GiftShelfKey = 'aphrodisiac'
+    elseif $GiftShelfResolveId = 'maiden_ten_knights_tale' or $GiftShelfResolveId = 'gardener_pear_fable' or $GiftShelfResolveId = 'stable_lady_romance' or $GiftShelfResolveId = 'minstrel_thighs_story' or $GiftShelfResolveId = 'damp_seals_castle_cache' or $GiftShelfResolveId = 'capital_cook_diary':
+        GiftShelfKnown = 1
+        $GiftShelfOwner = 'melissa'
+        $GiftShelfKey = 'book'
+    elseif $GiftShelfResolveId = 'silk_boudoir_sachet' or $GiftShelfResolveId = 'neckline_musk_vial' or $GiftShelfResolveId = 'linen_sunset_perfume' or $GiftShelfResolveId = 'velvet_wrist_tincture' or $GiftShelfResolveId = 'hidden_lace_essence' or $GiftShelfResolveId = 'midnight_seamstress_oil':
+        GiftShelfKnown = 1
+        $GiftShelfOwner = 'irma'
+        $GiftShelfKey = 'aromatic'
+    end
+
+    killvar '$GiftShelfResolveId'
+---
+
+#GiftShelfGirlAccepts
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftShelfAcceptGirl = $GirlKey
+    $GiftShelfAcceptId = LCASE($ARGS[1])
+    GiftShelfGirlAccepts = 0
+
+    gs 'GiftShelfResolve', $GiftShelfAcceptId
+
+    if GiftShelfKnown = 0:
+        GiftShelfGirlAccepts = 1
+    elseif $GiftShelfAcceptGirl = $GiftShelfOwner:
+        GiftShelfGirlAccepts = 1
+    end
+
+    killvar '$GiftShelfAcceptGirl'
+    killvar '$GiftShelfAcceptId'
+    killvar 'GiftShelfKnown'
+    killvar '$GiftShelfOwner'
+    killvar '$GiftShelfKey'
+---
+
+#GiftShelfPrimaryReactionText
+    $GiftShelfReactionId = LCASE($ARGS[0])
+    $GiftReactionText = ''
+
+    gs 'GiftShelfResolve', $GiftShelfReactionId
+
+    if $GiftShelfOwner = 'sandra':
+        gs 'GiftSandraSpiceReactionText', $GiftShelfReactionId
+    elseif $GiftShelfOwner = 'amanda':
+        gs 'GiftAmandaCosmeticReactionText', $GiftShelfReactionId
+    elseif $GiftShelfOwner = 'becky':
+        gs 'GiftBeckySeedReactionText', $GiftShelfReactionId
+    elseif $GiftShelfOwner = 'inga':
+        gs 'GiftIngaSewingReactionText', $GiftShelfReactionId
+    elseif $GiftShelfOwner = 'clarissa':
+        gs 'GiftClarissaAphrodisiacReactionText', $GiftShelfReactionId
+    elseif $GiftShelfOwner = 'melissa':
+        gs 'GiftMelissaBookReactionText', $GiftShelfReactionId
+    elseif $GiftShelfOwner = 'irma':
+        gs 'GiftIrmaAromaticReactionText', $GiftShelfReactionId
+    end
+
+    killvar '$GiftShelfReactionId'
+    killvar 'GiftShelfKnown'
+    killvar '$GiftShelfOwner'
+    killvar '$GiftShelfKey'
+---
+
+#GiftShelfRefuseReactionText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GiftRefuseGirl = $GirlKey
+    $GiftRefuseOwner = LCASE($ARGS[1])
+    $GiftReactionText = ''
+
+    if $GiftRefuseOwner = 'sandra':
+        if $GiftRefuseGirl = 'amanda':
+            $GiftReactionText = 'Аманда отталкивает банку подальше.<br><br>— Маме. Сразу. Я в зале, не в кастрюле. И на этикетке такое, что краснеешь быстрее, чем успеваешь прочитать.'
+        elseif $GiftRefuseGirl = 'melissa':
+            $GiftReactionText = 'Мелисса морщится и отодвигает подарок.<br><br>— Для кухни — маме. Мне ближе книга, чем перец, от которого чихаешь и материшься.'
+        elseif $GiftRefuseGirl = 'becky':
+            $GiftReactionText = 'Бекки хохочет и тычет пальцем в этикетку.<br><br>— Сандре, милый. У меня и так в задней комнате жарко. Не путай кухню с моей лавкой.'
+        elseif $GiftRefuseGirl = 'clarissa':
+            $GiftReactionText = 'Кларисса качает головой.<br><br>— Специи — Сандре или в котёл. У меня и без этого хватает запахов у бочонков.'
+        elseif $GiftRefuseGirl = 'inga':
+            $GiftReactionText = 'Инга краснеет и отступает.<br><br>— Это маме на кухню. Я… я лучше нитку подарю, чем буду нюхать такое при всех.'
+        elseif $GiftRefuseGirl = 'irma':
+            $GiftReactionText = 'Ирма ровно отодвигает банку.<br><br>— Не мой товар. Отнесите на кухню — там знают, куда это класть.'
+        elseif $GiftRefuseGirl = 'lizette':
+            $GiftReactionText = 'Лизетта смеётся и пожимает плечами.<br><br>— Мило. Только это маме Сандре, не мне на шею. Я из столицы, но не из кастрюли.'
+        elseif $GiftRefuseGirl = 'georgett':
+            $GiftReactionText = 'Жоржетта усмехается.<br><br>— В кастрюлю, не ко мне. У порта и так хватает вкусов без ваших банок.'
+        else:
+            $GiftReactionText = $RealName[$GiftRefuseGirl] + ' отодвигает подарок.<br><br>— Не моё. На кухню, Стефан.'
+        end
+    elseif $GiftRefuseOwner = 'amanda':
+        if $GiftRefuseGirl = 'sandra':
+            $GiftReactionText = 'Сандра смотрит на пудру и усмехается.<br><br>— Аманде неси. Мне румяна не нужны — мне нужен порядок в кухне и чтобы дочь в зале не сгорела от собственного блеска.'
+        elseif $GiftRefuseGirl = 'melissa':
+            $GiftReactionText = 'Мелисса кивает сухо.<br><br>— Красиво. Аманде понравится — ей такое к лицу. Я бы выбрала книгу, но спасибо, что хоть не кастрюлю.'
+        elseif $GiftRefuseGirl = 'becky':
+            $GiftReactionText = 'Бекки прищуривается и хихикает.<br><br>— Румяна? Аманде, милый. Мне бы семечко, от которого и огурец, и настроение вырастет.'
+        elseif $GiftRefuseGirl = 'clarissa':
+            $GiftReactionText = 'Кларисса прячет улыбку.<br><br>— Для зала, не для лавки. У меня и без пудры хватает чужих глаз.'
+        elseif $GiftRefuseGirl = 'inga':
+            $GiftReactionText = 'Инга отводит взгляд.<br><br>— Это сестре. Я… я не крашусь при всех. Спасибо, но нет.'
+        elseif $GiftRefuseGirl = 'irma':
+            $GiftReactionText = 'Ирма рассматривает упаковку профессионально.<br><br>— Камни сели бы на бархат лучше. Отнесите Аманде — ей это к лицу.'
+        elseif $GiftRefuseGirl = 'lizette':
+            $GiftReactionText = 'Лизетта оборачивает пудру и крутится на месте.<br><br>— О, как у столицы! Но это Аманде — она в зале блистает, а я только подпеваю.'
+        elseif $GiftRefuseGirl = 'georgett':
+            $GiftReactionText = 'Жоржетта фыркает.<br><br>— Для зала, не для церкви. Аманде отдавай — мне такое на причале только мешает торговать лицом.'
+        else:
+            $GiftReactionText = $RealName[$GiftRefuseGirl] + ' качает головой.<br><br>— Не моё. Аманде такое ближе.'
+        end
+    elseif $GiftRefuseOwner = 'becky':
+        if $GiftRefuseGirl = 'sandra':
+            $GiftReactionText = 'Сандра разворачивает пакет и хмыкает.<br><br>— Бекки посадит за лавкой и будет хохотать. Мне оставь соль — а не семена, от которых в городе новые сплетни прорастут.'
+        elseif $GiftRefuseGirl = 'amanda':
+            $GiftReactionText = 'Аманда морщит нос.<br><br>— Семена? Бекки обрадуется. Я в зале, не в грядке. Хотя… этикетку почитай — там такое, что краснеешь.'
+        elseif $GiftRefuseGirl = 'melissa':
+            $GiftReactionText = 'Мелисса вздыхает.<br><br>— Для огорода Бекки. Я королева трактира, не огородница. Хотя название на пакете… богато.'
+        elseif $GiftRefuseGirl = 'clarissa':
+            $GiftReactionText = 'Кларисса усмехается.<br><br>— Бекки знает, что с этим делать. У меня грядка — бочонки, и то не все мои.'
+        elseif $GiftRefuseGirl = 'inga':
+            $GiftReactionText = 'Инга смущённо качает головой.<br><br>— Это маме Бекки. Я шью, не сажаю… хотя названия на пакетах вы оба умеете выбирать громкие.'
+        elseif $GiftRefuseGirl = 'irma':
+            $GiftReactionText = 'Ирма отодвигает пакет.<br><br>— Не мой метраж. Отнесите Бекки — она из тех, кто посадит и не покраснеет.'
+        elseif $GiftRefuseGirl = 'lizette':
+            $GiftReactionText = 'Лизетта смеётся.<br><br>— Ого. Бекки понравится. Я из корабля, не из грядки.'
+        elseif $GiftRefuseGirl = 'georgett':
+            $GiftReactionText = 'Жоржетта хмыкает.<br><br>— Бекки и её огород. Мне бы муку, не семена с такими именами.'
+        else:
+            $GiftReactionText = $RealName[$GiftRefuseGirl] + ' отодвигает пакет.<br><br>— Бекки это оценит. Я — нет.'
+        end
+    elseif $GiftRefuseOwner = 'inga':
+        if $GiftRefuseGirl = 'sandra':
+            $GiftReactionText = 'Сандра кивает на порт.<br><br>— Инге отнеси. Мне иглы не нужны — мне ножи, от которых мясо режется, а не сердце дочери.'
+        elseif $GiftRefuseGirl = 'amanda':
+            $GiftReactionText = 'Аманда вертит моток в руках и возвращает.<br><br>— Красиво, но Инге. Она шьёт, я сияю. Не путай нас, Стефан.'
+        elseif $GiftRefuseGirl = 'melissa':
+            $GiftReactionText = 'Мелисса смотрит на золотую нить с уважением.<br><br>— Инге ближе. Я корона, не мастерская. Но выбор тонкий — запомню.'
+        elseif $GiftRefuseGirl = 'becky':
+            $GiftReactionText = 'Бекки хохочет.<br><br>— Нитки? Инге, милый. У меня руки заняты мукой и… другими делами.'
+        elseif $GiftRefuseGirl = 'clarissa':
+            $GiftReactionText = 'Кларисса кивает деловито.<br><br>— Шитьё — Инге. У меня счёты и бочонки, не выкройки.'
+        elseif $GiftRefuseGirl = 'irma':
+            $GiftReactionText = 'Ирма проводит пальцем по нити и возвращает аккуратно.<br><br>— Инге отдайте. Я бы сделала иначе — но ей это нужнее.'
+        elseif $GiftRefuseGirl = 'lizette':
+            $GiftReactionText = 'Лизетта пожимает плечами.<br><br>— Мило. Инге — она тихая мастерская. Я — шум порта.'
+        elseif $GiftRefuseGirl = 'georgett':
+            $GiftReactionText = 'Жоржетта усмехается.<br><br>— Инге. У меня штопать сапоги, не кружева.'
+        else:
+            $GiftReactionText = $RealName[$GiftRefuseGirl] + ' возвращает подарок.<br><br>— Инге это нужнее. Я не шью.'
+        end
+    elseif $GiftRefuseOwner = 'melissa':
+        if $GiftRefuseGirl = 'sandra':
+            $GiftReactionText = 'Сандра смотрит на переплёт и усмехается.<br><br>— Мелиссе. Я в кухне, не в романах. Хотя название… богато.'
+        elseif $GiftRefuseGirl = 'amanda':
+            $GiftReactionText = 'Аманда отодвигает книгу.<br><br>— Сестре. Я в зале, не в постели с десятью рыцарями. Спасибо, что хоть не кастрюлю.'
+        elseif $GiftRefuseGirl = 'becky':
+            $GiftReactionText = 'Бекки хохочет и тычет в обложку.<br><br>— Мелиссе, милый. У меня огород, не библиотека. Хотя «груши» — моя тема.'
+        elseif $GiftRefuseGirl = 'clarissa':
+            $GiftReactionText = 'Кларисса кивает деловито.<br><br>— Книги — Мелиссе. У меня счёты и бочонки, не рыцарские романы.'
+        elseif $GiftRefuseGirl = 'inga':
+            $GiftReactionText = 'Инга краснеет и отступает.<br><br>— Это… для сестры. Я шью, не читаю такое при всех.'
+        elseif $GiftRefuseGirl = 'irma':
+            $GiftReactionText = 'Ирма возвращает том аккуратно.<br><br>— Не мой жанр. Мелиссе — она королева таких историй.'
+        elseif $GiftRefuseGirl = 'lizette':
+            $GiftReactionText = 'Лизетта смеётся.<br><br>— О, столица пишет громко! Мелиссе — она любит корону и книгу под ней.'
+        elseif $GiftRefuseGirl = 'georgett':
+            $GiftReactionText = 'Жоржетта хмыкает.<br><br>— Мелиссе. У порта свои сплетни — не надо ещё и рыцарей в сумке.'
+        else:
+            $GiftReactionText = $RealName[$GiftRefuseGirl] + ' отодвигает книгу.<br><br>— Мелиссе ближе. Я не из тех, кто читает такое вслух.'
+        end
+    elseif $GiftRefuseOwner = 'irma':
+        if $GiftRefuseGirl = 'sandra':
+            $GiftReactionText = 'Сандра нюхает флакон и возвращает.<br><br>— Ирме. Мне пахнуть котёл, не декольте. Хотя выбор у вас оба умеете.'
+        elseif $GiftRefuseGirl = 'amanda':
+            $GiftReactionText = 'Аманда морщит нос.<br><br>— Красиво пахнет. Ирме — она знает, куда это капать. Я в зале.'
+        elseif $GiftRefuseGirl = 'melissa':
+            $GiftReactionText = 'Мелисса кивает с уважением.<br><br>— Ирме. Я королева книг, не флаконов. Но запах… тонкий.'
+        elseif $GiftRefuseGirl = 'becky':
+            $GiftReactionText = 'Бекки прищуривается.<br><br>— Ароматы Ирме, милый. У меня мука и задняя — и так жарко.'
+        elseif $GiftRefuseGirl = 'clarissa':
+            $GiftReactionText = 'Кларисса усмехается.<br><br>— Ирме. У меня и без духов хватает запахов у бочонков.'
+        elseif $GiftRefuseGirl = 'inga':
+            $GiftReactionText = 'Инга шепчет «нет» и отступает.<br><br>— Это маме Ирмы… то есть Ирме. Я ещё молодая для таких этикеток.'
+        elseif $GiftRefuseGirl = 'lizette':
+            $GiftReactionText = 'Лизетта вдыхает и кивает.<br><br>— Столица пахнет иначе. Ирме — она мастерская. Мне — корабль.'
+        elseif $GiftRefuseGirl = 'georgett':
+            $GiftReactionText = 'Жоржетта отодвигает флакон.<br><br>— Ирме. У порта свой рынок запахов.'
+        else:
+            $GiftReactionText = $RealName[$GiftRefuseGirl] + ' возвращает флакон.<br><br>— Ирме это нужнее. Не моё.'
+        end
+    elseif $GiftRefuseOwner = 'clarissa':
+        if $GiftRefuseGirl = 'sandra':
+            $GiftReactionText = 'Сандра читает этикетку и усмехается.<br><br>— Клариссе. У меня и без капель в вино хватает работы — не разжигай мне зал лишний раз.'
+        elseif $GiftRefuseGirl = 'amanda':
+            $GiftReactionText = 'Аманда краснеет и отодвигает пузырёк.<br><br>— Опасная вещь. Клариссе — она у бочонков знает, куда это прятать. Я в зале и так на виду.'
+        elseif $GiftRefuseGirl = 'melissa':
+            $GiftReactionText = 'Мелисса смотрит строго.<br><br>— Клариссе. Я не хочу, чтобы в трактире пахло её лавкой сильнее, чем кухней.'
+        elseif $GiftRefuseGirl = 'becky':
+            $GiftReactionText = 'Бекки присвистывает.<br><br>— Ого. Клариссе, милый. У меня задняя и так жаркая — не подливай масла в чужой огонь.'
+        elseif $GiftRefuseGirl = 'inga':
+            $GiftReactionText = 'Инга шепчет «нет» и отступает.<br><br>— Это… взрослое. Клариссе. Я ещё молодая для таких этикеток.'
+        elseif $GiftRefuseGirl = 'irma':
+            $GiftReactionText = 'Ирма отодвигает флакон без суеты.<br><br>— Не мой заказ. Кларисса знает своих покупателей лучше.'
+        elseif $GiftRefuseGirl = 'lizette':
+            $GiftReactionText = 'Лизетта смеётся тихо.<br><br>— Столица пахнет иначе. Клариссе — она взрослая и у бочонков. Мне пока рано.'
+        elseif $GiftRefuseGirl = 'georgett':
+            $GiftReactionText = 'Жоржетта хмыкает.<br><br>— Клариссе, не мне. У порта свой рынок таких вещей — и свой стыд.'
+        else:
+            $GiftReactionText = $RealName[$GiftRefuseGirl] + ' отодвигает флакон.<br><br>— Клариссе ближе. Не моё.'
+        end
+    else:
+        $GiftReactionText = $RealName[$GiftRefuseGirl] + ' качает головой.<br><br>— Не мой подарок, Стефан. Забери.'
+    end
+
+    killvar '$GiftRefuseGirl'
+    killvar '$GiftRefuseOwner'
+---
