@@ -1,15 +1,24 @@
-# Handoff: сессия 17.06.2026
+# Handoff
 
-Документ для продолжения работы с другой машины. Читать **первым делом** вместе с `docs/state.md` и `Agents.md`.
+Документ для продолжения с другой машины.  
+**Актуальная сессия:** [`docs/session-handoff-2026-07-14.md`](session-handoff-2026-07-14.md) — читать **первым**.  
+Также: `docs/state.md`, `docs/design-character-intimacy-arc.md` (§ live-NTR + § Обида-дни), `docs/economy.md` (§0–0c), `AGENTS.md`.
 
 **Репозиторий:** `vanisimo/wild-stallion-qsp`, ветка `main`  
-**Локально:** `E:\TraKtir`  
-**Git:** `main` опережает `origin/main` на **8 коммитов** (не запушено)  
-**Незакоммичено:** `wild_stallion_story_bible_v4.docx` (в корне, untracked)
+**Локально:** `E:\TraKtir`
+
+### Срез 2026-07-14 (кратко)
+
+| | |
+|--|--|
+| **Код** | 4b: Защитить/Наблюдать/Отвернуться + policy сдержанно/сама/расковано; гейт `FamilyLiberationGateOpen` (`4e49b23`) |
+| **Дизайн** | чистый/mixed/dirty; live-NTR; OffenseDays (dual protect **K=3** накопление); audit step_aside |
+| **TODO код** | step_aside/leave never hidden FirstSex; OffenseDays v1; 4c тексты |
+| **Полный handoff** | `docs/session-handoff-2026-07-14.md` |
 
 ---
 
-## 1. Что делали в этой сессии (обсуждение, без нового кода)
+## 1. Архив: сессия 17.06.2026 (обсуждение)
 
 ### 1.1. Сверка с story bible
 
@@ -85,9 +94,9 @@
 
 #### Доли семьи (личные кошельки)
 
-**Полный дизайн:** [`docs/economy.md`](economy.md) — доли **70/15/7.5/7.5** (в коде), чаевые, траты, мечты (eavesdrop); **подарки** = `gift_cheap`/`gift_expensive` (корабль; 7 полок **устарели**); **собрание** после **клерка** (6 экранов, ночь) → `FamilyLiberationGateOpen` (§0–0b).
+**Актуально:** [`docs/economy.md`](economy.md) — доли **70/15/7.5/7.5** **в коде**, чаевые, траты, мечты (eavesdrop); **подарки** = `gift_cheap`/`gift_expensive`; **собрание** после **клерка** → `FamilyLiberationGateOpen` (§0–0c). Пути/обиды: `design-character-intimacy-arc.md`.
 
-Кратко: Стефан **70%**, Сандра **15%**, Аманда/Мелисса по **7.5%**. Налог с gross — без удлинения честной ветки.
+Кратко: Стефан **70%**, Сандра **15%**, Аманда/Мелисса по **7.5%**.
 
 #### Разовые расходы (уже в коде)
 
@@ -239,7 +248,7 @@
 1. **`MayorOfficeMagistrateSubmit` обходит гейт** — главный расхождение план/код.
 2. **`TaxPercent = 10` не списывается** в `tavern_income.qsps`.
 3. **Прибыль не связана с закупкой запасов** — COGS ~190/день вручную на рынке.
-4. **Доли семьи 70/15/7.5/7.5** — шаг 1 в коде (`DistributeFamilyProfitShares`); чаевые на личные и собрание/гейт — ещё нет (`docs/economy.md`).
+4. **Доли/чаевые/собрание/гейт** — в коде; **OffenseDays / live-NTR fix step_aside** — дизайн, код TODO (`session-handoff-2026-07-14.md`).
 5. **`qsp-project.json` не менять** без явной просьбы пользователя.
 6. **`archive/old`** — не подключать (вне сборки).
 7. **`modules/images`** — отдельно от сборки.
@@ -250,12 +259,13 @@
 
 | Задача | Файлы |
 |--------|-------|
-| Экономика | `modules/core/tavern/tavern_income.qsps`, `tavern_supply_economy.qsps`, `game_init.qsps` |
-| Мэр / дворяне | `mayor_office.qsps`, `noble_attack.qsps`, `sandra_birth_reveal.qsps`, `player_room_chest.qsps` |
-| Расписание | `business_schedule.qsps`, `next_day.qsps` |
+| **Продолжить с другой машины** | `docs/session-handoff-2026-07-14.md` |
+| Пути / live-NTR / обиды | `docs/design-character-intimacy-arc.md` |
+| Ужин / кнопки зала | `docs/economy.md` §0–0c; `hall_harassment.qsps`, `girl_work_policy_talk.qsps` |
+| Экономика | `modules/core/tavern/tavern_income.qsps`, `girl_tips.qsps`, `girl_wallet_spend.qsps` |
+| Мэр / дворяне | `mayor_office.qsps`, `noble_attack.qsps`, `sandra_birth_reveal.qsps` |
 | Состояние переменных | `docs/state.md` |
-| Правила агента | `Agents.md` |
-| Story bible | `wild_stallion_story_bible_v4.docx` (локально, не в git) |
+| Правила агента | `AGENTS.md` / `Agents.md` |
 
 ---
 
