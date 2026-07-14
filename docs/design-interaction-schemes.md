@@ -206,7 +206,8 @@ flowchart LR
 
 ## 6. Подарки и реестр
 
-Эталон: `gift_registry.qsps`, `gift_shop_menus.qsps`.
+Эталон: `gift_registry.qsps`, `gift_shop_menus.qsps`, `gift_simple_text.qsps`.  
+**2026-07-13:** система упрощена до `gift_cheap` / `gift_expensive` (корабль); 7 полок — **не** код. См. `docs/economy.md` §Gifts, `docs/session-handoff-2026-07-12.md` (архив).
 
 | Локация | Подарки | Вход |
 |---------|---------|------|

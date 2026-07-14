@@ -1,0 +1,182 @@
+! ================================================
+! FILE: modules/events/family/family_council.qsps
+! MODULE: events/family
+! Семейный ужин после клерка + Act1MoralUnlock
+! docs/economy.md §0–0b
+! ================================================
+
+#FamilyCouncilCanStart
+    FamilyCouncilCanStart = 0
+
+    if FamilyCouncilDone = 1:
+        exit
+    end
+
+    if FamilyCouncilPending = 0:
+        exit
+    end
+
+    if Act1MoralUnlocked = 0:
+        exit
+    end
+
+    FamilyCouncilCanStart = 1
+---
+
+#FamilyCouncilTryAtNight
+    gs 'FamilyCouncilCanStart'
+
+    if FamilyCouncilCanStart = 0:
+        exit
+    end
+
+    if time <> 5:
+        exit
+    end
+
+    gt 'FamilyCouncilScreen', 1
+---
+
+#FamilyCouncilTryBeforeNextDay
+    gs 'FamilyCouncilCanStart'
+
+    if FamilyCouncilCanStart = 0:
+        exit
+    end
+
+    $FamilyCouncilResumeNextDay = 1
+    gt 'FamilyCouncilScreen', 1
+---
+
+#FamilyCouncilShowImage
+    if LOC('ShowImagePath') = 1:
+        gs 'ShowImagePath', 'images/events/family/dinner/family_dinner', 'Семейный ужин', 'location', 'png'
+    end
+---
+
+#FamilyCouncilScreen
+    FamilyCouncilPage = ARGS[0]
+
+    if FamilyCouncilPage <= 0:
+        FamilyCouncilPage = 1
+    end
+
+    if FamilyCouncilPage > 6:
+        gt 'FamilyCouncilFinish'
+        exit
+    end
+
+    cls
+    clr
+    cla
+
+    gs 'FamilyCouncilShowImage'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СЕМЕЙНЫЙ УЖИН'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if FamilyCouncilPage = 1:
+        gs 'FamilyCouncilText1'
+    elseif FamilyCouncilPage = 2:
+        gs 'FamilyCouncilText2'
+    elseif FamilyCouncilPage = 3:
+        gs 'FamilyCouncilText3'
+    elseif FamilyCouncilPage = 4:
+        gs 'FamilyCouncilText4'
+    elseif FamilyCouncilPage = 5:
+        gs 'FamilyCouncilText5'
+    else:
+        gs 'FamilyCouncilText6'
+    end
+
+    *pl ' '
+
+    if FamilyCouncilPage < 6:
+        gs 'ActUiPrepare', 'Далее', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyCouncilScreen', FamilyCouncilPage + 1
+        end
+    else:
+        gs 'ActUiPrepare', 'Встать из-за стола', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyCouncilFinish'
+        end
+    end
+---
+
+#FamilyCouncilFinish
+    FamilyCouncilDone = 1
+    FamilyCouncilPending = 0
+    FamilyLiberationGateOpen = 1
+
+    if FamilyCorruptionPoints < 100:
+        FamilyCorruptionPoints += 2
+
+        if FamilyCorruptionPoints > 100:
+            FamilyCorruptionPoints = 100
+        end
+    end
+
+    if LOC('HallFamilyStateUpdateStage') = 1:
+        gs 'HallFamilyStateUpdateStage'
+    end
+
+    if $FamilyCouncilResumeNextDay = 1:
+        $FamilyCouncilResumeNextDay = 0
+        gt 'NextDay'
+        exit
+    end
+
+    gt 'TavernMain'
+---
+
+#FamilyCouncilMomHintCanTalk
+    FamilyCouncilMomHintCanTalk = 0
+
+    if FamilyCouncilDone = 1:
+        exit
+    end
+
+    if FamilyCouncilPending = 0:
+        exit
+    end
+
+    if FamilyCouncilMomHintDone = 1:
+        exit
+    end
+
+    if Act1MoralUnlocked = 0:
+        exit
+    end
+
+    FamilyCouncilMomHintCanTalk = 1
+---
+
+#FamilyCouncilMomHintTalk
+    gs 'FamilyCouncilMomHintCanTalk'
+
+    if FamilyCouncilMomHintCanTalk = 0:
+        gt 'GirlTalk', 'sandra', 'TavernMain'
+        exit
+    end
+
+    cls
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР: Сандра'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'FamilyCouncilMomHintText'
+
+    FamilyCouncilMomHintDone = 1
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlTalk', 'sandra', 'TavernMain'
+    end
+---

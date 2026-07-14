@@ -81,6 +81,8 @@ Daily calculation values:
 - `GirlWalletLastSpendDay[girl]`, `GirlWalletSpendCount[girl]`, `SandraKitchenExperimentCount` - spend tracking.
 - `ProcessSandraKitchenNewDish` - after ≥3 experiments, chance for new dish: +rep, tips to Sandra, `KitchenNewDishVisitorBonus` next day, summary + smalltalk; cooldown `SandraKitchenLastDishDay`.
 - Dream items (not GirlTalk with GG): Sunday/room eavesdrop sets `DreamItemKnown[id]`, `PlayerKnows_Dream_FullLengthMirror` / `_EleanorVol3` / `_RecipeCodex` / `_StallionCucumber` / `_SewingMachine` / `_AncestralStaff` / `_GoldenWine`. Cucumber jokes always eligible. `DreamItemGiven[id]` drops most dream phrases (not cucumber). Full quest later.
+- Family council (**coded**): after clerk path `Act1MoralUnlock` → `FamilyCouncilPending` → night (`time=5` / NextDay safety) → 6-screen dinner → `FamilyCouncilDone` + **`FamilyLiberationGateOpen`**. Mom personal «Нам нужно поговорить». Debug: mayor panel. See `docs/economy.md` §0–0b.
+- Gifts (**2026-07-13**): only `gift_cheap` / `gift_expensive` in inventory; buy at capital ship; old multi-shelf ids in `archive/old/gifts/`. See `docs/economy.md` §Gifts.
 - `tavern_stock_penalty` - low stock penalty.
 - `tavern_food_used`, `tavern_wine_used`, `tavern_beer_used` - stock consumed by the previous work day.
 - `tavern_can_serve_food`, `tavern_can_serve_drinks` - service availability flags.

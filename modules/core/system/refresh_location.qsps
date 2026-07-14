@@ -70,12 +70,33 @@
         gs 'UpdateGirlLocations'
         gs 'GetDateTimeNames'
 
+        if time = 5 and LOC('FamilyCouncilTryAtNight') = 1:
+            gs 'FamilyCouncilCanStart'
+
+            if FamilyCouncilCanStart = 1:
+                killvar '$AdvanceReturnLoc'
+                killvar '$AdvanceMode'
+                gt 'FamilyCouncilScreen', 1
+            end
+        end
+
         if $AdvanceMode = 'time_panel':
             $PanelRestoreAfterRefresh = 'time'
         end
 
         gt $AdvanceReturnLoc
     else:
+        if LOC('FamilyCouncilCanStart') = 1:
+            gs 'FamilyCouncilCanStart'
+
+            if FamilyCouncilCanStart = 1:
+                killvar '$AdvanceReturnLoc'
+                killvar '$AdvanceMode'
+                $FamilyCouncilResumeNextDay = 1
+                gt 'FamilyCouncilScreen', 1
+            end
+        end
+
         gt 'NextDay'
     end
 
