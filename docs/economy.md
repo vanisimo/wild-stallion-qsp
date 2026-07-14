@@ -459,6 +459,7 @@ Intim-stage (дом/секс) остаётся **своей** лестницей
 | **4b** | ✅ Кнопки сцены: только **Защитить** до ужина; после — тройка; policy **сдержанно/сама/расковано**; гейт = `FamilyLiberationGateOpen` | `hall_harassment`, `kitchen_harassment`, `girl_work_policy_talk` |
 | **4c** | Тексты сцен/policy / thoughts (отложено; подписи кнопок уже §0c) | `*_text.qsps` |
 | **5** | ✅ Собрание 6 экранов + гейт + картинка `images/events/family/dinner/family_dinner` | `family_council*.qsps` |
+| **paths** | ✅ Дизайн: чистый/mixed/dirty + live-NTR + **OffenseDays** (код TODO) | `docs/design-character-intimacy-arc.md` |
 
 ---
 
