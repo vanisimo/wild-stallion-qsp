@@ -31,7 +31,9 @@
     MelissaMinstrelFridayRaceCanStart = 0
 
     if MelissaMinstrelFridayRaceDone = 1:
-        exit
+        if MelissaMinstrelFridayRaceSparkPending <> 1:
+            exit
+        end
     end
 
     if MelissaMinstrelFirstSexDone = 1:
@@ -89,6 +91,12 @@
     cla
 
     MelissaMinstrelFridayRaceDone = 1
+    MelissaMinstrelFridayRaceSoftNearMiss = 0
+    MelissaMinstrelFridayRaceWatchRollHard = 0
+
+    if MelissaMinstrelFridayRaceSparkPending = 1:
+        MelissaMinstrelFridayRaceSparkPending = 0
+    end
 
     gs 'EnsureGirlData', 'melissa'
 
@@ -190,12 +198,7 @@
         end
 
         if MinstrelRaceRoll <= MinstrelRaceChance:
-            MelissaMinstrelFirstSexDone = 1
-            MelissaNpcPath += 3
-            GirlNpcPath['melissa'] += 3
-            MelissaFirstPathChoiceReady = 1
-            Fact_MelissaMinstrelFridayAlley = 1
-            gs 'MelissaMinstrelAffairAdvance'
+            MelissaMinstrelFridayRaceWatchRollHard = 1
         end
 
         killvar 'MinstrelRaceRoll'
@@ -218,11 +221,11 @@
         end
 
         if MinstrelRaceRoll <= MinstrelRaceChance:
-            MelissaMinstrelFirstSexDone = 1
-            MelissaNpcPath += 4
-            GirlNpcPath['melissa'] += 4
-            MelissaFirstPathChoiceReady = 1
-            Fact_MelissaMinstrelFridayAlley = 1
+            MelissaMinstrelFridayRaceSoftNearMiss = 1
+            MelissaMinstrelFridayRaceSparkPending = 1
+            MelissaNpcPath += 1
+            GirlNpcPath['melissa'] += 1
+            MelissaMusicianInterest += 1
             gs 'MelissaMinstrelAffairAdvance'
         end
 
@@ -245,23 +248,64 @@
 
     *pl ' '
 
-    if MelissaMinstrelFirstSexDone = 1 and MelissaFirstPathChoiceReady = 1:
-        if LOC('MelissaFirstPathChoiceTryStart') = 1:
-            gs 'MelissaFirstPathChoiceTryStart', 'MarketDance'
-        end
+    MelissaMinstrelWatchReactionDone = 0
+
+    if $MelissaRaceChoice = 'watch':
+        gs 'MelissaMinstrelWatchReactionStart', 'friday_race', 'MarketDance'
     end
 
-    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MarketDance'
+    if MelissaMinstrelWatchReactionDone = 0:
+        gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MarketDance'
+        end
     end
 
     killvar '$MelissaRaceChoice'
 ---
 
+#MelissaMinstrelFridayRaceWatchCommitHard
+    if MelissaMinstrelFridayRaceWatchRollHard <> 1:
+        exit
+    end
+
+    if MelissaMinstrelFirstSexDone = 1:
+        MelissaMinstrelFridayRaceWatchRollHard = 0
+        exit
+    end
+
+    MelissaMinstrelFirstSexDone = 1
+    MelissaNpcPath += 3
+    GirlNpcPath['melissa'] += 3
+    MelissaFirstPathChoiceReady = 1
+    Fact_MelissaMinstrelFridayAlley = 1
+    MelissaMinstrelFridayRaceWatchRollHard = 0
+    gs 'MelissaMinstrelAffairAdvance'
+
+    if LOC('MelissaMinstrelFridayRaceWatchDetailText') = 1:
+        gs 'MelissaMinstrelFridayRaceWatchDetailText'
+    end
+---
+
+#MelissaMinstrelFridayRaceWatchAbortHard
+    if MelissaMinstrelFridayRaceWatchRollHard <> 1:
+        exit
+    end
+
+    MelissaMinstrelFridayRaceWatchRollHard = 0
+    MelissaMinstrelFridayRaceSoftNearMiss = 1
+    MelissaMinstrelFridayRaceSparkPending = 1
+    MelissaNpcPath += 1
+    GirlNpcPath['melissa'] += 1
+---
+
 #MelissaMinstrelFridayRaceDebugReset
     MelissaMinstrelFridayRaceDone = 0
     MelissaMinstrelFridayRaceResult = 0
+    MelissaMinstrelFridayRaceSparkPending = 0
+    MelissaMinstrelFridayRaceSoftNearMiss = 0
+    MelissaMinstrelFridayRaceWatchRollHard = 0
+    MelissaMinstrelWatchReactionDone = 0
     PlayerKnows_MelissaMinstrelFridayRace = 0
     Fact_MelissaMinstrelFridayAlley = 0
     MelissaMinstrelFridayRaceCanStart = 0

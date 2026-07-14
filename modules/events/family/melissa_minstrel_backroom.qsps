@@ -8,7 +8,9 @@
     MelissaMinstrelBackroomCanStart = 0
 
     if MelissaMinstrelBackroomDone = 1:
-        exit
+        if MelissaMinstrelBackroomSparkPending <> 1:
+            exit
+        end
     end
 
     if MelissaMinstrelFirstSexDone = 1:
@@ -74,6 +76,12 @@
     end
 
     MelissaMinstrelBackroomDone = 1
+    MelissaMinstrelBackroomSoftNearMiss = 0
+    MelissaMinstrelBackroomSpyRollHard = 0
+
+    if MelissaMinstrelBackroomSparkPending = 1:
+        MelissaMinstrelBackroomSparkPending = 0
+    end
 
     gs 'EnsureGirlData', 'melissa'
 
@@ -155,12 +163,7 @@
         end
 
         if MinstrelBackroomRoll <= MinstrelBackroomChance:
-            MelissaMinstrelFirstSexDone = 1
-            MelissaNpcPath += 3
-            GirlNpcPath['melissa'] += 3
-            MelissaFirstPathChoiceReady = 1
-            Fact_MelissaMinstrelBackroomSex = 1
-            gs 'MelissaMinstrelAffairAdvance'
+            MelissaMinstrelBackroomSpyRollHard = 1
         end
 
         killvar 'MinstrelBackroomRoll'
@@ -182,11 +185,11 @@
         end
 
         if MinstrelBackroomRoll <= MinstrelBackroomChance:
-            MelissaMinstrelFirstSexDone = 1
-            MelissaNpcPath += 4
-            GirlNpcPath['melissa'] += 4
-            MelissaFirstPathChoiceReady = 1
-            Fact_MelissaMinstrelBackroomSex = 1
+            MelissaMinstrelBackroomSoftNearMiss = 1
+            MelissaMinstrelBackroomSparkPending = 1
+            MelissaNpcPath += 1
+            GirlNpcPath['melissa'] += 1
+            MelissaMusicianInterest += 1
             gs 'MelissaMinstrelAffairAdvance'
         end
 
@@ -196,12 +199,6 @@
 
     if MelissaMinstrelAffairStage >= 2:
         MelissaMinstrelThreesomeReady = 1
-    end
-
-    if MelissaFirstPathChoiceDone = 0 and MelissaFirstPathChoiceReady = 1:
-        if LOC('MelissaFirstPathChoiceTryStart') = 1:
-            gs 'MelissaFirstPathChoiceTryStart', $MelissaBackroomReturnLoc
-        end
     end
 
     gs 'ClampGirlSocialStats', 'melissa'
@@ -217,12 +214,55 @@
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться в главный зал', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $MelissaBackroomReturnLoc
+    MelissaMinstrelWatchReactionDone = 0
+
+    if $MelissaBackroomChoice = 'spy':
+        gs 'MelissaMinstrelWatchReactionStart', 'backroom', $MelissaBackroomReturnLoc
+    end
+
+    if MelissaMinstrelWatchReactionDone = 0:
+        gs 'ActUiPrepare', 'Вернуться в главный зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $MelissaBackroomReturnLoc
+        end
     end
 
     killvar '$MelissaBackroomChoice'
+---
+
+#MelissaMinstrelBackroomSpyCommitHard
+    if MelissaMinstrelBackroomSpyRollHard <> 1:
+        exit
+    end
+
+    if MelissaMinstrelFirstSexDone = 1:
+        MelissaMinstrelBackroomSpyRollHard = 0
+        exit
+    end
+
+    MelissaMinstrelFirstSexDone = 1
+    MelissaNpcPath += 3
+    GirlNpcPath['melissa'] += 3
+    MelissaFirstPathChoiceReady = 1
+    Fact_MelissaMinstrelBackroomSex = 1
+    MelissaMinstrelBackroomSpyRollHard = 0
+    gs 'MelissaMinstrelAffairAdvance'
+
+    if LOC('MelissaMinstrelBackroomSpyDetailText') = 1:
+        gs 'MelissaMinstrelBackroomSpyDetailText'
+    end
+---
+
+#MelissaMinstrelBackroomSpyAbortHard
+    if MelissaMinstrelBackroomSpyRollHard <> 1:
+        exit
+    end
+
+    MelissaMinstrelBackroomSpyRollHard = 0
+    MelissaMinstrelBackroomSoftNearMiss = 1
+    MelissaMinstrelBackroomSparkPending = 1
+    MelissaNpcPath += 1
+    GirlNpcPath['melissa'] += 1
 ---
 
 #MelissaMinstrelThreesomeCanOffer
@@ -262,6 +302,10 @@
 #MelissaMinstrelBackroomDebugReset
     MelissaMinstrelBackroomDone = 0
     MelissaMinstrelBackroomResult = 0
+    MelissaMinstrelBackroomSparkPending = 0
+    MelissaMinstrelBackroomSoftNearMiss = 0
+    MelissaMinstrelBackroomSpyRollHard = 0
+    MelissaMinstrelWatchReactionDone = 0
     MelissaMinstrelFirstSexDone = 0
     Fact_MelissaMinstrelBackroomSex = 0
     MelissaMinstrelThreesomeReady = 0

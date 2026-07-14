@@ -59,7 +59,14 @@
         exit
     end
 
-    gs 'KitchenHarassmentPickGirl'
+    if SparkQueueConsumeKitchen = 1 and $SparkQueueConsumeGirl <> '':
+        $KitchenHarassGirl = $SparkQueueConsumeGirl
+    else:
+        gs 'KitchenHarassmentPickGirl'
+    end
+
+    SparkQueueConsumeKitchen = 0
+    killvar '$SparkQueueConsumeGirl'
 
     if $KitchenHarassGirl = '':
         exit
@@ -105,6 +112,12 @@
         exit
     end
 
+    gs 'SparkQueueTryStartKitchenFromLook', $KitchenHarassReturnLoc
+
+    if KitchenHarassmentStarted = 1:
+        exit
+    end
+
     gs 'UpdateGirlLocations'
 
     if LOC('CalculateTavernStaffEfficiency') = 1:
@@ -118,6 +131,8 @@
             KitchenHarassmentStarted = 1
             KitchenHarassEntryType = 2
             gt 'KitchenHarassment', $KitchenHarassReturnLoc
+        else:
+            gs 'SparkQueueEnqueueKitchen', $KitchenHarassGirl
         end
     end
 ---
@@ -132,6 +147,12 @@
     KitchenHarassmentStarted = 0
 
     if KitchenHarassmentDay = day and KitchenHarassmentTime = time:
+        exit
+    end
+
+    gs 'SparkQueueTryStartKitchenFromLook', $KitchenHarassReturnLoc
+
+    if KitchenHarassmentStarted = 1:
         exit
     end
 
@@ -150,6 +171,8 @@
         KitchenHarassEntryType = 1
         $KitchenHarassGirl = 'sandra'
         gt 'KitchenHarassment', $KitchenHarassReturnLoc
+    else:
+        gs 'SparkQueueEnqueueKitchen', 'sandra'
     end
 ---
 

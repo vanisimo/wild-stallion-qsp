@@ -67,6 +67,16 @@
 
     gs 'AmandaFirstSexMorningTryShow'
 
+    if TavernMainOpen = 1 and time <> 5:
+        gs 'SparkQueueOfferHallOnEnter'
+
+        if $SparkQueueHallNotice <> '':
+            *pl ' '
+            gs 'PrintMainP', $SparkQueueHallNotice
+            *pl ' '
+        end
+    end
+
     TavernHallLookMessageShown = 0
 
     if $TavernHallLookMessage <> '':
@@ -152,6 +162,13 @@
     end
 
     ! ====================== ДЕЙСТВИЯ В ГЛАВНОМ ЗАЛЕ ======================
+
+    if HallSparkQueuePending = 1:
+        gs 'ActUiPrepare', 'Разобраться в зале', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'SparkQueueActHall'
+        end
+    end
 
     act '<b>Встать за стойку</b>', 'images/common/ui/actions/work.png':
         gt 'TavernHallActivityStart', 'work'

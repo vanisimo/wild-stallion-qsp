@@ -36,6 +36,15 @@
         $RealName[$TalkGirl] = UCASE(MID($TalkGirl, 1, 1)) + LCASE(MID($TalkGirl, 2))
     end
 
+    if LOC('OffenseDaysTalkCanStart') = 1:
+        gs 'OffenseDaysTalkCanStart', $TalkGirl
+
+        if OffenseDaysTalkCanStart = 1:
+            gt 'OffenseDaysTalkStart', $TalkGirl, $TalkReturnLoc
+            exit
+        end
+    end
+
     if MenuCanTalk = 0:
         if LOC('TavernDayEventStaffBlocksGirl') = 1:
             gs 'TavernDayEventStaffBlocksGirl', $TalkGirl
@@ -329,6 +338,17 @@
     gs 'EnsureGirlData', $TalkGirl
     gs 'MenuGirlCalcConditions', $TalkGirl, $TalkReturnLoc
 
+    if LOC('OffenseDaysTalkCanStart') = 1:
+        gs 'OffenseDaysTalkCanStart', $TalkGirl
+
+        if OffenseDaysTalkCanStart = 1:
+            GirlTalkMenuReady = 1
+            killvar '$TalkGirl'
+            killvar '$TalkReturnLoc'
+            exit
+        end
+    end
+
     if MenuCanTalk = 0:
         exit
     end
@@ -381,6 +401,15 @@
         killvar '$TalkOpenMenuLoc'
         killvar '$TalkOpenReturnLoc'
         exit
+    end
+
+    if LOC('OffenseDaysTalkCanStart') = 1:
+        gs 'OffenseDaysTalkCanStart', $TalkGirl
+
+        if OffenseDaysTalkCanStart = 1:
+            gt 'OffenseDaysTalkStart', $TalkGirl, $TalkOpenReturnLoc
+            exit
+        end
     end
 
     $TalkReturnLoc = $TalkOpenReturnLoc

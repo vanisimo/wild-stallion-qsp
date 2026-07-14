@@ -1,0 +1,346 @@
+! ================================================
+! FILE: modules/core/tavern/spark_queue.qsps
+! MODULE: core/tavern
+! Очередь искр приставания (зал / кухня) при AFK и провале roll
+! ================================================
+
+#SparkQueueInit
+    HallSparkQueuePending = 0
+    $HallSparkQueueGirl = ''
+    HallSparkQueueDay = 0
+    HallSparkQueueTime = 0
+    KitchenSparkQueuePending = 0
+    $KitchenSparkQueueGirl = ''
+    KitchenSparkQueueDay = 0
+    KitchenSparkQueueTime = 0
+    SparkQueueConsumeHall = 0
+    SparkQueueConsumeKitchen = 0
+    $SparkQueueConsumeGirl = ''
+    $SparkQueueHallNotice = ''
+    $SparkQueueKitchenNotice = ''
+---
+
+#SparkQueuePlayerInActiveScene
+    SparkQueuePlayerInActiveScene = 0
+
+    if $CURLOC = 'HallHarassment' or $CURLOC = 'KitchenHarassment':
+        SparkQueuePlayerInActiveScene = 1
+    end
+---
+
+#SparkQueueHallSlotFree
+    SparkQueueHallSlotFree = 1
+
+    if HallHarassmentDay = day and HallHarassmentTime = time:
+        SparkQueueHallSlotFree = 0
+    end
+---
+
+#SparkQueueKitchenSlotFree
+    SparkQueueKitchenSlotFree = 1
+
+    if KitchenHarassmentDay = day and KitchenHarassmentTime = time:
+        SparkQueueKitchenSlotFree = 0
+    end
+---
+
+#SparkQueueEnqueueHall
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $SparkQueueGirl = $GirlKey
+
+    if $SparkQueueGirl = '':
+        killvar '$SparkQueueGirl'
+        exit
+    end
+
+    gs 'SparkQueueHallSlotFree'
+
+    if SparkQueueHallSlotFree = 0:
+        killvar '$SparkQueueGirl'
+        exit
+    end
+
+    if HallSparkQueuePending = 1:
+        killvar '$SparkQueueGirl'
+        exit
+    end
+
+    HallSparkQueuePending = 1
+    $HallSparkQueueGirl = $SparkQueueGirl
+    HallSparkQueueDay = day
+    HallSparkQueueTime = time
+
+    killvar '$SparkQueueGirl'
+---
+
+#SparkQueueEnqueueKitchen
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $SparkQueueGirl = $GirlKey
+
+    if $SparkQueueGirl = '':
+        killvar '$SparkQueueGirl'
+        exit
+    end
+
+    gs 'SparkQueueKitchenSlotFree'
+
+    if SparkQueueKitchenSlotFree = 0:
+        killvar '$SparkQueueGirl'
+        exit
+    end
+
+    if KitchenSparkQueuePending = 1:
+        killvar '$SparkQueueGirl'
+        exit
+    end
+
+    KitchenSparkQueuePending = 1
+    $KitchenSparkQueueGirl = $SparkQueueGirl
+    KitchenSparkQueueDay = day
+    KitchenSparkQueueTime = time
+
+    killvar '$SparkQueueGirl'
+---
+
+#SparkQueueClearHall
+    HallSparkQueuePending = 0
+    $HallSparkQueueGirl = ''
+    HallSparkQueueDay = 0
+    HallSparkQueueTime = 0
+    $SparkQueueHallNotice = ''
+---
+
+#SparkQueueClearKitchen
+    KitchenSparkQueuePending = 0
+    $KitchenSparkQueueGirl = ''
+    KitchenSparkQueueDay = 0
+    KitchenSparkQueueTime = 0
+    $SparkQueueKitchenNotice = ''
+---
+
+#SparkQueueTryStartHallFromLook
+    HallHarassmentStarted = 0
+    $HallHarassReturnLoc = $ARGS[0]
+
+    if $HallHarassReturnLoc = '':
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+
+    if HallSparkQueuePending <> 1:
+        exit
+    end
+
+    if HallSparkQueueDay <> day:
+        gs 'SparkQueueClearHall'
+        exit
+    end
+
+    gs 'SparkQueueHallSlotFree'
+
+    if SparkQueueHallSlotFree = 0:
+        gs 'SparkQueueClearHall'
+        exit
+    end
+
+    SparkQueueConsumeHall = 1
+    $SparkQueueConsumeGirl = $HallSparkQueueGirl
+    gs 'SparkQueueClearHall'
+    HallHarassmentStarted = 1
+    gt 'HallHarassment', $HallHarassReturnLoc
+---
+
+#SparkQueueTryStartKitchenFromLook
+    KitchenHarassmentStarted = 0
+    $KitchenHarassReturnLoc = $ARGS[0]
+
+    if $KitchenHarassReturnLoc = '':
+        $KitchenHarassReturnLoc = 'Kitchen'
+    end
+
+    if KitchenSparkQueuePending <> 1:
+        exit
+    end
+
+    if KitchenSparkQueueDay <> day:
+        gs 'SparkQueueClearKitchen'
+        exit
+    end
+
+    gs 'SparkQueueKitchenSlotFree'
+
+    if SparkQueueKitchenSlotFree = 0:
+        gs 'SparkQueueClearKitchen'
+        exit
+    end
+
+    SparkQueueConsumeKitchen = 1
+    $SparkQueueConsumeGirl = $KitchenSparkQueueGirl
+    KitchenHarassEntryType = 2
+    gs 'SparkQueueClearKitchen'
+    KitchenHarassmentStarted = 1
+    gt 'KitchenHarassment', $KitchenHarassReturnLoc
+---
+
+#SparkQueueOfferHallOnEnter
+    $SparkQueueHallNotice = ''
+
+    if HallSparkQueuePending <> 1:
+        exit
+    end
+
+    if HallSparkQueueDay <> day:
+        gs 'SparkQueueClearHall'
+        exit
+    end
+
+    gs 'SparkQueueHallSlotFree'
+
+    if SparkQueueHallSlotFree = 0:
+        gs 'SparkQueueClearHall'
+        exit
+    end
+
+    gs 'EnsureGirlData', $HallSparkQueueGirl
+
+    if LOC('SparkQueueHallNoticeText') = 1:
+        gs 'SparkQueueHallNoticeText', $HallSparkQueueGirl
+    else:
+        $SparkQueueHallNotice = 'В зале что-то назревает: к ' + $RealName[$HallSparkQueueGirl] + ' пристают, пока вы не смотрите.'
+    end
+---
+
+#SparkQueueOfferKitchenOnEnter
+    $SparkQueueKitchenNotice = ''
+
+    if KitchenSparkQueuePending <> 1:
+        exit
+    end
+
+    if KitchenSparkQueueDay <> day:
+        gs 'SparkQueueClearKitchen'
+        exit
+    end
+
+    gs 'SparkQueueKitchenSlotFree'
+
+    if SparkQueueKitchenSlotFree = 0:
+        gs 'SparkQueueClearKitchen'
+        exit
+    end
+
+    gs 'EnsureGirlData', $KitchenSparkQueueGirl
+
+    if LOC('SparkQueueKitchenNoticeText') = 1:
+        gs 'SparkQueueKitchenNoticeText', $KitchenSparkQueueGirl
+    else:
+        $SparkQueueKitchenNotice = 'С кухни доносится слишком громкий смех. Похоже, ' + $RealName[$KitchenSparkQueueGirl] + ' снова влипла.'
+    end
+---
+
+#SparkQueueActHall
+    SparkQueueConsumeHall = 1
+    $SparkQueueConsumeGirl = $HallSparkQueueGirl
+    gs 'SparkQueueClearHall'
+    gt 'HallHarassment', 'TavernMain'
+---
+
+#SparkQueueActKitchen
+    SparkQueueConsumeKitchen = 1
+    $SparkQueueConsumeGirl = $KitchenSparkQueueGirl
+    gs 'SparkQueueClearKitchen'
+    gt 'KitchenHarassment', 'Kitchen'
+---
+
+#SparkQueueBackgroundTick
+    if time = 5:
+        exit
+    end
+
+    gs 'IsTavernOpen'
+
+    if TavernOpen = 0:
+        exit
+    end
+
+    gs 'SparkQueuePlayerInActiveScene'
+
+    if SparkQueuePlayerInActiveScene = 1:
+        exit
+    end
+
+    gs 'UpdateGirlLocations'
+
+    if LOC('CalculateTavernStaffEfficiency') = 1:
+        gs 'CalculateTavernStaffEfficiency'
+    end
+
+    gs 'SparkQueueBackgroundTryHall'
+    gs 'SparkQueueBackgroundTryKitchen'
+---
+
+#SparkQueueBackgroundTryHall
+    gs 'SparkQueueHallSlotFree'
+
+    if SparkQueueHallSlotFree = 0:
+        exit
+    end
+
+    if HallSparkQueuePending = 1:
+        exit
+    end
+
+    if $CURLOC = 'TavernMain':
+        exit
+    end
+
+    gs 'HallHarassmentPickGirl'
+
+    if $HallHarassGirl = '':
+        exit
+    end
+
+    SparkQueueBgRoll = RAND(1, 100)
+
+    if SparkQueueBgRoll <= 20:
+        gs 'SparkQueueEnqueueHall', $HallHarassGirl
+    end
+
+    killvar 'SparkQueueBgRoll'
+    killvar '$HallHarassGirl'
+    killvar '$HallHarassJob'
+---
+
+#SparkQueueBackgroundTryKitchen
+    gs 'SparkQueueKitchenSlotFree'
+
+    if SparkQueueKitchenSlotFree = 0:
+        exit
+    end
+
+    if KitchenSparkQueuePending = 1:
+        exit
+    end
+
+    if $CURLOC = 'Kitchen':
+        exit
+    end
+
+    gs 'KitchenHarassmentPickGirl'
+
+    if $KitchenHarassGirl = '':
+        exit
+    end
+
+    SparkQueueBgRoll = RAND(1, 100)
+
+    if SparkQueueBgRoll <= 18:
+        gs 'SparkQueueEnqueueKitchen', $KitchenHarassGirl
+    end
+
+    killvar 'SparkQueueBgRoll'
+    killvar '$KitchenHarassGirl'
+---
+
+#SparkQueueDebugReset
+    gs 'SparkQueueInit'
+---

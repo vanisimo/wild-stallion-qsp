@@ -60,7 +60,15 @@
         exit
     end
 
-    gs 'HallHarassmentPickGirl'
+    if SparkQueueConsumeHall = 1 and $SparkQueueConsumeGirl <> '':
+        $HallHarassGirl = $SparkQueueConsumeGirl
+        $HallHarassJob = 'waitress'
+    else:
+        gs 'HallHarassmentPickGirl'
+    end
+
+    SparkQueueConsumeHall = 0
+    killvar '$SparkQueueConsumeGirl'
 
     if $HallHarassGirl = '':
         *pl '══════════════════════════════════════════════'
@@ -440,6 +448,12 @@
         exit
     end
 
+    gs 'SparkQueueTryStartHallFromLook', $HallHarassReturnLoc
+
+    if HallHarassmentStarted = 1:
+        exit
+    end
+
     gs 'UpdateGirlLocations'
 
     if LOC('CalculateTavernStaffEfficiency') = 1:
@@ -452,6 +466,8 @@
         if RAND(1, 100) <= 35:
             HallHarassmentStarted = 1
             gt 'HallHarassment', $HallHarassReturnLoc
+        else:
+            gs 'SparkQueueEnqueueHall', $HallHarassGirl
         end
     end
 ---
@@ -469,6 +485,12 @@
         exit
     end
 
+    gs 'SparkQueueTryStartHallFromLook', $HallHarassReturnLoc
+
+    if HallHarassmentStarted = 1:
+        exit
+    end
+
     gs 'UpdateGirlLocations'
 
     if LOC('CalculateTavernStaffEfficiency') = 1:
@@ -481,6 +503,8 @@
         if RAND(1, 100) <= 25:
             HallHarassmentStarted = 1
             gt 'HallHarassment', $HallHarassReturnLoc
+        else:
+            gs 'SparkQueueEnqueueHall', $HallHarassGirl
         end
     end
 ---
@@ -958,6 +982,10 @@
 
     if LOC('KnowledgeRegisterFact') = 1:
         gs 'KnowledgeRegisterFact', 'HallHarassment_' + $HallHarassGirl
+    end
+
+    if LOC('OffenseDaysHarassmentAfter') = 1:
+        gs 'OffenseDaysHarassmentAfter', $HallHarassGirl, $HallHarassConsequenceArea, $HallHarassReaction, $HallHarassTalkReaction
     end
 
 ---

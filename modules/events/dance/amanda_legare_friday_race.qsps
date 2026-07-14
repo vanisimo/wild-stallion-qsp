@@ -8,7 +8,9 @@
     AmandaLegareFridayRaceCanStart = 0
 
     if AmandaLegareFridayRaceDone = 1:
-        exit
+        if AmandaLegareFridayRaceSparkPending <> 1:
+            exit
+        end
     end
 
     if AmandaLegareFirstSexDone = 1:
@@ -72,6 +74,12 @@
     cla
 
     AmandaLegareFridayRaceDone = 1
+    AmandaLegareFridayRaceSoftNearMiss = 0
+    AmandaLegareFridayRaceWatchRollHard = 0
+
+    if AmandaLegareFridayRaceSparkPending = 1:
+        AmandaLegareFridayRaceSparkPending = 0
+    end
 
     gs 'EnsureGirlData', 'amanda'
 
@@ -176,12 +184,7 @@
         end
 
         if FridayRaceRoll <= FridayRaceChance:
-            AmandaLegareFirstSexDone = 1
-            AmandaNpcPath += 3
-            GirlNpcPath['amanda'] += 3
-            AmandaPathChoiceReady = 1
-            Fact_AmandaLegareFridayAlley = 1
-            oralacts['amanda'] += 1
+            AmandaLegareFridayRaceWatchRollHard = 1
         end
 
         killvar 'FridayRaceRoll'
@@ -207,12 +210,12 @@
         end
 
         if FridayRaceRoll <= FridayRaceChance:
-            AmandaLegareFirstSexDone = 1
-            AmandaNpcPath += 4
-            GirlNpcPath['amanda'] += 4
-            AmandaPathChoiceReady = 1
-            Fact_AmandaLegareFridayAlley = 1
-            oralacts['amanda'] += 1
+            AmandaLegareFridayRaceSoftNearMiss = 1
+            AmandaLegareFridayRaceSparkPending = 1
+            AmandaNpcPath += 1
+            GirlNpcPath['amanda'] += 1
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
         end
 
         killvar 'FridayRaceRoll'
@@ -239,16 +242,10 @@
     *pl ' '
 
     if $FridayRaceChoice = 'watch':
-        if Fact_AmandaLegareFridayAlley = 1:
+        if AmandaLegareFridayRaceWatchRollHard = 1:
             gs 'AmandaLegareWitnessRegister', 'amanda_legare_peek_friday'
         else
             gs 'AmandaLegareWitnessRegister', 'amanda_legare_peek_friday_flirt'
-        end
-    end
-
-    if AmandaLegareFirstSexDone = 1 and AmandaPathChoiceReady = 1:
-        if LOC('AmandaPathChoiceTryAutoStart') = 1:
-            gs 'AmandaPathChoiceTryAutoStart', 'MarketDance'
         end
     end
 
@@ -265,9 +262,48 @@
     killvar '$FridayRaceChoice'
 ---
 
+#AmandaLegareFridayRaceWatchCommitHard
+    if AmandaLegareFridayRaceWatchRollHard <> 1:
+        exit
+    end
+
+    if AmandaLegareFirstSexDone = 1:
+        AmandaLegareFridayRaceWatchRollHard = 0
+        exit
+    end
+
+    AmandaLegareFirstSexDone = 1
+    AmandaNpcPath += 3
+    GirlNpcPath['amanda'] += 3
+    AmandaPathChoiceReady = 1
+    Fact_AmandaLegareFridayAlley = 1
+    oralacts['amanda'] += 1
+    AmandaLegareFridayRaceWatchRollHard = 0
+
+    if LOC('AmandaLegareFridayRaceWatchDetailText') = 1:
+        gs 'AmandaLegareFridayRaceWatchDetailText'
+        *p 'Вы понимаете: он опередил вас. Первый раз случился не дома и не с вами — в подворотне, где музыка ещё гремит за углом, а стыд пахнет дешёвым вином.'
+    end
+---
+
+#AmandaLegareFridayRaceWatchAbortHard
+    if AmandaLegareFridayRaceWatchRollHard <> 1:
+        exit
+    end
+
+    AmandaLegareFridayRaceWatchRollHard = 0
+    AmandaLegareFridayRaceSoftNearMiss = 1
+    AmandaLegareFridayRaceSparkPending = 1
+    AmandaNpcPath += 1
+    GirlNpcPath['amanda'] += 1
+---
+
 #AmandaLegareFridayRaceDebugReset
     AmandaLegareFridayRaceDone = 0
     AmandaLegareFridayRaceResult = 0
+    AmandaLegareFridayRaceSparkPending = 0
+    AmandaLegareFridayRaceSoftNearMiss = 0
+    AmandaLegareFridayRaceWatchRollHard = 0
     PlayerKnows_AmandaLegareFridayRace = 0
     Fact_AmandaLegareFridayAlley = 0
     AmandaLegareFridayRaceCanStart = 0

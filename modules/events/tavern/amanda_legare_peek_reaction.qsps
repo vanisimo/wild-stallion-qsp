@@ -32,7 +32,7 @@
         end
     elseif $ARGS[0] = 'friday_race':
         if $FridayRaceChoice = 'watch':
-            if Fact_AmandaLegareFridayAlley = 1:
+            if AmandaLegareFridayRaceWatchRollHard = 1:
                 AmandaLegarePeekReactionShouldStart = 1
             elseif sluttiness['amanda'] >= 38:
                 AmandaLegarePeekReactionShouldStart = 1
@@ -126,6 +126,10 @@
             AmandaLegareKnowsStefanWatches = 1
             PlayerKnows_AmandaLegarePeekDefiant = 1
 
+            if $AmandaLegarePeekContext = 'friday_race' and AmandaLegareFridayRaceWatchRollHard = 1:
+                gs 'AmandaLegareFridayRaceWatchCommitHard'
+            end
+
             if $AmandaLegarePeekContext = 'major_risk':
                 AmandaLegareMajorRiskResult = 2
             end
@@ -139,6 +143,10 @@
             AmandaRebellion += 1
             LegareConflictStage += 1
             LegareSupplyPressureReady = 1
+
+            if $AmandaLegarePeekContext = 'friday_race' and AmandaLegareFridayRaceWatchRollHard = 1:
+                gs 'AmandaLegareFridayRaceWatchAbortHard'
+            end
 
             if $AmandaLegarePeekContext = 'major_risk':
                 AmandaLegareMajorRiskResult = 0
@@ -159,10 +167,18 @@
             AmandaPublicAttention += 1
             TavernScandal += 1
             AmandaRebellion += 1
+
+            if $AmandaLegarePeekContext = 'friday_race' and AmandaLegareFridayRaceWatchRollHard = 1:
+                gs 'AmandaLegareFridayRaceWatchCommitHard'
+            end
         else
             AmandaSecretiveness += 2
             AmandaLegareInterest += 1
             AmandaRebellion += 1
+
+            if $AmandaLegarePeekContext = 'friday_race' and AmandaLegareFridayRaceWatchRollHard = 1:
+                gs 'AmandaLegareFridayRaceWatchAbortHard'
+            end
         end
 
     elseif $AmandaLegarePeekChoice = 'keep_watch':
@@ -182,12 +198,28 @@
             sluttiness['amanda'] += 1
         end
 
+        if $AmandaLegarePeekContext = 'friday_race' and AmandaLegareFridayRaceWatchRollHard = 1:
+            gs 'AmandaLegareFridayRaceWatchCommitHard'
+        end
+
     elseif $AmandaLegarePeekChoice = 'leave':
         if LOC('AmandaLegarePeekReactionLeaveText') = 1:
             gs 'AmandaLegarePeekReactionLeaveText'
         end
 
         AmandaSecretiveness += 1
+
+        if $AmandaLegarePeekContext = 'friday_race' and AmandaLegareFridayRaceWatchRollHard = 1:
+            gs 'AmandaLegareFridayRaceWatchAbortHard'
+        end
+    end
+
+    if $AmandaLegarePeekContext = 'friday_race':
+        if AmandaLegareFirstSexDone = 1 and AmandaPathChoiceReady = 1:
+            if LOC('AmandaPathChoiceTryAutoStart') = 1:
+                gs 'AmandaPathChoiceTryAutoStart', $AmandaLegarePeekReturnLoc
+            end
+        end
     end
 
     if LegareConflictStage > 7:

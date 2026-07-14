@@ -1,0 +1,743 @@
+! ================================================
+! FILE: modules/core/family/offense_days.qsps
+! MODULE: core/family
+! Обида-дни v1: движок + накопление dual protect/policy
+! ================================================
+
+#OffenseDaysInitGirl
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    if LOC('OffenseDaysGirlInEngine') = 1:
+        gs 'OffenseDaysGirlInEngine', $OffenseGirl
+
+        if OffenseDaysGirlInEngine = 0:
+            killvar '$OffenseGirl'
+            exit
+        end
+    end
+
+    GirlOffenseDays[$OffenseGirl] = 0
+    GirlOffenseReason[$OffenseGirl] = ''
+    GirlOffenseRightUsed[$OffenseGirl] = 0
+    GirlOffenseMismatchProtect[$OffenseGirl] = 0
+    GirlOffenseMismatchPolicy[$OffenseGirl] = 0
+    GirlOffenseInterceptCount[$OffenseGirl] = 0
+    GirlOffenseMismatchLastDay[$OffenseGirl] = 0
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysGirlInEngine
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    OffenseDaysGirlInEngine = 0
+
+    if $OffenseGirl = 'amanda' or $OffenseGirl = 'melissa' or $OffenseGirl = 'sandra':
+        OffenseDaysGirlInEngine = 1
+    end
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysMismatchK
+    OffenseDaysMismatchK = 3
+---
+
+#OffenseDaysInterceptK
+    OffenseDaysInterceptK = 3
+---
+
+#OffenseDaysStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseReason = LCASE($ARGS[1])
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        killvar '$OffenseReason'
+        exit
+    end
+
+    gs 'OffenseDaysGirlInEngine', $OffenseGirl
+
+    if OffenseDaysGirlInEngine = 0:
+        killvar '$OffenseGirl'
+        killvar '$OffenseReason'
+        exit
+    end
+
+    if $OffenseReason = '':
+        $OffenseReason = 'unknown'
+    end
+
+    GirlOffenseDays[$OffenseGirl] = 4
+    GirlOffenseReason[$OffenseGirl] = $OffenseReason
+    GirlOffenseRightUsed[$OffenseGirl] = 0
+
+    killvar '$OffenseGirl'
+    killvar '$OffenseReason'
+---
+
+#OffenseDaysTalkCanStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    OffenseDaysTalkCanStart = 0
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    if GirlOffenseDays[$OffenseGirl] > 0:
+        OffenseDaysTalkCanStart = 1
+    end
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysGirlStatBand
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    GirlOffenseStatBand = 0
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    gs 'EnsureGirlData', $OffenseGirl
+
+    OffenseBandLowScore = 0
+    OffenseBandHighScore = 0
+
+    if sluttiness[$OffenseGirl] < 28:
+        OffenseBandLowScore += 1
+    end
+
+    if GirlWorkPolicy[$OffenseGirl] <= 1:
+        OffenseBandLowScore += 1
+    end
+
+    if GirlPublicAttention[$OffenseGirl] < 22:
+        OffenseBandLowScore += 1
+    end
+
+    if GirlWorkDiscipline[$OffenseGirl] >= 45:
+        OffenseBandLowScore += 1
+    end
+
+    if sluttiness[$OffenseGirl] >= 32:
+        OffenseBandHighScore += 1
+    end
+
+    if GirlWorkPolicy[$OffenseGirl] >= 3:
+        OffenseBandHighScore += 1
+    end
+
+    if GirlPublicAttention[$OffenseGirl] >= 28:
+        OffenseBandHighScore += 1
+    end
+
+    if GirlRebellion[$OffenseGirl] >= 5:
+        OffenseBandHighScore += 1
+    end
+
+    if $OffenseGirl = 'amanda' and AmandaRebellion >= 5:
+        OffenseBandHighScore += 1
+    end
+
+    if OffenseBandLowScore >= 3 and OffenseBandHighScore = 0:
+        GirlOffenseStatBand = 1
+    elseif OffenseBandHighScore >= 2 and OffenseBandLowScore <= 1:
+        GirlOffenseStatBand = 2
+    end
+
+    killvar 'OffenseBandLowScore'
+    killvar 'OffenseBandHighScore'
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysRegisterMismatchProtect
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseMismatchKind = LCASE($ARGS[1])
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        killvar '$OffenseMismatchKind'
+        exit
+    end
+
+    gs 'OffenseDaysGirlInEngine', $OffenseGirl
+
+    if OffenseDaysGirlInEngine = 0:
+        killvar '$OffenseGirl'
+        killvar '$OffenseMismatchKind'
+        exit
+    end
+
+    if GirlOffenseDays[$OffenseGirl] > 0:
+        killvar '$OffenseGirl'
+        killvar '$OffenseMismatchKind'
+        exit
+    end
+
+    gs 'OffenseDaysMismatchK'
+    GirlOffenseMismatchProtect[$OffenseGirl] += 1
+    GirlOffenseMismatchLastDay[$OffenseGirl] = day
+
+    if GirlOffenseMismatchProtect[$OffenseGirl] >= OffenseDaysMismatchK:
+        gs 'OffenseDaysStart', $OffenseGirl, $OffenseMismatchKind
+        GirlOffenseMismatchProtect[$OffenseGirl] = 1
+        killvar '$OffenseGirl'
+        killvar '$OffenseMismatchKind'
+        exit
+    end
+
+    if LOC('OffenseDaysSoftMismatchNotice') = 1:
+        gs 'OffenseDaysSoftMismatchNotice', $OffenseGirl, $OffenseMismatchKind, GirlOffenseMismatchProtect[$OffenseGirl]
+    end
+
+    killvar '$OffenseGirl'
+    killvar '$OffenseMismatchKind'
+---
+
+#OffenseDaysRegisterMismatchPolicy
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    gs 'OffenseDaysGirlInEngine', $OffenseGirl
+
+    if OffenseDaysGirlInEngine = 0:
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    if GirlOffenseDays[$OffenseGirl] > 0:
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    gs 'OffenseDaysMismatchK'
+    GirlOffenseMismatchPolicy[$OffenseGirl] += 1
+    GirlOffenseMismatchLastDay[$OffenseGirl] = day
+
+    if GirlOffenseMismatchPolicy[$OffenseGirl] >= OffenseDaysMismatchK:
+        gs 'OffenseDaysStart', $OffenseGirl, 'policy_mismatch'
+        GirlOffenseMismatchPolicy[$OffenseGirl] = 1
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    if LOC('OffenseDaysSoftMismatchNotice') = 1:
+        gs 'OffenseDaysSoftMismatchNotice', $OffenseGirl, 'policy_mismatch', GirlOffenseMismatchPolicy[$OffenseGirl]
+    end
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysRegisterIntercept
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    gs 'OffenseDaysGirlInEngine', $OffenseGirl
+
+    if OffenseDaysGirlInEngine = 0 or $OffenseGirl = 'sandra':
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    if GirlOffenseDays[$OffenseGirl] > 0:
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    gs 'OffenseDaysInterceptK'
+    GirlOffenseInterceptCount[$OffenseGirl] += 1
+
+    if GirlOffenseInterceptCount[$OffenseGirl] >= OffenseDaysInterceptK:
+        gs 'OffenseDaysStart', $OffenseGirl, 'intercept'
+        GirlOffenseInterceptCount[$OffenseGirl] = 0
+    end
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysHarassmentAfter
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseArea = LCASE($ARGS[1])
+    $OffenseReaction = LCASE($ARGS[2])
+    $OffenseTalkReaction = LCASE($ARGS[3])
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        killvar '$OffenseArea'
+        killvar '$OffenseReaction'
+        killvar '$OffenseTalkReaction'
+        exit
+    end
+
+    if $OffenseGirl <> 'amanda' and $OffenseGirl <> 'melissa':
+        killvar '$OffenseGirl'
+        killvar '$OffenseArea'
+        killvar '$OffenseReaction'
+        killvar '$OffenseTalkReaction'
+        exit
+    end
+
+    gs 'OffenseDaysGirlStatBand', $OffenseGirl
+
+    if $OffenseReaction = 'ignore':
+        if GirlOffenseStatBand = 1:
+            gs 'OffenseDaysRegisterMismatchProtect', $OffenseGirl, 'no_protect_low'
+        end
+    elseif $OffenseReaction = 'watch':
+        if $OffenseTalkReaction = 'watch_bad' or $OffenseTalkReaction = 'watch_lewd':
+            if GirlOffenseStatBand = 1:
+                gs 'OffenseDaysRegisterMismatchProtect', $OffenseGirl, 'no_protect_low'
+            end
+        end
+    elseif $OffenseReaction = 'protect_hard':
+        if $OffenseTalkReaction = 'protect_dislike':
+            if GirlOffenseStatBand = 2:
+                gs 'OffenseDaysRegisterMismatchProtect', $OffenseGirl, 'protect_high'
+            end
+        elseif $OffenseTalkReaction = 'protect_success':
+            gs 'OffenseDaysRegisterIntercept', $OffenseGirl
+        end
+    end
+
+    gs 'OffenseDaysSandraDaughterAfterHarass', $OffenseGirl, $OffenseReaction, $OffenseTalkReaction
+
+    killvar '$OffenseGirl'
+    killvar '$OffenseArea'
+    killvar '$OffenseReaction'
+    killvar '$OffenseTalkReaction'
+    killvar 'GirlOffenseStatBand'
+---
+
+#OffenseDaysSandraDaughterAfterHarass
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseDaughter = $GirlKey
+    $OffenseReaction = LCASE($ARGS[1])
+    $OffenseTalkReaction = LCASE($ARGS[2])
+
+    if $OffenseDaughter <> 'amanda' and $OffenseDaughter <> 'melissa':
+        killvar '$OffenseDaughter'
+        killvar '$OffenseReaction'
+        killvar '$OffenseTalkReaction'
+        exit
+    end
+
+    if GirlOffenseDays['sandra'] > 0:
+        killvar '$OffenseDaughter'
+        killvar '$OffenseReaction'
+        killvar '$OffenseTalkReaction'
+        exit
+    end
+
+    SandraDaughterOffenseRoll = 0
+
+    if $OffenseReaction = 'ignore':
+        SandraDaughterOffenseRoll = 1
+    elseif $OffenseReaction = 'watch' and ($OffenseTalkReaction = 'watch_bad' or $OffenseTalkReaction = 'watch_lewd'):
+        SandraDaughterOffenseRoll = 1
+    end
+
+    if SandraDaughterOffenseRoll = 0:
+        killvar '$OffenseDaughter'
+        killvar '$OffenseReaction'
+        killvar '$OffenseTalkReaction'
+        exit
+    end
+
+    SandraDaughterLearnRoll = RAND(1, 100)
+    SandraDaughterLearnChance = 35 + SandraFamilyConcern * 5 + FamilyTension / 2
+
+    if SandraDaughterLearnChance > 85:
+        SandraDaughterLearnChance = 85
+    end
+
+    if SandraDaughterLearnRoll <= SandraDaughterLearnChance:
+        gs 'OffenseDaysStart', 'sandra', 'daughter_no_protect'
+    end
+
+    killvar 'SandraDaughterOffenseRoll'
+    killvar 'SandraDaughterLearnRoll'
+    killvar 'SandraDaughterLearnChance'
+    killvar '$OffenseDaughter'
+    killvar '$OffenseReaction'
+    killvar '$OffenseTalkReaction'
+---
+
+#OffenseDaysPolicyAfterAssign
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    PolicyOffenseValue = ARGS[2]
+    PolicyOffenseLevel = ARGS[3]
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    gs 'OffenseDaysGirlInEngine', $OffenseGirl
+
+    if OffenseDaysGirlInEngine = 0:
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    if PolicyOffenseLevel <= 1:
+        gs 'OffenseDaysRegisterMismatchPolicy', $OffenseGirl
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    gs 'OffenseDaysGirlStatBand', $OffenseGirl
+
+    if PolicyOffenseValue = 1 and GirlOffenseStatBand = 2:
+        gs 'OffenseDaysRegisterMismatchPolicy', $OffenseGirl
+    elseif PolicyOffenseValue = 3 and GirlOffenseStatBand = 1:
+        gs 'OffenseDaysRegisterMismatchPolicy', $OffenseGirl
+    end
+
+    killvar '$OffenseGirl'
+    killvar 'GirlOffenseStatBand'
+---
+
+#OffenseDaysBanImmediate
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseBanReason = LCASE($ARGS[1])
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        killvar '$OffenseBanReason'
+        exit
+    end
+
+    gs 'OffenseDaysGirlInEngine', $OffenseGirl
+
+    if OffenseDaysGirlInEngine = 0:
+        killvar '$OffenseGirl'
+        killvar '$OffenseBanReason'
+        exit
+    end
+
+    if $OffenseBanReason = '':
+        $OffenseBanReason = 'ban_unknown'
+    end
+
+    gs 'OffenseDaysStart', $OffenseGirl, $OffenseBanReason
+
+    killvar '$OffenseGirl'
+    killvar '$OffenseBanReason'
+---
+
+#OffenseDaysTickDay
+    gs 'OffenseDaysTickDecayMismatch'
+    gs 'OffenseDaysTickDecayDays'
+---
+
+#OffenseDaysTickDecayDays
+    $OffenseTickGirl = 'amanda'
+    gs 'OffenseDaysTickGirlDay', $OffenseTickGirl
+    $OffenseTickGirl = 'melissa'
+    gs 'OffenseDaysTickGirlDay', $OffenseTickGirl
+    $OffenseTickGirl = 'sandra'
+    gs 'OffenseDaysTickGirlDay', $OffenseTickGirl
+    killvar '$OffenseTickGirl'
+---
+
+#OffenseDaysTickGirlDay
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    if GirlOffenseDays[$OffenseGirl] > 0:
+        GirlOffenseDays[$OffenseGirl] -= 1
+
+        if GirlOffenseDays[$OffenseGirl] < 0:
+            GirlOffenseDays[$OffenseGirl] = 0
+        end
+
+        if GirlOffenseDays[$OffenseGirl] = 0:
+            GirlOffenseReason[$OffenseGirl] = ''
+            GirlOffenseRightUsed[$OffenseGirl] = 0
+        end
+    end
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysTickDecayMismatch
+    $OffenseTickGirl = 'amanda'
+    gs 'OffenseDaysTickGirlMismatchDecay', $OffenseTickGirl
+    $OffenseTickGirl = 'melissa'
+    gs 'OffenseDaysTickGirlMismatchDecay', $OffenseTickGirl
+    $OffenseTickGirl = 'sandra'
+    gs 'OffenseDaysTickGirlMismatchDecay', $OffenseTickGirl
+    killvar '$OffenseTickGirl'
+---
+
+#OffenseDaysTickGirlMismatchDecay
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    if GirlOffenseMismatchLastDay[$OffenseGirl] <= 0:
+        killvar '$OffenseGirl'
+        exit
+    end
+
+    if day - GirlOffenseMismatchLastDay[$OffenseGirl] >= 7:
+        if GirlOffenseMismatchProtect[$OffenseGirl] > 0:
+            GirlOffenseMismatchProtect[$OffenseGirl] -= 1
+        end
+
+        if GirlOffenseMismatchPolicy[$OffenseGirl] > 0:
+            GirlOffenseMismatchPolicy[$OffenseGirl] -= 1
+        end
+
+        GirlOffenseMismatchLastDay[$OffenseGirl] = day
+    end
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysTalkStart
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseReturnLoc = $ARGS[1]
+
+    if $OffenseGirl = '':
+        killvar '$OffenseGirl'
+        killvar '$OffenseReturnLoc'
+        exit
+    end
+
+    if $OffenseReturnLoc = '':
+        $OffenseReturnLoc = 'TavernMain'
+    end
+
+    if LOC($OffenseReturnLoc) = 0:
+        $OffenseReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $OffenseGirl
+
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $OffenseGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОБИДА: ' + $RealName[$OffenseGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('OffenseDaysTalkIntroText') = 1:
+        gs 'OffenseDaysTalkIntroText', $OffenseGirl
+    else:
+        *p $RealName[$OffenseGirl] + ' смотрит мимо. Разговор сейчас — только про то, что между вами треснуло.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG OFFENSE] days: ' + STR(GirlOffenseDays[$OffenseGirl])
+        *pl '[DEBUG OFFENSE] reason: ' + GirlOffenseReason[$OffenseGirl]
+        *pl '[DEBUG OFFENSE] protect K: ' + STR(GirlOffenseMismatchProtect[$OffenseGirl])
+        *pl '[DEBUG OFFENSE] policy K: ' + STR(GirlOffenseMismatchPolicy[$OffenseGirl])
+        *pl ' '
+    end
+
+    gs 'OffenseDaysTalkBuildMenu', $OffenseGirl, $OffenseReturnLoc
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''OffenseDaysTalkMenu''">делать</a>?'
+---
+
+#OffenseDaysTalkBuildMenu
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseReturnLoc = $ARGS[1]
+
+    gs 'Menu.Destroy', 'OffenseDaysTalkMenu'
+    gs 'Menu.Create', 'OffenseDaysTalkMenu'
+
+    gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Извиниться', ''
+    gs 'Menu.AddModule', 'OffenseDaysTalkMenu', {
+        gt 'OffenseDaysTalkAction', 'apologize', $OffenseGirl, $OffenseReturnLoc
+    }
+
+    if GirlOffenseRightUsed[$OffenseGirl] = 0:
+        gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Я всё сделал правильно', ''
+        gs 'Menu.AddModule', 'OffenseDaysTalkMenu', {
+            gt 'OffenseDaysTalkAction', 'right', $OffenseGirl, $OffenseReturnLoc
+        }
+    end
+
+    gs 'GiftHasAnyInInventory'
+
+    if GiftHasAny = 1:
+        gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Подарить', ''
+        gs 'Menu.AddModule', 'OffenseDaysTalkMenu', {
+            gt 'OffenseDaysTalkGiftMenu', $OffenseGirl, $OffenseReturnLoc
+        }
+    end
+
+    killvar 'GiftHasAny'
+
+    gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Вернуться', 'return'
+    gs 'Menu.AddModule', 'OffenseDaysTalkMenu', {
+        gt $OffenseReturnLoc
+    }
+
+    killvar '$OffenseGirl'
+    killvar '$OffenseReturnLoc'
+---
+
+#OffenseDaysTalkGiftMenu
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseReturnLoc = $ARGS[1]
+
+    gs 'Menu.Destroy', 'OffenseDaysGiftMenu'
+    gs 'Menu.Create', 'OffenseDaysGiftMenu'
+
+    if GiftInventory['gift_cheap'] > 0:
+        gs 'MenuUiAdd', 'OffenseDaysGiftMenu', 'Обычный подарок', ''
+        gs 'Menu.AddModule', 'OffenseDaysGiftMenu', {
+            gt 'OffenseDaysTalkAction', 'gift_cheap', $OffenseGirl, $OffenseReturnLoc
+        }
+    end
+
+    if GiftInventory['gift_expensive'] > 0:
+        gs 'MenuUiAdd', 'OffenseDaysGiftMenu', 'Дорогой подарок', ''
+        gs 'Menu.AddModule', 'OffenseDaysGiftMenu', {
+            gt 'OffenseDaysTalkAction', 'gift_expensive', $OffenseGirl, $OffenseReturnLoc
+        }
+    end
+
+    gs 'Menu.Show', 'OffenseDaysGiftMenu'
+    killvar '$OffenseGirl'
+    killvar '$OffenseReturnLoc'
+---
+
+#OffenseDaysTalkAction
+    *clr
+    clr
+    cla
+
+    $OffenseTalkChoice = LCASE($ARGS[0])
+    gs 'NormalizeGirlKey', $ARGS[1]
+    $OffenseGirl = $GirlKey
+    $OffenseReturnLoc = $ARGS[2]
+
+    gs 'EnsureGirlData', $OffenseGirl
+
+    if $OffenseTalkChoice = 'apologize':
+        if GirlOffenseDays[$OffenseGirl] > 0:
+            GirlOffenseDays[$OffenseGirl] -= 1
+        end
+
+        Friends[$OffenseGirl] += 1
+
+        if $OffenseGirl = 'amanda':
+            AmandaTrustStefan += 1
+        elseif $OffenseGirl = 'melissa':
+            MelissaTrustStefan += 1
+        elseif $OffenseGirl = 'sandra':
+            SandraTrust += 1
+        end
+
+        if LOC('OffenseDaysTalkApologizeText') = 1:
+            gs 'OffenseDaysTalkApologizeText', $OffenseGirl
+        end
+
+    elseif $OffenseTalkChoice = 'right':
+        GirlOffenseRightUsed[$OffenseGirl] = 1
+
+        if LOC('OffenseDaysTalkRightText') = 1:
+            gs 'OffenseDaysTalkRightText', $OffenseGirl
+        end
+
+    elseif $OffenseTalkChoice = 'gift_cheap':
+        if GiftInventory['gift_cheap'] > 0:
+            GiftInventory['gift_cheap'] -= 1
+
+            if GirlOffenseDays[$OffenseGirl] > 1:
+                GirlOffenseDays[$OffenseGirl] -= 2
+            else:
+                GirlOffenseDays[$OffenseGirl] = 0
+            end
+
+            Friends[$OffenseGirl] += 1
+
+            if LOC('OffenseDaysTalkGiftCheapText') = 1:
+                gs 'OffenseDaysTalkGiftCheapText', $OffenseGirl
+            end
+        end
+
+    elseif $OffenseTalkChoice = 'gift_expensive':
+        if GiftInventory['gift_expensive'] > 0:
+            GiftInventory['gift_expensive'] -= 1
+            GirlOffenseDays[$OffenseGirl] = 0
+            Friends[$OffenseGirl] += 1
+            love[$OffenseGirl] += 1
+
+            if LOC('OffenseDaysTalkGiftExpensiveText') = 1:
+                gs 'OffenseDaysTalkGiftExpensiveText', $OffenseGirl
+            end
+        end
+    end
+
+    if GirlOffenseDays[$OffenseGirl] <= 0:
+        GirlOffenseDays[$OffenseGirl] = 0
+        GirlOffenseReason[$OffenseGirl] = ''
+        GirlOffenseRightUsed[$OffenseGirl] = 0
+
+        if LOC('OffenseDaysTalkClearText') = 1:
+            gs 'OffenseDaysTalkClearText', $OffenseGirl
+        end
+    end
+
+    gs 'ClampGirlSocialStats', $OffenseGirl
+    gs 'GirlTalkSessionEnd'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $OffenseReturnLoc
+    end
+
+    killvar '$OffenseTalkChoice'
+    killvar '$OffenseGirl'
+    killvar '$OffenseReturnLoc'
+---
+
+#OffenseDaysDebugReset
+    gs 'OffenseDaysInitGirl', 'amanda'
+    gs 'OffenseDaysInitGirl', 'melissa'
+    gs 'OffenseDaysInitGirl', 'sandra'
+---

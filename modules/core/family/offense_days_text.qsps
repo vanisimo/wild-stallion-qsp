@@ -1,0 +1,116 @@
+! ================================================
+! FILE: modules/core/family/offense_days_text.qsps
+! MODULE: core/family
+! Тексты обида-дней v1
+! ================================================
+
+#OffenseDaysSoftMismatchNotice
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseNoticeKind = LCASE($ARGS[1])
+    OffenseNoticeCount = ARGS[2]
+
+    if $RealName[$OffenseGirl] = '':
+        $RealName[$OffenseGirl] = $OffenseGirl
+    end
+
+    if $OffenseNoticeKind = 'no_protect_low':
+        $GirlTalkPendingNotice[$OffenseGirl] = $RealName[$OffenseGirl] + ' бросила короткий взгляд: «Опять ты…»'
+    elseif $OffenseNoticeKind = 'protect_high':
+        $GirlTalkPendingNotice[$OffenseGirl] = $RealName[$OffenseGirl] + ' сжала губы: «Я уже не маленькая»'
+    elseif $OffenseNoticeKind = 'policy_mismatch':
+        $GirlTalkPendingNotice[$OffenseGirl] = $RealName[$OffenseGirl] + ' недовольно кивнула на ваши правила'
+    end
+
+    killvar '$OffenseGirl'
+    killvar '$OffenseNoticeKind'
+    killvar 'OffenseNoticeCount'
+---
+
+#OffenseDaysTalkIntroText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+    $OffenseReason = GirlOffenseReason[$OffenseGirl]
+
+    if $OffenseReason = 'no_protect_low':
+        *p $RealName[$OffenseGirl] + ' не смотрит вам в глаза. Голос ровный — слишком ровный:'
+        *p '«Ты опять сделал вид, что это не твоя война. Я запомню.»'
+    elseif $OffenseReason = 'protect_high':
+        *p $RealName[$OffenseGirl] + ' скрещивает руки:'
+        *p '«Ты влез, когда я и сама справилась бы. Не надо меня опекать как ребёнка.»'
+    elseif $OffenseReason = 'policy_mismatch':
+        *p $RealName[$OffenseGirl] + ' ткнула пальцем в воздух:'
+        *p '«Ты выставил правила, будто мы не взрослые. Я не согласна — и не забуду.»'
+    elseif $OffenseReason = 'intercept':
+        *p $RealName[$OffenseGirl] + ' вздыхает с раздражением:'
+        *p '«Ты опять вскочил посреди зала, как будто я без тебя развалюсь. Хватит.»'
+    elseif $OffenseReason = 'ban_guys':
+        *p 'Аманда смотрит в пол:'
+        *p '«Запретил парней? Спасибо за доверие. Нет, правда.»'
+    elseif $OffenseReason = 'ban_minstrel':
+        *p 'Мелисса говорит тихо, но колко:'
+        *p '«Менестрель — не твоя собственность. Запрет не сделает меня послушнее.»'
+    elseif $OffenseReason = 'ban_lizette':
+        *p 'Аманда поднимает подбородок:'
+        *p '«Лизетта — моя подруга, не твой приказ. Так ты только хуже сделал.»'
+    elseif $OffenseReason = 'daughter_no_protect':
+        *p 'Сандра стоит у двери, руки в боки:'
+        *p '«Я слышала, что в зале было с девочками. Ты где был? Молчание — тоже ответ.»'
+    else
+        *p $RealName[$OffenseGirl] + ' явно обижена. Обычный разговор сейчас не пройдёт.'
+    end
+
+    killvar '$OffenseGirl'
+    killvar '$OffenseReason'
+---
+
+#OffenseDaysTalkApologizeText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    if GirlOffenseDays[$OffenseGirl] > 0:
+        *p 'Вы извиняетесь — не красиво, но честно. ' + $RealName[$OffenseGirl] + ' кивает: обида ещё жива, но уже не каменная.'
+    else
+        *p 'Вы извиняетесь. ' + $RealName[$OffenseGirl] + ' выдыхает:'
+        *p '«Ладно, братик… сынок… как я долго могу злиться.»'
+    end
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysTalkRightText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    *p 'Вы стоите на своём. ' + $RealName[$OffenseGirl] + ' смотрит так, будто вы только что подтвердили всё, в чём она вас подозревала.'
+    *p 'Сегодня она больше ничего не скажет — но дни обиды не тают сами.'
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysTalkGiftCheapText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    *p 'Подарок принят без восторга. «Спасибо», — бросает ' + $RealName[$OffenseGirl] + '. Улыбка слабая, но обида уже не каменная.'
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysTalkGiftExpensiveText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    *p '«Как раз…» — на секунду в голосе мелькает тепло. Потом снова строгость, но обида сходит на нет.'
+
+    killvar '$OffenseGirl'
+---
+
+#OffenseDaysTalkClearText
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseGirl = $GirlKey
+
+    *p $RealName[$OffenseGirl] + ' снова готова говорить по-обычному. Пока вы не наступите на те же грабли.'
+
+    killvar '$OffenseGirl'
+---
