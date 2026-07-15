@@ -118,6 +118,7 @@
     $SparkQueueKitchenNotice = ''
 ---
 
+! Только флаги/consume. gt делает вызывающий — gt из gs в QSP часто не переносит экран.
 #SparkQueueTryStartHallFromLook
     HallHarassmentStarted = 0
     $HallHarassReturnLoc = $ARGS[0]
@@ -135,18 +136,12 @@
         exit
     end
 
-    gs 'SparkQueueHallSlotFree'
-
-    if SparkQueueHallSlotFree = 0:
-        gs 'SparkQueueClearHall'
-        exit
-    end
-
     SparkQueueConsumeHall = 1
     $SparkQueueConsumeGirl = $HallSparkQueueGirl
+    $HallHarassGirl = $HallSparkQueueGirl
+    $HallHarassJob = 'waitress'
     gs 'SparkQueueClearHall'
     HallHarassmentStarted = 1
-    gt 'HallHarassment', $HallHarassReturnLoc
 ---
 
 #SparkQueueTryStartKitchenFromLook
@@ -166,19 +161,12 @@
         exit
     end
 
-    gs 'SparkQueueKitchenSlotFree'
-
-    if SparkQueueKitchenSlotFree = 0:
-        gs 'SparkQueueClearKitchen'
-        exit
-    end
-
     SparkQueueConsumeKitchen = 1
     $SparkQueueConsumeGirl = $KitchenSparkQueueGirl
+    $KitchenHarassGirl = $KitchenSparkQueueGirl
     KitchenHarassEntryType = 2
     gs 'SparkQueueClearKitchen'
     KitchenHarassmentStarted = 1
-    gt 'KitchenHarassment', $KitchenHarassReturnLoc
 ---
 
 #SparkQueueOfferHallOnEnter
@@ -237,18 +225,21 @@
     end
 ---
 
+! Оставлены для debug/старых вызовов: та же подготовка + gt с вызывающего уровня.
 #SparkQueueActHall
-    SparkQueueConsumeHall = 1
-    $SparkQueueConsumeGirl = $HallSparkQueueGirl
-    gs 'SparkQueueClearHall'
-    gt 'HallHarassment', 'TavernMain'
+    gs 'SparkQueueTryStartHallFromLook', 'TavernMain'
+
+    if HallHarassmentStarted = 1:
+        gt 'HallHarassment', 'TavernMain'
+    end
 ---
 
 #SparkQueueActKitchen
-    SparkQueueConsumeKitchen = 1
-    $SparkQueueConsumeGirl = $KitchenSparkQueueGirl
-    gs 'SparkQueueClearKitchen'
-    gt 'KitchenHarassment', 'Kitchen'
+    gs 'SparkQueueTryStartKitchenFromLook', 'Kitchen'
+
+    if KitchenHarassmentStarted = 1:
+        gt 'KitchenHarassment', 'Kitchen'
+    end
 ---
 
 #SparkQueueBackgroundTick
