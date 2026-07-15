@@ -88,13 +88,19 @@ cheap: −дни +stats↓; expensive: =0 +stats↓
 
 ---
 
-## Что делать дальше (приоритет кода)
+## Статус кода (после `1f77539`)
 
-1. **Гонки:** `step_aside` / `leave` — never FirstSex без live; soft + retry  
-2. **watch** hard — явный live-beat, не тихий roll  
-3. **OffenseDays v1** (накопление dual protect)  
-4. **4c** — тексты сцен/policy/thoughts (подписи кнопок уже §0c)  
-5. Очередь искр при AFK  
+Пункты 1–5 ниже **в коде**. Дальше: **playtest v1**, не OffenseDays v2.
+
+**QA-чеклист:** [`docs/qa-checklist-paths-offense-v1.md`](qa-checklist-paths-offense-v1.md)
+
+### Было TODO (закрыто в `1f77539`)
+
+1. ~~Гонки: step_aside/leave~~  
+2. ~~watch live-beat~~  
+3. ~~OffenseDays v1~~  
+4. ~~4c тексты~~  
+5. ~~Spark queue AFK~~  
 
 ---
 
