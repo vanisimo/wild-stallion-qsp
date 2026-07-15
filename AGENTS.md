@@ -119,8 +119,26 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 
 | File | Notes |
 |------|--------|
-| `modules/actions/tavern/girl_work_policy_talk_text.qsps` | policy talk / thoughts / set lines |
-| `modules/actions/tavern/girl_work_policy_assignment_reaction_text.qsps` | girl reactions to policy 1–3 |
+| `modules/actions/tavern/girl_work_policy_talk_text.qsps` | policy talk / thoughts / set |
+| `modules/actions/tavern/girl_work_policy_assignment_reaction_text.qsps` | reactions to policy 1–3 |
+| `modules/events/becky/becky_home_chain_text.qsps` | Becky home chain |
+| `modules/events/becky/becky_dance_text.qsps` | Becky dances |
+| `modules/events/becky/becky_talk_text.qsps` | Becky talk |
+| `modules/events/becky/eddie_arc_text.qsps` | Eddie arc |
+| `modules/events/amanda/amanda_liza_talk_text.qsps` | Amanda + Lizette overhear |
+| `modules/events/church/church_spy_lizette_text.qsps` | church spy Lizette |
+| `modules/events/hall/hall_family_reactions_text.qsps` | family reactions to hall |
+| `modules/events/hall/hall_choice_family_talk_text.qsps` | family talk after hall choice |
+| `modules/events/hall/noble_attack_text.qsps` | noble conflict in hall |
+| `modules/actions/dialogs/girl_talk_sandra_text.qsps` | Sandra girl talk |
+| `modules/actions/dialogs/girl_talk_personal_text.qsps` | personal talk |
+| `modules/actions/dialogs/girl_talk_tavern_text.qsps` | tavern talk |
+| `modules/actions/dialogs/girl_talk_family_text.qsps` | family talk |
+| `modules/actions/sex/sex_scene_text.qsps` | SexScene narratives |
+| `modules/core/gifts/gift_simple_text.qsps` | gifts cheap/expensive |
+| `modules/events/family/amanda_home_first_sex_text.qsps` | Amanda home first sex |
+| `modules/events/family/birth_certificate_text.qsps` | birth certificate |
+| `modules/events/family/sandra_staff_girls_reaction_text.qsps` | staff hire reactions |
 
 **Rules for agents:**
 
@@ -128,6 +146,7 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 - Before any redesign or bulk rewrite of these files — **ask the user first**.
 - If a bugfix must touch the file: change **only** structure/logic/`if`/`end`/gates; **keep the user’s strings** verbatim unless the user is fixing typos themselves.
 - Prefer reporting typos/logic notes in chat over silent rewrites.
+- When the user adds more files to this list — mark header `USER-OWNED TEXT` and extend this table.
 
 ## Patch delivery style
 
