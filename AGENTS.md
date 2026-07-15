@@ -113,6 +113,22 @@ Follow the existing project style:
 - Always check that every `if` has its matching `end`.
 - Avoid duplicate location names.
 
+### USER-OWNED TEXT (do not overwrite prose)
+
+Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user for narrative tone.
+
+| File | Notes |
+|------|--------|
+| `modules/actions/tavern/girl_work_policy_talk_text.qsps` | policy talk / thoughts / set lines |
+| `modules/actions/tavern/girl_work_policy_assignment_reaction_text.qsps` | girl reactions to policy 1–3 |
+
+**Rules for agents:**
+
+- Do **not** rewrite, “polish”, or regenerate the prose in these files without an explicit user ask («можно править тексты» / equivalent).
+- Before any redesign or bulk rewrite of these files — **ask the user first**.
+- If a bugfix must touch the file: change **only** structure/logic/`if`/`end`/gates; **keep the user’s strings** verbatim unless the user is fixing typos themselves.
+- Prefer reporting typos/logic notes in chat over silent rewrites.
+
 ## Patch delivery style
 
 When giving file patches or replacement archives to the user, use this format:
