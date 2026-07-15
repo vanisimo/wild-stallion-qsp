@@ -144,6 +144,11 @@
         PolicyTalkValue = 3
     end
 
+    ! До ужина/гейта — только сдержанно.
+    if FamilyLiberationGateOpen = 0 and PolicyTalkValue > 1:
+        PolicyTalkValue = 1
+    end
+
     gs 'GirlWorkPolicyTalkEnsureName', $PolicyTalkGirl
 
     if $PolicyTalkArea = 'kitchen':
@@ -161,7 +166,10 @@
     elseif PolicyTalkValue = 3:
         GirlPublicAttention[$PolicyTalkGirl] += 1
         GirlNpcPath[$PolicyTalkGirl] += 1
-        TavernScandal += 1
+
+        if FamilyLiberationGateOpen = 0:
+            TavernScandal += 1
+        end
     end
 
     if GirlSecretiveness[$PolicyTalkGirl] < 0:
@@ -349,6 +357,10 @@
         PolicyTalkValue = 3
     end
 
+    if FamilyLiberationGateOpen = 0 and PolicyTalkValue > 1:
+        PolicyTalkValue = 1
+    end
+
     if $PolicyTalkReturnLoc = '':
         $PolicyTalkReturnLoc = 'TavernMain'
     end
@@ -365,7 +377,6 @@
         GirlWorkPolicy[$PolicyTalkGirl] = PolicyTalkValue
     end
 
-    ! Небольшие последствия самого разговора.
     if PolicyTalkValue = 1:
         GirlTrustStefan[$PolicyTalkGirl] += 1
         GirlSecretiveness[$PolicyTalkGirl] -= 1
@@ -376,11 +387,7 @@
         GirlPublicAttention[$PolicyTalkGirl] += 1
         GirlNpcPath[$PolicyTalkGirl] += 1
 
-        if FamilyLiberationGateOpen = 1:
-            if TavernScandal < 100:
-                TavernScandal += 0
-            end
-        else:
+        if FamilyLiberationGateOpen = 0:
             TavernScandal += 1
         end
     end
