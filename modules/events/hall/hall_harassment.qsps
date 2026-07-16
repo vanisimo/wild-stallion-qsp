@@ -107,7 +107,7 @@
         $RealName[$HallHarassGirl] = UCASE(MID($HallHarassGirl, 1, 1)) + LCASE(MID($HallHarassGirl, 2))
     end
 
-    HallHarassType = RAND(1, 4)
+    gs 'HallHarassmentSetupScene'
 
     if $HallHarassGirl = 'amanda' and Amanda_FirstHallHarassment = 0:
         HallHarassFirstAmanda = 1
@@ -544,19 +544,14 @@
 ---
 
 #HallHarassmentIntro
+    ! Пока: служебный разбор сцены. Художественные intro — позже (G3).
+    ! I1: girl flavor только в художественном intro (когда появится).
     if $HallHarassGirl = 'amanda' and HallHarassFirstAmanda = 1:
         gs 'HallHarassmentPrintText', 'amanda_first_intro'
-    else:
-        if HallHarassType = 1:
-            gs 'HallHarassmentPrintText', 'waitress_intro_1'
-        elseif HallHarassType = 2:
-            gs 'HallHarassmentPrintText', 'waitress_intro_2'
-        elseif HallHarassType = 3:
-            gs 'HallHarassmentPrintText', 'waitress_intro_3'
-        else:
-            gs 'HallHarassmentPrintText', 'waitress_intro_4'
-        end
+        *pl ' '
     end
+
+    gs 'HallHarassmentPrintServiceIntro'
 
     if GirlNoPantiesWork[$HallHarassGirl] = 1:
         gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'default'
@@ -998,41 +993,139 @@
 
 ---
 
+! ================================================
+! Setup: AllowedTier / Tier / Type / Stance / art keys
+! A2: T3 types 1-3 only (4-5 later)
+! B1: resist / mixed / provoke
+! D1: HarassTier = RAND(1, AllowedTier)
+! E2: Tier 3 only if GirlUniformLevel = 1
+! F1: stance bands, not fine slut steps
+! H: no full art yet — one common stub image
+! ================================================
+
+#HallHarassmentSetupScene
+    gs 'HallHarassmentCalculateAllowedTier'
+    gs 'HallHarassmentPickTier'
+    gs 'HallHarassmentPickType'
+    gs 'HallHarassmentCalculateStance'
+    gs 'HallHarassmentBuildArtKeys'
+---
+
+#HallHarassmentCalculateAllowedTier
+    HallHarassAllowedTier = 1
+
+    if FamilyCorruptionStage >= 2 and sluttiness[$HallHarassGirl] >= 20:
+        HallHarassAllowedTier = 2
+    end
+
+    ! E2: жёсткий тир только в откровенной форме
+    if FamilyCorruptionStage >= 3 and sluttiness[$HallHarassGirl] >= 40 and GirlUniformLevel[$HallHarassGirl] = 1:
+        HallHarassAllowedTier = 3
+    end
+
+    if GirlNoPantiesWork[$HallHarassGirl] = 1 and HallHarassAllowedTier < 3:
+        HallHarassAllowedTier += 1
+    end
+
+    if GirlUniformLevel[$HallHarassGirl] <> 1 and HallHarassAllowedTier > 2:
+        HallHarassAllowedTier = 2
+    end
+
+    if HallHarassAllowedTier < 1:
+        HallHarassAllowedTier = 1
+    end
+
+    if HallHarassAllowedTier > 3:
+        HallHarassAllowedTier = 3
+    end
+---
+
+#HallHarassmentPickTier
+    ! D1: равный шанс 1..Allowed
+    if HallHarassAllowedTier <= 1:
+        HarassTier = 1
+    else:
+        HarassTier = RAND(1, HallHarassAllowedTier)
+    end
+---
+
+#HallHarassmentPickType
+    ! T1/T2: types 1-4; T3 (A2): types 1-3 only
+    if HarassTier >= 3:
+        HallHarassType = RAND(1, 3)
+    else:
+        HallHarassType = RAND(1, 4)
+    end
+---
+
+#HallHarassmentCalculateStance
+    ! B1 + F1: large bands
+    $HarassGirlStance = 'resist'
+
+    if sluttiness[$HallHarassGirl] >= 35 and FamilyCorruptionStage >= 2:
+        $HarassGirlStance = 'mixed'
+    end
+
+    if sluttiness[$HallHarassGirl] >= 50 and FamilyCorruptionStage >= 3:
+        $HarassGirlStance = 'provoke'
+    end
+---
+
+#HallHarassmentBuildArtKeys
+    if GirlUniformLevel[$HallHarassGirl] = 1:
+        $HallHarassUniformKey = 'u1'
+    else:
+        $HallHarassUniformKey = 'u0'
+    end
+
+    if GirlNoPantiesWork[$HallHarassGirl] = 1:
+        $HallHarassPantyKey = 'nop'
+    else:
+        $HallHarassPantyKey = 'panties'
+    end
+
+    ! Будущий oneshot (когда появятся ассеты):
+    ! images/events/{girl}/hall_harass/t{tier}_type{n}_{u0|u1}[_nop].webp
+    $HallHarassFutureImagePath = 'images/events/' + $HallHarassGirl + '/hall_harass/t' + STR(HarassTier) + '_type' + STR(HallHarassType) + '_' + $HallHarassUniformKey
+
+    if $HallHarassPantyKey = 'nop':
+        $HallHarassFutureImagePath += '_nop'
+    end
+
+    $HallHarassFutureImagePath += '.webp'
+
+    ! Текущая заглушка (одна на все):
+    $HallHarassStubImagePath = 'images/common/hall_harass_stub.png'
+---
+
+#HallHarassmentPrintServiceIntro
+    *pl '─── СЛУЖЕБНО: ПРИСТАВАНИЕ (заглушка) ───'
+    *pl 'Девушка: ' + $RealName[$HallHarassGirl] + ' (' + $HallHarassGirl + ')'
+    *pl 'Зона: ' + $HallHarassConsequenceArea + ' / job: ' + $HallHarassJob
+    *pl 'AllowedTier: ' + STR(HallHarassAllowedTier) + ' → HarassTier: ' + STR(HarassTier) + ' / type: ' + STR(HallHarassType)
+    *pl 'Stance: ' + $HarassGirlStance + ' | uniform: ' + $HallHarassUniformKey + ' | panty: ' + $HallHarassPantyKey
+    *pl 'stage=' + STR(FamilyCorruptionStage) + ' slut=' + STR(sluttiness[$HallHarassGirl]) + ' policy=' + STR(GirlWorkPolicy[$HallHarassGirl])
+    *pl 'Художественный текст: пока нет. Меню реакции — как обычно.'
+    *pl '──────────────────────────────────────'
+
+    if debug = 1:
+        *pl '[DEBUG PATH] stub: ' + $HallHarassStubImagePath
+        *pl '[DEBUG PATH] future: ' + $HallHarassFutureImagePath
+        gs 'HallHarassmentDebug'
+    end
+---
+
 #HallHarassmentShowIntroImage
-    gs 'NormalizeGirlKey', $ARGS[0]
-    $HallImageGirl = $GirlKey
-    $HallImageJob = LCASE($ARGS[1])
-    HallImageType = ARGS[2]
-
-    if $HallImageGirl = '':
-        exit
-    end
-
-    if $HallImageJob = '':
-        $HallImageJob = 'waitress'
-    end
-
-    if HallImageType <= 0:
-        HallImageType = 1
-    end
-
-    $HallImageAction = 'hall_harass/' + $HallImageJob
-    $HallImagePose = STR(HallImageType) + '_base'
-
+    ! H: одна маленькая заглушка на все intro (не large — меньше листать)
     if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'event', $HallImageGirl, $HallImageAction, $HallImagePose, 'webp', 'large'
+        gs 'ShowImage', 'common', '', 'hall_harass_stub', '', 'png', 'small'
     end
 
     if debug = 1:
-        *pl '[DEBUG HALL IMAGE] expected: images/events/' + $HallImageGirl + '/' + $HallImageAction + '_' + $HallImagePose + '.webp'
+        *pl '[DEBUG HALL IMAGE] stub show: ' + $HallHarassStubImagePath
+        *pl '[DEBUG HALL IMAGE] future plan: ' + $HallHarassFutureImagePath
         *pl ' '
     end
-
-    killvar '$HallImageGirl'
-    killvar '$HallImageJob'
-    killvar 'HallImageType'
-    killvar '$HallImageAction'
-    killvar '$HallImagePose'
 ---
 
 #HallHarassmentShowImage
@@ -1058,15 +1151,14 @@
         $HallImageReaction = 'ignore'
     end
 
-    $HallImageAction = 'hall_harass/reaction'
-    $HallImagePose = $HallImageReaction
-
+    ! Пока reaction тоже на stub (чтобы не тянуть large oneshot)
     if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'event', $HallImageGirl, $HallImageAction, $HallImagePose, 'webp', 'large'
+        gs 'ShowImage', 'common', '', 'hall_harass_stub', '', 'png', 'small'
     end
 
     if debug = 1:
-        *pl '[DEBUG HALL IMAGE] expected: images/events/' + $HallImageGirl + '/' + $HallImageAction + '_' + $HallImagePose + '.webp'
+        *pl '[DEBUG HALL IMAGE] reaction stub: ' + $HallHarassStubImagePath
+        *pl '[DEBUG HALL IMAGE] reaction key: ' + $HallImageReaction + ' (future: hall_harass/reaction_' + $HallImageReaction + ')'
         *pl ' '
     end
 
@@ -1074,8 +1166,6 @@
     killvar '$HallImageJob'
     killvar 'HallImageType'
     killvar '$HallImageReaction'
-    killvar '$HallImageAction'
-    killvar '$HallImagePose'
 ---
 
 #HallHarassmentClampStats
@@ -1109,12 +1199,22 @@
         *pl ' '
         *pl '[DEBUG HALL HARASS] girl: ' + $HallHarassGirl
         *pl '[DEBUG HALL HARASS] job: ' + $HallHarassJob
+        *pl '[DEBUG HALL HARASS] area: ' + $HallHarassConsequenceArea
+        *pl '[DEBUG HALL HARASS] AllowedTier: ' + STR(HallHarassAllowedTier)
+        *pl '[DEBUG HALL HARASS] HarassTier: ' + STR(HarassTier)
         *pl '[DEBUG HALL HARASS] type: ' + STR(HallHarassType)
+        *pl '[DEBUG HALL HARASS] stance: ' + $HarassGirlStance
+        *pl '[DEBUG HALL HARASS] uniform: ' + $HallHarassUniformKey + ' (GirlUniformLevel=' + STR(GirlUniformLevel[$HallHarassGirl]) + ')'
+        *pl '[DEBUG HALL HARASS] panty: ' + $HallHarassPantyKey + ' (NoPanties=' + STR(GirlNoPantiesWork[$HallHarassGirl]) + ')'
+        *pl '[DEBUG HALL HARASS] stage: ' + STR(FamilyCorruptionStage) + ' slut: ' + STR(sluttiness[$HallHarassGirl])
         *pl '[DEBUG HALL HARASS] reaction: ' + $HallHarassReaction
+        *pl '[DEBUG HALL HARASS] stub path: ' + $HallHarassStubImagePath
+        *pl '[DEBUG HALL HARASS] future path: ' + $HallHarassFutureImagePath
         *pl '[DEBUG HALL HARASS] TavernScandal: ' + STR(TavernScandal)
         *pl '[DEBUG HALL HARASS] TavernLewdFame: ' + STR(TavernLewdFame)
         *pl '[DEBUG HALL HARASS] GirlWorkPolicy: ' + STR(GirlWorkPolicy[$HallHarassGirl])
         *pl ' '
     end
 ---
+
 
