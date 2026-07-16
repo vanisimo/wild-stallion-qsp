@@ -144,17 +144,21 @@ flowchart TD
 
 ## 4. События приставаний и правила работы
 
-См. `docs/policy-flow.md`. Краткая карта:
+См. `docs/policy-flow.md`.  
+**Полный дизайн тиров / типов / stance / реакций:** `docs/design-hall-harassment.md`.
+
+Краткая карта потока:
 
 ### 4.1 Hall harassment (Аманда, Мелисса)
 
 | Шаг | Локация |
 |-----|---------|
 | Try из осмотра зала | `HallHarassmentTry` |
+| Setup сцены | `#HallHarassmentSetupScene` (AllowedTier, Tier, Type, Stance, art keys) |
 | Сцена | `#HallHarassment` |
-| Выбор «мне» | protect_hard / watch / ignore |
+| Выбор «мне» | protect_hard / watch / ignore (watch+ignore — при `FamilyLiberationGateOpen`) |
 | Последствия | `HallHarassmentApplyChoice` |
-| Разговор о правилах | `GirlWorkPolicyTalkStart`, area=`hall` |
+| Разговор о правилах | after-screen + policy menu; `GirlWorkPolicyTalkAfterHarassApply` |
 
 ### 4.2 Kitchen harassment (Сандра)
 
@@ -162,9 +166,9 @@ flowchart TD
 |-----|---------|
 | Из зала (шум) | `KitchenHarassmentTryFromHall` ~14% |
 | Из осмотра кухни | `KitchenHarassmentTry` ~22% |
-| Сцена | `#KitchenHarassment` (общие переменные `$HallHarass*`) |
+| Сцена | `#KitchenHarassment` (общие `$HallHarass*` + тот же SetupScene) |
 | Area | `$HallHarassConsequenceArea = 'kitchen'` |
-| Разговор | `GirlWorkPolicyTalkStart`, area=`kitchen` |
+| Разговор | after-screen policy, area=`kitchen` |
 
 ### 4.3 GirlWorkPolicy (значения)
 

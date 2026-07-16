@@ -21,6 +21,7 @@
 - `docs/economy.md` - family profit shares, tips, wallet spends, dream eavesdrops, **gifts v2** (`gift_cheap`/`expensive`), family council design.
 - `docs/handoff.md` - session economy audit and mayor-path plan.
 - `docs/policy-flow.md` - hall/kitchen policy event flow.
+- `docs/design-hall-harassment.md` - hall/kitchen harassment tiers, types, stance, player reactions, art plan.
 
 ## Event Subfolders
 
