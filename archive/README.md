@@ -29,6 +29,7 @@ Whole files with **no** `gt`/`gs`/`LOC` callers in the active tree (or already m
 | `modules/actions/sex/intim_menu.qsps` | `MenuGirlIntim` | No callers |
 | `modules/actions/sex/intim_poses.qsps` | `Intim_VaginalPoses`, `Intim_AnalPoses` | No callers |
 | `modules/core/time/week_control.qsps` | `OLD_WeekControl` | Dead debug day-picker |
+| `modules/locations/town/amanda_dark_alley.qsps` | `AmandaDarkAlley*` | Replaced by `events/dance/amanda_dark_alley.qsps` (`AmandaDanceAlley*`) |
 
 Also previously archived:
 

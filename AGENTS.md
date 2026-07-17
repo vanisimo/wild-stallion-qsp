@@ -65,22 +65,27 @@ Do not assume that folders outside this list are compiled unless `qsp-project.js
 
 Known structure of the project:
 
-- `modules/core/init/`
+- `modules/core/init_npc/`
 - `modules/core/time/npc_talk_limits.qsps`
 - `modules/core/show_image/image_debug_random.qsps`
 - `modules/core/tavern/tavern_event_state_core.qsps`
+- `modules/core/family/` — offense days engine
 - `modules/actions/tavern/`
 - `modules/actions/sex/`
 - `modules/menu/`
 - `modules/events/kitchen/`
 - `modules/events/hall/`
 - `modules/events/tavern/`
-- `modules/events/lizette/`
+- `modules/events/dance/`
+- `modules/events/amanda/`
+- `modules/events/melissa/`
+- `modules/events/sandra/`
+- `modules/events/becky/`
+- `modules/events/inga/`
+- `modules/events/eddie/`
+- `modules/events/family/` — shared family arcs (act1, council, home first sex…)
 - `modules/locations/`
-- `modules/npc/`
-- `modules/npc/girls/amanda/`
-- `modules/npc/girls/melissa/`
-- `modules/npc/girls/sandra/`
+- `modules/npc/` — init only (`npc/amanda/amanda.qsps`, `npc/family/*`, …)
 - `modules/debug/`
 
 The folder `archive/old` is considered old/disabled material and should not be connected or reused without explicit instruction.
@@ -124,7 +129,7 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/becky/becky_home_chain_text.qsps` | Becky home chain |
 | `modules/events/becky/becky_dance_text.qsps` | Becky dances |
 | `modules/events/becky/becky_talk_text.qsps` | Becky talk |
-| `modules/events/becky/eddie_arc_text.qsps` | Eddie arc |
+| `modules/events/eddie/eddie_arc_text.qsps` | Eddie arc |
 | `modules/events/amanda/amanda_liza_talk_text.qsps` | Amanda + Lizette overhear |
 | `modules/events/church/church_spy_lizette_text.qsps` | church spy Lizette |
 | `modules/events/hall/hall_family_reactions_text.qsps` | family reactions to hall |

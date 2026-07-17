@@ -1,0 +1,227 @@
+! ================================================
+! FILE: modules/events/melissa/melissa_minstrel_watch_reaction.qsps
+! MODULE: events/family
+! Live-beat меню после watch/spy у менестреля
+! ================================================
+
+#MelissaMinstrelWatchReactionShouldStart
+    MelissaMinstrelWatchReactionShouldStart = 0
+
+    $MelissaWatchReactContext = LCASE($ARGS[0])
+
+    if $MelissaWatchReactContext = 'friday_race':
+        if $MelissaRaceChoice = 'watch':
+            if MelissaMinstrelFridayRaceWatchRollHard = 1:
+                MelissaMinstrelWatchReactionShouldStart = 1
+            elseif sluttiness['melissa'] >= 35:
+                MelissaMinstrelWatchReactionShouldStart = 1
+            end
+        end
+
+    elseif $MelissaWatchReactContext = 'backroom':
+        if $MelissaBackroomChoice = 'spy':
+            if MelissaMinstrelBackroomSpyRollHard = 1:
+                MelissaMinstrelWatchReactionShouldStart = 1
+            elseif sluttiness['melissa'] >= 35:
+                MelissaMinstrelWatchReactionShouldStart = 1
+            end
+        end
+    end
+
+    killvar '$MelissaWatchReactContext'
+---
+
+#MelissaMinstrelWatchReactionStart
+    $MelissaWatchReactContext = LCASE($ARGS[0])
+    $MelissaWatchReactReturnLoc = $ARGS[1]
+
+    if $MelissaWatchReactReturnLoc = '':
+        if $MelissaWatchReactContext = 'friday_race':
+            $MelissaWatchReactReturnLoc = 'MarketDance'
+        else
+            $MelissaWatchReactReturnLoc = 'TavernMain'
+        end
+    end
+
+    gs 'MelissaMinstrelWatchReactionShouldStart', $MelissaWatchReactContext
+
+    if MelissaMinstrelWatchReactionShouldStart = 0:
+        killvar '$MelissaWatchReactContext'
+        killvar '$MelissaWatchReactReturnLoc'
+        exit
+    end
+
+    MelissaMinstrelWatchDefiant = 0
+
+    if MelissaControlNeed < MelissaTrustStefan or MelissaJealousy >= 5:
+        MelissaMinstrelWatchDefiant = 1
+    elseif sluttiness['melissa'] >= 45:
+        MelissaMinstrelWatchDefiant = 1
+    end
+
+    *pl ' '
+
+    if LOC('MelissaMinstrelWatchReactionPromptText') = 1:
+        gs 'MelissaMinstrelWatchReactionPromptText'
+    end
+
+    *pl ' '
+
+    gs 'MelissaMinstrelWatchReactionBuildMenu'
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaMinstrelWatchMenu''">делать</a>?'
+---
+
+#MelissaMinstrelWatchReactionBuildMenu
+    gs 'Menu.Destroy', 'MelissaMinstrelWatchMenu'
+    gs 'Menu.Create', 'MelissaMinstrelWatchMenu'
+
+    gs 'MenuUiAdd', 'MelissaMinstrelWatchMenu', 'Прервать — крикнуть', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelWatchMenu', {
+        gt 'MelissaMinstrelWatchReactionAction', 'interrupt'
+    }
+
+    gs 'MenuUiAdd', 'MelissaMinstrelWatchMenu', 'Дать понять, что смотрю', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelWatchMenu', {
+        gt 'MelissaMinstrelWatchReactionAction', 'reveal'
+    }
+
+    gs 'MenuUiAdd', 'MelissaMinstrelWatchMenu', 'Молчать и смотреть дальше', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelWatchMenu', {
+        gt 'MelissaMinstrelWatchReactionAction', 'keep_watch'
+    }
+
+    gs 'MenuUiAdd', 'MelissaMinstrelWatchMenu', 'Хватит — уйти', ''
+    gs 'Menu.AddModule', 'MelissaMinstrelWatchMenu', {
+        gt 'MelissaMinstrelWatchReactionAction', 'leave'
+    }
+---
+
+#MelissaMinstrelWatchReactionAction
+    *clr
+    clr
+    cla
+
+    $MelissaWatchReactChoice = LCASE($ARGS[0])
+
+    MelissaMinstrelWatchReactionDone = 1
+
+    if $MelissaWatchReactChoice = 'interrupt':
+        if MelissaMinstrelWatchDefiant = 1:
+            if LOC('MelissaMinstrelWatchReactionInterruptDefiantText') = 1:
+                gs 'MelissaMinstrelWatchReactionInterruptDefiantText'
+            end
+            MelissaJealousy += 1
+            MelissaNpcPath += 2
+            GirlNpcPath['melissa'] += 2
+            sluttiness['melissa'] += 1
+            TavernScandal += 1
+
+            if $MelissaWatchReactContext = 'friday_race' and MelissaMinstrelFridayRaceWatchRollHard = 1:
+                gs 'MelissaMinstrelFridayRaceWatchCommitHard'
+            elseif $MelissaWatchReactContext = 'backroom' and MelissaMinstrelBackroomSpyRollHard = 1:
+                gs 'MelissaMinstrelBackroomSpyCommitHard'
+            end
+        else
+            if LOC('MelissaMinstrelWatchReactionInterruptText') = 1:
+                gs 'MelissaMinstrelWatchReactionInterruptText'
+            end
+            MelissaTrustStefan += 1
+            Friends['melissa'] += 1
+            MelissaSecretiveness += 1
+            MelissaMusicianInterest -= 1
+
+            if MelissaMusicianInterest < 0:
+                MelissaMusicianInterest = 0
+            end
+
+            if $MelissaWatchReactContext = 'friday_race' and MelissaMinstrelFridayRaceWatchRollHard = 1:
+                gs 'MelissaMinstrelFridayRaceWatchAbortHard'
+            elseif $MelissaWatchReactContext = 'backroom' and MelissaMinstrelBackroomSpyRollHard = 1:
+                gs 'MelissaMinstrelBackroomSpyAbortHard'
+            end
+        end
+
+    elseif $MelissaWatchReactChoice = 'reveal':
+        if LOC('MelissaMinstrelWatchReactionRevealText') = 1:
+            gs 'MelissaMinstrelWatchReactionRevealText'
+        end
+
+        if sluttiness['melissa'] >= 42 or MelissaControlNeed < MelissaTrustStefan:
+            MelissaMinstrelWatchDefiant = 1
+            MelissaNpcPath += 2
+            GirlNpcPath['melissa'] += 2
+            TavernScandal += 1
+
+            if $MelissaWatchReactContext = 'friday_race' and MelissaMinstrelFridayRaceWatchRollHard = 1:
+                gs 'MelissaMinstrelFridayRaceWatchCommitHard'
+            elseif $MelissaWatchReactContext = 'backroom' and MelissaMinstrelBackroomSpyRollHard = 1:
+                gs 'MelissaMinstrelBackroomSpyCommitHard'
+            end
+        else
+            MelissaSecretiveness += 2
+            MelissaMusicianInterest += 1
+
+            if $MelissaWatchReactContext = 'friday_race' and MelissaMinstrelFridayRaceWatchRollHard = 1:
+                gs 'MelissaMinstrelFridayRaceWatchAbortHard'
+            elseif $MelissaWatchReactContext = 'backroom' and MelissaMinstrelBackroomSpyRollHard = 1:
+                gs 'MelissaMinstrelBackroomSpyAbortHard'
+            end
+        end
+
+    elseif $MelissaWatchReactChoice = 'keep_watch':
+        if LOC('MelissaMinstrelWatchReactionKeepWatchText') = 1:
+            gs 'MelissaMinstrelWatchReactionKeepWatchText'
+        end
+
+        MelissaNpcPath += 1
+        GirlNpcPath['melissa'] += 1
+        MelissaSecretiveness += 1
+        TavernScandal += 1
+
+        if $MelissaWatchReactContext = 'friday_race' and MelissaMinstrelFridayRaceWatchRollHard = 1:
+            gs 'MelissaMinstrelFridayRaceWatchCommitHard'
+        elseif $MelissaWatchReactContext = 'backroom' and MelissaMinstrelBackroomSpyRollHard = 1:
+            gs 'MelissaMinstrelBackroomSpyCommitHard'
+        end
+
+    elseif $MelissaWatchReactChoice = 'leave':
+        if LOC('MelissaMinstrelWatchReactionLeaveText') = 1:
+            gs 'MelissaMinstrelWatchReactionLeaveText'
+        end
+
+        MelissaSecretiveness += 1
+
+        if $MelissaWatchReactContext = 'friday_race' and MelissaMinstrelFridayRaceWatchRollHard = 1:
+            gs 'MelissaMinstrelFridayRaceWatchAbortHard'
+        elseif $MelissaWatchReactContext = 'backroom' and MelissaMinstrelBackroomSpyRollHard = 1:
+            gs 'MelissaMinstrelBackroomSpyAbortHard'
+        end
+    end
+
+    if $MelissaWatchReactContext = 'friday_race':
+        if MelissaMinstrelFirstSexDone = 1 and MelissaFirstPathChoiceReady = 1:
+            if LOC('MelissaFirstPathChoiceTryStart') = 1:
+                gs 'MelissaFirstPathChoiceTryStart', $MelissaWatchReactReturnLoc
+            end
+        end
+    elseif $MelissaWatchReactContext = 'backroom':
+        if MelissaFirstPathChoiceDone = 0 and MelissaFirstPathChoiceReady = 1:
+            if LOC('MelissaFirstPathChoiceTryStart') = 1:
+                gs 'MelissaFirstPathChoiceTryStart', $MelissaWatchReactReturnLoc
+            end
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Дальше', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $MelissaWatchReactReturnLoc
+    end
+
+    killvar '$MelissaWatchReactChoice'
+    killvar '$MelissaWatchReactContext'
+    killvar '$MelissaWatchReactReturnLoc'
+---
