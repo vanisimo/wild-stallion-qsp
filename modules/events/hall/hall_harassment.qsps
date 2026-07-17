@@ -238,6 +238,14 @@
         $HallHarassConsequenceArea = 'hall'
     end
 
+    if $HallHarassGirl = '':
+        $HallHarassGirl = $HallLewdGirl
+    end
+
+    if $HallHarassGirl = '':
+        $HallHarassGirl = $HallMissingGirl
+    end
+
     gs 'GirlWorkPolicyTalkAfterHarassApply', $HallHarassGirl, $HallHarassConsequenceArea, HallHarassPolicyValue
 
     HallHarassPolicyChosen = 1
@@ -245,6 +253,50 @@
 
     if $HallHarassEventLoc = '':
         $HallHarassEventLoc = 'HallHarassment'
+    end
+
+    ! lewd / missing: остаёмся на экране последствия + реакция на правило
+    if $HallScenePolicySource = 'lewd' or $HallScenePolicySource = 'missing':
+        *clr
+        clr
+        cla
+
+        if LOC('ShowGirlSidebar') = 1:
+            gs 'ShowGirlSidebar', $HallHarassGirl
+        end
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ПРАВИЛО ОБНОВЛЕНО'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        if LOC('GirlWorkPolicyAssignmentReactionPrint') = 1:
+            gs 'GirlWorkPolicyAssignmentReactionPrint', $HallHarassGirl, $HallHarassConsequenceArea, HallHarassPolicyValue
+            *pl ' '
+        end
+
+        if $GirlTalkPendingNotice[$HallHarassGirl] <> '':
+            *pl $GirlTalkPendingNotice[$HallHarassGirl]
+            $GirlTalkPendingNotice[$HallHarassGirl] = ''
+            *pl ' '
+        end
+
+        if $HallScenePolicySource = 'lewd' and $HallLewdReturnLoc <> '':
+            $HallScenePolicyReturn = $HallLewdReturnLoc
+        elseif $HallScenePolicySource = 'missing' and $HallMissingReturnLoc <> '':
+            $HallScenePolicyReturn = $HallMissingReturnLoc
+        else:
+            $HallScenePolicyReturn = 'TavernMain'
+        end
+
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $HallScenePolicyReturn
+        end
+
+        killvar '$HallScenePolicySource'
+        killvar '$HallScenePolicyReturn'
+        exit
     end
 
     if $HallHarassConsequenceArea = 'kitchen':

@@ -22,6 +22,15 @@
     HallMissingGirlCanStart = 0
     $HallMissingGirlSelected = ''
 
+    ! Позже harassment и hall_lewd: только после семейного ужина
+    if FamilyLiberationGateOpen = 0:
+        exit
+    end
+
+    if Act1MoralUnlocked = 0:
+        exit
+    end
+
     if HallMissingGirlDisabled = 1:
         exit
     end
@@ -121,26 +130,41 @@
         exit
     end
 
+    ! Нужна реальная готовность «уйти с клиентом», не только приказ
+    if sluttiness[$HallMissingCheckGirl] < 30 and GirlNpcPath[$HallMissingCheckGirl] < 25:
+        if GirlWorkPolicy[$HallMissingCheckGirl] <> 3 or GirlPolicyAgreement[$HallMissingCheckGirl] < 2:
+            exit
+        end
+    end
+
+    if GirlWorkPolicy[$HallMissingCheckGirl] = 3 and GirlPolicyAgreement[$HallMissingCheckGirl] <= 1 and sluttiness[$HallMissingCheckGirl] < 32:
+        exit
+    end
+
     gs 'HallMissingGirlGetStage', $HallMissingCheckGirl
 
-    if HallMissingGirlStage < 4:
+    if HallMissingGirlStage < 3:
         exit
     end
 
-    if TavernScandal < 25 and TavernLewdFame < 10 and GirlWorkPolicy[$HallMissingCheckGirl] <> 3:
+    if TavernScandal < 18 and TavernLewdFame < 8 and GirlWorkPolicy[$HallMissingCheckGirl] <> 3:
         exit
     end
 
-    HallMissingCandidateChance = 12
+    HallMissingCandidateChance = 10
 
     if HallMissingGirlStage >= 4:
-        HallMissingCandidateChance = 28
+        HallMissingCandidateChance = 22
     end
 
     if GirlWorkPolicy[$HallMissingCheckGirl] = 3:
-        HallMissingCandidateChance += 15
+        if GirlPolicyAgreement[$HallMissingCheckGirl] >= 2:
+            HallMissingCandidateChance += 12
+        else:
+            HallMissingCandidateChance += 2
+        end
     elseif GirlWorkPolicy[$HallMissingCheckGirl] = 1:
-        HallMissingCandidateChance -= 15
+        HallMissingCandidateChance -= 18
     end
 
     if GirlUniformLevel[$HallMissingCheckGirl] = 1:
@@ -222,16 +246,27 @@
         exit
     end
 
-    HallMissingGirlScore += TavernScandal
-    HallMissingGirlScore += TavernLewdFame
-    HallMissingGirlScore += TavernGirlsEasyRumor * 10
-    HallMissingGirlScore += TavernBackroomRumor * 15
+    HallMissingGirlScore += TavernScandal / 2
+    HallMissingGirlScore += TavernLewdFame / 2
+    HallMissingGirlScore += TavernGirlsEasyRumor * 4
+    if TavernBackroomRumor = 1:
+        HallMissingGirlScore += 8
+    end
 
-    HallMissingGirlScore += GirlHallLewdStage[$HallMissingStageGirl] * 20
-    HallMissingGirlScore += GirlPublicAttention[$HallMissingStageGirl]
-    HallMissingGirlScore += GirlNpcPath[$HallMissingStageGirl]
-    HallMissingGirlScore += GirlSecretiveness[$HallMissingStageGirl]
-    HallMissingGirlScore += GirlRebellion[$HallMissingStageGirl]
+    if GirlHallLewdStage[$HallMissingStageGirl] < 0:
+        GirlHallLewdStage[$HallMissingStageGirl] = 0
+    end
+
+    if GirlHallLewdStage[$HallMissingStageGirl] > 4:
+        GirlHallLewdStage[$HallMissingStageGirl] = 4
+    end
+
+    HallMissingGirlScore += GirlHallLewdStage[$HallMissingStageGirl] * 8
+    HallMissingGirlScore += GirlPublicAttention[$HallMissingStageGirl] / 2
+    HallMissingGirlScore += GirlNpcPath[$HallMissingStageGirl] / 2
+    HallMissingGirlScore += GirlSecretiveness[$HallMissingStageGirl] / 2
+    HallMissingGirlScore += GirlRebellion[$HallMissingStageGirl] / 2
+    HallMissingGirlScore += sluttiness[$HallMissingStageGirl] / 2
 
     if GirlUniformLevel[$HallMissingStageGirl] > 1:
         GirlUniformLevel[$HallMissingStageGirl] = 1
@@ -242,41 +277,37 @@
     end
 
     if GirlUniformLevel[$HallMissingStageGirl] = 1:
-        HallMissingGirlScore += 15
+        HallMissingGirlScore += 10
     end
 
     if GirlWorkPolicy[$HallMissingStageGirl] = 1:
-        HallMissingGirlScore -= 25
+        HallMissingGirlScore -= 18
     elseif GirlWorkPolicy[$HallMissingStageGirl] = 2:
-        HallMissingGirlScore += 5
+        HallMissingGirlScore += 4
     elseif GirlWorkPolicy[$HallMissingStageGirl] = 3:
-        HallMissingGirlScore += 25
+        if GirlPolicyAgreement[$HallMissingStageGirl] >= 2:
+            HallMissingGirlScore += 16
+        else:
+            HallMissingGirlScore += 3
+        end
     end
 
     if $HallMissingStageGirl = 'amanda':
-        HallMissingGirlScore += AmandaScandalLevel
-        HallMissingGirlScore += AmandaPublicAttention
-        HallMissingGirlScore += AmandaNpcPath
-        HallMissingGirlScore += AmandaSecretiveness
-        HallMissingGirlScore += AmandaRebellion
+        HallMissingGirlScore += AmandaScandalLevel / 2
 
         if uniform_purchased['amanda'] = 1 or revealing_uniform_worn = 1:
             GirlUniformLevel['amanda'] = 1
         end
     elseif $HallMissingStageGirl = 'melissa':
-        HallMissingGirlScore += MelissaScandalTolerance
-        HallMissingGirlScore += MelissaNpcPath
-        HallMissingGirlScore += MelissaJealousy
-        HallMissingGirlScore += MelissaControlNeed
+        HallMissingGirlScore += MelissaScandalTolerance / 2
+        HallMissingGirlScore += MelissaJealousy / 3
 
         if uniform_purchased['melissa'] = 1 or revealing_uniform_worn = 1:
             GirlUniformLevel['melissa'] = 1
         end
     elseif $HallMissingStageGirl = 'sandra':
-        HallMissingGirlScore += SandraNpcPath
-        HallMissingGirlScore += SandraPragmatism
-        HallMissingGirlScore -= SandraMoralResistance
-        HallMissingGirlScore += SandraBitterness
+        HallMissingGirlScore += SandraPragmatism / 3
+        HallMissingGirlScore -= SandraMoralResistance / 2
 
         if uniform_purchased['sandra'] = 1 or revealing_uniform_worn = 1:
             GirlUniformLevel['sandra'] = 1
@@ -287,19 +318,19 @@
         HallMissingGirlScore = 0
     end
 
-    if HallMissingGirlScore < 45:
+    if HallMissingGirlScore < 50:
         HallMissingGirlStage = 0
-    elseif HallMissingGirlScore < 75:
+    elseif HallMissingGirlScore < 80:
         HallMissingGirlStage = 1
-    elseif HallMissingGirlScore < 105:
+    elseif HallMissingGirlScore < 110:
         HallMissingGirlStage = 2
-    elseif HallMissingGirlScore < 140:
+    elseif HallMissingGirlScore < 145:
         HallMissingGirlStage = 3
     else:
         HallMissingGirlStage = 4
     end
 
-    GirlHallLewdStage[$HallMissingStageGirl] = HallMissingGirlStage
+    ! Не перезаписываем GirlHallLewdStage вычисленным score
 
     killvar '$HallMissingStageGirl'
 ---
@@ -431,21 +462,32 @@
         $HallMissingReturnLoc = $ARGS[0]
     end
 
-    if $HallMissingGirl = '':
-        gs 'HallMissingGirlPickCandidate'
-        $HallMissingGirl = $HallMissingGirlSelected
-    end
-
-    if $HallMissingGirl = '':
-        gt 'TavernMain'
-    end
-
     if $HallMissingReturnLoc = '':
         $HallMissingReturnLoc = 'TavernMain'
     end
 
     if LOC($HallMissingReturnLoc) = 0:
         $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0:
+        gt $HallMissingReturnLoc
+    end
+
+    if $HallMissingGirl = '':
+        gs 'HallMissingGirlPickCandidate'
+        $HallMissingGirl = $HallMissingGirlSelected
+    else:
+        HallMissingCandidateCount = 0
+        gs 'HallMissingGirlCheckCandidate', $HallMissingGirl
+
+        if HallMissingCandidateCount <= 0:
+            $HallMissingGirl = ''
+        end
+    end
+
+    if $HallMissingGirl = '':
+        gt $HallMissingReturnLoc
     end
 
     gs 'HallMissingGirlEnsureName', $HallMissingGirl
@@ -481,22 +523,18 @@
     gs 'HallMissingGirlPrintText', 'intro'
 
     *pl ' '
-    gs 'PolicyEventContextPrintStart', $HallMissingGirl, 'hall_missing'
 
-    *pl ' '
+    if LOC('PolicyEventContextPrintStart') = 1:
+        gs 'PolicyEventContextPrintStart', $HallMissingGirl, 'hall_missing'
+        *pl ' '
+    end
 
     gs 'HallMissingGirlPrintDecisionThoughts'
 
-    gs 'PolicyEventReactionPrint', $HallMissingGirl, 'hall', 'hall_missing', $HallMissingReturnLoc
     *pl ' '
-
-    gs 'PolicyEventSceneVariationPrint', $HallMissingGirl, 'hall_missing', 'start'
-
-    *pl ' '
-
-    gs 'PolicyEventDebugPrintStart', 'HALL MISSING', $HallMissingGirl, HallMissingGirlStage, HallMissingGirlScore, 'place', $HallMissingPlace, $HallMissingClient, HallMissingUniform, GirlWorkPolicy[$HallMissingGirl]
 
     if debug = 1:
+        gs 'PolicyEventDebugPrintStart', 'HALL MISSING', $HallMissingGirl, HallMissingGirlStage, HallMissingGirlScore, 'place', $HallMissingPlace, $HallMissingClient, HallMissingUniform, GirlWorkPolicy[$HallMissingGirl]
         *pl '[DEBUG HALL MISSING] act: ' + $HallMissingPrivateAct
     end
 
@@ -521,23 +559,27 @@
 ---
 
 #HallMissingGirlBuildMenu
+    ! Канон §0c: Защитить / Наблюдать / Отвернуться
+    ! (interrupt / peek / ignore → protect_hard / watch / ignore)
     gs 'Menu.Destroy', 'HallMissingGirlMenu'
     gs 'Menu.Create', 'HallMissingGirlMenu'
 
-    gs 'MenuUiAdd', 'HallMissingGirlMenu', 'Не вмешиваться', ''
+    gs 'MenuUiAdd', 'HallMissingGirlMenu', 'Защитить', ''
     gs 'Menu.AddModule', 'HallMissingGirlMenu', {
-        gt 'HallMissingGirlResolve', 'ignore', $HallMissingReturnLoc
+        gt 'HallMissingGirlResolve', 'protect_hard', $HallMissingReturnLoc
     }
 
-    gs 'MenuUiAdd', 'HallMissingGirlMenu', 'Тихо подсмотреть', ''
-    gs 'Menu.AddModule', 'HallMissingGirlMenu', {
-        gt 'HallMissingGirlResolve', 'peek', $HallMissingReturnLoc
-    }
+    if FamilyLiberationGateOpen = 1:
+        gs 'MenuUiAdd', 'HallMissingGirlMenu', 'Наблюдать', ''
+        gs 'Menu.AddModule', 'HallMissingGirlMenu', {
+            gt 'HallMissingGirlResolve', 'watch', $HallMissingReturnLoc
+        }
 
-    gs 'MenuUiAdd', 'HallMissingGirlMenu', 'Ворваться и прервать', ''
-    gs 'Menu.AddModule', 'HallMissingGirlMenu', {
-        gt 'HallMissingGirlResolve', 'interrupt', $HallMissingReturnLoc
-    }
+        gs 'MenuUiAdd', 'HallMissingGirlMenu', 'Отвернуться', ''
+        gs 'Menu.AddModule', 'HallMissingGirlMenu', {
+            gt 'HallMissingGirlResolve', 'ignore', $HallMissingReturnLoc
+        }
+    end
 ---
 
 ! ================================================
@@ -587,13 +629,23 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
+    if $HallMissingChoice = 'interrupt':
+        $HallMissingChoice = 'protect_hard'
+    elseif $HallMissingChoice = 'peek':
+        $HallMissingChoice = 'watch'
+    end
+
+    if FamilyLiberationGateOpen = 0:
+        $HallMissingChoice = 'protect_hard'
+    end
+
     if $HallMissingChoice = 'ignore':
         HallMissingGirlLastChoice[$HallMissingGirl] = 1
         gs 'HallMissingGirlApplyConsequences', 'ignore'
         gs 'HallMissingGirlShowImage', 'after'
         gs 'HallMissingGirlPrintText', 'ignore_after'
 
-    elseif $HallMissingChoice = 'peek':
+    elseif $HallMissingChoice = 'watch':
         HallMissingGirlLastChoice[$HallMissingGirl] = 2
         gs 'HallMissingGirlApplyConsequences', 'peek'
         gs 'HallMissingGirlShowImage', 'peek'
@@ -601,17 +653,18 @@
         *pl ' '
         gs 'HallMissingGirlPrintText', 'peek_meet'
 
-    elseif $HallMissingChoice = 'interrupt':
+    elseif $HallMissingChoice = 'protect_hard':
         HallMissingGirlLastChoice[$HallMissingGirl] = 3
         gs 'HallMissingGirlApplyConsequences', 'interrupt'
         gs 'HallMissingGirlShowImage', 'interrupt'
         gs 'HallMissingGirlPrintText', 'interrupt_scene'
 
     else:
-        $HallMissingChoice = 'ignore'
-        HallMissingGirlLastChoice[$HallMissingGirl] = 1
-        gs 'HallMissingGirlApplyConsequences', 'ignore'
-        gs 'HallMissingGirlPrintText', 'ignore_after'
+        $HallMissingChoice = 'protect_hard'
+        HallMissingGirlLastChoice[$HallMissingGirl] = 3
+        gs 'HallMissingGirlApplyConsequences', 'interrupt'
+        gs 'HallMissingGirlShowImage', 'interrupt'
+        gs 'HallMissingGirlPrintText', 'interrupt_scene'
     end
 
     gs 'PolicyEventChoiceConsequencePrint', 'hall_missing', $HallMissingChoice, $HallMissingGirl
@@ -628,12 +681,20 @@
         *pl ' '
     end
 
-    if LOC('GirlWorkPolicyTalkHall') = 1:
-        gs 'ActUiPrepare', 'Поговорить с ней о правилах', 'policy'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlWorkPolicyTalkHall', $HallMissingGirl, $HallMissingReturnLoc
-        end
-    end
+    $HallHarassGirl = $HallMissingGirl
+    $HallHarassConsequenceArea = 'hall'
+    $HallHarassReturnLoc = $HallMissingReturnLoc
+    $HallHarassReaction = $HallMissingChoice
+    $HallScenePolicySource = 'missing'
+    HallHarassPolicyChosen = 0
+    HallHarassPolicyValue = 0
+
+    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
+    *pl ' '
+    gs 'HallHarassmentBuildPolicyMenu'
+    gs 'HallHarassmentPrintGirlPolicyMenuLine'
+
+    *pl ' '
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:

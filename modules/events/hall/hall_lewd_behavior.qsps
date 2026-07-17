@@ -531,19 +531,19 @@
         *pl ' '
     end
 
-    gs 'PolicyEventContextPrintStart', $HallLewdGirl, 'hall_lewd'
+    ! Краткий контекст правила — без полного refuse-текста (он ломал intro)
+    if LOC('PolicyEventContextPrintStart') = 1:
+        gs 'PolicyEventContextPrintStart', $HallLewdGirl, 'hall_lewd'
+        *pl ' '
+    end
 
-    *pl ' '
     gs 'HallLewdPrintDecisionThoughts'
 
     *pl ' '
-    gs 'PolicyEventReactionPrint', $HallLewdGirl, 'hall', $HallLewdScene, $HallLewdReturnLoc
 
-    gs 'PolicyEventSceneVariationPrint', $HallLewdGirl, 'hall_lewd', 'start'
-
-    *pl ' '
-
-    gs 'PolicyEventDebugPrintStart', 'HALL LEWD', $HallLewdGirl, HallLewdStage, HallLewdScore, 'scene', $HallLewdScene, $HallLewdClient, HallLewdUniform, GirlWorkPolicy[$HallLewdGirl]
+    if debug = 1:
+        gs 'PolicyEventDebugPrintStart', 'HALL LEWD', $HallLewdGirl, HallLewdStage, HallLewdScore, 'scene', $HallLewdScene, $HallLewdClient, HallLewdUniform, GirlWorkPolicy[$HallLewdGirl]
+    end
 
     gs 'HallLewdBuildMenu'
 
@@ -566,23 +566,26 @@
 ---
 
 #HallLewdBuildMenu
+    ! Канон §0c: Защитить / Наблюдать / Отвернуться (как harassment)
     gs 'Menu.Destroy', 'HallLewdMenu'
     gs 'Menu.Create', 'HallLewdMenu'
 
-    gs 'MenuUiAdd', 'HallLewdMenu', 'Жёстко вмешаться', ''
+    gs 'MenuUiAdd', 'HallLewdMenu', 'Защитить', ''
     gs 'Menu.AddModule', 'HallLewdMenu', {
-        gt 'HallLewdResolve', 'stop', $HallLewdReturnLoc
+        gt 'HallLewdResolve', 'protect_hard', $HallLewdReturnLoc
     }
 
-    gs 'MenuUiAdd', 'HallLewdMenu', 'Наблюдать со стороны', ''
-    gs 'Menu.AddModule', 'HallLewdMenu', {
-        gt 'HallLewdResolve', 'watch', $HallLewdReturnLoc
-    }
+    if FamilyLiberationGateOpen = 1:
+        gs 'MenuUiAdd', 'HallLewdMenu', 'Наблюдать', ''
+        gs 'Menu.AddModule', 'HallLewdMenu', {
+            gt 'HallLewdResolve', 'watch', $HallLewdReturnLoc
+        }
 
-    gs 'MenuUiAdd', 'HallLewdMenu', 'Сделать вид, что это часть работы', ''
-    gs 'Menu.AddModule', 'HallLewdMenu', {
-        gt 'HallLewdResolve', 'encourage', $HallLewdReturnLoc
-    }
+        gs 'MenuUiAdd', 'HallLewdMenu', 'Отвернуться', ''
+        gs 'Menu.AddModule', 'HallLewdMenu', {
+            gt 'HallLewdResolve', 'ignore', $HallLewdReturnLoc
+        }
+    end
 ---
 
 ! ================================================
@@ -626,8 +629,19 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
+    ! Alias legacy keys → канон
     if $HallLewdChoice = 'stop':
-        gs 'HallLewdApplyConsequences', 'stop'
+        $HallLewdChoice = 'protect_hard'
+    elseif $HallLewdChoice = 'encourage':
+        $HallLewdChoice = 'ignore'
+    end
+
+    if FamilyLiberationGateOpen = 0:
+        $HallLewdChoice = 'protect_hard'
+    end
+
+    if $HallLewdChoice = 'protect_hard':
+        gs 'HallLewdApplyConsequences', 'protect_hard'
         gs 'HallLewdShowImage', 'stop'
         gs 'HallLewdPrintText', 'stop'
 
@@ -636,15 +650,16 @@
         gs 'HallLewdShowImage', 'watch'
         gs 'HallLewdPrintText', 'watch'
 
-    elseif $HallLewdChoice = 'encourage':
-        gs 'HallLewdApplyConsequences', 'encourage'
+    elseif $HallLewdChoice = 'ignore':
+        gs 'HallLewdApplyConsequences', 'ignore'
         gs 'HallLewdShowImage', 'encourage'
         gs 'HallLewdPrintText', 'encourage'
 
     else:
-        $HallLewdChoice = 'watch'
-        gs 'HallLewdApplyConsequences', 'watch'
-        gs 'HallLewdPrintText', 'watch'
+        $HallLewdChoice = 'protect_hard'
+        gs 'HallLewdApplyConsequences', 'protect_hard'
+        gs 'HallLewdShowImage', 'stop'
+        gs 'HallLewdPrintText', 'stop'
     end
 
     gs 'PolicyEventChoiceConsequencePrint', 'hall_lewd', $HallLewdChoice, $HallLewdGirl
@@ -660,12 +675,21 @@
         *pl ' '
     end
 
-    if LOC('GirlWorkPolicyTalkHall') = 1:
-        gs 'ActUiPrepare', 'Поговорить с ней о правилах', 'policy'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlWorkPolicyTalkHall', $HallLewdGirl, $HallLewdReturnLoc
-        end
-    end
+    ! После сцены — то же policy-меню, что у harassment (сдержанно / сама / расковано)
+    $HallHarassGirl = $HallLewdGirl
+    $HallHarassConsequenceArea = 'hall'
+    $HallHarassReturnLoc = $HallLewdReturnLoc
+    $HallHarassReaction = $HallLewdChoice
+    $HallScenePolicySource = 'lewd'
+    HallHarassPolicyChosen = 0
+    HallHarassPolicyValue = 0
+
+    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
+    *pl ' '
+    gs 'HallHarassmentBuildPolicyMenu'
+    gs 'HallHarassmentPrintGirlPolicyMenuLine'
+
+    *pl ' '
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -684,8 +708,8 @@
     $HallLewdApplyChoice = LCASE($ARGS[0])
     HallLewdPreviousPolicy = GirlWorkPolicy[$HallLewdGirl]
 
-    if $HallLewdApplyChoice = 'stop':
-        GirlWorkPolicy[$HallLewdGirl] = 1
+    if $HallLewdApplyChoice = 'stop' or $HallLewdApplyChoice = 'protect_hard':
+        ! Не форсим policy=1 здесь — правило задаётся в after-menu
         GirlPublicAttention[$HallLewdGirl] -= 1
         GirlNpcPath[$HallLewdGirl] -= 1
         GirlSecretiveness[$HallLewdGirl] += 1
@@ -723,9 +747,9 @@
             end
         end
 
-    elseif $HallLewdApplyChoice = 'encourage':
+    elseif $HallLewdApplyChoice = 'encourage' or $HallLewdApplyChoice = 'ignore':
+        ! «Отвернуться» = самый выгодный исход (чаевые), policy не форсим
         gs 'AwardGirlTipsFromBase', $HallLewdGirl, 20 + HallLewdStage * 10
-        GirlWorkPolicy[$HallLewdGirl] = 3
         TavernScandal += 2
         TavernLewdFame += 2
         TavernGirlsEasyRumor = 1
