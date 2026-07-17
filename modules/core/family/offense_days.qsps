@@ -152,7 +152,9 @@
         OffenseBandHighScore += 1
     end
 
-    if OffenseBandLowScore >= 3 and OffenseBandHighScore = 0:
+    ! Раньше: low>=3 & high=0 — после policy=3 high=1 и band обнулялся,
+    ! ignore/no_protect переставал копиться. Смягчено для playable mid.
+    if OffenseBandLowScore >= 2 and OffenseBandHighScore <= 1:
         GirlOffenseStatBand = 1
     elseif OffenseBandHighScore >= 2 and OffenseBandLowScore <= 1:
         GirlOffenseStatBand = 2
@@ -305,12 +307,13 @@
     gs 'OffenseDaysGirlStatBand', $OffenseGirl
 
     if $OffenseReaction = 'ignore':
-        if GirlOffenseStatBand = 1:
+        ! modest / mid-low: ждала защиты
+        if GirlOffenseStatBand = 1 or (GirlOffenseStatBand = 0 and sluttiness[$OffenseGirl] < 32):
             gs 'OffenseDaysRegisterMismatchProtect', $OffenseGirl, 'no_protect_low'
         end
     elseif $OffenseReaction = 'watch':
         if $OffenseTalkReaction = 'watch_bad' or $OffenseTalkReaction = 'watch_lewd':
-            if GirlOffenseStatBand = 1:
+            if GirlOffenseStatBand = 1 or (GirlOffenseStatBand = 0 and sluttiness[$OffenseGirl] < 32):
                 gs 'OffenseDaysRegisterMismatchProtect', $OffenseGirl, 'no_protect_low'
             end
         end
@@ -325,6 +328,11 @@
     end
 
     gs 'OffenseDaysSandraDaughterAfterHarass', $OffenseGirl, $OffenseReaction, $OffenseTalkReaction
+
+    if debug = 1:
+        *pl '[DEBUG OFFENSE HARASS] band=' + STR(GirlOffenseStatBand) + ' girl=' + $OffenseGirl
+        *pl '[DEBUG OFFENSE HARASS] protectK=' + STR(GirlOffenseMismatchProtect[$OffenseGirl]) + ' days=' + STR(GirlOffenseDays[$OffenseGirl])
+    end
 
     killvar '$OffenseGirl'
     killvar '$OffenseArea'

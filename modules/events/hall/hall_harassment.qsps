@@ -522,6 +522,7 @@
     $HallHarassJob = ''
     HallHarassCandidateCount = 0
 
+    ! Зал: только официантки (Аманда / Мелисса). Сандра — кухня (KitchenHarassment).
     if jobwaitress['amanda'] = 1 and $GirlLocation['amanda'] = 'TavernMain':
         HallHarassCandidateCount += 1
         $HallHarassCandidate[HallHarassCandidateCount] = 'amanda'
@@ -532,11 +533,48 @@
         $HallHarassCandidate[HallHarassCandidateCount] = 'melissa'
     end
 
-    if HallHarassCandidateCount > 0:
+    if HallHarassCandidateCount <= 0:
+        killvar 'HallHarassCandidateCount'
+        killvar '$HallHarassCandidate'
+        exit
+    end
+
+    if HallHarassCandidateCount = 1:
+        $HallHarassGirl = $HallHarassCandidate[1]
+        $HallHarassJob = 'waitress'
+        $HallHarassLastGirl = $HallHarassGirl
+        killvar 'HallHarassCandidateCount'
+        killvar '$HallHarassCandidate'
+        exit
+    end
+
+    ! Fair-ish: 70% шанс взять НЕ ту, что была в прошлый раз (если обе в зале)
+    HallHarassPickRoll = RAND(1, 100)
+
+    if $HallHarassLastGirl <> '' and HallHarassPickRoll <= 70:
+        HallHarassAlt = 0
+
+        if $HallHarassCandidate[1] <> $HallHarassLastGirl:
+            $HallHarassGirl = $HallHarassCandidate[1]
+            HallHarassAlt = 1
+        elseif $HallHarassCandidate[2] <> $HallHarassLastGirl:
+            $HallHarassGirl = $HallHarassCandidate[2]
+            HallHarassAlt = 1
+        end
+
+        if HallHarassAlt = 0:
+            HallHarassPickRoll = RAND(1, HallHarassCandidateCount)
+            $HallHarassGirl = $HallHarassCandidate[HallHarassPickRoll]
+        end
+
+        killvar 'HallHarassAlt'
+    else:
         HallHarassPickRoll = RAND(1, HallHarassCandidateCount)
         $HallHarassGirl = $HallHarassCandidate[HallHarassPickRoll]
-        $HallHarassJob = 'waitress'
     end
+
+    $HallHarassJob = 'waitress'
+    $HallHarassLastGirl = $HallHarassGirl
 
     killvar 'HallHarassCandidateCount'
     killvar 'HallHarassPickRoll'
@@ -989,6 +1027,12 @@
 
     if LOC('OffenseDaysHarassmentAfter') = 1:
         gs 'OffenseDaysHarassmentAfter', $HallHarassGirl, $HallHarassConsequenceArea, $HallHarassReaction, $HallHarassTalkReaction
+    end
+
+    if debug = 1:
+        *pl '[DEBUG OFFENSE AFTER HARASS] girl=' + $HallHarassGirl + ' react=' + $HallHarassReaction + ' talk=' + $HallHarassTalkReaction
+        *pl '[DEBUG OFFENSE] days=' + STR(GirlOffenseDays[$HallHarassGirl]) + ' reason=' + GirlOffenseReason[$HallHarassGirl]
+        *pl '[DEBUG OFFENSE] protectK=' + STR(GirlOffenseMismatchProtect[$HallHarassGirl]) + ' policyK=' + STR(GirlOffenseMismatchPolicy[$HallHarassGirl])
     end
 
 ---
