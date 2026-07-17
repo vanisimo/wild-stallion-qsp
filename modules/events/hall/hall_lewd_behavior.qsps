@@ -462,21 +462,34 @@
         $HallLewdGirl = ''
     end
 
-    if $HallLewdGirl = '':
-        gs 'HallLewdPickCandidate'
-        $HallLewdGirl = $HallLewdSelectedGirl
-    end
-
-    if $HallLewdGirl = '':
-        gt 'TavernMain'
-    end
-
     if $HallLewdReturnLoc = '':
         $HallLewdReturnLoc = 'TavernMain'
     end
 
     if LOC($HallLewdReturnLoc) = 0:
         $HallLewdReturnLoc = 'TavernMain'
+    end
+
+    ! Жёсткий гейт (CanStart + debug/dispatcher обходы)
+    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0:
+        gt $HallLewdReturnLoc
+    end
+
+    if $HallLewdGirl = '':
+        gs 'HallLewdPickCandidate'
+        $HallLewdGirl = $HallLewdSelectedGirl
+    else:
+        ! Явный вызов с именем — всё равно фильтр «играет / не refuse»
+        HallLewdCandidateCount = 0
+        gs 'HallLewdCheckCandidate', $HallLewdGirl
+
+        if HallLewdCandidateCount <= 0:
+            $HallLewdGirl = ''
+        end
+    end
+
+    if $HallLewdGirl = '':
+        gt $HallLewdReturnLoc
     end
 
     gs 'HallLewdEnsureName', $HallLewdGirl
