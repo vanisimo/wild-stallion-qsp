@@ -18,6 +18,11 @@
     HallLewdBehaviorCanStart = 0
     $HallLewdSelectedGirl = ''
 
+    ! Не «ранний» контент: до семейного ужина / liberation — только harassment.
+    if FamilyLiberationGateOpen = 0:
+        exit
+    end
+
     if Act1MoralUnlocked = 0:
         exit
     end
@@ -121,43 +126,63 @@
         exit
     end
 
+    ! «Сама играет» — не когда только что приказали и она отказывается.
+    ! Нужна личная готовность ИЛИ согласие с раскованной политикой.
+    if sluttiness[$HallLewdCheckGirl] < 22 and GirlNpcPath[$HallLewdCheckGirl] < 18:
+        if GirlWorkPolicy[$HallLewdCheckGirl] <> 3 or GirlPolicyAgreement[$HallLewdCheckGirl] < 2:
+            killvar '$HallLewdCheckGirl'
+            exit
+        end
+    end
+
+    if GirlWorkPolicy[$HallLewdCheckGirl] = 3 and GirlPolicyAgreement[$HallLewdCheckGirl] <= 1 and sluttiness[$HallLewdCheckGirl] < 28:
+        ! Приказ «раскованнее», но фактически refuse/against — это harassment, не lewd.
+        killvar '$HallLewdCheckGirl'
+        exit
+    end
+
     gs 'HallLewdGetStage', $HallLewdCheckGirl
 
     ! Это не ранняя сцена. Для ранних случаев есть hall_harassment.
     if HallLewdStage < 2:
+        killvar '$HallLewdCheckGirl'
         exit
     end
 
-    HallLewdChance = 15
+    HallLewdChance = 12
 
     if HallLewdStage = 2:
-        HallLewdChance = 25
+        HallLewdChance = 20
     elseif HallLewdStage = 3:
-        HallLewdChance = 40
+        HallLewdChance = 32
     elseif HallLewdStage >= 4:
-        HallLewdChance = 55
+        HallLewdChance = 45
     end
 
     if GirlUniformLevel[$HallLewdCheckGirl] = 1:
-        HallLewdChance += 10
-    end
-
-    if GirlNoPantiesWork[$HallLewdCheckGirl] = 1:
         HallLewdChance += 8
     end
 
+    if GirlNoPantiesWork[$HallLewdCheckGirl] = 1:
+        HallLewdChance += 6
+    end
+
     if GirlWorkPolicy[$HallLewdCheckGirl] = 1:
-        HallLewdChance -= 20
+        HallLewdChance -= 25
     elseif GirlWorkPolicy[$HallLewdCheckGirl] = 3:
-        HallLewdChance += 20
+        if GirlPolicyAgreement[$HallLewdCheckGirl] >= 2:
+            HallLewdChance += 15
+        else:
+            HallLewdChance += 3
+        end
     end
 
-    if HallLewdChance < 5:
-        HallLewdChance = 5
+    if HallLewdChance < 3:
+        HallLewdChance = 3
     end
 
-    if HallLewdChance > 85:
-        HallLewdChance = 85
+    if HallLewdChance > 75:
+        HallLewdChance = 75
     end
 
     if RAND(1, 100) <= HallLewdChance:
@@ -223,15 +248,27 @@
         exit
     end
 
-    HallLewdScore += TavernScandal
-    HallLewdScore += TavernLewdFame
-    HallLewdScore += TavernGirlsEasyRumor * 10
+    ! Таверна / слухи (смягчено: раньше скандал один-в-один раздувал stage)
+    HallLewdScore += TavernScandal / 2
+    HallLewdScore += TavernLewdFame / 2
+    HallLewdScore += TavernGirlsEasyRumor * 4
 
-    HallLewdScore += GirlHallLewdStage[$HallLewdStageGirl] * 20
-    HallLewdScore += GirlPublicAttention[$HallLewdStageGirl]
-    HallLewdScore += GirlNpcPath[$HallLewdStageGirl]
-    HallLewdScore += GirlSecretiveness[$HallLewdStageGirl]
-    HallLewdScore += GirlRebellion[$HallLewdStageGirl]
+    ! GirlHallLewdStage — прогресс от прошлых lewd-сцен (не *20: была петля → score 100+)
+    if GirlHallLewdStage[$HallLewdStageGirl] < 0:
+        GirlHallLewdStage[$HallLewdStageGirl] = 0
+    end
+
+    if GirlHallLewdStage[$HallLewdStageGirl] > 4:
+        GirlHallLewdStage[$HallLewdStageGirl] = 4
+    end
+
+    HallLewdScore += GirlHallLewdStage[$HallLewdStageGirl] * 6
+
+    HallLewdScore += GirlPublicAttention[$HallLewdStageGirl] / 2
+    HallLewdScore += GirlNpcPath[$HallLewdStageGirl] / 2
+    HallLewdScore += GirlSecretiveness[$HallLewdStageGirl] / 3
+    HallLewdScore += GirlRebellion[$HallLewdStageGirl] / 2
+    HallLewdScore += sluttiness[$HallLewdStageGirl] / 3
 
     if GirlUniformLevel[$HallLewdStageGirl] > 1:
         GirlUniformLevel[$HallLewdStageGirl] = 1
@@ -242,42 +279,43 @@
     end
 
     if GirlUniformLevel[$HallLewdStageGirl] = 1:
-        HallLewdScore += 15
+        HallLewdScore += 10
     end
 
     if GirlWorkPolicy[$HallLewdStageGirl] = 1:
-        HallLewdScore -= 20
+        HallLewdScore -= 15
     elseif GirlWorkPolicy[$HallLewdStageGirl] = 2:
-        HallLewdScore += 5
+        HallLewdScore += 3
     elseif GirlWorkPolicy[$HallLewdStageGirl] = 3:
-        HallLewdScore += 25
+        ! Приказ «раскованнее» без согласия почти не поднимает lewd-stage
+        if GirlPolicyAgreement[$HallLewdStageGirl] >= 2:
+            HallLewdScore += 18
+        elseif GirlPolicyAgreement[$HallLewdStageGirl] = 1:
+            HallLewdScore += 6
+        else:
+            HallLewdScore += 2
+        end
     end
 
-    ! Мосты к старым индивидуальным переменным.
+    ! Только уникальные шкалы (без дубля GirlPublicAttention / GirlNpcPath)
     if $HallLewdStageGirl = 'amanda':
-        HallLewdScore += AmandaScandalLevel
-        HallLewdScore += AmandaPublicAttention
-        HallLewdScore += AmandaNpcPath
-        HallLewdScore += AmandaSecretiveness
-        HallLewdScore += AmandaRebellion
+        HallLewdScore += AmandaScandalLevel / 2
 
         if uniform_purchased['amanda'] = 1 or revealing_uniform_worn = 1:
             GirlUniformLevel['amanda'] = 1
         end
     elseif $HallLewdStageGirl = 'melissa':
-        HallLewdScore += MelissaScandalTolerance
-        HallLewdScore += MelissaNpcPath
-        HallLewdScore += MelissaJealousy
-        HallLewdScore += MelissaControlNeed
+        HallLewdScore += MelissaScandalTolerance / 2
+        HallLewdScore += MelissaJealousy / 3
+        HallLewdScore += MelissaControlNeed / 3
 
         if uniform_purchased['melissa'] = 1 or revealing_uniform_worn = 1:
             GirlUniformLevel['melissa'] = 1
         end
     elseif $HallLewdStageGirl = 'sandra':
-        HallLewdScore += SandraNpcPath
-        HallLewdScore += SandraPragmatism
-        HallLewdScore -= SandraMoralResistance
-        HallLewdScore += SandraBitterness
+        HallLewdScore += SandraPragmatism / 3
+        HallLewdScore -= SandraMoralResistance / 2
+        HallLewdScore += SandraBitterness / 3
 
         if uniform_purchased['sandra'] = 1 or revealing_uniform_worn = 1:
             GirlUniformLevel['sandra'] = 1
@@ -288,19 +326,20 @@
         HallLewdScore = 0
     end
 
-    if HallLewdScore < 30:
+    ! Пороги выше: stage 2+ только когда девушка реально «играет»
+    if HallLewdScore < 35:
         HallLewdStage = 0
-    elseif HallLewdScore < 55:
+    elseif HallLewdScore < 60:
         HallLewdStage = 1
-    elseif HallLewdScore < 80:
+    elseif HallLewdScore < 90:
         HallLewdStage = 2
-    elseif HallLewdScore < 110:
+    elseif HallLewdScore < 125:
         HallLewdStage = 3
     else:
         HallLewdStage = 4
     end
 
-    GirlHallLewdStage[$HallLewdStageGirl] = HallLewdStage
+    ! Не перезаписываем GirlHallLewdStage вычисленным stage (ломало прогресс +=1 после сцен)
 
     killvar '$HallLewdStageGirl'
 ---
