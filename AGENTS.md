@@ -146,6 +146,8 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/sandra/sandra_staff_girls_reaction_text.qsps` | staff hire reactions |
 | `modules/events/family/act1_moral_unlock_text.qsps` | Act1 moral morning thoughts |
 | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | Sandra reveals Stefan birth / Lermont |
+| `modules/locations/town/mayor_office_text.qsps` | mayor office / clerk / first talk / magistrate |
+| `modules/events/family/family_council_text.qsps` | family dinner council (6 screens) → liberation gate |
 
 **Rules for agents:**
 
