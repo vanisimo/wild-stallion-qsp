@@ -6,31 +6,130 @@
 
 #OffenseDaysSoftMismatchNotice
     gs 'NormalizeGirlKey', $ARGS[0]
-    $OffenseGirl = $GirlKey
+    $OffenseNoticeGirl = $GirlKey
     $OffenseNoticeKind = LCASE($ARGS[1])
     OffenseNoticeCount = ARGS[2]
 
-    if $RealName[$OffenseGirl] = '':
-        $RealName[$OffenseGirl] = $OffenseGirl
+    if $OffenseNoticeGirl = '':
+        killvar '$OffenseNoticeGirl'
+        killvar '$OffenseNoticeKind'
+        killvar 'OffenseNoticeCount'
+        exit
+    end
+
+    if $RealName[$OffenseNoticeGirl] = '':
+        $RealName[$OffenseNoticeGirl] = $OffenseNoticeGirl
     end
 
     if $OffenseNoticeKind = 'no_protect_low':
-        $GirlTalkPendingNotice[$OffenseGirl] = $RealName[$OffenseGirl] + ' тихо вздыхает: «Опять ты за своё...»'
+        $GirlTalkPendingNotice[$OffenseNoticeGirl] = $RealName[$OffenseNoticeGirl] + ' тихо вздыхает: «Опять ты за своё...» (' + STR(OffenseNoticeCount) + '/3)'
     elseif $OffenseNoticeKind = 'protect_high':
-        $GirlTalkPendingNotice[$OffenseGirl] = $RealName[$OffenseGirl] + ' прищуривается: «Ну что, рыцарь, опять в доспехах?»'
+        $GirlTalkPendingNotice[$OffenseNoticeGirl] = $RealName[$OffenseNoticeGirl] + ' прищуривается: «Ну что, рыцарь, опять в доспехах?» (' + STR(OffenseNoticeCount) + '/3)'
     elseif $OffenseNoticeKind = 'policy_mismatch':
-        $GirlTalkPendingNotice[$OffenseGirl] = $RealName[$OffenseGirl] + ' хлопает в ладоши: «У нас таверна или монастырь, Стефан?»'
+        $GirlTalkPendingNotice[$OffenseNoticeGirl] = $RealName[$OffenseNoticeGirl] + ' хлопает в ладоши: «У нас таверна или монастырь, Стефан?» (' + STR(OffenseNoticeCount) + '/3)'
     end
 
-    killvar '$OffenseGirl'
+    ! полная обида — короткий якорь; полные реплики рисует OffenseDaysPrintSceneReaction
+    if GirlOffenseDays[$OffenseNoticeGirl] > 0 and OffenseNoticeCount >= 3:
+        $GirlTalkPendingNotice[$OffenseNoticeGirl] = ''
+    end
+
+    killvar '$OffenseNoticeGirl'
     killvar '$OffenseNoticeKind'
     killvar 'OffenseNoticeCount'
+---
+
+! ================================================
+! Реакция на экране после harass / в начале talk:
+! холод + (если был секс) отказ от близости
+! ================================================
+
+#OffenseDaysHasIntimateHistory
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseIntimGirl = $GirlKey
+    OffenseDaysHasIntimate = 0
+
+    if $OffenseIntimGirl = 'amanda':
+        if AmandaHomeSex = 1 or IntimStage['amanda'] >= 3 or sexacts['amanda'] > 0:
+            OffenseDaysHasIntimate = 1
+        end
+    elseif $OffenseIntimGirl = 'melissa':
+        if MelissaHomeSex = 1 or IntimStage['melissa'] >= 3 or sexacts['melissa'] > 0:
+            OffenseDaysHasIntimate = 1
+        end
+    elseif $OffenseIntimGirl = 'sandra':
+        if SandraHomeSex = 1 or IntimStage['sandra'] >= 3 or sexacts['sandra'] > 0:
+            OffenseDaysHasIntimate = 1
+        end
+    end
+
+    killvar '$OffenseIntimGirl'
+---
+
+#OffenseDaysPrintSceneReaction
+    ! ARGS[0] girl — полная обида (days>0) на after-screen / talk
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseSceneGirl = $GirlKey
+
+    if $OffenseSceneGirl = '':
+        killvar '$OffenseSceneGirl'
+        exit
+    end
+
+    if GirlOffenseDays[$OffenseSceneGirl] <= 0:
+        killvar '$OffenseSceneGirl'
+        exit
+    end
+
+    if $RealName[$OffenseSceneGirl] = '':
+        gs 'EnsureGirlData', $OffenseSceneGirl
+    end
+
+    *pl ' '
+
+    if $OffenseSceneGirl = 'amanda':
+        *pl 'Аманда отступает на шаг. Губы сжаты, глаза мокрые от злости, не от слёз.'
+        *pl '«Всё. Я на тебя обиделась. Не подходи ко мне.»'
+        *pl 'Она говорит тихо, но так, чтобы ты точно услышал: «Не смотри так. Не сейчас.»'
+    elseif $OffenseSceneGirl = 'melissa':
+        *pl 'Мелисса смотрит ровно и холодно, будто отмеряет расстояние.'
+        *pl '«Я на тебя обиделась. Не подходи. Не надо глаз, не надо рук, не надо „Мелисса, послушай“.»'
+        *pl '«Пока я сама не скажу — держись от меня подальше.»'
+    elseif $OffenseSceneGirl = 'sandra':
+        *pl 'Сандра вытирает руки о фартук медленно, как перед тяжёлым разговором.'
+        *pl '«Я на тебя обиделась, Стефан. Не лезь. Не сейчас.»'
+        *pl '«Не подходи с шутками и не делай вид, что ничего не было.»'
+    else:
+        *pl $RealName[$OffenseSceneGirl] + ' отворачивается: «Я обижена. Не подходи.»'
+    end
+
+    gs 'OffenseDaysHasIntimateHistory', $OffenseSceneGirl
+
+    if OffenseDaysHasIntimate = 1:
+        *pl ' '
+        if $OffenseSceneGirl = 'amanda':
+            *pl 'Она бросает через плечо, уже тише и злее:'
+            *pl '«И на потрахушки можешь не рассчитывать. Пока я дуюсь — к постели пути нет.»'
+        elseif $OffenseSceneGirl = 'melissa':
+            *pl 'Мелисса чуть наклоняет голову — улыбки нет:'
+            *pl '«Можешь не искать дорогу к моей пещерке. Ты отлучён от сладкого, нерыцарь.»'
+        elseif $OffenseSceneGirl = 'sandra':
+            *pl 'Сандра смотрит в упор, без крика:'
+            *pl '«Ночью ко мне не приходи. Дверь будет закрыта. Понял?»'
+        end
+    end
+
+    *pl ' '
+    *pl '(Обида: ' + STR(GirlOffenseDays[$OffenseSceneGirl]) + ' дн. Разговор с ней начнётся с этого.)'
+
+    killvar '$OffenseSceneGirl'
+    killvar 'OffenseDaysHasIntimate'
 ---
 
 #OffenseDaysTalkIntroText
     gs 'NormalizeGirlKey', $ARGS[0]
     $OffenseGirl = $GirlKey
-    $OffenseReason = GirlOffenseReason[$OffenseGirl]
+    $OffenseReason = $GirlOffenseReason[$OffenseGirl]
 
     if $OffenseReason = 'no_protect_low':
         *pl 'Ты ловишь её взгляд: «Ну ты чего, даже не смотришь?»'
@@ -61,8 +160,22 @@
         *pl $RealName[$OffenseGirl] + ' отворачивается к окну, но плечи выдают: скоро оттает.'
     end
 
+    gs 'OffenseDaysHasIntimateHistory', $OffenseGirl
+
+    if OffenseDaysHasIntimate = 1:
+        *pl ' '
+        if $OffenseGirl = 'amanda':
+            *pl '«И да: на потрахушки можешь не рассчитывать, пока я так.»'
+        elseif $OffenseGirl = 'melissa':
+            *pl '«К моей пещерке дорогу забудь. Отлучён от сладкого, нерыцарь.»'
+        elseif $OffenseGirl = 'sandra':
+            *pl '«Ночью ко мне не приходи. Пока обижена — дверь закрыта.»'
+        end
+    end
+
     killvar '$OffenseGirl'
     killvar '$OffenseReason'
+    killvar 'OffenseDaysHasIntimate'
 ---
 
 #OffenseDaysTalkApologizeText

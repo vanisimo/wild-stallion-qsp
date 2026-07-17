@@ -1,7 +1,10 @@
 ! ================================================
 ! FILE: modules/events/hall/hall_choice_consequences.qsps
 ! Последствия выбора Стефана после событий зала/кухни
-! Версия: v4 / correct argument order
+! thin memory A:
+!   1) HallChoiceMemory — last snapshot (talks)
+!   2) GirlMemoryOfStefan — long-term GirlRemembers* + aftermath
+!   3) HallFamilyState — trust/tension/stage
 ! ================================================
 
 #HallChoiceConsequencesApply
@@ -16,6 +19,7 @@
     if $HallChoiceConsequenceChoice = '': $HallChoiceConsequenceChoice = 'watch'
     if $HallChoiceConsequenceArea = '': $HallChoiceConsequenceArea = 'hall'
 
+    ! last choice for family/tavern talk hooks (not a second long-term ledger)
     if LOC('HallChoiceMemorySave') = 1:
         gs 'HallChoiceMemorySave', $HallChoiceConsequenceEvent, $HallChoiceConsequenceGirl, $HallChoiceConsequenceChoice, $HallChoiceConsequenceArea
     end
@@ -26,6 +30,7 @@
         gs 'HallFamilyStateApply', $HallChoiceConsequenceEvent, $HallChoiceConsequenceGirl, $HallChoiceConsequenceChoice
     end
 
+    ! primary long-term style memory
     if LOC('GirlMemoryOfStefanRegister') = 1:
         gs 'GirlMemoryOfStefanRegister', $HallChoiceConsequenceGirl, $HallChoiceConsequenceEvent, $HallChoiceConsequenceChoice, $HallChoiceConsequenceArea
     end

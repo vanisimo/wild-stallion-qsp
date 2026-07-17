@@ -1,11 +1,7 @@
 ! ================================================
 ! FILE: modules/actions/tavern/girl_talk_hall_event_reaction_compat.qsps
-! Совместимость старой темы разговора после события в зале
-! Версия: v1
-! Назначение:
-! - возвращает локатор #GirlTalkHallEventReaction
-! - убирает ошибку, если старая тема hall_event ещё вызывается из GirlTalkResult
-! - переводит старую тему в новую систему HallRecentTalk / GirlWorkPolicyTalk
+! Тема hall_event после LastHallEvent (harassment и др.)
+! thin memory A: без HallRecentTalk (frozen)
 ! ================================================
 
 #GirlTalkHallEventReaction
@@ -15,10 +11,6 @@
 
     if $HallEventTalkGirl = '':
         $HallEventTalkGirl = $LastHallEventGirl
-    end
-
-    if $HallEventTalkGirl = '':
-        $HallEventTalkGirl = $LastHallMemoryGirl
     end
 
     if $HallEventTalkReturnLoc = '':
@@ -38,10 +30,11 @@
         *pl ' РАЗГОВОР ПОСЛЕ СЛУЧАЯ В ЗАЛЕ'
         *pl '══════════════════════════════════════════════'
         *pl ' '
-        *p 'Стефан пытается вспомнить, с кем именно хотел поговорить после случившегося, но в памяти всё уже смешалось с шумом зала.'
+        *pl 'Стефан пытается вспомнить, с кем именно хотел поговорить после случившегося, но в памяти всё уже смешалось с шумом зала.'
         *pl ' '
 
-        act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
             gt $HallEventTalkReturnLoc
         end
 
@@ -49,10 +42,6 @@
     end
 
     gs 'EnsureGirlData', $HallEventTalkGirl
-
-    if LOC('HallRecentTalkStart') = 1:
-        gt 'HallRecentTalkStart', $HallEventTalkGirl, $HallEventTalkReturnLoc
-    end
 
     *clr
     clr
@@ -67,17 +56,26 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
+    if $LastHallEventText <> '':
+        *pl $LastHallEventText
+        *pl ' '
+    end
+
     if $HallEventTalkGirl = 'amanda':
-        *p 'Аманда мнётся, краснеет и всё время будто собирается сказать больше, чем решается.'
+        *pl 'Аманда мнётся, краснеет и всё время будто собирается сказать больше, чем решается.'
     elseif $HallEventTalkGirl = 'melissa':
-        *p 'Мелисса смотрит внимательно. Она уже поняла, что разговор будет не только о клиенте, но и о ваших правилах.'
+        *pl 'Мелисса смотрит внимательно. Она уже поняла, что разговор будет не только о клиенте, но и о ваших правилах.'
     elseif $HallEventTalkGirl = 'sandra':
-        *p 'Сандра слушает спокойно, но тяжёлый взгляд ясно говорит: в трактире пора наводить порядок.'
+        *pl 'Сандра слушает спокойно, но тяжёлый взгляд ясно говорит: в трактире пора наводить порядок.'
     else:
-        *p $RealName[$HallEventTalkGirl] + ' ждёт, что вы скажете после случившегося.'
+        *pl $RealName[$HallEventTalkGirl] + ' ждёт, что вы скажете после случившегося.'
     end
 
     HallEventDiscussed[$HallEventTalkGirl] = 1
+
+    if LOC('HallRecentMemoryMarkDiscussed') = 1:
+        gs 'HallRecentMemoryMarkDiscussed'
+    end
 
     *pl ' '
 
@@ -88,7 +86,8 @@
         end
     end
 
-    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
         gt $HallEventTalkReturnLoc
     end
 ---

@@ -57,6 +57,7 @@ Choice names should be reused consistently by result handlers, `PolicyEventChoic
 - `HallPolicyReaction` and `KitchenPolicyReaction` are area-specific compatibility entries behind that owner helper.
 - `HallChoiceConsequencesApply` owns shared memory and family-state updates.
 - `GirlMemoryOfStefanRegister` should not be called directly from event-specific result handlers when `PolicyEventChoiceConsequencePrint` is used.
+- Thin memory A: do **not** call `HallRecentMemorySave` from events; long-term = GirlMemory, snapshot = HallChoiceMemory, log = SaveLastHallEvent (`docs/design-hall-memory-thin.md`).
 - `PolicyEventSceneVariationPrint` belongs before the player choice, never inside a debug-only block.
 
 ## Next Refactor Targets

@@ -399,18 +399,14 @@ When adding a new girl to tavern/hall systems, make sure the relevant init/clamp
 
 ## Hall Memory And Family State
 
-Recent hall memory owner: `modules/events/hall/hall_recent_memory.qsps`.
+**Canon (thin memory A):** see `docs/design-hall-memory-thin.md`.
 
-- `$LastHallMemoryGirl`
-- `$LastHallMemoryType`
-- `$LastHallMemoryPlace`
-- `LastHallMemorySeverity`
-- `LastHallMemoryDay`
-- `LastHallMemoryTime`
-- `LastHallMemoryDiscussed`
-- `HallMemoryCount[girl]`
-- `HallMemorySeriousCount[girl]`
-- `HallMemoryDirtyCount[girl]`
+- **Long-term style:** `GirlMemoryOfStefan` → `GirlRemembersProtection|Neglect|ProfitChoices|Control[girl]`, `DailyAftermathPending`
+- **Last choice snapshot:** `HallChoiceMemory` → `$LastHallChoice*`, `$LastGirlChoice*`
+- **Scene log:** `SaveLastHallEvent` → `$LastHallEvent*`
+- **Frozen:** `HallRecentMemory*` / `HallRecentTalk*` (no-op / never in menus)
+
+`$LastHallMemoryGirl|Event|Choice` still written by `GirlMemoryOfStefanRegister` for aftermath reason (not by recent-memory).
 
 Choice memory owner: `modules/events/hall/hall_choice_memory.qsps`.
 
@@ -481,7 +477,7 @@ Moods: `calm`, `happy`, `tired`, `angry` — file pattern `{mood}_1.webp`.
 
 Debug: `GirlTalkImageDebugPanel` (linked from debug panel → Girls); briefs print when `debug = 1` or `debug_images = 1`.
 
-These flags do not replace the dedicated hall-topic menu. Full follow-up scenes such as `HallChoiceFamilyTalk` and `HallRecentTalk` keep their own `*Discussed` flags.
+These flags do not replace the dedicated hall-topic menu. Full follow-up: `HallChoiceFamilyTalk` (own Discussed). `HallRecentTalk` is frozen.
 
 ## Personal Girl Talk
 

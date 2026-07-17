@@ -1,8 +1,8 @@
 # Design: Hall / Kitchen Harassment (v1)
 
-**Статус:** логика tier/stance/E2 — в коде; intro пока служебный + stub; каталог T3-4/5 — дизайн.  
+**Статус:** логика T1–T3 (types 1–5 + wall/drop/cock) + художественные intro G3 v1 — в коде.  
 **Код:** `modules/events/hall/hall_harassment.qsps`, `modules/events/kitchen/kitchen_harassment.qsps`  
-**Тексты:** `hall_harassment_text.qsps`, kitchen text  
+**Тексты:** `hall_harassment_intro_text.qsps` (intro), `hall_harassment_text.qsps` (after/policy), kitchen text  
 **Связано:** `docs/design-hall-scene-unified.md` (lewd/missing + пороги), `docs/economy.md` §0c, offense days, state.md  
 
 Единые кнопки/policy/лестница зала — в **design-hall-scene-unified.md**.
@@ -94,7 +94,7 @@ HarassTier = RAND(1, HallHarassAllowedTier)   // равный шанс
 | HarassTier | Пул type |
 |------------|----------|
 | 1, 2 | `RAND(1, 4)` |
-| 3 | **сейчас** `RAND(1, 3)`; **позже** + type 4–5 (drop/стена); under-table cock — subroll type 5 coin |
+| 3 | weighted 1–5: ~22% each types 1–3, ~19% type 4 wall, ~15% type 5 drop; type 5 → `drop_cutlery` \| `drop_coin`; cock только `drop_coin` + гейты |
 
 ---
 
@@ -131,11 +131,11 @@ Panty / nop — где видна юбка/пах.
 
 | Type | Жест | MVP | Panty |
 |------|------|-----|-------|
-| 1 | Задирает юбку | да | да |
-| 2 | Сажает на колени жёстко | да | да |
-| 3 | Тянет → падает к нему **на пах** (не на лицо) | да | да |
-| 4 | **Прижал к стойке/стене**, рука под юбкой | план | да |
-| 5 | **Drop** (subroll) | план | да |
+| 1 | Задирает юбку | да (stub) | да |
+| 2 | Сажает на колени жёстко | да (stub) | да |
+| 3 | Тянет → падает к нему **на пах** (не на лицо) | да (stub) | да |
+| 4 | **Прижал к стойке/стене**, рука под юбкой | **да** (`$HallHarassSubScene=wall`) | да |
+| 5 | **Drop** (subroll) | **да** | да |
 
 #### Type 5 subroll (вместо «сама / face»)
 
@@ -155,7 +155,15 @@ Panty / nop — где видна юбка/пах.
   → touch / hold — НЕ harass → lewd или missing high
 ```
 
-Гейты under-table cock (черновик): liberation + FamCorrupt ≥2–3 + не первый harass; low slut+refuse → только лапанье **без** члена.
+Гейты under-table cock (**в коде** `#HallHarassmentPickUnderTableCock`):
+
+- `$HallHarassSubScene = drop_coin`
+- `FamilyLiberationGateOpen = 1`
+- `FamilyCorruptionStage >= 3`
+- `HallHarassEverOccurred = 1` (не на самом первом harass кампании; флаг ставится в ApplyChoice)
+- **не** (slut &lt; 35 **и** policy = 1) → иначе только `groping` без члена
+
+Реакция при cock: `provoke`/slut≥50 → `coin`; `resist`/slut&lt;40 → `flee`; mixed → 50/50.
 
 **Не возвращаем в harass:** «сама показала», падение **на лицо** (face → **lewd** `face_fall`), cleaning.
 
@@ -211,10 +219,14 @@ Late stance сдвигает тон, персона сохраняется.
 
 | Условие | Reason |
 |---------|--------|
-| band low + ignore / watch_bad / watch_lewd | `no_protect_low` (накопление K) |
-| band high + protect_hard + protect_dislike | `protect_high` |
+| band **≠ 2** + ignore / watch_bad / watch_lewd | `no_protect_low` (накопление **K=3**) |
+| band high (2) + protect_hard + protect_dislike | `protect_high` |
 | protect_success | intercept count → `intercept` |
 | + Сандра узнала про дочерей | `daughter_no_protect` |
+
+**Не** мгновенная обида с 1× ignore: soft notice «1/3…2/3», на 3-й — `GirlOffenseDays=4` + talk-lock.  
+After-screen показывает pending notice (раньше *clr сносил *pl).  
+Band 2 (высокая) **не** копит no_protect — T3-пресет slut45+pol3 часто band2.
 
 См. `modules/core/family/offense_days.qsps`.
 
@@ -264,19 +276,13 @@ images/events/{girl}/hall_harass/t{tier}_type{n}_{u0|u1}[_nop].webp
 
 | Фаза | Что |
 |------|-----|
-| **Сейчас** | `#HallHarassmentPrintServiceIntro` — кто, tier, type, stance, uniform, panty, stage, slut; пути только при `debug = 1` |
-| **Потом (G3)** | длинные художественные intro: type × girl × stance × text_roll; panty-ветки на T3 |
+| **Сейчас (G3 v1)** | `#HallHarassmentPrintArtisticIntro` → hall/kitchen × T1–T3 × type; stance-хвост; T3 wall/drop/cock; service-блок только при `debug=1` |
+| **Потом** | text_roll 2–3 варианта; panty-ветки; полировка USER tone |
 
-Предлагаемые id (когда писать):
+Локации intro: `hall_harassment_intro_text.qsps`  
+Debug: `gt 'HallHarassmentDebugMenu'` / `HallHarassmentDebugStart` (girl, tier, type [, sub, cock, react])  
 
-```
-waitress_intro_t{tier}_type{n}
-waitress_intro_t{tier}_type{n}_{resist|mixed|provoke}
-waitress_intro_t{tier}_type{n}_nop
-kitchen_intro_…  (зеркало)
-```
-
-Старые ключи `waitress_intro_1..4` без tier — legacy; не опираться для новых сцен.
+Старые ключи `waitress_intro_1..4` — legacy.
 
 ---
 
@@ -290,6 +296,10 @@ kitchen_intro_…  (зеркало)
 | `HallHarassAllowedTier` | потолок 1…3 |
 | `HarassTier` | выпавший 1…3 |
 | `HallHarassType` | type в тире |
+| `$HallHarassSubScene` | `wall` / `drop_cutlery` / `drop_coin` / '' |
+| `HallHarassUnderTableCock` | 0/1 — член под столом |
+| `$HallHarassUnderReact` | `groping` / `flee` / `coin` |
+| `HallHarassEverOccurred` | 1 после первого resolve (гейт cock) |
 | `$HarassGirlStance` | resist / mixed / provoke |
 | `$HallHarassUniformKey` | u0 / u1 |
 | `$HallHarassPantyKey` | panties / nop |
@@ -302,13 +312,12 @@ kitchen_intro_…  (зеркало)
 
 ## 11. MVP контента (когда выйдем из заглушек)
 
-1. T1 types 1–4 — тексты + oneshot (хотя бы u0)  
-2. T2 types 1–4 — u0 + u1  
-3. T3 types 1–3 — u1 + panty/nop + stance  
-4. T3 type 4 (C1) и type 5 rare — phase 2  
-5. Girl flavor I1 в intro; after — отдельно  
+1. T1–T3 intro тексты — **G3 v1 готово** (hall + kitchen)  
+2. Oneshot-арт по ключам path  
+3. text_roll / panty-ветки / after-flavor по type  
+4. After/policy тексты — отдельно (уже есть generic)  
 
-Порядок утверждён: **сначала логика/служебка (готово) → художество и арт по слоям.**
+Порядок: **логика ✓ → intro prose v1 ✓ → арт / polish.**
 
 ---
 
@@ -318,7 +327,8 @@ kitchen_intro_…  (зеркало)
 |------|------|
 | Логика зал | `modules/events/hall/hall_harassment.qsps` |
 | Логика кухня | `modules/events/kitchen/kitchen_harassment.qsps` |
-| Тексты зал | `modules/events/hall/hall_harassment_text.qsps` |
+| Intro | `modules/events/hall/hall_harassment_intro_text.qsps` |
+| After/прочее | `modules/events/hall/hall_harassment_text.qsps` |
 | Policy after | `modules/actions/tavern/girl_work_policy_*.qsps` |
 | Offense after | `modules/core/family/offense_days.qsps` |
 | Stub image | `images/common/hall_harass_stub.png` |
@@ -330,7 +340,7 @@ kitchen_intro_…  (зеркало)
 
 | ID | Решение |
 |----|---------|
-| A2 | T3 types 1–3 now; 4–5 later |
+| A2 | T3 types 1–5 + drop/wall/cock subrolls **done** (stub intro) |
 | B1 | stance resist / mixed / provoke |
 | C1 | type4: accidental / mixed / provoke (later) |
 | D1 | equal RAND tier |

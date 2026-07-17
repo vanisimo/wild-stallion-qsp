@@ -21,6 +21,8 @@
 ---
 
 #GirlTalkPersonalCountHallTopics
+    ! thin hall follow-up: policy after harass уже на сцене.
+    ! «Что случилось» / «Моё решение» в личном меню не считаем (дубль after-screen).
     gs 'NormalizeGirlKey', $ARGS[0]
     $GirlTalkPersonalHallGirl = $GirlKey
     GirlTalkPersonalHallTopicsCount = 0
@@ -30,10 +32,7 @@
         exit
     end
 
-    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $GirlTalkPersonalHallGirl and HallEventDiscussed[$GirlTalkPersonalHallGirl] = 0:
-        GirlTalkPersonalHallTopicsCount += 1
-    end
-
+    ! «Как она выполнила правило» — только если policy-response реально ждёт разговора
     if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
         gs 'GirlPolicyResponseTalkCanDiscuss', $GirlTalkPersonalHallGirl
         if GirlPolicyResponseTalkAvailable = 1:
@@ -41,23 +40,10 @@
         end
     end
 
-    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
-        gs 'HallChoiceFamilyTalkCanDiscuss', $GirlTalkPersonalHallGirl
-        if HallChoiceFamilyTalkAvailable = 1:
-            GirlTalkPersonalHallTopicsCount += 1
-        end
-    end
-
+    ! «Реакция семьи» — чужая реакция, не дубль policy after harass
     if LOC('HallFamilyReactionCanDiscuss') = 1:
         gs 'HallFamilyReactionCanDiscuss', $GirlTalkPersonalHallGirl
         if HallFamilyReactionAvailable = 1:
-            GirlTalkPersonalHallTopicsCount += 1
-        end
-    end
-
-    if LOC('HallRecentTalkCanDiscuss') = 1:
-        gs 'HallRecentTalkCanDiscuss', $GirlTalkPersonalHallGirl
-        if HallRecentTalkAvailable = 1:
             GirlTalkPersonalHallTopicsCount += 1
         end
     end
@@ -66,12 +52,9 @@
 ---
 
 #GirlTalkPersonalAddHallTopicsToMenu
-    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $TalkGirl and HallEventDiscussed[$TalkGirl] = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Что случилось в зале', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_event'
-        }
-    end
+    ! Убрано: «Что случилось в зале» (hall_event) — после harass уже итог + policy.
+    ! Убрано: «Моё решение в зале» (hall_choice) — protect/watch уже отыгран на сцене;
+    !   текст HallChoiceFamilyTalk остаётся в файлах (debug / future), не в меню.
 
     if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
         gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
@@ -83,32 +66,12 @@
         end
     end
 
-    if LOC('HallChoiceFamilyTalkCanDiscuss') = 1:
-        gs 'HallChoiceFamilyTalkCanDiscuss', $TalkGirl
-        if HallChoiceFamilyTalkAvailable = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Моё решение в зале', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_choice'
-            }
-        end
-    end
-
     if LOC('HallFamilyReactionCanDiscuss') = 1:
         gs 'HallFamilyReactionCanDiscuss', $TalkGirl
         if HallFamilyReactionAvailable = 1:
             gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Реакция семьи', ''
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
                 gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_family'
-            }
-        end
-    end
-
-    if LOC('HallRecentTalkCanDiscuss') = 1:
-        gs 'HallRecentTalkCanDiscuss', $TalkGirl
-        if HallRecentTalkAvailable = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Недавний случай в зале', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_recent'
             }
         end
     end
@@ -425,10 +388,41 @@
             GirlTalkPersonalBanOptionsCount += 1
         end
 
-        GirlTalkPersonalBanOptionsCount += 1
+        ! парни: не с первого дня — только если уже есть повод / запрет уже стоит (снять)
+        gs 'GirlTalkPersonalGuysBanCanShow', 'amanda'
+        if GirlTalkPersonalGuysBanCanShow = 1:
+            GirlTalkPersonalBanOptionsCount += 1
+        end
+        killvar 'GirlTalkPersonalGuysBanCanShow'
     end
 
     killvar '$GirlTalkPersonalBanGirl'
+---
+
+#GirlTalkPersonalGuysBanCanShow
+    ! Запрет парней — после unlock amanda_boys / соседских следов / уже включённого запрета
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkGuysBanGirl = $GirlKey
+    GirlTalkPersonalGuysBanCanShow = 0
+
+    if $GirlTalkGuysBanGirl <> 'amanda':
+        killvar '$GirlTalkGuysBanGirl'
+        exit
+    end
+
+    if AmandaProhibitGuys = 1:
+        GirlTalkPersonalGuysBanCanShow = 1
+        killvar '$GirlTalkGuysBanGirl'
+        exit
+    end
+
+    gs 'GirlTalkPersonalStoryUnlocked', 'amanda', 'amanda_boys'
+    if GirlTalkPersonalStoryUnlocked = 1:
+        GirlTalkPersonalGuysBanCanShow = 1
+    end
+
+    killvar 'GirlTalkPersonalStoryUnlocked'
+    killvar '$GirlTalkGuysBanGirl'
 ---
 
 #GirlTalkPersonalLegareBanned
@@ -491,15 +485,19 @@
             killvar 'GirlTalkPersonalLegareBanned'
         end
 
-        if AmandaProhibitGuys = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить встречаться с парнями', ''
-        else
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить встречаться с парнями', ''
-        end
+        gs 'GirlTalkPersonalGuysBanCanShow', 'amanda'
+        if GirlTalkPersonalGuysBanCanShow = 1:
+            if AmandaProhibitGuys = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить встречаться с парнями', ''
+            else
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить встречаться с парнями', ''
+            end
 
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'guys'
-        }
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'guys'
+            }
+        end
+        killvar 'GirlTalkPersonalGuysBanCanShow'
 
     elseif $TalkGirl = 'melissa':
         gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'

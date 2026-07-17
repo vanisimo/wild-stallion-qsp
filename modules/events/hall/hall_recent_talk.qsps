@@ -1,87 +1,36 @@
 ! ================================================
 ! FILE: modules/events/hall/hall_recent_talk.qsps
-! Разговоры после последних событий в зале
-! Версия: v1
-! Назначение:
-! - дать живую тему разговора после HallRecentMemorySave
-! - использовать последнюю память зала
-! - персонализировать реакцию Аманды, Мелиссы и Сандры
+! FROZEN (variant A thin memory, 2026-07)
+! Тема «Недавний случай в зале» отключена.
+! Рабочие темы: hall_event (LastHallEvent/harassment), policy, family choice.
+! Тексты ниже оставлены на случай ручного debug-вызова Start.
 ! ================================================
 
 #HallRecentTalkCanShow
-    gs 'NormalizeGirlKey', $ARGS[0]
-    $HallRecentTalkGirl = $GirlKey
-
+    ! frozen: never offer in menus
     HallRecentTalkCanShow = 0
-
-    if $HallRecentTalkGirl = '':
-        exit
-    end
-
-    if $HallRecentGirl = $HallRecentTalkGirl and HallRecentDay = day and HallRecentTalkDone[$HallRecentTalkGirl] = 0:
-        HallRecentTalkCanShow = 1
-    end
-
-    killvar '$HallRecentTalkGirl'
+    HallRecentTalkAvailable = 0
 ---
 
 #HallRecentTalkStart
+    ! frozen entry: redirect to hall_event compat / policy fallback
     gs 'NormalizeGirlKey', $ARGS[0]
     $HallRecentTalkGirl = $GirlKey
     $HallRecentTalkReturnLoc = $ARGS[1]
-
-    if $HallRecentTalkGirl = '':
-        gt 'TavernMain'
-    end
 
     if $HallRecentTalkReturnLoc = '':
         $HallRecentTalkReturnLoc = 'TavernMain'
     end
 
-    gs 'EnsureGirlData', $HallRecentTalkGirl
-
-    *clr
-    clr
-    cla
-
-    if LOC('ShowGirlSidebar') = 1:
-        gs 'ShowGirlSidebar', $HallRecentTalkGirl
+    if LOC($HallRecentTalkReturnLoc) = 0:
+        $HallRecentTalkReturnLoc = 'TavernMain'
     end
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' РАЗГОВОР ПОСЛЕ СЛУЧАЯ В ЗАЛЕ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    gs 'HallRecentTalkPrintText', 'intro'
-
-    HallRecentTalkDone[$HallRecentTalkGirl] = 1
-
-    if $HallRecentType = 'hall_lewd' or $HallRecentType = 'lewd':
-        GirlPublicAttention[$HallRecentTalkGirl] += 1
+    if LOC('GirlTalkHallEventReaction') = 1:
+        gt 'GirlTalkHallEventReaction', $HallRecentTalkGirl, $HallRecentTalkReturnLoc
     end
 
-    if $HallRecentSeverity = 'high' or HallRecentSeverity >= 3:
-        TavernScandal += 1
-    end
-
-    if LOC('ClampTavernEventState') = 1:
-        gs 'ClampTavernEventState'
-    end
-
-    gs 'ClampGirlSocialStats', $HallRecentTalkGirl
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Обсудить правило работы', 'work'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'GirlWorkPolicyTalkHall', $HallRecentTalkGirl, $HallRecentTalkReturnLoc
-    end
-
-    gs 'ActUiPrepare', 'Вернуться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $HallRecentTalkReturnLoc
-    end
+    gt $HallRecentTalkReturnLoc
 ---
 
 #HallRecentTalkPrintText

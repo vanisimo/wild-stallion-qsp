@@ -267,11 +267,24 @@
 ---
 
 #KitchenHarassmentIntro
-    ! Служебный intro (общий с залом). Художественные kitchen_intro — позже.
-    gs 'HallHarassmentPrintServiceIntro'
+    ! Общий художественный intro (kitchen flavor внутри PrintArtisticIntro)
+    if LOC('HallHarassmentPrintArtisticIntro') = 1:
+        gs 'HallHarassmentPrintArtisticIntro'
+    else:
+        gs 'HallHarassmentPrintServiceIntro'
+    end
+
+    if debug = 1:
+        *pl ' '
+        gs 'HallHarassmentPrintServiceIntro'
+    end
 
     if GirlNoPantiesWork[$HallHarassGirl] = 1:
-        if HallHarassType = 2:
+        if $HallHarassSubScene = 'drop_cutlery' or $HallHarassSubScene = 'drop_coin':
+            gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'cleaning_bend'
+        elseif HarassTier >= 3 and HallHarassType = 1:
+            gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'cleaning_bend'
+        elseif HallHarassType = 2:
             gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'cleaning_bend'
         else:
             gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'default'

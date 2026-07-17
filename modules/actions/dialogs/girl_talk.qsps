@@ -79,11 +79,6 @@
     gs 'GirlTalkShowNpcMenuAnchor', 'main'
     *pl ' '
 
-    if GirlTalkAutoOpenTalkMenu = 1:
-        GirlTalkAutoOpenTalkMenu = 0
-        gs 'Menu.Show', 'GirlTalkMainMenu'
-    end
-
     gs 'GirlTalkIntroText', $TalkGirl
     gs 'UsefulTalkDebugPanel', $TalkGirl
 
@@ -94,6 +89,12 @@
     end
 
     *pl ' '
+
+    ! Меню после intro — иначе пустой серый экран (dropdown раньше текста)
+    if GirlTalkAutoOpenTalkMenu = 1:
+        GirlTalkAutoOpenTalkMenu = 0
+        gs 'Menu.Show', 'GirlTalkMainMenu'
+    end
 
     if $TalkGirl = 'amanda' or $TalkGirl = 'melissa':
         gs 'DanceDressEscortCanStart', $TalkGirl
@@ -575,16 +576,7 @@
     $GirlTalkHallGirl = LCASE($ARGS[0])
     GirlTalkHallTopicsAvailable = 0
 
-    if $LastHallEventType = 'harassment' and $LastHallEventGirl = $GirlTalkHallGirl and HallEventDiscussed[$GirlTalkHallGirl] = 0:
-        GirlTalkHallTopicsAvailable = 1
-    end
-
-    if LOC('HallRecentTalkCanDiscuss') = 1:
-        gs 'HallRecentTalkCanDiscuss', $GirlTalkHallGirl
-        if HallRecentTalkAvailable = 1:
-            GirlTalkHallTopicsAvailable = 1
-        end
-    end
+    ! hall_event «Что случилось» — убрано из меню (после harass уже after + policy)
 
     if LOC('HallFamilyReactionCanDiscuss') = 1:
         gs 'HallFamilyReactionCanDiscuss', $GirlTalkHallGirl
@@ -684,7 +676,8 @@
     elseif $GirlTalkHallTopic = 'hall_family':
         gt 'HallFamilyReactionStart', $TalkGirl, $TalkReturnLoc
     elseif $GirlTalkHallTopic = 'hall_recent':
-        gt 'HallRecentTalkStart', $TalkGirl, $TalkReturnLoc
+        ! frozen → hall_event
+        gt 'GirlTalkHallEventReaction', $TalkGirl, $TalkReturnLoc
     else:
         gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
     end
