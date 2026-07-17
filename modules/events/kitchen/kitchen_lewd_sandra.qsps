@@ -1,0 +1,500 @@
+! ================================================
+! FILE: modules/events/kitchen/kitchen_lewd_sandra.qsps
+! MODULE: events/kitchen
+! Кухня: скандальное поведение Сандры (она играет)
+! Канон: docs/design-hall-scene-unified.md
+! Только Сандра. Сёстры — hall-lewd. Уборки нет.
+! ================================================
+
+#KitchenLewdSandraCanStart
+    KitchenLewdSandraCanStart = 0
+
+    if FamilyLiberationGateOpen = 0:
+        exit
+    end
+
+    if Act1MoralUnlocked = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    if KitchenLewdSandraDisabled = 1:
+        exit
+    end
+
+    if time = 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    if KitchenLewdLastGlobalDay = day and KitchenLewdLastGlobalTime = time:
+        exit
+    end
+
+    if LOC('IsTavernOpen') = 1:
+        gs 'IsTavernOpen'
+
+        if TavernOpen = 0:
+            exit
+        end
+    end
+
+    gs 'KitchenLewdSandraCheck'
+
+    if KitchenLewdSandraOk = 1:
+        KitchenLewdSandraCanStart = 1
+    end
+
+    killvar 'KitchenLewdSandraOk'
+---
+
+#KitchenLewdSandraCheck
+    KitchenLewdSandraOk = 0
+    $KitchenLewdGirl = 'sandra'
+
+    if HallLewdLastDay['sandra'] = day:
+        exit
+    end
+
+    if jobkitchen['sandra'] <> 1:
+        exit
+    end
+
+    if $GirlLocation['sandra'] <> 'Kitchen' and $GirlLocation['sandra'] <> '':
+        ! если локация задана и не кухня — нет
+        if $GirlLocation['sandra'] <> 'Kitchen':
+            exit
+        end
+    end
+
+    ! Жёстче зала: slut>=32 OR pol3+agr>=2 OR path>=26
+    KitchenLewdReady = 0
+
+    if sluttiness['sandra'] >= 32:
+        KitchenLewdReady = 1
+    end
+
+    if GirlNpcPath['sandra'] >= 26:
+        KitchenLewdReady = 1
+    end
+
+    if GirlWorkPolicy['sandra'] = 3 and GirlPolicyAgreement['sandra'] >= 2:
+        KitchenLewdReady = 1
+    end
+
+    if GirlKitchenPolicy['sandra'] = 3 and GirlPolicyAgreement['sandra'] >= 2:
+        KitchenLewdReady = 1
+    end
+
+    if KitchenLewdReady = 0:
+        killvar 'KitchenLewdReady'
+        exit
+    end
+
+    killvar 'KitchenLewdReady'
+
+    if GirlWorkPolicy['sandra'] = 3 and GirlPolicyAgreement['sandra'] <= 1 and sluttiness['sandra'] < 32:
+        exit
+    end
+
+    gs 'HallLewdGetStage', 'sandra'
+
+    if HallLewdStage < 2:
+        exit
+    end
+
+    KitchenLewdChance = 14
+
+    if HallLewdStage = 2:
+        KitchenLewdChance = 22
+    elseif HallLewdStage = 3:
+        KitchenLewdChance = 34
+    elseif HallLewdStage >= 4:
+        KitchenLewdChance = 48
+    end
+
+    if GirlUniformLevel['sandra'] = 1:
+        KitchenLewdChance += 6
+    end
+
+    if GirlWorkPolicy['sandra'] = 1 and GirlKitchenPolicy['sandra'] = 1:
+        KitchenLewdChance -= 20
+    end
+
+    if GirlWorkPolicy['sandra'] = 3 or GirlKitchenPolicy['sandra'] = 3:
+        if GirlPolicyAgreement['sandra'] >= 2:
+            KitchenLewdChance += 12
+        end
+    end
+
+    if KitchenLewdChance < 4:
+        KitchenLewdChance = 4
+    end
+
+    if KitchenLewdChance > 70:
+        KitchenLewdChance = 70
+    end
+
+    if RAND(1, 100) <= KitchenLewdChance:
+        KitchenLewdSandraOk = 1
+    end
+
+    killvar 'KitchenLewdChance'
+---
+
+#KitchenLewdSandraPickScene
+    $KitchenLewdScene = 'counter'
+    KitchenLewdSceneRoll = RAND(1, 100)
+    KitchenLewdHardOk = 0
+
+    if GirlHallLewdSoftCount['sandra'] >= 3:
+        KitchenLewdHardOk = 1
+    end
+
+    if HallLewdStage >= 3:
+        KitchenLewdHardOk = 1
+    end
+
+    ! soft: counter, waist, corner | hard: lap, face_fall
+    if KitchenLewdHardOk = 0:
+        if KitchenLewdSceneRoll <= 40:
+            $KitchenLewdScene = 'counter'
+        elseif KitchenLewdSceneRoll <= 70:
+            $KitchenLewdScene = 'waist'
+        else:
+            $KitchenLewdScene = 'corner'
+        end
+    elseif HallLewdStage <= 2:
+        if KitchenLewdSceneRoll <= 30:
+            $KitchenLewdScene = 'counter'
+        elseif KitchenLewdSceneRoll <= 55:
+            $KitchenLewdScene = 'waist'
+        elseif KitchenLewdSceneRoll <= 75:
+            $KitchenLewdScene = 'corner'
+        elseif KitchenLewdSceneRoll <= 90:
+            $KitchenLewdScene = 'lap'
+        else:
+            $KitchenLewdScene = 'face_fall'
+        end
+    else:
+        if KitchenLewdSceneRoll <= 25:
+            $KitchenLewdScene = 'corner'
+        elseif KitchenLewdSceneRoll <= 55:
+            $KitchenLewdScene = 'lap'
+        elseif KitchenLewdSceneRoll <= 85:
+            $KitchenLewdScene = 'face_fall'
+        else:
+            $KitchenLewdScene = 'counter'
+        end
+    end
+
+    killvar 'KitchenLewdSceneRoll'
+    killvar 'KitchenLewdHardOk'
+---
+
+#KitchenLewdSandraStart
+    *clr
+    clr
+    cla
+
+    $KitchenLewdReturnLoc = $ARGS[0]
+
+    if $KitchenLewdReturnLoc = '':
+        $KitchenLewdReturnLoc = 'Kitchen'
+    end
+
+    if LOC($KitchenLewdReturnLoc) = 0:
+        $KitchenLewdReturnLoc = 'Kitchen'
+    end
+
+    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0 or FamilyCorruptionStage < 3:
+        gt $KitchenLewdReturnLoc
+    end
+
+    gs 'KitchenLewdSandraCheck'
+
+    if KitchenLewdSandraOk = 0:
+        killvar 'KitchenLewdSandraOk'
+        gt $KitchenLewdReturnLoc
+    end
+
+    killvar 'KitchenLewdSandraOk'
+
+    $KitchenLewdGirl = 'sandra'
+    $HallLewdGirl = 'sandra'
+    gs 'EnsureGirlData', 'sandra'
+    gs 'HallLewdEnsureName', 'sandra'
+    gs 'HallLewdGetStage', 'sandra'
+    gs 'KitchenLewdSandraPickScene'
+    $HallLewdScene = $KitchenLewdScene
+
+    HallLewdUniform = GirlUniformLevel['sandra']
+
+    if HallLewdUniform > 1:
+        HallLewdUniform = 1
+    end
+
+    if HallLewdUniform < 0:
+        HallLewdUniform = 0
+    end
+
+    KitchenLewdLastGlobalDay = day
+    KitchenLewdLastGlobalTime = time
+    HallLewdLastDay['sandra'] = day
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'sandra'
+    end
+
+    gs 'KitchenLewdShowImage', 'base'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СКАНДАЛ НА КУХНЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'KitchenLewdPrintText', 'intro'
+    *pl ' '
+
+    if GirlNoPantiesWork['sandra'] = 1:
+        if LOC('GirlNoPantiesEventPrintAddon') = 1:
+            gs 'GirlNoPantiesEventPrintAddon', 'sandra', 'kitchen_lewd', 'default'
+            *pl ' '
+        end
+    end
+
+    if FamilyLiberationGateOpen = 1:
+        gs 'HallEventChoiceThoughtsPrint', 'kitchen_lewd'
+    else:
+        gs 'HallEventChoiceThoughtsPrint', 'kitchen'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG KITCHEN LEWD] girl=sandra stage=' + STR(HallLewdStage) + ' score=' + STR(HallLewdScore)
+        *pl '[DEBUG KITCHEN LEWD] scene=' + $KitchenLewdScene + ' softCount=' + STR(GirlHallLewdSoftCount['sandra'])
+        *pl '[DEBUG KITCHEN LEWD] policy=' + STR(GirlWorkPolicy['sandra']) + '/' + STR(GirlKitchenPolicy['sandra']) + ' agr=' + STR(GirlPolicyAgreement['sandra'])
+        *pl ' '
+    end
+
+    gs 'KitchenLewdBuildMenu'
+    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''KitchenLewdMenu''">Стефану</a>?'
+---
+
+#KitchenLewdBuildMenu
+    gs 'Menu.Destroy', 'KitchenLewdMenu'
+    gs 'Menu.Create', 'KitchenLewdMenu'
+
+    gs 'MenuUiAdd', 'KitchenLewdMenu', 'Защитить', ''
+    gs 'Menu.AddModule', 'KitchenLewdMenu', {
+        gt 'KitchenLewdResolve', 'protect_hard', $KitchenLewdReturnLoc
+    }
+
+    if FamilyLiberationGateOpen = 1:
+        gs 'MenuUiAdd', 'KitchenLewdMenu', 'Наблюдать', ''
+        gs 'Menu.AddModule', 'KitchenLewdMenu', {
+            gt 'KitchenLewdResolve', 'watch', $KitchenLewdReturnLoc
+        }
+
+        gs 'MenuUiAdd', 'KitchenLewdMenu', 'Отвернуться', ''
+        gs 'Menu.AddModule', 'KitchenLewdMenu', {
+            gt 'KitchenLewdResolve', 'ignore', $KitchenLewdReturnLoc
+        }
+    end
+---
+
+#KitchenLewdResolve
+    *clr
+    clr
+    cla
+
+    $KitchenLewdChoice = LCASE($ARGS[0])
+    $KitchenLewdReturnLoc = $ARGS[1]
+
+    if $KitchenLewdReturnLoc = '':
+        $KitchenLewdReturnLoc = 'Kitchen'
+    end
+
+    if LOC($KitchenLewdReturnLoc) = 0:
+        $KitchenLewdReturnLoc = 'Kitchen'
+    end
+
+    $KitchenLewdGirl = 'sandra'
+    $HallLewdGirl = 'sandra'
+    $HallLewdScene = $KitchenLewdScene
+
+    gs 'EnsureGirlData', 'sandra'
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'sandra'
+    end
+
+    if FamilyLiberationGateOpen = 0:
+        $KitchenLewdChoice = 'protect_hard'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СКАНДАЛ НА КУХНЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $KitchenLewdChoice = 'protect_hard' or $KitchenLewdChoice = 'stop':
+        $KitchenLewdChoice = 'protect_hard'
+        gs 'KitchenLewdApplyConsequences', 'protect_hard'
+        gs 'KitchenLewdShowImage', 'stop'
+        gs 'KitchenLewdPrintText', 'stop'
+    elseif $KitchenLewdChoice = 'watch':
+        gs 'KitchenLewdApplyConsequences', 'watch'
+        gs 'KitchenLewdShowImage', 'watch'
+        gs 'KitchenLewdPrintText', 'watch'
+    elseif $KitchenLewdChoice = 'ignore' or $KitchenLewdChoice = 'encourage':
+        $KitchenLewdChoice = 'ignore'
+        gs 'KitchenLewdApplyConsequences', 'ignore'
+        gs 'KitchenLewdShowImage', 'ignore'
+        gs 'KitchenLewdPrintText', 'ignore'
+    else:
+        $KitchenLewdChoice = 'protect_hard'
+        gs 'KitchenLewdApplyConsequences', 'protect_hard'
+        gs 'KitchenLewdShowImage', 'stop'
+        gs 'KitchenLewdPrintText', 'stop'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG KITCHEN LEWD] choice=' + $KitchenLewdChoice
+        *pl ' '
+    end
+
+    $HallHarassGirl = 'sandra'
+    $HallHarassConsequenceArea = 'kitchen'
+    $HallHarassReturnLoc = $KitchenLewdReturnLoc
+    $HallHarassReaction = $KitchenLewdChoice
+    $HallScenePolicySource = 'lewd'
+    $HallLewdReturnLoc = $KitchenLewdReturnLoc
+    HallHarassPolicyChosen = 0
+    HallHarassPolicyValue = 0
+
+    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
+    *pl ' '
+    gs 'HallHarassmentBuildPolicyMenu'
+    gs 'HallHarassmentPrintGirlPolicyMenuLine'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $KitchenLewdReturnLoc
+    end
+
+    killvar '$KitchenLewdChoice'
+---
+
+#KitchenLewdApplyConsequences
+    $KitchenLewdApplyChoice = LCASE($ARGS[0])
+    $KitchenLewdGirl = 'sandra'
+
+    if $KitchenLewdApplyChoice = 'protect_hard' or $KitchenLewdApplyChoice = 'stop':
+        GirlPublicAttention['sandra'] -= 1
+        GirlNpcPath['sandra'] -= 1
+        GirlSecretiveness['sandra'] += 1
+        GirlRebellion['sandra'] += 1
+        TavernScandal -= 1
+        SandraFamilyConcern += 1
+
+        if GirlTrustStefan['sandra'] > 0:
+            GirlTrustStefan['sandra'] += 1
+        end
+
+    elseif $KitchenLewdApplyChoice = 'watch':
+        gs 'AwardGirlTipsFromBase', 'sandra', 10 + HallLewdStage * 5
+        TavernScandal += 1
+        TavernLewdFame += 1
+        GirlPublicAttention['sandra'] += 1
+        GirlNpcPath['sandra'] += 1
+
+    elseif $KitchenLewdApplyChoice = 'ignore' or $KitchenLewdApplyChoice = 'encourage':
+        gs 'AwardGirlTipsFromBase', 'sandra', 20 + HallLewdStage * 10
+        TavernScandal += 2
+        TavernLewdFame += 2
+        GirlPublicAttention['sandra'] += 2
+        GirlNpcPath['sandra'] += 2
+        GirlHallLewdStage['sandra'] += 1
+        SandraNpcPath = GirlNpcPath['sandra']
+    end
+
+    if $KitchenLewdScene = 'counter' or $KitchenLewdScene = 'waist' or $KitchenLewdScene = 'corner':
+        GirlHallLewdSoftCount['sandra'] += 1
+    end
+
+    if GirlPublicAttention['sandra'] < 0:
+        GirlPublicAttention['sandra'] = 0
+    end
+
+    if GirlNpcPath['sandra'] < 0:
+        GirlNpcPath['sandra'] = 0
+    end
+
+    if TavernScandal < 0:
+        TavernScandal = 0
+    end
+
+    SandraNpcPath = GirlNpcPath['sandra']
+
+    killvar '$KitchenLewdApplyChoice'
+---
+
+#KitchenLewdShowImage
+    $KitchenLewdImageOutcome = LCASE($ARGS[0])
+
+    if $KitchenLewdImageOutcome = '':
+        $KitchenLewdImageOutcome = 'base'
+    end
+
+    $KitchenLewdStubPath = 'images/common/hall_scene_stub.png'
+    $KitchenLewdFuturePath = 'images/events/sandra/kitchen_lewd/' + $KitchenLewdScene + '_' + $KitchenLewdImageOutcome + '.webp'
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'small'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG KITCHEN LEWD IMAGE] stub: ' + $KitchenLewdStubPath
+        *pl '[DEBUG KITCHEN LEWD IMAGE] future: ' + $KitchenLewdFuturePath
+        *pl ' '
+    end
+
+    killvar '$KitchenLewdImageOutcome'
+    killvar '$KitchenLewdStubPath'
+    killvar '$KitchenLewdFuturePath'
+---
+
+#KitchenLewdDebugStart
+    FamilyLiberationGateOpen = 1
+    Act1MoralUnlocked = 1
+    FamilyCorruptionStage = 3
+    sluttiness['sandra'] = 35
+    GirlNpcPath['sandra'] = 28
+    GirlPolicyAgreement['sandra'] = 2
+    GirlWorkPolicy['sandra'] = 3
+    GirlKitchenPolicy['sandra'] = 3
+    jobkitchen['sandra'] = 1
+    $GirlLocation['sandra'] = 'Kitchen'
+    GirlHallLewdSoftCount['sandra'] = 3
+    GirlHallLewdStage['sandra'] = 2
+    KitchenLewdLastGlobalDay = 0
+    KitchenLewdLastGlobalTime = 0
+    HallLewdLastDay['sandra'] = 0
+    gt 'KitchenLewdSandraStart', 'Kitchen'
+---

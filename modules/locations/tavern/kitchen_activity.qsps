@@ -183,7 +183,19 @@
         exit
     end
 
-    if LOC('KitchenCustomerEventCanStart') = 1:
+    KitchenLookRarePick = RAND(1, 100)
+
+    ! 55% — kitchen-lewd Сандры (если гейты), иначе customer event
+    if KitchenLookRarePick <= 55 and LOC('KitchenLewdSandraCanStart') = 1:
+        gs 'KitchenLewdSandraCanStart'
+
+        if KitchenLewdSandraCanStart = 1:
+            KitchenLookRareEventStarted = 1
+            gt 'KitchenLewdSandraStart', 'Kitchen'
+        end
+    end
+
+    if KitchenLookRareEventStarted = 0 and LOC('KitchenCustomerEventCanStart') = 1:
         gs 'KitchenCustomerEventCanStart'
 
         if KitchenCustomerEventCanStart = 1:
@@ -191,6 +203,8 @@
             gt 'KitchenCustomerEventStart', $KitchenCustomerSelectedGirl, 'Kitchen'
         end
     end
+
+    killvar 'KitchenLookRarePick'
 ---
 
 ! ================================================

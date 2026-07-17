@@ -166,9 +166,25 @@ intro (без полного refuse-policy текста)
 
 ### 3.7 Файлы
 
-- `modules/events/hall/hall_lewd_behavior.qsps`  
+- `modules/events/hall/hall_lewd_behavior.qsps` — зал, Аманда/Мелисса  
 - `modules/events/hall/hall_lewd_behavior_text.qsps`  
-- (future) kitchen-lewd table for Sandra  
+- `modules/events/kitchen/kitchen_lewd_sandra.qsps` — кухня, только Сандра  
+- `modules/events/kitchen/kitchen_lewd_sandra_text.qsps` — stub prose  
+- Картинка-заглушка: `images/common/hall_scene_stub.png`  
+
+### 3.8 Kitchen-lewd Сандра (сцены)
+
+| id | Сцена | Unlock |
+|----|--------|--------|
+| `counter` | наклон над разделочным столом | soft |
+| `waist` | рука на бедре/талии у плиты | soft |
+| `corner` | угол / кладовая, близко | soft |
+| `lap` | на коленях (табурет) | hard N=3 soft / stage≥3 |
+| `face_fall` | падение лицом к паху | hard |
+
+Гейт: liberation + moral + FamCorrupt≥3 + (slut≥32 ∨ path≥26 ∨ pol3+agr≥2).  
+Вход: rare «осмотреть кухню» (`kitchen_activity.qsps`).  
+Debug: `gt 'KitchenLewdDebugStart'`.  
 
 ---
 
