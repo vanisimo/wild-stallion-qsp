@@ -143,8 +143,9 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/core/gifts/gift_simple_text.qsps` | gifts cheap/expensive |
 | `modules/events/family/amanda_home_first_sex_text.qsps` | Amanda home first sex |
 | `modules/events/family/birth_certificate_text.qsps` | birth certificate |
-| `modules/events/family/sandra_staff_girls_reaction_text.qsps` | staff hire reactions |
+| `modules/events/sandra/sandra_staff_girls_reaction_text.qsps` | staff hire reactions |
 | `modules/events/family/act1_moral_unlock_text.qsps` | Act1 moral morning thoughts |
+| `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | Sandra reveals Stefan birth / Lermont |
 
 **Rules for agents:**
 
