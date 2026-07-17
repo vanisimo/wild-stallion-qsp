@@ -87,7 +87,7 @@
         *pl ' '
     end
 
-    if BirthCertificateFound = 1 and BirthCertificateMagistrateConfirmed = 0 and MayorFirstTalkDone = 1:
+    if BirthCertificateFound = 1 and BirthCertificateRead = 1 and BirthCertificateMagistrateConfirmed = 0 and MayorFirstTalkDone = 1:
         act '<b>Подтвердить свидетельство</b>', 'images/common/ui/actions/policy.png':
             gt 'MayorOfficeMagistrateSubmit'
         end
@@ -178,7 +178,21 @@
     end
 
     if MayorBribePaid = 1 and MayorAudienceRefused = 1:
-        gt 'MayorOfficeReception'
+        gs 'MayorOfficeShowClerkImage'
+        gs 'MayorOfficeAudienceRefusedDoneText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Потребовать деньги', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOfficeClerkRefundTalk'
+        end
+
+        gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOffice'
+        end
+
         exit
     end
 
@@ -280,6 +294,11 @@
         act $ActUiLabel, $ActUiIconPath:
             gt 'MayorOfficeClerkRefundTalk'
         end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
     end
 ---
 
@@ -526,7 +545,7 @@
         exit
     end
 
-    if BirthCertificateFound = 0 or MayorFirstTalkDone = 0:
+    if BirthCertificateFound = 0 or BirthCertificateRead = 0 or MayorFirstTalkDone = 0:
         gt 'MayorOfficeMagistrateGate'
         exit
     end
@@ -638,10 +657,7 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    *p 'Клерк листает толстую книгу и качает головой.'
-    *p '— Ответ из столицы ещё не пришёл. Приходите через несколько дней.'
-
-    if day >= BirthCertificateMagistrateSubmitDay + 5:
+    if BirthCertificateMagistrateSubmitDay > 0 and day >= BirthCertificateMagistrateSubmitDay + 5:
         BirthCertificateMagistratePending = 0
         BirthCertificateMagistrateConfirmed = 1
         StefanNobleLineUnlocked = 1
@@ -651,6 +667,9 @@
         if LOC('KnowledgeRegisterFact') = 1:
             gs 'KnowledgeRegisterFact', 'Stefan_BirthCertificateConfirmed_1'
         end
+    else:
+        *pl 'Клерк листает толстую книгу и качает головой.'
+        *pl '— Ответ из столицы ещё не пришёл. Приходите через несколько дней.'
     end
 
     *pl ' '
