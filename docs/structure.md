@@ -73,7 +73,7 @@ Not compiled: `archive/`, `modules/story/`, `modules/system/` (reserved), `image
 - `docs/economy.md`
 - `docs/policy-flow.md`
 - `docs/design-hall-harassment.md`
-- `docs/design-hall-scene-unified.md` — harassment / lewd / missing: общие кнопки и policy
+- `docs/design-hall-scene-unified.md` — harassment / lewd / missing: лестница, гейты, кнопки, acts, числа
 - `docs/design-interaction-schemes.md`
 - `docs/handoff.md`
 
