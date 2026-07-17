@@ -1,29 +1,24 @@
 ! ================================================
 ! FILE: modules/events/hall/hall_lewd_behavior.qsps
-! Скандальное поведение девушки в зале
-! Версия: v1.1 / policy talk hook
-! Назначение:
-! - отдельная система для случаев, когда девушка уже сама играет вниманием клиентов
-! - работает для Аманды, Мелиссы и Сандры
-! - не заменяет hall_harassment и hall_missing_girl
-! - выбор игрока короткий: пресечь / наблюдать / поощрить ради чаевых
-! - картинки обязательны через ShowImage и debug-путь
-! - после события даёт живой разговор о правилах, если подключён GirlWorkPolicyTalk
-!
-! Тексты берутся из:
-! modules/events/hall/hall_lewd_behavior_text.qsps
+! Скандальное поведение (она играет) — зал: Аманда/Мелисса
+! Канон: docs/design-hall-scene-unified.md
+! Сандра lewd — только кухня (отдельный entry позже); здесь sandra не в пуле
 ! ================================================
 
 #HallLewdBehaviorCanStart
     HallLewdBehaviorCanStart = 0
     $HallLewdSelectedGirl = ''
 
-    ! Не «ранний» контент: до семейного ужина / liberation — только harassment.
     if FamilyLiberationGateOpen = 0:
         exit
     end
 
     if Act1MoralUnlocked = 0:
+        exit
+    end
+
+    ! Не сразу после ужина: нужна семейная коррупция
+    if FamilyCorruptionStage < 3:
         exit
     end
 
@@ -95,9 +90,9 @@
     $HallLewdSelectedGirl = ''
     HallLewdCandidateCount = 0
 
+    ! Зал lewd: только сёстры. Сандра — kitchen-lewd (отдельный модуль).
     gs 'HallLewdCheckCandidate', 'amanda'
     gs 'HallLewdCheckCandidate', 'melissa'
-    gs 'HallLewdCheckCandidate', 'sandra'
 
     if HallLewdCandidateCount <= 0:
         exit
@@ -122,28 +117,46 @@
         exit
     end
 
+    if $HallLewdCheckGirl <> 'amanda' and $HallLewdCheckGirl <> 'melissa':
+        killvar '$HallLewdCheckGirl'
+        exit
+    end
+
     if HallLewdLastDay[$HallLewdCheckGirl] = day:
         exit
     end
 
-    ! «Сама играет» — не когда только что приказали и она отказывается.
-    ! Нужна личная готовность ИЛИ согласие с раскованной политикой.
-    if sluttiness[$HallLewdCheckGirl] < 22 and GirlNpcPath[$HallLewdCheckGirl] < 18:
-        if GirlWorkPolicy[$HallLewdCheckGirl] <> 3 or GirlPolicyAgreement[$HallLewdCheckGirl] < 2:
-            killvar '$HallLewdCheckGirl'
-            exit
-        end
+    ! Канон §7: slut>=28 OR path>=22 OR (pol3 AND agr>=2)
+    HallLewdReady = 0
+
+    if sluttiness[$HallLewdCheckGirl] >= 28:
+        HallLewdReady = 1
     end
 
+    if GirlNpcPath[$HallLewdCheckGirl] >= 22:
+        HallLewdReady = 1
+    end
+
+    if GirlWorkPolicy[$HallLewdCheckGirl] = 3 and GirlPolicyAgreement[$HallLewdCheckGirl] >= 2:
+        HallLewdReady = 1
+    end
+
+    if HallLewdReady = 0:
+        killvar '$HallLewdCheckGirl'
+        killvar 'HallLewdReady'
+        exit
+    end
+
+    killvar 'HallLewdReady'
+
+    ! Refuse «раскованнее» — не lewd
     if GirlWorkPolicy[$HallLewdCheckGirl] = 3 and GirlPolicyAgreement[$HallLewdCheckGirl] <= 1 and sluttiness[$HallLewdCheckGirl] < 28:
-        ! Приказ «раскованнее», но фактически refuse/against — это harassment, не lewd.
         killvar '$HallLewdCheckGirl'
         exit
     end
 
     gs 'HallLewdGetStage', $HallLewdCheckGirl
 
-    ! Это не ранняя сцена. Для ранних случаев есть hall_harassment.
     if HallLewdStage < 2:
         killvar '$HallLewdCheckGirl'
         exit
@@ -352,68 +365,73 @@
 #HallLewdPickScene
     $HallLewdScene = 'bend'
     $HallLewdJob = 'waitress'
-
-    if jobcleaning[$HallLewdGirl] = 1 and jobwaitress[$HallLewdGirl] = 0:
-        $HallLewdJob = 'cleaning'
-    elseif jobcleaning[$HallLewdGirl] = 1 and jobwaitress[$HallLewdGirl] = 1:
-        if RAND(1, 2) = 1:
-            $HallLewdJob = 'cleaning'
-        end
-    end
+    ! Уборки нет: cleaning / floor / ladder / fall не используются.
+    ! kiss+шнуровка убраны → hard: lap | face_fall
 
     HallLewdSceneRoll = RAND(1, 100)
+    HallLewdHardOk = 0
 
-    if $HallLewdJob = 'cleaning':
-        if HallLewdSceneRoll <= 35:
-            $HallLewdScene = 'floor'
-        elseif HallLewdSceneRoll <= 65:
-            $HallLewdScene = 'ladder'
+    if GirlHallLewdSoftCount[$HallLewdGirl] >= 3:
+        HallLewdHardOk = 1
+    end
+
+    if HallLewdStage >= 3:
+        HallLewdHardOk = 1
+    end
+
+    if HallLewdHardOk = 0:
+        ! soft only
+        if HallLewdSceneRoll <= 40:
+            $HallLewdScene = 'bend'
+        elseif HallLewdSceneRoll <= 70:
+            $HallLewdScene = 'waist'
         else:
-            $HallLewdScene = 'fall'
+            $HallLewdScene = 'sit_near'
+        end
+    elseif HallLewdStage <= 2:
+        if HallLewdSceneRoll <= 35:
+            $HallLewdScene = 'bend'
+        elseif HallLewdSceneRoll <= 60:
+            $HallLewdScene = 'waist'
+        elseif HallLewdSceneRoll <= 80:
+            $HallLewdScene = 'sit_near'
+        elseif HallLewdSceneRoll <= 90:
+            $HallLewdScene = 'lap'
+        else:
+            $HallLewdScene = 'face_fall'
+        end
+    elseif HallLewdStage = 3:
+        if HallLewdSceneRoll <= 25:
+            $HallLewdScene = 'waist'
+        elseif HallLewdSceneRoll <= 50:
+            $HallLewdScene = 'sit_near'
+        elseif HallLewdSceneRoll <= 75:
+            $HallLewdScene = 'lap'
+        else:
+            $HallLewdScene = 'face_fall'
         end
     else:
-        if HallLewdStage <= 2:
-            if HallLewdSceneRoll <= 45:
-                $HallLewdScene = 'bend'
-            elseif HallLewdSceneRoll <= 75:
-                $HallLewdScene = 'waist'
-            else:
-                $HallLewdScene = 'sit_near'
-            end
-        elseif HallLewdStage = 3:
-            if HallLewdSceneRoll <= 30:
-                $HallLewdScene = 'waist'
-            elseif HallLewdSceneRoll <= 60:
-                $HallLewdScene = 'sit_near'
-            elseif HallLewdSceneRoll <= 85:
-                $HallLewdScene = 'lap'
-            else:
-                $HallLewdScene = 'kiss'
-            end
+        if HallLewdSceneRoll <= 20:
+            $HallLewdScene = 'sit_near'
+        elseif HallLewdSceneRoll <= 50:
+            $HallLewdScene = 'lap'
+        elseif HallLewdSceneRoll <= 80:
+            $HallLewdScene = 'face_fall'
         else:
-            if HallLewdSceneRoll <= 25:
-                $HallLewdScene = 'sit_near'
-            elseif HallLewdSceneRoll <= 55:
-                $HallLewdScene = 'lap'
-            elseif HallLewdSceneRoll <= 80:
-                $HallLewdScene = 'kiss'
-            else:
-                $HallLewdScene = 'bend'
-            end
+            $HallLewdScene = 'bend'
         end
     end
 
-    if GirlConflictUntilDay[$HallLewdGirl] >= day and HallLewdStage >= 3 and $HallLewdJob <> 'cleaning':
-        if HallLewdSceneRoll <= 45:
+    if GirlConflictUntilDay[$HallLewdGirl] >= day and HallLewdHardOk = 1:
+        if HallLewdSceneRoll <= 50:
             $HallLewdScene = 'lap'
-        elseif HallLewdSceneRoll <= 75:
-            $HallLewdScene = 'kiss'
         else:
-            $HallLewdScene = 'sit_near'
+            $HallLewdScene = 'face_fall'
         end
     end
 
     killvar 'HallLewdSceneRoll'
+    killvar 'HallLewdHardOk'
 ---
 
 ! ================================================
@@ -471,15 +489,18 @@
     end
 
     ! Жёсткий гейт (CanStart + debug/dispatcher обходы)
-    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0:
+    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0 or FamilyCorruptionStage < 3:
         gt $HallLewdReturnLoc
+    end
+
+    if $HallLewdGirl = 'sandra':
+        $HallLewdGirl = ''
     end
 
     if $HallLewdGirl = '':
         gs 'HallLewdPickCandidate'
         $HallLewdGirl = $HallLewdSelectedGirl
     else:
-        ! Явный вызов с именем — всё равно фильтр «играет / не refuse»
         HallLewdCandidateCount = 0
         gs 'HallLewdCheckCandidate', $HallLewdGirl
 
@@ -737,16 +758,6 @@
             GirlSecretiveness[$HallLewdGirl] += 2
         end
 
-        if $HallLewdGirl = 'amanda':
-            if LOC('KnowledgeRegisterFact') = 1:
-                gs 'KnowledgeRegisterFact', 'amanda_hall_lewd_witness'
-            end
-
-            if LOC('KnowledgeRegisterPlayerKnows') = 1:
-                gs 'KnowledgeRegisterPlayerKnows', 'amanda_hall_lewd_witness', 'witness'
-            end
-        end
-
     elseif $HallLewdApplyChoice = 'encourage' or $HallLewdApplyChoice = 'ignore':
         ! «Отвернуться» = самый выгодный исход (чаевые), policy не форсим
         gs 'AwardGirlTipsFromBase', $HallLewdGirl, 20 + HallLewdStage * 10
@@ -756,7 +767,14 @@
         GirlPublicAttention[$HallLewdGirl] += 2
         GirlNpcPath[$HallLewdGirl] += 2
         GirlHallLewdStage[$HallLewdGirl] += 1
+    end
 
+    ! Soft-счётчик для hard unlock (lap / face_fall): N=3
+    if $HallLewdScene = 'bend' or $HallLewdScene = 'waist' or $HallLewdScene = 'sit_near':
+        GirlHallLewdSoftCount[$HallLewdGirl] += 1
+    end
+
+    if $HallLewdApplyChoice = 'watch' or $HallLewdApplyChoice = 'ignore' or $HallLewdApplyChoice = 'encourage':
         if $HallLewdGirl = 'amanda':
             if LOC('KnowledgeRegisterFact') = 1:
                 gs 'KnowledgeRegisterFact', 'amanda_hall_lewd_witness'

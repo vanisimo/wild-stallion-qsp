@@ -22,12 +22,15 @@
     HallMissingGirlCanStart = 0
     $HallMissingGirlSelected = ''
 
-    ! Позже harassment и hall_lewd: только после семейного ужина
     if FamilyLiberationGateOpen = 0:
         exit
     end
 
     if Act1MoralUnlocked = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
         exit
     end
 
@@ -130,14 +133,44 @@
         exit
     end
 
-    ! Нужна реальная готовность «уйти с клиентом», не только приказ
-    if sluttiness[$HallMissingCheckGirl] < 30 and GirlNpcPath[$HallMissingCheckGirl] < 25:
-        if GirlWorkPolicy[$HallMissingCheckGirl] <> 3 or GirlPolicyAgreement[$HallMissingCheckGirl] < 2:
-            exit
+    ! Канон: сёстры — зал-пропажа; Сандра — только kitchen place (ниже)
+    if $HallMissingCheckGirl <> 'amanda' and $HallMissingCheckGirl <> 'melissa' and $HallMissingCheckGirl <> 'sandra':
+        exit
+    end
+
+    ! Personal gate: sisters slut>=35; Sandra slut>=38 or pol3+agr>=2
+    HallMissingReady = 0
+
+    if $HallMissingCheckGirl = 'sandra':
+        if sluttiness[$HallMissingCheckGirl] >= 38:
+            HallMissingReady = 1
+        end
+
+        if GirlWorkPolicy[$HallMissingCheckGirl] = 3 and GirlPolicyAgreement[$HallMissingCheckGirl] >= 2:
+            HallMissingReady = 1
+        end
+    else:
+        if sluttiness[$HallMissingCheckGirl] >= 35:
+            HallMissingReady = 1
+        end
+
+        if GirlNpcPath[$HallMissingCheckGirl] >= 28:
+            HallMissingReady = 1
+        end
+
+        if GirlWorkPolicy[$HallMissingCheckGirl] = 3 and GirlPolicyAgreement[$HallMissingCheckGirl] >= 2:
+            HallMissingReady = 1
         end
     end
 
-    if GirlWorkPolicy[$HallMissingCheckGirl] = 3 and GirlPolicyAgreement[$HallMissingCheckGirl] <= 1 and sluttiness[$HallMissingCheckGirl] < 32:
+    if HallMissingReady = 0:
+        killvar 'HallMissingReady'
+        exit
+    end
+
+    killvar 'HallMissingReady'
+
+    if GirlWorkPolicy[$HallMissingCheckGirl] = 3 and GirlPolicyAgreement[$HallMissingCheckGirl] <= 1 and sluttiness[$HallMissingCheckGirl] < 35:
         exit
     end
 
@@ -341,29 +374,24 @@
 ! ================================================
 
 #HallMissingGirlPickPlace
+    ! Сандра — только kitchen. Сёстры — under_table / storage / stairs (без kitchen, без 2nd floor).
     $HallMissingPlace = 'storage'
     HallMissingPlaceRoll = RAND(1, 100)
 
-    if HallMissingGirlStage >= 4 and (jobwhore[$HallMissingGirl] = 1 or TavernBackroomRumor = 1 or TavernScandal >= 70):
-        if HallMissingPlaceRoll <= 20:
-            $HallMissingPlace = 'under_table'
-        elseif HallMissingPlaceRoll <= 45:
-            $HallMissingPlace = 'storage'
-        elseif HallMissingPlaceRoll <= 65:
-            $HallMissingPlace = 'kitchen'
-        elseif HallMissingPlaceRoll <= 85:
-            $HallMissingPlace = 'stairs'
-        else:
-            $HallMissingPlace = 'second_floor'
-        end
-    elseif HallMissingGirlStage >= 4 and HallMissingPlaceRoll <= 25:
-        $HallMissingPlace = 'under_table'
-    elseif HallMissingPlaceRoll <= 50:
-        $HallMissingPlace = 'storage'
-    elseif HallMissingPlaceRoll <= 75:
+    if $HallMissingGirl = 'sandra':
         $HallMissingPlace = 'kitchen'
-    else:
+        killvar 'HallMissingPlaceRoll'
+        exit
+    end
+
+    if HallMissingGirlStage >= 4 and HallMissingPlaceRoll <= 30:
+        $HallMissingPlace = 'under_table'
+    elseif HallMissingPlaceRoll <= 55:
+        $HallMissingPlace = 'storage'
+    elseif HallMissingPlaceRoll <= 80:
         $HallMissingPlace = 'stairs'
+    else:
+        $HallMissingPlace = 'under_table'
     end
 
     killvar 'HallMissingPlaceRoll'
@@ -396,52 +424,58 @@
 ! ================================================
 
 #HallMissingGirlPickPrivateAct
-    $HallMissingPrivateAct = 'talk'
+    ! early: petting/tits/pussy/cock_touch
+    ! mid: hand, mouth, cuni (+titjob Sandra)
+    ! late: mouth_balls, deepthroat, anilingus
+    ! без room_invite / second_floor
+    $HallMissingPrivateAct = 'petting'
     HallMissingPrivateActRoll = RAND(1, 100)
+    HallMissingActBand = 1
 
-    if HallMissingGirlStage < 4:
-        $HallMissingPrivateAct = 'talk'
-    elseif $HallMissingPlace = 'under_table':
-        if HallMissingPrivateActRoll <= 55:
-            $HallMissingPrivateAct = 'hand'
-        else:
-            $HallMissingPrivateAct = 'tease'
-        end
-    elseif $HallMissingPlace = 'kitchen':
-        if HallMissingPrivateActRoll <= 45:
-            $HallMissingPrivateAct = 'mouth'
-        elseif HallMissingPrivateActRoll <= 75:
-            $HallMissingPrivateAct = 'hand'
-        else:
-            $HallMissingPrivateAct = 'tease'
-        end
-    elseif $HallMissingPlace = 'stairs':
-        if HallMissingPrivateActRoll <= 50:
-            $HallMissingPrivateAct = 'client_mouth'
-        else:
-            $HallMissingPrivateAct = 'touch'
-        end
-    elseif $HallMissingPlace = 'second_floor':
-        if HallMissingPrivateActRoll <= 35:
-            $HallMissingPrivateAct = 'room_invite'
+    if HallMissingGirlStage >= 4 and (HallMissingGirlPrivateCount[$HallMissingGirl] >= 2 or GirlHallLewdStage[$HallMissingGirl] >= 3):
+        HallMissingActBand = 3
+    elseif HallMissingGirlStage >= 4 or HallMissingGirlPrivateCount[$HallMissingGirl] >= 1:
+        HallMissingActBand = 2
+    end
+
+    if HallMissingActBand = 1:
+        if HallMissingPrivateActRoll <= 25:
+            $HallMissingPrivateAct = 'petting'
+        elseif HallMissingPrivateActRoll <= 45:
+            $HallMissingPrivateAct = 'tits_lick'
         elseif HallMissingPrivateActRoll <= 65:
-            $HallMissingPrivateAct = 'mouth'
+            $HallMissingPrivateAct = 'pussy_touch'
         elseif HallMissingPrivateActRoll <= 85:
-            $HallMissingPrivateAct = 'client_mouth'
+            $HallMissingPrivateAct = 'cock_touch'
         else:
             $HallMissingPrivateAct = 'hand'
+        end
+    elseif HallMissingActBand = 2:
+        if $HallMissingGirl = 'sandra' and HallMissingPrivateActRoll <= 25:
+            $HallMissingPrivateAct = 'titjob'
+        elseif HallMissingPrivateActRoll <= 40:
+            $HallMissingPrivateAct = 'hand'
+        elseif HallMissingPrivateActRoll <= 70:
+            $HallMissingPrivateAct = 'mouth'
+        else:
+            $HallMissingPrivateAct = 'cuni'
         end
     else:
-        if HallMissingPrivateActRoll <= 45:
-            $HallMissingPrivateAct = 'hand'
-        elseif HallMissingPrivateActRoll <= 75:
-            $HallMissingPrivateAct = 'mouth'
+        if HallMissingPrivateActRoll <= 30:
+            $HallMissingPrivateAct = 'mouth_balls'
+        elseif HallMissingPrivateActRoll <= 55:
+            $HallMissingPrivateAct = 'deepthroat'
+        elseif HallMissingPrivateActRoll <= 80:
+            $HallMissingPrivateAct = 'anilingus'
+        elseif $HallMissingGirl = 'sandra' and HallMissingPrivateActRoll <= 92:
+            $HallMissingPrivateAct = 'titjob'
         else:
-            $HallMissingPrivateAct = 'touch'
+            $HallMissingPrivateAct = 'cuni'
         end
     end
 
     killvar 'HallMissingPrivateActRoll'
+    killvar 'HallMissingActBand'
 ---
 
 ! ================================================
@@ -470,7 +504,7 @@
         $HallMissingReturnLoc = 'TavernMain'
     end
 
-    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0:
+    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0 or FamilyCorruptionStage < 3:
         gt $HallMissingReturnLoc
     end
 
