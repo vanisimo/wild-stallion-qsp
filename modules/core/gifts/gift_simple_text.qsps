@@ -62,7 +62,8 @@
     GiftReactStreak = ARGS[2]
     $GiftReactionText = ''
 
-    if $GiftReactId = 'gift_cheap' and GiftReactStreak >= 2:
+    ! Второй подарок за день — любой тип (раньше только gift_cheap → дорогой/смесь не давали реплику)
+    if GiftReactStreak >= 2:
         if $GiftReactGirl = 'sandra':
             $GiftReactionText = 'Сандра принимает второй свёрток и смотрит на вас прищуренно.<br><br>— Стефан… Ты сегодня что, меня задобрить решил? Или вину отрабатываешь?'
         elseif $GiftReactGirl = 'amanda':
@@ -156,6 +157,15 @@
     $GiftRegId = LCASE($ARGS[1])
     GiftCheapStreakToday = 1
 
+    ! Счётчик любых подарков за сутки (для «второй за день»)
+    if GirlGiftAnyStampDay[$GiftRegGirl] <> day:
+        GirlGiftAnyStampDay[$GiftRegGirl] = day
+        GirlGiftAnyTodayCount[$GiftRegGirl] = 0
+    end
+
+    GirlGiftAnyTodayCount[$GiftRegGirl] += 1
+    GiftCheapStreakToday = GirlGiftAnyTodayCount[$GiftRegGirl]
+
     if $GiftRegId = 'gift_cheap':
         if GirlGiftCheapStampDay[$GiftRegGirl] <> day:
             GirlGiftCheapStampDay[$GiftRegGirl] = day
@@ -163,7 +173,6 @@
         end
 
         GirlGiftCheapTodayCount[$GiftRegGirl] += 1
-        GiftCheapStreakToday = GirlGiftCheapTodayCount[$GiftRegGirl]
     end
 
     killvar '$GiftRegGirl'

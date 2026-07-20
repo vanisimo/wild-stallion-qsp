@@ -343,9 +343,9 @@
         gs 'OffenseDaysTalkCanStart', $TalkGirl
 
         if OffenseDaysTalkCanStart = 1:
+            ! Не killvar $TalkGirl/$TalkReturnLoc: OpenNpcMenu и BuildTopics
+            ! читают их сразу после check. killvar → пустой GirlTalkResult.
             GirlTalkMenuReady = 1
-            killvar '$TalkGirl'
-            killvar '$TalkReturnLoc'
             exit
         end
     end
@@ -359,8 +359,7 @@
 
         if AmandaHomeRestingAfterIntim = 1:
             killvar 'AmandaHomeRestingAfterIntim'
-            killvar '$TalkGirl'
-            killvar '$TalkReturnLoc'
+            GirlTalkMenuReady = 0
             exit
         end
 
@@ -404,6 +403,16 @@
         exit
     end
 
+    ! CheckNpcLinkAvailable перезаписывает $TalkGirl — восстановить из ARGS
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+
+    if $TalkGirl = '':
+        killvar '$TalkOpenMenuLoc'
+        killvar '$TalkOpenReturnLoc'
+        exit
+    end
+
     if LOC('OffenseDaysTalkCanStart') = 1:
         gs 'OffenseDaysTalkCanStart', $TalkGirl
 
@@ -429,6 +438,22 @@
 
     if GirlTalkMenuReady = 0:
         exit
+    end
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkGirl = '':
+        exit
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = $CURLOC
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
     end
 
     gs 'GirlTalkSessionBegin'
@@ -565,6 +590,31 @@
         }
     end
 
+    gs 'GirlTalkAppendGiftMenuItems'
+---
+
+#GirlTalkAppendGiftMenuItems
+    ! Подарок в dropdown разговора (не только в меню «клик по имени» / обиде)
+    if $TalkGirl = '':
+        exit
+    end
+
+    if GirlTalkIrritatedUntilDay[$TalkGirl] >= day:
+        exit
+    end
+
+    gs 'GiftHasAnyInInventory'
+    gs 'GiftGirlCanReceive', $TalkGirl
+
+    if GiftHasAny = 1 and GiftGirlCanReceive = 1 and LOC('MenuGirlGift') = 1:
+        $GirlTalkGiftMod = 'gt ''MenuGirlGift'', ''' + $TalkGirl + ''', ''' + $TalkReturnLoc + ''''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Подарить', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', $GirlTalkGiftMod
+        killvar '$GirlTalkGiftMod'
+    end
+
+    killvar 'GiftHasAny'
+    killvar 'GiftGirlCanReceive'
 ---
 
 ! ================================================

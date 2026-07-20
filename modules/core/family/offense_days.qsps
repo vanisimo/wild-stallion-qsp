@@ -26,6 +26,7 @@
     GirlOffenseDays[$OffenseInitGirl] = 0
     $GirlOffenseReason[$OffenseInitGirl] = ''
     GirlOffenseRightUsed[$OffenseInitGirl] = 0
+    GirlOffenseApologizeDay[$OffenseInitGirl] = 0
     GirlOffenseMismatchProtect[$OffenseInitGirl] = 0
     GirlOffenseMismatchPolicy[$OffenseInitGirl] = 0
     GirlOffenseInterceptCount[$OffenseInitGirl] = 0
@@ -81,6 +82,7 @@
     GirlOffenseDays[$OffenseStartGirl] = 4
     $GirlOffenseReason[$OffenseStartGirl] = $OffenseReason
     GirlOffenseRightUsed[$OffenseStartGirl] = 0
+    GirlOffenseApologizeDay[$OffenseStartGirl] = 0
 
     killvar '$OffenseStartGirl'
     killvar '$OffenseReason'
@@ -497,6 +499,7 @@
         if GirlOffenseDays[$OffenseGirl] = 0:
             $GirlOffenseReason[$OffenseGirl] = ''
             GirlOffenseRightUsed[$OffenseGirl] = 0
+            GirlOffenseApologizeDay[$OffenseGirl] = 0
         end
     end
 
@@ -537,6 +540,41 @@
     killvar '$OffenseGirl'
 ---
 
+#OffenseDaysShowTalkImage
+    ! ARGS[0] girl, ARGS[1] mood: angry|happy|calm|tired, ARGS[2] size
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseImgGirl = $GirlKey
+    $OffenseImgMood = LCASE($ARGS[1])
+    $OffenseImgSize = $ARGS[2]
+
+    if $OffenseImgGirl = '':
+        killvar '$OffenseImgGirl'
+        killvar '$OffenseImgMood'
+        killvar '$OffenseImgSize'
+        exit
+    end
+
+    if $OffenseImgMood = '':
+        $OffenseImgMood = 'angry'
+    end
+
+    if $OffenseImgSize = '':
+        $OffenseImgSize = 'large'
+    end
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'portrait', $OffenseImgGirl, 'talk_' + $OffenseImgMood, '', 'webp', $OffenseImgSize
+    end
+
+    if debug = 1 or debug_images = 1:
+        *pl '[DEBUG OFFENSE IMG] ' + $OffenseImgGirl + ' talk_' + $OffenseImgMood + ' (' + $OffenseImgSize + ')'
+    end
+
+    killvar '$OffenseImgGirl'
+    killvar '$OffenseImgMood'
+    killvar '$OffenseImgSize'
+---
+
 #OffenseDaysTalkStart
     gs 'NormalizeGirlKey', $ARGS[0]
     $OffenseGirl = $GirlKey
@@ -556,6 +594,10 @@
         $OffenseReturnLoc = 'TavernMain'
     end
 
+    ! Сессия talk: тексты/меню не должны затирать контекст
+    $OffenseSessionGirl = $OffenseGirl
+    $OffenseSessionReturn = $OffenseReturnLoc
+
     gs 'EnsureGirlData', $OffenseGirl
 
     *clr
@@ -571,11 +613,18 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
+    ! Обида: портрет talk_angry (images/portraits/{girl}/talk_angry.webp)
+    gs 'OffenseDaysShowTalkImage', $OffenseGirl, 'angry', 'large'
+    *pl ' '
+
     if LOC('OffenseDaysTalkIntroText') = 1:
-        gs 'OffenseDaysTalkIntroText', $OffenseGirl
+        gs 'OffenseDaysTalkIntroText', $OffenseSessionGirl
     else:
-        *p $RealName[$OffenseGirl] + ' смотрит мимо. Разговор сейчас — только про то, что между вами треснуло.'
+        *p $RealName[$OffenseSessionGirl] + ' смотрит мимо. Разговор сейчас — только про то, что между вами треснуло.'
     end
+
+    $OffenseGirl = $OffenseSessionGirl
+    $OffenseReturnLoc = $OffenseSessionReturn
 
     *pl ' '
 
@@ -587,7 +636,7 @@
         *pl ' '
     end
 
-    gs 'OffenseDaysTalkBuildMenu', $OffenseGirl, $OffenseReturnLoc
+    gs 'OffenseDaysTalkBuildMenu', $OffenseSessionGirl, $OffenseSessionReturn
 
     *p 'Что будешь <a href="exec:gs ''Menu.Show'', ''OffenseDaysTalkMenu''">делать</a>?'
 ---
@@ -597,66 +646,108 @@
     $OffenseGirl = $GirlKey
     $OffenseReturnLoc = $ARGS[1]
 
+    if $OffenseGirl = '':
+        $OffenseGirl = $OffenseSessionGirl
+    end
+
+    if $OffenseReturnLoc = '':
+        $OffenseReturnLoc = $OffenseSessionReturn
+    end
+
+    if $OffenseReturnLoc = '':
+        $OffenseReturnLoc = 'TavernMain'
+    end
+
+    if LOC($OffenseReturnLoc) = 0:
+        $OffenseReturnLoc = 'TavernMain'
+    end
+
+    if $OffenseGirl = '':
+        exit
+    end
+
+    $OffenseSessionGirl = $OffenseGirl
+    $OffenseSessionReturn = $OffenseReturnLoc
+
     gs 'Menu.Destroy', 'OffenseDaysTalkMenu'
     gs 'Menu.Create', 'OffenseDaysTalkMenu'
 
-    gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Извиниться', ''
-    gs 'Menu.AddModule', 'OffenseDaysTalkMenu', {
-        gt 'OffenseDaysTalkAction', 'apologize', $OffenseGirl, $OffenseReturnLoc
-    }
+    ! Литералы в модуле: клик не зависит от живых $OffenseGirl
+    ! Без «Вернуться» — выход с dropdown по уходу курсора (как GirlTalk)
+    ! Извиниться — 1×/сутки; после извинения «я прав» скрыт (непоследовательность)
+    if GirlOffenseApologizeDay[$OffenseGirl] <> day:
+        $OffenseModCode = 'gt ''OffenseDaysTalkAction'', ''apologize'', ''' + $OffenseGirl + ''', ''' + $OffenseReturnLoc + ''''
+        gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Извиниться', ''
+        gs 'Menu.AddModule', 'OffenseDaysTalkMenu', $OffenseModCode
+    end
 
-    if GirlOffenseRightUsed[$OffenseGirl] = 0:
+    if GirlOffenseRightUsed[$OffenseGirl] = 0 and GirlOffenseApologizeDay[$OffenseGirl] <> day:
+        $OffenseModCode = 'gt ''OffenseDaysTalkAction'', ''right'', ''' + $OffenseGirl + ''', ''' + $OffenseReturnLoc + ''''
         gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Я всё сделал правильно', ''
-        gs 'Menu.AddModule', 'OffenseDaysTalkMenu', {
-            gt 'OffenseDaysTalkAction', 'right', $OffenseGirl, $OffenseReturnLoc
-        }
+        gs 'Menu.AddModule', 'OffenseDaysTalkMenu', $OffenseModCode
     end
 
-    gs 'GiftHasAnyInInventory'
-
-    if GiftHasAny = 1:
+    ! «Подарить» → то же окно, только dropdown с типами подарка (без «Назад»)
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        $OffenseModCode = 'gs ''OffenseDaysTalkShowGiftMenu'', ''' + $OffenseGirl + ''', ''' + $OffenseReturnLoc + ''''
         gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Подарить', ''
-        gs 'Menu.AddModule', 'OffenseDaysTalkMenu', {
-            gt 'OffenseDaysTalkGiftMenu', $OffenseGirl, $OffenseReturnLoc
-        }
+        gs 'Menu.AddModule', 'OffenseDaysTalkMenu', $OffenseModCode
     end
 
-    killvar 'GiftHasAny'
-
-    gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Вернуться', 'return'
-    gs 'Menu.AddModule', 'OffenseDaysTalkMenu', {
-        gt $OffenseReturnLoc
-    }
-
-    killvar '$OffenseGirl'
-    killvar '$OffenseReturnLoc'
+    killvar '$OffenseModCode'
 ---
 
-#OffenseDaysTalkGiftMenu
+#OffenseDaysTalkShowGiftMenu
+    ! Только пересобрать dropdown — экран обиды не трогаем (*clr нет)
     gs 'NormalizeGirlKey', $ARGS[0]
     $OffenseGirl = $GirlKey
     $OffenseReturnLoc = $ARGS[1]
+
+    if $OffenseGirl = '':
+        $OffenseGirl = $OffenseSessionGirl
+    end
+
+    if $OffenseReturnLoc = '':
+        $OffenseReturnLoc = $OffenseSessionReturn
+    end
+
+    if $OffenseGirl = '':
+        exit
+    end
+
+    if $OffenseReturnLoc = '':
+        $OffenseReturnLoc = 'TavernMain'
+    end
+
+    if LOC($OffenseReturnLoc) = 0:
+        $OffenseReturnLoc = 'TavernMain'
+    end
+
+    $OffenseSessionGirl = $OffenseGirl
+    $OffenseSessionReturn = $OffenseReturnLoc
 
     gs 'Menu.Destroy', 'OffenseDaysGiftMenu'
     gs 'Menu.Create', 'OffenseDaysGiftMenu'
 
     if GiftInventory['gift_cheap'] > 0:
+        $OffenseModCode = 'gt ''OffenseDaysTalkAction'', ''gift_cheap'', ''' + $OffenseGirl + ''', ''' + $OffenseReturnLoc + ''''
         gs 'MenuUiAdd', 'OffenseDaysGiftMenu', 'Обычный подарок', ''
-        gs 'Menu.AddModule', 'OffenseDaysGiftMenu', {
-            gt 'OffenseDaysTalkAction', 'gift_cheap', $OffenseGirl, $OffenseReturnLoc
-        }
+        gs 'Menu.AddModule', 'OffenseDaysGiftMenu', $OffenseModCode
     end
 
     if GiftInventory['gift_expensive'] > 0:
+        $OffenseModCode = 'gt ''OffenseDaysTalkAction'', ''gift_expensive'', ''' + $OffenseGirl + ''', ''' + $OffenseReturnLoc + ''''
         gs 'MenuUiAdd', 'OffenseDaysGiftMenu', 'Дорогой подарок', ''
-        gs 'Menu.AddModule', 'OffenseDaysGiftMenu', {
-            gt 'OffenseDaysTalkAction', 'gift_expensive', $OffenseGirl, $OffenseReturnLoc
-        }
+        gs 'Menu.AddModule', 'OffenseDaysGiftMenu', $OffenseModCode
     end
 
+    killvar '$OffenseModCode'
     gs 'Menu.Show', 'OffenseDaysGiftMenu'
-    killvar '$OffenseGirl'
-    killvar '$OffenseReturnLoc'
+---
+
+#OffenseDaysTalkGiftMenu
+    ! legacy alias
+    gs 'OffenseDaysTalkShowGiftMenu', $ARGS[0], $ARGS[1]
 ---
 
 #OffenseDaysTalkAction
@@ -669,9 +760,79 @@
     $OffenseGirl = $GirlKey
     $OffenseReturnLoc = $ARGS[2]
 
+    if $OffenseGirl = '':
+        gs 'NormalizeGirlKey', $OffenseSessionGirl
+        $OffenseGirl = $GirlKey
+    end
+
+    if $OffenseReturnLoc = '':
+        $OffenseReturnLoc = $OffenseSessionReturn
+    end
+
+    if $OffenseGirl = '':
+        msg 'Ошибка: OffenseDaysTalkAction без имени девушки.'
+        killvar '$OffenseTalkChoice'
+        exit
+    end
+
+    if $OffenseReturnLoc = '':
+        $OffenseReturnLoc = 'TavernMain'
+    end
+
+    if LOC($OffenseReturnLoc) = 0:
+        $OffenseReturnLoc = 'TavernMain'
+    end
+
+    $OffenseSessionGirl = $OffenseGirl
+    $OffenseSessionReturn = $OffenseReturnLoc
+    $OffenseActionMood = 'angry'
+    OffenseActionDoApologize = 0
+    OffenseActionDoRight = 0
+    OffenseActionDoGiftCheap = 0
+    OffenseActionDoGiftExpensive = 0
+    OffenseActionApologizeRepeat = 0
+
     gs 'EnsureGirlData', $OffenseGirl
 
     if $OffenseTalkChoice = 'apologize':
+        if GirlOffenseApologizeDay[$OffenseGirl] = day:
+            OffenseActionApologizeRepeat = 1
+            $OffenseActionMood = 'angry'
+        else:
+            OffenseActionDoApologize = 1
+            $OffenseActionMood = 'happy'
+        end
+    elseif $OffenseTalkChoice = 'right':
+        OffenseActionDoRight = 1
+        $OffenseActionMood = 'angry'
+    elseif $OffenseTalkChoice = 'gift_cheap':
+        if GiftInventory['gift_cheap'] > 0:
+            OffenseActionDoGiftCheap = 1
+            $OffenseActionMood = 'happy'
+        end
+    elseif $OffenseTalkChoice = 'gift_expensive':
+        if GiftInventory['gift_expensive'] > 0:
+            OffenseActionDoGiftExpensive = 1
+            $OffenseActionMood = 'happy'
+        end
+    end
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $OffenseGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОБИДА: ' + $RealName[$OffenseGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    gs 'OffenseDaysShowTalkImage', $OffenseGirl, $OffenseActionMood, 'large'
+    *pl ' '
+
+    if OffenseActionApologizeRepeat = 1:
+        *pl 'Ты уже извинялся сегодня. Ещё раз — завтра, или подарок / время.'
+    elseif OffenseActionDoApologize = 1:
+        GirlOffenseApologizeDay[$OffenseGirl] = day
+
         if LOC('OffenseDaysTalkApologizeText') = 1:
             gs 'OffenseDaysTalkApologizeText', $OffenseGirl
         end
@@ -689,48 +850,93 @@
         elseif $OffenseGirl = 'sandra':
             SandraTrust += 1
         end
-
-    elseif $OffenseTalkChoice = 'right':
+    elseif OffenseActionDoRight = 1:
         GirlOffenseRightUsed[$OffenseGirl] = 1
 
         if LOC('OffenseDaysTalkRightText') = 1:
             gs 'OffenseDaysTalkRightText', $OffenseGirl
         end
+    elseif OffenseActionDoGiftCheap = 1:
+        GiftInventory['gift_cheap'] -= 1
 
-    elseif $OffenseTalkChoice = 'gift_cheap':
-        if GiftInventory['gift_cheap'] > 0:
-            GiftInventory['gift_cheap'] -= 1
-
-            if GirlOffenseDays[$OffenseGirl] > 1:
-                GirlOffenseDays[$OffenseGirl] -= 2
-            else:
-                GirlOffenseDays[$OffenseGirl] = 0
-            end
-
-            Friends[$OffenseGirl] += 1
-
-            if LOC('OffenseDaysTalkGiftCheapText') = 1:
-                gs 'OffenseDaysTalkGiftCheapText', $OffenseGirl
-            end
-        end
-
-    elseif $OffenseTalkChoice = 'gift_expensive':
-        if GiftInventory['gift_expensive'] > 0:
-            GiftInventory['gift_expensive'] -= 1
+        if GirlOffenseDays[$OffenseGirl] > 1:
+            GirlOffenseDays[$OffenseGirl] -= 2
+        else:
             GirlOffenseDays[$OffenseGirl] = 0
-            Friends[$OffenseGirl] += 1
-            love[$OffenseGirl] += 1
-
-            if LOC('OffenseDaysTalkGiftExpensiveText') = 1:
-                gs 'OffenseDaysTalkGiftExpensiveText', $OffenseGirl
-            end
         end
+
+        Friends[$OffenseGirl] += 1
+        GirlGiftCount[$OffenseGirl] += 1
+
+        ! Полная реакция подарка (в т.ч. «второй за день»), не короткий offense-only stub
+        if LOC('GiftSimpleRegisterGive') = 1:
+            gs 'GiftSimpleRegisterGive', $OffenseGirl, 'gift_cheap'
+        end
+
+        if LOC('GiftSimpleNarrative') = 1:
+            gs 'GiftSimpleNarrative', $OffenseGirl, 'gift_cheap'
+            if $GiftNarrativeText <> '':
+                *pl $GiftNarrativeText
+            end
+            killvar '$GiftNarrativeText'
+        end
+
+        if LOC('GiftSimpleReactionText') = 1:
+            gs 'GiftSimpleReactionText', $OffenseGirl, 'gift_cheap', GiftCheapStreakToday
+            if $GiftReactionText <> '':
+                *pl $GiftReactionText
+            end
+            killvar '$GiftReactionText'
+        end
+
+        if LOC('MenuGirlGiftValue') = 1:
+            gs 'MenuGirlGiftValue', $OffenseGirl, 'gift_cheap'
+            gs 'MenuGirlGiftApplyReaction', $OffenseGirl, GiftValue
+            killvar 'GiftValue'
+        end
+
+        killvar 'GiftCheapStreakToday'
+    elseif OffenseActionDoGiftExpensive = 1:
+        GiftInventory['gift_expensive'] -= 1
+        GirlOffenseDays[$OffenseGirl] = 0
+        Friends[$OffenseGirl] += 1
+        love[$OffenseGirl] += 1
+        GirlGiftCount[$OffenseGirl] += 1
+
+        if LOC('GiftSimpleRegisterGive') = 1:
+            gs 'GiftSimpleRegisterGive', $OffenseGirl, 'gift_expensive'
+        end
+
+        if LOC('GiftSimpleNarrative') = 1:
+            gs 'GiftSimpleNarrative', $OffenseGirl, 'gift_expensive'
+            if $GiftNarrativeText <> '':
+                *pl $GiftNarrativeText
+            end
+            killvar '$GiftNarrativeText'
+        end
+
+        if LOC('GiftSimpleReactionText') = 1:
+            gs 'GiftSimpleReactionText', $OffenseGirl, 'gift_expensive', GiftCheapStreakToday
+            if $GiftReactionText <> '':
+                *pl $GiftReactionText
+            end
+            killvar '$GiftReactionText'
+        end
+
+        if LOC('MenuGirlGiftValue') = 1:
+            gs 'MenuGirlGiftValue', $OffenseGirl, 'gift_expensive'
+            gs 'MenuGirlGiftApplyReaction', $OffenseGirl, GiftValue
+            killvar 'GiftValue'
+        end
+
+        killvar 'GiftCheapStreakToday'
     end
 
     if GirlOffenseDays[$OffenseGirl] <= 0:
         GirlOffenseDays[$OffenseGirl] = 0
         $GirlOffenseReason[$OffenseGirl] = ''
         GirlOffenseRightUsed[$OffenseGirl] = 0
+        GirlOffenseApologizeDay[$OffenseGirl] = 0
 
         if LOC('OffenseDaysTalkClearText') = 1:
             gs 'OffenseDaysTalkClearText', $OffenseGirl
@@ -740,16 +946,28 @@
     gs 'ClampGirlSocialStats', $OffenseGirl
     gs 'GirlTalkSessionEnd'
 
+    killvar 'OffenseActionDoApologize'
+    killvar 'OffenseActionDoRight'
+    killvar 'OffenseActionDoGiftCheap'
+    killvar 'OffenseActionDoGiftExpensive'
+    killvar 'OffenseActionApologizeRepeat'
+    killvar '$OffenseActionMood'
+
     *pl ' '
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt $OffenseReturnLoc
+        if $OffenseReturnLoc <> '' and LOC($OffenseReturnLoc) = 1:
+            gt $OffenseReturnLoc
+        elseif $OffenseSessionReturn <> '' and LOC($OffenseSessionReturn) = 1:
+            gt $OffenseSessionReturn
+        else:
+            gt 'TavernMain'
+        end
     end
 
+    ! Не killvar $OffenseGirl / $OffenseReturnLoc / session — act «Вернуться» при клике
     killvar '$OffenseTalkChoice'
-    killvar '$OffenseGirl'
-    killvar '$OffenseReturnLoc'
 ---
 
 #OffenseDaysDebugReset

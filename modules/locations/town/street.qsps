@@ -41,6 +41,31 @@
     *pl ' '
     gs 'PrintMainLine', 'Куда пойдёшь?'
 
+    ! Фасад только по осмотру — не второй plate поверх street
+    if LOC('ShowTavernExteriorImage') = 1:
+        act '<b>Осмотреть фасад трактира</b>', 'images/common/ui/actions/look.png':
+            *clr
+            clr
+            cla
+            gs 'ShowLocationScreenTitle', 'ФАСАД «ДИКОГО ЖЕРЕБЦА»'
+            gs 'ShowTavernExteriorImage'
+            if TavernUpgradeSignDone = 1:
+                *pl 'Над дверью висит новая вывеска — свежая краска, гордый жеребец.'
+            else:
+                *pl 'Старая вывеска потрескалась от дождей, но всё ещё держится на железных крюках.'
+            end
+            *pl ' '
+            gs 'ActUiPrepare', 'Вернуться на улицу', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'Street'
+            end
+            gs 'ActUiPrepare', 'Войти в трактир', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'TavernMain'
+            end
+        end
+    end
+
     act '<b>Трактир</b>', 'images/common/ui/tavern.png':
         gt 'TavernMain'
     end

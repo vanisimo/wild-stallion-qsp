@@ -1398,7 +1398,27 @@
         $HallHarassPantyKey = 'panties'
     end
 
-    ! Будущий oneshot:
+    ! Art path: shipped matrix is T1–T2 type1–4 (3/4 alias 1/2). T3 → T2 plate until T3 art exists.
+    ! Sub/cock/nop suffixes stay on $HallHarassFutureImagePath for future oneshots only.
+    HallHarassArtTier = HarassTier
+    if HallHarassArtTier < 1:
+        HallHarassArtTier = 1
+    end
+
+    if HallHarassArtTier > 2:
+        HallHarassArtTier = 2
+    end
+
+    HallHarassArtType = HallHarassType
+    if HallHarassArtType < 1:
+        HallHarassArtType = 1
+    end
+
+    if HallHarassArtType > 4:
+        HallHarassArtType = 4
+    end
+
+    ! Будущий oneshot (полный ключ):
     ! images/events/{girl}/hall_harass/t{tier}_type{n}[_sub][_cock_flee|coin]_{u0|u1}[_nop].webp
     $HallHarassFutureImagePath = 'images/events/' + $HallHarassGirl + '/hall_harass/t' + STR(HarassTier) + '_type' + STR(HallHarassType)
 
@@ -1416,10 +1436,38 @@
         $HallHarassFutureImagePath += '_nop'
     end
 
-    $HallHarassFutureImagePath += '.webp'
+    $HallHarassFutureImagePath = $HallHarassFutureImagePath + '.webp'
 
-    ! Текущая заглушка (одна на все):
     $HallHarassStubImagePath = 'images/common/hall_harass_stub.png'
+
+    ! Без FILEEXISTS: art/legacy только для девушек с отгруженной матрицей.
+    ! Иначе $HallHarassArtBase всегда непустой → stub/legacy мёртвы (Сандра/кухня = broken img).
+    HallHarassHasShippedArt = 0
+    $HallHarassArtBase = ''
+    $HallHarassLegacyArtBase = ''
+
+    if $HallHarassGirl = 'amanda' or $HallHarassGirl = 'melissa':
+        HallHarassHasShippedArt = 1
+
+        ! Shipped art base (no ext): t{1|2}_type{1..4}_{u0|u1}
+        $HallHarassArtBase = 'images/events/' + $HallHarassGirl + '/hall_harass/t' + STR(HallHarassArtTier) + '_type' + STR(HallHarassArtType) + '_' + $HallHarassUniformKey
+
+        ! legacy: waitress_{1|2}_base.webp — type>2 maps to 1/2
+        HallHarassLegacyType = HallHarassArtType
+        if HallHarassLegacyType > 2:
+            HallHarassLegacyType = HallHarassLegacyType - 2
+        end
+
+        if HallHarassLegacyType < 1:
+            HallHarassLegacyType = 1
+        end
+
+        if HallHarassLegacyType > 2:
+            HallHarassLegacyType = 2
+        end
+
+        $HallHarassLegacyArtBase = 'images/events/' + $HallHarassGirl + '/hall_harass/waitress_' + STR(HallHarassLegacyType) + '_base'
+    end
 ---
 
 #HallHarassmentPrintServiceIntro
@@ -1503,14 +1551,22 @@
 ---
 
 #HallHarassmentShowIntroImage
-    ! H: одна маленькая заглушка на все intro (не large — меньше листать)
-    if LOC('ShowImage') = 1:
+    ! 1) named art (только amanda/melissa)  2) legacy waitress_*  3) stub
+    gs 'HallHarassmentBuildArtKeys'
+
+    if LOC('ShowImagePath') = 1 and HallHarassHasShippedArt = 1 and $HallHarassArtBase <> '':
+        gs 'ShowImagePath', $HallHarassArtBase, '', 'event', 'webp'
+    elseif LOC('ShowImagePath') = 1 and HallHarassHasShippedArt = 1 and $HallHarassLegacyArtBase <> '':
+        gs 'ShowImagePath', $HallHarassLegacyArtBase, '', 'event', 'webp'
+    elseif LOC('ShowImage') = 1:
         gs 'ShowImage', 'common', '', 'hall_harass_stub', '', 'png', 'small'
     end
 
     if debug = 1:
-        *pl '[DEBUG HALL IMAGE] stub show: ' + $HallHarassStubImagePath
-        *pl '[DEBUG HALL IMAGE] future plan: ' + $HallHarassFutureImagePath
+        *pl '[DEBUG HALL IMAGE] shipped=' + STR(HallHarassHasShippedArt) + ' art: ' + $HallHarassArtBase + ' (tier=' + STR(HallHarassArtTier) + ' type=' + STR(HallHarassArtType) + ')'
+        *pl '[DEBUG HALL IMAGE] legacy: ' + $HallHarassLegacyArtBase
+        *pl '[DEBUG HALL IMAGE] future: ' + $HallHarassFutureImagePath
+        *pl '[DEBUG HALL IMAGE] stub: ' + $HallHarassStubImagePath
         *pl ' '
     end
 ---
@@ -1538,14 +1594,23 @@
         $HallImageReaction = 'ignore'
     end
 
-    ! Пока reaction тоже на stub (чтобы не тянуть large oneshot)
-    if LOC('ShowImage') = 1:
+    ! reaction_* webp только у amanda/melissa; Сандра и прочие → stub
+    HallHarassHasShippedReaction = 0
+    $HallHarassReactionArtBase = ''
+
+    if $HallImageGirl = 'amanda' or $HallImageGirl = 'melissa':
+        HallHarassHasShippedReaction = 1
+        $HallHarassReactionArtBase = 'images/events/' + $HallImageGirl + '/hall_harass/reaction_' + $HallImageReaction
+    end
+
+    if LOC('ShowImagePath') = 1 and HallHarassHasShippedReaction = 1 and $HallHarassReactionArtBase <> '':
+        gs 'ShowImagePath', $HallHarassReactionArtBase, '', 'event', 'webp'
+    elseif LOC('ShowImage') = 1:
         gs 'ShowImage', 'common', '', 'hall_harass_stub', '', 'png', 'small'
     end
 
     if debug = 1:
-        *pl '[DEBUG HALL IMAGE] reaction stub: ' + $HallHarassStubImagePath
-        *pl '[DEBUG HALL IMAGE] reaction key: ' + $HallImageReaction + ' (future: hall_harass/reaction_' + $HallImageReaction + ')'
+        *pl '[DEBUG HALL IMAGE] reaction shipped=' + STR(HallHarassHasShippedReaction) + ' path: ' + $HallHarassReactionArtBase
         *pl ' '
     end
 
@@ -1553,6 +1618,8 @@
     killvar '$HallImageJob'
     killvar 'HallImageType'
     killvar '$HallImageReaction'
+    killvar '$HallHarassReactionArtBase'
+    killvar 'HallHarassHasShippedReaction'
 ---
 
 #HallHarassmentClampStats

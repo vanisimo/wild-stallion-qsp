@@ -1,13 +1,35 @@
 ! ================================================
 ! FILE: modules/events/hall/hall_harassment_text.qsps
-! Тексты базовых приставаний в главном зале
-! Используется: modules/events/hall/hall_harassment.qsps
+! MODULE: events/hall
+! After / policy / hall-reaction / talk-recall (intro — hall_harassment_intro_text)
+! Структура: protect / watch / ignore × girl × early|late
+! Late (stance mixed/provoke, stage≥3, slut≥40): терпеливее, меньше злости
+! Зал: Аманда/Мелисса. Кухня: Сандра.
+! Не USER-OWNED
 ! ================================================
 
 #HallHarassmentPrintText
     gs 'HallHarassmentText', $ARGS[0]
+
     if $HallHarassmentText <> '':
-        *p $HallHarassmentText
+        *pl $HallHarassmentText
+    end
+---
+
+#HallHarassmentTextLateFlag
+    ! 1 = поздний тон (терпеливее / менее «я сама ударю»)
+    HallHarassmentTextLate = 0
+
+    if $HallHarassGirl = '':
+        exit
+    end
+
+    if $HarassGirlStance = 'provoke' or $HarassGirlStance = 'mixed':
+        HallHarassmentTextLate = 1
+    elseif FamilyCorruptionStage >= 3:
+        HallHarassmentTextLate = 1
+    elseif sluttiness[$HallHarassGirl] >= 40:
+        HallHarassmentTextLate = 1
     end
 ---
 
@@ -15,231 +37,300 @@
     $HallHarassmentTextId = LCASE($ARGS[0])
     $HallHarassmentText = ''
 
+    gs 'HallHarassmentTextLateFlag'
+
+    ! ---------- служебные ----------
     if $HallHarassmentTextId = 'no_repeat':
-        $HallHarassmentText = 'Вы ещё некоторое время наблюдаете за залом. После недавнего шума гости ведут себя осторожнее, а девушки работают чуть настороженнее.'
+        $HallHarassmentText = 'После недавнего шума зал ведёт себя осторожнее. Девушки работают настороженнее обычного.'
     elseif $HallHarassmentTextId = 'closed':
-        $HallHarassmentText = 'Сейчас таверна закрыта. В зале пусто, и приставать тут некому.'
+        $HallHarassmentText = 'Сейчас таверна закрыта. В зале пусто — приставать некому.'
     elseif $HallHarassmentTextId = 'no_girl':
-        $HallHarassmentText = 'Вы некоторое время наблюдаете за залом, но ничего особенного не происходит. Девушки сейчас не попадаются под руки шумным гостям.'
+        $HallHarassmentText = 'Вы смотрите зал. Ничего особенного: гости пьют, девушки не попадают под руки.'
     elseif $HallHarassmentTextId = 'choice_prompt':
-        $HallHarassmentText = 'Зал уже смотрит. Клиент перешёл черту взглядами и руками — дальше решать хозяину.'
+        $HallHarassmentText = 'Зал уже смотрит. Клиент перешёл черту — дальше решать хозяину.'
+
+    ! ---------- policy (перед/после, контекст) ----------
     elseif $HallHarassmentTextId = 'policy_none':
-        $HallHarassmentText = 'Чёткого правила для таких случаев вы ей не давали. Значит, сейчас она смотрит не только на клиента, но и на вас: вмешается хозяин или снова оставит всё на её догадку?'
+        $HallHarassmentText = 'Чёткого правила вы ей не давали. Она смотрит и на гостя, и на вас: вмешается хозяин или снова оставит на её догадку?'
     elseif $HallHarassmentTextId = 'policy_decent':
-        $HallHarassmentText = 'Она помнит: вести себя сдержанно и звать хозяина, если гость распускает руки. Но правило правилом — а зал уже смотрит.'
+        $HallHarassmentText = 'Она помнит: сдержанно, звать хозяина, если распускают руки. Но правило — одно, а зал уже смотрит.'
     elseif $HallHarassmentTextId = 'policy_own':
-        $HallHarassmentText = 'Вы раньше сказали ей решать самой. Теперь это не просто слова: клиент проверяет её границы, а зал — вашу выдержку.'
+        $HallHarassmentText = 'Вы сказали решать самой. Теперь это не слова: клиент проверяет её границы, зал — вашу выдержку.'
     elseif $HallHarassmentTextId = 'policy_profit':
-        $HallHarassmentText = 'Она помнит другое правило: вести себя раскованнее — улыбка, ручка, чаевые. Не на колени. Но сейчас грань проверяют не словами, а лапами.'
+        $HallHarassmentText = 'Она помнит: улыбка, ручка, чаевые — раскованнее, не на колени. Сейчас грань проверяют уже лапами.'
+
+    ! ---------- first amanda (ещё вызывается из Intro) ----------
     elseif $HallHarassmentTextId = 'amanda_first_intro':
-        $HallHarassmentText = 'Аманда несёт поднос с кружками к дальнему столу. Один из пьяных мастеровых ловит её за запястье и резко тянет ближе к лавке. Она замирает, краснеет до ушей и неловко ёрзает, пытаясь вырвать руку. "Отпустите... пожалуйста."'
+        $HallHarassmentText = 'Аманда несёт поднос к дальнему столу. Пьяный мастеровой ловит её за запястье и тянет ближе. Она замирает, краснеет, пытается вырвать руку: «Отпустите… пожалуйста.»'
 
-    elseif $HallHarassmentTextId = 'waitress_intro_1':
-        if $HallHarassGirl = 'amanda':
-            $HallHarassmentText = 'Аманда подходит принять заказ, и подвыпивший гость задерживает её руку слишком долго. Она краснеет, пытается выдернуться и тихо говорит: "Мне нужно работать..."'
-        elseif $HallHarassGirl = 'melissa':
-            $HallHarassmentText = 'Мелисса подходит к столу с заказом. Один из гостей слишком уверенно придерживает её за руку. Она смотрит на него холодно и спокойно: "Руку уберёшь или мне самой помочь?"'
-        elseif $HallHarassGirl = 'sandra':
-            $HallHarassmentText = 'Сандра ставит кружки на стол. Гость задерживает её руку и ухмыляется. Она медленно выпрямляется, тяжело смотрит на него и говорит тихо, но так, что соседний стол притихает: "Отпусти. Сейчас же."'
-        else:
-            $HallHarassmentText = $RealName[$HallHarassGirl] + ' подходит принять заказ, и один из гостей слишком вольно задерживает её руку.'
-        end
-
-    elseif $HallHarassmentTextId = 'waitress_intro_2':
-        if $HallHarassGirl = 'amanda':
-            $HallHarassmentText = 'У шумной компании Аманду встречают гоготом и грязными намёками. Она мнётся с подносом в руках, краснеет и тихо говорит: "Я... я просто принесла заказ..."'
-        elseif $HallHarassGirl = 'melissa':
-            $HallHarassmentText = 'Компания за столом встречает Мелиссу грязной шуткой. Она улыбается краешком губ, но в этой улыбке больше угрозы, чем веселья. "Смешно. А теперь забирай свои руки и заказывай, пока я добрая."'
-        elseif $HallHarassGirl = 'sandra':
-            $HallHarassmentText = 'За дальним столом кто-то отпускает грязную шутку в сторону Сандры. Она не краснеет и не теряется. Только медленно поворачивает голову и смотрит на шутника так, что тот сразу замолкает.'
-        else:
-            $HallHarassmentText = $RealName[$HallHarassGirl] + ' сталкивается с грязной шуткой за дальним столом.'
-        end
-
-    elseif $HallHarassmentTextId = 'waitress_intro_3':
-        if $HallHarassGirl = 'amanda':
-            $HallHarassmentText = 'Аманда протискивается между лавками, и один из гостей нарочно задевает её бедром. Она резко останавливается, краснеет и прижимает поднос к груди. "Что вы делаете?!"'
-        elseif $HallHarassGirl = 'melissa':
-            $HallHarassmentText = 'Мелисса проходит мимо лавки, и гость слишком нагло придвигается к проходу. Она замечает это сразу и холодно смотрит на него сверху вниз: "Дальше не подходи."'
-        elseif $HallHarassGirl = 'sandra':
-            $HallHarassmentText = 'Сандра проходит между столами. Один гость пробует преградить ей путь, но её тяжёлый взгляд быстро превращает его ухмылку в неловкое покашливание.'
-        else:
-            $HallHarassmentText = $RealName[$HallHarassGirl] + ' проходит между лавками, и один из гостей слишком нагло преграждает ей путь.'
-        end
-
-    elseif $HallHarassmentTextId = 'waitress_intro_4':
-        if $HallHarassGirl = 'amanda':
-            $HallHarassmentText = 'Аманда ставит кувшин вина на стол, и гость предлагает ей задержаться рядом за чаевые. Она нервно улыбается, не зная, шутка это или уже приказ. "Я... мне ещё работать..."'
-        elseif $HallHarassGirl = 'melissa':
-            $HallHarassmentText = 'Мелисса ставит на стол кувшин, и гость предлагает ей задержаться за лишнюю монету. Она смотрит на него так, будто решает, кто здесь кого сейчас купит. "Хорошо. Я побуду. Но ты за это заплатишь."'
-        elseif $HallHarassGirl = 'sandra':
-            $HallHarassmentText = 'Сандра ставит кувшин на стол. Гость кигает монету и предлагает ей задержаться. Она медленно переводит взгляд с монеты на его лицо: "Деньги оставь. А я останусь только если сама захочу."'
-        else:
-            $HallHarassmentText = $RealName[$HallHarassGirl] + ' ставит на стол кувшин, и гость предлагает ей задержаться за чаевые.'
-        end
-
-    elseif $HallHarassmentTextId = 'kitchen_intro_1':
-        if $HallHarassGirl = 'amanda':
-            $HallHarassmentText = 'Аманда убирает у дальнего стола, когда подвыпивший гость встаёт слишком близко. Она ёрзает на месте, сжимает тряпку и тихо говорит: "Простите... мне нужно пройти."'
-        elseif $HallHarassGirl = 'melissa':
-            $HallHarassmentText = 'Мелисса протирает стол, когда гость нарочно загораживает ей путь. Она не отступает сразу и смотрит на него с лукавой, опасной усмешкой: "Ты серьёзно решил мне помешать?"'
-        elseif $HallHarassGirl = 'sandra':
-            $HallHarassmentText = 'Сандра убирает у дальнего стола. Гость встаёт у неё на пути, но быстро понимает, что перед ним не перепуганная девочка, а женщина, у которой терпение давно стало тяжёлым оружием.'
-        else:
-            $HallHarassmentText = $RealName[$HallHarassGirl] + ' убирает у дальнего стола, когда гость преграждает ей путь.'
-        end
-
-    elseif $HallHarassmentTextId = 'kitchen_intro_2':
-        if $HallHarassGirl = 'amanda':
-            $HallHarassmentText = 'Аманда наклоняется поднять разбитую кружку. За соседним столом кто-то грязно шутит про её короткую юбку. Она тут же выпрямляется, красная как уголь, и прижимает руки к юбке. "Прекратите!"'
-        elseif $HallHarassGirl = 'melissa':
-            $HallHarassmentText = 'Мелисса наклоняется убрать осколки. Компания за столом тут же начинает переглядываться. Она замечает это и медленно выпрямляется, словно специально давая им понять, что всё видела. "Смешно?"'
-        elseif $HallHarassGirl = 'sandra':
-            $HallHarassmentText = 'Сандра наклоняется убрать осколки. Кто-то за столом отпускает грязный намёк. Она выпрямляется медленно, её грудь тяжело колышется с дыханием, а взгляд становится жёстким: "Ещё раз — и я тебе эту кружку в голову засуну."'
-        else:
-            $HallHarassmentText = $RealName[$HallHarassGirl] + ' убирает осколки, пока за столом начинают грязно шутить.'
-        end
-
-    elseif $HallHarassmentTextId = 'kitchen_intro_3':
-        if $HallHarassGirl = 'amanda':
-            $HallHarassmentText = 'Аманда протирает стол возле шумной компании. Один гость слишком настойчиво зовёт её ближе. Она замирает, будто не решила, обидеться или сделать вид, что не поняла. "Я... я работаю."'
-        elseif $HallHarassGirl = 'melissa':
-            $HallHarassmentText = 'Мелисса протирает стол возле шумной компании. Один из гостей зовёт её ближе с мерзкой ухмылкой. Она чуть склоняет голову, будто принимает вызов: "Хорошо. Я подойду. Но только если ты будешь вести себя как человек."'
-        elseif $HallHarassGirl = 'sandra':
-            $HallHarassmentText = 'Сандра протирает стол. Гость зовёт её ближе и кивает на свободное место рядом. Она смотрит на лавку, потом на него: "Я не собака, чтобы меня звали. Если что-то нужно — говори."'
-        else:
-            $HallHarassmentText = $RealName[$HallHarassGirl] + ' протирает стол, когда гость начинает слишком настойчиво звать её ближе.'
-        end
-
-    elseif $HallHarassmentTextId = 'kitchen_intro_4':
-        if $HallHarassGirl = 'amanda':
-            $HallHarassmentText = 'Аманда убирает пролитое пиво. Пьяный грузчик приседает рядом и начинает говорить слишком тихо и слишком грязно. Она краснеет, сжимает тряпку и бросает быстрый взгляд в вашу сторону: "Стефан..."'
-        elseif $HallHarassGirl = 'melissa':
-            $HallHarassmentText = 'Мелисса убирает пролитое пиво. Пьяный грузчик приседает рядом и пробует шептать ей что-то непристойное. Она слушает ровно миг, затем поднимает глаза и холодно улыбается: "Ты серьёзно думаешь, что я это хочу услышать?"'
-        elseif $HallHarassGirl = 'sandra':
-            $HallHarassmentText = 'Сандра убирает пролитое пиво. Пьяный грузчик пробует говорить с ней слишком вольно. Она медленно вытирает руки и смотрит на него так, будто уже выбирает, чем ударить: "Ещё одно слово — и ты пожалеешь, что вообще открыл рот."'
-        else:
-            $HallHarassmentText = $RealName[$HallHarassGirl] + ' убирает пролитое пиво, когда гость начинает вести себя слишком вольно.'
-        end
-
+    ! ---------- resolve: protect ----------
     elseif $HallHarassmentTextId = 'protect_hard_success':
-        $HallHarassmentText = 'Вы резко вмешиваетесь. Не орёте попусту, а подходите так, что стол сам понимает: шутка кончилась. Клиент отступает, бормочет что-то про веселье, но руки убирает. ' + $RealName[$HallHarassGirl] + ' переводит дыхание и смотрит на вас уже иначе. "Спасибо... что не дал ему продолжить."'
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Вы подходите ровно, без крика. Гость убирает руки, бормочет про шутку. Мелисса поправляет фартук и коротко кивает: «Ладно. Спасибо. Но я бы и сама…» — без злости, скорее привычка.'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Вы ставите гостя на место. Сандра вытирает руки о фартук: «Вовремя. Только не делай из меня фарфоровую куклу каждый раз.»'
+            else:
+                $HallHarassmentText = 'Вы вмешиваетесь спокойно, но твёрдо. Гость отступает. Аманда выдыхает, щёки ещё розовые: «Спасибо… что не дал продолжить.»'
+            end
+        else:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Вы резко, по-хозяйски, обрываете сцену. Мелисса смотрит на гостя, потом на вас: «Спасибо. Хотя я уже почти…» — и криво усмехается.'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Вы выгоняете наглеца с кухни/зала. Сандра кивает тяжело: «Спасибо. Здесь чужих лап не держат.»'
+            else:
+                $HallHarassmentText = 'Вы подходите так, что стол понимает: шутка кончилась. Аманда переводит дыхание: «Спасибо… что не дал ему продолжить.»'
+            end
+        end
 
     elseif $HallHarassmentTextId = 'protect_hard_dislike':
-        $HallHarassmentText = 'Вы ставите наглеца на место слишком жёстко. Зал притихает, клиент отступает, но ' + $RealName[$HallHarassGirl] + ' смотрит на вас не с благодарностью, а с раздражением. "Я сама могла с этим справиться. Не надо каждый раз делать вид, будто я беспомощная."'
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Гость отступает, но Мелисса смотрит на вас чуть устало: «Я уже почти сама. Не надо каждый раз, будто я без рук.» Без крика — скорее привычка к независимости.'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Сандра кивает на уходящего гостя: «Спасибо. Но я не фарфор. Иногда дай мне самой.»'
+            else:
+                $HallHarassmentText = 'Аманда благодарит тихо, но мнётся: «Спасибо… только я уже могла сама. Не всегда надо… так сразу.»'
+            end
+        else:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Клиент отступает. Мелисса смотрит раздражённо: «Я сама могла. Не делай вид, будто я беспомощная.»'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Сандра хмурится: «Спасибо. Но я не ребёнок. Иногда хватит и моего слова.»'
+            else:
+                $HallHarassmentText = 'Аманда смотрит не с благодарностью, а с досадой: «Я сама могла… Не надо каждый раз, будто я не справлюсь.»'
+            end
+        end
 
     elseif $HallHarassmentTextId = 'protect_hard_fail':
-        $HallHarassmentText = 'Вы вмешиваетесь резко, и клиент тут же начинает шуметь. Его всё равно приходится осадить, но часть гостей уже недовольно ворчит. Порядок восстановлен, только осадок остался.'
+        $HallHarassmentText = 'Вы вмешиваетесь резко — клиент шумит, часть зала ворчит. Порядок всё же восстановлен, но осадок остался.'
 
     elseif $HallHarassmentTextId = 'warn_client_success':
-        $HallHarassmentText = 'Вы подходите ближе и спокойно предупреждаете клиента. Не громко, без драки, но так, чтобы за соседними столами услышали. Гость убирает руки и пытается сделать вид, что всё было простой шуткой. "Ладно, ладно... просто пошутил."'
-
+        $HallHarassmentText = 'Вы спокойно предупреждаете клиента — не громко, но так, чтобы соседние столы услышали. Он убирает руки: «Ладно… пошутил.»'
     elseif $HallHarassmentTextId = 'warn_client_fail':
-        $HallHarassmentText = 'Вы пытаетесь решить всё спокойно, но клиент уже слишком пьян и слишком уверен в себе. Спор выходит громче, чем хотелось бы. В итоге он отступает, но зал всё равно запоминает сцену.'
+        $HallHarassmentText = 'Спокойно не выходит: клиент пьян и уверен. Спор громче, чем хотелось. Он отступает — зал запоминает шум.'
 
+    ! ---------- resolve: self / profit (legacy ids) ----------
     elseif $HallHarassmentTextId = 'self_handle_success':
-        $HallHarassmentText = 'Вы не вмешиваетесь сразу и даёте ей взглядом понять: решай. ' + $RealName[$HallHarassGirl] + ' справляется сама — не идеально, но достаточно твёрдо. В зале это замечают. "Я... я сама справилась. Правда."'
-
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'Вы даёте ей взглядом: решай. ' + $RealName[$HallHarassGirl] + ' выходит из сцены сама — твёрдо, без истерики. «Я справилась.»'
+        else:
+            $HallHarassmentText = 'Вы не лезете сразу. ' + $RealName[$HallHarassGirl] + ' справляется — не идеально, но достаточно. «Я… я сама. Правда.»'
+        end
     elseif $HallHarassmentTextId = 'self_handle_bad':
-        $HallHarassmentText = 'Вы ждёте, что она справится сама. Она вырывается из неприятной ситуации, но выглядит растерянной. Когда её взгляд находит вас, в нём слишком много вопроса: "Почему ты молчал?"'
-
+        $HallHarassmentText = 'Вы ждёте, что она справится. Она выбирается, но взгляд ищет вас: «Почему ты молчал?»'
     elseif $HallHarassmentTextId = 'profit_high':
-        $HallHarassmentText = 'Вы не мешаете — только смотрите, как сцена тянется дальше. Гость делает ещё заказ, на столе звенят лишние монеты, а ' + $RealName[$HallHarassGirl] + ' держит всё на грани. Зал оживляется. «Зато он заплатил… правда?» — говорит она потом, но в голосе нет радости.'
-
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'Вы не мешаете. Гость дозаказывает, монеты звенят, ' + $RealName[$HallHarassGirl] + ' держит грань. Потом коротко: «Заплатил… ладно.» Без радости, но и без слёз.'
+        else:
+            $HallHarassmentText = 'Вы не мешаете. Гость дозаказывает, зал оживляется. «Зато он заплатил… правда?» — в голосе нет радости.'
+        end
     elseif $HallHarassmentTextId = 'profit_low':
-        $HallHarassmentText = 'Вы делаете вид, что не заметили. ' + $RealName[$HallHarassGirl] + ' выбирается сама, но слишком поздно и слишком одна. «Я справилась. Но мне было неприятно, что ты отвернулся.»'
+        $HallHarassmentText = 'Вы делаете вид, что не заметили. ' + $RealName[$HallHarassGirl] + ' выбирается сама, поздно и одна. «Я справилась. Но мне было неприятно, что ты отвернулся.»'
 
+    ! ---------- resolve: watch ----------
     elseif $HallHarassmentTextId = 'watch_calm':
-        $HallHarassmentText = 'Вы стоите и смотрите, не вмешиваясь. ' + $RealName[$HallHarassGirl] + ' сама ставит клиента на место — не идеально, но достаточно твёрдо. Зал это замечает. И вы тоже.'
-
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Вы стоите и смотрите. Мелисса сама обрывает гостя — холодно, без крика. Взгляд на вас: «Видел. Хорошо, что хотя бы видел.»'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Вы в проходе. Сандра ставит гостя на место сама. Короткий кивок: «Справилась. Ты видел — и ладно.»'
+            else:
+                $HallHarassmentText = 'Вы смотрите, не вмешиваясь. Аманда выходит из сцены сама, ещё красная. «Я… справилась. Ты видел?»'
+            end
+        else:
+            $HallHarassmentText = 'Вы стоите и смотрите. ' + $RealName[$HallHarassGirl] + ' сама ставит клиента на место — не идеально, но твёрдо. Зал это замечает. И вы тоже.'
+        end
     elseif $HallHarassmentTextId = 'watch_bad':
-        $HallHarassmentText = 'Вы наблюдаете со стороны. ' + $RealName[$HallHarassGirl] + ' выбирается из сцены, но выглядит растерянной. Когда её взгляд находит вас, в нём слишком много вопроса: «Ты видел всё и всё равно молчал?»'
-
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'Вы наблюдаете. ' + $RealName[$HallHarassGirl] + ' выбирается, но во взгляде вопрос без крика: «Ты видел — и всё равно стоял?»'
+        else:
+            $HallHarassmentText = 'Вы наблюдаете. ' + $RealName[$HallHarassGirl] + ' выбирается растерянно. «Ты видел всё и всё равно молчал?»'
+        end
     elseif $HallHarassmentTextId = 'watch_lewd':
-        $HallHarassmentText = 'Вы не мешаете — только смотрите. Клиент смелеет, на столе звенят лишние монеты, а ' + $RealName[$HallHarassGirl] + ' удерживает ситуацию на грани. Зал оживляется. Вы понимаете, что только что показали: хозяин видит и не останавливает.'
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'Вы не мешаете — только смотрите. Клиент смелеет, монеты звенят, ' + $RealName[$HallHarassGirl] + ' держит на грани. Она не орёт — скорее устало: зал понял, что хозяин видит и не останавливает.'
+        else:
+            $HallHarassmentText = 'Вы не мешаете. Клиент смелеет, чаевые звенят, ' + $RealName[$HallHarassGirl] + ' на грани. Вы показали: хозяин видит и не вмешивается.'
+        end
 
-    elseif $HallHarassmentTextId = 'aftermath_ignore_cold':
-        $HallHarassmentText = '<br><br>Через минуту ' + $RealName[$HallHarassGirl] + ' подходит ближе и шепчет сквозь зубы: «Ты правда ничего не видел?.. Ладно. Забудь.»'
-
-    elseif $HallHarassmentTextId = 'aftermath_ignore_cold_line':
-        $HallHarassmentText = 'подходит ближе и шепчет сквозь зубы: «Ты правда ничего не видел?.. Ладно. Забудь.»'
-
-    elseif $HallHarassmentTextId = 'aftermath_ignore_ok':
-        $HallHarassmentText = '<br><br>' + $RealName[$HallHarassGirl] + ' молча проходит мимо и возвращается к работе, будто ничего не было.'
-
-    elseif $HallHarassmentTextId = 'aftermath_ignore_ok_line':
-        $HallHarassmentText = 'молча проходит мимо и возвращается к работе, будто ничего не было.'
-
-    elseif $HallHarassmentTextId = 'aftermath_watch_angry':
-        $HallHarassmentText = '<br><br>' + $RealName[$HallHarassGirl] + ' подходит к вам с покрасневшими щеками: «Я видела, как ты стоял и смотрел. Иногда это хуже, чем если бы тебя вообще не было рядом.»'
-
-    elseif $HallHarassmentTextId = 'aftermath_watch_angry_line':
-        $HallHarassmentText = 'подходит к вам с покрасневшими щеками: «Я видела, как ты стоял и смотрел. Иногда это хуже, чем если бы тебя вообще не было рядом.»'
-
-    elseif $HallHarassmentTextId = 'aftermath_watch_ok':
-        $HallHarassmentText = '<br><br>' + $RealName[$HallHarassGirl] + ' бросает короткий взгляд: «Я справилась. Но запомни — ты тоже всё видел.»'
-
-    elseif $HallHarassmentTextId = 'aftermath_watch_ok_line':
-        $HallHarassmentText = 'бросает короткий взгляд: «Я справилась. Но запомни — ты тоже всё видел.»'
-
+    ! ---------- aftermath (полная строка) ----------
     elseif $HallHarassmentTextId = 'aftermath_protect_thanks':
-        $HallHarassmentText = '<br><br>' + $RealName[$HallHarassGirl] + ' тихо говорит, не глядя в глаза: «Спасибо, что вмешался. Мне было важно, что ты не сделал вид, будто ничего не происходит.»'
-
-    elseif $HallHarassmentTextId = 'aftermath_protect_thanks_line':
-        $HallHarassmentText = 'тихо говорит, не глядя в глаза: «Спасибо, что вмешался. Мне было важно, что ты не сделал вид, будто ничего не происходит.»'
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Мелисса подходит ближе, без театра: «Спасибо, что вмешался. Не люблю, когда за меня решают… но сейчас — вовремя.»'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Сандра кивает: «Спасибо. Здесь без хозяина иногда не обходится.»'
+            else:
+                $HallHarassmentText = 'Аманда говорит тихо: «Спасибо… что не сделал вид, будто ничего нет.»'
+            end
+        else:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Мелисса: «Спасибо. Мне важно, что ты не отвернулся.»'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Сандра: «Спасибо, что вмешался.»'
+            else:
+                $HallHarassmentText = 'Аманда, не глядя в глаза: «Спасибо, что вмешался. Мне было важно, что ты не сделал вид, будто ничего не происходит.»'
+            end
+        end
 
     elseif $HallHarassmentTextId = 'aftermath_protect_annoyed':
-        $HallHarassmentText = '<br><br>' + $RealName[$HallHarassGirl] + ' смотрит на вас с раздражением: «Я сама могла с этим справиться. Не надо каждый раз делать вид, будто я беспомощная.»'
-
-    elseif $HallHarassmentTextId = 'aftermath_protect_annoyed_line':
-        $HallHarassmentText = 'смотрит на вас с раздражением: «Я сама могла с этим справиться. Не надо каждый раз делать вид, будто я беспомощная.»'
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Мелисса вздыхает: «Я почти сама. Не надо каждый раз, будто я без рук.» Спокойно, без яда.'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Сандра: «Спасибо. Но я не беспомощная. Иногда дай мне самой.»'
+            else:
+                $HallHarassmentText = 'Аманда мнётся: «Спасибо… только я уже могла. Не всегда надо так сразу.»'
+            end
+        else:
+            $HallHarassmentText = $RealName[$HallHarassGirl] + ' смотрит с раздражением: «Я сама могла с этим справиться. Не надо каждый раз делать вид, будто я беспомощная.»'
+        end
 
     elseif $HallHarassmentTextId = 'aftermath_protect_fail':
-        $HallHarassmentText = '<br><br>' + $RealName[$HallHarassGirl] + ' вздыхает: «Всё вышло шумно… но ты хотя бы попытался помочь.»'
+        $HallHarassmentText = $RealName[$HallHarassGirl] + ' вздыхает: «Шумно вышло… но ты хотя бы попытался.»'
 
+    elseif $HallHarassmentTextId = 'aftermath_watch_ok':
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Мелисса коротко: «Я справилась. Ты видел — и не полез. Иногда так тоже нормально.»'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Сандра: «Справилась. Ты стоял — ладно. Главное, не отвернулся совсем.»'
+            else:
+                $HallHarassmentText = 'Аманда тихо: «Я… справилась. Ты всё видел. Просто… стоял.» Без упрёка — скорее усталость.'
+            end
+        else:
+            $HallHarassmentText = $RealName[$HallHarassGirl] + ' бросает взгляд: «Я справилась. Но запомни — ты тоже всё видел.»'
+        end
+
+    elseif $HallHarassmentTextId = 'aftermath_watch_angry':
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Мелисса подходит ближе: «Ты смотрел. Иногда это… тяжело. Но кричать не буду. Просто запомни.»'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Сандра ровно: «Видел и стоял. В другой раз — ближе, если надо.» Без крика.'
+            else:
+                $HallHarassmentText = 'Аманда краснеет: «Ты стоял и смотрел… Мне от этого… странно. Не злись, просто…»'
+            end
+        else:
+            $HallHarassmentText = $RealName[$HallHarassGirl] + ' с покрасневшими щеками: «Я видела, как ты стоял и смотрел. Иногда это хуже, чем если бы тебя не было рядом.»'
+        end
+
+    elseif $HallHarassmentTextId = 'aftermath_ignore_cold':
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'Мелисса проходит мимо: «Сделал вид, что не видел? Понятно. Не удобно — так и скажи в следующий раз.»'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'Сандра коротко: «Не заметил? Ладно. Кухня/зал запомнит.»'
+            else:
+                $HallHarassmentText = 'Аманда шепчет: «Ты правда… не видел? Ладно. Забудь.» Голос тише злости — скорее обида.'
+            end
+        else:
+            $HallHarassmentText = 'Через минуту ' + $RealName[$HallHarassGirl] + ' шепчет сквозь зубы: «Ты правда ничего не видел?.. Ладно. Забудь.»'
+        end
+
+    elseif $HallHarassmentTextId = 'aftermath_ignore_ok':
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = $RealName[$HallHarassGirl] + ' возвращается к работе. Молча. Без сцены — будто решила не раздувать.'
+        else:
+            $HallHarassmentText = $RealName[$HallHarassGirl] + ' молча проходит мимо и возвращается к работе, будто ничего не было.'
+        end
+
+    ! ---------- aftermath lines (для склейки, без имени) ----------
+    elseif $HallHarassmentTextId = 'aftermath_protect_thanks_line':
+        if HallHarassmentTextLate = 1:
+            if $HallHarassGirl = 'melissa':
+                $HallHarassmentText = 'тихо: «Спасибо. Вовремя. Хотя я почти сама.»'
+            elseif $HallHarassGirl = 'sandra':
+                $HallHarassmentText = 'кивает: «Спасибо. Здесь без хозяина иногда никак.»'
+            else:
+                $HallHarassmentText = 'тихо: «Спасибо… что не сделал вид, будто ничего.»'
+            end
+        else:
+            $HallHarassmentText = 'тихо, не глядя: «Спасибо, что вмешался. Мне было важно, что ты не сделал вид, будто ничего не происходит.»'
+        end
+    elseif $HallHarassmentTextId = 'aftermath_protect_annoyed_line':
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'без яда: «Я почти сама. Не каждый раз надо.»'
+        else:
+            $HallHarassmentText = 'с раздражением: «Я сама могла. Не надо каждый раз, будто я беспомощная.»'
+        end
     elseif $HallHarassmentTextId = 'aftermath_protect_fail_line':
-        $HallHarassmentText = 'вздыхает: «Всё вышло шумно… но ты хотя бы попытался помочь.»'
+        $HallHarassmentText = 'вздыхает: «Шумно… но ты хотя бы попытался.»'
+    elseif $HallHarassmentTextId = 'aftermath_watch_ok_line':
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'коротко: «Я справилась. Ты видел — и ладно.»'
+        else:
+            $HallHarassmentText = '«Я справилась. Но запомни — ты тоже всё видел.»'
+        end
+    elseif $HallHarassmentTextId = 'aftermath_watch_angry_line':
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'тише: «Ты смотрел. Иногда это тяжело. Просто запомни.»'
+        else:
+            $HallHarassmentText = 'с покрасневшими щеками: «Ты стоял и смотрел. Иногда это хуже, чем если бы тебя не было.»'
+        end
+    elseif $HallHarassmentTextId = 'aftermath_ignore_cold_line':
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'мимо: «Не видел? Понятно. В следующий раз — хоть слово.»'
+        else:
+            $HallHarassmentText = 'сквозь зубы: «Ты правда ничего не видел?.. Ладно. Забудь.»'
+        end
+    elseif $HallHarassmentTextId = 'aftermath_ignore_ok_line':
+        $HallHarassmentText = 'молча возвращается к работе, будто ничего не было.'
 
+    ! ---------- ignore generic ----------
     elseif $HallHarassmentTextId = 'ignore':
-        $HallHarassmentText = 'Вы делаете вид, что не заметили происходящего. Через несколько мгновений ' + $RealName[$HallHarassGirl] + ' сама выходит из ситуации и возвращается к работе. Но теперь она избегает смотреть в вашу сторону.'
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'Вы делаете вид, что заняты. ' + $RealName[$HallHarassGirl] + ' выходит из ситуации сама и возвращается к работе — без крика, но и без тепла.'
+        else:
+            $HallHarassmentText = 'Вы делаете вид, что не заметили. ' + $RealName[$HallHarassGirl] + ' сама выходит из ситуации. Теперь она избегает смотреть в вашу сторону.'
+        end
 
+    ! ---------- family (Аманда-сцена) ----------
     elseif $HallHarassmentTextId = 'family_amanda_protected':
-        $HallHarassmentText = '<br><br>Позже Мелисса замечает, что вы не дали ситуации выйти из-под контроля. Сандра тоже слышит об этом и некоторое время молча смотрит на Аманду, будто впервые понимает, насколько опасной может быть обычная смена в зале.'
-
+        $HallHarassmentText = 'Позже Мелисса замечает, что вы не дали ситуации разрастись. Сандра тоже слышит — и молча смотрит на Аманду дольше обычного.'
     elseif $HallHarassmentTextId = 'family_amanda_bad':
-        $HallHarassmentText = '<br><br>Этот случай не остаётся незамеченным. Мелисса становится холоднее, а Сандра вечером слишком долго смотрит на Аманду, словно пытается понять, во что превращается работа в трактире.'
-
+        $HallHarassmentText = 'Случай не остаётся незамеченным. Мелисса холодеет. Сандра вечером слишком долго смотрит на Аманду — будто взвешивает, во что превращается зал.'
     elseif $HallHarassmentTextId = 'family_amanda_self':
-        $HallHarassmentText = '<br><br>Мелисса замечает, что Аманда справилась сама, но всё равно выглядит обеспокоенной. Сандра ничего не говорит, однако её молчание кажется тяжелее обычного.'
+        $HallHarassmentText = 'Мелисса видит, что Аманда справилась сама, но всё равно хмурится. Сандра молчит — и молчание тяжелее слов.'
 
+    ! ---------- зал как публика ----------
     elseif $HallHarassmentTextId = 'hall_reaction_ignore':
-        $HallHarassmentText = 'За соседним столом кто-то тихо фыркает. Сцена кончилась сама — не потому, что зал успокоился, а потому что хозяин сделал вид, что его это не касается.'
-
+        $HallHarassmentText = 'За соседним столом тихо фыркают. Сцена кончилась сама — не потому что зал успокоился, а потому что хозяин сделал вид, что его это не касается.'
     elseif $HallHarassmentTextId = 'hall_reaction_watch':
         $HallHarassmentText = 'Несколько гостей переглядываются. Кто-то отводит взгляд, кто-то смотрит слишком внимательно — не только на неё, но и на вас.'
-
     elseif $HallHarassmentTextId = 'hall_reaction_watch_bad':
-        $HallHarassmentText = 'За дальним столом кто-то усмехается. Сцена кончилась криво: запомнили и её, и то, что хозяин всё видел.'
-
+        $HallHarassmentText = 'За дальним столом усмехаются. Сцена кончилась криво: запомнили и её, и то, что хозяин всё видел.'
     elseif $HallHarassmentTextId = 'hall_reaction_watch_lewd':
-        $HallHarassmentText = 'Зал оживляется шёпотом. Кто-то поднимает кружку, чтобы лучше видеть. Хозяин не только заметил — позволил смотреть дальше.'
-
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentText = 'Зал оживляется шёпотом. Кто-то поднимает кружку, чтобы лучше видеть. Хозяин не остановил — и это уже тон трактира.'
+        else:
+            $HallHarassmentText = 'Зал оживляется. Кто-то поднимает кружку. Хозяин не только заметил — позволил смотреть дальше.'
+        end
     elseif $HallHarassmentTextId = 'hall_reaction_protect':
-        $HallHarassmentText = 'Зал притихает на миг. Клиент бурчит, но руки убирает — теперь все знают, кто здесь ставит точку.'
-
+        $HallHarassmentText = 'Зал на миг притихает. Клиент бурчит, но руки убирает — теперь ясно, кто ставит точку.'
     elseif $HallHarassmentTextId = 'hall_reaction_protect_fail':
-        $HallHarassmentText = 'Шум вспыхивает громче, чем хотелось. Сцена кончилась, а шёпот за столами только разгорелся.'
+        $HallHarassmentText = 'Шум вспыхивает громче, чем хотелось. Сцена кончилась, шёпот за столами только разгорелся.'
+
+    ! ---------- legacy intro ids (на случай старых вызовов; intro — в intro_text) ----------
+    elseif $HallHarassmentTextId = 'waitress_intro_1' or $HallHarassmentTextId = 'waitress_intro_2' or $HallHarassmentTextId = 'waitress_intro_3' or $HallHarassmentTextId = 'waitress_intro_4':
+        $HallHarassmentText = ''
+    elseif $HallHarassmentTextId = 'kitchen_intro_1' or $HallHarassmentTextId = 'kitchen_intro_2' or $HallHarassmentTextId = 'kitchen_intro_3' or $HallHarassmentTextId = 'kitchen_intro_4':
+        $HallHarassmentText = ''
 
     else:
         $HallHarassmentText = ''
     end
+
     killvar '$HallHarassmentTextId'
+    killvar 'HallHarassmentTextLate'
 ---
 
 #HallHarassmentTalkPrintText
     gs 'HallHarassmentTalkText', $ARGS[0]
+
     if $HallHarassmentTalkText <> '':
-        *p $HallHarassmentTalkText
+        *pl $HallHarassmentTalkText
     end
 ---
 
@@ -247,24 +338,40 @@
     $HallHarassmentTalkTextId = LCASE($ARGS[0])
     $HallHarassmentTalkText = ''
 
+    gs 'HallHarassmentTextLateFlag'
+
     if $HallHarassmentTalkTextId = 'no_event':
-        $HallHarassmentTalkText = 'Вы пытаетесь заговорить о случившемся в зале, но тема быстро сходит на нет.'
+        $HallHarassmentTalkText = 'Вы пытаетесь заговорить о зале — тема быстро сходит на нет.'
     elseif $HallHarassmentTalkTextId = 'wrong_girl':
         $HallHarassmentTalkText = $RealName[$TalkEventGirl] + ' не понимает, о каком случае вы говорите.'
     elseif $HallHarassmentTalkTextId = 'reaction_protect_dislike':
-        $HallHarassmentTalkText = 'Вы осторожно вспоминаете неприятный случай в зале. ' + $RealName[$TalkEventGirl] + ' смотрит на вас с лёгким раздражением. «Я сама могла с этим справиться. Не надо каждый раз делать вид, будто я беспомощная.»'
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentTalkText = 'Вы вспоминаете зал. ' + $RealName[$TalkEventGirl] + ' без яда: «Я почти сама. Не надо каждый раз, будто я без рук.»'
+        else:
+            $HallHarassmentTalkText = 'Вы вспоминаете зал. ' + $RealName[$TalkEventGirl] + ' с лёгким раздражением: «Я сама могла. Не надо каждый раз делать вид, будто я беспомощная.»'
+        end
     elseif $HallHarassmentTalkTextId = 'reaction_protect_success':
-        $HallHarassmentTalkText = 'Вы осторожно вспоминаете неприятный случай в зале. ' + $RealName[$TalkEventGirl] + ' на мгновение опускает взгляд, а потом тихо говорит: «Спасибо, что вмешался. Мне было важно, что ты не сделал вид, будто ничего не происходит.»'
+        $HallHarassmentTalkText = 'Вы вспоминаете зал. ' + $RealName[$TalkEventGirl] + ' тихо: «Спасибо, что вмешался. Мне было важно, что ты не сделал вид, будто ничего не происходит.»'
     elseif $HallHarassmentTalkTextId = 'reaction_protect_fail':
-        $HallHarassmentTalkText = 'Вы вспоминаете шумную сцену в зале. ' + $RealName[$TalkEventGirl] + ' вздыхает, но смотрит на вас мягче, чем обычно. «Всё вышло некрасиво… но ты хотя бы попытался помочь.»'
+        $HallHarassmentTalkText = 'Вы вспоминаете шум. ' + $RealName[$TalkEventGirl] + ' вздыхает: «Вышло некрасиво… но ты хотя бы попытался.»'
     elseif $HallHarassmentTalkTextId = 'reaction_watch':
-        $HallHarassmentTalkText = 'Вы пытаетесь заговорить о том, что случилось в зале. ' + $RealName[$TalkEventGirl] + ' смотрит на вас напряжённо. «Я видела, как ты стоял и смотрел. Иногда это хуже, чем если бы тебя вообще не было рядом.»'
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentTalkText = 'Вы заводите разговор о зале. ' + $RealName[$TalkEventGirl] + ' ровно: «Ты смотрел. Иногда это тяжело. Просто запомни.»'
+        else:
+            $HallHarassmentTalkText = 'Вы заводите разговор о зале. ' + $RealName[$TalkEventGirl] + ' напряжённо: «Я видела, как ты стоял и смотрел. Иногда это хуже, чем если бы тебя не было.»'
+        end
     elseif $HallHarassmentTalkTextId = 'reaction_profit':
-        $HallHarassmentTalkText = 'Вы вспоминаете тот случай. ' + $RealName[$TalkEventGirl] + ' криво усмехается. «Ты правда не видел? Или сделал вид? Для зала — удобно. Для меня — нет.»'
+        if HallHarassmentTextLate = 1:
+            $HallHarassmentTalkText = 'Вы вспоминаете тот случай. ' + $RealName[$TalkEventGirl] + ' криво усмехается: «Не видел — или сделал вид? Для зала удобно. Для меня… по-разному.»'
+        else:
+            $HallHarassmentTalkText = 'Вы вспоминаете тот случай. ' + $RealName[$TalkEventGirl] + ' криво: «Ты правда не видел? Или сделал вид? Для зала — удобно. Для меня — нет.»'
+        end
     elseif $HallHarassmentTalkTextId = 'instruction_intro':
-        $HallHarassmentTalkText = 'После такого случая нужно решить, как ей действовать дальше. Без ясных правил зал сам быстро придумает свои.'
+        $HallHarassmentTalkText = 'После такого случая нужно решить, как ей действовать дальше. Без правил зал сам придумает свои.'
     else:
         $HallHarassmentTalkText = ''
     end
+
     killvar '$HallHarassmentTalkTextId'
+    killvar 'HallHarassmentTextLate'
 ---

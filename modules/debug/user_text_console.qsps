@@ -1,0 +1,34 @@
+! ================================================
+! FILE: modules/debug/user_text_console.qsps
+! MODULE: debug
+! Нижнее поле ввода QSP-плеера → debug-консоль
+! Системная локация: user_comand_line (одна «m» — имя плеера)
+! Текст ввода: $user_text / $USER_TEXT
+! Пример: gs 'OffenseDaysStart', 'amanda', 'no_protect_low'
+! Опционально: /money = 5000  (ведущий / снимается)
+! ================================================
+
+#user_comand_line
+    if debug = 0:
+        clrinput
+        exit
+    end
+
+    if $user_text = '':
+        clrinput
+        exit
+    end
+
+    $UserTextCmd = $user_text
+
+    if $mid($UserTextCmd, 1, 1) = '/':
+        $UserTextCmd = $mid($UserTextCmd, 2)
+    end
+
+    if $UserTextCmd <> '':
+        dynamic $UserTextCmd
+    end
+
+    killvar '$UserTextCmd'
+    clrinput
+---

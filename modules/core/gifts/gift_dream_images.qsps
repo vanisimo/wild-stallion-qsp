@@ -1,0 +1,45 @@
+! ================================================
+! FILE: modules/core/gifts/gift_dream_images.qsps
+! MODULE: core/gifts
+! Картинки предметов-мечт (eavesdrop / stub квест)
+! Пути: images/items/dreams/{id}.png|jpg
+! ================================================
+
+#ShowDreamItemImage
+    $DreamImgId = LCASE($ARGS[0])
+
+    if $DreamImgId = '':
+        killvar '$DreamImgId'
+        exit
+    end
+
+    $DreamImgPath = 'images/items/dreams/' + $DreamImgId
+
+    if LOC('ShowImagePath') = 1:
+        gs 'ShowImagePath', $DreamImgPath, '', 'location', 'png'
+    end
+
+    killvar '$DreamImgId'
+    killvar '$DreamImgPath'
+---
+
+#ShowAncestralTreeImage
+    if LOC('ShowImagePath') = 1:
+        gs 'ShowImagePath', 'images/locations/tree/ancestral', '', 'location', 'jpg'
+    end
+---
+
+#ShowDreamItemIfKnown
+    $DreamKnownId = LCASE($ARGS[0])
+
+    if $DreamKnownId = '':
+        killvar '$DreamKnownId'
+        exit
+    end
+
+    if DreamItemKnown[$DreamKnownId] = 1 or DreamItemGiven[$DreamKnownId] = 1:
+        gs 'ShowDreamItemImage', $DreamKnownId
+    end
+
+    killvar '$DreamKnownId'
+---
