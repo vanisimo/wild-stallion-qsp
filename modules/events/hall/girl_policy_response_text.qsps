@@ -1,8 +1,11 @@
 ! ================================================
 ! FILE: modules/events/hall/girl_policy_response_text.qsps
-! Тексты реакции девушки на правило Стефана
-! Используется:
-! modules/events/hall/girl_policy_response.qsps
+! MODULE: events/hall
+! USER-OWNED TEXT
+! Реакция девушки на правило Стефана (сцена, до выбора игрока)
+! Policy: 0 no_rule / 1 decent / 2 own_choice / 3 keep_client
+! Level: 0 refuse / 1 reluctant / 2 obey / 3 eager / 4 overstep
+! (no_rule: 1 confused / 2 improvise / 3 self_willed)
 ! ================================================
 
 #GirlPolicyResponseText
@@ -20,113 +23,177 @@
 ---
 
 #GirlPolicyResponseTextKeepClient
-    if PolicyResponseLevel <= 1:
+    ! rule 3 — раскованнее / держать клиента
+    if PolicyResponseLevel = 0:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда слышит про «раскованнее», но тело решает быстрее стыда. Она отдёргивается, краснеет и смотрит на вас так, будто вы только что попросили её продать кусок себя за чаевые.'
+            $PolicyResponseText = 'Аманда слышит указ про «раскованнее», но смущение побеждает. Она отшатывается и смотрит с немым упрёком: у неё не получается торговать фальшивой лаской.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса принимает ваши слова холодно. Клиента она удерживает только на расстоянии вытянутой руки: монету заберёт, но играть в покорную девку не станет.'
+            $PolicyResponseText = 'Мелисса встречает правило с холодной иронией. Клиента держит на вытянутой руке: хорошую выручку сделает, но разыгрывать дешёвую лояльность не станет.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра не спорит вслух, но правило о богатых клиентах встречает тяжёлым взглядом. Она сделает для трактира ровно столько, сколько сочтёт нужным, и ни медяком больше.'
+            $PolicyResponseText = 'Сандра встречает требование быть «раскованнее» тяжёлым взглядом. Сделает всё ровно так, как сама сочтёт правильным на своей кухне, и ни шагом больше.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' сопротивляется грязному правилу и держит клиента на расстоянии.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' отказывается заигрывать с клиентом и держит дистанцию.'
         end
-    elseif PolicyResponseLevel <= 3:
+    elseif PolicyResponseLevel = 1:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда старается удержать клиента. Смущается, косится на вас, но не убегает: она поняла правило и теперь мучительно ищет границу между работой и грязью.'
+            $PolicyResponseText = 'Аманда неохотно пробует подстроиться. Улыбка выходит натянутой, она мнётся и невольно оглядывается на Стефана, словно ища одобрения.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса берёт клиента в оборот по-своему. Улыбка тонкая, дистанция точная, кошель у гостя раскрывается быстрее, чем он успевает понять, кто ведёт игру.'
+            $PolicyResponseText = 'Мелисса выполняет установку без особого энтузиазма. Прибыль удержит, но в тоне чувствуется колкий холод: границы она помнит.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра выполняет правило без улыбок и без дешёвой игры. Клиент остаётся, деньги звенят, но в её спокойствии чувствуется тяжёлая цена такого порядка.'
+            $PolicyResponseText = 'Сандра подчиняется неохотно. Посетителю не нагрубит, но и развлекать его не станет — только работа и чёткие границы.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' выполняет правило и удерживает клиента без явного спора.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' держит клиента неохотно, без особого старания.'
+        end
+    elseif PolicyResponseLevel = 2:
+        if $PolicyResponseGirl = 'amanda':
+            $PolicyResponseText = 'Аманда старается удержать клиента милым разговором. Смущается, но держится увереннее, пытаясь совместить вежливость и выгоду.'
+        elseif $PolicyResponseGirl = 'melissa':
+            $PolicyResponseText = 'Мелисса технично берёт клиента в оборот. Лёгкая ирония, вовремя поднесенный кувшин — и кошелёк гостя опустеет раньше, чем он поймёт расклад.'
+        elseif $PolicyResponseGirl = 'sandra':
+            $PolicyResponseText = 'Сандра выполняет наказ по-взрослому: без лишнего кокетства, но с выгодой. Клиент доволен, деньги звенят в кассе.'
+        else:
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' удерживает клиента по правилу, уверенно ведя диалог.'
+        end
+    elseif PolicyResponseLevel = 3:
+        if $PolicyResponseGirl = 'amanda':
+            $PolicyResponseText = 'Аманда принимает наказ охотнее, чем можно было ждать. Краснеет, но активно вовлекается в общение ради щедрых чаевых.'
+        elseif $PolicyResponseGirl = 'melissa':
+            $PolicyResponseText = 'Мелисса работает раскованностью мастера. Гость уверен, что сам проявляет инициативу, а она давно ведёт всю игру.'
+        elseif $PolicyResponseGirl = 'sandra':
+            $PolicyResponseText = 'Сандра выжимает из правила максимальную выгоду для заведения, твёрдо контролируя процесс.'
+        else:
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' охотно следует напутствию и удерживает внимание клиента.'
         end
     else:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда заходит дальше, чем вы ожидали. Она уже не просто терпит внимание, а проверяет, сколько свободы вы ей сами дали ради серебра.'
+            $PolicyResponseText = 'Аманда заходит дальше простых улыбок, пробуя смелее общаться с гостями и приглядываясь к реакции Стефана.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса перегибает раскованность почти нарочно. Клиент думает, что покупает внимание, а она уже продаёт ему надежду, взглядом спрашивая: так и задумано, хозяин?'
+            $PolicyResponseText = 'Мелисса разворачивает перед залом целый ироничный спектакль, перегибая с раскованностью прямо на ваших глазах.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра перегибает не игриво, а прагматично. Если вы велели быть раскованнее ради кассы, она сделает это по-взрослому — и потом не даст забыть цену.'
+            $PolicyResponseText = 'Сандра действует слишком настойчиво: выбьет из клиента всё до последнего серебряного, не стесняясь в выражениях.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' заходит дальше, чем требовалось по правилу.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' заходит дальше, чем требовало правило.'
         end
     end
 ---
 
 #GirlPolicyResponseTextDecent
-    if PolicyResponseLevel <= 1:
+    ! rule 1 — сдержанно / звать хозяина
+    if PolicyResponseLevel = 0:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда держится сдержанно, но видно, что правило давит. Ей хочется защиты, а не очередного приказа, где за неё уже решили, как краснеть и когда звать хозяина.'
+            $PolicyResponseText = 'Аманда старается быть строго сдержанной, но смущение мешает отказать твёрдо. Клиент чувствует её слабину раньше, чем она успевает позвать Стефана.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса принимает сдержанность сухо. Границу она поставит, но по её взгляду ясно: ей не нравится, когда порядок звучит как повод держать её на коротком поводке.'
+            $PolicyResponseText = 'Мелисса принимает правило о сдержанности, но ставит границу наглухо — суше и резче, чем просил Стефан.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра слышит в этом правиле правильную мысль, но не вашу власть. Она сама знает, где черта, и не любит, когда ей объясняют очевидное.'
+            $PolicyResponseText = 'Сандра выслушивает указ, но на своей кухне держит дистанцию по собственным строгим понятиям, а не по чужой указке.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' выполняет сдержанное правило неохотно.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' сбивает сдержанный тон и отвечает по-своему.'
         end
-    elseif PolicyResponseLevel <= 3:
+    elseif PolicyResponseLevel = 1:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда почти с облегчением держится в рамках. Она зовёт вас взглядом раньше, чем ситуация становится грязной, и явно рада, что правило оказалось понятным.'
+            $PolicyResponseText = 'Аманда держится строго, хотя ей трудно. Ей хотелось бы просто чувствовать защиту Стефана за спиной, а не строго следовать предписаниям.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса ставит границу чисто и спокойно. Без крика, без игры, без лишней улыбки: клиенту остаётся только вспомнить, что он пришёл пить.'
+            $PolicyResponseText = 'Мелисса сдержанна и суха. Дистанцию держит безупречно, но всем видом даёт понять, что опека ей не нужна.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра держит зал в рамках одним тяжёлым взглядом. В этом правиле она видит не запрет, а порядок, который дому давно нужен.'
+            $PolicyResponseText = 'Сандра соглашается с необходимостью порядка, но напоминает, что границы своего хозяйства она и так знает.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' принимает сдержанное правило и держит ситуацию в рамках.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' соблюдает сдержанность без особого восторга.'
+        end
+    elseif PolicyResponseLevel = 2:
+        if $PolicyResponseGirl = 'amanda':
+            $PolicyResponseText = 'Аманда с облегчением опирается на понятное правило. Встретив наглость, оглядывается на Стефана, чувствуя себя защищённой.'
+        elseif $PolicyResponseGirl = 'melissa':
+            $PolicyResponseText = 'Мелисса ставит границу легко и изящно. Без криков и сцен — гость сам вспоминает про свой бокал.'
+        elseif $PolicyResponseGirl = 'sandra':
+            $PolicyResponseText = 'Сандра держит порядок одним веским словом. Строгий наказ совпадает с её собственным взглядом на дела.'
+        else:
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' уверенно держится в рамках установленного порядка.'
+        end
+    elseif PolicyResponseLevel = 3:
+        if $PolicyResponseGirl = 'amanda':
+            $PolicyResponseText = 'Аманда цепляется за строгость как за щит. Чужую руку отбивает вежливо, но сразу даёт понять, что Стефан рядом.'
+        elseif $PolicyResponseGirl = 'melissa':
+            $PolicyResponseText = 'Мелисса охотно держит дистанцию. Без театра и ссор — наглый гость мгновенно встаёт на место.'
+        elseif $PolicyResponseGirl = 'sandra':
+            $PolicyResponseText = 'Сандра принимает правило порядка с одобрением. На кухне тишина и сдержанность — именно то, что нужно.'
+        else:
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' с готовностью поддерживает строгие рамки в общении.'
         end
     else:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда перегибает сдержанность в резкость. Клиент отступает, но зал притихает слишком резко: порядок сохранён, настроение сломано.'
+            $PolicyResponseText = 'Аманда перегибает с отпором, реагируя излишне испуганно и резко. Зал затихает, атмосфера весёлости нарушена.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса слишком охотно берётся за порядок и отсекает клиента ледяно. Урок понятен всем, только чаевые сегодня точно похудеют.'
+            $PolicyResponseText = 'Мелисса отсекает наглеца настолько ледяным тоном, что отбивает у него желание вообще продолжать вечер.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра ставит клиенту такую жёсткую границу, что спорить не решается никто. Порядок спасён, но в зале остаётся тяжёлая тишина.'
+            $PolicyResponseText = 'Сандра ставит границу так жёстко, что никто из соседних гостей даже не помышляет о шутках.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' перегибает приличие в слишком жёсткую сторону.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' перегибает строгость в слишком резкий отпор.'
         end
     end
 ---
 
 #GirlPolicyResponseTextOwnChoice
-    if PolicyResponseLevel <= 1:
+    ! rule 2 — решай сама
+    if PolicyResponseLevel = 0:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда теряется от свободы. Решать самой ей хотелось, но рядом с наглым клиентом это уже не красиво звучит, а тяжело ложится на плечи.'
+            $PolicyResponseText = 'Аманда теряется от слов «решай сама». Свобода пугает её, когда напротив оказывается хмельной и настойчивый гость.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса решает сама, но без благодарности. В её глазах вопрос: вы ей доверяете или просто удобно отошли в сторону?'
+            $PolicyResponseText = 'Мелисса принимает свободу действий без сентиментов. В её взгляде читается: за все результаты работы в зале она ответит сама.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра принимает ваше «решай сама» холодно. Она справится, конечно, но запомнит, что хозяин снова оставил её держать грязный зал одной.'
+            $PolicyResponseText = 'Сандра принимает «решай сама» сдержанно. Порядок на кухне она удержит, но запомнит, что Стефан уклонился от прямого указания.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' принимает свободу выбора тяжело и без радости.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' принимает свободу решений с некоторой настороженностью.'
         end
-    elseif PolicyResponseLevel <= 3:
+    elseif PolicyResponseLevel = 1:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда осторожно выбирает сама. Нервничает, краснеет, но не ломается: в этой сцене появляется первая настоящая самостоятельность.'
+            $PolicyResponseText = 'Аманда берёт решение на себя, но нервничает. Краснеет, старается вести разговор вежливо, всё равно косясь на Стефана.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса уверенно берёт ситуацию в руки. Ей явно приятно, что вы не лезете, хотя она и делает вид, будто просто выполняет работу.'
+            $PolicyResponseText = 'Мелисса решает ситуацию самостоятельно. Ей не привыкать брать дело в свои руки и выжимать из гостей максимум.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра решает без суеты. Иногда лучший приказ — не мешать женщине, которая и так знает, где поставить границу.'
+            $PolicyResponseText = 'Сандра берёт управление на себя без лишних слов. Ей не привыкать самой определять рамки дозволенного.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' сама выбирает, как держать клиента и зал.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' самостоятельно решает, как действовать, но без особой радости.'
+        end
+    elseif PolicyResponseLevel = 2:
+        if $PolicyResponseGirl = 'amanda':
+            $PolicyResponseText = 'Аманда осторожно пробует проявлять самостоятельность. Нервничает, но учится сама вести диалог с клиентом.'
+        elseif $PolicyResponseGirl = 'melissa':
+            $PolicyResponseText = 'Мелисса уверенно берёт инициативу. Ей по душе свобода рук, хотя она и делает вид, что просто выполняет работу.'
+        elseif $PolicyResponseGirl = 'sandra':
+            $PolicyResponseText = 'Сандра действует хозяйственно и твёрдо. Ей свобода указов не нужна — она и так знает, где проходит черта.'
+        else:
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' самостоятельно и уверенно держит ситуацию под контролем.'
+        end
+    elseif PolicyResponseLevel = 3:
+        if $PolicyResponseGirl = 'amanda':
+            $PolicyResponseText = 'Аманда чувствует себя увереннее, распоряжаясь своим общением. Границы теперь — её собственный выбор.'
+        elseif $PolicyResponseGirl = 'melissa':
+            $PolicyResponseText = 'Мелисса ведёт сцену остро и утончённо. Стефану остаётся только наблюдать за её мастерством.'
+        elseif $PolicyResponseGirl = 'sandra':
+            $PolicyResponseText = 'Сандра решает вопрос быстро и практично. Клиент понимает всё с первого слова.'
+        else:
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' охотно берёт контроль в свои руки.'
         end
     else:
         if $PolicyResponseGirl = 'amanda':
-            $PolicyResponseText = 'Аманда заходит дальше простой самостоятельности. Она будто проверяет не клиента, а вас: раз можно самой, значит можно и немного больше.'
+            $PolicyResponseText = 'Аманда пользуется свободой чуть смелее, проверяя, как далеко Стефан позволит ей зайти.'
         elseif $PolicyResponseGirl = 'melissa':
-            $PolicyResponseText = 'Мелисса превращает свободу в собственную игру. Формально она всё решила сама, но зал уже смотрит внимательнее, чем нужно.'
+            $PolicyResponseText = 'Мелисса превращает предоставленную свободу в свою собственную игру с залом.'
         elseif $PolicyResponseGirl = 'sandra':
-            $PolicyResponseText = 'Сандра выбирает слишком жёстко, но уверенно. Клиент второй раз не полезет, зато слух о её характере уйдёт дальше зала.'
+            $PolicyResponseText = 'Сандра поступает слишком прямолинейно и резко, но гость запомнит этот урок навсегда.'
         else:
-            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' пользуется свободой шире, чем вы ожидали.'
+            $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' трактует свободу шире, чем вы ожидали.'
         end
     end
 ---
 
 #GirlPolicyResponseTextNoRule
+    ! rule 0 — правила нет (confused / improvise / self_willed)
     if PolicyResponseLevel <= 1:
-        $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' действует без ясного правила и заметно злится на эту пустоту. Ей приходится угадывать, чего вы ждёте, пока клиент уже проверяет границу.'
-    elseif PolicyResponseLevel <= 3:
-        $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' справляется по собственному разумению. Правила нет, значит порядок в этот раз будет таким, каким она сама его удержит.'
+        $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' работает без чётких указаний и слегка досадует на это. Ей приходится угадывать ожидания Стефана прямо на ходу.'
+    elseif PolicyResponseLevel = 2:
+        $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' справляется по собственному разумению. Раз правил нет — она сама устанавливает порядок.'
     else:
-        $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' пользуется отсутствием правила слишком уверенно. Если хозяин молчит, она сама решит, насколько далеко можно зайти.'
+        $PolicyResponseText = $RealName[$PolicyResponseGirl] + ' пользуется отсутствием рамок смело и уверенно. Раз хозяин молчит, она сама решит, как вести себя с залом.'
     end
 ---

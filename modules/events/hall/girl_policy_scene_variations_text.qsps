@@ -1,8 +1,10 @@
 ! ================================================
 ! FILE: modules/events/hall/girl_policy_scene_variations_text.qsps
-! Тексты фактического поведения девушки в сцене
-! Используется:
-! modules/events/hall/girl_policy_scene_variations.qsps
+! MODULE: events/hall
+! USER-OWNED TEXT
+! Фактическое поведение в сцене после GirlPolicyResponse
+! Stage: <=1 resist/reluctant · <=3 follow · 4 overstep
+! PolicySceneRule: 0–3 (из GirlPolicyLastRule)
 ! ================================================
 
 #GirlPolicySceneVariationText
@@ -19,40 +21,90 @@
 
 #GirlPolicySceneVariationTextResist
     if $PolicySceneGirl = 'amanda':
-        if $PolicySceneEvent = 'kitchen':
-            $GirlPolicySceneVariationText = 'Аманда резко отступает от клиента и прижимает к груди полотенце. Она помнит ваше правило, но сейчас страх сильнее послушания: — Да пошёл ты, старый хрен. Полотенце летит ему в лицо, а кружка звонко бьёт по столу рядом с его рукой.'
+        if PolicySceneRule = 3:
+            $GirlPolicySceneVariationText = 'Аманда помнит наказ быть раскованнее, но не может переступить через смущение. Она поспешно отступает, сжимая поднос: «Не нужно... Пожалуйста». Монету она даже не пытается выгадать.'
+        elseif PolicySceneRule = 1:
+            $GirlPolicySceneVariationText = 'Аманда старается держаться строго, но смущение берёт верх. Убирая руку гостя, она путается в словах и краснеет, неуверенно оглядываясь в поисках поддержки.'
         else:
-            $GirlPolicySceneVariationText = 'Аманда вздрагивает от чужих рук и отскакивает назад. Она помнит ваши слова, но вместо улыбки выходит злое: — Руки убрал. Клиент получает локтем по пальцам, а зал сразу начинает шептаться.'
+            $GirlPolicySceneVariationText = 'Аманда вспыхивает от чужих прикосновений и отстраняется: «Руки уберите!» Установка быть вежливой ради чаевых в этот миг забывается.'
         end
     elseif $PolicySceneGirl = 'melissa':
-        $GirlPolicySceneVariationText = 'Мелисса не принимает правило вслепую. Она отводит руку клиента так резко, что тот давится смешком, и смотрит на вас холодно: приказ услышала, но дураком себя считать не позволит.'
+        if PolicySceneRule = 3:
+            $GirlPolicySceneVariationText = 'Мелисса указ услышала, но слепо следовать ему не намерена. Она сухо сбрасывает ладонь клиента и бросает на вас умеренно-холодный взгляд: чаевые заберёт, но набиваться в подружки гостю не станет.'
+        elseif PolicySceneRule = 1:
+            $GirlPolicySceneVariationText = 'Мелисса держит дистанцию без истерик, но проявляет гораздо больше резкости, чем требовалось, показывая, что её границы определяет она сама.'
+        else:
+            $GirlPolicySceneVariationText = 'Мелисса сбивает спесь с гостя одной колкой фразой. Заниматься дешёвым заигрыванием ради пары медяков она не собирается.'
+        end
     elseif $PolicySceneGirl = 'sandra':
-        $GirlPolicySceneVariationText = 'Сандра не спорит с вами при всех, зато клиенту хватает одного тяжёлого взгляда. Её предел оказался крепче вашего приказа, и зал это прекрасно понял.'
+        if $PolicySceneEvent = 'kitchen' or $GirlPolicyLastArea['sandra'] = 'kitchen':
+            if PolicySceneRule = 3:
+                $GirlPolicySceneVariationText = 'Сандра на кухне пресекает наглость без лишнего шума. Ей хватает одного строгого слова, чтобы отправленный обратно в зал гость понял: заигрывания здесь не пройдут.'
+            else:
+                $GirlPolicySceneVariationText = 'Сандра держит кухню в умелых руках. Одного её взгляда гостю достаточно, чтобы он вспомнил, где находится.'
+            end
+        else:
+            $GirlPolicySceneVariationText = 'Сандра держит порядок с привычным спокойствием. Наглость на её территории не пройдёт.'
+        end
     else:
-        $GirlPolicySceneVariationText = $RealName[$PolicySceneGirl] + ' сопротивляется правилу и действует по-своему.'
+        $GirlPolicySceneVariationText = $RealName[$PolicySceneGirl] + ' поступает по-своему, проигнорировав указание.'
     end
 ---
 
 #GirlPolicySceneVariationTextFollow
     if $PolicySceneGirl = 'amanda':
-        $GirlPolicySceneVariationText = 'Аманда выполняет правило неровно, но честно. Краснеет, осторожно убирает чужую руку и держит клиента разговором, всё время будто спрашивая взглядом: так достаточно, Стефан?'
+        if PolicySceneRule = 3:
+            $GirlPolicySceneVariationText = 'Аманда старательно пытается отшучиваться и мило улыбаться гостю ради чаевых. Она краснеет, но стойко держит диалог, косясь на Стефана: правильно ли у неё получается?'
+        elseif PolicySceneRule = 1:
+            $GirlPolicySceneVariationText = 'Аманда аккуратно соблюдает сдержанность. Чужую ладонь убирает вежливо и вовремя, оглядываясь на вас, словно проверяя одобрение.'
+        else:
+            $GirlPolicySceneVariationText = 'Аманда действует самостоятельно, но с оглядкой на Стефана. Смущается, но уверенно переводит приставания гостя в обычный заказ.'
+        end
     elseif $PolicySceneGirl = 'melissa':
-        $GirlPolicySceneVariationText = 'Мелисса держит ситуацию под контролем. Клиент уверен, что ведёт игру, а она уже ведёт его к новой кружке, новой монете и границе, за которую он не успеет перейти.'
+        if PolicySceneRule = 3:
+            $GirlPolicySceneVariationText = 'Мелисса ловко умеет крутить наглым клиентом. Она поддерживает лёгкий флирт, раскручивая его на выпивку и чаевые, но не давая при этом распускать руки.'
+        elseif PolicySceneRule = 1:
+            $GirlPolicySceneVariationText = 'Мелисса обозначает границы чисто и технично. Гостю остаётся лишь вспомнить о своём заказе и убрать лапы.'
+        else:
+            $GirlPolicySceneVariationText = 'Мелисса уверенно и спокойно справляется сама, умело удерживая дистанцию с посетителем.'
+        end
     elseif $PolicySceneGirl = 'sandra':
-        $GirlPolicySceneVariationText = 'Сандра выполняет правило спокойно и тяжело. Без девичьей игры она удерживает клиента ровно настолько близко, насколько считает допустимым: деньги забирает, лишнее пресекает.'
+        if PolicySceneRule = 3:
+            $GirlPolicySceneVariationText = 'Сандра выполняет установку на прибыль прагматично и без кокетства. Спокойно берёт деньги за заказы, а любые попытки перейти черту пресекает с первого слова.'
+        elseif PolicySceneRule = 1:
+            $GirlPolicySceneVariationText = 'Сандра поддерживает порядок на кухне ровным тоном. Руки при себе, заказы на стол — без суеты и лишних споров.'
+        else:
+            $GirlPolicySceneVariationText = 'Сандра решает дело одной веской фразой, отправляя зашедшего на кухню клиента обратно за его столик.'
+        end
     else:
-        $GirlPolicySceneVariationText = $RealName[$PolicySceneGirl] + ' выполняет правило без явного спора.'
+        $GirlPolicySceneVariationText = $RealName[$PolicySceneGirl] + ' выполняет наказ без лишних споров.'
     end
 ---
 
 #GirlPolicySceneVariationTextOverstep
     if $PolicySceneGirl = 'amanda':
-        $GirlPolicySceneVariationText = 'Аманда заходит дальше, чем требовалось. Она уже не просто терпит внимание клиента, а пробует играть с ним сама, пугаясь собственной смелости и всё равно не отступая.'
+        if PolicySceneRule = 1:
+            $GirlPolicySceneVariationText = 'Должна держаться строго, а сама невольно задержалась у стола чуть дольше. Мельком глядит на вас — словно пробует, где заканчиваются рамки правила.'
+        elseif PolicySceneRule = 3:
+            $GirlPolicySceneVariationText = 'Аманда заходит чуть дальше простого разговора. Втягивается в заигрывание с гостем, смущается своей смелости, но не отступает.'
+        else:
+            $GirlPolicySceneVariationText = 'Аманда пробует проявить чуть больше инициативы, чем от неё ждали, приглядываясь к вашей реакции.'
+        end
     elseif $PolicySceneGirl = 'melissa':
-        $GirlPolicySceneVariationText = 'Мелисса перегибает почти нарочно. Она превращает раскованность в спектакль для клиента и для вас, оставляя в воздухе вопрос: так и задумано, хозяин?'
+        if PolicySceneRule = 3:
+            $GirlPolicySceneVariationText = 'Мелисса явно переигрывает в раскованность, устраивая перед гостем и вами целый спектакль, словно демонстрируя: «Вот как работает твоё правило, Стефан».'
+        elseif PolicySceneRule = 1:
+            $GirlPolicySceneVariationText = 'Мелисса режет наглеца настолько ледяным и колким тоном, что тот мигом остывает, хотя вместе с ним остывают и его чаевые.'
+        else:
+            $GirlPolicySceneVariationText = 'Мелисса превращает свободу рук в собственную ироничную игру, держа зал в постоянном напряжении.'
+        end
     elseif $PolicySceneGirl = 'sandra':
-        $GirlPolicySceneVariationText = 'Сандра заходит дальше приказа не ради игры, а ради результата. Если уж грязная работа нужна трактиру, она сделает её без дешёвых ужимок и потом предъявит вам цену.'
+        if PolicySceneRule = 3:
+            $GirlPolicySceneVariationText = 'Сандра работает на результат жёстко и без сантиментов: заставит гостя выложить деньги, но и спуска ему не даст.'
+        else:
+            $GirlPolicySceneVariationText = 'Сандра ставит границы настолько прямо и сурово, что у гостя отпадает всякое желание заглядывать на кухню повторно.'
+        end
     else:
-        $GirlPolicySceneVariationText = $RealName[$PolicySceneGirl] + ' заходит дальше, чем вы ожидали.'
+        $GirlPolicySceneVariationText = $RealName[$PolicySceneGirl] + ' переходит обычные границы в этой сцене.'
     end
 ---

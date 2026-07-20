@@ -1,8 +1,10 @@
 ! ================================================
 ! FILE: modules/events/hall/girl_policy_response_consequences_text.qsps
-! Тексты последствий реакции девушки на рабочее правило
-! Используется:
-! modules/events/hall/girl_policy_response_consequences.qsps
+! MODULE: events/hall
+! USER-OWNED TEXT
+! Thought-хвост после фактической реакции на правило
+! Stage: 0 refuse / 1 reluctant / 2 obey / 3 eager / 4 overstep
+! Rule: 0 none / 1 decent / 2 own / 3 keep_client
 ! ================================================
 
 #GirlPolicyResponseConsequenceText
@@ -23,40 +25,66 @@
     end
 
     if PolicyTextStage <= 0:
-        if $PolicyTextGirl = 'amanda':
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Аманда услышала правило, но внутри упёрлась. Можно велеть быть доброй к клиенту, можно думать о её красивой жопке и чаевых, но нельзя заставить её улыбаться, когда старый хрен лезет руками.</i></font>'
-        elseif $PolicyTextGirl = 'melissa':
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Мелисса не спорит долго, но в её взгляде ясно читается: «Ты что, сдурел?» Если клиент полезет под юбку, она скорее разобьёт кружку о его башку, чем станет изображать благодарную служанку.</i></font>'
-        elseif $PolicyTextGirl = 'sandra':
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Сандра слушает молча, и от этого молчания в зале становится холоднее. Она может подчиниться дому, трактиру, нужде — но не приказу, который делает из неё игрушку для чужих лап.</i></font>'
+        if PolicyTextRule = 3:
+            if $PolicyTextGirl = 'amanda':
+                $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Аманда выслушала указ быть раскованнее, но переступить через себя не смогла. Копить на мечту она готова, но терпимости к чужим лапам в себе не находит.</i></font>'
+            elseif $PolicyTextGirl = 'melissa':
+                $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Мелисса видит намерение поднять выручку, но разыгрывать доступную служанку ради серебра категорически отказывается.</i></font>'
+            elseif $PolicyTextGirl = 'sandra':
+                $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Сандра игнорирует попытку учить её работе. На кухне порядок держится на её усмотрении, а не на заигрываниях с клиентами.</i></font>'
+            else:
+                $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>' + $RealName[$PolicyTextGirl] + ' отказывается от грязных методов работы с клиентом.</i></font>'
+            end
+        elseif PolicyTextRule = 1:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Сдержанность не помогла гасить вольности — граница плывёт, и клиент начинает чувствовать безнаказанность.</i></font>'
+        elseif PolicyTextRule = 2:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Напутствие «решай сама» воспринято без восторга. Она вынуждена сама разбираться с гостем, не чувствуя за собой твёрдого плеча.</i></font>'
         else:
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>' + $RealName[$PolicyTextGirl] + ' не принимает это правило всерьёз.</i></font>'
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Отсутствие чёткого правила путает работу. Ей приходится угадывать реакцию Стефана прямо на ходу.</i></font>'
         end
 
     elseif PolicyTextStage = 1:
         if PolicyTextRule = 3:
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она подчиняется неохотно. Улыбка есть, шаг ближе есть, даже чужую руку она терпит на миг дольше, чем хочет. Но инициативы в этом нет — только тяжёлое понимание, что Стефан ждёт от неё большего, чем простая работа.</i></font>'
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она подчиняется неохотно: мило улыбается и не спешит отходить, но никакой радости от такой работы не испытывает.</i></font>'
+        elseif PolicyTextRule = 1:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Сдержанность соблюдается через силу. Порядок выдержан, но дистанция между персоналом и хозяином увеличивается.</i></font>'
+        elseif PolicyTextRule = 2:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Свобода выбора принята с трудом. Она берёт дело в свои руки, запоминая, что Стефан предпочёл остаться в стороне.</i></font>'
         else:
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она принимает правило, но без радости. Формально всё правильно, только между словами остаётся осадок: ей не доверили решать самой, где клиент, а где уже похотливый старый хрен.</i></font>'
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она импровизирует на свой страх и риск, сохраняя недовольство неопределённостью.</i></font>'
         end
 
     elseif PolicyTextStage = 2:
-        $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>На этот раз правило ложится ровно. Она понимает, чего от неё ждут: где улыбнуться, где убрать руку с попы, где взять монету и не дать клиенту решить, будто он купил больше кружки вина.</i></font>'
+        if PolicyTextRule = 3:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Правило работает ровно. Она грамотно держит клиента: с улыбкой, за хорошим заказом и без лишнего повода перейти черту.</i></font>'
+        elseif PolicyTextRule = 1:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Сдержанность работает. Дистанция с клиентом сохранена, в зале соблюдается порядок.</i></font>'
+        elseif PolicyTextRule = 2:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Самостоятельность оправдывает себя. Она уверенно контролирует ситуацию с гостем без подсказок.</i></font>'
+        else:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Даже без указаний она справляется с залом благодаря собственному опыту.</i></font>'
+        end
 
     elseif PolicyTextStage = 3:
         if PolicyTextRule = 3:
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она принимает правило охотно. Не просто терпит клиента — играет его похотью, задерживает взгляд, садится ближе, держит его кошелёк на коротком поводке. Стефан сам подтолкнул её к этому, и теперь странно делать вид, что всё произошло само.</i></font>'
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Установка на выручку принята охотно. Она смело заигрывает с клиентом, удерживая его внимание и кошелёк.</i></font>'
+        elseif PolicyTextRule = 1:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Строгое правило воспринимается как удобная броня. Ей проще отказать клиенту, ссылаясь на волю хозяина.</i></font>'
+        elseif PolicyTextRule = 2:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Полная свобода действий пришлась ей по душе. Она спокойно и уверенно вертит гостями ради чаевых.</i></font>'
         else:
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она даже рада ясной границе. Не всякая свобода нужна, когда зал полон пьяных рук. Иногда приказ хозяина звучит не как клетка, а как щит между ней и чужой ладонью под юбкой.</i></font>'
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Без рамок она берёт инициативу в свои руки и задаёт тон общению в зале.</i></font>'
         end
 
     else:
         if PolicyTextRule = 1:
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Запрет прозвучал, но она уже выросла из простого «нельзя». На словах всё прилично, а на деле — лишняя улыбка клиенту, лишний шаг ближе, лишний взгляд в сторону Стефана. Проверяет, заметит ли он, как легко слухи рождаются из одной задранной юбки.</i></font>'
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Формально держась строго, она не упускает случая проверить реакцию Стефана лишним взглядом или улыбкой.</i></font>'
         elseif PolicyTextRule = 3:
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она заходит дальше, чем было сказано. Не просто удерживает клиента — ведёт его взглядом, телом и обещанием, которого вслух не произносит. Приказ стал не поводком, а разрешением, и зал это запомнит.</i></font>'
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Разрешение быть раскованнее трактуется максимально свободно. Она явно переходит обычные границы флирта.</i></font>'
+        elseif PolicyTextRule = 2:
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Свобода выбора заходит дальше ожидаемого. Она держится с клиентами смелее и откровеннее.</i></font>'
         else:
-            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Она трактует правило по-своему. Стефан хотел дать ей свободу, но свобода в таком зале быстро учится улыбаться слишком смело, садиться слишком близко и превращать чужую похоть в слухи о трактире.</i></font>'
+            $GirlPolicyResponseConsequenceText = '<font color="#606080"><i>Отсутствие рамок воспринимается как карт-бланш. Она сама определяет степень дозволенного в зале.</i></font>'
         end
     end
 

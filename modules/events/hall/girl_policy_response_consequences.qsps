@@ -29,49 +29,100 @@
 
     GirlPolicyLastRule[$PolicyConsequenceGirl] = PolicyConsequenceRule
     GirlPolicyLastResponse[$PolicyConsequenceGirl] = PolicyConsequenceStage
+    ! alias for talk / older readers
+    GirlPolicyLastResponseStage[$PolicyConsequenceGirl] = PolicyConsequenceStage
     $GirlPolicyLastArea[$PolicyConsequenceGirl] = $PolicyConsequenceArea
+    GirlPolicyHasLastResponse[$PolicyConsequenceGirl] = 1
+    GirlPolicyResponseTalkDone[$PolicyConsequenceGirl] = 0
 
+    ! --- counters ---
     if PolicyConsequenceStage <= 0:
         GirlPolicyRefused[$PolicyConsequenceGirl] += 1
-        GirlRebellion[$PolicyConsequenceGirl] += 2
-        GirlTrustStefan[$PolicyConsequenceGirl] -= 1
-
-        if PolicyConsequenceRule = 3:
-            GirlSecretiveness[$PolicyConsequenceGirl] += 1
-        end
-
     elseif PolicyConsequenceStage = 1:
         GirlPolicyReluctant[$PolicyConsequenceGirl] += 1
-        GirlRebellion[$PolicyConsequenceGirl] += 1
-
-        if PolicyConsequenceRule = 3:
-            GirlTrustStefan[$PolicyConsequenceGirl] -= 1
-            GirlPublicAttention[$PolicyConsequenceGirl] += 1
-        end
-
     elseif PolicyConsequenceStage = 2:
         GirlPolicyObeyed[$PolicyConsequenceGirl] += 1
-        GirlTrustStefan[$PolicyConsequenceGirl] += 1
-
     elseif PolicyConsequenceStage = 3:
         GirlPolicyEnthusiastic[$PolicyConsequenceGirl] += 1
-        GirlTrustStefan[$PolicyConsequenceGirl] += 1
-        GirlPublicAttention[$PolicyConsequenceGirl] += 1
-
-        if PolicyConsequenceRule = 3:
-            TavernScandal += 1
-            TavernLewdFame += 1
-        end
-
     else:
         GirlPolicyOverstep[$PolicyConsequenceGirl] += 1
-        GirlRebellion[$PolicyConsequenceGirl] += 1
-        GirlPublicAttention[$PolicyConsequenceGirl] += 2
-        TavernScandal += 1
+    end
 
-        if PolicyConsequenceRule = 3:
-            TavernLewdFame += 1
+    ! --- stats once (by rule mode + stage) ---
+    if PolicyConsequenceRule = 3:
+        if PolicyConsequenceStage <= 0:
+            GirlTrustStefan[$PolicyConsequenceGirl] -= 1
+            GirlRebellion[$PolicyConsequenceGirl] += 2
+            GirlWorkDiscipline[$PolicyConsequenceGirl] += 1
+            GirlSecretiveness[$PolicyConsequenceGirl] += 1
+        elseif PolicyConsequenceStage = 1:
+            GirlTrustStefan[$PolicyConsequenceGirl] -= 1
+            GirlPublicAttention[$PolicyConsequenceGirl] += 1
+            TavernScandal += 1
+        elseif PolicyConsequenceStage = 2:
+            GirlPublicAttention[$PolicyConsequenceGirl] += 1
             GirlNpcPath[$PolicyConsequenceGirl] += 1
+            TavernScandal += 1
+        elseif PolicyConsequenceStage = 3:
+            GirlPublicAttention[$PolicyConsequenceGirl] += 2
+            GirlNpcPath[$PolicyConsequenceGirl] += 1
+            TavernScandal += 1
+            TavernLewdFame += 1
+            sluttiness[$PolicyConsequenceGirl] += 1
+        else:
+            GirlPublicAttention[$PolicyConsequenceGirl] += 3
+            GirlNpcPath[$PolicyConsequenceGirl] += 2
+            TavernScandal += 2
+            TavernLewdFame += 2
+            sluttiness[$PolicyConsequenceGirl] += 2
+        end
+    elseif PolicyConsequenceRule = 1:
+        if PolicyConsequenceStage <= 0:
+            GirlRebellion[$PolicyConsequenceGirl] += 2
+            GirlPublicAttention[$PolicyConsequenceGirl] += 2
+            TavernScandal += 1
+        elseif PolicyConsequenceStage = 1:
+            GirlTrustStefan[$PolicyConsequenceGirl] -= 1
+            GirlRebellion[$PolicyConsequenceGirl] += 1
+        elseif PolicyConsequenceStage = 2:
+            GirlTrustStefan[$PolicyConsequenceGirl] += 1
+            GirlWorkDiscipline[$PolicyConsequenceGirl] += 1
+        elseif PolicyConsequenceStage = 3:
+            GirlTrustStefan[$PolicyConsequenceGirl] += 1
+            GirlWorkDiscipline[$PolicyConsequenceGirl] += 2
+            TavernScandal -= 1
+        else:
+            GirlWorkDiscipline[$PolicyConsequenceGirl] += 2
+            GirlPublicAttention[$PolicyConsequenceGirl] -= 1
+            TavernScandal -= 1
+        end
+    elseif PolicyConsequenceRule = 2:
+        if PolicyConsequenceStage <= 0:
+            GirlRebellion[$PolicyConsequenceGirl] += 1
+            GirlSecretiveness[$PolicyConsequenceGirl] += 1
+        elseif PolicyConsequenceStage = 1:
+            GirlTrustStefan[$PolicyConsequenceGirl] -= 1
+            GirlWorkDiscipline[$PolicyConsequenceGirl] += 1
+        elseif PolicyConsequenceStage = 2:
+            GirlTrustStefan[$PolicyConsequenceGirl] += 1
+        elseif PolicyConsequenceStage = 3:
+            GirlTrustStefan[$PolicyConsequenceGirl] += 1
+            GirlWorkDiscipline[$PolicyConsequenceGirl] += 1
+            GirlPublicAttention[$PolicyConsequenceGirl] += 1
+        else:
+            GirlRebellion[$PolicyConsequenceGirl] += 1
+            GirlPublicAttention[$PolicyConsequenceGirl] += 2
+            TavernScandal += 1
+        end
+    else:
+        ! no_rule / 0
+        if PolicyConsequenceStage = 1:
+            GirlSecretiveness[$PolicyConsequenceGirl] += 1
+        elseif PolicyConsequenceStage = 2:
+            GirlPublicAttention[$PolicyConsequenceGirl] += 1
+        else:
+            GirlRebellion[$PolicyConsequenceGirl] += 1
+            GirlPublicAttention[$PolicyConsequenceGirl] += 1
         end
     end
 

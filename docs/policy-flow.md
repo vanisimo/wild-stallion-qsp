@@ -20,10 +20,16 @@ Keep event modules aligned with this flow before refactoring shared helpers.
 
 | Event | Start reaction | Scene variation | Choice consequences | Memory write |
 | --- | --- | --- | --- | --- |
-| `harassment` | `PolicyEventReactionPrint` | `PolicyEventSceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `hall_lewd` | `PolicyEventReactionPrint` | `PolicyEventSceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `hall_missing` | `PolicyEventReactionPrint` | `PolicyEventSceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
-| `kitchen` | `PolicyEventReactionPrint` | `PolicyEventSceneVariationPrint` | `PolicyEventChoiceConsequencePrint` | `HallChoiceConsequencesApply` |
+| `harassment` (hall + kitchen harass) | `PolicyEventReactionPrint` | `PolicyEventSceneVariationPrint` | after-choice handlers | `HallChoiceConsequencesApply` where wired |
+| `hall_lewd` | `PolicyEventReactionPrint` | `PolicyEventSceneVariationPrint` | after-choice handlers | `HallChoiceConsequencesApply` where wired |
+| `hall_missing` | `PolicyEventReactionPrint` | `PolicyEventSceneVariationPrint` | after-choice handlers | `HallChoiceConsequencesApply` where wired |
+| `kitchen` (customer event) | `PolicyEventReactionPrint` | `PolicyEventSceneVariationPrint` | after-choice handlers | `HallChoiceConsequencesApply` where wired |
+
+### Policy response memory (for talk «Как она выполнила правило»)
+
+- Written in `GirlPolicyResponseApplyConsequences`: `GirlPolicyLastResponse`, `GirlPolicyLastResponseStage` (alias), `$GirlPolicyLastArea`, `GirlPolicyHasLastResponse=1`, resets `GirlPolicyResponseTalkDone=0`.
+- Talk unlock: `GirlPolicyHasLastResponse` / `$GirlPolicyLastArea` set and `GirlPolicyResponseTalkDone=0` (includes refuse stage 0).
+- Stats applied **once** in consequences (not also in `GirlPolicyResponseCalc`).
 
 ## Choice Vocabulary
 

@@ -24,6 +24,70 @@
     killvar '$HallFamilyReactionGirl'
 ---
 
+! ================================================
+! Регистрация «недавнего случая» для family reaction talk
+! ARGS: girl, choice, event
+! Severity: 1 = мягче / 2 = жёстче (ignore, watch, dirty)
+! ================================================
+
+#HallRecentEventRegister
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallRecentRegGirl = $GirlKey
+    $HallRecentRegChoice = LCASE($ARGS[1])
+    $HallRecentRegEvent = LCASE($ARGS[2])
+
+    if $HallRecentRegGirl = '':
+        killvar '$HallRecentRegChoice'
+        killvar '$HallRecentRegEvent'
+        exit
+    end
+
+    if $HallRecentRegEvent = '':
+        $HallRecentRegEvent = 'hall'
+    end
+
+    if $HallRecentRegChoice = '':
+        $HallRecentRegChoice = 'watch'
+    end
+
+    $HallRecentGirl = $HallRecentRegGirl
+    $HallRecentEvent = $HallRecentRegEvent
+    $HallRecentChoice = $HallRecentRegChoice
+    HallRecentDay = day
+    HallRecentTime = time
+
+    ! 1 = protect/own/warn; 2 = watch/ignore/dirty
+    HallRecentSeverity = 1
+
+    if $HallRecentRegChoice = 'watch' or $HallRecentRegChoice = 'peek' or $HallRecentRegChoice = 'peek_scene' or $HallRecentRegChoice = 'peek_meet':
+        HallRecentSeverity = 2
+    elseif $HallRecentRegChoice = 'ignore' or $HallRecentRegChoice = 'ignore_after' or $HallRecentRegChoice = 'do_nothing':
+        HallRecentSeverity = 2
+    elseif $HallRecentRegChoice = 'encourage' or $HallRecentRegChoice = 'client' or $HallRecentRegChoice = 'profit' or $HallRecentRegChoice = 'let_client':
+        HallRecentSeverity = 2
+    end
+
+    ! T3+ harass без жёсткой защиты — семья реагирует острее
+    if $HallRecentRegEvent = 'harassment' or $HallRecentRegEvent = 'hall_harassment':
+        if HarassTier >= 3 and HallRecentSeverity < 2 and $HallRecentRegChoice <> 'protect_hard' and $HallRecentRegChoice <> 'protect' and $HallRecentRegChoice <> 'stop':
+            HallRecentSeverity = 2
+        end
+    end
+
+    if $HallRecentRegEvent = 'hall_lewd' or $HallRecentRegEvent = 'kitchen_lewd':
+        if $HallRecentRegChoice = 'watch' or $HallRecentRegChoice = 'ignore' or $HallRecentRegChoice = 'encourage':
+            HallRecentSeverity = 2
+        end
+    end
+
+    ! новый случай — можно снова обсудить
+    HallFamilyReactionSeen[$HallRecentRegGirl] = 0
+
+    killvar '$HallRecentRegGirl'
+    killvar '$HallRecentRegChoice'
+    killvar '$HallRecentRegEvent'
+---
+
 #HallFamilyReactionStart
     gs 'NormalizeGirlKey', $ARGS[0]
     $HallFamilyReactionGirl = $GirlKey

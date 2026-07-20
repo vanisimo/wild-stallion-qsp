@@ -65,16 +65,8 @@
 
     gs 'GirlPolicyResponseApplyPersonality'
     gs 'GirlPolicyResponseResolveLevel'
-    gs 'GirlPolicyResponseApplyStats'
+    ! Статы/счётчики — только в GirlPolicyResponseApplyConsequences (без double-apply).
     gs 'GirlPolicyResponsePrintText'
-
-    if LOC('ClampTavernEventState') = 1:
-        gs 'ClampTavernEventState'
-    end
-
-    if LOC('ClampGirlSocialStats') = 1:
-        gs 'ClampGirlSocialStats', $PolicyResponseGirl
-    end
 
     killvar '$PolicyResponseArea'
     killvar 'PolicyResponsePolicy'
@@ -189,92 +181,12 @@
 
 ! ================================================
 ! FILE: modules/events/hall/girl_policy_response.qsps
-! Последствия именно фактического поведения
+! Legacy: статы перенесены в ApplyConsequences.
+! Оставлен пустой entry, чтобы старые gs не падали.
 ! ================================================
 
 #GirlPolicyResponseApplyStats
-    if $PolicyResponseMode = 'keep_client':
-        if PolicyResponseLevel = 0:
-            GirlTrustStefan[$PolicyResponseGirl] -= 1
-            GirlRebellion[$PolicyResponseGirl] += 2
-            GirlWorkDiscipline[$PolicyResponseGirl] += 1
-        elseif PolicyResponseLevel = 1:
-            GirlTrustStefan[$PolicyResponseGirl] -= 1
-            GirlPublicAttention[$PolicyResponseGirl] += 1
-            TavernScandal += 1
-        elseif PolicyResponseLevel = 2:
-            GirlPublicAttention[$PolicyResponseGirl] += 1
-            GirlNpcPath[$PolicyResponseGirl] += 1
-            TavernScandal += 1
-        elseif PolicyResponseLevel = 3:
-            GirlPublicAttention[$PolicyResponseGirl] += 2
-            GirlNpcPath[$PolicyResponseGirl] += 1
-            TavernScandal += 1
-            TavernLewdFame += 1
-            sluttiness[$PolicyResponseGirl] += 1
-        else:
-            GirlPublicAttention[$PolicyResponseGirl] += 3
-            GirlNpcPath[$PolicyResponseGirl] += 2
-            TavernScandal += 2
-            TavernLewdFame += 2
-            sluttiness[$PolicyResponseGirl] += 2
-        end
-    elseif $PolicyResponseMode = 'decent':
-        if PolicyResponseLevel = 0:
-            GirlRebellion[$PolicyResponseGirl] += 2
-            GirlPublicAttention[$PolicyResponseGirl] += 2
-            TavernScandal += 1
-        elseif PolicyResponseLevel = 1:
-            GirlTrustStefan[$PolicyResponseGirl] -= 1
-            GirlRebellion[$PolicyResponseGirl] += 1
-        elseif PolicyResponseLevel = 2:
-            GirlTrustStefan[$PolicyResponseGirl] += 1
-            GirlWorkDiscipline[$PolicyResponseGirl] += 1
-        elseif PolicyResponseLevel = 3:
-            GirlTrustStefan[$PolicyResponseGirl] += 1
-            GirlWorkDiscipline[$PolicyResponseGirl] += 2
-            TavernScandal -= 1
-        else:
-            GirlWorkDiscipline[$PolicyResponseGirl] += 2
-            GirlPublicAttention[$PolicyResponseGirl] -= 1
-            TavernScandal -= 1
-        end
-    elseif $PolicyResponseMode = 'own_choice':
-        if PolicyResponseLevel = 0:
-            GirlRebellion[$PolicyResponseGirl] += 1
-            GirlSecretiveness[$PolicyResponseGirl] += 1
-        elseif PolicyResponseLevel = 1:
-            GirlTrustStefan[$PolicyResponseGirl] -= 1
-            GirlWorkDiscipline[$PolicyResponseGirl] += 1
-        elseif PolicyResponseLevel = 2:
-            GirlTrustStefan[$PolicyResponseGirl] += 1
-        elseif PolicyResponseLevel = 3:
-            GirlTrustStefan[$PolicyResponseGirl] += 1
-            GirlWorkDiscipline[$PolicyResponseGirl] += 1
-            GirlPublicAttention[$PolicyResponseGirl] += 1
-        else:
-            GirlRebellion[$PolicyResponseGirl] += 1
-            GirlPublicAttention[$PolicyResponseGirl] += 2
-            TavernScandal += 1
-        end
-    else:
-        if PolicyResponseLevel = 1:
-            GirlSecretiveness[$PolicyResponseGirl] += 1
-        elseif PolicyResponseLevel = 2:
-            GirlPublicAttention[$PolicyResponseGirl] += 1
-        else:
-            GirlRebellion[$PolicyResponseGirl] += 1
-            GirlPublicAttention[$PolicyResponseGirl] += 1
-        end
-    end
-
-    if TavernScandal < 0:
-        TavernScandal = 0
-    end
-
-    if TavernLewdFame < 0:
-        TavernLewdFame = 0
-    end
+    ! no-op: see GirlPolicyResponseApplyConsequences
 ---
 
 ! ================================================

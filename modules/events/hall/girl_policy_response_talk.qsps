@@ -18,8 +18,11 @@
         exit
     end
 
-    if GirlPolicyLastResponseStage[$PolicyTalkCheckGirl] > 0 and GirlPolicyResponseTalkDone[$PolicyTalkCheckGirl] = 0:
-        GirlPolicyResponseTalkAvailable = 1
+    ! Доступно после любой фактической реакции, включая refuse (stage 0).
+    if GirlPolicyResponseTalkDone[$PolicyTalkCheckGirl] = 0:
+        if GirlPolicyHasLastResponse[$PolicyTalkCheckGirl] = 1 or $GirlPolicyLastArea[$PolicyTalkCheckGirl] <> '':
+            GirlPolicyResponseTalkAvailable = 1
+        end
     end
 
     killvar '$PolicyTalkCheckGirl'
@@ -68,7 +71,7 @@
 
     if debug = 1:
         *pl '[DEBUG POLICY RESPONSE TALK] girl: ' + $PolicyResponseTalkGirl
-        *pl '[DEBUG POLICY RESPONSE TALK] response stage: ' + STR(GirlPolicyLastResponseStage[$PolicyResponseTalkGirl])
+        *pl '[DEBUG POLICY RESPONSE TALK] response stage: ' + STR(GirlPolicyLastResponse[$PolicyResponseTalkGirl])
         *pl '[DEBUG POLICY RESPONSE TALK] policy: ' + STR(GirlWorkPolicy[$PolicyResponseTalkGirl])
         *pl '[DEBUG POLICY RESPONSE TALK] kitchen policy: ' + STR(GirlKitchenPolicy[$PolicyResponseTalkGirl])
         *pl ' '

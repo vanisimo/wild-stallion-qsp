@@ -133,7 +133,18 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/amanda/amanda_liza_talk_text.qsps` | Amanda + Lizette overhear |
 | `modules/events/church/church_spy_lizette_text.qsps` | church spy Lizette |
 | `modules/events/hall/hall_family_reactions_text.qsps` | family reactions to hall |
+| `modules/events/hall/hall_family_state_text.qsps` | family state after hall choice |
 | `modules/events/hall/hall_choice_family_talk_text.qsps` | family talk after hall choice |
+| `modules/events/hall/hall_harassment_intro_text.qsps` | hall/kitchen harass intro T1–T3 |
+| `modules/events/hall/hall_harassment_text.qsps` | harass after / reaction / talk-recall |
+| `modules/events/hall/hall_event_choice_thoughts_text.qsps` | Stefan thoughts before hall choice |
+| `modules/events/hall/girl_policy_response_text.qsps` | policy response in scene |
+| `modules/events/hall/girl_policy_response_consequences_text.qsps` | policy response thought tail |
+| `modules/events/hall/girl_policy_scene_variations_text.qsps` | policy scene variation prose |
+| `modules/events/hall/girl_policy_response_talk_text.qsps` | talk «как выполнила правило» |
+| `modules/events/kitchen/kitchen_harassment_text.qsps` | kitchen harass entry / hall reaction |
+| `modules/events/kitchen/kitchen_lewd_sandra_text.qsps` | kitchen lewd Sandra scenes |
+| `modules/events/kitchen/kitchen_customer_event_text.qsps` | kitchen customer conflict |
 | `modules/events/hall/noble_attack_text.qsps` | noble conflict in hall |
 | `modules/actions/dialogs/girl_talk_sandra_text.qsps` | Sandra girl talk |
 | `modules/actions/dialogs/girl_talk_personal_text.qsps` | personal talk |
