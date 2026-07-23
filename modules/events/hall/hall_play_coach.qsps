@@ -1,0 +1,236 @@
+! ================================================
+! FILE: modules/events/hall/hall_play_coach.qsps
+! MODULE: events/hall
+! Обучение play (канон v2 §0.4):
+! 1) Лизетта → Аманда
+! 2) Кларисса → Мелисса (после Аманды)
+! 3) Бекки → Сандра (после Мелиссы)
+! Ставит PlayCoached[girl] = 1
+! Тексты: hall_play_coach_text.qsps
+! ================================================
+
+#HallPlayCoachCanOffer
+    ! ARGS[0] = amanda | melissa | sandra
+    $HallPlayCoachTarget = LCASE($ARGS[0])
+    HallPlayCoachCanOffer = 0
+
+    if LOC('HallSceneV2EnsureFlags') = 1:
+        gs 'HallSceneV2EnsureFlags'
+    end
+
+    if $HallPlayCoachTarget = '':
+        killvar '$HallPlayCoachTarget'
+        exit
+    end
+
+    if FamilyLiberationGateOpen = 0:
+        killvar '$HallPlayCoachTarget'
+        exit
+    end
+
+    if Act1MoralUnlocked = 0:
+        killvar '$HallPlayCoachTarget'
+        exit
+    end
+
+    if FamilyCorruptionStage < 2:
+        killvar '$HallPlayCoachTarget'
+        exit
+    end
+
+    if PlayCoached[$HallPlayCoachTarget] = 1:
+        killvar '$HallPlayCoachTarget'
+        exit
+    end
+
+    if PlayCoachTalkDone[$HallPlayCoachTarget] = 1:
+        killvar '$HallPlayCoachTarget'
+        exit
+    end
+
+    if $HallPlayCoachTarget = 'amanda':
+        if LizetteKnown = 0 and PortMeetWitnessed = 0 and AmandaMetLizette = 0:
+            killvar '$HallPlayCoachTarget'
+            exit
+        end
+
+        if AmandaLizaInfluence < 1 and AmandaMetLizette = 0 and LizetteTalkPortDone = 0:
+            killvar '$HallPlayCoachTarget'
+            exit
+        end
+
+        HallPlayCoachCanOffer = 1
+
+    elseif $HallPlayCoachTarget = 'melissa':
+        if PlayCoached['amanda'] < 1:
+            killvar '$HallPlayCoachTarget'
+            exit
+        end
+
+        HallPlayCoachCanOffer = 1
+
+    elseif $HallPlayCoachTarget = 'sandra':
+        if PlayCoached['melissa'] < 1:
+            killvar '$HallPlayCoachTarget'
+            exit
+        end
+
+        HallPlayCoachCanOffer = 1
+    end
+
+    killvar '$HallPlayCoachTarget'
+---
+
+#HallPlayCoachStart
+    ! ARGS[0] = target girl, ARGS[1] = return loc
+    *clr
+    clr
+    cla
+
+    $HallPlayCoachTarget = LCASE($ARGS[0])
+    $HallPlayCoachReturnLoc = $ARGS[1]
+
+    if $HallPlayCoachReturnLoc = '':
+        $HallPlayCoachReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallPlayCoachReturnLoc) = 0:
+        $HallPlayCoachReturnLoc = 'TavernMain'
+    end
+
+    gs 'HallPlayCoachCanOffer', $HallPlayCoachTarget
+    HallPlayCoachReplayOnly = 0
+
+    if HallPlayCoachCanOffer = 0:
+        ! debug: можно перечитать сцену, если coach уже взят
+        if debug = 1 and PlayCoached[$HallPlayCoachTarget] = 1:
+            HallPlayCoachReplayOnly = 1
+        else
+            if debug = 1:
+                *pl '[DEBUG PLAY COACH] CanOffer=0 for ' + $HallPlayCoachTarget
+                *pl 'Нужны: liberation + moral + FamCorrupt≥2 + порядок coach + ещё не пройдено.'
+                *pl ' '
+            end
+
+            gs 'ActUiPrepare', 'Вернуться', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt $HallPlayCoachReturnLoc
+            end
+
+            killvar '$HallPlayCoachTarget'
+            killvar '$HallPlayCoachReturnLoc'
+            killvar 'HallPlayCoachReplayOnly'
+            exit
+        end
+    end
+
+    if $HallPlayCoachTarget = 'amanda':
+        $HallPlayCoachTitle = 'СОВЕТ ЛИЗЕТТЫ'
+        $HallPlayCoachSidebar = 'lizette'
+    elseif $HallPlayCoachTarget = 'melissa':
+        $HallPlayCoachTitle = 'КЛАРИССА О МЕЛИССЕ'
+        $HallPlayCoachSidebar = 'clarissa'
+    else
+        $HallPlayCoachTitle = 'БЕККИ О САНДРЕ'
+        $HallPlayCoachSidebar = 'becky'
+    end
+
+    if LOC('ShowGirlSidebar') = 1 and $HallPlayCoachSidebar <> '':
+        gs 'ShowGirlSidebar', $HallPlayCoachSidebar
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ' + $HallPlayCoachTitle
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'HallPlayCoachPrintText', $HallPlayCoachTarget
+
+    if HallPlayCoachReplayOnly = 0:
+        gs 'HallPlayCoachApply', $HallPlayCoachTarget
+    end
+
+    *pl ' '
+    if debug = 1:
+        *pl '[DEBUG] PlayCoached[' + $HallPlayCoachTarget + ']=' + STR(PlayCoached[$HallPlayCoachTarget]) + ' replay=' + STR(HallPlayCoachReplayOnly)
+        *pl ' '
+    end
+
+    killvar 'HallPlayCoachReplayOnly'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $HallPlayCoachReturnLoc
+    end
+
+    killvar '$HallPlayCoachTitle'
+    killvar '$HallPlayCoachSidebar'
+    killvar '$HallPlayCoachTarget'
+    killvar '$HallPlayCoachReturnLoc'
+---
+
+#HallPlayCoachApply
+    $HallPlayCoachApplyGirl = LCASE($ARGS[0])
+
+    if $HallPlayCoachApplyGirl = '':
+        exit
+    end
+
+    PlayCoached[$HallPlayCoachApplyGirl] = 1
+    PlayCoachTalkDone[$HallPlayCoachApplyGirl] = 1
+
+    if $HallPlayCoachApplyGirl = 'amanda':
+        AmandaLizaInfluence += 2
+        if AmandaLizaInfluence > 100:
+            AmandaLizaInfluence = 100
+        end
+        GirlNpcPath['amanda'] += 1
+        if LOC('ClampGirlSocialStats') = 1:
+            gs 'ClampGirlSocialStats', 'amanda'
+        end
+
+    elseif $HallPlayCoachApplyGirl = 'melissa':
+        MelissaClarissaBond += 2
+        GirlNpcPath['melissa'] += 1
+        if MelissaJealousy >= 0:
+            MelissaJealousy += 1
+        end
+        if LOC('ClampGirlSocialStats') = 1:
+            gs 'ClampGirlSocialStats', 'melissa'
+        end
+
+    elseif $HallPlayCoachApplyGirl = 'sandra':
+        if SandraBeckyBond >= 0:
+            SandraBeckyBond += 2
+        end
+        GirlNpcPath['sandra'] += 1
+        if LOC('ClampGirlSocialStats') = 1:
+            gs 'ClampGirlSocialStats', 'sandra'
+        end
+    end
+
+    killvar '$HallPlayCoachApplyGirl'
+---
+
+#HallPlayCoachPrintText
+    gs 'HallPlayCoachText', $ARGS[0]
+
+    if $HallPlayCoachText <> '':
+        *pl $HallPlayCoachText
+        *pl ' '
+    end
+
+    if $HallPlayCoachText2 <> '':
+        *pl $HallPlayCoachText2
+        *pl ' '
+    end
+
+    if $HallPlayCoachText3 <> '':
+        *pl $HallPlayCoachText3
+        *pl ' '
+    end
+
+    killvar '$HallPlayCoachText'
+    killvar '$HallPlayCoachText2'
+    killvar '$HallPlayCoachText3'
+---

@@ -1,0 +1,430 @@
+! ================================================
+! FILE: modules/events/hall/hall_scene_v2_core.qsps
+! MODULE: events/hall
+! Канон v2: сквозное приставание (design-hall-scene-unified §0 / §0.10)
+! - PlayCoached + pleasant client → stance play (provoke)
+! - missing только из play (α)
+! - клиенты: drunk всегда −−; веса разные
+! ================================================
+
+#HallSceneV2EnsureFlags
+    if PlayCoached['amanda'] < 0:
+        PlayCoached['amanda'] = 0
+    end
+
+    if PlayCoached['melissa'] < 0:
+        PlayCoached['melissa'] = 0
+    end
+
+    if PlayCoached['sandra'] < 0:
+        PlayCoached['sandra'] = 0
+    end
+
+    if HallSceneV2FlagsReady = 1:
+        exit
+    end
+
+    HallSceneV2FlagsReady = 1
+    HallMissingOnlyFromPlay = 1
+    HallLewdAutoDisabled = 1
+---
+
+! --------------------------------
+! Клиент: pick + pleasant
+! ARGS: none — пишет $HallHarassClient, HallClientPleasant
+! --------------------------------
+#HallHarassPickClient
+    gs 'HallSceneV2EnsureFlags'
+
+    HallHarassClientRoll = RAND(1, 100)
+
+    ! Веса: early drunk↑; late merchant/traveler↑
+    if FamilyCorruptionStage >= 3:
+        if HallHarassClientRoll <= 18:
+            $HallHarassClient = 'drunk_guest'
+        elseif HallHarassClientRoll <= 48:
+            $HallHarassClient = 'rich_merchant'
+        elseif HallHarassClientRoll <= 72:
+            $HallHarassClient = 'craftsman'
+        else:
+            $HallHarassClient = 'traveler'
+        end
+    elseif FamilyCorruptionStage >= 2:
+        if HallHarassClientRoll <= 28:
+            $HallHarassClient = 'drunk_guest'
+        elseif HallHarassClientRoll <= 52:
+            $HallHarassClient = 'rich_merchant'
+        elseif HallHarassClientRoll <= 78:
+            $HallHarassClient = 'craftsman'
+        else:
+            $HallHarassClient = 'traveler'
+        end
+    else
+        if HallHarassClientRoll <= 40:
+            $HallHarassClient = 'drunk_guest'
+        elseif HallHarassClientRoll <= 62:
+            $HallHarassClient = 'rich_merchant'
+        elseif HallHarassClientRoll <= 84:
+            $HallHarassClient = 'craftsman'
+        else:
+            $HallHarassClient = 'traveler'
+        end
+    end
+
+    killvar 'HallHarassClientRoll'
+    gs 'HallClientCheckPleasant', $HallHarassGirl, $HallHarassClient
+---
+
+! ARGS[0]=girl, ARGS[1]=client id
+! → HallClientPleasant 0/1
+#HallClientCheckPleasant
+    $HallPleasantGirl = LCASE($ARGS[0])
+    $HallPleasantClient = LCASE($ARGS[1])
+    HallClientPleasant = 0
+
+    if $HallPleasantGirl = '':
+        $HallPleasantGirl = $HallHarassGirl
+    end
+
+    if $HallPleasantClient = '':
+        $HallPleasantClient = $HallHarassClient
+    end
+
+    ! пьяный горожанин — всегда антипатия
+    if $HallPleasantClient = 'drunk_guest' or $HallPleasantClient = 'drunk':
+        HallClientPleasant = 0
+        killvar '$HallPleasantGirl'
+        killvar '$HallPleasantClient'
+        exit
+    end
+
+    if $HallPleasantGirl = 'amanda':
+        if $HallPleasantClient = 'craftsman' or $HallPleasantClient = 'traveler':
+            HallClientPleasant = 1
+        end
+    elseif $HallPleasantGirl = 'melissa':
+        if $HallPleasantClient = 'rich_merchant' or $HallPleasantClient = 'merchant':
+            HallClientPleasant = 1
+        end
+    elseif $HallPleasantGirl = 'sandra':
+        if $HallPleasantClient = 'rich_merchant' or $HallPleasantClient = 'merchant' or $HallPleasantClient = 'craftsman':
+            HallClientPleasant = 1
+        end
+    end
+
+    killvar '$HallPleasantGirl'
+    killvar '$HallPleasantClient'
+---
+
+! --------------------------------
+! Stance v2: resist | mixed(endure) | provoke(play)
+! play только PlayCoached + pleasant + FamCorrupt≥3 + rare
+! --------------------------------
+#HallHarassmentCalculateStanceV2
+    gs 'HallSceneV2EnsureFlags'
+
+    $HarassGirlStance = 'resist'
+    $HallHarassStanceCanon = 'resist'
+
+    if $HallHarassGirl = '':
+        exit
+    end
+
+    if $HallHarassClient = '':
+        gs 'HallHarassPickClient'
+    else
+        gs 'HallClientCheckPleasant', $HallHarassGirl, $HallHarassClient
+    end
+
+    ! endure / mixed
+    if sluttiness[$HallHarassGirl] >= 35 and FamilyCorruptionStage >= 2:
+        $HarassGirlStance = 'mixed'
+        $HallHarassStanceCanon = 'endure'
+    elseif FamilyLiberationGateOpen = 1 and FamilyCorruptionStage >= 1 and sluttiness[$HallHarassGirl] >= 25:
+        if RAND(1, 100) <= 35:
+            $HarassGirlStance = 'mixed'
+            $HallHarassStanceCanon = 'endure'
+        end
+    end
+
+    ! play / provoke — жёсткий gейт coach + pleasant
+    if PlayCoached[$HallHarassGirl] < 1:
+        exit
+    end
+
+    if HallClientPleasant <> 1:
+        exit
+    end
+
+    if FamilyLiberationGateOpen = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    HallPlayChance = 12
+
+    if sluttiness[$HallHarassGirl] >= 50:
+        HallPlayChance += 6
+    end
+
+    if GirlNpcPath[$HallHarassGirl] >= 22:
+        HallPlayChance += 4
+    end
+
+    if GirlWorkPolicy[$HallHarassGirl] = 3 and GirlPolicyAgreement[$HallHarassGirl] >= 2:
+        HallPlayChance += 8
+    elseif GirlWorkPolicy[$HallHarassGirl] = 1:
+        HallPlayChance -= 10
+    end
+
+    if HallPlayChance < 5:
+        HallPlayChance = 5
+    end
+
+    if HallPlayChance > 35:
+        HallPlayChance = 35
+    end
+
+    if RAND(1, 100) <= HallPlayChance:
+        $HarassGirlStance = 'provoke'
+        $HallHarassStanceCanon = 'play'
+    end
+
+    killvar 'HallPlayChance'
+---
+
+! --------------------------------
+! После resolve harass: шанс missing из play (α)
+! → HallHarassMissingTriggered 0/1
+! --------------------------------
+#HallHarassTryMissingFromPlay
+    HallHarassMissingTriggered = 0
+    gs 'HallSceneV2EnsureFlags'
+
+    if $HallHarassStanceCanon <> 'play' and $HarassGirlStance <> 'provoke':
+        exit
+    end
+
+    if $HallHarassReaction = 'protect_hard':
+        exit
+    end
+
+    if $HallHarassReaction <> 'watch' and $HallHarassReaction <> 'ignore':
+        exit
+    end
+
+    if HallClientPleasant <> 1:
+        exit
+    end
+
+    if FamilyLiberationGateOpen = 0:
+        exit
+    end
+
+    if Act1MoralUnlocked = 0:
+        exit
+    end
+
+    if FamilyCorruptionStage < 3:
+        exit
+    end
+
+    ! база 15–25; wall / lap выше
+    HallMissingFromPlayChance = 18
+
+    if $HallHarassReaction = 'ignore':
+        HallMissingFromPlayChance += 4
+    end
+
+    if HarassTier >= 3 and HallHarassType = 4:
+        ! wall
+        HallMissingFromPlayChance = 35
+    elseif HarassTier >= 2 and HallHarassType = 2:
+        ! lap_pull
+        HallMissingFromPlayChance = 32
+    elseif HarassTier >= 3 and HallHarassType = 3:
+        ! crotch_pull — чаще шоу на виду
+        HallMissingFromPlayChance = 12
+    elseif HarassTier >= 3 and HallHarassType = 5:
+        HallMissingFromPlayChance = 22
+    end
+
+    if GirlNpcPath[$HallHarassGirl] >= 28:
+        HallMissingFromPlayChance += 5
+    end
+
+    if HallMissingFromPlayChance > 45:
+        HallMissingFromPlayChance = 45
+    end
+
+    if RAND(1, 100) > HallMissingFromPlayChance:
+        killvar 'HallMissingFromPlayChance'
+        exit
+    end
+
+    HallHarassMissingTriggered = 1
+    killvar 'HallMissingFromPlayChance'
+---
+
+! --------------------------------
+! Вход в missing из play (обход auto CanStart)
+! ARGS[0]=girl, ARGS[1]=return loc
+! --------------------------------
+#HallMissingGirlStartFromPlay
+    *clr
+    clr
+    cla
+
+    gs 'HallSceneV2EnsureFlags'
+
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $HallMissingGirl = $HallMissingGirlKey
+    $HallMissingReturnLoc = $ARGS[1]
+
+    if $HallMissingGirl = '':
+        $HallMissingGirl = $HallHarassGirl
+    end
+
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = $HallHarassReturnLoc
+    end
+
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallMissingReturnLoc) = 0:
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0 or FamilyCorruptionStage < 3:
+        gt $HallMissingReturnLoc
+    end
+
+    if $HallMissingGirl <> 'amanda' and $HallMissingGirl <> 'melissa' and $HallMissingGirl <> 'sandra':
+        gt $HallMissingReturnLoc
+    end
+
+    ! Сандра missing — кухня; сёстры — зал
+    gs 'HallMissingGirlEnsureName', $HallMissingGirl
+    gs 'HallMissingGirlGetStage', $HallMissingGirl
+
+    ! client из harass
+    if $HallHarassClient <> '':
+        $HallMissingClient = $HallHarassClient
+    else
+        gs 'HallMissingGirlPickClientV2'
+    end
+
+    ! place: wall → storage; drop → under_table; kitchen girl → kitchen
+    if $HallMissingGirl = 'sandra':
+        $HallMissingPlace = 'kitchen'
+    elseif HarassTier >= 3 and HallHarassType = 4:
+        $HallMissingPlace = 'storage'
+    elseif HarassTier >= 3 and HallHarassType = 5:
+        $HallMissingPlace = 'under_table'
+    elseif HarassTier >= 3 and HallHarassType = 3:
+        if RAND(1, 2) = 1:
+            $HallMissingPlace = 'storage'
+        else:
+            $HallMissingPlace = 'stairs'
+        end
+    else
+        HallMissingPlaceRoll = RAND(1, 100)
+        if HallMissingPlaceRoll <= 40:
+            $HallMissingPlace = 'storage'
+        elseif HallMissingPlaceRoll <= 70:
+            $HallMissingPlace = 'stairs'
+        else:
+            $HallMissingPlace = 'under_table'
+        end
+        killvar 'HallMissingPlaceRoll'
+    end
+
+    gs 'HallMissingGirlPickPrivateAct'
+
+    HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
+    if HallMissingUniform > 1:
+        HallMissingUniform = 1
+    end
+    if HallMissingUniform < 0:
+        HallMissingUniform = 0
+    end
+
+    HallMissingGirlLastGlobalDay = day
+    HallMissingGirlLastGlobalTime = time
+    HallMissingGirlLastDay[$HallMissingGirl] = day
+    HallMissingGirlActive = 1
+    HallMissingFromPlay = 1
+
+    ! сброс harass-after UI
+    HallHarassmentResolved = 0
+    HallHarassPolicyChosen = 0
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallMissingGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ДЕВУШКА ПРОПАЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('HallMissingGirlShowImage') = 1:
+        gs 'HallMissingGirlShowImage', 'base'
+    end
+
+    gs 'HallMissingGirlPrintText', 'intro'
+    *pl ' '
+    gs 'HallMissingGirlPrintDecisionThoughts'
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MISSING FROM PLAY] girl=' + $HallMissingGirl + ' client=' + $HallMissingClient + ' place=' + $HallMissingPlace
+        *pl ' '
+    end
+
+    gs 'HallMissingGirlBuildMenu'
+    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''HallMissingGirlMenu''">Стефану</a>?'
+---
+
+! missing client weights (no drunk for missing — never pleasant; still allow if forced)
+#HallMissingGirlPickClientV2
+    HallMissingClientRoll = RAND(1, 100)
+
+    if FamilyCorruptionStage >= 3:
+        if HallMissingClientRoll <= 40:
+            $HallMissingClient = 'rich_merchant'
+        elseif HallMissingClientRoll <= 70:
+            $HallMissingClient = 'craftsman'
+        else:
+            $HallMissingClient = 'traveler'
+        end
+    else
+        if HallMissingClientRoll <= 35:
+            $HallMissingClient = 'rich_merchant'
+        elseif HallMissingClientRoll <= 70:
+            $HallMissingClient = 'craftsman'
+        else:
+            $HallMissingClient = 'traveler'
+        end
+    end
+
+    killvar 'HallMissingClientRoll'
+---
+
+! Debug: выдать coach play
+#HallSceneV2DebugCoach
+    $DebugCoachGirl = LCASE($ARGS[0])
+    if $DebugCoachGirl = '':
+        $DebugCoachGirl = 'amanda'
+    end
+    PlayCoached[$DebugCoachGirl] = 1
+    if debug = 1:
+        *pl '[DEBUG] PlayCoached[' + $DebugCoachGirl + ']=1'
+    end
+    killvar '$DebugCoachGirl'
+---
