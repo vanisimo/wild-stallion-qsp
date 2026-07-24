@@ -112,6 +112,14 @@
     if $HallHarassGirl = 'amanda' and Amanda_FirstHallHarassment = 0:
         HallHarassFirstAmanda = 1
         Amanda_FirstHallHarassment = 1
+        ! первое приставание Аманды — одна мягкая сцена (запястье), без T3 drop
+        HarassTier = 1
+        HallHarassType = 1
+        $HallHarassSubScene = ''
+        HallHarassUnderTableCock = 0
+        $HallHarassUnderReact = ''
+        HallHarassAllowedTier = 1
+        gs 'HallHarassmentBuildArtKeys'
     else:
         HallHarassFirstAmanda = 0
     end
@@ -125,6 +133,8 @@
 ! ================================================
 
 #HallHarassmentRenderScreen
+    ! v2 экран 1: картинка → сцена → короткий tint правила → мысли → меню
+    ! НЕ печатать полные PolicyReaction + SceneVariation (дублировали сцену)
     if HallHarassmentResolved = 0:
         *pl '══════════════════════════════════════════════'
         *pl ' ГЛАВНЫЙ ЗАЛ: НЕПРИЯТНЫЙ СЛУЧАЙ'
@@ -133,20 +143,8 @@
 
         gs 'HallHarassmentShowIntroImage', $HallHarassGirl, $HallHarassJob, HallHarassType
         gs 'HallHarassmentIntro'
-
         *pl ' '
-        if LOC('PolicyEventReactionPrint') = 1:
-            if $HallHarassReturnLoc = '':
-                $HallHarassReturnLoc = 'TavernMain'
-            end
-            gs 'PolicyEventReactionPrint', $HallHarassGirl, 'hall', 'harassment', $HallHarassReturnLoc
-            *pl ' '
-        end
-        if LOC('PolicyEventSceneVariationPrint') = 1:
-            gs 'PolicyEventSceneVariationPrint', $HallHarassGirl, 'harassment', 'start'
-            *pl ' '
-        end
-
+        gs 'HallHarassmentPrintPolicyTint'
         gs 'HallHarassmentPrintDecisionPrompt'
     else:
         gs 'HallHarassmentRenderAfterScreen'
@@ -157,7 +155,7 @@
 
 ! ================================================
 ! FILE: modules/events/hall/hall_harassment.qsps
-! Экран 2: отвели в сторону, имя = меню правил
+! Экран 2: итог → картинка → разговор о правилах
 ! ================================================
 
 #HallHarassmentRenderAfterScreen
@@ -165,12 +163,12 @@
 
     if $HallHarassConsequenceArea = 'kitchen':
         if $KitchenHarassReturnLoc = 'TavernMain':
-            *pl ' ГЛАВНЫЙ ЗАЛ: РАЗГОВОР В СТОРОНЕ'
+            *pl ' ГЛАВНЫЙ ЗАЛ: ПОСЛЕ СЛУЧАЯ'
         else:
-            *pl ' КУХНЯ: РАЗГОВОР В СТОРОНЕ'
+            *pl ' КУХНЯ: ПОСЛЕ СЛУЧАЯ'
         end
     else:
-        *pl ' ГЛАВНЫЙ ЗАЛ: РАЗГОВОР В СТОРОНЕ'
+        *pl ' ГЛАВНЫЙ ЗАЛ: ПОСЛЕ СЛУЧАЯ'
     end
 
     *pl '══════════════════════════════════════════════'
@@ -186,20 +184,28 @@
 
     gs 'GirlWorkPolicyTalkEnsureName', $PolicyTalkGirl
 
-    ! Сначала исход сцены (клиент/зал), потом разговор в стороне — не наоборот.
+    ! 1) картинка итога (reaction)
+    if LOC('HallHarassmentShowImage') = 1 and $HallHarassReaction <> '':
+        gs 'HallHarassmentShowImage', $HallHarassGirl, $HallHarassJob, HallHarassType, $HallHarassReaction
+        *pl ' '
+    elseif LOC('ShowGirlTalkContextImage') = 1:
+        gs 'ShowGirlTalkContextImage', $HallHarassGirl, 'large'
+        *pl ' '
+    end
+
+    ! 2) что сделал Стефан / зал
     if $HallHarassConsequenceArea = 'kitchen':
         gs 'KitchenHarassmentPrintHallReaction'
     else:
         gs 'HallHarassmentPrintHallReaction'
     end
 
-    ! soft K/3 (пока days=0)
+    ! 3) offense notices
     if GirlOffenseDays[$HallHarassGirl] <= 0 and $GirlTalkPendingNotice[$HallHarassGirl] <> '':
         *pl ' '
         *pl $GirlTalkPendingNotice[$HallHarassGirl]
     end
 
-    ! полная обида: холод + (если был секс) отказ от близости
     if GirlOffenseDays[$HallHarassGirl] > 0 and LOC('OffenseDaysPrintSceneReaction') = 1:
         gs 'OffenseDaysPrintSceneReaction', $HallHarassGirl
     elseif GirlOffenseDays[$HallHarassGirl] > 0:
@@ -207,7 +213,6 @@
         *pl $RealName[$HallHarassGirl] + ' обижена. Не подходи.'
     end
 
-    ! Сандра обиделась за дочь (параллельно, не всегда)
     if $HallHarassGirl <> 'sandra' and GirlOffenseDays['sandra'] > 0 and $GirlOffenseReason['sandra'] = 'daughter_no_protect':
         if LOC('OffenseDaysPrintSceneReaction') = 1:
             gs 'OffenseDaysPrintSceneReaction', 'sandra'
@@ -219,6 +224,9 @@
         *pl '[DEBUG OFFENSE] ' + $HallHarassOffenseDebug
     end
 
+    ! 4) разговор о правилах (без второй сцены)
+    *pl ' '
+    *pl '---'
     *pl ' '
     gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
 
@@ -233,6 +241,55 @@
 
     killvar '$PolicyTalkGirl'
     killvar '$PolicyTalkArea'
+---
+
+! Короткий tint правила на intro (calc+consequences без полной перепечати сцены)
+#HallHarassmentPrintPolicyTint
+    if GirlWorkPolicy[$HallHarassGirl] <= 0:
+        exit
+    end
+
+    $PolicyTintArea = 'hall'
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        $PolicyTintArea = 'kitchen'
+    end
+
+    ! применить реакцию на правило (stats), текст — одна строка
+    if LOC('GirlPolicyResponseCalc') = 1:
+        gs 'GirlPolicyResponseCalc', $HallHarassGirl, $PolicyTintArea, GirlWorkPolicy[$HallHarassGirl]
+
+        if LOC('GirlPolicyResponseApplyConsequences') = 1:
+            gs 'GirlPolicyResponseApplyConsequences', $HallHarassGirl, $PolicyTintArea, GirlWorkPolicy[$HallHarassGirl], PolicyResponseLevel
+        end
+    end
+
+    if GirlWorkPolicy[$HallHarassGirl] = 1:
+        if $PolicyTintArea = 'kitchen':
+            *pl $RealName[$HallHarassGirl] + ' помнит ваш наказ: на кухне без вольностей, даже ценой чаевых.'
+        else
+            *pl $RealName[$HallHarassGirl] + ' помнит ваш наказ: без вольностей, даже ценой чаевых.'
+        end
+    elseif GirlWorkPolicy[$HallHarassGirl] = 2:
+        *pl $RealName[$HallHarassGirl] + ' помнит: решать самой — и сейчас она на этом и держится.'
+    elseif GirlWorkPolicy[$HallHarassGirl] = 3:
+        if HallHarassUnderTableCock = 1 and $HallHarassUnderReact = 'flee':
+            *pl $RealName[$HallHarassGirl] + ' помнит про «раскованнее» — но сейчас отшатнулась: даже ради выручки есть предел.'
+        elseif $HallHarassSubScene = 'drop_coin' or HallHarassType = 5:
+            *pl $RealName[$HallHarassGirl] + ' помнит про выручку — потому и полезла за монетой, а не сразу за вами.'
+        elseif $PolicyTintArea = 'kitchen' and HarassTier >= 3 and HallHarassType = 3:
+            ! crotch: сцена «выставила» — не «держит раскованно»
+            *pl $RealName[$HallHarassGirl] + ' помнит про выручку, но этого гостя выставила сама: на кухне граница важнее «раскованнее».'
+        elseif $PolicyTintArea = 'kitchen' and HarassTier >= 3 and HallHarassType = 4 and $HarassGirlStance <> 'provoke':
+            *pl $RealName[$HallHarassGirl] + ' помнит про «раскованнее», но у кладовой сама ставит предел — не зовёт вас в голос.'
+        elseif $PolicyTintArea = 'kitchen':
+            *pl $RealName[$HallHarassGirl] + ' помнит про «раскованнее» и выручку — это видно в том, как она держит кухню.'
+        else
+            *pl $RealName[$HallHarassGirl] + ' помнит про «раскованнее» и выручку — это видно в том, как она держит стол.'
+        end
+    end
+
+    *pl ' '
+    killvar '$PolicyTintArea'
 ---
 
 #HallHarassmentBuildPolicyMenu
@@ -345,14 +402,7 @@
 ---
 
 #HallHarassmentShowPolicyReactionBlock
-    if LOC('HallHarassmentShowImage') = 1 and $HallHarassReaction <> '':
-        gs 'HallHarassmentShowImage', $HallHarassGirl, $HallHarassJob, HallHarassType, $HallHarassReaction
-    elseif LOC('ShowGirlTalkContextImage') = 1:
-        gs 'ShowGirlTalkContextImage', $HallHarassGirl, 'large'
-    end
-
-    *pl ' '
-
+    ! картинка уже на after-screen; здесь только реакция на выбранное правило
     if LOC('GirlWorkPolicyAssignmentReactionPrint') = 1:
         gs 'GirlWorkPolicyAssignmentReactionPrint', $HallHarassGirl, $HallHarassConsequenceArea, HallHarassPolicyValue
     end
@@ -389,6 +439,15 @@
 
     gs 'HallHarassmentApplyChoice'
 
+    ! v2 α: play + watch/ignore → шанс missing (без after-policy harass)
+    if LOC('HallHarassTryMissingFromPlay') = 1:
+        gs 'HallHarassTryMissingFromPlay'
+
+        if HallHarassMissingTriggered = 1 and LOC('HallMissingGirlStartFromPlay') = 1:
+            gt 'HallMissingGirlStartFromPlay', $HallHarassGirl, $HallHarassReturnLoc
+        end
+    end
+
     if $HallHarassEventLoc = '':
         $HallHarassEventLoc = 'HallHarassment'
     end
@@ -416,8 +475,22 @@
         $HallHarassConsequenceArea = 'hall'
     end
 
+    ! память / family / last choice: play → event hall_lewd (стык со старыми talk hooks)
     if LOC('HallChoiceConsequencesApply') = 1:
-        gs 'HallChoiceConsequencesApply', $HallHarassGirl, 'harassment', $HallHarassReaction, $HallHarassConsequenceArea
+        $HallMemEvent = 'harassment'
+        $HallMemChoice = $HallHarassReaction
+
+        if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+            $HallMemEvent = 'hall_lewd'
+            ! ignore на play ≈ «не мешаю / profit» для GirlRemembers*
+            if $HallHarassReaction = 'ignore':
+                $HallMemChoice = 'encourage'
+            end
+        end
+
+        gs 'HallChoiceConsequencesApply', $HallHarassGirl, $HallMemEvent, $HallMemChoice, $HallHarassConsequenceArea
+        killvar '$HallMemEvent'
+        killvar '$HallMemChoice'
     end
 
     gs 'HallHarassmentRegisterExtraSystems'
@@ -510,6 +583,14 @@
 ---
 
 #HallHarassmentPrintHallReaction
+    ! v2: при play — resolve из lewd-prose (client + тон), иначе классический harass
+    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        if LOC('HallHarassmentPrintPlayResolve') = 1:
+            gs 'HallHarassmentPrintPlayResolve'
+            exit
+        end
+    end
+
     if $HallHarassReaction = 'protect_hard':
         if $HallHarassTalkReaction = 'protect_fail':
             gs 'HallHarassmentPrintText', 'hall_reaction_protect_fail'
@@ -548,7 +629,22 @@
 
 #HallHarassmentPrintDecisionPrompt
     gs 'HallHarassmentBuildChoiceMenu'
-    gs 'HallEventChoiceThoughtsBody', 'harassment'
+
+    ! v2: play → мысли «lewd»; кухня → kitchen / kitchen_lewd
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+            gs 'HallEventChoiceThoughtsBody', 'kitchen_lewd'
+        else
+            gs 'HallEventChoiceThoughtsBody', 'harassment_kitchen'
+        end
+    else
+        if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+            gs 'HallEventChoiceThoughtsBody', 'hall_lewd'
+        else
+            gs 'HallEventChoiceThoughtsBody', 'harassment'
+        end
+    end
+
     gs 'PrintThoughtMenuPromptP', 'HallHarassmentChoiceMenu', 'мне', $HallEventChoiceThoughtsText
     killvar '$HallEventChoiceThoughtsText'
 ---
@@ -703,32 +799,36 @@
 ---
 
 #HallHarassmentIntro
-    ! Художественный intro (G3) + при debug служебный блок
+    ! Одна сцена: first amanda XOR artistic (не «запястье» + drop)
     if $HallHarassGirl = 'amanda' and HallHarassFirstAmanda = 1:
         gs 'HallHarassmentPrintText', 'amanda_first_intro'
         *pl ' '
-    end
+        if $HarassGirlStance = 'mixed' or $HarassGirlStance = 'provoke':
+            *pl 'Она всё ещё красная, но не орёт — будто ждёт, что вы сделаете на стойке.'
+            *pl ' '
+        end
+    else
+        if LOC('HallHarassmentPrintArtisticIntro') = 1:
+            gs 'HallHarassmentPrintArtisticIntro'
+        else
+            gs 'HallHarassmentPrintServiceIntro'
+        end
 
-    if LOC('HallHarassmentPrintArtisticIntro') = 1:
-        gs 'HallHarassmentPrintArtisticIntro'
-    else:
-        gs 'HallHarassmentPrintServiceIntro'
+        if GirlNoPantiesWork[$HallHarassGirl] = 1:
+            if $HallHarassSubScene = 'drop_cutlery' or $HallHarassSubScene = 'drop_coin':
+                gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'cleaning_bend'
+            elseif HarassTier >= 3 and HallHarassType = 1:
+                gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'cleaning_bend'
+            else
+                gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'default'
+            end
+            *pl ' '
+        end
     end
 
     if debug = 1:
         *pl ' '
-        gs 'HallHarassmentPrintServiceIntro'
-    end
-
-    if GirlNoPantiesWork[$HallHarassGirl] = 1:
-        if $HallHarassSubScene = 'drop_cutlery' or $HallHarassSubScene = 'drop_coin':
-            gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'cleaning_bend'
-        elseif HarassTier >= 3 and HallHarassType = 1:
-            gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'cleaning_bend'
-        else:
-            gs 'GirlNoPantiesEventPrintAddon', $HallHarassGirl, 'harassment', 'default'
-        end
-        *pl ' '
+        *pl '[DEBUG] tier=' + STR(HarassTier) + ' type=' + STR(HallHarassType) + ' sub=' + $HallHarassSubScene + ' client=' + $HallHarassClient + ' stance=' + $HarassGirlStance
     end
 ---
 
@@ -802,6 +902,11 @@
         HallWatchChance += 10
     end
 
+    ! v2 play: чаще «lewd»-исход watch (чаевые/scandal), не «злится что смотрел»
+    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        HallWatchChance += 25
+    end
+
     if HallWatchChance > 88:
         HallWatchChance = 88
     end
@@ -812,7 +917,7 @@
 
     HallWatchRoll = RAND(1, 100)
 
-    if GirlWorkPolicy[$HallHarassGirl] = 3 or sluttiness[$HallHarassGirl] >= 35:
+    if GirlWorkPolicy[$HallHarassGirl] = 3 or sluttiness[$HallHarassGirl] >= 35 or $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
         if HallWatchRoll <= HallWatchChance + 10:
             gs 'AwardGirlTipsFromBase', $HallHarassGirl, 5
             TavernScandal += 1
@@ -1144,18 +1249,42 @@
 
     ! HallRecentMemory — frozen (thin memory A); лог = SaveLastHallEvent выше
 
+    ! HallRumorRegister(ARGS): girl, event, severity — НЕ event, girl
     if LOC('HallRumorRegister') = 1:
-        if $HallHarassReaction = 'profit' or $HallHarassReaction = 'watch' and $HallHarassTalkReaction = 'watch_lewd':
-            gs 'HallRumorRegister', 'hall_lewd', $HallHarassGirl, 2
+        if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+            if $HallHarassReaction = 'protect_hard':
+                gs 'HallRumorRegister', $HallHarassGirl, 'hall_lewd', 1
+            else
+                gs 'HallRumorRegister', $HallHarassGirl, 'hall_lewd', 2
+            end
+        elseif $HallHarassReaction = 'profit' or ($HallHarassReaction = 'watch' and $HallHarassTalkReaction = 'watch_lewd'):
+            gs 'HallRumorRegister', $HallHarassGirl, 'hall_lewd', 2
         elseif $HallHarassReaction = 'ignore' or $HallHarassReaction = 'watch':
-            gs 'HallRumorRegister', 'hall_lewd', $HallHarassGirl, 2
-        else:
-            gs 'HallRumorRegister', 'hall_lewd', $HallHarassGirl, 1
+            gs 'HallRumorRegister', $HallHarassGirl, 'hall_lewd', 2
+        else
+            gs 'HallRumorRegister', $HallHarassGirl, 'harassment', 1
         end
     end
 
     if LOC('KnowledgeRegisterFact') = 1:
         gs 'KnowledgeRegisterFact', 'HallHarassment_' + $HallHarassGirl
+    end
+
+    ! v2 play: факт «подыгрывала» + legacy-совместимые id
+    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'HallPlay_' + $HallHarassGirl
+            if $HallHarassGirl = 'amanda':
+                gs 'KnowledgeRegisterFact', 'amanda_hall_lewd_witness'
+            end
+        end
+
+        if ($HallHarassReaction = 'watch' or $HallHarassReaction = 'ignore') and LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'HallPlay_' + $HallHarassGirl, 'witness'
+            if $HallHarassGirl = 'amanda' and LOC('KnowledgeRegisterPlayerKnows') = 1:
+                gs 'KnowledgeRegisterPlayerKnows', 'amanda_hall_lewd_witness', 'witness'
+            end
+        end
     end
 
     if LOC('OffenseDaysHarassmentAfter') = 1:
@@ -1185,16 +1314,69 @@
     HallHarassUnderTableCock = 0
     $HallHarassUnderReact = ''
     HallHarassTextRoll = 1
+    HallHarassMissingTriggered = 0
+    $HallHarassStanceCanon = 'resist'
+
+    if LOC('HallSceneV2EnsureFlags') = 1:
+        gs 'HallSceneV2EnsureFlags'
+    end
+
+    ! клиент до stance (pleasant / play)
+    if LOC('HallHarassPickClient') = 1:
+        gs 'HallHarassPickClient'
+    elseif $HallHarassClient = '':
+        $HallHarassClient = 'drunk_guest'
+        HallClientPleasant = 0
+    end
 
     gs 'HallHarassmentCalculateAllowedTier'
     gs 'HallHarassmentPickTier'
     gs 'HallHarassmentPickType'
+    gs 'HallHarassmentKitchenNormalizeScene'
     gs 'HallHarassmentCalculateStance'
     gs 'HallHarassmentPickUnderTableCock'
+    ! кухня: никогда cock (канон v2)
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        HallHarassUnderTableCock = 0
+        if $HallHarassSubScene = 'drop_coin':
+            $HallHarassUnderReact = 'groping'
+        end
+    end
     gs 'HallHarassmentApplyDebugForce'
     gs 'HallHarassmentBuildArtKeys'
 
     HallHarassTextRoll = RAND(1, 3)
+---
+
+#HallHarassmentKitchenNormalizeScene
+    ! v2 кухня: нет lap-как-зал; drop = монета на пол; без cock
+    if $HallHarassConsequenceArea <> 'kitchen' and $HallHarassJob <> 'kitchen':
+        exit
+    end
+
+    if HarassTier >= 3:
+        ! type 2 (lap) на кухне → wall pantry
+        if HallHarassType = 2:
+            HallHarassType = 4
+            $HallHarassSubScene = 'wall'
+        end
+
+        ! type 3 crotch: только on_crotch (не face-шоу на кухне)
+        if HallHarassType = 3:
+            $HallHarassSubScene = 'on_crotch'
+        end
+
+        ! type 5: всегда drop_coin на пол (не cutlery/under-table cock)
+        if HallHarassType = 5:
+            $HallHarassSubScene = 'drop_coin'
+        end
+
+        if HallHarassType = 4 and $HallHarassSubScene = '':
+            $HallHarassSubScene = 'wall'
+        end
+    end
+
+    HallHarassUnderTableCock = 0
 ---
 
 #HallHarassmentApplyDebugForce
@@ -1248,22 +1430,27 @@
 ---
 
 #HallHarassmentCalculateAllowedTier
+    ! v2: T3 только mid+ FamCorrupt (stage >= 2) + u1 / nop
     HallHarassAllowedTier = 1
 
     if FamilyCorruptionStage >= 2 and sluttiness[$HallHarassGirl] >= 20:
         HallHarassAllowedTier = 2
     end
 
-    ! E2: жёсткий тир только в откровенной форме
-    if FamilyCorruptionStage >= 3 and sluttiness[$HallHarassGirl] >= 40 and GirlUniformLevel[$HallHarassGirl] = 1:
-        HallHarassAllowedTier = 3
+    ! T3: mid+ FamCorrupt, жёстче при u1
+    if FamilyCorruptionStage >= 2 and sluttiness[$HallHarassGirl] >= 35:
+        if GirlUniformLevel[$HallHarassGirl] = 1 or GirlNoPantiesWork[$HallHarassGirl] = 1:
+            HallHarassAllowedTier = 3
+        elseif FamilyCorruptionStage >= 3 and sluttiness[$HallHarassGirl] >= 45:
+            HallHarassAllowedTier = 3
+        end
     end
 
-    if GirlNoPantiesWork[$HallHarassGirl] = 1 and HallHarassAllowedTier < 3:
+    if GirlNoPantiesWork[$HallHarassGirl] = 1 and HallHarassAllowedTier < 3 and FamilyCorruptionStage >= 2:
         HallHarassAllowedTier += 1
     end
 
-    if GirlUniformLevel[$HallHarassGirl] <> 1 and HallHarassAllowedTier > 2:
+    if GirlUniformLevel[$HallHarassGirl] <> 1 and GirlNoPantiesWork[$HallHarassGirl] <> 1 and HallHarassAllowedTier > 2:
         HallHarassAllowedTier = 2
     end
 
@@ -1277,11 +1464,27 @@
 ---
 
 #HallHarassmentPickTier
-    ! D1: равный шанс 1..Allowed
+    ! v2.1: при Allowed 3 — чаще mid/late (не 33% T1 при stage5)
     if HallHarassAllowedTier <= 1:
         HarassTier = 1
-    else:
-        HarassTier = RAND(1, HallHarassAllowedTier)
+    elseif HallHarassAllowedTier = 2:
+        ! ~40% T1 / 60% T2
+        if RAND(1, 100) <= 40:
+            HarassTier = 1
+        else
+            HarassTier = 2
+        end
+    else
+        ! Allowed 3: ~20% T1 / 35% T2 / 45% T3
+        HallHarassTierRoll = RAND(1, 100)
+        if HallHarassTierRoll <= 20:
+            HarassTier = 1
+        elseif HallHarassTierRoll <= 55:
+            HarassTier = 2
+        else
+            HarassTier = 3
+        end
+        killvar 'HallHarassTierRoll'
     end
 ---
 
@@ -1315,10 +1518,20 @@
 ---
 
 #HallHarassmentPickSubScene
-    ! T3 type 4 = wall press; type 5 = drop_cutlery | drop_coin
+    ! T3 type 3 = crotch_pull on_crotch | on_face
+    ! T3 type 4 = wall; type 5 = drop_cutlery | drop_coin
     $HallHarassSubScene = ''
 
     if HarassTier < 3:
+        exit
+    end
+
+    if HallHarassType = 3:
+        if RAND(1, 100) <= 45:
+            $HallHarassSubScene = 'on_face'
+        else:
+            $HallHarassSubScene = 'on_crotch'
+        end
         exit
     end
 
@@ -1339,7 +1552,7 @@
 ---
 
 #HallHarassmentPickUnderTableCock
-    ! Член только под столом: drop_coin + гейты. Иначе groping / пусто.
+    ! Член только под столом ЗАЛА: drop_coin + гейты. Кухня — никогда.
     HallHarassUnderTableCock = 0
     $HallHarassUnderReact = ''
 
@@ -1347,8 +1560,12 @@
         exit
     end
 
-    ! Без гейтов — лапанье / попа под столом, без члена
+    ! лапанье / visibility; cock только зал
     $HallHarassUnderReact = 'groping'
+
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        exit
+    end
 
     ! low slut + policy «сдержанно» → только лапанье
     if sluttiness[$HallHarassGirl] < 35 and GirlWorkPolicy[$HallHarassGirl] = 1:
@@ -1385,15 +1602,20 @@
 ---
 
 #HallHarassmentCalculateStance
-    ! B1 + F1: large bands
+    ! v2: resist | mixed(endure) | provoke(play)
+    ! play только PlayCoached + pleasant client (см. HallHarassmentCalculateStanceV2)
+    if LOC('HallHarassmentCalculateStanceV2') = 1:
+        gs 'HallHarassmentCalculateStanceV2'
+        exit
+    end
+
+    ! fallback legacy
     $HarassGirlStance = 'resist'
+    $HallHarassStanceCanon = 'resist'
 
     if sluttiness[$HallHarassGirl] >= 35 and FamilyCorruptionStage >= 2:
         $HarassGirlStance = 'mixed'
-    end
-
-    if sluttiness[$HallHarassGirl] >= 50 and FamilyCorruptionStage >= 3:
-        $HarassGirlStance = 'provoke'
+        $HallHarassStanceCanon = 'endure'
     end
 ---
 
@@ -1673,7 +1895,9 @@
         *pl '[DEBUG HALL HARASS] under_cock: ' + STR(HallHarassUnderTableCock) + ' react=' + $HallHarassUnderReact
         *pl '[DEBUG HALL HARASS] text_roll: ' + STR(HallHarassTextRoll)
         *pl '[DEBUG HALL HARASS] ever: ' + STR(HallHarassEverOccurred)
-        *pl '[DEBUG HALL HARASS] stance: ' + $HarassGirlStance
+        *pl '[DEBUG HALL HARASS] stance: ' + $HarassGirlStance + ' canon: ' + $HallHarassStanceCanon
+        *pl '[DEBUG HALL HARASS] client: ' + $HallHarassClient + ' pleasant: ' + STR(HallClientPleasant) + ' PlayCoached: ' + STR(PlayCoached[$HallHarassGirl])
+        *pl '[DEBUG HALL HARASS] sub: ' + $HallHarassSubScene
         *pl '[DEBUG HALL HARASS] uniform: ' + $HallHarassUniformKey + ' (GirlUniformLevel=' + STR(GirlUniformLevel[$HallHarassGirl]) + ')'
         *pl '[DEBUG HALL HARASS] panty: ' + $HallHarassPantyKey + ' (NoPanties=' + STR(GirlNoPantiesWork[$HallHarassGirl]) + ')'
         *pl '[DEBUG HALL HARASS] stage: ' + STR(FamilyCorruptionStage) + ' slut: ' + STR(sluttiness[$HallHarassGirl])

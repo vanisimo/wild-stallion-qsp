@@ -428,3 +428,204 @@
     end
     killvar '$DebugCoachGirl'
 ---
+
+! --------------------------------
+! Прогон v2: память / слухи / knowledge / play→missing
+! ARGS[0]=girl (default amanda), ARGS[1]=return loc
+! Симулирует: play+watch → memory/rumor, затем missing peek
+! --------------------------------
+#HallSceneV2DebugProbe
+    *clr
+    clr
+    cla
+
+    $V2ProbeGirl = LCASE($ARGS[0])
+    $V2ProbeReturn = $ARGS[1]
+
+    if $V2ProbeGirl = '':
+        $V2ProbeGirl = 'amanda'
+    end
+
+    if $V2ProbeGirl <> 'amanda' and $V2ProbeGirl <> 'melissa' and $V2ProbeGirl <> 'sandra':
+        $V2ProbeGirl = 'amanda'
+    end
+
+    if $V2ProbeReturn = '':
+        $V2ProbeReturn = 'TavernMain'
+    end
+
+    if LOC($V2ProbeReturn) = 0:
+        $V2ProbeReturn = 'TavernMain'
+    end
+
+    gs 'HallSceneV2EnsureFlags'
+    gs 'EnsureGirlData', $V2ProbeGirl
+
+    ! гейты + coach + приятный клиент
+    FamilyLiberationGateOpen = 1
+    Act1MoralUnlocked = 1
+    FamilyCouncilDone = 1
+    FamilyCorruptionStage = 3
+    PlayCoached[$V2ProbeGirl] = 1
+    PlayCoachTalkDone[$V2ProbeGirl] = 1
+    sluttiness[$V2ProbeGirl] = 50
+    GirlNpcPath[$V2ProbeGirl] = 25
+    GirlWorkPolicy[$V2ProbeGirl] = 2
+    GirlPolicyAgreement[$V2ProbeGirl] = 2
+    GirlUniformLevel[$V2ProbeGirl] = 1
+
+    if $V2ProbeGirl = 'amanda':
+        $HallHarassClient = 'craftsman'
+    elseif $V2ProbeGirl = 'melissa':
+        $HallHarassClient = 'rich_merchant'
+    else
+        $HallHarassClient = 'craftsman'
+    end
+
+    gs 'HallClientCheckPleasant', $V2ProbeGirl, $HallHarassClient
+
+    $HallHarassGirl = $V2ProbeGirl
+    $HallHarassConsequenceArea = 'hall'
+    if $V2ProbeGirl = 'sandra':
+        $HallHarassConsequenceArea = 'kitchen'
+        $HallHarassJob = 'kitchen'
+    else
+        $HallHarassJob = 'waitress'
+    end
+
+    $HarassGirlStance = 'provoke'
+    $HallHarassStanceCanon = 'play'
+    $HallHarassReaction = 'watch'
+    $HallHarassTalkReaction = 'watch_lewd'
+    HarassTier = 3
+    HallHarassType = 4
+    $HallHarassSubScene = 'wall'
+    HallHarassMissingTriggered = 0
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' V2 PROBE: play → memory/rumor → missing'
+    *pl '══════════════════════════════════════════════'
+    *pl 'girl=' + $V2ProbeGirl + ' client=' + $HallHarassClient + ' pleasant=' + STR(HallClientPleasant)
+    *pl 'stance=play reaction=watch wall'
+    *pl ' '
+
+    ! --- BEFORE snapshot ---
+    *pl '--- BEFORE ---'
+    gs 'HallSceneV2DebugProbePrintGirl', $V2ProbeGirl
+    *pl ' '
+
+    ! --- STEP 1: как HallHarassmentApplyChoice (play watch) ---
+    *pl '--- STEP 1: ApplyChoice play+watch ---'
+    if LOC('HallChoiceConsequencesApply') = 1:
+        $HallMemEvent = 'hall_lewd'
+        $HallMemChoice = 'watch'
+        gs 'HallChoiceConsequencesApply', $V2ProbeGirl, $HallMemEvent, $HallMemChoice, $HallHarassConsequenceArea
+        killvar '$HallMemEvent'
+        killvar '$HallMemChoice'
+    end
+
+    if LOC('HallRumorRegister') = 1:
+        gs 'HallRumorRegister', $V2ProbeGirl, 'hall_lewd', 2
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'HallHarassment_' + $V2ProbeGirl
+        gs 'KnowledgeRegisterFact', 'HallPlay_' + $V2ProbeGirl
+        if $V2ProbeGirl = 'amanda':
+            gs 'KnowledgeRegisterFact', 'amanda_hall_lewd_witness'
+        end
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'HallPlay_' + $V2ProbeGirl, 'witness'
+        if $V2ProbeGirl = 'amanda':
+            gs 'KnowledgeRegisterPlayerKnows', 'amanda_hall_lewd_witness', 'witness'
+        end
+    end
+
+    if LOC('SaveLastHallEvent') = 1:
+        gs 'SaveLastHallEvent', 'harassment', $V2ProbeGirl, 'V2 probe: play+watch у стены', 'watch_lewd'
+    end
+
+    *pl 'after step1:'
+    gs 'HallSceneV2DebugProbePrintGirl', $V2ProbeGirl
+    *pl ' '
+
+    ! --- STEP 2: missing peek (from play) ---
+    *pl '--- STEP 2: missing peek (from play) ---'
+    HallMissingFromPlay = 1
+    $HallMissingGirl = $V2ProbeGirl
+    $HallMissingPlace = 'storage'
+    if $V2ProbeGirl = 'sandra':
+        $HallMissingPlace = 'kitchen'
+    end
+    $HallMissingClient = $HallHarassClient
+    $HallMissingApplyChoice = 'peek'
+
+    if LOC('HallChoiceConsequencesApply') = 1:
+        gs 'HallChoiceConsequencesApply', $V2ProbeGirl, 'hall_missing', 'watch', $HallHarassConsequenceArea
+    end
+
+    if LOC('HallRumorRegister') = 1:
+        gs 'HallRumorRegister', $V2ProbeGirl, 'hall_missing', 2
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'HallMissing_' + $V2ProbeGirl
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'HallMissing_' + $V2ProbeGirl, 'witness'
+    end
+
+    if LOC('OffenseDaysMissingAfter') = 1:
+        gs 'OffenseDaysMissingAfter', $V2ProbeGirl, 'peek'
+    end
+
+    HallMissingFromPlay = 0
+
+    *pl 'after step2:'
+    gs 'HallSceneV2DebugProbePrintGirl', $V2ProbeGirl
+    *pl ' '
+
+    *pl '--- CHECKLIST ---'
+    *pl 'OK if: LastGirlChoiceEvent=hall_missing (or last step)'
+    *pl 'OK if: HallRumorGirlCount girl > 0, HallRumorLewd/Missing grew'
+    *pl 'OK if: FactHappened HallPlay_/HallMissing_ = 1'
+    *pl 'OK if: GirlRemembers* changed'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $V2ProbeReturn
+    end
+
+    killvar '$V2ProbeGirl'
+    killvar '$V2ProbeReturn'
+---
+
+#HallSceneV2DebugProbePrintGirl
+    $V2PrintG = LCASE($ARGS[0])
+    if $V2PrintG = '':
+        exit
+    end
+
+    *pl '  LastGirlChoiceEvent[' + $V2PrintG + ']=' + $LastGirlChoiceEvent[$V2PrintG]
+    *pl '  LastGirlChoiceChoice[' + $V2PrintG + ']=' + $LastGirlChoiceChoice[$V2PrintG]
+    *pl '  LastGirlChoiceType[' + $V2PrintG + ']=' + $LastGirlChoiceType[$V2PrintG]
+    *pl '  $LastHallChoiceEvent=' + $LastHallChoiceEvent + ' choice=' + $LastHallChoiceChoice + ' type=' + $LastHallChoiceType
+    *pl '  LastStefanChoiceEvent=' + $LastStefanChoiceEvent[$V2PrintG] + ' text=' + $LastStefanChoiceText[$V2PrintG]
+    *pl '  GirlRemembersProtection=' + STR(GirlRemembersProtection[$V2PrintG]) + ' Neglect=' + STR(GirlRemembersNeglect[$V2PrintG]) + ' Profit=' + STR(GirlRemembersProfitChoices[$V2PrintG])
+    *pl '  HallRumorGirlCount=' + STR(HallRumorGirlCount[$V2PrintG]) + ' Total=' + STR(HallRumorTotal) + ' Lewd=' + STR(HallRumorLewd) + ' Missing=' + STR(HallRumorMissing)
+    *pl '  TavernScandal=' + STR(TavernScandal) + ' LewdFame=' + STR(TavernLewdFame)
+    ! EventKnowledge LCASE id
+    *pl '  Fact hallplay_=' + STR(FactHappened['hallplay_' + $V2PrintG]) + ' hallmissing_=' + STR(FactHappened['hallmissing_' + $V2PrintG])
+    *pl '  PlayerKnows hallplay_=' + STR(PlayerKnows['hallplay_' + $V2PrintG]) + ' hallmissing_=' + STR(PlayerKnows['hallmissing_' + $V2PrintG])
+    if $V2PrintG = 'amanda':
+        *pl '  amanda_hall_lewd_witness Fact=' + STR(FactHappened['amanda_hall_lewd_witness']) + ' Knows=' + STR(PlayerKnows['amanda_hall_lewd_witness'])
+    end
+    *pl '  OffenseDays=' + STR(GirlOffenseDays[$V2PrintG]) + ' reason=' + $GirlOffenseReason[$V2PrintG]
+    *pl '  $LastHallEventGirl=' + $LastHallEventGirl + ' text snippet ok if non-empty: ' + STR(($LastHallEventText <> ''))
+
+    killvar '$V2PrintG'
+---

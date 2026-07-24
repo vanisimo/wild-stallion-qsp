@@ -466,6 +466,23 @@
     $AmandaLizaTalkPickedId = ''
     AmandaLizaTalkPickOk = 0
 
+    ! v2 play coach: воскресенье день/вечер — подслушать Аманда↔Лизетта (force, не RAND)
+    if week = 7:
+        gs 'GetCitySchedulePhase'
+        if $CitySchedulePhase = 'sunday_visits':
+            if LOC('HallPlayCoachCanOffer') = 1:
+                gs 'HallPlayCoachCanOffer', 'amanda'
+                if HallPlayCoachCanOffer = 1:
+                    $AmandaLizaTalkPickedId = 'play_coach_amanda'
+                    AmandaLizaTalkPickOk = 1
+                    killvar '$CitySchedulePhase'
+                    exit
+                end
+            end
+        end
+        killvar '$CitySchedulePhase'
+    end
+
     gs 'AmandaLizaTalkBuildPool'
 
     if AmandaLizaTalkPoolSize <= 0:
@@ -526,7 +543,14 @@
 #AmandaLizaTalkApplyPhraseEffects
     $AmandaLizaTalkEffectId = LCASE($ARGS[0])
 
-    if $AmandaLizaTalkEffectId = 'naive_children':
+    if $AmandaLizaTalkEffectId = 'play_coach_amanda':
+        if LOC('HallPlayCoachApply') = 1:
+            gs 'HallPlayCoachApply', 'amanda'
+        end
+        killvar '$AmandaLizaTalkEffectId'
+        exit
+
+    elseif $AmandaLizaTalkEffectId = 'naive_children':
         gs 'AmandaLizaTalkApplyInfluence', 5, 4, 10
     elseif $AmandaLizaTalkEffectId = 'naive_hole':
         gs 'AmandaLizaTalkApplyInfluence', 5, 4, 10

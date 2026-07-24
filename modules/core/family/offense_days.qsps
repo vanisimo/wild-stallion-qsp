@@ -290,6 +290,7 @@
 ---
 
 #OffenseDaysHarassmentAfter
+    ! v2.1 no_protect: liberation only; play off; band 1 only; watch_bad only
     gs 'NormalizeGirlKey', $ARGS[0]
     $OffenseHarassGirl = $GirlKey
     $OffenseArea = LCASE($ARGS[1])
@@ -314,25 +315,33 @@
 
     gs 'OffenseDaysGirlStatBand', $OffenseHarassGirl
 
-    ! band 2 = высокая: ignore/watch не копят no_protect
-    ! band 0/1 = ждала защиты
-    if $OffenseReaction = 'ignore':
-        if GirlOffenseStatBand <> 2:
-            gs 'OffenseDaysRegisterMismatchProtect', $OffenseHarassGirl, 'no_protect_low'
-        end
-    elseif $OffenseReaction = 'watch':
-        if $OffenseTalkReaction = 'watch_bad' or $OffenseTalkReaction = 'watch_lewd':
-            if GirlOffenseStatBand <> 2:
-                gs 'OffenseDaysRegisterMismatchProtect', $OffenseHarassGirl, 'no_protect_low'
-            end
-        end
-    elseif $OffenseReaction = 'protect_hard':
+    if $OffenseReaction = 'protect_hard':
         if $OffenseTalkReaction = 'protect_dislike':
             if GirlOffenseStatBand = 2:
                 gs 'OffenseDaysRegisterMismatchProtect', $OffenseHarassGirl, 'protect_high'
             end
         elseif $OffenseTalkReaction = 'protect_success':
             gs 'OffenseDaysRegisterIntercept', $OffenseHarassGirl
+        end
+    else
+        if FamilyLiberationGateOpen = 1:
+            OffenseNoProtectOk = 0
+
+            if $HallHarassStanceCanon <> 'play' and $HarassGirlStance <> 'provoke':
+                if GirlOffenseStatBand = 1:
+                    if $OffenseReaction = 'ignore':
+                        OffenseNoProtectOk = 1
+                    elseif $OffenseReaction = 'watch' and $OffenseTalkReaction = 'watch_bad':
+                        OffenseNoProtectOk = 1
+                    end
+                end
+            end
+
+            if OffenseNoProtectOk = 1:
+                gs 'OffenseDaysRegisterMismatchProtect', $OffenseHarassGirl, 'no_protect_low'
+            end
+
+            killvar 'OffenseNoProtectOk'
         end
     end
 
@@ -351,7 +360,103 @@
     killvar 'GirlOffenseStatBand'
 ---
 
+! --------------------------------
+! Missing after (v2): interrupt / peek / ignore
+! ARGS[0]=girl, ARGS[1]=choice protect_hard|watch|ignore
+! --------------------------------
+#OffenseDaysMissingAfter
+    ! v2.1: те же no_protect-гейты, что harass
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseMissingGirl = $GirlKey
+    $OffenseMissingChoice = LCASE($ARGS[1])
+
+    if $OffenseMissingGirl = '':
+        killvar '$OffenseMissingGirl'
+        killvar '$OffenseMissingChoice'
+        exit
+    end
+
+    if $OffenseMissingGirl <> 'amanda' and $OffenseMissingGirl <> 'melissa':
+        if $OffenseMissingGirl = 'sandra':
+            if FamilyLiberationGateOpen = 1 and GirlOffenseDays['sandra'] <= 0:
+                if $OffenseMissingChoice = 'ignore':
+                    if GirlWorkPolicy['sandra'] = 1 or GirlKitchenPolicy['sandra'] = 1:
+                        gs 'OffenseDaysRegisterMismatchProtect', 'sandra', 'no_protect_low'
+                    end
+                elseif $OffenseMissingChoice = 'protect_hard':
+                    if GirlWorkPolicy['sandra'] = 3 or GirlKitchenPolicy['sandra'] = 3:
+                        if PlayCoached['sandra'] = 1 or GirlNpcPath['sandra'] >= 26:
+                            gs 'OffenseDaysRegisterMismatchProtect', 'sandra', 'protect_high'
+                        end
+                    end
+                end
+            end
+        end
+
+        killvar '$OffenseMissingGirl'
+        killvar '$OffenseMissingChoice'
+        exit
+    end
+
+    gs 'OffenseDaysGirlStatBand', $OffenseMissingGirl
+
+    if FamilyLiberationGateOpen = 1:
+        if $HallHarassStanceCanon <> 'play' and $HarassGirlStance <> 'provoke' and HallMissingFromPlay <> 1:
+            if GirlOffenseStatBand = 1:
+                if $OffenseMissingChoice = 'ignore':
+                    gs 'OffenseDaysRegisterMismatchProtect', $OffenseMissingGirl, 'no_protect_low'
+                elseif ($OffenseMissingChoice = 'watch' or $OffenseMissingChoice = 'peek') and GirlWorkPolicy[$OffenseMissingGirl] = 1:
+                    gs 'OffenseDaysRegisterMismatchProtect', $OffenseMissingGirl, 'no_protect_low'
+                end
+            end
+        end
+    end
+
+    if $OffenseMissingChoice = 'protect_hard' or $OffenseMissingChoice = 'interrupt':
+        if GirlOffenseStatBand = 2 or PlayCoached[$OffenseMissingGirl] = 1:
+            if GirlWorkPolicy[$OffenseMissingGirl] = 3:
+                gs 'OffenseDaysRegisterMismatchProtect', $OffenseMissingGirl, 'protect_high'
+            end
+        else
+            if GirlOffenseStatBand = 1:
+                gs 'OffenseDaysRegisterIntercept', $OffenseMissingGirl
+            end
+        end
+    end
+
+    ! дочь: ignore → sandra; peek/watch_lewd НЕ (слишком часто)
+    $OffenseMissingDaughterReact = $OffenseMissingChoice
+    $OffenseMissingDaughterTalk = ''
+
+    if $OffenseMissingChoice = 'ignore':
+        $OffenseMissingDaughterReact = 'ignore'
+        $OffenseMissingDaughterTalk = ''
+    elseif $OffenseMissingChoice = 'interrupt' or $OffenseMissingChoice = 'protect_hard':
+        $OffenseMissingDaughterReact = 'protect_hard'
+        $OffenseMissingDaughterTalk = 'protect_success'
+    else
+        ! peek/watch — не daughter_no_protect
+        $OffenseMissingDaughterReact = ''
+    end
+
+    if $OffenseMissingDaughterReact <> '':
+        gs 'OffenseDaysSandraDaughterAfterHarass', $OffenseMissingGirl, $OffenseMissingDaughterReact, $OffenseMissingDaughterTalk
+    end
+
+    if debug = 1:
+        *pl '[DEBUG OFFENSE MISSING] girl=' + $OffenseMissingGirl + ' choice=' + $OffenseMissingChoice + ' band=' + STR(GirlOffenseStatBand) + ' days=' + STR(GirlOffenseDays[$OffenseMissingGirl])
+    end
+
+    killvar '$OffenseMissingGirl'
+    killvar '$OffenseMissingChoice'
+    killvar '$OffenseMissingDaughterReact'
+    killvar '$OffenseMissingDaughterTalk'
+    killvar 'GirlOffenseStatBand'
+---
+
 #OffenseDaysSandraDaughterAfterHarass
+    ! v2.1: не сразу days; K=3 через RegisterMismatchProtect;
+    ! learn 15–40%; cooldown 3 дня; play / watch_lewd не триггер
     gs 'NormalizeGirlKey', $ARGS[0]
     $OffenseDaughter = $GirlKey
     $OffenseDaughterReact = LCASE($ARGS[1])
@@ -371,15 +476,52 @@
         exit
     end
 
+    ! до ужина — нет
+    if FamilyLiberationGateOpen = 0:
+        killvar '$OffenseDaughter'
+        killvar '$OffenseDaughterReact'
+        killvar '$OffenseDaughterTalk'
+        exit
+    end
+
+    ! play у дочери — не «не защитил жертву»
+    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        killvar '$OffenseDaughter'
+        killvar '$OffenseDaughterReact'
+        killvar '$OffenseDaughterTalk'
+        exit
+    end
+
+    ! cooldown 3 дня между попытками «узнала»
+    if SandraDaughterOffenseLastDay > 0 and day < SandraDaughterOffenseLastDay + 3:
+        killvar '$OffenseDaughter'
+        killvar '$OffenseDaughterReact'
+        killvar '$OffenseDaughterTalk'
+        exit
+    end
+
     SandraDaughterOffenseRoll = 0
 
     if $OffenseDaughterReact = 'ignore':
         SandraDaughterOffenseRoll = 1
-    elseif $OffenseDaughterReact = 'watch' and ($OffenseDaughterTalk = 'watch_bad' or $OffenseDaughterTalk = 'watch_lewd'):
+    elseif $OffenseDaughterReact = 'watch' and $OffenseDaughterTalk = 'watch_bad':
+        ! только bad, не watch_lewd
         SandraDaughterOffenseRoll = 1
     end
 
     if SandraDaughterOffenseRoll = 0:
+        killvar 'SandraDaughterOffenseRoll'
+        killvar '$OffenseDaughter'
+        killvar '$OffenseDaughterReact'
+        killvar '$OffenseDaughterTalk'
+        exit
+    end
+
+    ! только если дочь в band «ждала защиты»
+    gs 'OffenseDaysGirlStatBand', $OffenseDaughter
+    if GirlOffenseStatBand <> 1:
+        killvar 'SandraDaughterOffenseRoll'
+        killvar 'GirlOffenseStatBand'
         killvar '$OffenseDaughter'
         killvar '$OffenseDaughterReact'
         killvar '$OffenseDaughterTalk'
@@ -387,19 +529,31 @@
     end
 
     SandraDaughterLearnRoll = RAND(1, 100)
-    SandraDaughterLearnChance = 35 + SandraFamilyConcern * 5 + FamilyTension / 2
+    SandraDaughterLearnChance = 15 + SandraFamilyConcern * 2 + FamilyTension / 4
 
-    if SandraDaughterLearnChance > 85:
-        SandraDaughterLearnChance = 85
+    if SandraDaughterLearnChance > 40:
+        SandraDaughterLearnChance = 40
     end
 
+    if SandraDaughterLearnChance < 10:
+        SandraDaughterLearnChance = 10
+    end
+
+    SandraDaughterOffenseLastDay = day
+
     if SandraDaughterLearnRoll <= SandraDaughterLearnChance:
-        gs 'OffenseDaysStart', 'sandra', 'daughter_no_protect'
+        ! K=3 накопление, не сразу 4 дня
+        gs 'OffenseDaysRegisterMismatchProtect', 'sandra', 'daughter_no_protect'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG OFFENSE DAUGHTER] learn=' + STR(SandraDaughterLearnRoll) + '/' + STR(SandraDaughterLearnChance) + ' protectK_sandra=' + STR(GirlOffenseMismatchProtect['sandra'])
     end
 
     killvar 'SandraDaughterOffenseRoll'
     killvar 'SandraDaughterLearnRoll'
     killvar 'SandraDaughterLearnChance'
+    killvar 'GirlOffenseStatBand'
     killvar '$OffenseDaughter'
     killvar '$OffenseDaughterReact'
     killvar '$OffenseDaughterTalk'

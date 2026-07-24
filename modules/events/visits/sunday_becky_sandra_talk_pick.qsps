@@ -145,6 +145,15 @@
             end
         end
 
+    elseif $SundayVisitBeckySandraPhraseId = 'play_coach_sandra':
+        ! v2: подслушать coach Бекки↔Сандра (one-shot via PlayCoached)
+        if LOC('HallPlayCoachCanOffer') = 1:
+            gs 'HallPlayCoachCanOffer', 'sandra'
+            if HallPlayCoachCanOffer = 1:
+                SundayVisitBeckySandraPhraseOk = 1
+            end
+        end
+
     end
 
     killvar '$SundayVisitBeckySandraPhraseId'
@@ -184,6 +193,7 @@
     SundayVisitBeckySandraPoolMax = 0
     SundayVisitBeckySandraPoolSize = 0
 
+    gs 'SundayVisitBeckySandraPoolTry', 'play_coach_sandra', 9
     gs 'SundayVisitBeckySandraPoolTry', 'sandra_stefan_marathon', 3
     gs 'SundayVisitBeckySandraPoolTry', 'sandra_stefan_first', 2
     gs 'SundayVisitBeckySandraPoolTry', 'becky_stefan_gossip', 2
@@ -207,6 +217,16 @@
 #SundayVisitBeckySandraPickPhrase
     $SundayVisitBeckySandraPickedId = ''
     SundayVisitBeckySandraPickOk = 0
+
+    ! force: play coach Сандра (после gear; не RAND)
+    if LOC('HallPlayCoachCanOffer') = 1:
+        gs 'HallPlayCoachCanOffer', 'sandra'
+        if HallPlayCoachCanOffer = 1:
+            $SundayVisitBeckySandraPickedId = 'play_coach_sandra'
+            SundayVisitBeckySandraPickOk = 1
+            exit
+        end
+    end
 
     gs 'SundayVisitBeckySandraBuildPool'
 
@@ -235,7 +255,12 @@
         SandraBeckyBond = 100
     end
 
-    if $SundayVisitBeckySandraEffectId = 'becky_two_men':
+    if $SundayVisitBeckySandraEffectId = 'play_coach_sandra':
+        if LOC('HallPlayCoachApply') = 1:
+            gs 'HallPlayCoachApply', 'sandra'
+        end
+
+    elseif $SundayVisitBeckySandraEffectId = 'becky_two_men':
         SandraBeckyTalkPhraseHeard['becky_two_men'] = 1
         FamilyTension += 1
 

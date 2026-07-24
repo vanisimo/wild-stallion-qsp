@@ -1,13 +1,23 @@
 ! ================================================
 ! FILE: modules/events/hall/hall_lewd_behavior.qsps
-! Скандальное поведение (она играет) — зал: Аманда/Мелисса
-! Канон: docs/design-hall-scene-unified.md
-! Сандра lewd — только кухня (отдельный entry позже); здесь sandra не в пуле
+! LEGACY (канон v2): отдельный lewd-roll СНЯТ.
+! Play = stance в hall_harassment + PlayCoached (hall_scene_v2_core).
+! Auto CanStart выключен (HallLewdAutoDisabled). Debug Start ещё жив.
+! Канон: docs/design-hall-scene-unified.md §0
 ! ================================================
 
 #HallLewdBehaviorCanStart
     HallLewdBehaviorCanStart = 0
     $HallLewdSelectedGirl = ''
+
+    ! v2: отдельный lewd-roll снят; auto-start выключен (debug Start ещё работает)
+    if LOC('HallSceneV2EnsureFlags') = 1:
+        gs 'HallSceneV2EnsureFlags'
+    end
+
+    if HallLewdAutoDisabled = 1:
+        exit
+    end
 
     if FamilyLiberationGateOpen = 0:
         exit
@@ -118,6 +128,15 @@
     end
 
     if $HallLewdCheckGirl <> 'amanda' and $HallLewdCheckGirl <> 'melissa':
+        killvar '$HallLewdCheckGirl'
+        exit
+    end
+
+    ! debug force: всегда в кандидаты, без RAND/гейтов
+    if HallLewdDebugForce = 1:
+        HallLewdCandidateCount += 1
+        $HallLewdCandidate[HallLewdCandidateCount] = $HallLewdCheckGirl
+        HallLewdDebugForce = 0
         killvar '$HallLewdCheckGirl'
         exit
     end
@@ -536,13 +555,12 @@
         gs 'ShowGirlSidebar', $HallLewdGirl
     end
 
-    gs 'HallLewdShowImage', 'base'
-
     *pl '══════════════════════════════════════════════'
     *pl ' СКАНДАЛЬНОЕ ПОВЕДЕНИЕ В ЗАЛЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
+    ! Картинка — внутри HallLewdPrintText (intro → base)
     gs 'HallLewdPrintText', 'intro'
 
     *pl ' '
@@ -672,26 +690,24 @@
         $HallLewdChoice = 'protect_hard'
     end
 
+    ! Тексты: protect_hard|stop · watch · ignore|encourage (alias в text-файле)
+    ! Картинка — внутри HallLewdPrintText (stop/watch/encourage asset keys)
     if $HallLewdChoice = 'protect_hard':
         gs 'HallLewdApplyConsequences', 'protect_hard'
-        gs 'HallLewdShowImage', 'stop'
-        gs 'HallLewdPrintText', 'stop'
+        gs 'HallLewdPrintText', 'protect_hard'
 
     elseif $HallLewdChoice = 'watch':
         gs 'HallLewdApplyConsequences', 'watch'
-        gs 'HallLewdShowImage', 'watch'
         gs 'HallLewdPrintText', 'watch'
 
     elseif $HallLewdChoice = 'ignore':
         gs 'HallLewdApplyConsequences', 'ignore'
-        gs 'HallLewdShowImage', 'encourage'
-        gs 'HallLewdPrintText', 'encourage'
+        gs 'HallLewdPrintText', 'ignore'
 
     else:
         $HallLewdChoice = 'protect_hard'
         gs 'HallLewdApplyConsequences', 'protect_hard'
-        gs 'HallLewdShowImage', 'stop'
-        gs 'HallLewdPrintText', 'stop'
+        gs 'HallLewdPrintText', 'protect_hard'
     end
 
     gs 'PolicyEventChoiceConsequencePrint', 'hall_lewd', $HallLewdChoice, $HallLewdGirl
@@ -708,6 +724,7 @@
     end
 
     ! После сцены — то же policy-меню, что у harassment (сдержанно / сама / расковано)
+    ! Legacy lewd-debug: policy after на виду ок; missing сюда не ходит
     $HallHarassGirl = $HallLewdGirl
     $HallHarassConsequenceArea = 'hall'
     $HallHarassReturnLoc = $HallLewdReturnLoc
@@ -890,11 +907,34 @@ killvar 'HallLewdPreviousPolicy'
 ! ================================================
 
 #HallLewdDebugStart
+    ! Legacy lewd UI: force gates + skip RAND candidate
     $DebugHallLewdGirl = LCASE($ARGS[0])
 
     if $DebugHallLewdGirl = '':
         $DebugHallLewdGirl = 'amanda'
     end
+
+    if $DebugHallLewdGirl = 'sandra':
+        ! зал-lewd без Сандры — в kitchen lewd debug
+        if LOC('KitchenLewdDebugStart') = 1:
+            gt 'KitchenLewdDebugStart'
+        end
+        $DebugHallLewdGirl = 'amanda'
+    end
+
+    FamilyLiberationGateOpen = 1
+    Act1MoralUnlocked = 1
+    FamilyCouncilDone = 1
+    if FamilyCorruptionStage < 3:
+        FamilyCorruptionStage = 3
+    end
+
+    HallLewdAutoDisabled = 0
+    HallLewdBehaviorDisabled = 0
+    HallLewdDebugForce = 1
+    HallLewdLastGlobalDay = 0
+    HallLewdLastGlobalTime = 0
+    HallLewdLastDay[$DebugHallLewdGirl] = 0
 
     TavernScandal = 35
     TavernLewdFame = 20
@@ -902,16 +942,19 @@ killvar 'HallLewdPreviousPolicy'
 
     GirlUniformLevel[$DebugHallLewdGirl] = 1
     GirlWorkPolicy[$DebugHallLewdGirl] = 2
+    GirlPolicyAgreement[$DebugHallLewdGirl] = 2
     GirlHallLewdStage[$DebugHallLewdGirl] = 3
     GirlPublicAttention[$DebugHallLewdGirl] = 30
-    GirlNpcPath[$DebugHallLewdGirl] = 20
+    GirlNpcPath[$DebugHallLewdGirl] = 25
     GirlSecretiveness[$DebugHallLewdGirl] = 10
     GirlRebellion[$DebugHallLewdGirl] = 10
+    sluttiness[$DebugHallLewdGirl] = 35
+    PlayCoached[$DebugHallLewdGirl] = 1
 
     if $DebugHallLewdGirl = 'amanda':
         AmandaScandalLevel = 35
         AmandaPublicAttention = 30
-        AmandaNpcPath = 20
+        AmandaNpcPath = 25
         AmandaSecretiveness = 10
         AmandaRebellion = 10
     end

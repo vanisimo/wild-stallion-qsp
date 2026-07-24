@@ -1,11 +1,14 @@
 ! ================================================
 ! FILE: modules/debug/debug_tavern_event_dispatcher.qsps
-! Debug-меню прямого запуска событий трактира
-! Версия: restore v1
+! MODULE: debug
+! Единый полноэкранный хаб: события трактира v2
+! Вход: gt 'TavernEventDispatcherDebugMenu'
+!       предмет «Дебаг» → Полноэкранный тест событий трактира
 ! Назначение:
-! - восстановить локатор TavernEventDispatcherDebugMenu
-! - дать быстрый запуск hall_missing / hall_lewd / kitchen_customer
-! - дать быстрый вход в разговоры о правилах работы
+! - harass / missing-from-play / lewd (legacy) / kitchen
+! - daily aftermath force
+! - v2 probe / play coach
+! - переходы в гейт-меню harassment
 ! ================================================
 
 #TavernEventDispatcherDebugMenu
@@ -14,82 +17,218 @@
     cla
 
     *pl '══════════════════════════════════════════════'
-    *pl ' DEBUG: СОБЫТИЯ ТРАКТИРА'
+    *pl ' DEBUG: СОБЫТИЯ ТРАКТИРА (v2)'
     *pl '══════════════════════════════════════════════'
     *pl ' '
+    *pl 'liberation=' + STR(FamilyLiberationGateOpen) + ' moral=' + STR(Act1MoralUnlocked) + ' stage=' + STR(FamilyCorruptionStage)
+    *pl 'ever_harass=' + STR(HallHarassEverOccurred) + ' PlayCoached a/m/s=' + STR(PlayCoached['amanda']) + '/' + STR(PlayCoached['melissa']) + '/' + STR(PlayCoached['sandra'])
+    *pl 'LewdAutoOff=' + STR(HallLewdAutoDisabled) + ' MissingOnlyPlay=' + STR(HallMissingOnlyFromPlay)
+    *pl 'day=' + STR(day) + ' time=' + STR(time) + ' week=' + STR(week)
+    *pl ' '
 
-    gs 'ActUiPrepare', 'Пропажа девушки: Аманда', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'HallMissingGirlDebugStart', 'amanda'
-    end
-
-    gs 'ActUiPrepare', 'Пропажа девушки: Мелисса', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'HallMissingGirlDebugStart', 'melissa'
-    end
-
-    gs 'ActUiPrepare', 'Пропажа девушки: Сандра', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'HallMissingGirlDebugStart', 'sandra'
-    end
-
-    gs 'ActUiPrepare', 'Приставания: гейты + после ужина', 'generic'
+    *pl '── ПРИСТАВАНИЯ (harass v2) ──'
+    gs 'ActUiPrepare', 'Harass: гейты + после ужина', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         gt 'HallHarassmentGateDebugMenu'
     end
 
-    gs 'ActUiPrepare', 'Harass: после ужина + T3 + Аманда wall', 'generic'
+    gs 'ActUiPrepare', 'Harass Аманда T3 wall (force)', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         gs 'HallHarassmentDebugPreset', 'post_dinner_t3'
         gt 'HallHarassmentDebugStart', 'amanda', 3, 4
     end
 
-    gs 'ActUiPrepare', 'Harass: Аманда natural (текущие гейты)', 'generic'
+    gs 'ActUiPrepare', 'Harass Мелисса T2 natural', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallHarassmentDebugPreset', 'post_dinner_t2'
+        gs 'HallHarassmentDebugLaunchNatural', 'melissa'
+    end
+
+    gs 'ActUiPrepare', 'Harass кухня Сандра natural', 'kitchen'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallHarassmentDebugPreset', 'post_dinner_t2'
+        gs 'HallHarassmentDebugLaunchNatural', 'sandra'
+    end
+
+    gs 'ActUiPrepare', 'Harass Аманда natural (текущие гейты)', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         gs 'HallHarassmentDebugLaunchNatural', 'amanda'
     end
 
-    gs 'ActUiPrepare', 'Скандальное поведение: Аманда', 'generic'
+    *pl ' '
+    *pl '── ПРОПАЖА (только from play) ──'
+    gs 'ActUiPrepare', 'Missing from play: Аманда', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingGirlDebugStart', 'amanda'
+    end
+
+    gs 'ActUiPrepare', 'Missing from play: Мелисса', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingGirlDebugStart', 'melissa'
+    end
+
+    gs 'ActUiPrepare', 'Missing from play: Сандра (кухня)', 'kitchen'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingGirlDebugStart', 'sandra'
+    end
+
+    *pl ' '
+    *pl '── LEWD (legacy UI; auto выключен) ──'
+    gs 'ActUiPrepare', 'Hall lewd: Аманда', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         gt 'HallLewdDebugStart', 'amanda'
     end
 
-    gs 'ActUiPrepare', 'Скандальное поведение: Мелисса', 'generic'
+    gs 'ActUiPrepare', 'Hall lewd: Мелисса', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         gt 'HallLewdDebugStart', 'melissa'
     end
 
-    gs 'ActUiPrepare', 'Скандальное поведение: Сандра', 'generic'
+    gs 'ActUiPrepare', 'Kitchen lewd: Сандра', 'kitchen'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'HallLewdDebugStart', 'sandra'
+        gt 'KitchenLewdDebugStart'
     end
 
-    gs 'ActUiPrepare', 'Кухня: Аманда', 'kitchen'
+    *pl ' '
+    *pl '── КУХНЯ: конфликт с клиентом ──'
+    gs 'ActUiPrepare', 'Кухня клиент: Аманда', 'kitchen'
     act $ActUiLabel, $ActUiIconPath:
         gt 'KitchenCustomerDebugStart', 'amanda'
     end
 
-    gs 'ActUiPrepare', 'Кухня: Мелисса', 'kitchen'
+    gs 'ActUiPrepare', 'Кухня клиент: Мелисса', 'kitchen'
     act $ActUiLabel, $ActUiIconPath:
         gt 'KitchenCustomerDebugStart', 'melissa'
     end
 
-    gs 'ActUiPrepare', 'Кухня: Сандра', 'kitchen'
+    gs 'ActUiPrepare', 'Кухня клиент: Сандра', 'kitchen'
     act $ActUiLabel, $ActUiIconPath:
         gt 'KitchenCustomerDebugStart', 'sandra'
     end
 
-    gs 'ActUiPrepare', 'Разговор о правилах зала: Аманда', 'policy'
+    *pl ' '
+    *pl '── УТРО / AFTERMATH ──'
+    gs 'ActUiPrepare', 'Aftermath: Аманда protect', 'generic'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'GirlWorkPolicyTalkDebugHall', 'amanda'
+        gt 'DailyAftermathDebugForce', 'amanda', 'harassment', 'protect'
     end
 
-    gs 'ActUiPrepare', 'Разговор о правилах кухни: Аманда', 'kitchen'
+    gs 'ActUiPrepare', 'Aftermath: Аманда ignore', 'generic'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'GirlWorkPolicyTalkDebugKitchen', 'amanda'
+        gt 'DailyAftermathDebugForce', 'amanda', 'harassment', 'ignore'
     end
 
-    gs 'ActUiPrepare', 'Вернуться', 'return'
+    gs 'ActUiPrepare', 'Aftermath: Мелисса watch', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DailyAftermathDebugForce', 'melissa', 'hall_lewd', 'watch'
+    end
+
+    gs 'ActUiPrepare', 'Aftermath: Сандра profit', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DailyAftermathDebugForce', 'sandra', 'kitchen', 'profit'
+    end
+
+    gs 'ActUiPrepare', 'Aftermath: полная панель', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DailyAftermathDebugPanel'
+    end
+
+    *pl ' '
+    *pl '── V2 / COACH / POLICY ──'
+    if LOC('HallSceneV2DebugProbe') = 1:
+        gs 'ActUiPrepare', 'V2 probe: Аманда memory/rumor', 'debug'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallSceneV2DebugProbe', 'amanda', 'TavernEventDispatcherDebugMenu'
+        end
+
+        gs 'ActUiPrepare', 'V2 probe: Мелисса', 'debug'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallSceneV2DebugProbe', 'melissa', 'TavernEventDispatcherDebugMenu'
+        end
+    end
+
+    if LOC('HallPlayCoachStart') = 1:
+        gs 'ActUiPrepare', 'Play coach (подслух): А↔Лизетта', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            FamilyLiberationGateOpen = 1
+            Act1MoralUnlocked = 1
+            if FamilyCorruptionStage < 2:
+                FamilyCorruptionStage = 2
+            end
+            AmandaMetLizette = 1
+            LizetteKnown = 1
+            gt 'HallPlayCoachStart', 'amanda', 'TavernEventDispatcherDebugMenu'
+        end
+
+        gs 'ActUiPrepare', 'Play coach (подслух): М↔Кларисса', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            FamilyLiberationGateOpen = 1
+            Act1MoralUnlocked = 1
+            if FamilyCorruptionStage < 2:
+                FamilyCorruptionStage = 2
+            end
+            PlayCoached['amanda'] = 1
+            gt 'HallPlayCoachStart', 'melissa', 'TavernEventDispatcherDebugMenu'
+        end
+
+        gs 'ActUiPrepare', 'Play coach (подслух): С↔Бекки', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            FamilyLiberationGateOpen = 1
+            Act1MoralUnlocked = 1
+            if FamilyCorruptionStage < 2:
+                FamilyCorruptionStage = 2
+            end
+            PlayCoached['amanda'] = 1
+            PlayCoached['melissa'] = 1
+            gt 'HallPlayCoachStart', 'sandra', 'TavernEventDispatcherDebugMenu'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Воскресенье: визиты (debug menu)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        if LOC('SundayShopVisitsDebugMenu') = 1:
+            gt 'SundayShopVisitsDebugMenu', 'TavernEventDispatcherDebugMenu'
+        else:
+            gt 'Market'
+        end
+    end
+
+    if LOC('GirlWorkPolicyTalkDebugHall') = 1:
+        gs 'ActUiPrepare', 'Правила зала: Аманда', 'policy'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlWorkPolicyTalkDebugHall', 'amanda'
+        end
+    end
+
+    if LOC('GirlWorkPolicyTalkDebugKitchen') = 1:
+        gs 'ActUiPrepare', 'Правила кухни: Аманда', 'kitchen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlWorkPolicyTalkDebugKitchen', 'amanda'
+        end
+    end
+
+    *pl ' '
+    *pl '── СЛУЖЕБНОЕ ──'
+    gs 'ActUiPrepare', 'Открыть смену (зал+кухня)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        if LOC('HallHarassmentDebugApplyStaff') = 1:
+            gs 'HallHarassmentDebugApplyStaff'
+        end
+        gt 'TavernEventDispatcherDebugMenu'
+    end
+
+    gs 'ActUiPrepare', 'Пресет: после ужина + T3', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        if LOC('HallHarassmentDebugPreset') = 1:
+            gs 'HallHarassmentDebugPreset', 'post_dinner_t3'
+        end
+        gt 'TavernEventDispatcherDebugMenu'
+    end
+
+    gs 'ActUiPrepare', 'В главный зал', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'TavernMain'
     end

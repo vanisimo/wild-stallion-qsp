@@ -325,7 +325,11 @@
     pl 'Зал: ' + STR(GirlWorkPolicy[$DebugPolicyGirl]) + ', кухня: ' + STR(GirlKitchenPolicy[$DebugPolicyGirl])
     pl '<a href="exec:GirlWorkPolicy[''' + $DebugPolicyGirl + '''] = 0 & gs ''PanelDebugToolsPolicy''">Зал 0</a> | <a href="exec:GirlWorkPolicy[''' + $DebugPolicyGirl + '''] = 1 & gs ''PanelDebugToolsPolicy''">Зал 1</a> | <a href="exec:GirlWorkPolicy[''' + $DebugPolicyGirl + '''] = 2 & gs ''PanelDebugToolsPolicy''">Зал 2</a> | <a href="exec:GirlWorkPolicy[''' + $DebugPolicyGirl + '''] = 3 & gs ''PanelDebugToolsPolicy''">Зал 3</a>'
     pl '<a href="exec:GirlKitchenPolicy[''' + $DebugPolicyGirl + '''] = 0 & gs ''PanelDebugToolsPolicy''">Кухня 0</a> | <a href="exec:GirlKitchenPolicy[''' + $DebugPolicyGirl + '''] = 1 & gs ''PanelDebugToolsPolicy''">Кухня 1</a> | <a href="exec:GirlKitchenPolicy[''' + $DebugPolicyGirl + '''] = 2 & gs ''PanelDebugToolsPolicy''">Кухня 2</a> | <a href="exec:GirlKitchenPolicy[''' + $DebugPolicyGirl + '''] = 3 & gs ''PanelDebugToolsPolicy''">Кухня 3</a>'
-    pl 'Тесты: <a href="exec:gt ''HallLewdBehaviorStart'', ''' + $DebugPolicyGirl + ''', ''TavernMain''">пошлое поведение</a> | <a href="exec:gt ''HallMissingGirlStart'', ''' + $DebugPolicyGirl + ''', ''TavernMain''">пропажа из зала</a> | <a href="exec:gt ''KitchenCustomerEventStart'', ''' + $DebugPolicyGirl + ''', ''TavernMain''">кухня</a>'
+    pl 'Тесты: <a href="exec:gt ''HallLewdBehaviorStart'', ''' + $DebugPolicyGirl + ''', ''TavernMain''">lewd legacy</a> | <a href="exec:gt ''HallMissingGirlStart'', ''' + $DebugPolicyGirl + ''', ''TavernMain''">missing force</a> | <a href="exec:gt ''KitchenCustomerEventStart'', ''' + $DebugPolicyGirl + ''', ''TavernMain''">кухня</a>'
+    pl 'v2 coach flag: <a href="exec:gs ''HallSceneV2DebugCoach'', ''amanda''">PlayCoached Аманда</a> | <a href="exec:gs ''HallSceneV2DebugCoach'', ''melissa''">Мелисса</a> | <a href="exec:gs ''HallSceneV2DebugCoach'', ''sandra''">Сандра</a>'
+    pl 'v2 coach (подслух): <a href="exec:gt ''HallPlayCoachStart'', ''amanda'', ''TavernMain''">А↔Лизетта</a> | <a href="exec:gt ''HallPlayCoachStart'', ''melissa'', ''TavernMain''">М↔Кларисса</a> | <a href="exec:gt ''HallPlayCoachStart'', ''sandra'', ''TavernMain''">С↔Бекки</a>'
+    pl 'v2 probe: <a href="exec:gt ''HallSceneV2DebugProbe'', ''amanda'', ''TavernMain''">Аманда play→mem→missing</a> | <a href="exec:gt ''HallSceneV2DebugProbe'', ''melissa'', ''TavernMain''">Мелисса</a> | <a href="exec:gt ''HallSceneV2DebugProbe'', ''sandra'', ''TavernMain''">Сандра</a>'
+    pl 'v2: PlayCoached[' + $DebugPolicyGirl + ']=' + STR(PlayCoached[$DebugPolicyGirl]) + ' | MissingOnlyFromPlay=' + STR(HallMissingOnlyFromPlay) + ' | LewdAutoOff=' + STR(HallLewdAutoDisabled)
     pl ' '
 
     killvar '$DebugPolicyGirl'
@@ -452,16 +456,35 @@
 #PanelDebugToolsDailyAftermath
     gs 'PanelDebugToolsHeader'
     pl 'DEBUG: DAILY AFTERMATH'
+    pl 'Утро после выбора в зале/кухне (память GirlRemembers* + сцена).'
     pl ' '
     pl 'DailyAftermathPending: ' + STR(DailyAftermathPending)
     pl 'DailyAftermathShownToday: ' + STR(DailyAftermathShownToday)
     pl 'DailyAftermathReasonDay: ' + STR(DailyAftermathReasonDay)
-    pl 'Reason girl: ' + $DailyAftermathLastGirl
-    pl 'Reason event: ' + $DailyAftermathLastEvent
-    pl 'Reason choice: ' + $DailyAftermathLastChoice
+    pl 'Reason girl: ' + $DailyAftermathReasonGirl
+    pl 'Reason event: ' + $DailyAftermathReasonEvent
+    pl 'Reason choice: ' + $DailyAftermathReasonChoice
+    pl 'LastHallMemory: ' + $LastHallMemoryGirl + ' / ' + $LastHallMemoryEvent + ' / ' + $LastHallMemoryChoice
     pl ' '
-    pl '<a href="exec:gs ''DailyAftermathDebugForce'', ''amanda'', ''harassment'', ''protect''">Тест: Аманда / защита</a>'
-    pl '<a href="exec:gs ''DailyAftermathDebugForce'', ''melissa'', ''hall_lewd'', ''watch''">Тест: Мелисса / наблюдение</a>'
-    pl '<a href="exec:gs ''DailyAftermathDebugForce'', ''sandra'', ''kitchen'', ''client''">Тест: Сандра / прибыль</a>'
+    pl 'Аманда protect/neglect/profit: ' + STR(GirlRemembersProtection['amanda']) + '/' + STR(GirlRemembersNeglect['amanda']) + '/' + STR(GirlRemembersProfitChoices['amanda'])
+    pl 'Мелисса protect/neglect/profit: ' + STR(GirlRemembersProtection['melissa']) + '/' + STR(GirlRemembersNeglect['melissa']) + '/' + STR(GirlRemembersProfitChoices['melissa'])
+    pl 'Сандра protect/neglect/profit: ' + STR(GirlRemembersProtection['sandra']) + '/' + STR(GirlRemembersNeglect['sandra']) + '/' + STR(GirlRemembersProfitChoices['sandra'])
+    pl ' '
+    pl '<b>Форс-сцены (полноэкран)</b>'
+    pl '<a href="exec:gt ''DailyAftermathDebugForce'', ''amanda'', ''harassment'', ''protect''">Аманда / защита</a>'
+    pl '<a href="exec:gt ''DailyAftermathDebugForce'', ''amanda'', ''harassment'', ''ignore''">Аманда / игнор</a>'
+    pl '<a href="exec:gt ''DailyAftermathDebugForce'', ''melissa'', ''hall_lewd'', ''watch''">Мелисса / наблюдение</a>'
+    pl '<a href="exec:gt ''DailyAftermathDebugForce'', ''sandra'', ''kitchen'', ''profit''">Сандра / прибыль</a>'
+    pl ' '
+    pl '<a href="exec:DailyAftermathPending = 1 & DailyAftermathShownToday = 0 & gs ''PanelDebugToolsDailyAftermath''">Поставить pending</a>'
+    pl '<a href="exec:DailyAftermathShownToday = 0 & gs ''PanelDebugToolsDailyAftermath''">Сброс shown today</a>'
+    pl '<a href="exec:DailyAftermathPending = 1 & DailyAftermathShownToday = 0 & gt ''DailyAftermathProcess''">Запустить aftermath сейчас</a>'
+    pl ' '
+    if LOC('DailyAftermathDebugPanel') = 1:
+        pl '<a href="exec:gt ''DailyAftermathDebugPanel''">Полноэкранная панель aftermath</a>'
+    end
+    if LOC('TavernEventDispatcherDebugMenu') = 1:
+        pl '<a href="exec:gt ''TavernEventDispatcherDebugMenu''">События трактира (хаб)</a>'
+    end
     gs 'PanelDebugToolsBack'
 ---

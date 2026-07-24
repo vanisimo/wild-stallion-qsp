@@ -22,6 +22,15 @@
     HallMissingGirlCanStart = 0
     $HallMissingGirlSelected = ''
 
+    ! v2: missing только из play (α) — auto-roll с look/dispatcher выключен
+    if LOC('HallSceneV2EnsureFlags') = 1:
+        gs 'HallSceneV2EnsureFlags'
+    end
+
+    if HallMissingOnlyFromPlay = 1:
+        exit
+    end
+
     if FamilyLiberationGateOpen = 0:
         exit
     end
@@ -715,6 +724,17 @@
 
     gs 'PolicyEventChoiceConsequencePrint', 'hall_missing', $HallMissingChoice, $HallMissingGirl
 
+    ! лог панели «последнее в зале» (стык со старым SaveLastHallEvent)
+    if LOC('SaveLastHallEvent') = 1:
+        if $HallMissingChoice = 'protect_hard':
+            gs 'SaveLastHallEvent', 'hall_missing', $HallMissingGirl, 'Стефан вмешался, когда ' + $RealName[$HallMissingGirl] + ' пропала с клиентом.', 'interrupt'
+        elseif $HallMissingChoice = 'watch':
+            gs 'SaveLastHallEvent', 'hall_missing', $HallMissingGirl, 'Стефан подсмотрел, где ' + $RealName[$HallMissingGirl] + ' была с клиентом.', 'peek'
+        else
+            gs 'SaveLastHallEvent', 'hall_missing', $HallMissingGirl, 'Стефан не стал вмешиваться, когда ' + $RealName[$HallMissingGirl] + ' пропала из зала.', 'ignore'
+        end
+    end
+
     *pl ' '
 
     if debug = 1:
@@ -727,18 +747,11 @@
         *pl ' '
     end
 
-    $HallHarassGirl = $HallMissingGirl
-    $HallHarassConsequenceArea = 'hall'
-    $HallHarassReturnLoc = $HallMissingReturnLoc
-    $HallHarassReaction = $HallMissingChoice
-    $HallScenePolicySource = 'missing'
+    ! v2 P0: после missing policy НЕ спрашиваем
+    $HallScenePolicySource = ''
     HallHarassPolicyChosen = 0
     HallHarassPolicyValue = 0
-
-    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
-    *pl ' '
-    gs 'HallHarassmentBuildPolicyMenu'
-    gs 'HallHarassmentPrintGirlPolicyMenuLine'
+    HallMissingFromPlay = 0
 
     *pl ' '
 
@@ -844,6 +857,33 @@
         end
     end
 
+    ! knowledge: missing (в т.ч. из play α)
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'HallMissing_' + $HallMissingGirl
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        if $HallMissingApplyChoice = 'peek' or $HallMissingApplyChoice = 'interrupt':
+            gs 'KnowledgeRegisterPlayerKnows', 'HallMissing_' + $HallMissingGirl, 'witness'
+        elseif $HallMissingApplyChoice = 'ignore':
+            gs 'KnowledgeRegisterPlayerKnows', 'HallMissing_' + $HallMissingGirl, 'suspect'
+        end
+    end
+
+    ! сплетни: girl, event, severity (всегда при missing; from play — чуть сильнее)
+    if LOC('HallRumorRegister') = 1:
+        if HallMissingFromPlay = 1:
+            gs 'HallRumorRegister', $HallMissingGirl, 'hall_missing', 2
+        else
+            gs 'HallRumorRegister', $HallMissingGirl, 'hall_missing', 1
+        end
+    end
+
+    ! offense days (v2): missing choice
+    if LOC('OffenseDaysMissingAfter') = 1:
+        gs 'OffenseDaysMissingAfter', $HallMissingGirl, $HallMissingApplyChoice
+    end
+
 killvar '$HallMissingApplyChoice'
 ---
 
@@ -902,11 +942,23 @@ killvar '$HallMissingApplyChoice'
 ! ================================================
 
 #HallMissingGirlDebugStart
+    ! v2: обходит CanStart/CheckCandidate — через StartFromPlay + гейты
     gs 'HallMissingGirlNormalizeKey', $ARGS[0]
     $DebugHallMissingGirl = $HallMissingGirlKey
 
     if $DebugHallMissingGirl = '':
         $DebugHallMissingGirl = 'amanda'
+    end
+
+    if LOC('HallSceneV2EnsureFlags') = 1:
+        gs 'HallSceneV2EnsureFlags'
+    end
+
+    FamilyLiberationGateOpen = 1
+    Act1MoralUnlocked = 1
+    FamilyCouncilDone = 1
+    if FamilyCorruptionStage < 3:
+        FamilyCorruptionStage = 3
     end
 
     TavernScandal = 50
@@ -920,6 +972,8 @@ killvar '$HallMissingApplyChoice'
     GirlNpcPath[$DebugHallMissingGirl] = 30
     GirlSecretiveness[$DebugHallMissingGirl] = 15
     GirlRebellion[$DebugHallMissingGirl] = 10
+    PlayCoached[$DebugHallMissingGirl] = 1
+    sluttiness[$DebugHallMissingGirl] = 40
 
     if $DebugHallMissingGirl = 'amanda':
         AmandaScandalLevel = 50
@@ -927,9 +981,21 @@ killvar '$HallMissingApplyChoice'
         AmandaNpcPath = 30
         AmandaSecretiveness = 15
         AmandaRebellion = 10
+        $HallHarassClient = 'craftsman'
+    elseif $DebugHallMissingGirl = 'melissa':
+        $HallHarassClient = 'rich_merchant'
+    else
+        $HallHarassClient = 'craftsman'
     end
 
-    gt 'HallMissingGirlStart', $DebugHallMissingGirl, 'TavernMain'
+    $HallHarassGirl = $DebugHallMissingGirl
+    $HallHarassStanceCanon = 'play'
+    $HarassGirlStance = 'provoke'
+    HarassTier = 3
+    HallHarassType = 4
+    HallMissingFromPlay = 1
+
+    gt 'HallMissingGirlStartFromPlay', $DebugHallMissingGirl, 'TavernMain'
 ---
 
 ! ================================================

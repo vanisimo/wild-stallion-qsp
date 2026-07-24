@@ -1,13 +1,23 @@
 ! ================================================
 ! FILE: modules/events/kitchen/kitchen_lewd_sandra.qsps
 ! MODULE: events/kitchen
-! Кухня: скандальное поведение Сандры (она играет)
-! Канон: docs/design-hall-scene-unified.md
-! Только Сандра. Сёстры — hall-lewd. Уборки нет.
+! LEGACY (канон v2): auto kitchen-lewd СНЯТ (HallLewdAutoDisabled).
+! Play Сандры = kitchen harassment + PlayCoached['sandra'] (Бекки-coach).
+! Debug KitchenLewdDebugStart ещё может жить. Уборки нет.
+! Канон: docs/design-hall-scene-unified.md §0
 ! ================================================
 
 #KitchenLewdSandraCanStart
     KitchenLewdSandraCanStart = 0
+
+    ! v2: auto kitchen-lewd снят (play = stance на kitchen harass; debug Start жив)
+    if LOC('HallSceneV2EnsureFlags') = 1:
+        gs 'HallSceneV2EnsureFlags'
+    end
+
+    if HallLewdAutoDisabled = 1:
+        exit
+    end
 
     if FamilyLiberationGateOpen = 0:
         exit
@@ -61,6 +71,13 @@
 #KitchenLewdSandraCheck
     KitchenLewdSandraOk = 0
     $KitchenLewdGirl = 'sandra'
+
+    ! debug force: всегда ok, без RAND/гейтов
+    if KitchenLewdDebugForce = 1:
+        KitchenLewdSandraOk = 1
+        KitchenLewdDebugForce = 0
+        exit
+    end
 
     if HallLewdLastDay['sandra'] = day:
         exit
@@ -490,7 +507,10 @@
 #KitchenLewdDebugStart
     FamilyLiberationGateOpen = 1
     Act1MoralUnlocked = 1
-    FamilyCorruptionStage = 3
+    FamilyCouncilDone = 1
+    if FamilyCorruptionStage < 3:
+        FamilyCorruptionStage = 3
+    end
     sluttiness['sandra'] = 35
     GirlNpcPath['sandra'] = 28
     GirlPolicyAgreement['sandra'] = 2
@@ -503,5 +523,7 @@
     KitchenLewdLastGlobalDay = 0
     KitchenLewdLastGlobalTime = 0
     HallLewdLastDay['sandra'] = 0
+    KitchenLewdSandraDisabled = 0
+    KitchenLewdDebugForce = 1
     gt 'KitchenLewdSandraStart', 'Kitchen'
 ---

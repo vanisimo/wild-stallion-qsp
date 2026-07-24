@@ -98,6 +98,15 @@
             end
         end
 
+    elseif $SundayVisitClarissaMelissaPhraseId = 'play_coach_melissa':
+        ! v2: подслушать coach Кларисса↔Мелисса (one-shot via PlayCoached)
+        if LOC('HallPlayCoachCanOffer') = 1:
+            gs 'HallPlayCoachCanOffer', 'melissa'
+            if HallPlayCoachCanOffer = 1:
+                SundayVisitClarissaMelissaPhraseOk = 1
+            end
+        end
+
     end
 
     killvar '$SundayVisitClarissaMelissaPhraseId'
@@ -137,6 +146,8 @@
     SundayVisitClarissaMelissaPoolMax = 0
     SundayVisitClarissaMelissaPoolSize = 0
 
+    ! play coach — высший приоритет (forced в PickPhrase, здесь запас)
+    gs 'SundayVisitClarissaMelissaPoolTry', 'play_coach_melissa', 9
     gs 'SundayVisitClarissaMelissaPoolTry', 'melissa_stefan_marathon', 3
     gs 'SundayVisitClarissaMelissaPoolTry', 'melissa_clarissa_brother', 2
     gs 'SundayVisitClarissaMelissaPoolTry', 'melissa_stefan_first', 2
@@ -154,6 +165,16 @@
 #SundayVisitClarissaMelissaPickPhrase
     $SundayVisitClarissaMelissaPickedId = ''
     SundayVisitClarissaMelissaPickOk = 0
+
+    ! force: play coach Мелисса, если доступен (не RAND)
+    if LOC('HallPlayCoachCanOffer') = 1:
+        gs 'HallPlayCoachCanOffer', 'melissa'
+        if HallPlayCoachCanOffer = 1:
+            $SundayVisitClarissaMelissaPickedId = 'play_coach_melissa'
+            SundayVisitClarissaMelissaPickOk = 1
+            exit
+        end
+    end
 
     gs 'SundayVisitClarissaMelissaBuildPool'
 
@@ -182,7 +203,12 @@
         MelissaClarissaBond = 100
     end
 
-    if $SundayVisitClarissaMelissaEffectId = 'melissa_clarissa_brother':
+    if $SundayVisitClarissaMelissaEffectId = 'play_coach_melissa':
+        if LOC('HallPlayCoachApply') = 1:
+            gs 'HallPlayCoachApply', 'melissa'
+        end
+
+    elseif $SundayVisitClarissaMelissaEffectId = 'melissa_clarissa_brother':
         MelissaClarissaTalkPhraseHeard['melissa_clarissa_brother'] = 1
         PlayerKnows_MelissaClarissaBrotherGossip = 1
         FamilyTension += 1

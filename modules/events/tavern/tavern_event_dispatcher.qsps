@@ -4,7 +4,8 @@
 ! Версия: v1.1 / policy aftermath hooks
 ! Назначение:
 ! - выбрать и запустить подходящее событие трактира
-! - приоритет: hall_missing -> hall_lewd -> kitchen_customer
+! - v2: hall_missing / hall_lewd auto сняты (missing из play; lewd = stance)
+! - приоритет: hall_harassment -> kitchen_customer
 ! - оставляет совместимые переменные результата
 ! ================================================
 
@@ -22,7 +23,8 @@
         gs 'UpdateGirlLocations'
     end
 
-    if TavernEventDispatcherRoll <= 25 and LOC('HallMissingGirlCanStart') = 1:
+    ! legacy missing/lewd auto — только если флаги v2 выключены
+    if HallMissingOnlyFromPlay <> 1 and TavernEventDispatcherRoll <= 25 and LOC('HallMissingGirlCanStart') = 1:
         gs 'HallMissingGirlCanStart'
 
         if HallMissingGirlCanStart = 1 and $HallMissingGirlSelected <> '':
@@ -31,7 +33,7 @@
         end
     end
 
-    if TavernEventDispatcherResult = 0 and TavernEventDispatcherRoll <= 60 and LOC('HallLewdBehaviorCanStart') = 1:
+    if HallLewdAutoDisabled <> 1 and TavernEventDispatcherResult = 0 and TavernEventDispatcherRoll <= 60 and LOC('HallLewdBehaviorCanStart') = 1:
         gs 'HallLewdBehaviorCanStart'
 
         if HallLewdBehaviorCanStart = 1 and $HallLewdSelectedGirl <> '':

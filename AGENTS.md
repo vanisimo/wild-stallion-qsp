@@ -135,7 +135,7 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/hall/hall_family_reactions_text.qsps` | family reactions to hall |
 | `modules/events/hall/hall_family_state_text.qsps` | family state after hall choice |
 | `modules/events/hall/hall_choice_family_talk_text.qsps` | family talk after hall choice |
-| `modules/events/hall/hall_harassment_intro_text.qsps` | hall/kitchen harass intro T1–T3 |
+| `modules/events/hall/hall_harassment_intro_text.qsps` | hall/kitchen harass intro T1–T3 (**WIP** — владелец допишет; не трогать prose) |
 | `modules/events/hall/hall_harassment_text.qsps` | harass after / reaction / talk-recall |
 | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | Stefan thoughts before hall choice |
 | `modules/events/hall/girl_policy_response_text.qsps` | policy response in scene |

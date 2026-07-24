@@ -7,6 +7,8 @@
 
 Единые кнопки/policy/лестница зала — в **design-hall-scene-unified.md**.
 
+**Канон v2 (2026-07-22, утверждено):** сквозное приставание; play = stance (не отдельный lewd-roll); missing только из play (α); **policy после missing не показывать (P0)**. Подробности — `docs/design-hall-scene-unified.md` §0.
+
 ---
 
 ## 1. Поток сцены (игрок)
@@ -215,18 +217,20 @@ Late stance сдвигает тон, персона сохраняется.
 
 ### Связь с offense days
 
-`OffenseDaysHarassmentAfter` (amanda/melissa):
+`OffenseDaysHarassmentAfter` (amanda/melissa) **v2.1**:
 
 | Условие | Reason |
 |---------|--------|
-| band **≠ 2** + ignore / watch_bad / watch_lewd | `no_protect_low` (накопление **K=3**) |
-| band high (2) + protect_hard + protect_dislike | `protect_high` |
-| protect_success | intercept count → `intercept` |
-| + Сандра узнала про дочерей | `daughter_no_protect` |
+| liberation=0 (early Act1) | no_protect **off** |
+| play / provoke | no_protect **off** |
+| band **0** mid | no_protect **off** |
+| band **1** + ignore | `no_protect_low` K=3 |
+| band **1** + watch_bad | `no_protect_low` K=3 |
+| band **1** + watch_lewd | **нет** |
+| band 2 + protect_dislike | `protect_high` |
+| protect_success | intercept → `intercept` |
 
-**Не** мгновенная обида с 1× ignore: soft notice «1/3…2/3», на 3-й — `GirlOffenseDays=4` + talk-lock.  
-After-screen показывает pending notice (раньше *clr сносил *pl).  
-Band 2 (высокая) **не** копит no_protect — T3-пресет slut45+pol3 часто band2.
+Сандра `daughter_no_protect` **v2.1**: learn **15–40%**; cooldown **3 дня**; **K=3** (не сразу days); не play; не watch_lewd; дочь band 1 only.
 
 См. `modules/core/family/offense_days.qsps`.
 

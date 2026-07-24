@@ -77,6 +77,20 @@
             $DailyAftermathSelected = 'amanda_profit'
             exit
         end
+
+        ! fallback по последнему выбору
+        if $DailyAftermathReasonChoice = 'protect' or $DailyAftermathReasonChoice = 'protect_hard' or $DailyAftermathReasonChoice = 'stop':
+            $DailyAftermathSelected = 'amanda_protection'
+            exit
+        end
+        if $DailyAftermathReasonChoice = 'ignore' or $DailyAftermathReasonChoice = 'watch' or $DailyAftermathReasonChoice = 'peek':
+            $DailyAftermathSelected = 'amanda_neglect'
+            exit
+        end
+        if $DailyAftermathReasonChoice = 'profit' or $DailyAftermathReasonChoice = 'client' or $DailyAftermathReasonChoice = 'encourage':
+            $DailyAftermathSelected = 'amanda_profit'
+            exit
+        end
     end
 
     if $DailyAftermathReasonGirl = 'melissa':
@@ -94,6 +108,20 @@
             $DailyAftermathSelected = 'melissa_profit'
             exit
         end
+
+        ! нет отдельного melissa_neglect — watch/ignore → doubt
+        if $DailyAftermathReasonChoice = 'protect' or $DailyAftermathReasonChoice = 'protect_hard' or $DailyAftermathReasonChoice = 'stop':
+            $DailyAftermathSelected = 'melissa_respect'
+            exit
+        end
+        if $DailyAftermathReasonChoice = 'ignore' or $DailyAftermathReasonChoice = 'watch' or $DailyAftermathReasonChoice = 'peek':
+            $DailyAftermathSelected = 'melissa_doubt'
+            exit
+        end
+        if $DailyAftermathReasonChoice = 'profit' or $DailyAftermathReasonChoice = 'client' or $DailyAftermathReasonChoice = 'encourage':
+            $DailyAftermathSelected = 'melissa_profit'
+            exit
+        end
     end
 
     if $DailyAftermathReasonGirl = 'sandra':
@@ -103,6 +131,15 @@
         end
 
         if GirlRemembersProtection['sandra'] > 0 or FamilyTrust >= FamilyTension:
+            $DailyAftermathSelected = 'sandra_trust'
+            exit
+        end
+
+        if $DailyAftermathReasonChoice = 'profit' or $DailyAftermathReasonChoice = 'client' or $DailyAftermathReasonChoice = 'encourage' or $DailyAftermathReasonChoice = 'ignore' or $DailyAftermathReasonChoice = 'watch':
+            $DailyAftermathSelected = 'sandra_concern'
+            exit
+        end
+        if $DailyAftermathReasonChoice = 'protect' or $DailyAftermathReasonChoice = 'protect_hard' or $DailyAftermathReasonChoice = 'stop':
             $DailyAftermathSelected = 'sandra_trust'
             exit
         end
@@ -116,6 +153,26 @@
     if FamilyTrust >= FamilyTension + 5:
         $DailyAftermathSelected = 'family_trust'
         exit
+    end
+
+    ! последний fallback: не молчать, если reason girl задан
+    if $DailyAftermathReasonGirl = 'amanda':
+        $DailyAftermathSelected = 'amanda_protection'
+        exit
+    end
+    if $DailyAftermathReasonGirl = 'melissa':
+        $DailyAftermathSelected = 'melissa_respect'
+        exit
+    end
+    if $DailyAftermathReasonGirl = 'sandra':
+        $DailyAftermathSelected = 'sandra_concern'
+        exit
+    end
+
+    if FamilyTension > FamilyTrust:
+        $DailyAftermathSelected = 'family_tension'
+    else:
+        $DailyAftermathSelected = 'family_trust'
     end
 ---
 
@@ -154,6 +211,84 @@
     end
 ---
 
+! ARGS[0]=girl, ARGS[1]=event, ARGS[2]=choice (protect/ignore/watch/profit/encourage)
+! Ставит память + pending и сразу показывает утро (полноэкран)
+#DailyAftermathDebugForce
+    $DAForceGirl = LCASE($ARGS[0])
+    $DAForceEvent = LCASE($ARGS[1])
+    $DAForceChoice = LCASE($ARGS[2])
+
+    if $DAForceGirl = '':
+        $DAForceGirl = 'amanda'
+    end
+
+    if $DAForceGirl <> 'amanda' and $DAForceGirl <> 'melissa' and $DAForceGirl <> 'sandra':
+        $DAForceGirl = 'amanda'
+    end
+
+    if $DAForceEvent = '':
+        $DAForceEvent = 'harassment'
+    end
+
+    if $DAForceChoice = '':
+        $DAForceChoice = 'protect'
+    end
+
+    if $DAForceChoice = 'client':
+        $DAForceChoice = 'profit'
+    end
+
+    if LOC('EnsureGirlData') = 1:
+        gs 'EnsureGirlData', $DAForceGirl
+    end
+
+    if LOC('GirlMemoryOfStefanRegister') = 1:
+        gs 'GirlMemoryOfStefanRegister', $DAForceGirl, $DAForceEvent, $DAForceChoice
+    end
+
+    DailyAftermathPending = 1
+    DailyAftermathShownToday = 0
+    DailyAftermathReasonDay = day
+    $DailyAftermathReasonGirl = $DAForceGirl
+    $DailyAftermathReasonEvent = $DAForceEvent
+    $DailyAftermathReasonChoice = $DAForceChoice
+
+    ! Явная сцена для debug — не зависеть от равных счётчиков / family stats
+    $DailyAftermathSelected = ''
+    if $DAForceGirl = 'amanda':
+        if $DAForceChoice = 'protect' or $DAForceChoice = 'protect_hard' or $DAForceChoice = 'stop' or $DAForceChoice = 'hard_stop':
+            $DailyAftermathSelected = 'amanda_protection'
+        elseif $DAForceChoice = 'ignore' or $DAForceChoice = 'watch' or $DAForceChoice = 'peek' or $DAForceChoice = 'do_nothing':
+            $DailyAftermathSelected = 'amanda_neglect'
+        else:
+            $DailyAftermathSelected = 'amanda_profit'
+        end
+    elseif $DAForceGirl = 'melissa':
+        if $DAForceChoice = 'protect' or $DAForceChoice = 'protect_hard' or $DAForceChoice = 'stop':
+            $DailyAftermathSelected = 'melissa_respect'
+        elseif $DAForceChoice = 'profit' or $DAForceChoice = 'client' or $DAForceChoice = 'encourage' or $DAForceChoice = 'let_client':
+            $DailyAftermathSelected = 'melissa_profit'
+        else:
+            $DailyAftermathSelected = 'melissa_doubt'
+        end
+    else:
+        if $DAForceChoice = 'protect' or $DAForceChoice = 'protect_hard' or $DAForceChoice = 'stop':
+            $DailyAftermathSelected = 'sandra_trust'
+        else:
+            $DailyAftermathSelected = 'sandra_concern'
+        end
+    end
+
+    DailyAftermathPending = 0
+    DailyAftermathShownToday = 1
+
+    killvar '$DAForceGirl'
+    killvar '$DAForceEvent'
+    killvar '$DAForceChoice'
+
+    gt 'DailyAftermathShow', $DailyAftermathSelected
+---
+
 #DailyAftermathDebugPanel
     *clr
     clr
@@ -180,30 +315,56 @@
     *pl 'Сандра защита/игнор/прибыль: ' + STR(GirlRemembersProtection['sandra']) + ' / ' + STR(GirlRemembersNeglect['sandra']) + ' / ' + STR(GirlRemembersProfitChoices['sandra'])
     *pl ' '
 
-    gs 'ActUiPrepare', 'Тест: Аманда / защита', 'debug'
+    gs 'ActUiPrepare', 'Тест: Аманда / защита → утро', 'debug'
     act $ActUiLabel, $ActUiIconPath:
-        gs 'GirlMemoryOfStefanRegister', 'amanda', 'debug', 'protect'
+        gt 'DailyAftermathDebugForce', 'amanda', 'harassment', 'protect'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Аманда / игнор → утро', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DailyAftermathDebugForce', 'amanda', 'harassment', 'ignore'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Мелисса / watch lewd → утро', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DailyAftermathDebugForce', 'melissa', 'hall_lewd', 'watch'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Сандра / прибыль → утро', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DailyAftermathDebugForce', 'sandra', 'kitchen', 'profit'
+    end
+
+    gs 'ActUiPrepare', 'Только поставить pending (без показа)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        DailyAftermathPending = 1
+        DailyAftermathShownToday = 0
         gt 'DailyAftermathDebugPanel'
     end
 
-    gs 'ActUiPrepare', 'Тест: Аманда / игнор', 'debug'
+    gs 'ActUiPrepare', 'Сброс shown today', 'generic'
     act $ActUiLabel, $ActUiIconPath:
-        gs 'GirlMemoryOfStefanRegister', 'amanda', 'debug', 'ignore'
-        gt 'DailyAftermathDebugPanel'
-    end
-
-    gs 'ActUiPrepare', 'Тест: Сандра / прибыль', 'debug'
-    act $ActUiLabel, $ActUiIconPath:
-        gs 'GirlMemoryOfStefanRegister', 'sandra', 'debug', 'profit'
+        DailyAftermathShownToday = 0
         gt 'DailyAftermathDebugPanel'
     end
 
     gs 'ActUiPrepare', 'Запустить aftermath сейчас', 'generic'
     act $ActUiLabel, $ActUiIconPath:
+        DailyAftermathShownToday = 0
+        DailyAftermathPending = 1
         gt 'DailyAftermathProcess'
     end
 
-    gs 'ActUiPrepare', 'Вернуться', 'return'
+    gs 'ActUiPrepare', 'К событиям трактира', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        if LOC('TavernEventDispatcherDebugMenu') = 1:
+            gt 'TavernEventDispatcherDebugMenu'
+        else:
+            gt 'TavernMain'
+        end
+    end
+
+    gs 'ActUiPrepare', 'В главный зал', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'TavernMain'
     end

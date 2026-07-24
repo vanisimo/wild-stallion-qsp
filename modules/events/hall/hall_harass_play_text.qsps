@@ -1,0 +1,65 @@
+! ================================================
+! FILE: modules/events/hall/hall_harass_play_text.qsps
+! MODULE: events/hall
+! Resolve-тексты при stance play (v2, слияние из hall_lewd_behavior_text)
+! Вызывается из HallHarassmentPrintHallReaction / Kitchen
+! Клиент: $HallHarassClient → HallLewdFillClientBits
+! ================================================
+
+#HallHarassmentPrintPlayResolve
+    ! ARGS none — читает $HallHarassReaction, $HallHarassGirl, stance
+    if $HallHarassStanceCanon <> 'play' and $HarassGirlStance <> 'provoke':
+        exit
+    end
+
+    $HallLewdClient = $HallHarassClient
+    if $HallLewdClient = '':
+        $HallLewdClient = 'drunk_guest'
+    end
+
+    if LOC('HallLewdFillClientBits') = 1:
+        gs 'HallLewdFillClientBits'
+    else
+        $HallLewdClientWho = 'гость'
+        $HallLewdClientWhoA = 'гостя'
+        $HallLewdClientCoin = 'монету'
+        $HallLewdClientManner = 'нагло'
+    end
+
+    if $RealName[$HallHarassGirl] = '':
+        if LOC('HallLewdEnsureName') = 1:
+            gs 'HallLewdEnsureName', $HallHarassGirl
+        end
+    end
+
+    $HallPlayResolveText = ''
+
+    if $HallHarassReaction = 'protect_hard':
+        if GirlWorkPolicy[$HallHarassGirl] = 3:
+            $HallPlayResolveText = 'Вы обрываете номер. ' + $HallLewdClientWho + ' убирает руку с попы / из-под юбки, ворчит; ' + $HallLewdClientCoin + ' остаётся в кулаке. ' + $RealName[$HallHarassGirl] + ' отходит, одёргивая платье, губы ещё приоткрыты: вы сами толкали к «раскованности» — и она это помнит.'
+        else
+            $HallPlayResolveText = 'Вы коротко: «Хватит». ' + $HallLewdClientWho + ' убирает мокрые пальцы, застёгивает выражение лица. ' + $RealName[$HallHarassGirl] + ' возвращается к работе — шоу оборвано, чаевые недосчитаны, между ног ещё горячо.'
+        end
+
+    elseif $HallHarassReaction = 'watch':
+        if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+            $HallPlayResolveText = 'Вы стоите в проходе и не отводите глаз. ' + $RealName[$HallHarassGirl] + ' видит это: подмахивает бёдрами на руку ' + $HallLewdClientWhoA + ', тихо стонет, ' + $HallLewdClientCoin + ' звенит на столе. Без вашей руки на плече — но с вашим взглядом.'
+        else
+            $HallPlayResolveText = 'Вы остаётесь на месте. ' + $HallLewdClientWho + ' лапает смелее: рука на попе, пальцы между ног. ' + $RealName[$HallHarassGirl] + ' держит игру — улыбка, стон сквозь зубы, ' + $HallLewdClientCoin + ' на столе. Зал запоминает: хозяин смотрел и не остановил.'
+        end
+
+    else
+        ! ignore
+        if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+            $HallPlayResolveText = 'Вы уходите в зал, будто кухня вас не касается. За спиной ' + $HallLewdClientWho + ' прижимает ' + $RealName[$HallHarassGirl] + ' у кладовой — рука под юбкой. Без вашего взгляда границы решает она.'
+        else
+            $HallPlayResolveText = 'Вы отворачиваетесь к стойке. За спиной ' + $HallLewdClientWho + ' действует ' + $HallLewdClientManner + ': мнёт попу, лезет пальцами. ' + $RealName[$HallHarassGirl] + ' сама закрывает сцену ради ' + $HallLewdClientCoin + ' — когда вы снова смотрите, монет больше, шёпот грязнее, у неё на щеках румянец.'
+        end
+    end
+
+    if $HallPlayResolveText <> '':
+        *pl $HallPlayResolveText
+    end
+
+    killvar '$HallPlayResolveText'
+---

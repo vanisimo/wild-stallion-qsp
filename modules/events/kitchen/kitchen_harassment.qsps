@@ -213,20 +213,9 @@
 
         gs 'HallHarassmentShowIntroImage', $HallHarassGirl, $HallHarassJob, HallHarassType
         gs 'KitchenHarassmentIntro'
-
         *pl ' '
-        if LOC('PolicyEventReactionPrint') = 1:
-            if $KitchenHarassReturnLoc = '':
-                $KitchenHarassReturnLoc = 'Kitchen'
-            end
-            gs 'PolicyEventReactionPrint', $HallHarassGirl, 'kitchen', 'harassment', $KitchenHarassReturnLoc
-            *pl ' '
-        end
-        if LOC('PolicyEventSceneVariationPrint') = 1:
-            gs 'PolicyEventSceneVariationPrint', $HallHarassGirl, 'kitchen', 'start'
-            *pl ' '
-        end
-
+        ! v2: без полной PolicyReaction+Variation на intro (дубль сцены)
+        gs 'HallHarassmentPrintPolicyTint'
         gs 'KitchenHarassmentPrintDecisionPrompt'
     else:
         gs 'HallHarassmentRenderAfterScreen'
@@ -237,7 +226,13 @@
 
 #KitchenHarassmentPrintDecisionPrompt
     gs 'KitchenHarassmentBuildChoiceMenu'
-    gs 'HallEventChoiceThoughtsBody', 'harassment_kitchen'
+
+    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        gs 'HallEventChoiceThoughtsBody', 'kitchen_lewd'
+    else
+        gs 'HallEventChoiceThoughtsBody', 'harassment_kitchen'
+    end
+
     gs 'PrintThoughtMenuPromptP', 'KitchenHarassmentChoiceMenu', 'мне', $HallEventChoiceThoughtsText
     killvar '$HallEventChoiceThoughtsText'
 ---
@@ -279,15 +274,10 @@
 ---
 
 #KitchenHarassmentIntro
-    ! Общий художественный intro (kitchen flavor внутри PrintArtisticIntro)
+    ! Одна художественная сцена; debug — одна строка, без полного service-stub
     if LOC('HallHarassmentPrintArtisticIntro') = 1:
         gs 'HallHarassmentPrintArtisticIntro'
     else:
-        gs 'HallHarassmentPrintServiceIntro'
-    end
-
-    if debug = 1:
-        *pl ' '
         gs 'HallHarassmentPrintServiceIntro'
     end
 
@@ -303,9 +293,22 @@
         end
         *pl ' '
     end
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG KITCHEN] tier=' + STR(HarassTier) + ' type=' + STR(HallHarassType) + ' sub=' + $HallHarassSubScene + ' client=' + $HallHarassClient + ' stance=' + $HarassGirlStance
+    end
 ---
 
 #KitchenHarassmentPrintHallReaction
+    ! v2 play resolve (общий текст)
+    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        if LOC('HallHarassmentPrintPlayResolve') = 1:
+            gs 'HallHarassmentPrintPlayResolve'
+            exit
+        end
+    end
+
     if $HallHarassReaction = 'protect_hard':
         if $HallHarassTalkReaction = 'protect_fail':
             gs 'KitchenHarassmentPrintText', 'hall_reaction_protect_fail'
