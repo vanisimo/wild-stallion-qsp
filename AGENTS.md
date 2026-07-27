@@ -395,7 +395,7 @@ Important Amanda event themes:
 
 ### Melissa
 
-Voice (canon, hall/clients): **bookish Hermione-style know-it-all** — not a mean “prostitute bitch”. Finds male lust **funny, predictable, naive**; eye-rolls; ironic digs at crude euphemisms; bargains with a light smirk; takes silver **for paper, books, poetry**. Full write-up: `docs/design-npc-voices.md` §3.
+Voice (canon, hall/clients): **bookish know-it-all like Hermione Granger (Harry Potter)** — type only, not a crossover; not a mean “prostitute bitch”. Finds male lust **funny, predictable, naive**; eye-rolls; ironic digs at crude euphemisms; bargains with a light smirk; takes silver **for paper, books, poetry**. Full write-up: `docs/design-npc-voices.md` §3.
 
 Known Melissa scales:
 
