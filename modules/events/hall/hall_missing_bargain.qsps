@@ -155,41 +155,85 @@
 ---
 
 #HallMissingBargainPickPromise
-    ! что «договорились» на словах (клиент потом может перейти → PromiseBreak)
-    $HallMissingPromise = 'petting'
-
-    if $HallMissingBargainStyle = 'hard':
-        HallMissingPromiseRoll = RAND(1, 100)
-        if HallMissingPromiseRoll <= 35:
-            $HallMissingPromise = 'mouth_spit'
-        elseif HallMissingPromiseRoll <= 60:
-            $HallMissingPromise = 'mouth_swallow'
-        elseif HallMissingPromiseRoll <= 80:
-            $HallMissingPromise = 'mouth_show'
-        elseif $HallMissingGirl = 'sandra' and HallMissingPromiseRoll <= 92:
-            $HallMissingPromise = 'titjob'
-        else
-            $HallMissingPromise = 'cuni'
-        end
-        killvar 'HallMissingPromiseRoll'
-        exit
-    end
-
-    ! soft: три главных «малых» уговора (→ break в petting / cuni / hand)
-    HallMissingPromiseRoll = RAND(1, 100)
-    if HallMissingPromiseRoll <= 34:
-        $HallMissingPromise = 'look_tits'
-    elseif HallMissingPromiseRoll <= 67:
-        $HallMissingPromise = 'smell'
+    ! Определяем уровень инициативы и развращённости (high/low)
+    if GirlHallLewdStage[$HallMissingGirl] >= 3 or sluttiness[$HallMissingGirl] >= 30 or GirlNpcPath[$HallMissingGirl] >= 26 or HallMissingGirlStage >= 4:
+        $HallMissingInitiative = 'high'
     else
-        $HallMissingPromise = 'touch_cock'
+        $HallMissingInitiative = 'low'
     end
+
+    ! Индивидуальный выбор обещания (promise) по девушкам и стилю (soft / hard)
+    HallMissingPromiseRoll = RAND(1, 100)
+
+    if $HallMissingGirl = 'amanda':
+        if $HallMissingBargainStyle = 'hard':
+            if HallMissingPromiseRoll <= 35:
+                $HallMissingPromise = 'mouth_spit'
+            elseif HallMissingPromiseRoll <= 70:
+                $HallMissingPromise = 'mouth_swallow'
+            else
+                $HallMissingPromise = 'hand_quick'
+            end
+        else
+            if HallMissingPromiseRoll <= 35:
+                $HallMissingPromise = 'look_tits'
+            elseif HallMissingPromiseRoll <= 70:
+                $HallMissingPromise = 'hug_waist'
+            else
+                $HallMissingPromise = 'touch_cock'
+            end
+        end
+
+    elseif $HallMissingGirl = 'melissa':
+        if $HallMissingBargainStyle = 'hard':
+            if HallMissingPromiseRoll <= 40:
+                $HallMissingPromise = 'mouth_price'
+            elseif HallMissingPromiseRoll <= 75:
+                $HallMissingPromise = 'hand_strict'
+            else
+                $HallMissingPromise = 'cuni'
+            end
+        else
+            if HallMissingPromiseRoll <= 35:
+                $HallMissingPromise = 'show_stockings'
+            elseif HallMissingPromiseRoll <= 70:
+                $HallMissingPromise = 'touch_thigh'
+            else
+                $HallMissingPromise = 'whisper_poem'
+            end
+        end
+
+    else
+                $HallMissingPromise = 'whisper_flirt'
+            end
+        end
+
+    else
+        ! sandra (кухня, БЕЗ cuni)
+        if $HallMissingBargainStyle = 'hard':
+            if HallMissingPromiseRoll <= 45:
+                $HallMissingPromise = 'titjob'
+            elseif HallMissingPromiseRoll <= 75:
+                $HallMissingPromise = 'hand_pragmatic'
+            else
+                $HallMissingPromise = 'swallow_trade'
+            end
+        else
+            if HallMissingPromiseRoll <= 35:
+                $HallMissingPromise = 'kitchen_waist_hug'
+            elseif HallMissingPromiseRoll <= 70:
+                $HallMissingPromise = 'heavy_breast_touch'
+            else
+                $HallMissingPromise = 'kitchen_backroom_rest'
+            end
+        end
+    end
+
     killvar 'HallMissingPromiseRoll'
 ---
 
 ! Promise → private act
-! soft: look_tits→petting(break), smell→cuni(break), touch_cock→hand(break)
-! hard: mouth_* ; titjob только sandra
+! Индивидуальная маппинг-логика действий в подсобке
 #HallMissingApplyPromiseToAct
     if $HallMissingPromise = '':
         exit
@@ -200,50 +244,50 @@
     HallMissingSilverExtra = 0
 
     if $p = 'look_tits':
-        ! уговор: только глянуть на грудь; часто → petting (лапает дальше)
         $HallMissingPrivateAct = 'tits_lick'
         if $HallMissingBargainStyle = 'soft' and RAND(1, 100) <= 70:
             HallMissingPromiseBreak = 1
             $HallMissingPrivateAct = 'petting'
         end
 
-    elseif $p = 'smell':
-        ! уговор: показать / «понюхать бутончик» = показать писю → часто cuni
-        $HallMissingPrivateAct = 'pussy_touch'
-        if $HallMissingBargainStyle = 'soft' and RAND(1, 100) <= 75:
-            HallMissingPromiseBreak = 1
-            $HallMissingPrivateAct = 'cuni'
-        end
+    elseif $p = 'kiss_small' or $p = 'hug_waist' or $p = 'kitchen_waist_hug':
+        $HallMissingPrivateAct = 'petting'
 
     elseif $p = 'touch_cock':
-        ! уговор: только потрогать → часто handjob
         $HallMissingPrivateAct = 'cock_touch'
         if $HallMissingBargainStyle = 'soft' and RAND(1, 100) <= 70:
             HallMissingPromiseBreak = 1
             $HallMissingPrivateAct = 'hand'
         end
 
-    elseif $p = 'mouth_spit':
-        $HallMissingPrivateAct = 'mouth'
-        if $HallMissingBargainStyle = 'hard' and RAND(1, 100) <= 55:
+    elseif $p = 'show_stockings' or $p = 'touch_thigh' or $p = 'whisper_poem':
+        $HallMissingPrivateAct = 'petting'
+        if RAND(1, 100) <= 65:
             HallMissingPromiseBreak = 1
+            $HallMissingPrivateAct = 'cuni'
+        end
+
+    elseif $p = 'kitchen_heavy_coin' or $p = 'backroom_wine_trade':
+        $HallMissingPrivateAct = 'petting'
+
+    elseif $p = 'heavy_breast_touch':
+        $HallMissingPrivateAct = 'tits_lick'
+        if RAND(1, 100) <= 65:
+            HallMissingPromiseBreak = 1
+            $HallMissingPrivateAct = 'petting'
+        end
+
+    elseif $p = 'mouth_spit' or $p = 'mouth_swallow' or $p = 'mouth_price' or $p = 'swallow_trade':
+        $HallMissingPrivateAct = 'mouth'
+        if RAND(1, 100) <= 50:
             HallMissingSilverExtra = 1
         end
 
-    elseif $p = 'mouth_swallow':
-        $HallMissingPrivateAct = 'mouth'
-        HallMissingSilverExtra = 1
-
-    elseif $p = 'mouth_show':
-        $HallMissingPrivateAct = 'deepthroat'
-        HallMissingSilverExtra = 1
+    elseif $p = 'hand_quick' or $p = 'hand_strict' or $p = 'hand_pragmatic':
+        $HallMissingPrivateAct = 'hand'
 
     elseif $p = 'titjob':
-        if $HallMissingGirl = 'sandra':
-            $HallMissingPrivateAct = 'titjob'
-        else
-            $HallMissingPrivateAct = 'mouth'
-        end
+        $HallMissingPrivateAct = 'titjob'
 
     elseif $p = 'cuni':
         $HallMissingPrivateAct = 'cuni'
