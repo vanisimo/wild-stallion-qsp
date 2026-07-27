@@ -1,0 +1,350 @@
+! ================================================
+! FILE: modules/events/hall/hall_missing_bargain.qsps
+! MODULE: events/hall
+! Каркас уговора перед missing (после play → TryMissing)
+! soft = early уламывание «только гляну/потрогаю»
+! hard = late договор «отсоси / проглоти» + дожим
+! Картинка: bargain (HallMissingGirlShowImage / future path)
+! Текст: hall_missing_bargain_text.qsps
+! ================================================
+
+#HallMissingBargainEnsureFlags
+    if HallMissingBargainSkip < 0:
+        HallMissingBargainSkip = 0
+    end
+
+    if HallMissingBargainDone < 0:
+        HallMissingBargainDone = 0
+    end
+
+    if HallMissingPromiseBreak < 0:
+        HallMissingPromiseBreak = 0
+    end
+
+    if HallMissingSilverExtra < 0:
+        HallMissingSilverExtra = 0
+    end
+---
+
+! ARGS[0]=girl, ARGS[1]=return loc
+#HallMissingBargainStart
+    *clr
+    clr
+    cla
+
+    gs 'HallSceneV2EnsureFlags'
+    gs 'HallMissingBargainEnsureFlags'
+
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $HallMissingGirl = $HallMissingGirlKey
+    $HallMissingReturnLoc = $ARGS[1]
+
+    if $HallMissingGirl = '':
+        $HallMissingGirl = $HallHarassGirl
+    end
+
+    if $HallMissingGirl = '':
+        $HallMissingGirl = 'amanda'
+    end
+
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = $HallHarassReturnLoc
+    end
+
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    if LOC($HallMissingReturnLoc) = 0:
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    ! debug: пропуск уговора
+    if HallMissingBargainSkip = 1:
+        HallMissingBargainSkip = 0
+        HallMissingBargainDone = 0
+        gt 'HallMissingGirlStartFromPlay', $HallMissingGirl, $HallMissingReturnLoc
+    end
+
+    if FamilyLiberationGateOpen = 0 or Act1MoralUnlocked = 0 or FamilyCorruptionStage < 3:
+        gt $HallMissingReturnLoc
+    end
+
+    gs 'HallMissingGirlEnsureName', $HallMissingGirl
+    gs 'HallMissingGirlGetStage', $HallMissingGirl
+
+    ! тот же клиент, что в harass
+    if $HallHarassClient <> '':
+        $HallMissingClient = $HallHarassClient
+    elseif $HallMissingClient = '':
+        if LOC('HallMissingGirlPickClientV2') = 1:
+            gs 'HallMissingGirlPickClientV2'
+        else
+            $HallMissingClient = 'rich_merchant'
+        end
+    end
+
+    $HallLewdClient = $HallMissingClient
+    if LOC('HallLewdFillClientBits') = 1:
+        gs 'HallLewdFillClientBits'
+    else
+        $HallLewdClientWho = 'гость'
+        $HallLewdClientWhoA = 'гостя'
+        $HallLewdClientCoin = 'монету'
+        $HallLewdClientManner = 'нагло'
+    end
+
+    gs 'HallMissingBargainPickStyle'
+    gs 'HallMissingBargainPickPromise'
+
+    HallMissingFromPlay = 1
+    HallMissingBargainDone = 0
+    HallMissingPromiseBreak = 0
+    HallMissingSilverExtra = 0
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallMissingGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УГОВОР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'HallMissingBargainShowImage'
+
+    gs 'HallMissingBargainPrintText'
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG BARGAIN] girl=' + $HallMissingGirl + ' style=' + $HallMissingBargainStyle + ' promise=' + $HallMissingPromise
+        *pl '[DEBUG BARGAIN] client=' + $HallMissingClient + ' stage=' + STR(HallMissingGirlStage) + ' band≈' + STR(HallMissingBargainBand)
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Слушать дальше…', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingBargainContinue'
+    end
+---
+
+#HallMissingBargainPickStyle
+    ! soft early / hard late — по stage + lewd path (как band missing)
+    $HallMissingBargainStyle = 'soft'
+    HallMissingBargainBand = 1
+
+    if HallMissingGirlStage >= 4 and (HallMissingGirlPrivateCount[$HallMissingGirl] >= 2 or GirlHallLewdStage[$HallMissingGirl] >= 3):
+        HallMissingBargainBand = 3
+    elseif HallMissingGirlStage >= 4 or HallMissingGirlPrivateCount[$HallMissingGirl] >= 1 or GirlNpcPath[$HallMissingGirl] >= 26 or sluttiness[$HallMissingGirl] >= 35:
+        HallMissingBargainBand = 2
+    end
+
+    if HallMissingBargainBand >= 3:
+        $HallMissingBargainStyle = 'hard'
+    elseif HallMissingBargainBand = 2 and RAND(1, 100) <= 40:
+        $HallMissingBargainStyle = 'hard'
+    else
+        $HallMissingBargainStyle = 'soft'
+    end
+
+    ! force из debug
+    if $HallMissingBargainStyleForce = 'soft' or $HallMissingBargainStyleForce = 'hard':
+        $HallMissingBargainStyle = $HallMissingBargainStyleForce
+        $HallMissingBargainStyleForce = ''
+    end
+---
+
+#HallMissingBargainPickPromise
+    ! что «договорились» на словах (клиент потом может перейти → PromiseBreak)
+    $HallMissingPromise = 'petting'
+
+    if $HallMissingBargainStyle = 'hard':
+        HallMissingPromiseRoll = RAND(1, 100)
+        if HallMissingPromiseRoll <= 35:
+            $HallMissingPromise = 'mouth_spit'
+        elseif HallMissingPromiseRoll <= 60:
+            $HallMissingPromise = 'mouth_swallow'
+        elseif HallMissingPromiseRoll <= 80:
+            $HallMissingPromise = 'mouth_show'
+        elseif $HallMissingGirl = 'sandra' and HallMissingPromiseRoll <= 92:
+            $HallMissingPromise = 'titjob'
+        else
+            $HallMissingPromise = 'cuni'
+        end
+        killvar 'HallMissingPromiseRoll'
+        exit
+    end
+
+    ! soft: три главных «малых» уговора (→ break в petting / cuni / hand)
+    HallMissingPromiseRoll = RAND(1, 100)
+    if HallMissingPromiseRoll <= 34:
+        $HallMissingPromise = 'look_tits'
+    elseif HallMissingPromiseRoll <= 67:
+        $HallMissingPromise = 'smell'
+    else
+        $HallMissingPromise = 'touch_cock'
+    end
+    killvar 'HallMissingPromiseRoll'
+---
+
+! Promise → private act
+! soft: look_tits→petting(break), smell→cuni(break), touch_cock→hand(break)
+! hard: mouth_* ; titjob только sandra
+#HallMissingApplyPromiseToAct
+    if $HallMissingPromise = '':
+        exit
+    end
+
+    $p = LCASE($HallMissingPromise)
+    HallMissingPromiseBreak = 0
+    HallMissingSilverExtra = 0
+
+    if $p = 'look_tits':
+        ! уговор: только глянуть на грудь; часто → petting (лапает дальше)
+        $HallMissingPrivateAct = 'tits_lick'
+        if $HallMissingBargainStyle = 'soft' and RAND(1, 100) <= 70:
+            HallMissingPromiseBreak = 1
+            $HallMissingPrivateAct = 'petting'
+        end
+
+    elseif $p = 'smell':
+        ! уговор: показать / «понюхать бутончик» = показать писю → часто cuni
+        $HallMissingPrivateAct = 'pussy_touch'
+        if $HallMissingBargainStyle = 'soft' and RAND(1, 100) <= 75:
+            HallMissingPromiseBreak = 1
+            $HallMissingPrivateAct = 'cuni'
+        end
+
+    elseif $p = 'touch_cock':
+        ! уговор: только потрогать → часто handjob
+        $HallMissingPrivateAct = 'cock_touch'
+        if $HallMissingBargainStyle = 'soft' and RAND(1, 100) <= 70:
+            HallMissingPromiseBreak = 1
+            $HallMissingPrivateAct = 'hand'
+        end
+
+    elseif $p = 'mouth_spit':
+        $HallMissingPrivateAct = 'mouth'
+        if $HallMissingBargainStyle = 'hard' and RAND(1, 100) <= 55:
+            HallMissingPromiseBreak = 1
+            HallMissingSilverExtra = 1
+        end
+
+    elseif $p = 'mouth_swallow':
+        $HallMissingPrivateAct = 'mouth'
+        HallMissingSilverExtra = 1
+
+    elseif $p = 'mouth_show':
+        $HallMissingPrivateAct = 'deepthroat'
+        HallMissingSilverExtra = 1
+
+    elseif $p = 'titjob':
+        if $HallMissingGirl = 'sandra':
+            $HallMissingPrivateAct = 'titjob'
+        else
+            $HallMissingPrivateAct = 'mouth'
+        end
+
+    elseif $p = 'cuni':
+        $HallMissingPrivateAct = 'cuni'
+
+    else
+        $HallMissingPrivateAct = 'petting'
+    end
+
+    killvar '$p'
+---
+
+#HallMissingBargainShowImage
+    ! outcome bargain — stub + future path
+    if $HallMissingGirl = '':
+        exit
+    end
+
+    HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
+    if HallMissingUniform > 1:
+        HallMissingUniform = 1
+    end
+    if HallMissingUniform < 0:
+        HallMissingUniform = 0
+    end
+
+    if $HallMissingGirl = 'sandra':
+        $HallMissingBargainArea = 'kitchen'
+    else
+        $HallMissingBargainArea = 'hall'
+    end
+
+    $HallMissingBargainStubPath = 'images/common/hall_scene_stub.png'
+    $HallMissingBargainFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/bargain_' + $HallMissingBargainArea + '_uniform' + STR(HallMissingUniform) + '.webp'
+
+    if LOC('ShowImage') = 1:
+        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'small'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG BARGAIN IMAGE] stub: ' + $HallMissingBargainStubPath
+        *pl '[DEBUG BARGAIN IMAGE] future: ' + $HallMissingBargainFuturePath
+        *pl ' '
+    end
+
+    killvar '$HallMissingBargainStubPath'
+    killvar '$HallMissingBargainFuturePath'
+    killvar '$HallMissingBargainArea'
+---
+
+#HallMissingBargainContinue
+    HallMissingBargainDone = 1
+
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    gt 'HallMissingGirlStartFromPlay', $HallMissingGirl, $HallMissingReturnLoc
+---
+
+! Debug: force soft/hard + girl
+! ARGS[0]=girl, ARGS[1]=soft|hard, ARGS[2]=return
+#HallMissingBargainDebugStart
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $HallMissingGirl = $HallMissingGirlKey
+    if $HallMissingGirl = '':
+        $HallMissingGirl = 'amanda'
+    end
+
+    $HallMissingBargainStyleForce = LCASE($ARGS[1])
+    if $HallMissingBargainStyleForce <> 'soft' and $HallMissingBargainStyleForce <> 'hard':
+        $HallMissingBargainStyleForce = 'soft'
+    end
+
+    $HallMissingReturnLoc = $ARGS[2]
+    if $HallMissingReturnLoc = '':
+        $HallMissingReturnLoc = 'TavernMain'
+    end
+
+    FamilyLiberationGateOpen = 1
+    Act1MoralUnlocked = 1
+    FamilyCouncilDone = 1
+    if FamilyCorruptionStage < 3:
+        FamilyCorruptionStage = 3
+    end
+
+    HallMissingBargainSkip = 0
+    HallMissingBargainDone = 0
+    HallMissingFromPlay = 1
+
+    if $HallHarassClient = '':
+        $HallHarassClient = 'craftsman'
+    end
+    $HallHarassGirl = $HallMissingGirl
+    $HallHarassStanceCanon = 'play'
+    $HarassGirlStance = 'provoke'
+
+    if $HallMissingBargainStyleForce = 'hard':
+        GirlHallLewdStage[$HallMissingGirl] = 4
+        HallMissingGirlPrivateCount[$HallMissingGirl] = 2
+        sluttiness[$HallMissingGirl] = 40
+    end
+
+    gt 'HallMissingBargainStart', $HallMissingGirl, $HallMissingReturnLoc
+---

@@ -312,10 +312,11 @@
     gs 'HallMissingGirlEnsureName', $HallMissingGirl
     gs 'HallMissingGirlGetStage', $HallMissingGirl
 
-    ! client из harass
-    if $HallHarassClient <> '':
+    ! client: из bargain/harass
+    if $HallMissingClient = '' and $HallHarassClient <> '':
         $HallMissingClient = $HallHarassClient
-    else
+    end
+    if $HallMissingClient = '':
         gs 'HallMissingGirlPickClientV2'
     end
 
@@ -344,7 +345,12 @@
         killvar 'HallMissingPlaceRoll'
     end
 
-    gs 'HallMissingGirlPickPrivateAct'
+    ! act: promise из уговора, иначе roll
+    if HallMissingBargainDone = 1 and $HallMissingPromise <> '' and LOC('HallMissingApplyPromiseToAct') = 1:
+        gs 'HallMissingApplyPromiseToAct'
+    else
+        gs 'HallMissingGirlPickPrivateAct'
+    end
 
     HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
     if HallMissingUniform > 1:
@@ -383,7 +389,8 @@
     *pl ' '
 
     if debug = 1:
-        *pl '[DEBUG MISSING FROM PLAY] girl=' + $HallMissingGirl + ' client=' + $HallMissingClient + ' place=' + $HallMissingPlace
+        *pl '[DEBUG MISSING FROM PLAY] girl=' + $HallMissingGirl + ' client=' + $HallMissingClient + ' place=' + $HallMissingPlace + ' act=' + $HallMissingPrivateAct
+        *pl '[DEBUG MISSING FROM PLAY] bargain=' + STR(HallMissingBargainDone) + ' style=' + $HallMissingBargainStyle + ' promise=' + $HallMissingPromise + ' break=' + STR(HallMissingPromiseBreak)
         *pl ' '
     end
 

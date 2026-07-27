@@ -918,7 +918,18 @@ killvar '$HallMissingApplyChoice'
     end
 
     $HallMissingStubPath = 'images/common/hall_scene_stub.png'
-    $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/' + $HallMissingPlace + '_uniform' + STR(HallMissingUniform) + '_' + $HallMissingImageOutcome + '.webp'
+
+    if $HallMissingImageOutcome = 'bargain':
+        if $HallMissingGirl = 'sandra':
+            $HallMissingBargainArea = 'kitchen'
+        else
+            $HallMissingBargainArea = 'hall'
+        end
+        $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/bargain_' + $HallMissingBargainArea + '_uniform' + STR(HallMissingUniform) + '.webp'
+        killvar '$HallMissingBargainArea'
+    else
+        $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/' + $HallMissingPlace + '_uniform' + STR(HallMissingUniform) + '_' + $HallMissingImageOutcome + '.webp'
+    end
 
     if LOC('ShowImage') = 1:
         gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'small'
@@ -994,6 +1005,11 @@ killvar '$HallMissingApplyChoice'
     HarassTier = 3
     HallHarassType = 4
     HallMissingFromPlay = 1
+
+    ! через уговор (каркас); skip=1 → сразу StartFromPlay
+    if LOC('HallMissingBargainStart') = 1 and HallMissingBargainSkip = 0:
+        gt 'HallMissingBargainStart', $DebugHallMissingGirl, 'TavernMain'
+    end
 
     gt 'HallMissingGirlStartFromPlay', $DebugHallMissingGirl, 'TavernMain'
 ---
