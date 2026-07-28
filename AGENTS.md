@@ -159,6 +159,9 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | Sandra reveals Stefan birth / Lermont |
 | `modules/locations/town/mayor_office_text.qsps` | mayor office / clerk / first talk / magistrate |
 | `modules/events/family/family_council_text.qsps` | family dinner council (6 screens) → liberation gate |
+| `modules/events/hall/hall_missing_agent_amanda_text.qsps` | Amanda missing scenes (USER-OWNED) |
+| `modules/events/hall/hall_missing_agent_melissa_text.qsps` | Melissa missing scenes (USER-OWNED) |
+| `modules/events/hall/hall_missing_agent_sandra_text.qsps` | Sandra missing scenes (USER-OWNED) |
 
 **Rules for agents:**
 
