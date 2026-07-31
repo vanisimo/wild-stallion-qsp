@@ -413,6 +413,18 @@
     $HallMissingPromise = ''
     $HallMissingFinish = ''
 
+    ! debug / force
+    if $HallMissingPromiseForce <> '':
+        $HallMissingPromise = LCASE($HallMissingPromiseForce)
+        $HallMissingPromiseForce = ''
+        if $HallMissingPromise = 'noble':
+            $HallMissingClient = 'noble'
+        end
+        killvar 'HallMissingPromiseRoll'
+        killvar '$ph'
+        exit
+    end
+
     if $ph = 'soft_intro':
         HallMissingIntroIdx = HallMissingSoftIntroStep[$HallMissingGirl]
         if HallMissingIntroIdx < 0:
@@ -434,14 +446,18 @@
         killvar 'HallMissingIntroIdx'
 
     elseif $ph = 'soft_play':
-        if HallMissingPromiseRoll <= 33:
+        ! нобиль: только сёстры, после soft-intro, НЕ в hard-seq; редко в soft_play
+        if $HallMissingGirl <> 'sandra' and HallMissingSoftIntroDone[$HallMissingGirl] = 1 and HallMissingPromiseRoll <= 6:
+            $HallMissingPromise = 'noble'
+            $HallMissingClient = 'noble'
+        elseif HallMissingPromiseRoll <= 33:
             $HallMissingPromise = 'look_tits'
         elseif HallMissingPromiseRoll <= 66:
             $HallMissingPromise = 'hug_waist'
         else
             $HallMissingPromise = 'touch_cock'
         end
-        if $HallMissingGirl = 'melissa' and $HallMissingPromise = 'look_tits':
+        if $HallMissingPromise <> 'noble' and $HallMissingGirl = 'melissa' and $HallMissingPromise = 'look_tits':
             $HallMissingPromise = 'look_line'
         end
 
@@ -470,8 +486,11 @@
         end
 
     else
-        ! free
-        if $HallMissingBargainStyle = 'soft':
+        ! free: нобиль только сёстры, после soft-intro; выше вес чем в soft_play
+        if $HallMissingGirl <> 'sandra' and HallMissingSoftIntroDone[$HallMissingGirl] = 1 and HallMissingPromiseRoll <= 12:
+            $HallMissingPromise = 'noble'
+            $HallMissingClient = 'noble'
+        elseif $HallMissingBargainStyle = 'soft':
             if HallMissingPromiseRoll <= 33:
                 $HallMissingPromise = 'look_tits'
             elseif HallMissingPromiseRoll <= 66:
@@ -484,14 +503,11 @@
             end
         else
             HallMissingFreeHard = RAND(1, 100)
-            if HallMissingFreeHard <= 8 and HallMissingSoftIntroDone[$HallMissingGirl] = 1 and $HallMissingGirl <> 'sandra':
-                $HallMissingPromise = 'noble'
-                $HallMissingClient = 'noble'
-            elseif HallMissingFreeHard <= 30:
+            if HallMissingFreeHard <= 28:
                 $HallMissingPromise = 'mouth_hard'
-            elseif HallMissingFreeHard <= 50:
+            elseif HallMissingFreeHard <= 48:
                 $HallMissingPromise = 'facial'
-            elseif HallMissingFreeHard <= 70:
+            elseif HallMissingFreeHard <= 68:
                 $HallMissingPromise = 'deepthroat'
             elseif $HallMissingGirl = 'sandra':
                 $HallMissingPromise = 'titjob'
@@ -666,9 +682,17 @@
         $HallMissingPrivateAct = 'titjob'
 
     elseif $p = 'noble':
-        $HallMissingPrivateAct = 'mouth'
-        $HallMissingClient = 'noble'
-        $HallMissingFinish = 'noble'
+        ! только amanda/melissa; multi-screen prose в agent (S-*-60)
+        if $HallMissingGirl = 'sandra':
+            $HallMissingPrivateAct = 'hand'
+            $HallMissingPromise = 'touch_cock'
+        else
+            $HallMissingPrivateAct = 'mouth'
+            $HallMissingClient = 'noble'
+            $HallMissingFinish = 'noble'
+            HallMissingPromiseBreak = 0
+            HallMissingSilverExtra = 0
+        end
 
     elseif $p = 'hand_quick' or $p = 'hand_strict' or $p = 'hand_pragmatic':
         $HallMissingPrivateAct = 'hand'
