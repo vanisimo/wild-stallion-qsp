@@ -1,14 +1,17 @@
 ! ================================================
 ! FILE: modules/events/hall/hall_missing_bargain.qsps
 ! MODULE: events/hall
-! Уговор + phase-лесенка missing (design catalog v0.16)
+! Уговор + phase-лесенка missing (catalog v0.16) — complete wire
 !
-! Фазы HallMissingPhase[girl]:
-!   soft_intro | soft_play | hard | free
-! Soft-знакомство 3 hold → Soft-игра N=3 → Hard-лесенка → free (S3 + random)
-! FlagFaceDone после first face (A5) — explicit bargain, soft слоты живут
-! Текст: hall_missing_bargain_text.qsps (STUB IDs)
-! Архив прозы: archive/hall_missing_text_v016_backup/
+! HallMissingPhase[girl]: soft_intro | soft_play | hard | free
+! soft_intro: 3 hold (look/hug/cock)
+! soft_play:  N=3 random soft ± break
+! hard:       sisters h0a→mouth→h0b→face→throat; sandra mouth×7
+! free:       mix soft S3 + hard terminals; FlagFaceDone → explicit
+!
+! Advance: HallMissingPhaseAdvance on peek/ignore
+! Text stubs: hall_missing_bargain_text.qsps
+! Prose archive: archive/hall_missing_text_v016_backup/
 ! ================================================
 
 #HallMissingBargainEnsureFlags
@@ -29,7 +32,7 @@
     end
 ---
 
-! ARGS[0]=girl — init counters if empty
+! ARGS[0]=girl
 #HallMissingPhaseEnsure
     gs 'HallMissingGirlNormalizeKey', $ARGS[0]
     $g = $HallMissingGirlKey
@@ -37,9 +40,14 @@
         exit
     end
 
+    if HallMissingSoftPlayNeed < 1:
+        HallMissingSoftPlayNeed = 3
+    end
+
     if $HallMissingPhase[$g] = '':
         $HallMissingPhase[$g] = 'soft_intro'
     end
+
     if HallMissingSoftIntroStep[$g] < 0:
         HallMissingSoftIntroStep[$g] = 0
     end
@@ -68,21 +76,25 @@
         HallMissingHardLadderDone[$g] = 0
     end
 
-    ! sync phase from flags if mid-progress save
+    ! recover phase from flags (save/load / partial)
     if HallMissingHardLadderDone[$g] = 1:
         $HallMissingPhase[$g] = 'free'
     elseif HallMissingSoftPlayDone[$g] = 1:
         $HallMissingPhase[$g] = 'hard'
     elseif HallMissingSoftIntroDone[$g] = 1:
         $HallMissingPhase[$g] = 'soft_play'
+    else
+        $HallMissingPhase[$g] = 'soft_intro'
     end
 
     killvar '$g'
 ---
 
-! explicit bargain language after face (sisters) or mouth mature (sandra)
 #HallMissingBargainIsExplicit
     HallMissingBargainExplicit = 0
+    if $HallMissingGirl = '':
+        exit
+    end
     if $HallMissingGirl = 'sandra':
         if HallMissingFlagMouthMature['sandra'] = 1:
             HallMissingBargainExplicit = 1
@@ -94,24 +106,28 @@
     end
 ---
 
-! hard list length / slot name by girl+step
+! ARGS[0]=optional girl key (else $HallMissingGirl)
+! out: $HallMissingHardSlot, HallMissingHardSubMax, HallMissingHardStepMax
 #HallMissingHardGetSlot
-    ! sets $HallMissingHardSlot, HallMissingHardSubMax
+    $hg = $ARGS[0]
+    if $hg = '':
+        $hg = $HallMissingGirl
+    end
+
     $HallMissingHardSlot = ''
     HallMissingHardSubMax = 1
     HallMissingHardStepMax = 0
 
-    if $HallMissingGirl = 'sandra':
-        ! 0=mouth only simplified ladder (A4)
+    if $hg = 'sandra':
         HallMissingHardStepMax = 1
-        if HallMissingHardStep['sandra'] <= 0:
+        if HallMissingHardStep[$hg] <= 0:
             $HallMissingHardSlot = 'mouth'
             HallMissingHardSubMax = 7
         end
     else
-        ! amanda / melissa: h0a, mouth, h0b, face, throat
+        ! amanda / melissa
         HallMissingHardStepMax = 5
-        HallMissingHardStepIdx = HallMissingHardStep[$HallMissingGirl]
+        HallMissingHardStepIdx = HallMissingHardStep[$hg]
         if HallMissingHardStepIdx < 0:
             HallMissingHardStepIdx = 0
         end
@@ -127,15 +143,20 @@
         elseif HallMissingHardStepIdx = 3:
             $HallMissingHardSlot = 'face'
             HallMissingHardSubMax = 3
-        else
+        elseif HallMissingHardStepIdx = 4:
             $HallMissingHardSlot = 'throat'
             HallMissingHardSubMax = 5
+        else
+            $HallMissingHardSlot = ''
+            HallMissingHardSubMax = 1
         end
         killvar 'HallMissingHardStepIdx'
     end
+
+    killvar '$hg'
 ---
 
-! ARGS[0]=girl — after missing resolve: advance ladder
+! ARGS[0]=girl — after peek/ignore
 #HallMissingPhaseAdvance
     gs 'HallMissingGirlNormalizeKey', $ARGS[0]
     $g = $HallMissingGirlKey
@@ -145,8 +166,8 @@
     if $g = '':
         exit
     end
-    gs 'HallMissingPhaseEnsure', $g
 
+    gs 'HallMissingPhaseEnsure', $g
     $ph = $HallMissingPhase[$g]
 
     if $ph = 'soft_intro':
@@ -167,44 +188,71 @@
         end
 
     elseif $ph = 'hard':
-        gs 'HallMissingHardGetSlot'
+        gs 'HallMissingHardGetSlot', $g
+        $slot = $HallMissingHardSlot
         HallMissingHardSub[$g] += 1
 
-        ! face complete → FlagFaceDone (sisters)
-        if $HallMissingHardSlot = 'face' and HallMissingHardSub[$g] >= HallMissingHardSubMax:
+        if $slot = 'face' and HallMissingHardSub[$g] >= HallMissingHardSubMax:
             HallMissingFlagFaceDone[$g] = 1
         end
-        ! sandra mouth mid (sub>=2 = swallow-ish) → mature
-        if $g = 'sandra' and $HallMissingHardSlot = 'mouth' and HallMissingHardSub[$g] >= 2:
+        if $g = 'sandra' and $slot = 'mouth' and HallMissingHardSub[$g] >= 2:
             HallMissingFlagMouthMature['sandra'] = 1
         end
-        ! sisters swallow (mouth sub 5) also can mature language early optional
-        if $g <> 'sandra' and $HallMissingHardSlot = 'mouth' and HallMissingHardSub[$g] >= 5:
-            ! face still main flag; swallow noted
+        if $g <> 'sandra' and $slot = 'mouth' and HallMissingHardSub[$g] >= 5:
             HallMissingFlagMouthMature[$g] = 1
         end
 
         if HallMissingHardSub[$g] >= HallMissingHardSubMax:
             HallMissingHardSub[$g] = 0
             HallMissingHardStep[$g] += 1
-            gs 'HallMissingHardGetSlot'
             if HallMissingHardStep[$g] >= HallMissingHardStepMax:
                 HallMissingHardLadderDone[$g] = 1
                 $HallMissingPhase[$g] = 'free'
-                if $g <> 'sandra':
-                    HallMissingFlagFaceDone[$g] = 1
-                else
+                if $g = 'sandra':
                     HallMissingFlagMouthMature['sandra'] = 1
+                else
+                    HallMissingFlagFaceDone[$g] = 1
                 end
             end
         end
+        killvar '$slot'
 
     else
-        ! free — no forced advance
+        ! free: no forced ladder advance
     end
 
     killvar '$g'
     killvar '$ph'
+---
+
+! full phase wipe (debug reset)
+! ARGS[0]=girl optional; empty = all three
+#HallMissingPhaseReset
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $g = $HallMissingGirlKey
+    if $g = '':
+        gs 'HallMissingPhaseResetOne', 'amanda'
+        gs 'HallMissingPhaseResetOne', 'melissa'
+        gs 'HallMissingPhaseResetOne', 'sandra'
+        exit
+    end
+    gs 'HallMissingPhaseResetOne', $g
+    killvar '$g'
+---
+
+#HallMissingPhaseResetOne
+    $g = $ARGS[0]
+    $HallMissingPhase[$g] = 'soft_intro'
+    HallMissingSoftIntroStep[$g] = 0
+    HallMissingSoftPlayCount[$g] = 0
+    HallMissingHardStep[$g] = 0
+    HallMissingHardSub[$g] = 0
+    HallMissingFlagFaceDone[$g] = 0
+    HallMissingFlagMouthMature[$g] = 0
+    HallMissingSoftIntroDone[$g] = 0
+    HallMissingSoftPlayDone[$g] = 0
+    HallMissingHardLadderDone[$g] = 0
+    killvar '$g'
 ---
 
 ! ARGS[0]=girl, ARGS[1]=return loc
@@ -250,6 +298,10 @@
     gs 'HallMissingGirlEnsureName', $HallMissingGirl
     gs 'HallMissingGirlGetStage', $HallMissingGirl
 
+    $HallMissingFinish = ''
+    HallMissingPromiseBreak = 0
+    HallMissingSilverExtra = 0
+
     if $HallHarassClient <> '':
         $HallMissingClient = $HallHarassClient
     elseif $HallMissingClient = '':
@@ -277,8 +329,6 @@
 
     HallMissingFromPlay = 1
     HallMissingBargainDone = 0
-    HallMissingPromiseBreak = 0
-    HallMissingSilverExtra = 0
 
     if LOC('ShowGirlSidebar') = 1:
         gs 'ShowGirlSidebar', $HallMissingGirl
@@ -296,8 +346,8 @@
     if debug = 1:
         *pl '[DEBUG BARGAIN] girl=' + $HallMissingGirl + ' phase=' + $HallMissingPhase[$HallMissingGirl]
         *pl '[DEBUG BARGAIN] style=' + $HallMissingBargainStyle + ' promise=' + $HallMissingPromise + ' explicit=' + STR(HallMissingBargainExplicit)
-        *pl '[DEBUG BARGAIN] introStep=' + STR(HallMissingSoftIntroStep[$HallMissingGirl]) + ' playCnt=' + STR(HallMissingSoftPlayCount[$HallMissingGirl])
-        *pl '[DEBUG BARGAIN] hardStep=' + STR(HallMissingHardStep[$HallMissingGirl]) + ' hardSub=' + STR(HallMissingHardSub[$HallMissingGirl]) + ' face=' + STR(HallMissingFlagFaceDone[$HallMissingGirl])
+        *pl '[DEBUG BARGAIN] intro=' + STR(HallMissingSoftIntroStep[$HallMissingGirl]) + '/' + STR(HallMissingSoftIntroDone[$HallMissingGirl]) + ' play=' + STR(HallMissingSoftPlayCount[$HallMissingGirl]) + '/' + STR(HallMissingSoftPlayDone[$HallMissingGirl])
+        *pl '[DEBUG BARGAIN] hardStep=' + STR(HallMissingHardStep[$HallMissingGirl]) + ' hardSub=' + STR(HallMissingHardSub[$HallMissingGirl]) + ' face=' + STR(HallMissingFlagFaceDone[$HallMissingGirl]) + ' mouthMat=' + STR(HallMissingFlagMouthMature[$HallMissingGirl])
         *pl ' '
     end
 
@@ -319,8 +369,7 @@
         $HallMissingBargainStyle = 'hard'
         HallMissingBargainBand = 3
     else
-        ! free: mix — after face prefer hard weight
-        if HallMissingBargainExplicit = 1 or HallMissingFlagFaceDone[$HallMissingGirl] = 1 or HallMissingFlagMouthMature[$HallMissingGirl] = 1:
+        if HallMissingBargainExplicit = 1:
             if RAND(1, 100) <= 55:
                 $HallMissingBargainStyle = 'hard'
                 HallMissingBargainBand = 3
@@ -348,11 +397,11 @@
 ---
 
 #HallMissingBargainPickPromise
-    ! initiative: soft_intro force low; else not only slut30
     $ph = $HallMissingPhase[$HallMissingGirl]
+
     if $ph = 'soft_intro':
         $HallMissingInitiative = 'low'
-    elseif HallMissingBargainExplicit = 1 or HallMissingFlagFaceDone[$HallMissingGirl] = 1:
+    elseif HallMissingBargainExplicit = 1:
         $HallMissingInitiative = 'high'
     elseif GirlHallLewdStage[$HallMissingGirl] >= 3 or HallMissingGirlStage >= 4:
         $HallMissingInitiative = 'high'
@@ -362,6 +411,7 @@
 
     HallMissingPromiseRoll = RAND(1, 100)
     $HallMissingPromise = ''
+    $HallMissingFinish = ''
 
     if $ph = 'soft_intro':
         HallMissingIntroIdx = HallMissingSoftIntroStep[$HallMissingGirl]
@@ -378,6 +428,9 @@
         else
             $HallMissingPromise = 'touch_cock'
         end
+        if $HallMissingGirl = 'melissa' and $HallMissingPromise = 'look_tits':
+            $HallMissingPromise = 'look_line'
+        end
         killvar 'HallMissingIntroIdx'
 
     elseif $ph = 'soft_play':
@@ -388,15 +441,12 @@
         else
             $HallMissingPromise = 'touch_cock'
         end
-        ! melissa flavor aliases for text only — same act map
         if $HallMissingGirl = 'melissa' and $HallMissingPromise = 'look_tits':
             $HallMissingPromise = 'look_line'
         end
 
     elseif $ph = 'hard':
-        gs 'HallMissingHardGetSlot'
-        $HallMissingPromise = $HallMissingHardSlot
-        ! sub-specific promise flavor
+        gs 'HallMissingHardGetSlot', $HallMissingGirl
         if $HallMissingHardSlot = 'h0a':
             if $HallMissingGirl = 'melissa':
                 $HallMissingPromise = 'bud_smell'
@@ -415,10 +465,12 @@
             $HallMissingPromise = 'facial'
         elseif $HallMissingHardSlot = 'throat':
             $HallMissingPromise = 'deepthroat'
+        else
+            $HallMissingPromise = 'mouth_hard'
         end
 
     else
-        ! free: soft S3 or hard terminal / noble rare
+        ! free
         if $HallMissingBargainStyle = 'soft':
             if HallMissingPromiseRoll <= 33:
                 $HallMissingPromise = 'look_tits'
@@ -431,28 +483,24 @@
                 $HallMissingPromise = 'look_line'
             end
         else
-            HallMissingFreeHard = RAND(1, 4)
-            if HallMissingFreeHard = 1:
-                $HallMissingPromise = 'mouth_hard'
-            elseif HallMissingFreeHard = 2:
-                $HallMissingPromise = 'facial'
-            elseif HallMissingFreeHard = 3:
-                $HallMissingPromise = 'deepthroat'
-            else
-                if $HallMissingGirl = 'melissa':
-                    $HallMissingPromise = 'bud_cuni'
-                elseif $HallMissingGirl = 'sandra':
-                    $HallMissingPromise = 'titjob'
-                else
-                    $HallMissingPromise = 'piggy_cuni'
-                end
-            end
-            killvar 'HallMissingFreeHard'
-            ! noble rare after soft intro done
-            if HallMissingSoftIntroDone[$HallMissingGirl] = 1 and RAND(1, 100) <= 8 and $HallMissingGirl <> 'sandra':
+            HallMissingFreeHard = RAND(1, 100)
+            if HallMissingFreeHard <= 8 and HallMissingSoftIntroDone[$HallMissingGirl] = 1 and $HallMissingGirl <> 'sandra':
                 $HallMissingPromise = 'noble'
                 $HallMissingClient = 'noble'
+            elseif HallMissingFreeHard <= 30:
+                $HallMissingPromise = 'mouth_hard'
+            elseif HallMissingFreeHard <= 50:
+                $HallMissingPromise = 'facial'
+            elseif HallMissingFreeHard <= 70:
+                $HallMissingPromise = 'deepthroat'
+            elseif $HallMissingGirl = 'sandra':
+                $HallMissingPromise = 'titjob'
+            elseif $HallMissingGirl = 'melissa':
+                $HallMissingPromise = 'bud_cuni'
+            else
+                $HallMissingPromise = 'piggy_cuni'
             end
+            killvar 'HallMissingFreeHard'
         end
     end
 
@@ -469,6 +517,11 @@
     HallMissingPromiseBreak = 0
     HallMissingSilverExtra = 0
     $ph = $HallMissingPhase[$HallMissingGirl]
+    HallMissingCurSub = HallMissingHardSub[$HallMissingGirl]
+    if HallMissingCurSub < 0:
+        HallMissingCurSub = 0
+    end
+
     HallMissingForceHold = 0
     if $ph = 'soft_intro':
         HallMissingForceHold = 1
@@ -478,17 +531,11 @@
         if HallMissingForceHold = 1:
             $HallMissingPrivateAct = 'look_tits'
         elseif HallMissingBargainExplicit = 1 or $ph = 'free':
-            ! S3 escalate
-            if RAND(1, 100) <= 50:
-                $HallMissingPrivateAct = 'tits_lick'
-                HallMissingPromiseBreak = 1
+            HallMissingPromiseBreak = 1
+            if $HallMissingGirl = 'sandra' and RAND(1, 100) <= 55:
+                $HallMissingPrivateAct = 'titjob'
             else
-                if $HallMissingGirl = 'sandra':
-                    $HallMissingPrivateAct = 'titjob'
-                else
-                    $HallMissingPrivateAct = 'tits_lick'
-                end
-                HallMissingPromiseBreak = 1
+                $HallMissingPrivateAct = 'tits_lick'
             end
         elseif RAND(1, 100) <= 65:
             HallMissingPromiseBreak = 1
@@ -502,7 +549,9 @@
             $HallMissingPrivateAct = 'hug_waist'
         elseif HallMissingBargainExplicit = 1 or $ph = 'free':
             HallMissingPromiseBreak = 1
-            if RAND(1, 100) <= 40:
+            if $HallMissingGirl = 'sandra' and RAND(1, 100) <= 45:
+                $HallMissingPrivateAct = 'cuni'
+            elseif RAND(1, 100) <= 40:
                 $HallMissingPrivateAct = 'pussy_touch'
             else
                 $HallMissingPrivateAct = 'petting'
@@ -519,7 +568,11 @@
             $HallMissingPrivateAct = 'cock_touch_cloth'
         elseif HallMissingBargainExplicit = 1 or $ph = 'free':
             HallMissingPromiseBreak = 1
-            $HallMissingPrivateAct = 'hand'
+            if $HallMissingGirl = 'sandra' and RAND(1, 100) <= 40:
+                $HallMissingPrivateAct = 'mouth'
+            else
+                $HallMissingPrivateAct = 'hand'
+            end
         elseif RAND(1, 100) <= 65:
             HallMissingPromiseBreak = 1
             $HallMissingPrivateAct = 'hand'
@@ -528,42 +581,86 @@
         end
 
     elseif $p = 'bud_smell' or $p = 'piggy_look':
-        ! H0.a
-        HallMissingH0sub = HallMissingHardSub[$HallMissingGirl]
-        if HallMissingH0sub <= 0:
+        if HallMissingCurSub <= 0:
             $HallMissingPrivateAct = 'look_tits'
-        elseif HallMissingH0sub = 1:
+        elseif HallMissingCurSub = 1:
             $HallMissingPrivateAct = 'touch_thigh'
-        elseif HallMissingH0sub = 2:
+        elseif HallMissingCurSub = 2:
             $HallMissingPrivateAct = 'pussy_touch'
             HallMissingPromiseBreak = 1
         else
             $HallMissingPrivateAct = 'cuni'
             HallMissingPromiseBreak = 1
         end
-        killvar 'HallMissingH0sub'
 
     elseif $p = 'bud_cuni' or $p = 'piggy_cuni':
-        HallMissingH0sub = HallMissingHardSub[$HallMissingGirl]
-        if HallMissingH0sub <= 0:
+        if HallMissingCurSub <= 0:
             $HallMissingPrivateAct = 'cuni'
         else
             $HallMissingPrivateAct = 'anilingus'
         end
-        killvar 'HallMissingH0sub'
 
     elseif $p = 'mouth_hard' or $p = 'mouth_spit' or $p = 'mouth_swallow' or $p = 'mouth_price' or $p = 'swallow_trade':
         $HallMissingPrivateAct = 'mouth'
+        if $HallMissingGirl = 'sandra':
+            if HallMissingCurSub = 0:
+                $HallMissingFinish = 'cum_mouth'
+            elseif HallMissingCurSub = 1:
+                $HallMissingFinish = 'swallow'
+            elseif HallMissingCurSub = 2:
+                $HallMissingFinish = 'show_mouth'
+            elseif HallMissingCurSub = 3:
+                $HallMissingFinish = 'cum_face'
+            elseif HallMissingCurSub = 4:
+                $HallMissingPrivateAct = 'deepthroat'
+                $HallMissingFinish = 'cough'
+            elseif HallMissingCurSub = 5:
+                $HallMissingPrivateAct = 'deepthroat'
+                $HallMissingFinish = 'cum_mouth'
+            else
+                $HallMissingPrivateAct = 'deepthroat'
+                $HallMissingFinish = 'cum_throat'
+            end
+        else
+            if HallMissingCurSub <= 0:
+                $HallMissingFinish = 'wipe'
+            elseif HallMissingCurSub = 1:
+                $HallMissingFinish = 'taste'
+            elseif HallMissingCurSub = 2:
+                $HallMissingFinish = 'spit'
+            elseif HallMissingCurSub = 3:
+                $HallMissingFinish = 'hold_spit'
+            else
+                $HallMissingFinish = 'swallow'
+            end
+        end
         if RAND(1, 100) <= 40:
             HallMissingSilverExtra = 1
         end
 
     elseif $p = 'facial':
         $HallMissingPrivateAct = 'mouth'
-        $HallMissingFinish = 'cum_face'
+        if HallMissingCurSub = 0:
+            $HallMissingFinish = 'cum_face_soft'
+        elseif HallMissingCurSub = 1:
+            $HallMissingFinish = 'cum_face'
+        else
+            $HallMissingFinish = 'cum_face_high'
+        end
 
     elseif $p = 'deepthroat':
         $HallMissingPrivateAct = 'deepthroat'
+        if HallMissingCurSub <= 0:
+            $HallMissingFinish = 'try'
+        elseif HallMissingCurSub = 1:
+            $HallMissingFinish = 'partial'
+        elseif HallMissingCurSub = 2:
+            $HallMissingFinish = 'full'
+        elseif HallMissingCurSub = 3:
+            $HallMissingFinish = 'cum_mouth'
+        else
+            $HallMissingFinish = 'cum_throat'
+        end
 
     elseif $p = 'titjob':
         $HallMissingPrivateAct = 'titjob'
@@ -571,6 +668,7 @@
     elseif $p = 'noble':
         $HallMissingPrivateAct = 'mouth'
         $HallMissingClient = 'noble'
+        $HallMissingFinish = 'noble'
 
     elseif $p = 'hand_quick' or $p = 'hand_strict' or $p = 'hand_pragmatic':
         $HallMissingPrivateAct = 'hand'
@@ -585,6 +683,7 @@
     killvar '$p'
     killvar '$ph'
     killvar 'HallMissingForceHold'
+    killvar 'HallMissingCurSub'
 ---
 
 #HallMissingBargainShowImage
@@ -611,58 +710,83 @@
     gt 'HallMissingGirlStartFromPlay', $HallMissingGirl, $HallMissingReturnLoc
 ---
 
-! Debug
+! ARGS[0]=girl, ARGS[1]=soft|hard, ARGS[2]=return
 #HallMissingBargainDebugStart
     gs 'HallMissingGirlNormalizeKey', $ARGS[0]
     $HallMissingGirl = $HallMissingGirlKey
     if $HallMissingGirl = '':
         $HallMissingGirl = 'amanda'
     end
+
     $HallMissingBargainStyleForce = LCASE($ARGS[1])
     if $HallMissingBargainStyleForce <> 'soft' and $HallMissingBargainStyleForce <> 'hard':
-        $HallMissingBargainStyleForce = 'soft'
+        $HallMissingBargainStyleForce = ''
     end
+
     $HallMissingReturnLoc = $ARGS[2]
     if $HallMissingReturnLoc = '':
         $HallMissingReturnLoc = 'TavernMain'
     end
+
     FamilyLiberationGateOpen = 1
     Act1MoralUnlocked = 1
     FamilyCouncilDone = 1
     if FamilyCorruptionStage < 3:
         FamilyCorruptionStage = 3
     end
+
     HallMissingBargainSkip = 0
     HallMissingBargainDone = 0
     HallMissingFromPlay = 1
+    $HallMissingClient = ''
+    $HallMissingFinish = ''
+
     if $HallHarassClient = '':
         $HallHarassClient = 'craftsman'
     end
     $HallHarassGirl = $HallMissingGirl
     $HallHarassStanceCanon = 'play'
     $HarassGirlStance = 'provoke'
+
     gs 'HallMissingPhaseEnsure', $HallMissingGirl
     gt 'HallMissingBargainStart', $HallMissingGirl, $HallMissingReturnLoc
 ---
 
-! Debug: set phase
 ! ARGS[0]=girl ARGS[1]=soft_intro|soft_play|hard|free
 #HallMissingPhaseDebugSet
     gs 'HallMissingGirlNormalizeKey', $ARGS[0]
     $g = $HallMissingGirlKey
+    if $g = '':
+        $g = 'amanda'
+    end
+
+    gs 'HallMissingPhaseResetOne', $g
     $HallMissingPhase[$g] = LCASE($ARGS[1])
+
     if $HallMissingPhase[$g] = 'soft_play':
         HallMissingSoftIntroDone[$g] = 1
         HallMissingSoftIntroStep[$g] = 3
+        $HallMissingPhase[$g] = 'soft_play'
     elseif $HallMissingPhase[$g] = 'hard':
         HallMissingSoftIntroDone[$g] = 1
         HallMissingSoftPlayDone[$g] = 1
-        HallMissingSoftPlayCount[$g] = 3
+        HallMissingSoftPlayCount[$g] = HallMissingSoftPlayNeed
+        HallMissingHardStep[$g] = 0
+        HallMissingHardSub[$g] = 0
+        $HallMissingPhase[$g] = 'hard'
     elseif $HallMissingPhase[$g] = 'free':
         HallMissingSoftIntroDone[$g] = 1
         HallMissingSoftPlayDone[$g] = 1
         HallMissingHardLadderDone[$g] = 1
         HallMissingFlagFaceDone[$g] = 1
+        HallMissingFlagMouthMature[$g] = 1
+        $HallMissingPhase[$g] = 'free'
+    else
+        $HallMissingPhase[$g] = 'soft_intro'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG] phase set ' + $g + ' → ' + $HallMissingPhase[$g]
     end
     killvar '$g'
 ---

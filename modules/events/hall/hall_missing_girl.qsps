@@ -535,9 +535,28 @@
 
     gs 'HallMissingGirlEnsureName', $HallMissingGirl
     gs 'HallMissingGirlGetStage', $HallMissingGirl
+
+    ! v0.16: always через уговор+phase (единый вход)
+    if LOC('HallMissingBargainStart') = 1 and HallMissingBargainSkip = 0:
+        gt 'HallMissingBargainStart', $HallMissingGirl, $HallMissingReturnLoc
+    end
+
+    if LOC('HallMissingPhaseEnsure') = 1:
+        gs 'HallMissingPhaseEnsure', $HallMissingGirl
+    end
     gs 'HallMissingGirlPickPlace'
-    gs 'HallMissingGirlPickClient'
-    gs 'HallMissingGirlPickPrivateAct'
+    if $HallMissingClient = '':
+        gs 'HallMissingGirlPickClient'
+    end
+    if LOC('HallMissingBargainPickPromise') = 1 and LOC('HallMissingApplyPromiseToAct') = 1:
+        gs 'HallMissingBargainIsExplicit'
+        gs 'HallMissingBargainPickStyle'
+        gs 'HallMissingBargainPickPromise'
+        gs 'HallMissingApplyPromiseToAct'
+        HallMissingBargainDone = 1
+    else
+        gs 'HallMissingGirlPickPrivateAct'
+    end
 
     HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
 
@@ -1036,6 +1055,16 @@ killvar '$HallMissingApplyChoice'
     TavernLewdFame = 0
     TavernGirlsEasyRumor = 0
     TavernBackroomRumor = 0
+    HallMissingBargainDone = 0
+    HallMissingBargainSkip = 0
+    $HallMissingPromise = ''
+    $HallMissingFinish = ''
+    $HallMissingSceneKey = ''
+    $HallMissingSceneBlurb = ''
+
+    if LOC('HallMissingPhaseReset') = 1:
+        gs 'HallMissingPhaseReset', ''
+    end
 
     killvar '$HallMissingGirlSelected'
     killvar '$HallMissingGirl'

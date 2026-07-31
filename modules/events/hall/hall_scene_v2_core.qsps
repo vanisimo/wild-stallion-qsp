@@ -311,6 +311,12 @@
     ! Сандра missing — кухня; сёстры — зал
     gs 'HallMissingGirlEnsureName', $HallMissingGirl
     gs 'HallMissingGirlGetStage', $HallMissingGirl
+    if LOC('HallMissingPhaseEnsure') = 1:
+        gs 'HallMissingPhaseEnsure', $HallMissingGirl
+    end
+    if LOC('HallMissingBargainIsExplicit') = 1:
+        gs 'HallMissingBargainIsExplicit'
+    end
 
     ! client: из bargain/harass
     if $HallMissingClient = '' and $HallHarassClient <> '':
@@ -345,9 +351,15 @@
         killvar 'HallMissingPlaceRoll'
     end
 
-    ! act: promise из уговора, иначе roll
+    ! act: promise из уговора (phase), иначе phase-pick без UI, иначе legacy roll
     if HallMissingBargainDone = 1 and $HallMissingPromise <> '' and LOC('HallMissingApplyPromiseToAct') = 1:
         gs 'HallMissingApplyPromiseToAct'
+    elseif LOC('HallMissingBargainPickPromise') = 1 and LOC('HallMissingApplyPromiseToAct') = 1:
+        gs 'HallMissingBargainIsExplicit'
+        gs 'HallMissingBargainPickStyle'
+        gs 'HallMissingBargainPickPromise'
+        gs 'HallMissingApplyPromiseToAct'
+        HallMissingBargainDone = 1
     else
         gs 'HallMissingGirlPickPrivateAct'
     end
@@ -390,7 +402,8 @@
 
     if debug = 1:
         *pl '[DEBUG MISSING FROM PLAY] girl=' + $HallMissingGirl + ' client=' + $HallMissingClient + ' place=' + $HallMissingPlace + ' act=' + $HallMissingPrivateAct
-        *pl '[DEBUG MISSING FROM PLAY] bargain=' + STR(HallMissingBargainDone) + ' style=' + $HallMissingBargainStyle + ' promise=' + $HallMissingPromise + ' break=' + STR(HallMissingPromiseBreak)
+        *pl '[DEBUG MISSING FROM PLAY] bargain=' + STR(HallMissingBargainDone) + ' style=' + $HallMissingBargainStyle + ' promise=' + $HallMissingPromise + ' break=' + STR(HallMissingPromiseBreak) + ' finish=' + $HallMissingFinish
+        *pl '[DEBUG MISSING FROM PLAY] phase=' + $HallMissingPhase[$HallMissingGirl] + ' hardStep/Sub=' + STR(HallMissingHardStep[$HallMissingGirl]) + '/' + STR(HallMissingHardSub[$HallMissingGirl]) + ' face=' + STR(HallMissingFlagFaceDone[$HallMissingGirl]) + ' explicit=' + STR(HallMissingBargainExplicit)
         *pl ' '
     end
 

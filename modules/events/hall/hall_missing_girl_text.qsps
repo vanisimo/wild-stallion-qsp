@@ -1,10 +1,8 @@
 ! ================================================
 ! FILE: modules/events/hall/hall_missing_girl_text.qsps
 ! MODULE: events/hall
-! STUB + LOGIC — missing print (catalog v0.16)
-! Архив прозы: archive/hall_missing_text_v016_backup/hall_missing_girl_text.qsps
-!
-! Печать сцен: номер + кратко. Полную prose вернём из архива/агентов.
+! STUB + LOGIC missing print (ready for prose fill)
+! Archive: archive/hall_missing_text_v016_backup/
 ! ================================================
 
 #HallMissingGirlPrintText
@@ -52,6 +50,12 @@
         $HallLewdClientCoin = 'монету'
         $HallLewdClientManner = 'нагло'
     end
+    if LOC('HallMissingPhaseEnsure') = 1:
+        gs 'HallMissingPhaseEnsure', $HallMissingGirl
+    end
+    if LOC('HallMissingBargainIsExplicit') = 1:
+        gs 'HallMissingBargainIsExplicit'
+    end
 ---
 
 #HallMissingGetActBand
@@ -63,20 +67,18 @@
     end
 ---
 
-! key + blurb from act / promise / phase
 #HallMissingResolveSceneKey
     gs 'HallMissingEnsurePrintContext'
     gs 'HallMissingGetActBand'
-    if LOC('HallMissingPhaseEnsure') = 1:
-        gs 'HallMissingPhaseEnsure', $HallMissingGirl
-    end
-    if LOC('HallMissingBargainIsExplicit') = 1:
-        gs 'HallMissingBargainIsExplicit'
-    end
 
     $act = LCASE($HallMissingPrivateAct)
     $g = $HallMissingGirl
     $pr = LCASE($HallMissingPromise)
+    $fin = LCASE($HallMissingFinish)
+    HallMissingRSub = HallMissingHardSub[$g]
+    if HallMissingRSub < 0:
+        HallMissingRSub = 0
+    end
 
     if $act = 'client_mouth':
         $act = 'cuni'
@@ -85,78 +87,88 @@
         $act = 'pussy_touch'
     end
 
-    if $pr = 'noble' or $HallMissingClient = 'noble':
+    if $pr = 'noble' or $fin = 'noble' or $HallMissingClient = 'noble':
         $HallMissingSceneKey = 'noble_' + $g
-        $HallMissingSceneBlurb = 'Нобиль multi-screen (архив). soft/high ответы, finish mouth/face/anilingus.'
+        $HallMissingSceneBlurb = 'Нобиль multi-screen. soft/high + finish. Prose: archive noble_*'
     elseif $act = 'look_tits':
         $HallMissingSceneKey = 'look_tits_' + $g
-        $HallMissingSceneBlurb = 'Hold: клиент смотрит грудь/вырез. Compliance.'
+        $HallMissingSceneBlurb = 'Hold: смотрит грудь/вырез.'
     elseif $act = 'hug_waist':
         $HallMissingSceneKey = 'hug_waist_' + $g
-        $HallMissingSceneBlurb = 'Hold: обнимашки / талия.'
+        $HallMissingSceneBlurb = 'Hold: обнять/талия. Сандра: юбка/попа (u1 no panties).'
     elseif $act = 'cock_touch_cloth':
         $HallMissingSceneKey = 'cock_touch_cloth_' + $g
         $HallMissingSceneBlurb = 'Hold: ладонь сквозь ткань.'
     elseif $act = 'tits_lick':
         $HallMissingSceneKey = 'tits_lick_' + $g
-        $HallMissingSceneBlurb = 'Break/S3: мнёт, лижет соски. Сандра→возможен titjob glue.'
+        $HallMissingSceneBlurb = 'Break: мнёт/лижет соски.'
     elseif $act = 'petting':
         $HallMissingSceneKey = 'petting_' + $g
-        $HallMissingSceneBlurb = 'Petting / руки по телу. S3: делом.'
+        $HallMissingSceneBlurb = 'Petting. S3: «ерунда или делом».'
     elseif $act = 'pussy_touch':
         $HallMissingSceneKey = 'pussy_touch_' + $g
-        $HallMissingSceneBlurb = 'Пальцы / касание лона (+оргазм вариант).'
+        $HallMissingSceneBlurb = 'Пальцы/лоно (+оргазм). H0.a sub2 / S3.'
     elseif $act = 'hand':
         $HallMissingSceneKey = 'hand_' + $g
-        $HallMissingSceneBlurb = 'Handjob. Finish пол/руки по initiative.'
+        $HallMissingSceneBlurb = 'Handjob. Finish пол/руки.'
     elseif $act = 'touch_thigh':
         $HallMissingSceneKey = 'touch_thigh_' + $g
-        $HallMissingSceneBlurb = 'Бедро / нюх (H0.a mid).'
+        $HallMissingSceneBlurb = 'Бедро/нюх (H0.a / bud).'
     elseif $act = 'cuni':
         $HallMissingSceneKey = 'cuni_' + $g
-        $HallMissingSceneBlurb = 'Cuni. Мелисса H0 / Аманда H0.b / Сандра post-A2.'
+        $HallMissingSceneBlurb = 'Cuni. H0.b / bud / Sandra post-A2.'
     elseif $act = 'anilingus':
         $HallMissingSceneKey = 'anilingus_' + $g
-        $HallMissingSceneBlurb = 'Anilingus (+пальцы). H0.last / Сандра post-A2.'
+        $HallMissingSceneBlurb = 'Anilingus + пальцы (H0.last).'
     elseif $act = 'titjob':
         $HallMissingSceneKey = 'titjob_' + $g
-        $HallMissingSceneBlurb = 'Titjob (Сандра post-A1 / glue).'
-    elseif $act = 'mouth' or $act = 'mouth_balls':
-        if $HallMissingFinish = 'cum_face' or $pr = 'facial':
-            $HallMissingSceneKey = 'mouth_' + $g + '_facial'
-            $HallMissingSceneBlurb = 'Окончание на лицо (A5 LITE / mouth sub).'
-        elseif HallMissingHardSub[$g] >= 4 and $pr = 'mouth_hard':
-            $HallMissingSceneKey = 'mouth_' + $g + '_swallow'
-            $HallMissingSceneBlurb = 'Проглот / late mouth sub.'
-        else
-            $HallMissingSceneKey = 'mouth_' + $g + '_mid'
-            $HallMissingSceneBlurb = 'Отсос mid: spit/show/hold (sub по hardSub).'
-        end
+        $HallMissingSceneBlurb = 'Titjob (Sandra A1 glue / free).'
     elseif $act = 'deepthroat':
-        $HallMissingSceneKey = 'deepthroat_' + $g
-        $HallMissingSceneBlurb = 'Deepthroat ladder sub (кашель→full→cum throat).'
+        $HallMissingSceneKey = 'deepthroat_' + $g + '_s' + STR(HallMissingRSub)
+        $HallMissingSceneBlurb = 'DT sub=' + STR(HallMissingRSub) + ' finish=' + $fin
+    elseif $act = 'mouth' or $act = 'mouth_balls':
+        if $fin = 'cum_face' or $fin = 'cum_face_soft' or $fin = 'cum_face_high' or $pr = 'facial':
+            $HallMissingSceneKey = 'mouth_' + $g + '_facial_s' + STR(HallMissingRSub)
+            $HallMissingSceneBlurb = 'Facial LITE sub=' + STR(HallMissingRSub) + ' (' + $fin + ').'
+        elseif $fin = 'swallow':
+            $HallMissingSceneKey = 'mouth_' + $g + '_swallow'
+            $HallMissingSceneBlurb = 'Проглот / mouth mature (Sandra).'
+        elseif $fin = 'show_mouth':
+            $HallMissingSceneKey = 'mouth_' + $g + '_show'
+            $HallMissingSceneBlurb = 'Покажи что во рту.'
+        elseif $fin = 'wipe' or $fin = 'taste' or $fin = 'spit' or $fin = 'hold_spit':
+            $HallMissingSceneKey = 'mouth_' + $g + '_' + $fin
+            $HallMissingSceneBlurb = 'Mouth early sub: ' + $fin
+        else
+            $HallMissingSceneKey = 'mouth_' + $g + '_mid_s' + STR(HallMissingRSub)
+            $HallMissingSceneBlurb = 'Mouth mid sub=' + STR(HallMissingRSub) + ' finish=' + $fin
+        end
     else
-        $HallMissingSceneKey = 'petting_' + $g
-        $HallMissingSceneBlurb = 'Fallback petting. act=' + $act
+        $HallMissingSceneKey = 'fallback_' + $g
+        $HallMissingSceneBlurb = 'Fallback act=' + $act + ' promise=' + $pr
     end
 
     if HallMissingPromiseBreak = 1:
-        $HallMissingSceneBlurb = $HallMissingSceneBlurb + ' [BREAK уговора]'
+        $HallMissingSceneBlurb = $HallMissingSceneBlurb + ' [BREAK]'
     end
     if HallMissingBargainExplicit = 1:
         $HallMissingSceneBlurb = $HallMissingSceneBlurb + ' [EXPLICIT]'
     end
+    $HallMissingSceneBlurb = $HallMissingSceneBlurb + ' phase=' + $HallMissingPhase[$g]
 
     killvar '$act'
     killvar '$g'
     killvar '$pr'
+    killvar '$fin'
+    killvar 'HallMissingRSub'
 ---
 
 #HallMissingStubPrintLine
     *pl '[' + $HallMissingSceneKey + ']'
     *pl $HallMissingSceneBlurb
     if debug = 1:
-        *pl '[STUB meta] promise=' + $HallMissingPromise + ' act=' + $HallMissingPrivateAct + ' phase=' + $HallMissingPhase[$HallMissingGirl] + ' client=' + $HallMissingClient
+        *pl '[STUB] promise=' + $HallMissingPromise + ' act=' + $HallMissingPrivateAct + ' finish=' + $HallMissingFinish + ' client=' + $HallMissingClient
+        *pl '[STUB] hardStep=' + STR(HallMissingHardStep[$HallMissingGirl]) + ' hardSub=' + STR(HallMissingHardSub[$HallMissingGirl]) + ' face=' + STR(HallMissingFlagFaceDone[$HallMissingGirl])
     end
 ---
 
@@ -166,8 +178,9 @@
     end
     *pl '─── ПОДСМОТРЕТЬ (stub) ───'
     gs 'HallMissingStubPrintLine'
-    if HallMissingPromiseBreak = 1 and LOC('HallMissingPrintPromiseBreakTail') = 1:
-        gs 'HallMissingPrintPromiseBreakTail'
+    if HallMissingPromiseBreak = 1:
+        *pl ' '
+        *pl '[M-BREAK-TAIL] Клиент перешёл границу уговора (promise=' + $HallMissingPromise + ').'
     end
 ---
 
@@ -177,22 +190,31 @@
     end
     *pl '─── ВСТРЕЧА ПОСЛЕ (stub meet) ───'
     *pl '[' + $HallMissingSceneKey + '_meet]'
-    *pl 'Короткая отмазка/разговор со Стефаном после сцены. Позже — prose из архива.'
+    *pl 'Отмазка/разговор со Стефаном. Prose → archive + agent fill.'
 ---
 
 #HallMissingPrintIntro
     gs 'HallMissingEnsurePrintContext'
-    *pl '[M-INTRO] ' + $RealName[$HallMissingGirl] + ' пропала с ' + $HallLewdClientWhoA + '. place=' + $HallMissingPlace + '. Выбор: вмешаться / подсмотреть / не вмешиваться.'
+    *pl '[M-INTRO] ' + $RealName[$HallMissingGirl] + ' исчезла с ' + $HallLewdClientWhoA + '.'
+    *pl 'place=' + $HallMissingPlace + ' act=' + $HallMissingPrivateAct + ' phase=' + $HallMissingPhase[$HallMissingGirl]
+    if HallMissingBargainDone = 1:
+        *pl 'уговор: ' + $HallMissingPromise + ' break=' + STR(HallMissingPromiseBreak) + ' explicit=' + STR(HallMissingBargainExplicit)
+    end
+    *pl 'Выбор: вмешаться / подсмотреть / не вмешиваться.'
 ---
 
 #HallMissingPrintIgnoreAfter
     gs 'HallMissingEnsurePrintContext'
-    *pl '[M-IGNORE] Не вмешались. ' + $RealName[$HallMissingGirl] + ' вернулась позже (stub).'
+    *pl '[M-IGNORE] Не вмешались. ' + $RealName[$HallMissingGirl] + ' вернулась (stub).'
 ---
 
 #HallMissingPrintInterrupt
     gs 'HallMissingEnsurePrintContext'
-    *pl '[M-INTERRUPT] Вмешались, оборвали. Реакция ' + $RealName[$HallMissingGirl] + ' (stub).'
+    *pl '[M-INTERRUPT] Вмешались. Реакция ' + $RealName[$HallMissingGirl] + ' (stub).'
+---
+
+#HallMissingConflictMoodText
+    $HallMissingConflictMoodText = ''
 ---
 
 #HallMissingPrintPromiseBreakTail
@@ -200,9 +222,5 @@
         exit
     end
     *pl ' '
-    *pl '[M-BREAK-TAIL] Клиент перешёл границу уговора (stub по promise=' + $HallMissingPromise + ').'
----
-
-#HallMissingConflictMoodText
-    $HallMissingConflictMoodText = ''
+    *pl '[M-BREAK-TAIL] Граница уговора нарушена (' + $HallMissingPromise + ').'
 ---
