@@ -212,6 +212,13 @@
     gs 'HallMissingPhaseEnsure', $g
     $ph = $HallMissingPhase[$g]
 
+    ! нобиль — боковой слот: не ест soft_play count и не двигает hardStep/Sub
+    if LCASE($HallMissingPromise) = 'noble':
+        killvar '$g'
+        killvar '$ph'
+        exit
+    end
+
     if $ph = 'soft_intro':
         HallMissingSoftIntroStep[$g] += 1
         if HallMissingSoftIntroStep[$g] >= 3:
@@ -411,9 +418,16 @@
         *pl ' '
     end
 
-    gs 'ActUiPrepare', 'Слушать дальше…', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'HallMissingBargainContinue'
+    if HallMissingBargainRefused = 1:
+        gs 'ActUiPrepare', 'Вернуться к работе', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    else
+        gs 'ActUiPrepare', 'Слушать дальше…', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingBargainContinue'
+        end
     end
 ---
 
