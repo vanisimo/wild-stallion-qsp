@@ -1079,3 +1079,434 @@ killvar '$HallMissingApplyChoice'
 ! Print/text: hall_missing_girl_text.qsps (stubs v0.16)
 ! Archive prose: archive/hall_missing_text_v016_backup/
 
+
+! ================================================
+! PRINT DISPATCH — logic only; scenes in agent_*_text.qsps
+! ================================================
+
+#HallMissingGirlPrintText
+    $HallMissingPrintTextId = LCASE($ARGS[0])
+    gs 'HallMissingEnsurePrintContext'
+
+    if $HallMissingPrintTextId = 'intro':
+        $HallMissingSceneKey = ''
+        if $HallMissingGirl = 'melissa':
+            gs 'HallMissingIntro_melissa'
+        elseif $HallMissingGirl = 'sandra':
+            gs 'HallMissingIntro_sandra'
+        else
+            gs 'HallMissingIntro_amanda'
+        end
+    elseif $HallMissingPrintTextId = 'ignore_after':
+        if $HallMissingGirl = 'melissa':
+            gs 'HallMissingIgnore_melissa'
+        elseif $HallMissingGirl = 'sandra':
+            gs 'HallMissingIgnore_sandra'
+        else
+            gs 'HallMissingIgnore_amanda'
+        end
+    elseif $HallMissingPrintTextId = 'peek_scene':
+        $HallMissingSceneKey = ''
+        gs 'HallMissingResolveSceneKey'
+        gs 'HallMissingPrintPeekScene'
+    elseif $HallMissingPrintTextId = 'peek_meet':
+        if $HallMissingSceneKey = '':
+            gs 'HallMissingResolveSceneKey'
+        end
+        gs 'HallMissingPrintPeekMeet'
+    elseif $HallMissingPrintTextId = 'interrupt_scene':
+        if $HallMissingGirl = 'melissa':
+            gs 'HallMissingInterrupt_melissa'
+        elseif $HallMissingGirl = 'sandra':
+            gs 'HallMissingInterrupt_sandra'
+        else
+            gs 'HallMissingInterrupt_amanda'
+        end
+    end
+
+    killvar '$HallMissingPrintTextId'
+---
+
+#HallMissingEnsurePrintContext
+    gs 'HallMissingGirlNormalizeKey', $HallMissingGirl
+    $HallMissingGirl = $HallMissingGirlKey
+    if $HallMissingGirl = '':
+        $HallMissingGirl = 'amanda'
+    end
+    if $RealName[$HallMissingGirl] = '':
+        gs 'HallMissingGirlEnsureName', $HallMissingGirl
+    end
+    if $HallMissingClient = '':
+        $HallMissingClient = 'rich_merchant'
+    end
+    $HallLewdClient = $HallMissingClient
+    if LOC('HallLewdFillClientBits') = 1:
+        gs 'HallLewdFillClientBits'
+    else
+        $HallLewdClientWho = 'гость'
+        $HallLewdClientWhoA = 'гостя'
+        $HallLewdClientCoin = 'монету'
+        $HallLewdClientManner = 'нагло'
+    end
+    if LOC('HallMissingPhaseEnsure') = 1:
+        gs 'HallMissingPhaseEnsure', $HallMissingGirl
+    end
+    if LOC('HallMissingBargainIsExplicit') = 1:
+        gs 'HallMissingBargainIsExplicit'
+    end
+---
+
+#HallMissingResolveSceneKey
+    gs 'HallMissingEnsurePrintContext'
+
+    $act = LCASE($HallMissingPrivateAct)
+    $g = $HallMissingGirl
+    $pr = LCASE($HallMissingPromise)
+    $fin = LCASE($HallMissingFinish)
+    HallMissingRSub = HallMissingHardSub[$g]
+    if HallMissingRSub < 0:
+        HallMissingRSub = 0
+    end
+
+    if $act = 'client_mouth':
+        $act = 'cuni'
+    end
+    if $act = 'touch':
+        $act = 'pussy_touch'
+    end
+
+    if $pr = 'noble' or $fin = 'noble' or $HallMissingClient = 'noble':
+        $HallMissingSceneKey = 'noble_' + $g
+    elseif $act = 'look_tits':
+        $HallMissingSceneKey = 'look_tits_' + $g
+    elseif $act = 'hug_waist':
+        $HallMissingSceneKey = 'hug_waist_' + $g
+    elseif $act = 'cock_touch_cloth':
+        $HallMissingSceneKey = 'cock_touch_cloth_' + $g
+    elseif $act = 'tits_lick':
+        $HallMissingSceneKey = 'tits_lick_' + $g
+    elseif $act = 'petting':
+        $HallMissingSceneKey = 'petting_' + $g
+    elseif $act = 'pussy_touch':
+        $HallMissingSceneKey = 'pussy_touch_' + $g
+    elseif $act = 'hand':
+        $HallMissingSceneKey = 'hand_' + $g
+    elseif $act = 'touch_thigh':
+        $HallMissingSceneKey = 'touch_thigh_' + $g
+    elseif $act = 'cuni':
+        $HallMissingSceneKey = 'cuni_' + $g
+    elseif $act = 'anilingus':
+        $HallMissingSceneKey = 'anilingus_' + $g
+    elseif $act = 'titjob':
+        $HallMissingSceneKey = 'titjob_' + $g
+    elseif $act = 'deepthroat':
+        $HallMissingSceneKey = 'deepthroat_' + $g
+    elseif $act = 'mouth' or $act = 'mouth_balls':
+        if $fin = 'cum_face' or $fin = 'cum_face_soft' or $fin = 'cum_face_high' or $pr = 'facial':
+            $HallMissingSceneKey = 'facial_' + $g
+        elseif $fin = 'swallow':
+            $HallMissingSceneKey = 'mouth_swallow_' + $g
+        elseif $fin = 'show_mouth':
+            $HallMissingSceneKey = 'mouth_show_' + $g
+        elseif $fin = 'wipe':
+            $HallMissingSceneKey = 'mouth_wipe_' + $g
+        elseif $fin = 'taste':
+            $HallMissingSceneKey = 'mouth_taste_' + $g
+        elseif $fin = 'spit':
+            $HallMissingSceneKey = 'mouth_spit_' + $g
+        elseif $fin = 'hold_spit':
+            $HallMissingSceneKey = 'mouth_hold_spit_' + $g
+        else
+            $HallMissingSceneKey = 'mouth_mid_' + $g
+        end
+    else
+        $HallMissingSceneKey = 'petting_' + $g
+    end
+
+    killvar '$act'
+    killvar '$g'
+    killvar '$pr'
+    killvar '$fin'
+---
+
+#HallMissingPrintPeekScene
+    if $HallMissingSceneKey = '':
+        gs 'HallMissingResolveSceneKey'
+    end
+    $k = $HallMissingSceneKey
+
+    if $k = 'look_tits_amanda':
+        gs 'HallMissingScene_look_tits_amanda'
+    elseif $k = 'look_tits_melissa':
+        gs 'HallMissingScene_look_tits_melissa'
+    elseif $k = 'look_tits_sandra':
+        gs 'HallMissingScene_look_tits_sandra'
+    elseif $k = 'hug_waist_amanda':
+        gs 'HallMissingScene_hug_waist_amanda'
+    elseif $k = 'hug_waist_melissa':
+        gs 'HallMissingScene_hug_waist_melissa'
+    elseif $k = 'hug_waist_sandra':
+        gs 'HallMissingScene_hug_waist_sandra'
+    elseif $k = 'cock_touch_cloth_amanda':
+        gs 'HallMissingScene_cock_touch_cloth_amanda'
+    elseif $k = 'cock_touch_cloth_melissa':
+        gs 'HallMissingScene_cock_touch_cloth_melissa'
+    elseif $k = 'cock_touch_cloth_sandra':
+        gs 'HallMissingScene_cock_touch_cloth_sandra'
+    elseif $k = 'tits_lick_amanda':
+        gs 'HallMissingScene_tits_lick_amanda'
+    elseif $k = 'tits_lick_melissa':
+        gs 'HallMissingScene_tits_lick_melissa'
+    elseif $k = 'tits_lick_sandra':
+        gs 'HallMissingScene_tits_lick_sandra'
+    elseif $k = 'petting_amanda':
+        gs 'HallMissingScene_petting_amanda'
+    elseif $k = 'petting_melissa':
+        gs 'HallMissingScene_petting_melissa'
+    elseif $k = 'petting_sandra':
+        gs 'HallMissingScene_petting_sandra'
+    elseif $k = 'pussy_touch_amanda':
+        gs 'HallMissingScene_pussy_touch_amanda'
+    elseif $k = 'pussy_touch_melissa':
+        gs 'HallMissingScene_pussy_touch_melissa'
+    elseif $k = 'pussy_touch_sandra':
+        gs 'HallMissingScene_pussy_touch_sandra'
+    elseif $k = 'hand_amanda':
+        gs 'HallMissingScene_hand_amanda'
+    elseif $k = 'hand_melissa':
+        gs 'HallMissingScene_hand_melissa'
+    elseif $k = 'hand_sandra':
+        gs 'HallMissingScene_hand_sandra'
+    elseif $k = 'touch_thigh_amanda':
+        gs 'HallMissingScene_touch_thigh_amanda'
+    elseif $k = 'touch_thigh_melissa':
+        gs 'HallMissingScene_touch_thigh_melissa'
+    elseif $k = 'touch_thigh_sandra':
+        gs 'HallMissingScene_touch_thigh_sandra'
+    elseif $k = 'cuni_amanda':
+        gs 'HallMissingScene_cuni_amanda'
+    elseif $k = 'cuni_melissa':
+        gs 'HallMissingScene_cuni_melissa'
+    elseif $k = 'cuni_sandra':
+        gs 'HallMissingScene_cuni_sandra'
+    elseif $k = 'anilingus_amanda':
+        gs 'HallMissingScene_anilingus_amanda'
+    elseif $k = 'anilingus_melissa':
+        gs 'HallMissingScene_anilingus_melissa'
+    elseif $k = 'anilingus_sandra':
+        gs 'HallMissingScene_anilingus_sandra'
+    elseif $k = 'titjob_amanda':
+        gs 'HallMissingScene_titjob_amanda'
+    elseif $k = 'titjob_melissa':
+        gs 'HallMissingScene_titjob_melissa'
+    elseif $k = 'titjob_sandra':
+        gs 'HallMissingScene_titjob_sandra'
+    elseif $k = 'mouth_wipe_amanda':
+        gs 'HallMissingScene_mouth_wipe_amanda'
+    elseif $k = 'mouth_wipe_melissa':
+        gs 'HallMissingScene_mouth_wipe_melissa'
+    elseif $k = 'mouth_wipe_sandra':
+        gs 'HallMissingScene_mouth_wipe_sandra'
+    elseif $k = 'mouth_taste_amanda':
+        gs 'HallMissingScene_mouth_taste_amanda'
+    elseif $k = 'mouth_taste_melissa':
+        gs 'HallMissingScene_mouth_taste_melissa'
+    elseif $k = 'mouth_taste_sandra':
+        gs 'HallMissingScene_mouth_taste_sandra'
+    elseif $k = 'mouth_spit_amanda':
+        gs 'HallMissingScene_mouth_spit_amanda'
+    elseif $k = 'mouth_spit_melissa':
+        gs 'HallMissingScene_mouth_spit_melissa'
+    elseif $k = 'mouth_spit_sandra':
+        gs 'HallMissingScene_mouth_spit_sandra'
+    elseif $k = 'mouth_hold_spit_amanda':
+        gs 'HallMissingScene_mouth_hold_spit_amanda'
+    elseif $k = 'mouth_hold_spit_melissa':
+        gs 'HallMissingScene_mouth_hold_spit_melissa'
+    elseif $k = 'mouth_hold_spit_sandra':
+        gs 'HallMissingScene_mouth_hold_spit_sandra'
+    elseif $k = 'mouth_swallow_amanda':
+        gs 'HallMissingScene_mouth_swallow_amanda'
+    elseif $k = 'mouth_swallow_melissa':
+        gs 'HallMissingScene_mouth_swallow_melissa'
+    elseif $k = 'mouth_swallow_sandra':
+        gs 'HallMissingScene_mouth_swallow_sandra'
+    elseif $k = 'mouth_show_amanda':
+        gs 'HallMissingScene_mouth_show_amanda'
+    elseif $k = 'mouth_show_melissa':
+        gs 'HallMissingScene_mouth_show_melissa'
+    elseif $k = 'mouth_show_sandra':
+        gs 'HallMissingScene_mouth_show_sandra'
+    elseif $k = 'mouth_mid_amanda':
+        gs 'HallMissingScene_mouth_mid_amanda'
+    elseif $k = 'mouth_mid_melissa':
+        gs 'HallMissingScene_mouth_mid_melissa'
+    elseif $k = 'mouth_mid_sandra':
+        gs 'HallMissingScene_mouth_mid_sandra'
+    elseif $k = 'facial_amanda':
+        gs 'HallMissingScene_facial_amanda'
+    elseif $k = 'facial_melissa':
+        gs 'HallMissingScene_facial_melissa'
+    elseif $k = 'facial_sandra':
+        gs 'HallMissingScene_facial_sandra'
+    elseif $k = 'deepthroat_amanda':
+        gs 'HallMissingScene_deepthroat_amanda'
+    elseif $k = 'deepthroat_melissa':
+        gs 'HallMissingScene_deepthroat_melissa'
+    elseif $k = 'deepthroat_sandra':
+        gs 'HallMissingScene_deepthroat_sandra'
+    elseif $k = 'noble_amanda':
+        gs 'HallMissingScene_noble_amanda'
+    elseif $k = 'noble_melissa':
+        gs 'HallMissingScene_noble_melissa'
+    elseif $k = 'noble_sandra':
+        gs 'HallMissingScene_noble_sandra'
+    else
+        *pl '[NO SCENE LOC] key=' + $k
+        *pl 'promise=' + $HallMissingPromise + ' act=' + $HallMissingPrivateAct + ' finish=' + $HallMissingFinish
+    end
+
+    if HallMissingPromiseBreak = 1:
+        *pl ' '
+        *pl '[BREAK] Уговор нарушен (promise=' + $HallMissingPromise + ').'
+    end
+    killvar '$k'
+---
+
+#HallMissingPrintPeekMeet
+    if $HallMissingSceneKey = '':
+        gs 'HallMissingResolveSceneKey'
+    end
+    $k = $HallMissingSceneKey
+
+    if $k = 'look_tits_amanda':
+        gs 'HallMissingMeet_look_tits_amanda'
+    elseif $k = 'look_tits_melissa':
+        gs 'HallMissingMeet_look_tits_melissa'
+    elseif $k = 'look_tits_sandra':
+        gs 'HallMissingMeet_look_tits_sandra'
+    elseif $k = 'hug_waist_amanda':
+        gs 'HallMissingMeet_hug_waist_amanda'
+    elseif $k = 'hug_waist_melissa':
+        gs 'HallMissingMeet_hug_waist_melissa'
+    elseif $k = 'hug_waist_sandra':
+        gs 'HallMissingMeet_hug_waist_sandra'
+    elseif $k = 'cock_touch_cloth_amanda':
+        gs 'HallMissingMeet_cock_touch_cloth_amanda'
+    elseif $k = 'cock_touch_cloth_melissa':
+        gs 'HallMissingMeet_cock_touch_cloth_melissa'
+    elseif $k = 'cock_touch_cloth_sandra':
+        gs 'HallMissingMeet_cock_touch_cloth_sandra'
+    elseif $k = 'tits_lick_amanda':
+        gs 'HallMissingMeet_tits_lick_amanda'
+    elseif $k = 'tits_lick_melissa':
+        gs 'HallMissingMeet_tits_lick_melissa'
+    elseif $k = 'tits_lick_sandra':
+        gs 'HallMissingMeet_tits_lick_sandra'
+    elseif $k = 'petting_amanda':
+        gs 'HallMissingMeet_petting_amanda'
+    elseif $k = 'petting_melissa':
+        gs 'HallMissingMeet_petting_melissa'
+    elseif $k = 'petting_sandra':
+        gs 'HallMissingMeet_petting_sandra'
+    elseif $k = 'pussy_touch_amanda':
+        gs 'HallMissingMeet_pussy_touch_amanda'
+    elseif $k = 'pussy_touch_melissa':
+        gs 'HallMissingMeet_pussy_touch_melissa'
+    elseif $k = 'pussy_touch_sandra':
+        gs 'HallMissingMeet_pussy_touch_sandra'
+    elseif $k = 'hand_amanda':
+        gs 'HallMissingMeet_hand_amanda'
+    elseif $k = 'hand_melissa':
+        gs 'HallMissingMeet_hand_melissa'
+    elseif $k = 'hand_sandra':
+        gs 'HallMissingMeet_hand_sandra'
+    elseif $k = 'touch_thigh_amanda':
+        gs 'HallMissingMeet_touch_thigh_amanda'
+    elseif $k = 'touch_thigh_melissa':
+        gs 'HallMissingMeet_touch_thigh_melissa'
+    elseif $k = 'touch_thigh_sandra':
+        gs 'HallMissingMeet_touch_thigh_sandra'
+    elseif $k = 'cuni_amanda':
+        gs 'HallMissingMeet_cuni_amanda'
+    elseif $k = 'cuni_melissa':
+        gs 'HallMissingMeet_cuni_melissa'
+    elseif $k = 'cuni_sandra':
+        gs 'HallMissingMeet_cuni_sandra'
+    elseif $k = 'anilingus_amanda':
+        gs 'HallMissingMeet_anilingus_amanda'
+    elseif $k = 'anilingus_melissa':
+        gs 'HallMissingMeet_anilingus_melissa'
+    elseif $k = 'anilingus_sandra':
+        gs 'HallMissingMeet_anilingus_sandra'
+    elseif $k = 'titjob_amanda':
+        gs 'HallMissingMeet_titjob_amanda'
+    elseif $k = 'titjob_melissa':
+        gs 'HallMissingMeet_titjob_melissa'
+    elseif $k = 'titjob_sandra':
+        gs 'HallMissingMeet_titjob_sandra'
+    elseif $k = 'mouth_wipe_amanda':
+        gs 'HallMissingMeet_mouth_wipe_amanda'
+    elseif $k = 'mouth_wipe_melissa':
+        gs 'HallMissingMeet_mouth_wipe_melissa'
+    elseif $k = 'mouth_wipe_sandra':
+        gs 'HallMissingMeet_mouth_wipe_sandra'
+    elseif $k = 'mouth_taste_amanda':
+        gs 'HallMissingMeet_mouth_taste_amanda'
+    elseif $k = 'mouth_taste_melissa':
+        gs 'HallMissingMeet_mouth_taste_melissa'
+    elseif $k = 'mouth_taste_sandra':
+        gs 'HallMissingMeet_mouth_taste_sandra'
+    elseif $k = 'mouth_spit_amanda':
+        gs 'HallMissingMeet_mouth_spit_amanda'
+    elseif $k = 'mouth_spit_melissa':
+        gs 'HallMissingMeet_mouth_spit_melissa'
+    elseif $k = 'mouth_spit_sandra':
+        gs 'HallMissingMeet_mouth_spit_sandra'
+    elseif $k = 'mouth_hold_spit_amanda':
+        gs 'HallMissingMeet_mouth_hold_spit_amanda'
+    elseif $k = 'mouth_hold_spit_melissa':
+        gs 'HallMissingMeet_mouth_hold_spit_melissa'
+    elseif $k = 'mouth_hold_spit_sandra':
+        gs 'HallMissingMeet_mouth_hold_spit_sandra'
+    elseif $k = 'mouth_swallow_amanda':
+        gs 'HallMissingMeet_mouth_swallow_amanda'
+    elseif $k = 'mouth_swallow_melissa':
+        gs 'HallMissingMeet_mouth_swallow_melissa'
+    elseif $k = 'mouth_swallow_sandra':
+        gs 'HallMissingMeet_mouth_swallow_sandra'
+    elseif $k = 'mouth_show_amanda':
+        gs 'HallMissingMeet_mouth_show_amanda'
+    elseif $k = 'mouth_show_melissa':
+        gs 'HallMissingMeet_mouth_show_melissa'
+    elseif $k = 'mouth_show_sandra':
+        gs 'HallMissingMeet_mouth_show_sandra'
+    elseif $k = 'mouth_mid_amanda':
+        gs 'HallMissingMeet_mouth_mid_amanda'
+    elseif $k = 'mouth_mid_melissa':
+        gs 'HallMissingMeet_mouth_mid_melissa'
+    elseif $k = 'mouth_mid_sandra':
+        gs 'HallMissingMeet_mouth_mid_sandra'
+    elseif $k = 'facial_amanda':
+        gs 'HallMissingMeet_facial_amanda'
+    elseif $k = 'facial_melissa':
+        gs 'HallMissingMeet_facial_melissa'
+    elseif $k = 'facial_sandra':
+        gs 'HallMissingMeet_facial_sandra'
+    elseif $k = 'deepthroat_amanda':
+        gs 'HallMissingMeet_deepthroat_amanda'
+    elseif $k = 'deepthroat_melissa':
+        gs 'HallMissingMeet_deepthroat_melissa'
+    elseif $k = 'deepthroat_sandra':
+        gs 'HallMissingMeet_deepthroat_sandra'
+    elseif $k = 'noble_amanda':
+        gs 'HallMissingMeet_noble_amanda'
+    elseif $k = 'noble_melissa':
+        gs 'HallMissingMeet_noble_melissa'
+    elseif $k = 'noble_sandra':
+        gs 'HallMissingMeet_noble_sandra'
+    else
+        *pl '[NO MEET] ' + $k
+    end
+    killvar '$k'
+---

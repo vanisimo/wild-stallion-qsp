@@ -5,10 +5,11 @@
 **Код:** phase machine in `hall_missing_bargain.qsps`; active text = **STUB**; prose backup `archive/hall_missing_text_v016_backup/`
 
 **Связанные файлы:**
-- `modules/events/hall/hall_missing_bargain.qsps` — механика
-- `modules/events/hall/hall_missing_bargain_text.qsps` — тексты уговора (USER-OWNED)
-- `modules/events/hall/hall_missing_girl.qsps` / `hall_missing_girl_text.qsps`
-- `modules/events/hall/hall_missing_agent_amanda|melissa|sandra_text.qsps`
+- `modules/events/hall/hall_missing_bargain.qsps` — механика + phase
+- `modules/events/hall/hall_missing_bargain_text.qsps` — stubs уговора `[B-…]`
+- `modules/events/hall/hall_missing_girl.qsps` — flow + print **dispatch** (без prose)
+- `modules/events/hall/hall_missing_agent_amanda|melissa|sandra_text.qsps` — **все сцены** по порядку `[S-…]`
+- ~~`hall_missing_girl_text.qsps`~~ **удалён** (архив v016)
 - `docs/design-npc-voices.md` §1–3
 - `docs/design-hall-scene-unified.md` §0.3a, 0.6
 
