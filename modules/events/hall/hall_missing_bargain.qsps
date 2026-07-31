@@ -75,6 +75,16 @@
     if HallMissingHardLadderDone[$g] < 0:
         HallMissingHardLadderDone[$g] = 0
     end
+    ! noble: 0=locked 1=after A3 (s1) 2=after A4 mouth (s1+s2) 3=after A6 throat (s1–s3 + free random)
+    if HallMissingNobleTier[$g] < 0:
+        HallMissingNobleTier[$g] = 0
+    end
+    if HallMissingNoblePending[$g] < 0:
+        HallMissingNoblePending[$g] = 0
+    end
+    if HallMissingNobleInRandom[$g] < 0:
+        HallMissingNobleInRandom[$g] = 0
+    end
 
     ! recover phase from flags (save/load / partial)
     if HallMissingHardLadderDone[$g] = 1:
@@ -88,6 +98,32 @@
     end
 
     killvar '$g'
+---
+
+! ARGS[0]=girl  ARGS[1]=newTier  — raise tier + pending first show
+#HallMissingNobleUnlock
+    $ng = $ARGS[0]
+    HallMissingNobleNew = $ARGS[1]
+    if $ng = 'sandra':
+        killvar '$ng'
+        killvar 'HallMissingNobleNew'
+        exit
+    end
+    if HallMissingNobleNew < 1:
+        HallMissingNobleNew = 1
+    end
+    if HallMissingNobleNew > 3:
+        HallMissingNobleNew = 3
+    end
+    if HallMissingNobleTier[$ng] < HallMissingNobleNew:
+        HallMissingNobleTier[$ng] = HallMissingNobleNew
+        HallMissingNoblePending[$ng] = 1
+        if HallMissingNobleNew >= 3:
+            HallMissingNobleInRandom[$ng] = 1
+        end
+    end
+    killvar '$ng'
+    killvar 'HallMissingNobleNew'
 ---
 
 #HallMissingBargainIsExplicit
@@ -176,6 +212,10 @@
             HallMissingSoftIntroDone[$g] = 1
             HallMissingSoftIntroStep[$g] = 3
             $HallMissingPhase[$g] = 'soft_play'
+            ! после A3: нобиль s1 (сёстры)
+            if $g <> 'sandra':
+                gs 'HallMissingNobleUnlock', $g, 1
+            end
         end
 
     elseif $ph = 'soft_play':
@@ -204,6 +244,16 @@
 
         if HallMissingHardSub[$g] >= HallMissingHardSubMax:
             HallMissingHardSub[$g] = 0
+            ! слот только что закрыт
+            if $g <> 'sandra':
+                if $slot = 'mouth':
+                    ! после A4 (рот): нобиль s1+s2
+                    gs 'HallMissingNobleUnlock', $g, 2
+                elseif $slot = 'throat':
+                    ! после A6 (горло): s1–s3 + random
+                    gs 'HallMissingNobleUnlock', $g, 3
+                end
+            end
             HallMissingHardStep[$g] += 1
             if HallMissingHardStep[$g] >= HallMissingHardStepMax:
                 HallMissingHardLadderDone[$g] = 1
@@ -212,6 +262,7 @@
                     HallMissingFlagMouthMature['sandra'] = 1
                 else
                     HallMissingFlagFaceDone[$g] = 1
+                    gs 'HallMissingNobleUnlock', $g, 3
                 end
             end
         end
@@ -252,6 +303,9 @@
     HallMissingSoftIntroDone[$g] = 0
     HallMissingSoftPlayDone[$g] = 0
     HallMissingHardLadderDone[$g] = 0
+    HallMissingNobleTier[$g] = 0
+    HallMissingNoblePending[$g] = 0
+    HallMissingNobleInRandom[$g] = 0
     killvar '$g'
 ---
 
@@ -419,6 +473,33 @@
         $HallMissingPromiseForce = ''
         if $HallMissingPromise = 'noble':
             $HallMissingClient = 'noble'
+            if HallMissingNobleTier[$HallMissingGirl] < 1:
+                HallMissingNobleTier[$HallMissingGirl] = 1
+            end
+            HallMissingNobleScreens = HallMissingNobleTier[$HallMissingGirl]
+            if HallMissingNobleScreens < 1:
+                HallMissingNobleScreens = 1
+            end
+            if HallMissingNobleScreens > 3:
+                HallMissingNobleScreens = 3
+            end
+        end
+        killvar 'HallMissingPromiseRoll'
+        killvar '$ph'
+        exit
+    end
+
+    ! pending first noble after unlock (сёстры) — даже между hard-шагами (после A3/A4/A6)
+    if $HallMissingGirl <> 'sandra' and HallMissingNoblePending[$HallMissingGirl] = 1 and $ph <> 'soft_intro':
+        $HallMissingPromise = 'noble'
+        $HallMissingClient = 'noble'
+        HallMissingNoblePending[$HallMissingGirl] = 0
+        HallMissingNobleScreens = HallMissingNobleTier[$HallMissingGirl]
+        if HallMissingNobleScreens < 1:
+            HallMissingNobleScreens = 1
+        end
+        if HallMissingNobleScreens > 3:
+            HallMissingNobleScreens = 3
         end
         killvar 'HallMissingPromiseRoll'
         killvar '$ph'
@@ -446,18 +527,15 @@
         killvar 'HallMissingIntroIdx'
 
     elseif $ph = 'soft_play':
-        ! нобиль: только сёстры, после soft-intro, НЕ в hard-seq; редко в soft_play
-        if $HallMissingGirl <> 'sandra' and HallMissingSoftIntroDone[$HallMissingGirl] = 1 and HallMissingPromiseRoll <= 6:
-            $HallMissingPromise = 'noble'
-            $HallMissingClient = 'noble'
-        elseif HallMissingPromiseRoll <= 33:
+        ! random soft only; noble — via pending after A3 (не random, чтобы не дублировать)
+        if HallMissingPromiseRoll <= 33:
             $HallMissingPromise = 'look_tits'
         elseif HallMissingPromiseRoll <= 66:
             $HallMissingPromise = 'hug_waist'
         else
             $HallMissingPromise = 'touch_cock'
         end
-        if $HallMissingPromise <> 'noble' and $HallMissingGirl = 'melissa' and $HallMissingPromise = 'look_tits':
+        if $HallMissingGirl = 'melissa' and $HallMissingPromise = 'look_tits':
             $HallMissingPromise = 'look_line'
         end
 
@@ -486,10 +564,11 @@
         end
 
     else
-        ! free: нобиль только сёстры, после soft-intro; выше вес чем в soft_play
-        if $HallMissingGirl <> 'sandra' and HallMissingSoftIntroDone[$HallMissingGirl] = 1 and HallMissingPromiseRoll <= 12:
+        ! free: полный нобиль s1–s3 только после A6 (InRandom)
+        if $HallMissingGirl <> 'sandra' and HallMissingNobleInRandom[$HallMissingGirl] = 1 and HallMissingPromiseRoll <= 12:
             $HallMissingPromise = 'noble'
             $HallMissingClient = 'noble'
+            HallMissingNobleScreens = 3
         elseif $HallMissingBargainStyle = 'soft':
             if HallMissingPromiseRoll <= 33:
                 $HallMissingPromise = 'look_tits'
@@ -682,7 +761,7 @@
         $HallMissingPrivateAct = 'titjob'
 
     elseif $p = 'noble':
-        ! только amanda/melissa; multi-screen prose в agent (S-*-60)
+        ! только amanda/melissa; экраны = HallMissingNobleScreens (1/2/3)
         if $HallMissingGirl = 'sandra':
             $HallMissingPrivateAct = 'hand'
             $HallMissingPromise = 'touch_cock'
@@ -692,6 +771,15 @@
             $HallMissingFinish = 'noble'
             HallMissingPromiseBreak = 0
             HallMissingSilverExtra = 0
+            if HallMissingNobleScreens < 1:
+                HallMissingNobleScreens = HallMissingNobleTier[$HallMissingGirl]
+            end
+            if HallMissingNobleScreens < 1:
+                HallMissingNobleScreens = 1
+            end
+            if HallMissingNobleScreens > 3:
+                HallMissingNobleScreens = 3
+            end
         end
 
     elseif $p = 'hand_quick' or $p = 'hand_strict' or $p = 'hand_pragmatic':

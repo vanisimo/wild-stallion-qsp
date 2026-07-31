@@ -241,12 +241,74 @@
 ! 60 NOBLE
 ! ------------------------------------------------
 
-! [S-ME-60] НОБИЛЬ — только сёстры; gate как Аманда (soft-intro+, не hard-seq)
-! Уговор B-ME-N: поэзия/милость; 0 серебра. Prose archive noble_melissa.
+! ================================================================
+! НОБИЛЬ МЕЛИССА — та же лесенка экранов, что у Аманды
+! tier1 после A3 → s1 hand; tier2 после A4 → s1+s2 mouth; tier3 после A6 → s1–s3 + random
+! ================================================================
+
 #HallMissingScene_noble_melissa
-    *pl '[S-ME-60] noble_melissa'
-    *pl 'Нобиль + Мелисса: verse/favor. multi s1–s3. Ирония + «поэзия двора».'
+    HallMissingNobleCur = 1
+    gs 'HallMissingNobleShow_melissa'
 ---
+
+! [S-ME-60s1] hand soft/hard + концовка
+#HallMissingNobleS1_melissa
+    *pl '[S-ME-60s1] noble s1 — hand'
+    *pl 'Verse/favor. soft: робко/иронично hand. hard: сама, «ритм», ирония.'
+    *pl 'КОНЦОВКА s1 (дописать).'
+---
+
+! [S-ME-60s2] минет soft/hard + концовка
+#HallMissingNobleS2_melissa
+    *pl '[S-ME-60s2] noble s2 — mouth'
+    *pl 'Рот. soft/hard версии. КОНЦОВКА s2 (дописать).'
+---
+
+! [S-ME-60s3] finish
+#HallMissingNobleS3_melissa
+    *pl '[S-ME-60s3] noble s3 — finish'
+    *pl 'mouth/face/anilingus. Archive noble_melissa_s3.'
+---
+
+#HallMissingNobleShow_melissa
+    *pl '─── НОБИЛЬ МЕЛИССА экран ' + STR(HallMissingNobleCur) + '/' + STR(HallMissingNobleScreens) + ' ───'
+    *pl ' '
+
+    if HallMissingNobleCur = 1:
+        gs 'HallMissingNobleS1_melissa'
+    elseif HallMissingNobleCur = 2:
+        gs 'HallMissingNobleS2_melissa'
+    else
+        gs 'HallMissingNobleS3_melissa'
+    end
+
+    *pl ' '
+    if HallMissingNobleCur < HallMissingNobleScreens:
+        gs 'ActUiPrepare', 'Смотреть дальше…', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            HallMissingNobleCur += 1
+            *clr
+            clr
+            cla
+            if LOC('ShowGirlSidebar') = 1:
+                gs 'ShowGirlSidebar', 'melissa'
+            end
+            gs 'HallMissingNobleShow_melissa'
+        end
+    else
+        gs 'HallMissingMeet_noble_melissa'
+        *pl ' '
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            HallMissingNobleMulti = 0
+            if $HallMissingReturnLoc = '':
+                $HallMissingReturnLoc = 'TavernMain'
+            end
+            gt $HallMissingReturnLoc
+        end
+    end
+---
+
 #HallMissingMeet_noble_melissa
-    *pl '[S-ME-60_meet] Meet noble Melissa.'
+    *pl '[S-ME-60_meet] Meet noble Melissa. tier=' + STR(HallMissingNobleTier['melissa'])
 ---

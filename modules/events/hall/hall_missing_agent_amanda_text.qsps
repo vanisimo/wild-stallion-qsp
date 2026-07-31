@@ -242,16 +242,87 @@
 ! 60 NOBLE
 ! ------------------------------------------------
 
-! [S-AM-60] НОБИЛЬ — только сёстры; не в hard-seq; после soft-intro в soft_play(~6%) / free(~12%)
-! Уговор: B-AM-N. Client=noble. 0 серебра.
-! Сейчас stub 1 экран; prose archive: noble_amanda + s1/s2/s3 acts «Смотреть дальше».
-! Потом: разбить на #…_s1 / _s2 / _s3 с act gt, как в архиве.
+! ================================================================
+! НОБИЛЬ АМАНДА — лесенка экранов (только сёстры)
+!
+! Unlock:
+!   tier1 после A3 (soft-intro) → только s1, pending
+!   tier2 после A4 (рот mouth slot) → s1+s2, pending
+!   tier3 после A6 (throat) → s1+s2+s3, + free random
+!
+! s1: hand soft/hard + концовка (дописать prose)
+! s2: минет soft/hard + концовка
+! s3: finish mouth|face|anilingus (архив)
+! ================================================================
+
+! [S-AM-60] entry key (dispatch) — сразу в multi-show
 #HallMissingScene_noble_amanda
-    *pl '[S-AM-60] noble_amanda'
-    *pl 'Нобиль уводит в подсобку (алтарь/угол). soft/high ответ Аманды.'
-    *pl 's1: поцелуй + hand (high сама). s2: на колени, рот. s3: finish mouth|face|anilingus+волосы.'
-    *pl 'Стефан смотрит в щель (меню missing или act внутри сцены — wire prose).'
+    HallMissingNobleCur = 1
+    gs 'HallMissingNobleShow_amanda'
 ---
+
+! [S-AM-60s1] экран 1: поцелуй + handjob soft/high + концовка
+#HallMissingNobleS1_amanda
+    *pl '[S-AM-60s1] noble s1 — hand'
+    *pl 'Уговор/подсобка: алтарь, комплименты. soft: робкий hand. hard/high: сама достаёт, дрочит.'
+    *pl 'КОНЦОВКА s1 (дописать): soft — кончил на руку/в кулак, она утирает; high — доводит, смотрит в щель.'
+    *pl 'initiative=' + $HallMissingInitiative + ' screens=' + STR(HallMissingNobleScreens)
+---
+
+! [S-AM-60s2] экран 2: минет soft/hard + концовка (с tier≥2)
+#HallMissingNobleS2_amanda
+    *pl '[S-AM-60s2] noble s2 — mouth'
+    *pl 'На колени, рот. soft: старательно, не deep. hard: до горла, подмигивает Стефану.'
+    *pl 'КОНЦОВКА s2 (дописать): soft — в рот/платок; high — глоток/показ/азарт.'
+---
+
+! [S-AM-60s3] экран 3: финал mouth|face|anilingus (tier≥3)
+#HallMissingNobleS3_amanda
+    *pl '[S-AM-60s3] noble s3 — finish'
+    *pl 'finish roll/archive: mouth / face / anilingus+cum hair. 0 серебра.'
+    *pl 'КОНЦОВКА s3: из archive noble_amanda_s3.'
+---
+
+#HallMissingNobleShow_amanda
+    *pl '─── НОБИЛЬ АМАНДА экран ' + STR(HallMissingNobleCur) + '/' + STR(HallMissingNobleScreens) + ' ───'
+    *pl ' '
+
+    if HallMissingNobleCur = 1:
+        gs 'HallMissingNobleS1_amanda'
+    elseif HallMissingNobleCur = 2:
+        gs 'HallMissingNobleS2_amanda'
+    else
+        gs 'HallMissingNobleS3_amanda'
+    end
+
+    *pl ' '
+    if HallMissingNobleCur < HallMissingNobleScreens:
+        gs 'ActUiPrepare', 'Смотреть дальше…', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            HallMissingNobleCur += 1
+            *clr
+            clr
+            cla
+            if LOC('ShowGirlSidebar') = 1:
+                gs 'ShowGirlSidebar', 'amanda'
+            end
+            gs 'HallMissingNobleShow_amanda'
+        end
+    else
+        gs 'HallMissingMeet_noble_amanda'
+        *pl ' '
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            HallMissingNobleMulti = 0
+            if $HallMissingReturnLoc = '':
+                $HallMissingReturnLoc = 'TavernMain'
+            end
+            gt $HallMissingReturnLoc
+        end
+    end
+---
+
 #HallMissingMeet_noble_amanda
-    *pl '[S-AM-60_meet] «Женился бы» / 0 медяков / злость Стефана / finish flavor.'
+    *pl '[S-AM-60_meet] «Женился бы» / 0 медяков / злость Стефана. tier=' + STR(HallMissingNobleTier['amanda'])
 ---
+
