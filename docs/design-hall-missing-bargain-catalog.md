@@ -2,7 +2,7 @@
 
 **Дата:** 2026-07-30 (обновлено: **v0.16** explicit bargain all slots after flag)  
 **Статус:** после FlagFaceDone (сёстры) / progress-флага (Сандра): **все** уговоры + ответы **откровенные** (soft и hard); soft-слоты живут + S3  
-**Код:** phase later; prose не трогаем
+**Код:** phase machine in `hall_missing_bargain.qsps`; active text = **STUB**; prose backup `archive/hall_missing_text_v016_backup/`
 
 **Связанные файлы:**
 - `modules/events/hall/hall_missing_bargain.qsps` — механика
