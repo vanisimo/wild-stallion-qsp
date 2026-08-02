@@ -234,6 +234,11 @@ Late stance сдвигает тон, персона сохраняется.
 
 См. `modules/core/family/offense_days.qsps`.
 
+**Пока `GirlOffenseDays[girl] > 0`:**  
+- **Missing bargain:** v1 — `docs/design-hall-missing-bargain-offense.md` (отказ в уговоре; нобиль — исключение).  
+- **Harass intro refuse:** backlog — resist + укол; нет play→missing.  
+- intimacy-arc § Обида.
+
 ### После сцены: policy
 
 Меню (если gate): сдержанно (1) / сама (2) / расковано (3) → `GirlWorkPolicyTalkAfterHarassApply`.  

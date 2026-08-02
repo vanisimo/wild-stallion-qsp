@@ -2,7 +2,10 @@
 
 **Статус:** **канон v2 утверждён + код core готов (2026-07)** — сквозное приставание; lewd/missing auto сняты; play coach; memory/rumor/knowledge probe **PASS**.  
 **Тексты:** intro play-хвосты есть; base T1–T3 / resolve play — доработка prose.  
-**Связь:** `docs/economy.md` §0c, `docs/design-hall-harassment.md`, `docs/state.md`
+**Связь:** `docs/economy.md` §0c, `docs/design-hall-harassment.md`, `docs/state.md`  
+**Уговор + обида (v1):** `docs/design-hall-missing-bargain-offense.md` — обычный клиент / отказ по `$p` / нобиль dig / пьяный.  
+**Backlog ambient:** осмотр сервис + T3 dirty — `docs/design-tavern-client-ambient.md`.  
+**Backlog:** harass-intro refuse при offense — intimacy-arc.
 
 ---
 
@@ -555,7 +558,7 @@ Legacy: rare missing/lewd в look — **убрать** при миграции.
 | **SaveLastHallEvent** | `HallHarassmentRegisterLastEvent` (лог панели) |
 | **HallRumorRegister** | girl, event, severity; play/watch/ignore → `hall_lewd`; missing → `hall_missing` (**порядок ARGS исправлен**) |
 | **Knowledge** | `HallHarassment_*`, `HallPlay_*`, `amanda_hall_lewd_witness`, `HallMissing_*` |
-| **OffenseDays** | HarassmentAfter + MissingAfter |
+| **OffenseDays** | HarassmentAfter + MissingAfter; **пока days>0:** force resist, **no** play/missing/bargain, refuse client + укол в ГГ (канон 2026-07-31, код backlog) |
 | **Policy after** | на виду да; missing P0 нет |
 | **HallRecentTalk** | frozen (thin memory A) — как было |
 

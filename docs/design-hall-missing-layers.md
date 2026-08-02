@@ -2,6 +2,7 @@
 
 **Статус:** канон утверждён (обсуждение 2026-07).  
 **Связь:** `docs/design-hall-scene-unified.md` (§0.5–0.6), `hall_missing_girl.qsps`, `hall_missing_girl_text.qsps`  
+**Backlog (не в missing v-now):** ambient-реплики клиентов (сервис / грязная слава) — `docs/design-tavern-client-ambient.md`. В missing **сейчас** dirty-фраз «девки распутные» **не** добавляем.  
 **Тон late/dirty:** лёгкая игра, подколы, «смотрел — значит можно»; без морали и без «зал делает вид».
 
 ---

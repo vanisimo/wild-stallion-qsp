@@ -1,0 +1,98 @@
+! ================================================
+! FILE: modules/events/hall/hall_missing_bargain_hooks.qsps
+! MODULE: events/hall
+! CODE only — offense answer + rumor hint
+!
+! Обычный уговор (PrintAmanda/…): после *pl клиента
+!   gs 'HallMissingBargainTryOffenseAnswer'
+!   if HallMissingBargainOffenseAnswered = 0:  …обычное «да»…
+!
+! Обида + НЕ noble → Refused + prose по $HallMissingPromise (реальные id уговора)
+! noble + обида → не сюда (укол в ветке noble)
+! ================================================
+
+#HallMissingBargainTryOffenseAnswer
+    HallMissingBargainOffenseAnswered = 0
+
+    if $HallMissingGirl = '':
+        exit
+    end
+
+    if GirlOffenseDays[$HallMissingGirl] <= 0:
+        exit
+    end
+
+    if LCASE($HallMissingPromise) = 'noble':
+        exit
+    end
+
+    ! уже отказала в этом уговоре (многошаговый soft у Сандры) — не печатать отказ снова
+    if HallMissingBargainRefused = 1:
+        HallMissingBargainOffenseAnswered = 1
+        exit
+    end
+
+    HallMissingBargainRefused = 1
+    HallMissingBargainOffenseAnswered = 1
+
+    if LOC('HallMissingBargainOffenseAnswerText') = 1:
+        gs 'HallMissingBargainOffenseAnswerText'
+    end
+---
+
+#HallMissingBargainRumorHintCan
+    HallMissingBargainRumorHintCan = 0
+
+    if $HallMissingGirl = '':
+        exit
+    end
+
+    if HallMissingSoftPlayDone[$HallMissingGirl] = 1:
+        HallMissingBargainRumorHintCan = 1
+    end
+    if HallMissingFlagFaceDone[$HallMissingGirl] = 1:
+        HallMissingBargainRumorHintCan = 1
+    end
+    if HallMissingHardStep[$HallMissingGirl] >= 1:
+        HallMissingBargainRumorHintCan = 1
+    end
+    if $HallMissingPhase[$HallMissingGirl] = 'hard' or $HallMissingPhase[$HallMissingGirl] = 'free':
+        HallMissingBargainRumorHintCan = 1
+    end
+
+    if HallMissingBargainRumorHintCan = 0:
+        exit
+    end
+
+    if HallMissingGirlPrivateCount[$HallMissingGirl] < 2 and TavernBackroomRumor = 0 and TavernGirlsEasyRumor = 0 and HallMissingFlagFaceDone[$HallMissingGirl] = 0 and HallMissingHardStep[$HallMissingGirl] < 1:
+        if HallMissingSoftPlayDone[$HallMissingGirl] = 1:
+            HallMissingBargainRumorHintCan = 0
+        end
+    end
+---
+
+#HallMissingBargainTryRumorHint
+    if LOC('HallMissingBargainRumorHintCan') = 1:
+        gs 'HallMissingBargainRumorHintCan'
+    else
+        HallMissingBargainRumorHintCan = 0
+    end
+
+    if HallMissingBargainRumorHintCan = 0:
+        exit
+    end
+
+    if RAND(1, 100) > 55:
+        killvar 'HallMissingBargainRumorHintCan'
+        exit
+    end
+
+    HallMissingRumorLine = RAND(0, 3)
+
+    if LOC('HallMissingBargainRumorHintText') = 1:
+        gs 'HallMissingBargainRumorHintText'
+    end
+
+    killvar 'HallMissingRumorLine'
+    killvar 'HallMissingBargainRumorHintCan'
+---

@@ -2,11 +2,13 @@
 
 **Дата:** 2026-07-30 (обновлено: **v0.17** E:\promt.txt canon, Сандра кухня без зала, A4–A6 оральное единство уговора)  
 **Статус:** после FlagFaceDone (сёстры) / progress-флага (Сандра): **все** уговоры + ответы **откровенные** (soft и hard); soft-слоты живут + S3; уговор A4–A6 единый на минет, расширение услуг внутри сцен missing; Сандра — всё на кухне без зала.
-**Код:** phase machine in `hall_missing_bargain.qsps`; active text = **STUB**; prose backup `archive/hall_missing_text_v016_backup/`
+**Код:** phase machine in `hall_missing_bargain.qsps`; prose уговора в `hall_missing_bargain_text.qsps`; backup `archive/hall_missing_text_v016_backup/`  
+**Обида / отказ / нобиль-dig / rumor в уговоре:** `docs/design-hall-missing-bargain-offense.md` (2026-08)
 
 **Связанные файлы:**
 - `modules/events/hall/hall_missing_bargain.qsps` — механика + phase
-- `modules/events/hall/hall_missing_bargain_text.qsps` — stubs уговора `[B-…]`
+- `modules/events/hall/hall_missing_bargain_hooks.qsps` — offense/rumor CODE
+- `modules/events/hall/hall_missing_bargain_text.qsps` — уговоры `[B-…]` + отказы + noble dig
 - `modules/events/hall/hall_missing_girl.qsps` — flow + print **dispatch** (без prose)
 - `modules/events/hall/hall_missing_agent_amanda|melissa|sandra_text.qsps` — **все сцены** по порядку `[S-…]`
 - ~~`hall_missing_girl_text.qsps`~~ **удалён** (архив v016)
