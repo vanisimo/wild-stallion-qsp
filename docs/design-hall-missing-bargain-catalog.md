@@ -272,19 +272,21 @@ A2→cuni/anil; A3→минет.
 | **Местный** | «пойду к **дочкам**» → она **ладно** |
 
 **Sub-лестница рта (упрощ. vs A4.1–5 сестёр):**  
-(порядок first-show β, потом random last)
+(порядок first-show β, потом random terminals; **без** отдельного шага «DT + кашель»)
 
-| step | |
-|------|--|
-| 1 | окончание **в рот** |
-| 2 | **проглот** |
-| 3 | отсос, **покажи что во рту** |
-| 4 | на **лицо** |
-| 5 | deepthroat **с кашлем** (один раз first) |
-| 6 | DT + окончание **в рот** |
-| 7 | DT + окончание **в горло** |
+| step | finish / act | Scene key |
+|------|--------------|-----------|
+| 0 | `cum_mouth` + mouth | `mouth_mid_sandra` |
+| 1 | `swallow` | `mouth_swallow_sandra` |
+| 2 | `show_mouth` | `mouth_show_sandra` |
+| 3 | `cum_face` | `facial_sandra` |
+| 4 | DT + `cum_mouth` | `deepthroat_sandra` |
+| 5 | DT + `cum_throat` | `deepthroat_sandra` |
 
-После **окончание в рот / проглот** — уговоры **жёстче**, Сандра **подыгрывает** (тон лесенки).
+`HallMissingHardSubMax['sandra']` = **6** (sub 0..5).  
+Полная схема + комментарии prose: `docs/design-hall-missing-sandra-ladder.md`.
+
+После **окончание в рот / проглот** (sub≥2 → `FlagMouthMature`) — уговоры **жёстче**, Сандра **подыгрывает** (тон лесенки).
 
 #### Откровенные уговоры / S3 — v0.15
 

@@ -425,6 +425,49 @@
     end
 
     killvar 'HallMissingClientRoll'
+    gs 'HallMissingApplyClientFlavorTags'
+---
+
+! Метки типажа для prose / free-bias (канон Сандра + общие client flavor):
+! traveler/sailor  — hand, большой член
+! rich_merchant    — mouth, толстый член, finish cum_mouth
+! craftsman/local  — facial, обильный finish cum_face
+! drunk_guest      — без favor (уговор срывается)
+#HallMissingApplyClientFlavorTags
+    $c = LCASE($HallMissingClient)
+    $HallMissingClientCock = ''
+    $HallMissingClientPreferAct = ''
+    $HallMissingClientPreferFinish = ''
+    HallMissingClientCumHeavy = 0
+
+    if $c = 'traveler' or $c = 'sailor':
+        $HallMissingClientCock = 'big'
+        $HallMissingClientPreferAct = 'hand'
+        $HallMissingClientPreferFinish = 'hand'
+        HallMissingClientCumHeavy = 0
+    elseif $c = 'rich_merchant' or $c = 'merchant':
+        $HallMissingClientCock = 'thick'
+        $HallMissingClientPreferAct = 'mouth'
+        $HallMissingClientPreferFinish = 'cum_mouth'
+        HallMissingClientCumHeavy = 0
+    elseif $c = 'craftsman' or $c = 'local':
+        $HallMissingClientCock = 'average'
+        $HallMissingClientPreferAct = 'facial'
+        $HallMissingClientPreferFinish = 'cum_face'
+        HallMissingClientCumHeavy = 1
+    elseif $c = 'drunk_guest':
+        $HallMissingClientCock = ''
+        $HallMissingClientPreferAct = ''
+        $HallMissingClientPreferFinish = ''
+        HallMissingClientCumHeavy = 0
+    else
+        $HallMissingClientCock = 'average'
+        $HallMissingClientPreferAct = ''
+        $HallMissingClientPreferFinish = ''
+        HallMissingClientCumHeavy = 0
+    end
+
+    killvar '$c'
 ---
 
 ! ================================================
@@ -1139,6 +1182,7 @@ killvar '$HallMissingApplyChoice'
     if $HallMissingClient = '':
         $HallMissingClient = 'rich_merchant'
     end
+    gs 'HallMissingApplyClientFlavorTags'
     $HallLewdClient = $HallMissingClient
     if LOC('HallLewdFillClientBits') = 1:
         gs 'HallLewdFillClientBits'

@@ -6,7 +6,7 @@
 ! HallMissingPhase[girl]: soft_intro | soft_play | hard | free
 ! soft_intro: 3 hold (look/hug/cock)
 ! soft_play:  N=3 random soft ± break
-! hard:       sisters h0a→mouth→h0b→face→throat; sandra mouth×7
+! hard:       sisters h0a→mouth→h0b→face→throat; sandra mouth×6 (no cough step)
 ! free:       mix soft S3 + hard terminals; FlagFaceDone → explicit
 !
 ! Advance: HallMissingPhaseAdvance on peek/ignore
@@ -162,10 +162,12 @@
     HallMissingHardStepMax = 0
 
     if $hg = 'sandra':
+        ! hard first-show: 6 steps (0..5), без DT+кашель
+        ! 0 cum_mouth | 1 swallow | 2 show_mouth | 3 cum_face | 4 DT+cum_mouth | 5 DT+cum_throat
         HallMissingHardStepMax = 1
         if HallMissingHardStep[$hg] <= 0:
             $HallMissingHardSlot = 'mouth'
-            HallMissingHardSubMax = 7
+            HallMissingHardSubMax = 6
         end
     else
         ! amanda / melissa
@@ -602,21 +604,57 @@
                 $HallMissingPromise = 'look_line'
             end
         else
-            HallMissingFreeHard = RAND(1, 100)
-            if HallMissingFreeHard <= 28:
-                $HallMissingPromise = 'mouth_hard'
-            elseif HallMissingFreeHard <= 48:
-                $HallMissingPromise = 'facial'
-            elseif HallMissingFreeHard <= 68:
-                $HallMissingPromise = 'deepthroat'
-            elseif $HallMissingGirl = 'sandra':
-                $HallMissingPromise = 'titjob'
-            elseif $HallMissingGirl = 'melissa':
-                $HallMissingPromise = 'bud_cuni'
+            ! free hard: у Сандры bias по client flavor tags (см. HallMissingApplyClientFlavorTags)
+            if $HallMissingGirl = 'sandra' and $HallMissingClientPreferAct <> '':
+                HallMissingFreeHard = RAND(1, 100)
+                if $HallMissingClientPreferAct = 'hand':
+                    ! моряк: рука / большой член — чаще hand, реже titjob
+                    if HallMissingFreeHard <= 55:
+                        $HallMissingPromise = 'hand_quick'
+                    elseif HallMissingFreeHard <= 80:
+                        $HallMissingPromise = 'titjob'
+                    else
+                        $HallMissingPromise = 'mouth_hard'
+                    end
+                elseif $HallMissingClientPreferAct = 'mouth':
+                    ! купец: отсос + в рот / толстый член
+                    if HallMissingFreeHard <= 60:
+                        $HallMissingPromise = 'mouth_hard'
+                    elseif HallMissingFreeHard <= 85:
+                        $HallMissingPromise = 'deepthroat'
+                    else
+                        $HallMissingPromise = 'facial'
+                    end
+                elseif $HallMissingClientPreferAct = 'facial':
+                    ! мастеровой: на лицо, обильно
+                    if HallMissingFreeHard <= 55:
+                        $HallMissingPromise = 'facial'
+                    elseif HallMissingFreeHard <= 80:
+                        $HallMissingPromise = 'mouth_hard'
+                    else
+                        $HallMissingPromise = 'hand_quick'
+                    end
+                else
+                    $HallMissingPromise = 'mouth_hard'
+                end
+                killvar 'HallMissingFreeHard'
             else
-                $HallMissingPromise = 'piggy_cuni'
+                HallMissingFreeHard = RAND(1, 100)
+                if HallMissingFreeHard <= 28:
+                    $HallMissingPromise = 'mouth_hard'
+                elseif HallMissingFreeHard <= 48:
+                    $HallMissingPromise = 'facial'
+                elseif HallMissingFreeHard <= 68:
+                    $HallMissingPromise = 'deepthroat'
+                elseif $HallMissingGirl = 'sandra':
+                    $HallMissingPromise = 'titjob'
+                elseif $HallMissingGirl = 'melissa':
+                    $HallMissingPromise = 'bud_cuni'
+                else
+                    $HallMissingPromise = 'piggy_cuni'
+                end
+                killvar 'HallMissingFreeHard'
             end
-            killvar 'HallMissingFreeHard'
         end
     end
 
@@ -719,7 +757,16 @@
     elseif $p = 'mouth_hard' or $p = 'mouth_spit' or $p = 'mouth_swallow' or $p = 'mouth_price' or $p = 'swallow_trade':
         $HallMissingPrivateAct = 'mouth'
         if $HallMissingGirl = 'sandra':
-            if HallMissingCurSub = 0:
+            ! Sandra hard mouth ladder (×6, no cough):
+            ! 0 mouth_mid+cum_mouth → 1 swallow → 2 show_mouth → 3 facial
+            ! → 4 deepthroat+cum_mouth → 5 deepthroat+cum_throat → free
+            ! free (ladder done / CurSub=0 + prefer): flavor finish по типажу
+            if HallMissingHardLadderDone['sandra'] = 1 and $HallMissingClientPreferFinish = 'cum_face':
+                $HallMissingFinish = 'cum_face'
+                $HallMissingPrivateAct = 'mouth'
+            elseif HallMissingHardLadderDone['sandra'] = 1 and $HallMissingClientPreferFinish = 'cum_mouth':
+                $HallMissingFinish = 'cum_mouth'
+            elseif HallMissingCurSub = 0:
                 $HallMissingFinish = 'cum_mouth'
             elseif HallMissingCurSub = 1:
                 $HallMissingFinish = 'swallow'
@@ -728,9 +775,6 @@
             elseif HallMissingCurSub = 3:
                 $HallMissingFinish = 'cum_face'
             elseif HallMissingCurSub = 4:
-                $HallMissingPrivateAct = 'deepthroat'
-                $HallMissingFinish = 'cough'
-            elseif HallMissingCurSub = 5:
                 $HallMissingPrivateAct = 'deepthroat'
                 $HallMissingFinish = 'cum_mouth'
             else
