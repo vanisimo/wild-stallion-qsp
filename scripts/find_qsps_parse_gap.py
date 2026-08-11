@@ -7,8 +7,12 @@ repo = Path(__file__).resolve().parents[1]
 qsps = repo / ".build" / "qsp-cli" / "dev" / "game.qsps"
 text = qsps.read_text(encoding="utf-8")
 
-node = r"""
-const {readQsps}=require('C:/Users/SlavID/AppData/Roaming/npm/node_modules/@qsp/cli/node_modules/@qsp/converters/dist/index.cjs');
+conv_path = subprocess.check_output(
+    ["python", str(repo / "scripts" / "resolve_qsp_converters.py")], text=True
+).strip().replace("\\", "/")
+
+node = f"""
+const {{readQsps}}=require('{conv_path}');
 const fs=require('fs');
 const parsed=readQsps(fs.readFileSync(process.argv[1],'utf8'));
 console.log(JSON.stringify(parsed.map(l=>l.name)));

@@ -25,7 +25,7 @@ const parsed=readQsps(fs.readFileSync(process.argv[1],'utf8'));
 console.log(JSON.stringify(parsed.map(l=>l.name)));
 """
 parsed_names = json.loads(
-    subprocess.check_output(["node", "-e", node, str(qsps_path)], text=True)
+    subprocess.check_output(["node", "-e", node, str(qsps_path)], encoding="utf-8")
 )
 parsed_set = set(parsed_names)
 
