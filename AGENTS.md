@@ -68,6 +68,8 @@ Known structure of the project:
 - `modules/core/init_npc/`
 - `modules/core/time/npc_talk_limits.qsps`
 - `modules/core/show_image/image_debug_random.qsps`
+- `modules/core/show_image/show_image_helpers.qsps` — `#SceneShowVisual` (stub + [VIS] caption, no empty screens)
+- `modules/events/kitchen/sandra_kitchen_hook.qsps` — kitchen notice→play→missing (α)
 - `modules/core/tavern/tavern_event_state_core.qsps`
 - `modules/core/family/` — offense days engine
 - `modules/actions/tavern/`
@@ -223,6 +225,16 @@ Current core design constraints:
   - Icon assets: `images/common/ui/actions/*.png` and `images/common/ui/*.png` (items) — **32×32 px** (was 48×48).
   - Dropdown `MenuUiAdd` menus are **not** covered by this rule (they already use menu icons separately).
   - After talk text screens may keep `act` «Вернуться» via `#GirlTalkAddReturnButton` (`return` icon).
+- **VISUAL ON EVERY SCREEN (no empty screens) — канон для всей игры:**
+  - **Нет экранов без картинки.** Открыли сундук → картинка сундука; окно → окно; секс на улице → кадр секса; клиент на кухню → дверь/занавеска с входящим; уговор / missing / harass / talk outcome — всегда visual.
+  - **Пока ассета нет** — **заглушка** `images/common/hall_scene_stub.png` (или тематический stub), **не** пустой main text.
+  - **Потом** подменить path на real webp/png — логику экрана не ломать.
+  - **Подпись / ключ ассета обязателен**, чтобы не терять смысл кадра: `gs 'SceneShowVisual', 'images/…/key_path', 'короткая подпись: что на кадре'`.
+  - Helper: `#SceneShowVisual` in `modules/core/show_image/show_image_helpers.qsps` — stub + `[VIS] caption` + debug future path. Real art: `SceneArtUseReal = 1` (или per-system `HallMissingArtUseReal` / `SandraKitchenArtUseReal`).
+  - **Код (logic/dispatch), не USER-OWNED prose:** image call **до** `*pl` сцены (`PrintText` / location body / resolve), не размазывать `ShowImage` по строкам narrative без нужды.
+  - **Новые сцены / agent / events:** в header файла или ASSET-*.md — список ключей (path + подпись). Неизвестный кадр — **спросить владельца**, не выдумывать сюжет арта.
+  - **Locations** (`TavernMain`, `Kitchen`, street…): на входе location image / work image уже есть; **event overlays** (notice, chest, window, sex) — отдельный `SceneShowVisual` на каждый *clr-экран события.
+  - Agent missing: `HallMissingGirlShowImage` + caption; kitchen hook Сандры: `SandraKitchenShowImage` → `SceneShowVisual`.
 - Work assignment:
   - maximum 2 jobs per girl
   - efficiency drops when a girl has 2 jobs

@@ -274,6 +274,61 @@ end
 gs 'ShowImage', 'sex', $girl, $type, $pose, 'webp', $size
 ---
 
+! ================================================
+! SceneShowVisual — КАНОН: нет экранов без картинки
+! ARGS[0] = future path без расширения (куда ляжет ассет)
+! ARGS[1] = подпись / ключ ассета (обязательно, чтобы не терять)
+! ARGS[2] = size: small|medium|large (default large)
+! ARGS[3] = prefer ext for real: webp|png|jpg (default webp)
+!
+! Пока ассета нет: заглушка images/common/hall_scene_stub.png
+! Когда ассет есть: SceneArtUseReal=1 → показать future path
+! Всегда печатает подпись [VIS] … (в debug — и future path)
+! Пример:
+!   gs 'SceneShowVisual', 'images/events/sandra/kitchen_hook/notice_door_enter', 'notice: клиент входит на кухню'
+! ================================================
+#SceneShowVisual
+    $SceneVisFuture = $ARGS[0]
+    $SceneVisCaption = $ARGS[1]
+    $SceneVisSize = LCASE($ARGS[2])
+    $SceneVisExt = LCASE($ARGS[3])
+
+    if $SceneVisSize = '':
+        $SceneVisSize = 'large'
+    end
+    if $SceneVisExt = '':
+        $SceneVisExt = 'webp'
+    end
+    if $SceneVisCaption = '':
+        $SceneVisCaption = 'scene'
+    end
+
+    $SceneVisStub = 'images/common/hall_scene_stub'
+
+    if SceneArtUseReal = 1 and $SceneVisFuture <> '' and LOC('ShowImagePath') = 1:
+        gs 'ShowImagePath', $SceneVisFuture, '', 'event', $SceneVisExt
+    elseif LOC('ShowImagePath') = 1:
+        gs 'ShowImagePath', $SceneVisStub, '', 'event', 'png'
+    elseif LOC('ShowImage') = 1:
+        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', $SceneVisSize
+    end
+
+    ! подпись — всегда (чтобы не терять ключ ассета при stub)
+    *pl '<center><small>[VIS] ' + $SceneVisCaption + '</small></center>'
+    if debug = 1 or debug_images = 1:
+        if $SceneVisFuture <> '':
+            *pl '<center><small>[VIS future] ' + $SceneVisFuture + '.' + $SceneVisExt + ' (ArtUseReal=' + STR(SceneArtUseReal) + ')</small></center>'
+        end
+    end
+    *pl ' '
+
+    killvar '$SceneVisFuture'
+    killvar '$SceneVisCaption'
+    killvar '$SceneVisSize'
+    killvar '$SceneVisExt'
+    killvar '$SceneVisStub'
+---
+
 ! ====================== ЗАГЛУШКА ДЛЯ СОВМЕСТИМОСТИ ======================
 ! Вызов gs 'show_image_helpers' из GameInit теперь будет работать
 #show_image_helpers

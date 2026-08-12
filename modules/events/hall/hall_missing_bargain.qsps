@@ -381,6 +381,10 @@
             $HallMissingClient = 'rich_merchant'
         end
     end
+    ! flavor tags ДО PickPromise / free-bias (Сандра PreferAct/Finish)
+    if LOC('HallMissingApplyClientFlavorTags') = 1:
+        gs 'HallMissingApplyClientFlavorTags'
+    end
 
     $HallLewdClient = $HallMissingClient
     if LOC('HallLewdFillClientBits') = 1:
@@ -424,7 +428,11 @@
     if HallMissingBargainRefused = 1:
         gs 'ActUiPrepare', 'Вернуться к работе', 'return'
         act $ActUiLabel, $ActUiIconPath:
-            gt 'TavernMain'
+            if $HallMissingReturnLoc <> '' and LOC($HallMissingReturnLoc) = 1:
+                gt $HallMissingReturnLoc
+            else
+                gt 'TavernMain'
+            end
         end
     else
         gs 'ActUiPrepare', 'Слушать дальше…', 'generic'
@@ -760,12 +768,15 @@
             ! Sandra hard mouth ladder (×6, no cough):
             ! 0 mouth_mid+cum_mouth → 1 swallow → 2 show_mouth → 3 facial
             ! → 4 deepthroat+cum_mouth → 5 deepthroat+cum_throat → free
-            ! free (ladder done / CurSub=0 + prefer): flavor finish по типажу
-            if HallMissingHardLadderDone['sandra'] = 1 and $HallMissingClientPreferFinish = 'cum_face':
-                $HallMissingFinish = 'cum_face'
-                $HallMissingPrivateAct = 'mouth'
-            elseif HallMissingHardLadderDone['sandra'] = 1 and $HallMissingClientPreferFinish = 'cum_mouth':
-                $HallMissingFinish = 'cum_mouth'
+            ! free (ladder done): flavor finish по типажу
+            if HallMissingHardLadderDone['sandra'] = 1:
+                ! free mouth_hard: finish по типажу (face / mouth); hand-prefer → всё равно рот
+                if $HallMissingClientPreferFinish = 'cum_face':
+                    $HallMissingFinish = 'cum_face'
+                    $HallMissingPrivateAct = 'mouth'
+                else
+                    $HallMissingFinish = 'cum_mouth'
+                end
             elseif HallMissingCurSub = 0:
                 $HallMissingFinish = 'cum_mouth'
             elseif HallMissingCurSub = 1:
@@ -800,7 +811,10 @@
 
     elseif $p = 'facial':
         $HallMissingPrivateAct = 'mouth'
-        if HallMissingCurSub = 0:
+        if $HallMissingGirl = 'sandra' and HallMissingHardLadderDone['sandra'] = 1:
+            ! free terminal: на лицо (craftsman PreferFinish / CumHeavy в prose)
+            $HallMissingFinish = 'cum_face'
+        elseif HallMissingCurSub = 0:
             $HallMissingFinish = 'cum_face_soft'
         elseif HallMissingCurSub = 1:
             $HallMissingFinish = 'cum_face'
@@ -810,7 +824,16 @@
 
     elseif $p = 'deepthroat':
         $HallMissingPrivateAct = 'deepthroat'
-        if HallMissingCurSub <= 0:
+        if $HallMissingGirl = 'sandra' and HallMissingHardLadderDone['sandra'] = 1:
+            ! free DT: finish по типажу (купец → в рот; иначе горло)
+            if $HallMissingClientPreferFinish = 'cum_mouth':
+                $HallMissingFinish = 'cum_mouth'
+            elseif $HallMissingClientPreferFinish = 'cum_face':
+                $HallMissingFinish = 'cum_mouth'
+            else
+                $HallMissingFinish = 'cum_throat'
+            end
+        elseif HallMissingCurSub <= 0:
             $HallMissingFinish = 'try'
         elseif HallMissingCurSub = 1:
             $HallMissingFinish = 'partial'
@@ -867,15 +890,11 @@
     if $HallMissingGirl = '':
         exit
     end
-    HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
-    if HallMissingUniform > 1:
-        HallMissingUniform = 1
-    end
-    if HallMissingUniform < 0:
-        HallMissingUniform = 0
-    end
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'small'
+    ! тот же pipeline, что agent missing — не пустой экран
+    if LOC('HallMissingGirlShowImage') = 1:
+        gs 'HallMissingGirlShowImage', 'bargain'
+    elseif LOC('ShowImage') = 1:
+        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'large'
     end
 ---
 

@@ -159,80 +159,84 @@
 ! ================================================
 
 #HallHarassmentRenderAfterScreen
+    ! ========== ЭКРАН 2 — чёткие блоки ==========
+    ! A visual | B что произошло | C она к вам | D правила
     *pl '══════════════════════════════════════════════'
-
     if $HallHarassConsequenceArea = 'kitchen':
-        if $KitchenHarassReturnLoc = 'TavernMain':
-            *pl ' ГЛАВНЫЙ ЗАЛ: ПОСЛЕ СЛУЧАЯ'
-        else:
-            *pl ' КУХНЯ: ПОСЛЕ СЛУЧАЯ'
-        end
-    else:
-        *pl ' ГЛАВНЫЙ ЗАЛ: ПОСЛЕ СЛУЧАЯ'
+        *pl ' ПОСЛЕ: КУХНЯ'
+    else
+        *pl ' ПОСЛЕ: ЗАЛ'
     end
-
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     $PolicyTalkGirl = $HallHarassGirl
-
     if $HallHarassConsequenceArea = 'kitchen':
         $PolicyTalkArea = 'kitchen'
-    else:
+    else
         $PolicyTalkArea = 'hall'
     end
-
     gs 'GirlWorkPolicyTalkEnsureName', $PolicyTalkGirl
 
-    ! 1) картинка итога (reaction)
+    ! A) visual
     if LOC('HallHarassmentShowImage') = 1 and $HallHarassReaction <> '':
         gs 'HallHarassmentShowImage', $HallHarassGirl, $HallHarassJob, HallHarassType, $HallHarassReaction
         *pl ' '
-    elseif LOC('ShowGirlTalkContextImage') = 1:
-        gs 'ShowGirlTalkContextImage', $HallHarassGirl, 'large'
-        *pl ' '
     end
 
-    ! 2) что сделал Стефан / зал
-    if $HallHarassConsequenceArea = 'kitchen':
-        gs 'KitchenHarassmentPrintHallReaction'
-    else:
+    ! B) сцена / звуки (hall_harassment_after_text)
+    *pl '── Что произошло ──'
+    *pl ' '
+    if LOC('HallHarassmentPrintAfterBeat') = 1:
+        gs 'HallHarassmentPrintAfterBeat'
+    else
         gs 'HallHarassmentPrintHallReaction'
     end
+    *pl ' '
 
-    ! 3) offense notices
-    if GirlOffenseDays[$HallHarassGirl] <= 0 and $GirlTalkPendingNotice[$HallHarassGirl] <> '':
+    if debug = 1:
+        *pl '[DEBUG AFTER] choice=' + $HallHarassReaction + ' beat=' + $HallHarassSceneBeat + ' slap=' + STR(HallHarassSceneSlap) + ' band=' + STR(HallHarassAfterBand)
         *pl ' '
-        *pl $GirlTalkPendingNotice[$HallHarassGirl]
     end
 
-    if GirlOffenseDays[$HallHarassGirl] > 0 and LOC('OffenseDaysPrintSceneReaction') = 1:
-        gs 'OffenseDaysPrintSceneReaction', $HallHarassGirl
-    elseif GirlOffenseDays[$HallHarassGirl] > 0:
+    ! C) реплика к Стефану (отдельно от меню)
+    *pl '── ' + $RealName[$HallHarassGirl] + ' ──'
+    *pl ' '
+    gs 'HallHarassmentAftermathLineText'
+    if $HallHarassAftermathLine <> '':
+        *pl $RealName[$HallHarassGirl] + ' ' + $HallHarassAftermathLine
         *pl ' '
-        *pl $RealName[$HallHarassGirl] + ' обижена. Не подходи.'
     end
+    killvar '$HallHarassAftermathLine'
 
-    if $HallHarassGirl <> 'sandra' and GirlOffenseDays['sandra'] > 0 and $GirlOffenseReason['sandra'] = 'daughter_no_protect':
+    if GirlOffenseDays[$HallHarassGirl] > 0:
         if LOC('OffenseDaysPrintSceneReaction') = 1:
-            gs 'OffenseDaysPrintSceneReaction', 'sandra'
+            gs 'OffenseDaysPrintSceneReaction', $HallHarassGirl
+            *pl ' '
         end
     end
 
+    ! offense-debug только если про эту же девушку (не чужой хвост melissa на sandra)
     if debug = 1 and $HallHarassOffenseDebug <> '':
-        *pl ' '
-        *pl '[DEBUG OFFENSE] ' + $HallHarassOffenseDebug
+        if INSTR($HallHarassOffenseDebug, 'girl=' + $HallHarassGirl) > 0:
+            *pl '[DEBUG OFFENSE] ' + $HallHarassOffenseDebug
+            *pl ' '
+        end
     end
+    $HallHarassOffenseDebug = ''
 
-    ! 4) разговор о правилах (без второй сцены)
-    *pl ' '
-    *pl '---'
+    ! D) правила
+    *pl '── На будущее ──'
     *pl ' '
     gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
-
     *pl ' '
     gs 'HallHarassmentBuildPolicyMenu'
-    gs 'HallHarassmentPrintGirlPolicyMenuLine'
+    if HallHarassPolicyChosen = 0:
+        gs 'GetMenuOpenLinkHref', 'HallHarassPolicyMenu', 'Обсудить правило поведения'
+        *p $MenuOpenLinkHref + '.'
+        killvar '$MenuOpenLinkHref'
+        *pl ' '
+    end
 
     if HallHarassPolicyChosen = 1:
         *pl ' '
@@ -557,64 +561,76 @@
 ---
 
 #HallHarassmentAftermathLineText
+    ! реплика к Стефану (band × choice) — hall_harassment_after_text.qsps
     $HallHarassAftermathLine = ''
-    $HallHarassAftermathLineId = ''
+    if LOC('HallHarassAfterBandCalc') = 1:
+        gs 'HallHarassAfterBandCalc'
+    end
 
+    $HallHarassAfterId = ''
     if $HallHarassReaction = 'protect_hard':
         if $HallHarassTalkReaction = 'protect_dislike':
-            $HallHarassAftermathLineId = 'aftermath_protect_annoyed_line'
+            $HallHarassAfterId = 'talk_protect_annoyed'
         elseif $HallHarassTalkReaction = 'protect_fail':
-            $HallHarassAftermathLineId = 'aftermath_protect_fail_line'
-        else:
-            $HallHarassAftermathLineId = 'aftermath_protect_thanks_line'
+            $HallHarassAfterId = 'talk_protect_fail'
+        else
+            $HallHarassAfterId = 'talk_protect_thanks'
         end
     elseif $HallHarassReaction = 'watch':
-        if $HallHarassTalkReaction = 'watch_bad' or $HallHarassTalkReaction = 'watch_lewd':
-            $HallHarassAftermathLineId = 'aftermath_watch_angry_line'
-        else:
-            $HallHarassAftermathLineId = 'aftermath_watch_ok_line'
+        if HallHarassAfterBand = 0:
+            $HallHarassAfterId = 'talk_watch_band0'
+        elseif HallHarassAfterBand = 1:
+            $HallHarassAfterId = 'talk_watch_band1'
+        elseif HallHarassAfterBand = 2:
+            $HallHarassAfterId = 'talk_watch_band2'
+        else
+            $HallHarassAfterId = 'talk_watch_band3'
         end
-    elseif $HallHarassReaction = 'ignore':
-        if Friends[$HallHarassGirl] < 3 or fear[$HallHarassGirl] >= 2:
-            $HallHarassAftermathLineId = 'aftermath_ignore_cold_line'
-        else:
-            $HallHarassAftermathLineId = 'aftermath_ignore_ok_line'
+    else
+        if HallHarassAfterBand = 0:
+            $HallHarassAfterId = 'talk_ignore_band0'
+        elseif HallHarassAfterBand = 1:
+            $HallHarassAfterId = 'talk_ignore_band1'
+        elseif HallHarassAfterBand = 2:
+            $HallHarassAfterId = 'talk_ignore_band2'
+        else
+            $HallHarassAfterId = 'talk_ignore_band3'
         end
     end
 
-    if $HallHarassAftermathLineId <> '':
-        gs 'HallHarassmentText', $HallHarassAftermathLineId
-        $HallHarassAftermathLine = $HallHarassmentText
-        killvar '$HallHarassmentText'
+    if $HallHarassAfterId <> '' and LOC('HallHarassmentAfterText') = 1:
+        gs 'HallHarassmentAfterText', $HallHarassAfterId
+        $HallHarassAftermathLine = $HallHarassmentAfterText
+        killvar '$HallHarassmentAfterText'
     end
-
-    killvar '$HallHarassAftermathLineId'
+    killvar '$HallHarassAfterId'
 ---
 
 #HallHarassmentPrintHallReaction
-    ! v2: при play — resolve из lewd-prose (client + тон), иначе классический harass
+    ! экран 2: девушка + клиент (after_text); не «зал осудил хозяина»
     if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        if $HallHarassReaction = 'watch' or $HallHarassReaction = 'ignore':
+            if LOC('HallHarassmentPrintAfterBeat') = 1:
+                gs 'HallHarassmentPrintAfterBeat'
+                exit
+            end
+        end
         if LOC('HallHarassmentPrintPlayResolve') = 1:
             gs 'HallHarassmentPrintPlayResolve'
             exit
         end
     end
 
+    if LOC('HallHarassmentPrintAfterBeat') = 1:
+        gs 'HallHarassmentPrintAfterBeat'
+        exit
+    end
+
     if $HallHarassReaction = 'protect_hard':
-        if $HallHarassTalkReaction = 'protect_fail':
-            gs 'HallHarassmentPrintText', 'hall_reaction_protect_fail'
-        else:
-            gs 'HallHarassmentPrintText', 'hall_reaction_protect'
-        end
+        gs 'HallHarassmentPrintText', 'hall_reaction_protect'
     elseif $HallHarassReaction = 'watch':
-        if $HallHarassTalkReaction = 'watch_lewd':
-            gs 'HallHarassmentPrintText', 'hall_reaction_watch_lewd'
-        elseif $HallHarassTalkReaction = 'watch_bad':
-            gs 'HallHarassmentPrintText', 'hall_reaction_watch_bad'
-        else:
-            gs 'HallHarassmentPrintText', 'hall_reaction_watch'
-        end
-    else:
+        gs 'HallHarassmentPrintText', 'hall_reaction_watch'
+    else
         gs 'HallHarassmentPrintText', 'hall_reaction_ignore'
     end
 ---
@@ -1325,6 +1341,9 @@
     HallHarassTextRoll = 1
     HallHarassMissingTriggered = 0
     $HallHarassStanceCanon = 'resist'
+    $HallHarassSceneBeat = ''
+    HallHarassScenePicked = 0
+    HallHarassSceneSlap = 0
 
     if LOC('HallSceneV2EnsureFlags') = 1:
         gs 'HallSceneV2EnsureFlags'
@@ -1837,6 +1856,38 @@
         $HallImageReaction = 'ignore'
     end
 
+    ! ignore / отвернулся: картинка СТОЙКИ (future: common/hall_bar_counter; пока work hall)
+    if $HallImageReaction = 'ignore':
+        $HallHarassBarPath = 'images/events/common/hall_bar_counter'
+        $HallHarassBarCaption = 'стойка: отвернулись; за спиной — звуки инцидента'
+        $HallHarassBarExt = 'webp'
+        if $HallImageJob = 'kitchen' or $HallHarassConsequenceArea = 'kitchen':
+            $HallHarassBarPath = 'images/events/tavern/work/kitchen/normal/work_1'
+            $HallHarassBarCaption = 'спиной к кухне: только звуки'
+            $HallHarassBarExt = 'jpg'
+        end
+        ! пока bar_counter нет — fallback work hall
+        if $HallHarassBarPath = 'images/events/common/hall_bar_counter':
+            if LOC('ShowImagePath') = 1:
+                gs 'ShowImagePath', 'images/events/tavern/work/hall/normal/work_1', '', 'event', 'jpg'
+                *pl '<center><small>[VIS] ' + $HallHarassBarCaption + ' | future: hall_bar_counter.webp</small></center>'
+                *pl ' '
+            end
+        elseif LOC('SceneShowVisual') = 1:
+            SceneArtUseReal = 1
+            gs 'SceneShowVisual', $HallHarassBarPath, $HallHarassBarCaption, 'large', $HallHarassBarExt
+            SceneArtUseReal = 0
+        end
+        killvar '$HallHarassBarExt'
+        killvar '$HallHarassBarPath'
+        killvar '$HallHarassBarCaption'
+        killvar '$HallImageGirl'
+        killvar '$HallImageJob'
+        killvar 'HallImageType'
+        killvar '$HallImageReaction'
+        exit
+    end
+
     ! reaction_* webp только у amanda/melissa; Сандра и прочие → stub
     HallHarassHasShippedReaction = 0
     $HallHarassReactionArtBase = ''
@@ -1860,6 +1911,8 @@
     killvar '$HallImageGirl'
     killvar '$HallImageJob'
     killvar 'HallImageType'
+    killvar '$HallImageReaction'
+
     killvar '$HallImageReaction'
     killvar '$HallHarassReactionArtBase'
     killvar 'HallHarassHasShippedReaction'

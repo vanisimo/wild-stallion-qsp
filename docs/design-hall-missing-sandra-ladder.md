@@ -55,19 +55,156 @@ First-show hard ladder **не** ломается метками — только
 
 ---
 
-## 1. Два слоя
+## 1. Два слоя (legacy / ядро Scene)
 
 ```
-[Кухня] Гость заходит
-    → УГОВОР (1 экран): client × Explicit × rumor × (offense=отказ)
-    → Intro (занавеска) → peek / ignore / interrupt
+[Кухня] после решения «наблюдать» (missing-beat)
     → Scene = $HallMissingPrivateAct (+ $HallMissingFinish)
          внутри: «уговор на большее» (если не pure hold)
-    → Meet (Стефан у щели)
+    → Meet (Стефан у щели / у двери)
     → PhaseAdvance
 ```
 
 ---
+
+## 1a. Вход из зала — многослойно (канон **v2 play→missing**, как Аманда)
+
+**Не отдельный «режим» missing.** Как сёстры / unified §0.4–0.6:  
+`PlayCoached` (Бекки) → rare **play** → watch → roll **missing**.  
+**Missing не выбирается на notice.**
+
+### Зафиксировано
+
+| # | Решение |
+|---|---------|
+| **R1** | На notice: **harass \| play** (stance v2). Play только `PlayCoached['sandra']` + pleasant + FamCorrupt≥3 + rare. |
+| **R2** | До liberation: меню **только Защитить** (как kitchen/hall harass). Missing-гейты: liberation + moral + corruption≥3 + slut/policy + stage. Drunk → отказ уговора. |
+| **R3** | **Оффскрин** (ignore): **НЕ** PhaseAdvance, **НЕ** missing. |
+| **R4** | Многослойность как у сестёр (coach→play→missing α). |
+| **R5** | **Уговор:** один prose на **client** × тон **harass\|play** (не меню act). |
+| **R6** | Intro у двери **схлопнут**. |
+| **R7** | **Missing только из play + watch** (`HallHarassTryMissingFromPlay` + мост 1–2 реплики → Scene). Protect на play → missing 0%. |
+
+### Схема слоёв
+
+```
+[Зал] notice: клиент → кухня
+    │  client pick + stance v2 → beat harass | play
+    │
+    ├─ Проследить → уговор (client × harass|play)
+    │      refused → вон
+    │      ok → Защитить | Наблюдать* | Отвернуться*  (* после liberation)
+    │            Защитить → разгон, no missing
+    │            Наблюдать → kitchen scene
+    │                 play → roll missing → мост → Scene+Meet + PhaseAdvance
+    │                 harass → конец (no missing)
+    │            Отвернуться → оффскрин (no advance, no missing)
+    │
+    └─ Не обращать внимания* → оффскрин
+```
+
+### Стык с сёстрами
+
+| | Сёстры (зал) | Сандра (кухня из зала) |
+|--|--------------|-------------------------|
+| Coach | Лизетта / Кларисса | **Бекки** (`PlayCoached['sandra']`) после a→m |
+| Play | harass stance play | notice + stance play у печи |
+| Missing | play + watch/ignore + roll | **play + watch** + roll (ignore без missing) |
+| Уговор missing | BargainStart перед Scene | мост 1–2 реплики после play-watch |
+
+### Wiring (код 2026-08-12, v2 play→missing)
+
+| Файл | Роль |
+|------|------|
+| `modules/events/kitchen/sandra_kitchen_hook.qsps` | notice / follow / watch; missing **только** из play |
+| `modules/events/kitchen/sandra_kitchen_hook_text.qsps` | prose |
+| `modules/locations/tavern/tavern_main.qsps` | `SandraKitchenNoticeTry` при входе в зал |
+| Debug | `SandraKitchenDebugStart` harass \| play \| play_missing |
+
+**Канон как Аманда (unified §0.4–0.6):**  
+`PlayCoached`: Лизетта→Аманда → Кларисса→Мелисса → Бекки→Сандра.  
+`$SandraKitchenBeat` = `harass` \| `play` (stance v2).  
+**Missing не на notice.** Missing = watch + play + `HallHarassTryMissingFromPlay` + мост → Scene.  
+Ignore/offscreen: **без** missing, **без** PhaseAdvance.  
+Protect на play: missing 0%.  
+
+
+### Intro missing
+
+После «проследить» ГГ **уже у двери** → intro «к щели» **схлопнут** (R6).
+
+### Триггер notice — **канон: вход в зал (авто)**
+
+**Что это:** ГГ **входит в зал** (`TavernMain` / hall enter) → при гейтах roll → экран  
+«клиент идёт на кухню» (notice). **Не** отдельная кнопка «осмотреть зал» (её можно добавить позже).
+
+| | |
+|--|--|
+| **Когда** | авто при **входе в зал** (как spark/AFK-событие), 1 раз на day/time-лимит |
+| **Не** | обязательно кликать «осмотреть» |
+| **Лимиты** | общий с kitchen/missing: не спамить каждый заход; day + part-of-day |
+
+Имя в коде (черновик): `#SandraKitchenNoticeTry` из enter hall / dispatcher.
+
+---
+
+## 1b. Harass vs missing + эскалация — **канон**
+
+### Два пути missing (оба нормальны)
+
+**Да: missing может быть БЕЗ harass.**
+
+| Путь | Как | Harass был? |
+|------|-----|-------------|
+| **P1. Прямой missing** | notice roll = `missing` → уговор (missing-тон) → watch → Scene | **нет** |
+| **P2. Через harass** | notice = `harass` → уговор (harass-тон) → watch harass → **escalate roll** → missing Scene | **да** |
+
+Это не «режим», а **два валидных бита** на notice (R1) + эскалация как у сестёр play→missing.
+
+```
+notice roll ──► missing ──────────────────► [уговор missing] ► watch ► Scene missing
+            └─► harass ──► [уговор harass] ► watch harass
+                                              ├─ escalate fail → конец
+                                              └─ escalate ok  → 1–2 реплики-мост
+                                                               ► Scene missing
+```
+
+Оффскрин / ignore: **без** escalate, **без** PhaseAdvance (R3).
+
+### Эскалация — **утверждено (рекомендации)**
+
+| # | Решение |
+|---|---------|
+| **E1** | Escalate **только** после «Наблюдать» на harass-bit. Ignore/отвернуться — **нет**. |
+| **E2** | Не полный второй bargain-экран: **1–2 реплики встык** («ещё монета / за занавеску») → сразу missing Scene. |
+| **E3** | Шанс escalate ≈ `HallMissingFromPlayChance` (18–35%) + **гейты missing**. Нет гейтов → escalate невозможен. |
+| **E4** | Notice = **авто при входе в зал** (см. выше). |
+
+### Уговор (R5 + beat)
+
+**Один каркас на client**, тон зависит от beat / escalate:
+
+| Ситуация | Тон |
+|----------|-----|
+| **missing** (P1) | уединение / ласка за серебро; hard — опц. «губы» одной фразой |
+| **harass** | щупать у печи; **без** минета в уговоре |
+| **escalate** (мост) | 1–2 реплики после harass-watch, не отдельное меню client |
+
+Drunk: отказ, без missing/escalate.
+
+### PhaseAdvance
+
+| Действие | Advance? |
+|----------|----------|
+| Watch → missing Scene (P1 или после escalate) | **да** |
+| Watch → только harass, escalate fail | **нет** (missing ladder) |
+| Ignore / отвернуться / оффскрин | **нет** (R3) |
+| Защитить (interrupt) | **нет** |
+
+---
+
+
+
 
 ## 2. Фазы (общая машина)
 
@@ -157,17 +294,19 @@ HallMissingPrintPeekScene
 |-------|--------|-------------------|
 | Intro / Ignore / Interrupt | OK | — |
 | look_tits, hug_waist, cock_touch_cloth | OK hold | — |
-| tits_lick, petting, pussy_touch, hand | OK; добавить дожим | P1 |
-| titjob | OK (+ client split) | P2 craftsman |
-| cuni, anilingus | тонко / short | P0 soft free |
-| mouth_mid | thin — **P0 hard** | base + в рот |
-| mouth_swallow | OK | P1 дожим «глотни» |
-| mouth_show | stub | **P0** |
-| facial | stub | **P0** |
-| deepthroat | stub + ветки finish | **P0** |
+| tits_lick, petting, pussy_touch, hand | OK (+ client split hand) | polish |
+| titjob | OK (sailor / craftsman / merchant) | polish |
+| cuni, anilingus | short | soft free polish |
+| mouth_mid | OK hard sub0 | polish |
+| mouth_swallow | OK | polish |
+| mouth_show | OK hard sub2 | polish |
+| facial | OK + CumHeavy | polish |
+| deepthroat | OK finish cum_mouth/throat + free else | polish |
 | mouth_wipe / taste / hold_spit | sister leftovers | P3 |
 | mouth_spit | prose OK, hard path не first | P2 |
 | noble | off | не писать |
+
+**Wiring 2026-08-12:** `ApplyClientFlavorTags` после PickClientV2 / BargainStart / StartFromPlay; free facial/DT finish по PreferFinish; уговор hard/oral = минет (`BargainPrintSandra`).
 
 ---
 

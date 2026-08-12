@@ -17,17 +17,25 @@
 Осмотр зала / spark queue
   → #HallHarassment (или #KitchenHarassment для Сандры)
   → HallHarassmentSetupScene
-  → stub image (small) + служебный intro
+  → ЭКРАН 1: visual + intro (схватили/щупают) + меню
   → dropdown «мне»: Защитить / [Наблюдать / Отвернуться]
   → HallHarassmentApplyChoice → resolved
-  → экран «в стороне»: итог + меню policy (сдержанно / сама / расковано)
+  → ЭКРАН 2: visual reaction + after beat (она+клиент) + talk band + policy
 ```
 
 | Шаг | Что видит игрок |
 |-----|-----------------|
-| Intro | oneshot-картинка (сейчас одна заглушка) + текст сцены |
-| Выбор | **Защитить** всегда; **Наблюдать** / **Отвернуться** только если `FamilyLiberationGateOpen = 1` |
-| After | реакция зала + разговор о правилах работы (policy) |
+| **Экран 1** | Картинка лапанья + intro. **Ещё нет** «чем кончилось». Выбор: **Защитить** всегда; **Наблюдать** / **Отвернуться** если `FamilyLiberationGateOpen = 1` |
+| **Экран 2** | Один **roll сцены** `$HallHarassSceneBeat` (type/tier/no-panties/play). **Watch** = видно эту сцену; **Ignore** = **стойка** + **звуки/возгласы из той же сцены** (напр. bare: «ой, голая…»). Protect: клиент **уходит**. Пощёчина — roll `HallHarassSceneSlap`. Talk band + policy. |
+
+**Меньше осуждения игрока (канон 2026-08):**  
+не «зал запомнил безучастие», не клиент смеётся «хозяин разрешил».  
+Злость на ГГ при watch/ignore — **личная**, по **FamilyCorruptionStage** (`HallHarassAfterBand` 0…3):  
+0 злость → 1 «смотрел, чтобы не обидели» → 2 «сама бы» → 3 «хороший дядька / деньги, а ты лезешь».
+
+**Тексты экрана 2:** `hall_harassment_after_text.qsps`  
+**Intro:** `hall_harassment_intro_text.qsps`  
+**Карта для ориентира:** `docs/map-harass-screens.md`
 
 **Не в hall harass** (отдельные события): подворотня, missing girl, group, стрип-шоу, glory — не раздувать типы приставания.
 

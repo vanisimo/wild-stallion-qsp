@@ -1,0 +1,870 @@
+! ================================================
+! FILE: modules/debug/debug_hall_missing.qsps
+! MODULE: debug
+! Полный debug missing (уговор + phase + scene) для amanda / melissa / sandra
+!
+! Вход: gt 'HallMissingDebugMenu'
+!       Дебаг → «Missing (все девушки)» / хаб событий трактира
+!
+! Что умеет:
+! - выбор девушки / клиента
+! - phase: soft_intro / soft_play / hard / free
+! - hard step/sub (сёстры step 0–4, Сандра mouth sub 0–5)
+! - force promise
+! - полный прогон: уговор → missing (return в это меню)
+! - preview Scene+Meet без уговора (prose scroll)
+! - reset phase
+! ================================================
+
+#HallMissingDebugEnsure
+    if $HallMissingDbgGirl = '':
+        $HallMissingDbgGirl = 'sandra'
+    end
+    if $HallMissingDbgGirl <> 'amanda' and $HallMissingDbgGirl <> 'melissa' and $HallMissingDbgGirl <> 'sandra':
+        $HallMissingDbgGirl = 'sandra'
+    end
+    if $HallMissingDbgClient = '':
+        $HallMissingDbgClient = 'craftsman'
+    end
+    if HallMissingDbgHardStep < 0:
+        HallMissingDbgHardStep = 0
+    end
+    if HallMissingDbgHardSub < 0:
+        HallMissingDbgHardSub = 0
+    end
+    if debug < 1:
+        debug = 1
+    end
+---
+
+#HallMissingDebugPrepGates
+    if LOC('HallSceneV2EnsureFlags') = 1:
+        gs 'HallSceneV2EnsureFlags'
+    end
+    FamilyLiberationGateOpen = 1
+    Act1MoralUnlocked = 1
+    FamilyCouncilDone = 1
+    if FamilyCorruptionStage < 3:
+        FamilyCorruptionStage = 3
+    end
+    TavernScandal = 50
+    TavernLewdFame = 30
+    TavernGirlsEasyRumor = 1
+    TavernBackroomRumor = 1
+    HallMissingOnlyFromPlay = 1
+    HallMissingBargainSkip = 0
+    HallMissingBargainDone = 0
+    HallMissingFromPlay = 1
+    HallMissingGirlDisabled = 0
+    HallMissingGirlLastGlobalDay = 0
+    HallMissingGirlLastGlobalTime = 0
+---
+
+! ARGS[0]=girl
+#HallMissingDebugPrepGirl
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $g = $HallMissingGirlKey
+    if $g = '':
+        $g = $HallMissingDbgGirl
+    end
+    gs 'HallMissingDebugPrepGates'
+    if LOC('HallMissingGirlEnsureName') = 1:
+        gs 'HallMissingGirlEnsureName', $g
+    end
+    GirlUniformLevel[$g] = 1
+    GirlWorkPolicy[$g] = 3
+    GirlPolicyAgreement[$g] = 2
+    GirlHallLewdStage[$g] = 4
+    GirlPublicAttention[$g] = 40
+    GirlNpcPath[$g] = 30
+    GirlSecretiveness[$g] = 15
+    GirlRebellion[$g] = 10
+    PlayCoached[$g] = 1
+    sluttiness[$g] = 40
+    HallMissingGirlLastDay[$g] = 0
+    if $g = 'amanda':
+        AmandaScandalLevel = 50
+        AmandaPublicAttention = 40
+        AmandaNpcPath = 30
+        AmandaSecretiveness = 15
+        AmandaRebellion = 10
+    elseif $g = 'melissa':
+        MelissaScandalTolerance = 40
+        MelissaNpcPath = 30
+    else
+        SandraPragmatism = 40
+        SandraMoralResistance = 10
+        SandraNpcPath = 30
+    end
+    killvar '$g'
+---
+
+#HallMissingDebugStatusLine
+    gs 'HallMissingDebugEnsure'
+    $g = $HallMissingDbgGirl
+    if LOC('HallMissingPhaseEnsure') = 1:
+        gs 'HallMissingPhaseEnsure', $g
+    end
+    *pl 'girl=' + $g + '  client=' + $HallMissingDbgClient
+    *pl 'phase=' + $HallMissingPhase[$g] + '  introStep=' + STR(HallMissingSoftIntroStep[$g]) + '  play=' + STR(HallMissingSoftPlayCount[$g]) + '/' + STR(HallMissingSoftPlayNeed)
+    *pl 'hardStep=' + STR(HallMissingHardStep[$g]) + '  hardSub=' + STR(HallMissingHardSub[$g]) + '  ladderDone=' + STR(HallMissingHardLadderDone[$g])
+    *pl 'faceDone=' + STR(HallMissingFlagFaceDone[$g]) + '  mouthMature=' + STR(HallMissingFlagMouthMature[$g]) + '  nobleTier=' + STR(HallMissingNobleTier[$g])
+    *pl 'dbg hardStep/Sub force=' + STR(HallMissingDbgHardStep) + '/' + STR(HallMissingDbgHardSub)
+    if $HallMissingPromiseForce <> '':
+        *pl 'promiseForce=' + $HallMissingPromiseForce
+    end
+    killvar '$g'
+---
+
+#HallMissingDebugMenu
+    *clr
+    clr
+    cla
+    gs 'HallMissingDebugEnsure'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' DEBUG: HALL MISSING (все девушки)'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    gs 'HallMissingDebugStatusLine'
+    *pl ' '
+    *pl 'Полный прогон: уговор → intro → peek/ignore/interrupt → return сюда.'
+    *pl 'Preview: только Scene+Meet (prose), без phase advance.'
+    *pl ' '
+
+    *pl '── ДЕВУШКА ──'
+    gs 'ActUiPrepare', '→ Аманда', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingDbgGirl = 'amanda'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', '→ Мелисса', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingDbgGirl = 'melissa'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', '→ Сандра (кухня)', 'kitchen'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingDbgGirl = 'sandra'
+        gt 'HallMissingDebugMenu'
+    end
+
+    *pl ' '
+    *pl '── КЛИЕНТ ──'
+    gs 'ActUiPrepare', 'Клиент: traveler (моряк/big)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingDbgClient = 'traveler'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Клиент: craftsman (face/heavy)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingDbgClient = 'craftsman'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Клиент: rich_merchant (thick/mouth)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingDbgClient = 'rich_merchant'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Клиент: drunk (отказ уговора)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingDbgClient = 'drunk_guest'
+        gt 'HallMissingDebugMenu'
+    end
+    if $HallMissingDbgGirl <> 'sandra':
+        gs 'ActUiPrepare', 'Клиент: noble', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            $HallMissingDbgClient = 'noble'
+            gt 'HallMissingDebugMenu'
+        end
+    end
+
+    *pl ' '
+    *pl '── PHASE ──'
+    gs 'ActUiPrepare', 'Phase → soft_intro', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseDebugSet', $HallMissingDbgGirl, 'soft_intro'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Phase → soft_play', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseDebugSet', $HallMissingDbgGirl, 'soft_play'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Phase → hard (sub0)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseDebugSet', $HallMissingDbgGirl, 'hard'
+        HallMissingDbgHardStep = 0
+        HallMissingDbgHardSub = 0
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Phase → free (mature)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseDebugSet', $HallMissingDbgGirl, 'free'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Phase RESET эта девушка', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseResetOne', $HallMissingDbgGirl
+        HallMissingDbgHardStep = 0
+        HallMissingDbgHardSub = 0
+        $HallMissingPromiseForce = ''
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Phase RESET все трое', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseReset', ''
+        HallMissingDbgHardStep = 0
+        HallMissingDbgHardSub = 0
+        $HallMissingPromiseForce = ''
+        gt 'HallMissingDebugMenu'
+    end
+
+    *pl ' '
+    *pl '── HARD STEP / SUB (перед «Старт») ──'
+    if $HallMissingDbgGirl = 'sandra':
+        *pl 'Сандра mouth ladder: sub 0 mid → 1 swallow → 2 show → 3 facial → 4 DT+рот → 5 DT+горло'
+        gs 'ActUiPrepare', 'Sandra hardSub = 0 (mid/рот)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', 'sandra', 0, 0
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'Sandra hardSub = 1 (swallow)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', 'sandra', 0, 1
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'Sandra hardSub = 2 (show)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', 'sandra', 0, 2
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'Sandra hardSub = 3 (facial)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', 'sandra', 0, 3
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'Sandra hardSub = 4 (DT+рот)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', 'sandra', 0, 4
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'Sandra hardSub = 5 (DT+горло)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', 'sandra', 0, 5
+            gt 'HallMissingDebugMenu'
+        end
+    else
+        *pl 'Сёстры hardStep: 0=h0a 1=mouth 2=h0b 3=face 4=throat; hardSub внутри слота'
+        gs 'ActUiPrepare', 'HardStep 0 h0a (sub0)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', $HallMissingDbgGirl, 0, 0
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'HardStep 1 mouth (sub0)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', $HallMissingDbgGirl, 1, 0
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'HardStep 3 face (sub0)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', $HallMissingDbgGirl, 3, 0
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'HardStep 4 throat (sub0)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'HallMissingDebugSetHard', $HallMissingDbgGirl, 4, 0
+            gt 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'hardSub +1 (текущий step)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            HallMissingDbgHardSub += 1
+            if HallMissingDbgHardSub > 5:
+                HallMissingDbgHardSub = 0
+            end
+            gs 'HallMissingDebugSetHard', $HallMissingDbgGirl, HallMissingDbgHardStep, HallMissingDbgHardSub
+            gt 'HallMissingDebugMenu'
+        end
+    end
+
+    *pl ' '
+    *pl '── FORCE PROMISE (опц., сброс после Pick) ──'
+    gs 'ActUiPrepare', 'Force: look_tits', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingPromiseForce = 'look_tits'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Force: hug_waist', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingPromiseForce = 'hug_waist'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Force: touch_cock', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingPromiseForce = 'touch_cock'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Force: mouth_hard', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingPromiseForce = 'mouth_hard'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Force: facial', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingPromiseForce = 'facial'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Force: deepthroat', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingPromiseForce = 'deepthroat'
+        gt 'HallMissingDebugMenu'
+    end
+    gs 'ActUiPrepare', 'Force: titjob / hand_quick', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        if $HallMissingDbgGirl = 'sandra':
+            $HallMissingPromiseForce = 'titjob'
+        else
+            $HallMissingPromiseForce = 'hand_quick'
+        end
+        gt 'HallMissingDebugMenu'
+    end
+    if $HallMissingDbgGirl <> 'sandra':
+        gs 'ActUiPrepare', 'Force: noble', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            $HallMissingPromiseForce = 'noble'
+            $HallMissingDbgClient = 'noble'
+            gt 'HallMissingDebugMenu'
+        end
+    end
+    gs 'ActUiPrepare', 'Force: CLEAR', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $HallMissingPromiseForce = ''
+        gt 'HallMissingDebugMenu'
+    end
+
+    *pl ' '
+    *pl '── САНДРА: ВХОД ИЗ ЗАЛА (как Аманда: coach→play→missing) ──'
+    *pl 'PlayCoached a/m/s=' + STR(PlayCoached['amanda']) + '/' + STR(PlayCoached['melissa']) + '/' + STR(PlayCoached['sandra'])
+    if LOC('SandraKitchenDebugStart') = 1:
+        gs 'ActUiPrepare', '★ SK: harass (без coach Сандры)', 'kitchen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraKitchenDebugStart', 'harass', 'craftsman'
+        end
+        gs 'ActUiPrepare', '★ SK: play (coach a→m→s)', 'kitchen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraKitchenDebugStart', 'play', 'craftsman'
+        end
+        gs 'ActUiPrepare', '★ SK: play→missing FORCE (watch)', 'kitchen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraKitchenDebugStart', 'play_missing', 'craftsman'
+        end
+        gs 'ActUiPrepare', '★ SK: play + merchant', 'kitchen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraKitchenDebugStart', 'play', 'rich_merchant'
+        end
+        gs 'ActUiPrepare', '★ SK: protect_only (до ужина)', 'kitchen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraKitchenDebugStart', 'protect_only', 'craftsman'
+        end
+        gs 'ActUiPrepare', '★ SK: drunk отказ', 'kitchen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraKitchenDebugStart', 'harass', 'drunk_guest'
+        end
+        gs 'ActUiPrepare', 'Coach: подслушать Аманда', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallPlayCoachStart', 'amanda', 'HallMissingDebugMenu'
+        end
+        gs 'ActUiPrepare', 'SK: сброс лимитов + ForceMissing=0', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            SandraKitchenHookLastDay = 0
+            SandraKitchenHookLastTime = 0
+            KitchenHarassmentDay = 0
+            KitchenHarassmentTime = 0
+            HallMissingGirlLastDay['sandra'] = 0
+            PlayCoached['sandra'] = 0
+            SandraKitchenForceMissing = 0
+            gt 'HallMissingDebugMenu'
+        end
+    end
+
+    *pl ' '
+    *pl '── ПОЛНЫЙ ПРОГОН (legacy bargain+missing) ──'
+    gs 'ActUiPrepare', '▶ СТАРТ уговор+missing (текущие настройки)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugRunFull'
+    end
+    gs 'ActUiPrepare', '▶ soft_intro step0 + старт', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseDebugSet', $HallMissingDbgGirl, 'soft_intro'
+        HallMissingSoftIntroStep[$HallMissingDbgGirl] = 0
+        $HallMissingPromiseForce = ''
+        gt 'HallMissingDebugRunFull'
+    end
+    gs 'ActUiPrepare', '▶ soft_intro step1 (hug) + старт', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseDebugSet', $HallMissingDbgGirl, 'soft_intro'
+        HallMissingSoftIntroStep[$HallMissingDbgGirl] = 1
+        $HallMissingPromiseForce = ''
+        gt 'HallMissingDebugRunFull'
+    end
+    gs 'ActUiPrepare', '▶ soft_intro step2 (cock) + старт', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseDebugSet', $HallMissingDbgGirl, 'soft_intro'
+        HallMissingSoftIntroStep[$HallMissingDbgGirl] = 2
+        $HallMissingPromiseForce = ''
+        gt 'HallMissingDebugRunFull'
+    end
+    gs 'ActUiPrepare', '▶ hard (текущий sub) + старт', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingDebugSetHard', $HallMissingDbgGirl, HallMissingDbgHardStep, HallMissingDbgHardSub
+        $HallMissingPromiseForce = ''
+        gt 'HallMissingDebugRunFull'
+    end
+    gs 'ActUiPrepare', '▶ free + старт', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'HallMissingPhaseDebugSet', $HallMissingDbgGirl, 'free'
+        $HallMissingPromiseForce = ''
+        gt 'HallMissingDebugRunFull'
+    end
+    gs 'ActUiPrepare', '▶ missing БЕЗ уговора (skip bargain)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugRunSkipBargain'
+    end
+
+    *pl ' '
+    *pl '── PREVIEW SCENE+MEET (prose) ──'
+    gs 'ActUiPrepare', 'Каталог soft сцен…', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreviewSoftMenu'
+    end
+    gs 'ActUiPrepare', 'Каталог hard / mouth…', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreviewHardMenu'
+    end
+    gs 'ActUiPrepare', 'Каталог terminal / free…', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreviewTermMenu'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'К хабу событий трактира', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        if LOC('TavernEventDispatcherDebugMenu') = 1:
+            gt 'TavernEventDispatcherDebugMenu'
+        else
+            gt 'TavernMain'
+        end
+    end
+    gs 'ActUiPrepare', 'В зал (TavernMain)', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+! ARGS[0]=girl ARGS[1]=hardStep ARGS[2]=hardSub
+#HallMissingDebugSetHard
+    gs 'HallMissingGirlNormalizeKey', $ARGS[0]
+    $g = $HallMissingGirlKey
+    if $g = '':
+        $g = $HallMissingDbgGirl
+    end
+    HallMissingDbgHardStep = $ARGS[1]
+    HallMissingDbgHardSub = $ARGS[2]
+    if HallMissingDbgHardStep < 0:
+        HallMissingDbgHardStep = 0
+    end
+    if HallMissingDbgHardSub < 0:
+        HallMissingDbgHardSub = 0
+    end
+    gs 'HallMissingPhaseDebugSet', $g, 'hard'
+    HallMissingHardStep[$g] = HallMissingDbgHardStep
+    HallMissingHardSub[$g] = HallMissingDbgHardSub
+    HallMissingHardLadderDone[$g] = 0
+    $HallMissingPhase[$g] = 'hard'
+    if $g = 'sandra' and HallMissingDbgHardSub >= 2:
+        HallMissingFlagMouthMature['sandra'] = 1
+    end
+    killvar '$g'
+---
+
+#HallMissingDebugRunFull
+    gs 'HallMissingDebugEnsure'
+    gs 'HallMissingDebugPrepGirl', $HallMissingDbgGirl
+    $HallMissingGirl = $HallMissingDbgGirl
+    $HallHarassGirl = $HallMissingDbgGirl
+    $HallHarassClient = $HallMissingDbgClient
+    $HallMissingClient = $HallMissingDbgClient
+    $HallMissingReturnLoc = 'HallMissingDebugMenu'
+    HallMissingBargainSkip = 0
+    HallMissingBargainDone = 0
+    HallMissingFromPlay = 1
+    $HallHarassStanceCanon = 'play'
+    $HarassGirlStance = 'provoke'
+    HarassTier = 3
+    HallHarassType = 4
+    if LOC('HallMissingApplyClientFlavorTags') = 1:
+        gs 'HallMissingApplyClientFlavorTags'
+    end
+    if LOC('HallMissingPhaseEnsure') = 1:
+        gs 'HallMissingPhaseEnsure', $HallMissingDbgGirl
+    end
+    ! если в hard — применить dbg step/sub
+    if $HallMissingPhase[$HallMissingDbgGirl] = 'hard':
+        HallMissingHardStep[$HallMissingDbgGirl] = HallMissingDbgHardStep
+        HallMissingHardSub[$HallMissingDbgGirl] = HallMissingDbgHardSub
+    end
+    gt 'HallMissingBargainStart', $HallMissingDbgGirl, 'HallMissingDebugMenu'
+---
+
+#HallMissingDebugRunSkipBargain
+    gs 'HallMissingDebugEnsure'
+    gs 'HallMissingDebugPrepGirl', $HallMissingDbgGirl
+    $HallMissingGirl = $HallMissingDbgGirl
+    $HallHarassGirl = $HallMissingDbgGirl
+    $HallHarassClient = $HallMissingDbgClient
+    $HallMissingClient = $HallMissingDbgClient
+    HallMissingBargainSkip = 1
+    HallMissingBargainDone = 0
+    HallMissingFromPlay = 1
+    if LOC('HallMissingApplyClientFlavorTags') = 1:
+        gs 'HallMissingApplyClientFlavorTags'
+    end
+    if $HallMissingPhase[$HallMissingDbgGirl] = 'hard':
+        HallMissingHardStep[$HallMissingDbgGirl] = HallMissingDbgHardStep
+        HallMissingHardSub[$HallMissingDbgGirl] = HallMissingDbgHardSub
+    end
+    if $HallMissingPromiseForce <> '':
+        $HallMissingPromise = LCASE($HallMissingPromiseForce)
+        $HallMissingPromiseForce = ''
+        HallMissingBargainDone = 1
+        if LOC('HallMissingApplyPromiseToAct') = 1:
+            gs 'HallMissingApplyPromiseToAct'
+        end
+        HallMissingBargainSkip = 1
+        gt 'HallMissingGirlStartFromPlay', $HallMissingDbgGirl, 'HallMissingDebugMenu'
+    end
+    gt 'HallMissingGirlStartFromPlay', $HallMissingDbgGirl, 'HallMissingDebugMenu'
+---
+
+! ARGS[0]=act  ARGS[1]=finish(optional)  ARGS[2]=promise(optional)
+#HallMissingDebugPreview
+    *clr
+    clr
+    cla
+    gs 'HallMissingDebugEnsure'
+    gs 'HallMissingDebugPrepGirl', $HallMissingDbgGirl
+
+    $HallMissingGirl = $HallMissingDbgGirl
+    $HallMissingClient = $HallMissingDbgClient
+    $HallMissingPrivateAct = LCASE($ARGS[0])
+    $HallMissingFinish = LCASE($ARGS[1])
+    $HallMissingPromise = LCASE($ARGS[2])
+    if $HallMissingPrivateAct = '':
+        $HallMissingPrivateAct = 'look_tits'
+    end
+    HallMissingPromiseBreak = 0
+    HallMissingSilverExtra = 0
+    $HallMissingSceneKey = ''
+    $HallMissingPlace = 'storage'
+    if $HallMissingDbgGirl = 'sandra':
+        $HallMissingPlace = 'kitchen'
+    end
+
+    if LOC('HallMissingApplyClientFlavorTags') = 1:
+        gs 'HallMissingApplyClientFlavorTags'
+    end
+    $HallLewdClient = $HallMissingClient
+    if LOC('HallLewdFillClientBits') = 1:
+        gs 'HallLewdFillClientBits'
+    else
+        $HallLewdClientWho = 'гость'
+        $HallLewdClientWhoA = 'гостя'
+    end
+
+    gs 'HallMissingResolveSceneKey'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' PREVIEW MISSING'
+    *pl '══════════════════════════════════════════════'
+    *pl 'girl=' + $HallMissingGirl + ' client=' + $HallMissingClient + ' cock=' + $HallMissingClientCock
+    *pl 'act=' + $HallMissingPrivateAct + ' finish=' + $HallMissingFinish + ' promise=' + $HallMissingPromise
+    *pl 'key=' + $HallMissingSceneKey + ' CumHeavy=' + STR(HallMissingClientCumHeavy)
+    *pl ' '
+    *pl '── SCENE ──'
+    *pl ' '
+    gs 'HallMissingPrintPeekScene'
+    *pl ' '
+    *pl '── MEET ──'
+    *pl ' '
+    gs 'HallMissingPrintPeekMeet'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Ещё preview (тот же)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', $HallMissingPrivateAct, $HallMissingFinish, $HallMissingPromise
+    end
+    gs 'ActUiPrepare', 'Назад в каталог soft', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreviewSoftMenu'
+    end
+    gs 'ActUiPrepare', 'В меню Missing debug', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugMenu'
+    end
+---
+
+#HallMissingDebugPreviewSoftMenu
+    *clr
+    clr
+    cla
+    gs 'HallMissingDebugEnsure'
+    *pl '══════════════════════════════════════════════'
+    *pl ' PREVIEW SOFT — ' + $HallMissingDbgGirl + ' / ' + $HallMissingDbgClient
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'look_tits (hold A1)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'look_tits', '', 'look_tits'
+    end
+    gs 'ActUiPrepare', 'tits_lick (break A1)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'tits_lick', '', 'look_tits'
+    end
+    gs 'ActUiPrepare', 'titjob (S3)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'titjob', '', 'titjob'
+    end
+    gs 'ActUiPrepare', 'hug_waist (hold A2)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'hug_waist', '', 'hug_waist'
+    end
+    gs 'ActUiPrepare', 'petting', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'petting', '', 'hug_waist'
+    end
+    gs 'ActUiPrepare', 'pussy_touch', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'pussy_touch', '', 'hug_waist'
+    end
+    gs 'ActUiPrepare', 'cuni', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'cuni', '', 'cuni'
+    end
+    gs 'ActUiPrepare', 'anilingus', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'anilingus', '', 'cuni'
+    end
+    gs 'ActUiPrepare', 'cock_touch_cloth (hold A3)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'cock_touch_cloth', '', 'touch_cock'
+    end
+    gs 'ActUiPrepare', 'hand', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'hand', '', 'hand_quick'
+    end
+    gs 'ActUiPrepare', 'touch_thigh', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'touch_thigh', '', 'hug_waist'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', '← Missing debug', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugMenu'
+    end
+---
+
+#HallMissingDebugPreviewHardMenu
+    *clr
+    clr
+    cla
+    gs 'HallMissingDebugEnsure'
+    *pl '══════════════════════════════════════════════'
+    *pl ' PREVIEW HARD / MOUTH — ' + $HallMissingDbgGirl + ' / ' + $HallMissingDbgClient
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $HallMissingDbgGirl = 'sandra':
+        *pl 'Сандра first-show ×6:'
+        gs 'ActUiPrepare', '0 mouth_mid + cum_mouth', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'cum_mouth', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', '1 swallow', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'swallow', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', '2 show_mouth', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'show_mouth', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', '3 facial / cum_face', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'cum_face', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', '4 deepthroat + cum_mouth', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'deepthroat', 'cum_mouth', 'deepthroat'
+        end
+        gs 'ActUiPrepare', '5 deepthroat + cum_throat', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'deepthroat', 'cum_throat', 'deepthroat'
+        end
+    else
+        *pl 'Сёстры mouth ladder (finish):'
+        gs 'ActUiPrepare', 'mouth wipe', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'wipe', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', 'mouth taste', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'taste', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', 'mouth spit', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'spit', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', 'mouth hold_spit', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'hold_spit', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', 'mouth swallow', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'swallow', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', 'mouth mid (fallback)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'cum_mouth', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', 'mouth show', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'show_mouth', 'mouth_hard'
+        end
+        gs 'ActUiPrepare', 'facial cum_face', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'mouth', 'cum_face', 'facial'
+        end
+        gs 'ActUiPrepare', 'deepthroat cum_throat', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'deepthroat', 'cum_throat', 'deepthroat'
+        end
+        gs 'ActUiPrepare', 'deepthroat cum_mouth', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingDebugPreview', 'deepthroat', 'cum_mouth', 'deepthroat'
+        end
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', '← Missing debug', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugMenu'
+    end
+---
+
+#HallMissingDebugPreviewTermMenu
+    *clr
+    clr
+    cla
+    gs 'HallMissingDebugEnsure'
+    *pl '══════════════════════════════════════════════'
+    *pl ' PREVIEW TERMINAL / FREE — ' + $HallMissingDbgGirl
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'titjob', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'titjob', '', 'titjob'
+    end
+    gs 'ActUiPrepare', 'hand', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'hand', '', 'hand_quick'
+    end
+    gs 'ActUiPrepare', 'cuni', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'cuni', '', 'cuni'
+    end
+    gs 'ActUiPrepare', 'anilingus', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'anilingus', '', 'cuni'
+    end
+    gs 'ActUiPrepare', 'facial (free)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'mouth', 'cum_face', 'facial'
+    end
+    gs 'ActUiPrepare', 'deepthroat free cum_mouth', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreview', 'deepthroat', 'cum_mouth', 'deepthroat'
+    end
+    gs 'ActUiPrepare', 'intro only', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreviewIntro'
+    end
+    gs 'ActUiPrepare', 'interrupt only', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreviewInterrupt'
+    end
+    if $HallMissingDbgGirl <> 'sandra':
+        gs 'ActUiPrepare', 'noble scene', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            $HallMissingDbgClient = 'noble'
+            gt 'HallMissingDebugPreview', 'mouth', 'noble', 'noble'
+        end
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', '← Missing debug', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugMenu'
+    end
+---
+
+#HallMissingDebugPreviewIntro
+    *clr
+    clr
+    cla
+    gs 'HallMissingDebugEnsure'
+    gs 'HallMissingDebugPrepGirl', $HallMissingDbgGirl
+    $HallMissingGirl = $HallMissingDbgGirl
+    $HallMissingClient = $HallMissingDbgClient
+    if LOC('HallMissingApplyClientFlavorTags') = 1:
+        gs 'HallMissingApplyClientFlavorTags'
+    end
+    $HallLewdClient = $HallMissingClient
+    if LOC('HallLewdFillClientBits') = 1:
+        gs 'HallLewdFillClientBits'
+    end
+    *pl '── INTRO ──'
+    *pl ' '
+    gs 'HallMissingGirlPrintText', 'intro'
+    *pl ' '
+    gs 'ActUiPrepare', '← Назад', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreviewTermMenu'
+    end
+---
+
+#HallMissingDebugPreviewInterrupt
+    *clr
+    clr
+    cla
+    gs 'HallMissingDebugEnsure'
+    gs 'HallMissingDebugPrepGirl', $HallMissingDbgGirl
+    $HallMissingGirl = $HallMissingDbgGirl
+    $HallMissingClient = $HallMissingDbgClient
+    if LOC('HallMissingApplyClientFlavorTags') = 1:
+        gs 'HallMissingApplyClientFlavorTags'
+    end
+    $HallLewdClient = $HallMissingClient
+    if LOC('HallLewdFillClientBits') = 1:
+        gs 'HallLewdFillClientBits'
+    end
+    *pl '── INTERRUPT ──'
+    *pl ' '
+    gs 'HallMissingGirlPrintText', 'interrupt_scene'
+    *pl ' '
+    gs 'ActUiPrepare', '← Назад', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingDebugPreviewTermMenu'
+    end
+---

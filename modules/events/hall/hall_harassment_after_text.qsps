@@ -1,0 +1,486 @@
+! ================================================
+! FILE: modules/events/hall/hall_harassment_after_text.qsps
+! MODULE: events/hall
+! Экран 2 harass: реакция ДЕВУШКИ + КЛИЕНТА на выбор Стефана
+! (не «зал осудил хозяина», не «клиент смеётся что хозяин не против»)
+!
+! Канон (владелец 2026-08):
+! - Экран 1 = схватили/щупают → выбор
+! - Экран 2 = она + он (к ней); зал смотрит на ИНЦИДЕНТ (свист, подглядывание), не на ГГ
+! - Клиент почти не «читает» Стефана; при protect просто уходит
+! - Меньше осуждения игрока; злость на ГГ — по FamilyCorruptionStage (band)
+! - ignore: visual стойка (HallHarassmentShowImage); текст = звуки инцидента за спиной
+!
+! band (HallHarassAfterBand):
+!   0 stage≤1 — злость / страх, «ты просто смотрел»
+!   1 stage=2 — «смотрели, чтобы не обидели»
+!   2 stage=3 — «я сама бы справилась»
+!   3 stage≥4 — «такой хороший… деньги, а ты лезешь / вмешиваешься»
+!
+! Intro приставания — hall_harassment_intro_text.qsps (отдельно)
+! ================================================
+
+#HallHarassAfterBandCalc
+    HallHarassAfterBand = 0
+    if FamilyCorruptionStage >= 4:
+        HallHarassAfterBand = 3
+    elseif FamilyCorruptionStage >= 3:
+        HallHarassAfterBand = 2
+    elseif FamilyCorruptionStage >= 2:
+        HallHarassAfterBand = 1
+    else
+        HallHarassAfterBand = 0
+    end
+    ! play / high slut чуть сдвигает к «позже»
+    if ($HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke') and HallHarassAfterBand < 3:
+        HallHarassAfterBand += 1
+    elseif sluttiness[$HallHarassGirl] >= 45 and HallHarassAfterBand < 2:
+        HallHarassAfterBand += 1
+    end
+    if HallHarassAfterBand > 3:
+        HallHarassAfterBand = 3
+    end
+---
+
+! Один roll сцены на инцидент: watch = видно, ignore = звуки/возгласы ИЗ ТОЙ ЖЕ сцены
+! → $HallHarassSceneBeat, HallHarassSceneSlap (0/1 — пощёчина в исходе)
+#HallHarassAfterScenePick
+    if $HallHarassSceneBeat <> '' and HallHarassScenePicked = 1:
+        exit
+    end
+
+    $HallHarassSceneBeat = 'grab_generic'
+    HallHarassSceneSlap = 0
+
+    ! play
+    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        $HallHarassSceneBeat = 'play_tip'
+    elseif GirlNoPantiesWork[$HallHarassGirl] = 1 and (HallHarassType >= 3 or HarassTier >= 2 or $HallHarassSubScene = 'drop_coin' or $HallHarassSubScene = 'drop_cutlery'):
+        $HallHarassSceneBeat = 'hand_bare'
+    elseif HarassTier >= 3 and HallHarassType = 4:
+        $HallHarassSceneBeat = 'wall'
+    elseif HarassTier >= 3 and (HallHarassType = 5 or $HallHarassSubScene = 'drop_coin' or $HallHarassSubScene = 'drop_cutlery'):
+        $HallHarassSceneBeat = 'drop_bend'
+    elseif HallHarassType = 2 or (HarassTier >= 2 and HallHarassType >= 2):
+        $HallHarassSceneBeat = 'grab_ass'
+    elseif HallHarassType = 1:
+        $HallHarassSceneBeat = 'grab_tits'
+    else
+        HallHarassSceneRoll = RAND(1, 100)
+        if HallHarassSceneRoll <= 40:
+            $HallHarassSceneBeat = 'grab_tits'
+        elseif HallHarassSceneRoll <= 75:
+            $HallHarassSceneBeat = 'grab_ass'
+        else
+            $HallHarassSceneBeat = 'hand_skirt'
+        end
+        killvar 'HallHarassSceneRoll'
+    end
+
+    ! пощёчина в исходе (чаще early/resist)
+    HallHarassSlapChance = 35
+    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        HallHarassSlapChance = 10
+    elseif $HarassGirlStance = 'resist' or FamilyCorruptionStage <= 1:
+        HallHarassSlapChance = 55
+    elseif FamilyCorruptionStage >= 4:
+        HallHarassSlapChance = 20
+    end
+    if $HallHarassSceneBeat = 'play_tip':
+        HallHarassSlapChance = 8
+    end
+    if RAND(1, 100) <= HallHarassSlapChance:
+        HallHarassSceneSlap = 1
+    end
+    killvar 'HallHarassSlapChance'
+    HallHarassScenePicked = 1
+---
+
+! Печать beat «она + клиент» (+ короткий фон зала на инцидент)
+#HallHarassmentPrintAfterBeat
+    gs 'HallHarassAfterBandCalc'
+    gs 'HallHarassAfterScenePick'
+
+    $HallHarassAfterId = ''
+    if $HallHarassReaction = 'protect_hard':
+        $HallHarassAfterId = 'after_protect'
+    elseif $HallHarassReaction = 'ignore':
+        $HallHarassAfterId = 'after_ignore'
+    elseif $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
+        $HallHarassAfterId = 'after_watch_play'
+    else
+        $HallHarassAfterId = 'after_watch'
+    end
+
+    gs 'HallHarassmentAfterText', $HallHarassAfterId
+    if $HallHarassmentAfterText <> '':
+        *pl $HallHarassmentAfterText
+    end
+    killvar '$HallHarassAfterId'
+    killvar '$HallHarassmentAfterText'
+---
+
+! Реплика к Стефану (policy-склейка) — band для watch/ignore; protect — thanks/annoyed
+#HallHarassmentPrintAfterTalkLine
+    gs 'HallHarassAfterBandCalc'
+    $HallHarassAfterId = ''
+
+    if $HallHarassReaction = 'protect_hard':
+        if $HallHarassTalkReaction = 'protect_dislike':
+            $HallHarassAfterId = 'talk_protect_annoyed'
+        elseif $HallHarassTalkReaction = 'protect_fail':
+            $HallHarassAfterId = 'talk_protect_fail'
+        else
+            $HallHarassAfterId = 'talk_protect_thanks'
+        end
+    elseif $HallHarassReaction = 'watch':
+        if HallHarassAfterBand = 0:
+            $HallHarassAfterId = 'talk_watch_band0'
+        elseif HallHarassAfterBand = 1:
+            $HallHarassAfterId = 'talk_watch_band1'
+        elseif HallHarassAfterBand = 2:
+            $HallHarassAfterId = 'talk_watch_band2'
+        else
+            $HallHarassAfterId = 'talk_watch_band3'
+        end
+    else
+        if HallHarassAfterBand = 0:
+            $HallHarassAfterId = 'talk_ignore_band0'
+        elseif HallHarassAfterBand = 1:
+            $HallHarassAfterId = 'talk_ignore_band1'
+        elseif HallHarassAfterBand = 2:
+            $HallHarassAfterId = 'talk_ignore_band2'
+        else
+            $HallHarassAfterId = 'talk_ignore_band3'
+        end
+    end
+
+    gs 'HallHarassmentAfterText', $HallHarassAfterId
+    if $HallHarassmentAfterText <> '':
+        *pl $RealName[$HallHarassGirl] + ' ' + $HallHarassmentAfterText
+    end
+    killvar '$HallHarassAfterId'
+    killvar '$HallHarassmentAfterText'
+---
+
+#HallHarassmentAfterText
+    $id = LCASE($ARGS[0])
+    $HallHarassmentAfterText = ''
+    $g = $HallHarassGirl
+    if $g = '':
+        $g = 'amanda'
+    end
+    if $RealName[$g] = '':
+        if LOC('HallMissingGirlEnsureName') = 1:
+            gs 'HallMissingGirlEnsureName', $g
+        end
+    end
+
+    ! ========== BEAT: protect — клиент УХОДИТ, без «залу ясно кто хозяин» ==========
+    if $id = 'after_protect':
+        if $g = 'melissa':
+            $HallHarassmentAfterText = 'Вы подходите — достаточно твёрдо, без крика. Гость снимает руки с Мелиссы, бурчит себе под нос и отходит к столу, будто сам так решил. Она одёргивает платье, щёки горят: то ли от стыда, то ли от облегчения.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>За соседними столами кто-то присвистнул на прощание — не вам, а уходящей картинке. Взгляды всё ещё на её спине, не на хозяине.'
+        elseif $g = 'sandra':
+            $HallHarassmentAfterText = 'Вы обрываете гостя у печи. Он убирает руки, разворачивается и уходит в зал, не глядя вам в лицо. Сандра вытирает ладонь о передник — злость и жар кухни. Занавеска снова закрывает плиту: зрителей тут нет.'
+        else
+            $HallHarassmentAfterText = 'Вы вмешиваетесь. Гость отпускает Аманду, бормочет и уходит к своему месту. Она сжимает поднос, краснеет, выдыхает — неловко и стыдно, но уже легче. Поправляет вырез дрожащими от злости, не от паники, пальцами.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>У дальнего стола наклонили головы — досмотреть, как она оправляется. Не к вам: к ней.'
+        end
+
+    ! ========== BEAT: watch / ignore — см. FromBeat (тот же $HallHarassSceneBeat) ==========
+    elseif $id = 'after_watch' or $id = 'after_watch_play':
+        gs 'HallHarassAfterWatchFromBeat'
+    elseif $id = 'after_ignore':
+        gs 'HallHarassAfterIgnoreFromBeat'
+
+    ! ========== TALK lines (к Стефану) — band ==========
+    ! protect — Аманда: смущение/неловкость, не «страх»; Сандра: как к сыну
+    elseif $id = 'talk_protect_thanks':
+        if HallHarassAfterBand >= 2:
+            if $g = 'melissa':
+                $HallHarassmentAfterText = 'тихо: «Спасибо… хотя я почти сама. В следующий раз можно мягче — клиенты пугливые».'
+            elseif $g = 'sandra':
+                $HallHarassmentAfterText = 'теплее, чем с гостями: «Спасибо, сынок. Только не опекай каждую минуту — я ещё не старая».'
+            else
+                $HallHarassmentAfterText = 'шепчет: «Спасибо, Стефан… правда. Я уже не знала, как отшутиться».'
+            end
+        else
+            if $g = 'melissa':
+                $HallHarassmentAfterText = 'ровно: «Вовремя. Спасибо».'
+            elseif $g = 'sandra':
+                $HallHarassmentAfterText = 'кивает, по-матерински: «Спасибо, Стефан. Наглецам у плиты не место — ты правильно сделал».'
+            else
+                $HallHarassmentAfterText = 'тихо, с румянцем: «Спасибо… я растерялась, не сразу нашлась, что сказать».'
+            end
+        end
+
+    elseif $id = 'talk_protect_annoyed':
+        if HallHarassAfterBand >= 3:
+            if $g = 'sandra':
+                $HallHarassmentAfterText = 'с мягкой укоризной, как сыну: «Он уже серебро тянул — а ты как обухом. Не спугни всех, кто платит, Стефан».'
+            else
+                $HallHarassmentAfterText = 'с лёгкой усмешкой: «Он уже серебро тянул — а ты как обухом. Не спугни всех хороших дядек».'
+            end
+        elseif HallHarassAfterBand >= 2:
+            if $g = 'sandra':
+                $HallHarassmentAfterText = 'вздыхает: «Я сама бы справилась, сынок. Не обязательно было так лезть».'
+            elseif $g = 'amanda':
+                $HallHarassmentAfterText = 'с досадой, но без слёз: «Я уже почти уладила… Не обязательно было так резко».'
+            else
+                $HallHarassmentAfterText = 'с досадой: «Я сама бы справилась. Не обязательно было так лезть».'
+            end
+        else
+            if $g = 'sandra':
+                $HallHarassmentAfterText = 'мягко, но твёрдо: «Спасибо, что заступился. Только не делай из меня беспомощную при всём честном народе, сынок».'
+            elseif $g = 'amanda':
+                $HallHarassmentAfterText = 'поджимает губы: «Я могла и сама отшутиться… Теперь подумают, что я без тебя ни шагу».'
+            else
+                $HallHarassmentAfterText = 'поджимает губы: «Я могла и сама… Теперь все думают, что я без тебя ни шагу».'
+            end
+        end
+
+    elseif $id = 'talk_protect_fail':
+        if $g = 'sandra':
+            $HallHarassmentAfterText = 'вздыхает: «Шумно вышло, сынок… но хоть руки убрал».'
+        else
+            $HallHarassmentAfterText = 'вздыхает: «Шумно вышло… но хоть руки убрал».'
+        end
+
+    ! watch band 0–3
+    elseif $id = 'talk_watch_band0':
+        if $g = 'melissa':
+            $HallHarassmentAfterText = 'жёстко, без крика на весь зал: «Ты просто стоял и смотрел. Мне было мерзко — и тебе, выходит, всё равно».'
+        elseif $g = 'sandra':
+            $HallHarassmentAfterText = 'не сухо — по-матерински строго: «Стефан. Видел, как лезут, и ждал. В следующий раз подойди, сынок. Я не в обиде — я жду, что хозяин на месте».'
+        else
+            $HallHarassmentAfterText = 'смущённо, с упрёком: «Ты… просто смотрел. Мне было так неловко, а ты стоял».'
+        end
+
+    elseif $id = 'talk_watch_band1':
+        if $g = 'melissa':
+            $HallHarassmentAfterText = 'тише: «Хоть смотрел. Неприятно — но я видела, что ты на месте, если совсем прижмёт».'
+        elseif $g = 'sandra':
+            $HallHarassmentAfterText = 'мягче: «Приглядывал — ладно, сынок. Сама отбилась. Главное, не отвернулся совсем».'
+        else
+            $HallHarassmentAfterText = 'смущённо: «Ты смотрел… наверное, чтобы не обидели. Всё равно было очень неловко».'
+        end
+
+    elseif $id = 'talk_watch_band2':
+        if $g = 'melissa':
+            $HallHarassmentAfterText = 'с иронией: «Я сама бы справилась. Ты зря напрягся глазами — хватило бы и моих».'
+        elseif $g = 'sandra':
+            $HallHarassmentAfterText = 'тепло, с усмешкой: «На кухне я порядок знаю, сынок. Сама бы выставила — но что ты рядом, я видела».'
+        else
+            $HallHarassmentAfterText = 'мягко, но твёрдо: «Я… могла и сама. Не обязательно было так смотреть».'
+        end
+
+    elseif $id = 'talk_watch_band3':
+        if $g = 'melissa':
+            $HallHarassmentAfterText = 'с лёгкой усмешкой: «Он нормальный был, даже серебро оставил. А ты стоишь, как судья. Не мешай, когда всё и так сходится».'
+        elseif $g = 'sandra':
+            $HallHarassmentAfterText = 'практично, без холода: «Дядька не злой, монету кинул. Ты только не лезь, сынок, коли я не зову — я сама разберусь».'
+        else
+            $HallHarassmentAfterText = 'краснеет, но упрямо: «Он… не грубый был, даже дал на чай. Зачем ты так смотрел, будто я в беде?».'
+        end
+
+    ! ignore band
+    elseif $id = 'talk_ignore_band0':
+        if $g = 'melissa':
+            $HallHarassmentAfterText = 'холодно: «Отвернулся к бочкам. Я слышала, как ты переставлял кружки, пока мне там… Ладно. Сама».'
+        elseif $g = 'sandra':
+            $HallHarassmentAfterText = 'строго, как матери: «Даже на кухню не зашёл, Стефан. Слышал хоть? Я сама — но ты хозяин. В следующий раз хоть головой кивни, сынок».'
+        else
+            $HallHarassmentAfterText = 'тихо, обиженно: «Ты отвернулся… Я хлопнула его — а ты даже не посмотрел. Мне было так неловко».'
+        end
+
+    elseif $id = 'talk_ignore_band1':
+        if $g = 'melissa':
+            $HallHarassmentAfterText = 'тише: «Не смотрел — может, и к лучшему. Я справилась. В следующий раз хоть ухом побудь».'
+        elseif $g = 'sandra':
+            $HallHarassmentAfterText = 'мягче: «Не зашёл. Ладно. Я выставила. Главное — слышал, что жива, сынок».'
+        else
+            $HallHarassmentAfterText = 'смущённо: «Ты отвернулся… Наверное, чтобы не смотреть. Я сама. Просто было неловко».'
+        end
+
+    elseif $id = 'talk_ignore_band2':
+        if $g = 'sandra':
+            $HallHarassmentAfterText = 'ровно, без сухости: «Я сама, сынок. Не обязательно рядом — и не обязательно отворачиваться так, будто тебя нет».'
+        elseif $g = 'amanda':
+            $HallHarassmentAfterText = 'ровно: «Я сама. Не обязательно было стоять рядом — и не обязательно так демонстративно отворачиваться».'
+        else
+            $HallHarassmentAfterText = 'ровно: «Я сама. Не обязательно было стоять рядом — и не обязательно отворачиваться так демонстративно».'
+        end
+
+    elseif $id = 'talk_ignore_band3':
+        if $g = 'sandra':
+            $HallHarassmentAfterText = 'почти беззлобно: «Обошлось. Даже монету дал. Ты к стойке — правильно, сынок: не мешай, коли не звали».'
+        else
+            $HallHarassmentAfterText = 'почти беззлобно: «Обошлось. Даже монету дал. Ты к стойке — правильно: не мешай, коли не звали».'
+        end
+
+    else
+        $HallHarassmentAfterText = ''
+    end
+
+    killvar '$id'
+    killvar '$g'
+---
+
+! Видимая сцена (watch) по $HallHarassSceneBeat
+! кухня ($HallHarassConsequenceArea=kitchen / job): БЕЗ «соседний стол / свист зала»
+#HallHarassAfterWatchFromBeat
+    $g = $HallHarassGirl
+    $b = $HallHarassSceneBeat
+    $HallHarassmentAfterText = ''
+    HallHarassAfterKitchen = 0
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen' or $g = 'sandra':
+        HallHarassAfterKitchen = 1
+    end
+
+    if $b = 'hand_bare':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = 'У печи ладонь гостя уходит под подол — и замирает: белья нет. Сандра локтем осаживает, голос сухой; он хмыкает ей в ухо, не вам. Пар, звон крышки — только кухня.'
+        elseif $g = 'melissa':
+            $HallHarassmentAfterText = 'Ладонь уходит под подол — трусиков нет. Мелисса вспыхивает, шипит, выкручивается; он смеётся ей. Зал: свист, шёпот «голая…», шеи к подолу — не к стойке.'
+        else
+            $HallHarassmentAfterText = 'Рука под подол Аманды — без белья. Она краснеет, писк, выскальзывает. Зал: «глянь…», взгляды на неё, не на вас.'
+        end
+    elseif $b = 'grab_tits':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = 'Ладонь на груди Сандры у плиты. «Руки.» — сухо. Он усмехается ей и отпускает. Никакого «соседа за столом»: только пар и шипение рагу.'
+        elseif $g = 'melissa':
+            $HallHarassmentAfterText = 'Гость мнёт грудь Мелиссы, смеётся ей в ключицу. Она одёргивает пальцы. У соседнего стола свист — на вырез, не на хозяина.'
+        else
+            $HallHarassmentAfterText = 'Пальцы на груди Аманды. «Отпустите, пожалуйста…» — смущённо, отступает. Взгляды на вырез, не на стойку.'
+        end
+    elseif $b = 'grab_ass' or $b = 'hand_skirt':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = 'Шлепок по юбке у плиты. Сандра оборачивается тяжело; гость ухмыляется ей. Кухня: пар, запах мяса, ни свиста зала, ни «пригнулись под юбку» — здесь нет соседей за столом, только вы у двери и они у печи.'
+        elseif $g = 'melissa':
+            $HallHarassmentAfterText = 'Ладонь на попе Мелиссы. Она шипит, вырывается. Кто-то пригнулся к подолу — на инцидент.'
+        else
+            $HallHarassmentAfterText = 'Рука на ягодице Аманды. Она вспыхивает от неловкости, одёргивает подол, отступает. Свист и смешки — на неё.'
+        end
+    elseif $b = 'wall':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = 'Сандру прижимают к каменной стене у печи. Она упирается ладонью и сдвигает его. Только они двое и жар — без зрителей из зала.'
+        else
+            $HallHarassmentAfterText = $RealName[$g] + ' у стены, гость нависает. Она сдвигает его. Зал тянет шеи к сцене, не к вам.'
+        end
+    elseif $b = 'drop_bend':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = 'Наклон у ларя — и ладонь сзади. Сандра вздрагивает, выпрямляется резко. На кухне никого, кто бы свистел снизу: только эхо о камень.'
+        else
+            $HallHarassmentAfterText = 'Наклон — ладонь сзади. ' + $RealName[$g] + ' вздрагивает. Свист снизу стола: смотрели, куда ушла юбка.'
+        end
+    elseif $b = 'play_tip':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = 'Сандра не бежит: с гостем коротко и по-деловому, но держит. Серебро звенит о стол. Он занят ею у печи — вам не кивает.'
+        elseif $g = 'melissa':
+            $HallHarassmentAfterText = 'Мелисса не ломает номер: улыбка, монета. Гость занят ею. Зал гудит на сцену у стола.'
+        else
+            $HallHarassmentAfterText = 'Аманда краснеет и подаётся — монета. Гость только о ней. Свист зала — на них.'
+        end
+    else
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = 'У печи гость не отпускает Сандру сразу — смех, руки; она выкручивается сама. Ни «зала», ни свиста: кухня закрыта занавеской.'
+        else
+            $HallHarassmentAfterText = 'Гость не отпускает ' + $RealName[$g] + ' — смех, руки; она сама. Присвист на неё.'
+        end
+    end
+
+    if HallHarassSceneSlap = 1 and $b <> 'play_tip':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. Гость отшатывается к занавеске; Сандра поправляет передник, щёки горят, и снова к половнику.'
+        else
+            if $g = 'amanda':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. Гость отшатывается; Аманда поправляет платье, щёки горят от злости и смущения — не от ужаса — и уходит к столам.'
+            else
+                $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. Гость отшатывается; она поправляет платье и уходит с горящими щеками.'
+            end
+        end
+    end
+
+    killvar '$g'
+    killvar '$b'
+    killvar 'HallHarassAfterKitchen'
+---
+
+! Звуки ignore из ТОГО ЖЕ beat
+#HallHarassAfterIgnoreFromBeat
+    $g = $HallHarassGirl
+    $b = $HallHarassSceneBeat
+    $HallHarassmentAfterText = ''
+    HallHarassAfterKitchen = 0
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen' or $g = 'sandra':
+        HallHarassAfterKitchen = 1
+    end
+
+    if HallHarassAfterKitchen = 1:
+        $HallHarassmentAfterText = 'Вы остаётесь в зале у стойки / у входа. На кухню не заходите. За занавеской — только слух.'
+    else
+        $HallHarassmentAfterText = 'Вы отворачиваетесь к стойке — дерево, эль, счёт. За спиной у стола не смотрите. Только слышите.'
+    end
+    $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>'
+
+    if $b = 'hand_bare':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шорох ткани у печи. Хриплый смех. Сухой возглас Сандры. Звон крышки. Ничьего «ой, голая» из зала — туда не слышно; только их двое за занавеской.'
+        elseif $g = 'amanda':
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шорох подола. Смех клиента. Её смущённый смешок. Шёпот: «Ой… да у неё голая писька…» Вздох зала.'
+        else
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шелест юбки. Смех. Шёпот «без…» и свист. Вздох. Стук подноса.'
+        end
+    elseif $b = 'grab_tits':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок ладони по ткани. Смех гостя. «Руки» — сухо, Сандра. Шорох передника. Шипение на сковороде.'
+        else
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Смех ' + $RealName[$g] + '. Смех клиента. Шлепок по груди через платье. Присвист. Шорох.'
+        end
+    elseif $b = 'grab_ass' or $b = 'hand_skirt':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок по юбке. Его смех. Её тяжёлый выдох. Стук половника. Ни свиста «соседа» — кухня глушит зал.'
+        else
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок по юбке. Смех. Шелест. Одобрительный свист — сцене, не стойке.'
+        end
+    elseif $b = 'wall':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Глухой стук о камень. Его смех. Её выдох. Резкий шаг — оттолкнула.'
+        else
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Стук о дерево. Смех. Выдох. Шаг — оттолкнула.'
+        end
+    elseif $b = 'drop_bend':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Звон миски. Шорох наклона. Шлепок сзади. Её вздох. Эхо кухни, без свиста снизу стола.'
+        else
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Звон монеты. Наклон. Шлепок сзади. Свист снизу стола.'
+        end
+    elseif $b = 'play_tip':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Тихий смех. Звяканье серебра о дерево. Шорох. Довольный выдох. Пар. Без крика.'
+        else
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Тихий смех. Серебро. Шорох. Гул зала на сцену. Без крика.'
+        end
+    else
+        $HallHarassmentAfterText = $HallHarassmentAfterText + 'Смех. Шорох. Голос — слов не разобрать. Стук.'
+    end
+
+    if HallHarassSceneSlap = 1 and $b <> 'play_tip':
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + ' Потом — звонкая пощёчина. Шаги к занавеске. Снова шипение печи.'
+        else
+            $HallHarassmentAfterText = $HallHarassmentAfterText + ' Потом — пощёчина. Вздох зала. Шаги, уже ровнее.'
+        end
+    else
+        if HallHarassAfterKitchen = 1:
+            $HallHarassmentAfterText = $HallHarassmentAfterText + ' Шаги. Занавеска. Снова только кухня.'
+        else
+            $HallHarassmentAfterText = $HallHarassmentAfterText + ' Шаги. Снова обычный гул.'
+        end
+    end
+
+    killvar '$g'
+    killvar '$b'
+    killvar 'HallHarassAfterKitchen'
+---

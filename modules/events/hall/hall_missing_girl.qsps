@@ -759,13 +759,13 @@
     if $HallMissingChoice = 'ignore':
         HallMissingGirlLastChoice[$HallMissingGirl] = 1
         gs 'HallMissingGirlApplyConsequences', 'ignore'
-        gs 'HallMissingGirlShowImage', 'after'
+        ! image внутри PrintText (ignore_after)
         gs 'HallMissingGirlPrintText', 'ignore_after'
 
     elseif $HallMissingChoice = 'watch':
         HallMissingGirlLastChoice[$HallMissingGirl] = 2
         gs 'HallMissingGirlApplyConsequences', 'peek'
-        gs 'HallMissingGirlShowImage', 'peek'
+        ! image внутри PrintText peek_scene / peek_meet
         gs 'HallMissingGirlPrintText', 'peek_scene'
         *pl ' '
         gs 'HallMissingGirlPrintText', 'peek_meet'
@@ -773,14 +773,12 @@
     elseif $HallMissingChoice = 'protect_hard':
         HallMissingGirlLastChoice[$HallMissingGirl] = 3
         gs 'HallMissingGirlApplyConsequences', 'interrupt'
-        gs 'HallMissingGirlShowImage', 'interrupt'
         gs 'HallMissingGirlPrintText', 'interrupt_scene'
 
     else:
         $HallMissingChoice = 'protect_hard'
         HallMissingGirlLastChoice[$HallMissingGirl] = 3
         gs 'HallMissingGirlApplyConsequences', 'interrupt'
-        gs 'HallMissingGirlShowImage', 'interrupt'
         gs 'HallMissingGirlPrintText', 'interrupt_scene'
     end
 
@@ -970,11 +968,15 @@ killvar '$HallMissingApplyChoice'
     end
 
     if $HallMissingGirl = '':
-        exit
+        $HallMissingGirl = 'amanda'
     end
 
     if $HallMissingPlace = '':
-        $HallMissingPlace = 'storage'
+        if $HallMissingGirl = 'sandra':
+            $HallMissingPlace = 'kitchen'
+        else
+            $HallMissingPlace = 'storage'
+        end
     end
 
     HallMissingUniform = GirlUniformLevel[$HallMissingGirl]
@@ -987,7 +989,7 @@ killvar '$HallMissingApplyChoice'
         HallMissingUniform = 0
     end
 
-    $HallMissingStubPath = 'images/common/hall_scene_stub.png'
+    $HallMissingStubPath = 'images/common/hall_scene_stub'
 
     if $HallMissingImageOutcome = 'bargain':
         if $HallMissingGirl = 'sandra':
@@ -995,26 +997,49 @@ killvar '$HallMissingApplyChoice'
         else
             $HallMissingBargainArea = 'hall'
         end
-        $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/bargain_' + $HallMissingBargainArea + '_uniform' + STR(HallMissingUniform) + '.webp'
+        $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/bargain_' + $HallMissingBargainArea + '_uniform' + STR(HallMissingUniform)
         killvar '$HallMissingBargainArea'
+    elseif $HallMissingImageOutcome = 'intro':
+        $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/' + $HallMissingPlace + '_uniform' + STR(HallMissingUniform) + '_intro'
+    elseif $HallMissingImageOutcome = 'scene' or $HallMissingImageOutcome = 'peek':
+        ! scene key: act + finish hint
+        $hmAct = LCASE($HallMissingPrivateAct)
+        if $hmAct = '':
+            $hmAct = 'petting'
+        end
+        $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/' + $HallMissingPlace + '/' + $hmAct + '_u' + STR(HallMissingUniform)
+        if $HallMissingFinish <> '':
+            $HallMissingFuturePath = $HallMissingFuturePath + '_' + LCASE($HallMissingFinish)
+        end
+        killvar '$hmAct'
     else
-        $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/' + $HallMissingPlace + '_uniform' + STR(HallMissingUniform) + '_' + $HallMissingImageOutcome + '.webp'
+        $HallMissingFuturePath = 'images/events/' + $HallMissingGirl + '/hall_missing/' + $HallMissingPlace + '_uniform' + STR(HallMissingUniform) + '_' + $HallMissingImageOutcome
     end
 
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'small'
+    ! канон: нет пустых экранов + подпись ассета (AGENTS / SceneShowVisual)
+    $HallMissingImageCaption = 'missing ' + $HallMissingGirl + ' / ' + $HallMissingPlace + ' / ' + $HallMissingImageOutcome
+    if $HallMissingPrivateAct <> '':
+        $HallMissingImageCaption = $HallMissingImageCaption + ' act=' + $HallMissingPrivateAct
+    end
+    if $HallMissingFinish <> '':
+        $HallMissingImageCaption = $HallMissingImageCaption + ' finish=' + $HallMissingFinish
     end
 
-    if debug = 1:
-        *pl '[DEBUG HALL MISSING IMAGE] stub: ' + $HallMissingStubPath
-        *pl '[DEBUG HALL MISSING IMAGE] future: ' + $HallMissingFuturePath
-        *pl '[DEBUG HALL MISSING IMAGE] place=' + $HallMissingPlace + ' act=' + $HallMissingPrivateAct + ' outcome=' + $HallMissingImageOutcome
+    if HallMissingArtUseReal = 1:
+        SceneArtUseReal = 1
+    end
+    if LOC('SceneShowVisual') = 1:
+        gs 'SceneShowVisual', $HallMissingFuturePath, $HallMissingImageCaption, 'large', 'webp'
+    elseif LOC('ShowImage') = 1:
+        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'large'
+        *pl '<center><small>[VIS] ' + $HallMissingImageCaption + '</small></center>'
         *pl ' '
     end
 
     killvar '$HallMissingImageOutcome'
     killvar '$HallMissingStubPath'
     killvar '$HallMissingFuturePath'
+    killvar '$HallMissingImageCaption'
 ---
 
 ! ================================================
@@ -1133,6 +1158,7 @@ killvar '$HallMissingApplyChoice'
 
     if $HallMissingPrintTextId = 'intro':
         $HallMissingSceneKey = ''
+        gs 'HallMissingGirlShowImage', 'intro'
         if $HallMissingGirl = 'melissa':
             gs 'HallMissingIntro_melissa'
         elseif $HallMissingGirl = 'sandra':
@@ -1141,6 +1167,7 @@ killvar '$HallMissingApplyChoice'
             gs 'HallMissingIntro_amanda'
         end
     elseif $HallMissingPrintTextId = 'ignore_after':
+        gs 'HallMissingGirlShowImage', 'after'
         if $HallMissingGirl = 'melissa':
             gs 'HallMissingIgnore_melissa'
         elseif $HallMissingGirl = 'sandra':
@@ -1151,13 +1178,16 @@ killvar '$HallMissingApplyChoice'
     elseif $HallMissingPrintTextId = 'peek_scene':
         $HallMissingSceneKey = ''
         gs 'HallMissingResolveSceneKey'
+        gs 'HallMissingGirlShowImage', 'peek'
         gs 'HallMissingPrintPeekScene'
     elseif $HallMissingPrintTextId = 'peek_meet':
         if $HallMissingSceneKey = '':
             gs 'HallMissingResolveSceneKey'
         end
+        gs 'HallMissingGirlShowImage', 'after'
         gs 'HallMissingPrintPeekMeet'
     elseif $HallMissingPrintTextId = 'interrupt_scene':
+        gs 'HallMissingGirlShowImage', 'interrupt'
         if $HallMissingGirl = 'melissa':
             gs 'HallMissingInterrupt_melissa'
         elseif $HallMissingGirl = 'sandra':
