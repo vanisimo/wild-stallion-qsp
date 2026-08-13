@@ -409,6 +409,37 @@
     end
 
     *pl '══════════════════════════════════════════════'
+    if $HallMissingGirl = 'sandra':
+        *pl ' У КУХОННОЙ ДВЕРИ'
+    else
+        *pl ' У ДВЕРИ ПОДСОБКИ'
+    end
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('HallMissingGirlShowImage') = 1:
+        gs 'HallMissingGirlShowImage', 'intro'
+    end
+    gs 'HallMissingBargainPrintNotice'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Подсмотреть', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallMissingBargainTalk'
+    end
+---
+
+! окно 2 — уговор
+#HallMissingBargainTalk
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallMissingGirl
+    end
+
+    *pl '══════════════════════════════════════════════'
     *pl ' УГОВОР'
     *pl '══════════════════════════════════════════════'
     *pl ' '
@@ -434,11 +465,32 @@
                 gt 'TavernMain'
             end
         end
-    else
-        gs 'ActUiPrepare', 'Слушать дальше…', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
+        exit
+    end
+
+    gs 'HallMissingBargainBuildMenu'
+    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''HallMissingBargainMenu''">Стефану</a>?'
+---
+
+#HallMissingBargainBuildMenu
+    gs 'Menu.Destroy', 'HallMissingBargainMenu'
+    gs 'Menu.Create', 'HallMissingBargainMenu'
+    gs 'MenuUiAdd', 'HallMissingBargainMenu', 'Защитить', ''
+    gs 'Menu.AddModule', 'HallMissingBargainMenu', {
+        $HallMissingBargainNext = 'protect_hard'
+        gt 'HallMissingBargainContinue'
+    }
+    if FamilyLiberationGateOpen = 1:
+        gs 'MenuUiAdd', 'HallMissingBargainMenu', 'Смотреть', ''
+        gs 'Menu.AddModule', 'HallMissingBargainMenu', {
+            $HallMissingBargainNext = 'watch'
             gt 'HallMissingBargainContinue'
-        end
+        }
+        gs 'MenuUiAdd', 'HallMissingBargainMenu', 'Отвернуться', ''
+        gs 'Menu.AddModule', 'HallMissingBargainMenu', {
+            $HallMissingBargainNext = 'ignore'
+            gt 'HallMissingBargainContinue'
+        }
     end
 ---
 
@@ -900,6 +952,9 @@
 
 #HallMissingBargainContinue
     HallMissingBargainDone = 1
+    if $HallMissingBargainNext = '':
+        $HallMissingBargainNext = 'watch'
+    end
     if $HallMissingReturnLoc = '':
         $HallMissingReturnLoc = 'TavernMain'
     end

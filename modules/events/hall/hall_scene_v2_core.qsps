@@ -390,26 +390,12 @@
         gs 'ShowGirlSidebar', $HallMissingGirl
     end
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ДЕВУШКА ПРОПАЛА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-    ! visual: HallMissingGirlPrintText intro → ShowImage intro
-
-    gs 'HallMissingGirlPrintText', 'intro'
-    *pl ' '
-    gs 'HallMissingGirlPrintDecisionThoughts'
-    *pl ' '
-
-    if debug = 1:
-        *pl '[DEBUG MISSING FROM PLAY] girl=' + $HallMissingGirl + ' client=' + $HallMissingClient + ' place=' + $HallMissingPlace + ' act=' + $HallMissingPrivateAct
-        *pl '[DEBUG MISSING FROM PLAY] bargain=' + STR(HallMissingBargainDone) + ' style=' + $HallMissingBargainStyle + ' promise=' + $HallMissingPromise + ' break=' + STR(HallMissingPromiseBreak) + ' finish=' + $HallMissingFinish
-        *pl '[DEBUG MISSING FROM PLAY] phase=' + $HallMissingPhase[$HallMissingGirl] + ' hardStep/Sub=' + STR(HallMissingHardStep[$HallMissingGirl]) + '/' + STR(HallMissingHardSub[$HallMissingGirl]) + ' face=' + STR(HallMissingFlagFaceDone[$HallMissingGirl]) + ' explicit=' + STR(HallMissingBargainExplicit)
-        *pl ' '
+    if $HallMissingBargainNext = '':
+        $HallMissingBargainNext = 'watch'
     end
-
-    gs 'HallMissingGirlBuildMenu'
-    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''HallMissingGirlMenu''">Стефану</a>?'
+    $HallMissingStartNext = $HallMissingBargainNext
+    $HallMissingBargainNext = ''
+    gt 'HallMissingGirlResolve', $HallMissingStartNext, $HallMissingReturnLoc
 ---
 
 ! missing client weights (no drunk for missing — never pleasant; still allow if forced)

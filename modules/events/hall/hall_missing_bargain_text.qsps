@@ -13,10 +13,7 @@
 ! Сёстры: подсобка (не «за бочками»).
 ! Аманда: смущение / азарт; «аккуратные» / первая любовь.
 !
-! ВАЖНОЕ ПРАВИЛО ДЛЯ A4, A5, A6 (рот / минет / лицо / горло):
-!   В зале/на кухне уговор ВСЕГДА идёт про МИНЕТ (ласка губами / отсос).
-!   Расширение услуг (кончить на лицо в A5, глубокое горло в A6) происходит
-!   непосредственно внутри самой сцены missing!
+! ОДИН уговор: уединение / ласка за монету (клиент × Explicit). Не меню услуг.
 !
 ! ТИПЫ КЛИЕНТОВ ($c = $HallMissingClient):
 !   'traveler' / 'sailor' — моряк / путешественник (морская брань, гавани, компас, брутальность)
@@ -27,6 +24,27 @@
 ! Комментарии [B-…] — якоря для сцен missing, не удалять.
 ! ================================================
 
+! окно 1: клиент у двери (ещё не уговор)
+#HallMissingBargainPrintNotice
+    if $RealName[$HallMissingGirl] = '':
+        gs 'HallMissingGirlEnsureName', $HallMissingGirl
+    end
+    if $HallLewdClientWho = '':
+        $HallLewdClientWho = 'гость'
+        $HallLewdClientWhoA = 'гостя'
+    end
+    if $HallMissingGirl = 'sandra':
+        *pl 'Вы замечаете, как ' + $HallLewdClientWho + ' подходит к кухонной двери и открывает её, оглядываясь по сторонам.'
+        *pl ' '
+        *pl 'За дверью — пар и звон посуды. Сандра у плиты. Гость уже на пороге.'
+    else
+        *pl 'Вы замечаете, как ' + $HallLewdClientWho + ' отходит от стойки вместе с ' + $RealName[$HallMissingGirl] + ' — прямо к двери подсобки.'
+        *pl ' '
+        *pl 'Речь совсем не про заказ эля. Они уже у порога.'
+    end
+---
+
+! окно 2: один уговор (клиент × Explicit), без входа и без сцены
 #HallMissingBargainPrintText
     HallMissingBargainRefused = 0
     if $RealName[$HallMissingGirl] = '':
@@ -42,13 +60,6 @@
         gs 'HallMissingBargainIsExplicit'
     end
 
-    if $HallMissingGirl = 'sandra':
-        *pl 'Вы замечаете, как ' + $HallLewdClientWho + ' бесцеремонно отодвигает кухонную занавеску и проходит на кухню, оглядываясь по сторонам. Вы тихо проходите следом проследить — и прямо от входа видите всю сцену.'
-    else
-        *pl 'Вы не вмешиваетесь — лишь из тени слышите, как ' + $HallLewdClientWho + ' сдавленным, хриплым от вожделения голосом уговаривает ' + $RealName[$HallMissingGirl] + ' отступить на пару минут в тёмный уголок за подсобку. Речь его совсем не о заказе эля.'
-    end
-    *pl ' '
-
     if $HallMissingGirl = 'amanda':
         gs 'HallMissingBargainPrintAmanda'
     elseif $HallMissingGirl = 'melissa':
@@ -57,16 +68,9 @@
         gs 'HallMissingBargainPrintSandra'
     end
 
-    *pl ' '
     if HallMissingBargainRefused = 1:
+        *pl ' '
         *pl 'Уговор сорвался — пьяный гость отступает ни с чем, а ' + $RealName[$HallMissingGirl] + ' возвращается к своей работе.'
-        exit
-    end
-
-    if $HallMissingGirl = 'sandra':
-        *pl 'Всё происходит прямо здесь, на кухне — в полумраке за кухонным столом, под шипение сковороды и густой пар. Если останетесь проследить — своими глазами увидите продолжение этой сцены прямо у печи.'
-    else
-        *pl 'Они медленно и бесшумно выскальзывают от стойки — прямо к тяжелой дубовой двери подсобки, в прохладный полумрак. Если шмыгнёте следом — своими глазами увидите, чем закончилась эта тёмная сделка.'
     end
 ---
 
@@ -465,12 +469,11 @@
 #HallMissingBargainPrintSandra
     $p = LCASE($HallMissingPromise)
     $c = LCASE($HallMissingClient)
-    $ph = LCASE($HallMissingPhase['sandra'])
 
     if $c = 'drunk_guest' or $c = 'drunk':
         pol_val = GirlWorkPolicy['sandra']
         HallMissingBargainRefused = 1
-        *pl 'Пьяный горожанин тяжело вламывается на кухню, едва не сбивая кухонную занавеску, одуряюще дышит перегаром и пытается сгрести Сандру в охапку у самой печи:'
+        *pl 'Пьяный горожанин тяжело вламывается на кухню, едва не сбивая кухонную дверь, одуряюще дышит перегаром и пытается сгрести Сандру в охапку у самой печи:'
         *pl '— Э-эй, Сандра! Пойдём к печке, прижму тебя да поглажу! Чё ты всё кастрюлями гремишь...'
         *pl ' '
         if pol_val = 3:
@@ -480,66 +483,9 @@
         end
         killvar '$p'
         killvar '$c'
-        killvar '$ph'
         exit
     end
 
-    ! hard / free oral promises: уговор ВСЕГДА про МИНЕТ (facial/DT — только внутри Scene)
-    HallMissingSandraOral = 0
-    if $ph = 'hard':
-        HallMissingSandraOral = 1
-    elseif $p = 'mouth_hard' or $p = 'facial' or $p = 'deepthroat' or $p = 'mouth_spit' or $p = 'mouth_swallow' or $p = 'mouth_price' or $p = 'swallow_trade':
-        HallMissingSandraOral = 1
-    end
-
-    if HallMissingSandraOral = 1:
-        if $c = 'traveler' or $c = 'sailor':
-            *pl 'Моряк припирает Сандру к ларю у печи, уже расстёгивая пояс. В кухонном пару его шёпот грубый и прямой:'
-            *pl '— На колени, хозяйка. Рот — и серебро на стол. Большой штурвал не в кулак, а в тёплые губы. Тихо, чтобы из залы не услышали.'
-            *pl ' '
-            gs 'HallMissingBargainTryOffenseAnswer'
-            if HallMissingBargainOffenseAnswered = 0:
-                if HallMissingBargainExplicit = 1:
-                    *pl '— Ладно, матрос... Монету — и заткнись. Только не ори, когда кончишь.'
-                else
-                    *pl '— Тс-с... Позорник. Монету на край стола — и без рыка. Я не в портовом кабаке.'
-                end
-            end
-        elseif $c = 'craftsman' or $c = 'local':
-            *pl 'Мастеровой упирается ладонью в разделочный стол, другой — у Сандры на затылке, не грубо, но уже без шуток:'
-            *pl '— Сандра, хватит кастрюль. Губами, как в прошлый раз — и я не жадничаю серебром. Зал не услышит, если ты не будешь стонать в голос.'
-            *pl ' '
-            gs 'HallMissingBargainTryOffenseAnswer'
-            if HallMissingBargainOffenseAnswered = 0:
-                if HallMissingBargainExplicit = 1:
-                    *pl '— Сосед ты мой... Ладно. Рот — и молчи. После — на лицо не лезь без спроса, уговор на губы.'
-                else
-                    *pl '— Охальник... Монету положи. Рот — и тихо. Больше ни слова про «как в юности».'
-                end
-            end
-        else
-            ! rich_merchant / default — толстый, в рот
-            *pl 'Купец кладёт кошель на край печи и расстёгивает штаны, не отводя глаз от губ Сандры:'
-            *pl '— Хозяйка, заказ простой: отсос. Толстый ствол — в рот, до конца. Серебро полное. Лицо и горло — потом, если договоримся на месте.'
-            *pl ' '
-            gs 'HallMissingBargainTryOffenseAnswer'
-            if HallMissingBargainOffenseAnswered = 0:
-                if HallMissingBargainExplicit = 1:
-                    *pl '— Купец... Деньги на стол. Рот — да. Только без крика, а то вылетишь на улицу без штанов.'
-                else
-                    *pl '— Бесстыдник... Монету — и губы. Больше ни слова, пока не кончишь.'
-                end
-            end
-        end
-        killvar 'HallMissingSandraOral'
-        killvar '$p'
-        killvar '$c'
-        killvar '$ph'
-        exit
-    end
-    killvar 'HallMissingSandraOral'
-
-    ! soft / free soft: client × explicit (hold / ласка, не меню услуг)
     if $c = 'traveler' or $c = 'sailor':
         if HallMissingBargainExplicit = 1 or $p = 'touch_cock' or $p = 'hand_quick':
             *pl 'Моряк прижимает Сандру к каменной стене кухни, ладонь — у неё на бедре, голос сиплый:'
@@ -568,7 +514,6 @@
         end
         killvar '$p'
         killvar '$c'
-        killvar '$ph'
         exit
     end
 
@@ -600,7 +545,6 @@
         end
         killvar '$p'
         killvar '$c'
-        killvar '$ph'
         exit
     end
 
@@ -632,7 +576,6 @@
         end
         killvar '$p'
         killvar '$c'
-        killvar '$ph'
         exit
     end
 
@@ -645,6 +588,5 @@
     end
     killvar '$p'
     killvar '$c'
-    killvar '$ph'
 
 ---

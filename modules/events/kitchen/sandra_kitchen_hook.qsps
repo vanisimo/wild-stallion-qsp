@@ -49,7 +49,7 @@
 
     if $skImg = 'notice':
         $SandraKitchenImageFuture = 'images/events/sandra/kitchen_hook/notice_door_enter'
-        $SandraKitchenImageCaption = 'notice: клиент заходит на кухню (дверь/занавеска, из зала)'
+        $SandraKitchenImageCaption = 'notice: клиент заходит на кухню (дверь, из зала)'
     elseif $skImg = 'bargain':
         if $SandraKitchenBeat = 'play':
             $SandraKitchenImageFuture = 'images/events/sandra/kitchen_hook/bargain_play'
@@ -77,7 +77,7 @@
         $SandraKitchenImageCaption = 'Стефан ворвался на кухню, клиент уходит'
     elseif $skImg = 'offscreen':
         $SandraKitchenImageFuture = 'images/events/sandra/kitchen_hook/offscreen'
-        $SandraKitchenImageCaption = 'зал: слушает звуки с кухни (дверь/занавеска)'
+        $SandraKitchenImageCaption = 'зал: слушает звуки с кухни (дверь)'
     elseif $skImg = 'missing_peek' or $skImg = 'missing_meet':
         if LOC('HallMissingGirlShowImage') = 1:
             if $skImg = 'missing_meet':
@@ -228,6 +228,29 @@
     SandraKitchenCanEscalate = 1
 ---
 
+! Согласие на ласку в harass: не в первый день.
+! liberation=0 / resist / обида → руки прочь. endure / policy 3 / play → можно.
+#SandraKitchenHarassAllowCheck
+    SandraKitchenHarassAllow = 0
+    if GirlOffenseDays['sandra'] > 0:
+        exit
+    end
+    if FamilyLiberationGateOpen = 0:
+        exit
+    end
+    if GirlWorkPolicy['sandra'] = 3 or GirlKitchenPolicy['sandra'] = 3:
+        SandraKitchenHarassAllow = 1
+        exit
+    end
+    if $HallHarassStanceCanon = 'endure' or $HallHarassStanceCanon = 'play':
+        SandraKitchenHarassAllow = 1
+        exit
+    end
+    if $HarassGirlStance = 'mixed' or $HarassGirlStance = 'provoke':
+        SandraKitchenHarassAllow = 1
+    end
+---
+
 #SandraKitchenPickClient
     if $HallMissingDbgClient <> '' and debug = 1 and SandraKitchenDebugForceClient = 1:
         $SandraKitchenClient = $HallMissingDbgClient
@@ -360,7 +383,7 @@
     else
         gs 'SandraKitchenShowImage', 'bargain'
     end
-    *pl 'Вы тихо подходите к кухонной занавеске. Пар, звон посуды — и чужие голоса у плиты.'
+    *pl 'Вы тихо подходите к кухонной двери. Пар, звон посуды — и чужие голоса у плиты.'
     *pl ' '
     $HallMissingGirl = 'sandra'
     if LOC('HallMissingBargainIsExplicit') = 1:
@@ -512,26 +535,18 @@
         *pl ' '
     end
 
-    ! visual внутри PrintText peek_scene / peek_meet
     $HallMissingSceneKey = ''
-    gs 'HallMissingGirlPrintText', 'peek_scene'
-    *pl ' '
-    gs 'HallMissingGirlPrintText', 'peek_meet'
-    *pl ' '
-
+    $HallMissingReturnLoc = $SandraKitchenReturnLoc
     if LOC('HallMissingGirlApplyConsequences') = 1:
         gs 'HallMissingGirlApplyConsequences', 'peek'
     end
     HallMissingGirlLastDay['sandra'] = day
     SandraKitchenForceMissing = 0
-
-    if LOC('SaveLastHallEvent') = 1:
-        gs 'SaveLastHallEvent', 'hall_missing', 'sandra', 'Стефан подсмотрел на кухне, где Сандра была с клиентом.', 'peek'
-    end
-
-    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    gs 'HallMissingGirlPrintText', 'peek_scene'
+    *pl ' '
+    gs 'ActUiPrepare', 'Далее', 'generic'
     act $ActUiLabel, $ActUiIconPath:
-        gt $SandraKitchenReturnLoc
+        gt 'HallMissingGirlMeet'
     end
 ---
 

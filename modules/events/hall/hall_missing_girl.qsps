@@ -620,33 +620,31 @@
         gs 'ShowGirlSidebar', $HallMissingGirl
     end
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ДЕВУШКА ПРОПАЛА ИЗ ЗАЛА'
-    *pl '══════════════════════════════════════════════'
+    gs 'HallMissingPrintHeader'
     *pl ' '
-
-    gs 'HallMissingGirlPrintText', 'intro'
-
-    *pl ' '
-
-    if LOC('PolicyEventContextPrintStart') = 1:
-        gs 'PolicyEventContextPrintStart', $HallMissingGirl, 'hall_missing'
+    if HallMissingBargainDone = 1:
+        gs 'HallMissingGirlShowImage', 'intro'
+        gs 'HallMissingPrintAfterBargain'
+    else
+        gs 'HallMissingGirlPrintText', 'intro'
         *pl ' '
-    end
-
-    if LOC('PolicyEventReactionPrint') = 1:
-        if $HallMissingReturnLoc = '':
-            $HallMissingReturnLoc = 'TavernMain'
+        if LOC('PolicyEventContextPrintStart') = 1:
+            gs 'PolicyEventContextPrintStart', $HallMissingGirl, 'hall_missing'
+            *pl ' '
         end
-        gs 'PolicyEventReactionPrint', $HallMissingGirl, 'hall', 'hall_missing', $HallMissingReturnLoc
-        *pl ' '
+        if LOC('PolicyEventReactionPrint') = 1:
+            if $HallMissingReturnLoc = '':
+                $HallMissingReturnLoc = 'TavernMain'
+            end
+            gs 'PolicyEventReactionPrint', $HallMissingGirl, 'hall', 'hall_missing', $HallMissingReturnLoc
+            *pl ' '
+        end
+        if LOC('PolicyEventSceneVariationPrint') = 1:
+            gs 'PolicyEventSceneVariationPrint', $HallMissingGirl, 'hall_missing', 'start'
+            *pl ' '
+        end
+        gs 'HallMissingGirlPrintDecisionThoughts'
     end
-    if LOC('PolicyEventSceneVariationPrint') = 1:
-        gs 'PolicyEventSceneVariationPrint', $HallMissingGirl, 'hall_missing', 'start'
-        *pl ' '
-    end
-
-    gs 'HallMissingGirlPrintDecisionThoughts'
 
     *pl ' '
 
@@ -675,6 +673,25 @@
     gs 'HallEventChoiceThoughtsPrint', 'hall_missing'
 ---
 
+#HallMissingPrintHeader
+    *pl '══════════════════════════════════════════════'
+    if $HallMissingGirl = 'sandra' or $HallMissingPlace = 'kitchen':
+        *pl ' НА КУХНЕ'
+    else
+        *pl ' ДЕВУШКА ПРОПАЛА ИЗ ЗАЛА'
+    end
+    *pl '══════════════════════════════════════════════'
+---
+
+! после одного уговора: не повторять вход / «уговаривает её…»
+#HallMissingPrintAfterBargain
+    if $HallMissingGirl = 'sandra':
+        *pl 'Вы остаётесь у кухонной двери. Уговор уже слышали. Дальше — смотреть в щель, ворваться или отойти к стойке.'
+    else
+        *pl 'Они уже отошли в полумрак. Вы у двери подсобки. Дальше — заглянуть, ворваться или вернуться к стойке.'
+    end
+---
+
 #HallMissingGirlBuildMenu
     ! Канон §0c: Защитить / Наблюдать / Отвернуться
     ! (interrupt / peek / ignore → protect_hard / watch / ignore)
@@ -687,7 +704,7 @@
     }
 
     if FamilyLiberationGateOpen = 1:
-        gs 'MenuUiAdd', 'HallMissingGirlMenu', 'Наблюдать', ''
+        gs 'MenuUiAdd', 'HallMissingGirlMenu', 'Смотреть', ''
         gs 'Menu.AddModule', 'HallMissingGirlMenu', {
             gt 'HallMissingGirlResolve', 'watch', $HallMissingReturnLoc
         }
@@ -741,9 +758,7 @@
     HallMissingGirlActive = 0
     HallMissingGirlLastChoice[$HallMissingGirl] = 0
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ДЕВУШКА ПРОПАЛА ИЗ ЗАЛА'
-    *pl '══════════════════════════════════════════════'
+    gs 'HallMissingPrintHeader'
     *pl ' '
 
     if $HallMissingChoice = 'interrupt':
@@ -759,39 +774,87 @@
     if $HallMissingChoice = 'ignore':
         HallMissingGirlLastChoice[$HallMissingGirl] = 1
         gs 'HallMissingGirlApplyConsequences', 'ignore'
-        ! image внутри PrintText (ignore_after)
         gs 'HallMissingGirlPrintText', 'ignore_after'
+        *pl ' '
+        gs 'PolicyEventChoiceConsequencePrint', 'hall_missing', 'ignore', $HallMissingGirl
+        if LOC('SaveLastHallEvent') = 1:
+            gs 'SaveLastHallEvent', 'hall_missing', $HallMissingGirl, 'Стефан не стал смотреть, когда ' + $RealName[$HallMissingGirl] + ' была с клиентом.', 'ignore'
+        end
+        if debug = 1:
+            *pl ' '
+            *pl '[DEBUG HALL MISSING] choice: ignore'
+        end
+        $HallScenePolicySource = ''
+        HallHarassPolicyChosen = 0
+        HallHarassPolicyValue = 0
+        HallMissingFromPlay = 0
+        gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $HallMissingReturnLoc
+        end
+        exit
 
     elseif $HallMissingChoice = 'watch':
         HallMissingGirlLastChoice[$HallMissingGirl] = 2
         gs 'HallMissingGirlApplyConsequences', 'peek'
-        ! image внутри PrintText peek_scene / peek_meet
         gs 'HallMissingGirlPrintText', 'peek_scene'
         *pl ' '
-        gs 'HallMissingGirlPrintText', 'peek_meet'
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingGirlMeet'
+        end
+        exit
 
     elseif $HallMissingChoice = 'protect_hard':
         HallMissingGirlLastChoice[$HallMissingGirl] = 3
         gs 'HallMissingGirlApplyConsequences', 'interrupt'
         gs 'HallMissingGirlPrintText', 'interrupt_scene'
+        *pl ' '
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingGirlMeet'
+        end
+        exit
 
     else:
         $HallMissingChoice = 'protect_hard'
         HallMissingGirlLastChoice[$HallMissingGirl] = 3
         gs 'HallMissingGirlApplyConsequences', 'interrupt'
         gs 'HallMissingGirlPrintText', 'interrupt_scene'
+        *pl ' '
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingGirlMeet'
+        end
+        exit
+    end
+---
+
+! окно 4 — разговор после действия
+#HallMissingGirlMeet
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallMissingGirl
     end
 
-    gs 'PolicyEventChoiceConsequencePrint', 'hall_missing', $HallMissingChoice, $HallMissingGirl
-
-    ! лог панели «последнее в зале» (стык со старым SaveLastHallEvent)
-    if LOC('SaveLastHallEvent') = 1:
-        if $HallMissingChoice = 'protect_hard':
+    gs 'HallMissingPrintHeader'
+    *pl ' '
+    if $HallMissingChoice = 'protect_hard' or $HallMissingChoice = 'interrupt':
+        gs 'HallMissingGirlPrintText', 'interrupt_after'
+        *pl ' '
+        gs 'PolicyEventChoiceConsequencePrint', 'hall_missing', 'protect_hard', $HallMissingGirl
+        if LOC('SaveLastHallEvent') = 1:
             gs 'SaveLastHallEvent', 'hall_missing', $HallMissingGirl, 'Стефан вмешался, когда ' + $RealName[$HallMissingGirl] + ' пропала с клиентом.', 'interrupt'
-        elseif $HallMissingChoice = 'watch':
+        end
+    else
+        gs 'HallMissingGirlPrintText', 'peek_meet'
+        *pl ' '
+        gs 'PolicyEventChoiceConsequencePrint', 'hall_missing', 'watch', $HallMissingGirl
+        if LOC('SaveLastHallEvent') = 1:
             gs 'SaveLastHallEvent', 'hall_missing', $HallMissingGirl, 'Стефан подсмотрел, где ' + $RealName[$HallMissingGirl] + ' была с клиентом.', 'peek'
-        else
-            gs 'SaveLastHallEvent', 'hall_missing', $HallMissingGirl, 'Стефан не стал вмешиваться, когда ' + $RealName[$HallMissingGirl] + ' пропала из зала.', 'ignore'
         end
     end
 
@@ -807,20 +870,19 @@
         *pl ' '
     end
 
-    ! v2 P0: после missing policy НЕ спрашиваем
     $HallScenePolicySource = ''
     HallHarassPolicyChosen = 0
     HallHarassPolicyValue = 0
     HallMissingFromPlay = 0
 
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Вернуться', 'return'
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt $HallMissingReturnLoc
+        if $HallMissingReturnLoc <> '' and LOC($HallMissingReturnLoc) = 1:
+            gt $HallMissingReturnLoc
+        else
+            gt 'TavernMain'
+        end
     end
-
-    killvar '$HallMissingChoice'
 ---
 
 ! ================================================
@@ -1194,6 +1256,15 @@ killvar '$HallMissingApplyChoice'
             gs 'HallMissingInterrupt_sandra'
         else
             gs 'HallMissingInterrupt_amanda'
+        end
+    elseif $HallMissingPrintTextId = 'interrupt_after':
+        gs 'HallMissingGirlShowImage', 'after'
+        if $HallMissingGirl = 'melissa':
+            gs 'HallMissingInterruptAfter_melissa'
+        elseif $HallMissingGirl = 'sandra':
+            gs 'HallMissingInterruptAfter_sandra'
+        else
+            gs 'HallMissingInterruptAfter_amanda'
         end
     end
 
