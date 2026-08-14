@@ -95,6 +95,7 @@
     HallHarassmentDay = day
     HallHarassmentTime = time
     HallHarassmentResolved = 0
+    HallHarassAfterStep = 0
     HallHarassPolicyChosen = 0
     HallHarassPolicyValue = 0
     $HallHarassJob = 'waitress'
@@ -147,9 +148,17 @@
         gs 'HallHarassmentPrintPolicyTint'
         gs 'HallHarassmentPrintDecisionPrompt'
     else:
-        gs 'HallHarassmentRenderAfterScreen'
-        *pl ' '
-        gs 'HallHarassmentPrintFooter'
+        if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+            gs 'HallHarassmentRenderAfterScreen'
+            *pl ' '
+            gs 'HallHarassmentPrintFooter'
+        elseif HallHarassAfterStep >= 2:
+            gs 'HallHarassmentRenderAfterTalkScreen'
+            *pl ' '
+            gs 'HallHarassmentPrintFooter'
+        else
+            gs 'HallHarassmentRenderActionScreen'
+        end
     end
 ---
 
@@ -158,9 +167,124 @@
 ! Экран 2: итог → картинка → разговор о правилах
 ! ================================================
 
+! H2 сёстры: действие гостя / её / Стефана после выбора
+#HallHarassmentRenderActionScreen
+    *pl '══════════════════════════════════════════════'
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        *pl ' КУХНЯ'
+    else
+        *pl ' ГЛАВНЫЙ ЗАЛ'
+    end
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('HallHarassmentShowImage') = 1 and $HallHarassReaction <> '':
+        gs 'HallHarassmentShowImage', $HallHarassGirl, $HallHarassJob, HallHarassType, $HallHarassReaction
+        *pl ' '
+    end
+
+    if LOC('HallHarassmentPrintAfterBeat') = 1:
+        gs 'HallHarassmentPrintAfterBeat'
+    else
+        gs 'HallHarassmentPrintHallReaction'
+    end
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AFTER] choice=' + $HallHarassReaction + ' beat=' + $HallHarassSceneBeat + ' slap=' + STR(HallHarassSceneSlap) + ' band=' + STR(HallHarassAfterBand)
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Далее', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'HallHarassmentAfterContinue'
+    end
+---
+
+#HallHarassmentAfterContinue
+    HallHarassAfterStep = 2
+    if $HallHarassEventLoc <> '' and LOC($HallHarassEventLoc) = 1:
+        gt $HallHarassEventLoc, $HallHarassReturnLoc
+    elseif $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        if $HallHarassReturnLoc = '':
+            $HallHarassReturnLoc = 'TavernMain'
+        end
+        gt 'KitchenHarassment', $HallHarassReturnLoc
+    else
+        if $HallHarassReturnLoc = '':
+            $HallHarassReturnLoc = 'TavernMain'
+        end
+        gt 'HallHarassment', $HallHarassReturnLoc
+    end
+---
+
+! H3 сёстры / after кухня: она к тебе + правило
+#HallHarassmentRenderAfterTalkScreen
+    *pl '══════════════════════════════════════════════'
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        *pl ' КУХНЯ'
+    else
+        *pl ' ГЛАВНЫЙ ЗАЛ'
+    end
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    $PolicyTalkGirl = $HallHarassGirl
+    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        $PolicyTalkArea = 'kitchen'
+    else
+        $PolicyTalkArea = 'hall'
+    end
+    gs 'GirlWorkPolicyTalkEnsureName', $PolicyTalkGirl
+
+    if LOC('HallHarassmentShowImage') = 1 and $HallHarassReaction <> '':
+        gs 'HallHarassmentShowImage', $HallHarassGirl, $HallHarassJob, HallHarassType, $HallHarassReaction
+        *pl ' '
+    end
+
+    gs 'HallHarassmentAftermathLineText'
+    if $HallHarassAftermathLine <> '':
+        *pl $RealName[$HallHarassGirl] + ' ' + $HallHarassAftermathLine
+        *pl ' '
+    end
+    killvar '$HallHarassAftermathLine'
+
+    if GirlOffenseDays[$HallHarassGirl] > 0:
+        if LOC('OffenseDaysPrintSceneReaction') = 1:
+            gs 'OffenseDaysPrintSceneReaction', $HallHarassGirl
+            *pl ' '
+        end
+    end
+
+    if debug = 1 and $HallHarassOffenseDebug <> '':
+        if INSTR($HallHarassOffenseDebug, 'girl=' + $HallHarassGirl) > 0:
+            *pl '[DEBUG OFFENSE] ' + $HallHarassOffenseDebug
+            *pl ' '
+        end
+    end
+    $HallHarassOffenseDebug = ''
+
+    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
+    *pl ' '
+    gs 'HallHarassmentBuildPolicyMenu'
+    if HallHarassPolicyChosen = 0:
+        gs 'GetMenuOpenLinkHref', 'HallHarassPolicyMenu', 'Обсудить правило поведения'
+        *p $MenuOpenLinkHref + '.'
+        killvar '$MenuOpenLinkHref'
+        *pl ' '
+    end
+
+    if HallHarassPolicyChosen = 1:
+        *pl ' '
+        gs 'HallHarassmentShowPolicyReactionBlock'
+    end
+
+    killvar '$PolicyTalkGirl'
+    killvar '$PolicyTalkArea'
+---
+
 #HallHarassmentRenderAfterScreen
-    ! ========== ЭКРАН 2 — чёткие блоки ==========
-    ! A visual | B что произошло | C она к вам | D правила
+    ! кухня (пока целиком): visual + beat + она к тебе + правило
     *pl '══════════════════════════════════════════════'
     if $HallHarassConsequenceArea = 'kitchen':
         *pl ' ПОСЛЕ: КУХНЯ'
@@ -185,8 +309,6 @@
     end
 
     ! B) сцена / звуки (hall_harassment_after_text)
-    *pl '── Что произошло ──'
-    *pl ' '
     if LOC('HallHarassmentPrintAfterBeat') = 1:
         gs 'HallHarassmentPrintAfterBeat'
     else
@@ -199,9 +321,7 @@
         *pl ' '
     end
 
-    ! C) реплика к Стефану (отдельно от меню)
-    *pl '── ' + $RealName[$HallHarassGirl] + ' ──'
-    *pl ' '
+    ! C) реплика к Стефану
     gs 'HallHarassmentAftermathLineText'
     if $HallHarassAftermathLine <> '':
         *pl $RealName[$HallHarassGirl] + ' ' + $HallHarassAftermathLine
@@ -226,8 +346,6 @@
     $HallHarassOffenseDebug = ''
 
     ! D) правила
-    *pl '── На будущее ──'
-    *pl ' '
     gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
     *pl ' '
     gs 'HallHarassmentBuildPolicyMenu'
@@ -422,7 +540,7 @@
     }
 
     if FamilyLiberationGateOpen = 1:
-        gs 'MenuUiAdd', 'HallHarassmentChoiceMenu', 'Наблюдать', ''
+        gs 'MenuUiAdd', 'HallHarassmentChoiceMenu', 'Смотреть', ''
         gs 'Menu.AddModule', 'HallHarassmentChoiceMenu', {
             gs 'HallHarassmentChoose', 'watch'
         }
@@ -442,13 +560,16 @@
     end
 
     gs 'HallHarassmentApplyChoice'
+    if HallHarassAfterStep < 1:
+        HallHarassAfterStep = 1
+    end
 
     ! v2 α: play + watch/ignore → шанс missing (без after-policy harass)
     if LOC('HallHarassTryMissingFromPlay') = 1:
         gs 'HallHarassTryMissingFromPlay'
 
         if HallHarassMissingTriggered = 1:
-            ! уговор (каркас) → затем StartFromPlay
+            HallMissingSkipNotice = 1
             if LOC('HallMissingBargainStart') = 1:
                 gt 'HallMissingBargainStart', $HallHarassGirl, $HallHarassReturnLoc
             elseif LOC('HallMissingGirlStartFromPlay') = 1:
@@ -638,8 +759,9 @@
 #HallHarassmentPrintFooter
     *pl ' '
 
-    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
+    act '<b>Вернуться в зал</b>', 'images/common/ui/tavern.png':
         HallHarassmentResolved = 0
+        HallHarassAfterStep = 0
         HallHarassPolicyChosen = 0
         HallHarassPolicyValue = 0
         $HallHarassGirl = ''
@@ -654,24 +776,7 @@
 
 #HallHarassmentPrintDecisionPrompt
     gs 'HallHarassmentBuildChoiceMenu'
-
-    ! v2: play → мысли «lewd»; кухня → kitchen / kitchen_lewd
-    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
-        if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
-            gs 'HallEventChoiceThoughtsBody', 'kitchen_lewd'
-        else
-            gs 'HallEventChoiceThoughtsBody', 'harassment_kitchen'
-        end
-    else
-        if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
-            gs 'HallEventChoiceThoughtsBody', 'hall_lewd'
-        else
-            gs 'HallEventChoiceThoughtsBody', 'harassment'
-        end
-    end
-
-    gs 'PrintThoughtMenuPromptP', 'HallHarassmentChoiceMenu', 'мне', $HallEventChoiceThoughtsText
-    killvar '$HallEventChoiceThoughtsText'
+    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''HallHarassmentChoiceMenu''">Стефану</a>?'
 ---
 
 

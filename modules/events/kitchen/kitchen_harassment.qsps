@@ -78,7 +78,9 @@
 
     KitchenHarassmentDay = day
     KitchenHarassmentTime = time
+    KitchenHarassPeek = 0
     HallHarassmentResolved = 0
+    HallHarassAfterStep = 0
     HallHarassPolicyChosen = 0
     HallHarassPolicyValue = 0
     $HallHarassConsequenceArea = 'kitchen'
@@ -190,51 +192,51 @@
 
 #KitchenHarassmentRenderScreen
     if HallHarassmentResolved = 0:
-        *pl '══════════════════════════════════════════════'
-
-        if $KitchenHarassReturnLoc = 'TavernMain' and KitchenHarassEntryType = 1:
-            *pl ' ГЛАВНЫЙ ЗАЛ: ШУМ С КУХНИ'
-        elseif $KitchenHarassReturnLoc = 'TavernMain' and KitchenHarassEntryType = 2:
-            *pl ' ГЛАВНЫЙ ЗАЛ: КЛИЕНТ С КУХНИ'
-        else:
-            *pl ' КУХНЯ: НЕПРИЯТНЫЙ СЛУЧАЙ'
+        if $KitchenHarassReturnLoc = 'TavernMain' and KitchenHarassPeek = 0:
+            *pl '══════════════════════════════════════════════'
+            *pl ' У КУХОННОЙ ДВЕРИ'
+            *pl '══════════════════════════════════════════════'
+            *pl ' '
+            if KitchenHarassEntryType = 2:
+                gs 'KitchenHarassmentPrintText', 'entry_chase'
+            else
+                gs 'KitchenHarassmentPrintText', 'entry_noise'
+            end
+            *pl ' '
+            gs 'ActUiPrepare', 'Подсмотреть', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                KitchenHarassPeek = 1
+                gt 'KitchenHarassment', $KitchenHarassReturnLoc
+            end
+            exit
         end
 
+        *pl '══════════════════════════════════════════════'
+        *pl ' КУХНЯ'
         *pl '══════════════════════════════════════════════'
         *pl ' '
-
-        if KitchenHarassEntryType = 1 and $KitchenHarassReturnLoc = 'TavernMain':
-            gs 'KitchenHarassmentPrintText', 'entry_noise'
-            *pl ' '
-        elseif KitchenHarassEntryType = 2 and $KitchenHarassReturnLoc = 'TavernMain':
-            gs 'KitchenHarassmentPrintText', 'entry_chase'
-            *pl ' '
-        end
 
         gs 'HallHarassmentShowIntroImage', $HallHarassGirl, $HallHarassJob, HallHarassType
         gs 'KitchenHarassmentIntro'
         *pl ' '
-        ! v2: без полной PolicyReaction+Variation на intro (дубль сцены)
         gs 'HallHarassmentPrintPolicyTint'
         gs 'KitchenHarassmentPrintDecisionPrompt'
-    else:
-        gs 'HallHarassmentRenderAfterScreen'
-        *pl ' '
-        gs 'KitchenHarassmentPrintFooter'
+    else
+        if HallHarassAfterStep >= 2:
+            gs 'HallHarassmentRenderAfterTalkScreen'
+        else
+            gs 'HallHarassmentRenderActionScreen'
+        end
+        if HallHarassAfterStep >= 2:
+            *pl ' '
+            gs 'KitchenHarassmentPrintFooter'
+        end
     end
 ---
 
 #KitchenHarassmentPrintDecisionPrompt
     gs 'KitchenHarassmentBuildChoiceMenu'
-
-    if $HallHarassStanceCanon = 'play' or $HarassGirlStance = 'provoke':
-        gs 'HallEventChoiceThoughtsBody', 'kitchen_lewd'
-    else
-        gs 'HallEventChoiceThoughtsBody', 'harassment_kitchen'
-    end
-
-    gs 'PrintThoughtMenuPromptP', 'KitchenHarassmentChoiceMenu', 'мне', $HallEventChoiceThoughtsText
-    killvar '$HallEventChoiceThoughtsText'
+    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''KitchenHarassmentChoiceMenu''">Стефану</a>?'
 ---
 
 #KitchenHarassmentBuildChoiceMenu
@@ -247,7 +249,7 @@
     }
 
     if FamilyLiberationGateOpen = 1:
-        gs 'MenuUiAdd', 'KitchenHarassmentChoiceMenu', 'Наблюдать', ''
+        gs 'MenuUiAdd', 'KitchenHarassmentChoiceMenu', 'Смотреть', ''
         gs 'Menu.AddModule', 'KitchenHarassmentChoiceMenu', {
             gs 'KitchenHarassmentChoose', 'watch'
         }
@@ -270,6 +272,20 @@
     $HallHarassEventLoc = 'KitchenHarassment'
 
     gs 'HallHarassmentApplyChoice'
+    if HallHarassAfterStep < 1:
+        HallHarassAfterStep = 1
+    end
+
+    if $HallHarassReaction = 'watch' and LOC('HallHarassTryMissingFromPlay') = 1:
+        gs 'HallHarassTryMissingFromPlay'
+        if HallHarassMissingTriggered = 1:
+            HallMissingSkipNotice = 1
+            if LOC('HallMissingBargainStart') = 1:
+                gt 'HallMissingBargainStart', $HallHarassGirl, $KitchenHarassReturnLoc
+            end
+        end
+    end
+
     gt 'KitchenHarassment', $KitchenHarassReturnLoc
 ---
 

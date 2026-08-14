@@ -333,7 +333,7 @@
     end
 
     *pl '══════════════════════════════════════════════'
-    *pl ' ГЛАВНЫЙ ЗАЛ'
+    *pl ' У КУХОННОЙ ДВЕРИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
     gs 'SandraKitchenShowImage', 'notice'
@@ -347,21 +347,10 @@
         *pl ' '
     end
 
-    ! как hall/kitchen harass: до liberation — только путь «вмешаться» (потом Защитить)
-    gs 'Menu.Destroy', 'SandraKitchenNoticeMenu'
-    gs 'Menu.Create', 'SandraKitchenNoticeMenu'
-    gs 'MenuUiAdd', 'SandraKitchenNoticeMenu', 'Проследить', ''
-    gs 'Menu.AddModule', 'SandraKitchenNoticeMenu', {
+    gs 'ActUiPrepare', 'Подсмотреть', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'SandraKitchenFollow'
-    }
-    if FamilyLiberationGateOpen = 1:
-        gs 'MenuUiAdd', 'SandraKitchenNoticeMenu', 'Не обращать внимания', ''
-        gs 'Menu.AddModule', 'SandraKitchenNoticeMenu', {
-            SandraKitchenOffscreen = 1
-            gt 'SandraKitchenOffscreen'
-        }
     end
-    *p 'Что делать <a href="exec:gs ''Menu.Show'', ''SandraKitchenNoticeMenu''">Стефану</a>?'
 ---
 
 #SandraKitchenFollow
@@ -374,10 +363,10 @@
     end
 
     *pl '══════════════════════════════════════════════'
-    *pl ' У КУХОННОЙ ДВЕРИ'
+    *pl ' КУХНЯ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    ! intro схлопнут — сразу уговор + visual
+    ! H2: сцена у плиты + меню
     if $SandraKitchenClient = 'drunk_guest' or $SandraKitchenClient = 'drunk':
         gs 'SandraKitchenShowImage', 'bargain_refuse'
     else
@@ -413,7 +402,7 @@
         gt 'SandraKitchenChoose', 'protect'
     }
     if FamilyLiberationGateOpen = 1:
-        gs 'MenuUiAdd', 'SandraKitchenChoiceMenu', 'Наблюдать', ''
+        gs 'MenuUiAdd', 'SandraKitchenChoiceMenu', 'Смотреть', ''
         gs 'Menu.AddModule', 'SandraKitchenChoiceMenu', {
             gt 'SandraKitchenChoose', 'watch'
         }
@@ -423,6 +412,39 @@
         }
     end
     *p 'Что делать <a href="exec:gs ''Menu.Show'', ''SandraKitchenChoiceMenu''">Стефану</a>?'
+---
+
+#SandraKitchenTryEscalateFromWatch
+    SandraKitchenEscalate = 0
+    gs 'SandraKitchenCanEscalateToMissing'
+    if SandraKitchenCanEscalate <> 1:
+        exit
+    end
+
+    $HallHarassGirl = 'sandra'
+    $HallHarassClient = $SandraKitchenClient
+    $HallHarassStanceCanon = 'play'
+    $HarassGirlStance = 'provoke'
+    $HallHarassReaction = 'watch'
+    if LOC('HallClientCheckPleasant') = 1:
+        gs 'HallClientCheckPleasant', 'sandra', $SandraKitchenClient
+    end
+
+    if SandraKitchenForceMissing = 1:
+        SandraKitchenEscalate = 1
+        HallHarassMissingTriggered = 1
+        exit
+    end
+    if LOC('HallHarassTryMissingFromPlay') = 1:
+        gs 'HallHarassTryMissingFromPlay'
+        if HallHarassMissingTriggered = 1:
+            SandraKitchenEscalate = 1
+        end
+        exit
+    end
+    if RAND(1, 100) <= SandraKitchenEscalateChance:
+        SandraKitchenEscalate = 1
+    end
 ---
 
 #SandraKitchenChoose
@@ -437,18 +459,110 @@
     end
 
     if $SandraKitchenChoice = 'protect' or $SandraKitchenChoice = 'protect_hard' or $SandraKitchenChoice = 'interrupt':
-        gt 'SandraKitchenProtect'
+        $SandraKitchenChoice = 'protect'
+        gt 'SandraKitchenAction'
     elseif $SandraKitchenChoice = 'watch' or $SandraKitchenChoice = 'peek':
-        ! always kitchen scene first; missing only if play + roll (α)
-        gt 'SandraKitchenWatchPlayOrHarass'
+        $SandraKitchenChoice = 'watch'
+        gs 'SandraKitchenTryEscalateFromWatch'
+        if SandraKitchenEscalate = 1:
+            $HallMissingGirl = 'sandra'
+            $HallHarassGirl = 'sandra'
+            $HallHarassClient = $SandraKitchenClient
+            $HallMissingClient = $SandraKitchenClient
+            HallMissingSkipNotice = 1
+            if $SandraKitchenReturnLoc = '':
+                $SandraKitchenReturnLoc = 'TavernMain'
+            end
+            gt 'HallMissingBargainStart', 'sandra', $SandraKitchenReturnLoc
+        end
+        gt 'SandraKitchenAction'
     else
-        ! ignore: оффскрин, без missing (R3; α missing — только watch, как «видел»)
-        SandraKitchenOffscreen = 1
-        gt 'SandraKitchenOffscreen'
+        $SandraKitchenChoice = 'ignore'
+        gt 'SandraKitchenAction'
     end
 ---
 
-#SandraKitchenProtect
+! H3 — действие после выбора
+#SandraKitchenAction
+    *clr
+    clr
+    cla
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'sandra'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КУХНЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    $HallMissingGirl = 'sandra'
+
+    if $SandraKitchenChoice = 'protect':
+        gs 'SandraKitchenShowImage', 'protect'
+        gs 'SandraKitchenPrintProtect'
+        TavernScandal += 1
+        GirlPublicAttention['sandra'] += 1
+        if GirlWorkPolicy['sandra'] = 3:
+            GirlRebellion['sandra'] += 1
+            GirlTrustStefan['sandra'] -= 1
+        else
+            GirlTrustStefan['sandra'] += 1
+        end
+        if LOC('SaveLastHallEvent') = 1:
+            gs 'SaveLastHallEvent', 'sandra_kitchen', 'sandra', 'Стефан вмешался на кухне, когда гость приставал к Сандре.', 'interrupt'
+        end
+    elseif $SandraKitchenChoice = 'watch':
+        gs 'SandraKitchenShowImage', 'watch'
+        gs 'SandraKitchenPrintHarassWatch'
+        TavernScandal += 1
+        GirlPublicAttention['sandra'] += 1
+        GirlNpcPath['sandra'] += 1
+        HallHarassEverOccurred = 1
+        $HallHarassReaction = 'watch'
+        if LOC('SaveLastHallEvent') = 1:
+            if $SandraKitchenBeat = 'play':
+                gs 'SaveLastHallEvent', 'hall_lewd', 'sandra', 'Стефан видел, как Сандра заигрывала с гостем на кухне.', 'watch'
+            else
+                gs 'SaveLastHallEvent', 'kitchen_harass', 'sandra', 'Стефан видел, как гость приставал к Сандре на кухне.', 'watch'
+            end
+        end
+    else
+        gs 'SandraKitchenShowImage', 'offscreen'
+        gs 'SandraKitchenPrintOffscreen'
+        TavernScandal += 1
+        GirlPublicAttention['sandra'] += 1
+        if $SandraKitchenBeat = 'play':
+            GirlNpcPath['sandra'] += 1
+            GirlSecretiveness['sandra'] += 1
+            if LOC('AwardGirlTipsFromBase') = 1:
+                gs 'AwardGirlTipsFromBase', 'sandra', 8
+            end
+        end
+        if LOC('SaveLastHallEvent') = 1:
+            if $SandraKitchenBeat = 'play':
+                gs 'SaveLastHallEvent', 'hall_lewd', 'sandra', 'Стефан не пошёл на кухню — с плиты доносились заигрывания.', 'ignore'
+            else
+                gs 'SaveLastHallEvent', 'kitchen_harass', 'sandra', 'Стефан не вмешался: с кухни доносились шлепки и голоса.', 'ignore'
+            end
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SK H3] choice=' + $SandraKitchenChoice + ' beat=' + $SandraKitchenBeat
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Далее', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraKitchenAfter'
+    end
+---
+
+! H4 — гость ушёл, она к тебе
+#SandraKitchenAfter
     *clr
     clr
     cla
@@ -461,23 +575,8 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
     gs 'SandraKitchenShowImage', 'protect'
-    gs 'SandraKitchenPrintProtect'
+    gs 'SandraKitchenPrintAfter'
     *pl ' '
-
-    $HallMissingGirl = 'sandra'
-    ! protect на play → missing chance 0 (канон α)
-    TavernScandal += 1
-    GirlPublicAttention['sandra'] += 1
-    if GirlWorkPolicy['sandra'] = 3:
-        GirlRebellion['sandra'] += 1
-        GirlTrustStefan['sandra'] -= 1
-    else
-        GirlTrustStefan['sandra'] += 1
-    end
-
-    if LOC('SaveLastHallEvent') = 1:
-        gs 'SaveLastHallEvent', 'sandra_kitchen', 'sandra', 'Стефан вмешался на кухне, когда гость приставал к Сандре.', 'interrupt'
-    end
 
     gs 'ActUiPrepare', 'Вернуться в зал', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -542,97 +641,19 @@
     end
     HallMissingGirlLastDay['sandra'] = day
     SandraKitchenForceMissing = 0
-    gs 'HallMissingGirlPrintText', 'peek_scene'
-    *pl ' '
-    gs 'ActUiPrepare', 'Далее', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'HallMissingGirlMeet'
-    end
+    $HallMissingChoice = 'watch'
+    gs 'HallMissingScenePageInit'
+    gt 'HallMissingGirlShowScene'
 ---
 
-! watch: harass или play-сцена; missing только play + roll (как HallHarassTryMissingFromPlay)
+#SandraKitchenProtect
+    $SandraKitchenChoice = 'protect'
+    gt 'SandraKitchenAction'
+---
+
 #SandraKitchenWatchPlayOrHarass
-    *clr
-    clr
-    cla
-    if LOC('ShowGirlSidebar') = 1:
-        gs 'ShowGirlSidebar', 'sandra'
-    end
-
-    *pl '══════════════════════════════════════════════'
-    if $SandraKitchenBeat = 'play':
-        *pl ' КУХНЯ — ЗАИГРЫВАНИЕ'
-    else
-        *pl ' КУХНЯ — ПРИСТАВАНИЕ'
-    end
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-    gs 'SandraKitchenShowImage', 'watch'
-    gs 'SandraKitchenPrintHarassWatch'
-    *pl ' '
-
-    TavernScandal += 1
-    GirlPublicAttention['sandra'] += 1
-    GirlNpcPath['sandra'] += 1
-    HallHarassEverOccurred = 1
-    $HallHarassReaction = 'watch'
-
-    ! α: missing только из play + watch
-    SandraKitchenEscalate = 0
-    gs 'SandraKitchenCanEscalateToMissing'
-    if SandraKitchenCanEscalate = 1:
-        $HallHarassGirl = 'sandra'
-        $HallHarassClient = $SandraKitchenClient
-        $HallHarassStanceCanon = 'play'
-        $HarassGirlStance = 'provoke'
-        $HallHarassReaction = 'watch'
-        if LOC('HallClientCheckPleasant') = 1:
-            gs 'HallClientCheckPleasant', 'sandra', $SandraKitchenClient
-        end
-
-        ! debug force (play_missing) — без random fail
-        if SandraKitchenForceMissing = 1:
-            SandraKitchenEscalate = 1
-            HallHarassMissingTriggered = 1
-        elseif LOC('HallHarassTryMissingFromPlay') = 1:
-            gs 'HallHarassTryMissingFromPlay'
-            if HallHarassMissingTriggered = 1:
-                SandraKitchenEscalate = 1
-            end
-        else
-            if RAND(1, 100) <= SandraKitchenEscalateChance:
-                SandraKitchenEscalate = 1
-            end
-        end
-    end
-
-    if debug = 1:
-        *pl '[DEBUG SK] beat=' + $SandraKitchenBeat + ' escalate=' + STR(SandraKitchenEscalate) + ' canEsc=' + STR(SandraKitchenCanEscalate) + ' force=' + STR(SandraKitchenForceMissing)
-        *pl '[DEBUG SK] PlayCoached[s]=' + STR(PlayCoached['sandra']) + ' pleasant=' + STR(HallClientPleasant) + ' stage=' + STR(HallMissingGirlStage)
-        *pl ' '
-    end
-
-    if SandraKitchenEscalate = 1:
-        gs 'ActUiPrepare', 'Слушать дальше…', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'SandraKitchenEscalateBridge'
-        end
-    else
-        SandraKitchenForceMissing = 0
-        gs 'SandraKitchenPrintHarassEnd'
-        *pl ' '
-        if LOC('SaveLastHallEvent') = 1:
-            if $SandraKitchenBeat = 'play':
-                gs 'SaveLastHallEvent', 'hall_lewd', 'sandra', 'Стефан видел, как Сандра заигрывала с гостем на кухне.', 'watch'
-            else
-                gs 'SaveLastHallEvent', 'kitchen_harass', 'sandra', 'Стефан видел, как гость приставал к Сандре на кухне.', 'watch'
-            end
-        end
-        gs 'ActUiPrepare', 'Вернуться в зал', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt $SandraKitchenReturnLoc
-        end
-    end
+    $SandraKitchenChoice = 'watch'
+    gt 'SandraKitchenAction'
 ---
 
 ! play → missing: короткий мост (не полный второй уговор) → Scene
@@ -682,47 +703,9 @@
     end
 ---
 
-! оффскрин: R3 — БЕЗ PhaseAdvance
 #SandraKitchenOffscreen
-    *clr
-    clr
-    cla
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ГЛАВНЫЙ ЗАЛ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-    gs 'SandraKitchenShowImage', 'offscreen'
-    gs 'SandraKitchenPrintOffscreen'
-    *pl ' '
-
-    TavernScandal += 1
-    GirlPublicAttention['sandra'] += 1
-    if $SandraKitchenBeat = 'play':
-        GirlNpcPath['sandra'] += 1
-        GirlSecretiveness['sandra'] += 1
-        if LOC('AwardGirlTipsFromBase') = 1:
-            gs 'AwardGirlTipsFromBase', 'sandra', 8
-        end
-    end
-
-    if LOC('SaveLastHallEvent') = 1:
-        if $SandraKitchenBeat = 'play':
-            gs 'SaveLastHallEvent', 'hall_lewd', 'sandra', 'Стефан не пошёл на кухню — с плиты доносились заигрывания.', 'ignore'
-        else
-            gs 'SaveLastHallEvent', 'kitchen_harass', 'sandra', 'Стефан не вмешался: с кухни доносились шлепки и голоса.', 'ignore'
-        end
-    end
-
-    if debug = 1:
-        *pl '[DEBUG SK offscreen] beat=' + $SandraKitchenBeat + ' phase frozen hardSub=' + STR(HallMissingHardSub['sandra'])
-        *pl ' '
-    end
-
-    gs 'ActUiPrepare', 'Остаться в зале', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $SandraKitchenReturnLoc
-    end
+    $SandraKitchenChoice = 'ignore'
+    gt 'SandraKitchenAction'
 ---
 
 ! ARGS[0]=harass|play|play_missing|protect_only  ARGS[1]=client
