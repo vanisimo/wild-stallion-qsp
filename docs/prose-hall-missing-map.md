@@ -70,10 +70,10 @@ free:         mix + нобиль сестёр после A6
 
 | ID | Что в сцене | Код | Добавить |
 |----|-------------|-----|----------|
-| **H1** | Клиент у двери / жест в зале. Без уговора missing. | есть | Сандра: только **дверь**, не занавеска |
-| **H2** сёстры | Действие после выбора (гость + она + ты) | after_beat | ветки клиента, если одна каша |
-| **H2** Сандра | У плиты: лапает, она отбивается **или** терпит (до liberation — resist) | kitchen hook | 3 клиента × resist/endure/play |
-| **H3/H4 после** | Гость ушёл, она к Стефану | есть | скромный / поздний тон |
+| **H1** | Клиент у двери / жест в зале. Без уговора missing. | есть | Сандра: **дверь**; notice: Подсмотреть + Не обращать внимания |
+| **H2** сёстры | Действие после выбора (гость + она + ты) | after_beat **CODE** | girl × beat × **client** (моряк/мастеровой/купец) |
+| **H2** Сандра | У плиты: лапает, она отбивается **или** терпит (до liberation — resist) | kitchen hook **CODE** | 3 клиента × resist/allow/play; drunk отказ |
+| **H3/H4 после** | Гость ушёл, она к Стефану + policy kitchen | kitchen hook **CODE** | protect/watch/ignore after + rule menu |
 | **M1** | Заметили у двери | `HallMissingBargainPrintNotice` | — |
 | **M2** | Один уговор: уединение/ласка за монету. Не меню услуг. Не минет-меню. | bargain_text | скромный vs explicit уже частично |
 | **M3** | Действие. Страницы. | agent_*_text | см. §3 |
@@ -126,8 +126,8 @@ free:         mix + нобиль сестёр после A6
 | `mouth_spit` | В рот → сплюнула. Mid: не «ещё не умею». | **CODE** (2 экрана, v3 A вшит) | **CODE** (2 экрана, v3 B вшит) | **CODE** + PACK C | Сандра USER-OWNED — не трогать | да, если hard уже открыт |
 | `mouth_hold_spit` | Подержала, сплюнула | **→ spit** | **→ spit** | короткий | слит со spit | нет |
 | `mouth_mid` | Минет, finish в рот, вытерла (не глоток) | **CODE** (2 экрана, mom-line craftsman) | **CODE** (2 экрана, mom-line стыд) | **CODE** | — | да first hard |
-| `mouth_swallow` | Грудь наружу. soft: яйца+рука→глоток; high: яйца языком→покажи→глоток; Explicit (после лица): шлепки/мат/она себе/оргазм/глоток. Первый swallow на лесенке ещё без Explicit. | **CODE** | **CODE** | USER-OWNED | — | нет |
-| `mouth_show` | У сестёр вшит в swallow high. Локация жива (Сандра / старый finish). | **CODE** | **CODE** | **CODE** | Сандра USER-OWNED | нет |
+| `mouth_swallow` | Грудь наружу. soft: яйца+рука→глоток; **high: покажи→глоток** (= сестринский show); Explicit (после лица): шлепки/мат/она себе/оргазм/глоток. First swallow до лица — без Explicit. | **CODE** | **CODE** | USER-OWNED | — | нет |
+| `mouth_show` | **Сёстры:** НЕ first-show; «покажи» = swallow high. Локация late/debug (`finish=show_mouth`). **Сандра:** hard sub2, USER-OWNED. | late/debug | late/debug | **CODE** first | не redirect/delete без запроса | нет |
 | `facial` | Грудь наружу. 1-й soft на грудь → 2-й high низ лица+рот → FlagFaceDone/Explicit. Повтор: на лицо, покрасуйся, собирает, ест. | **CODE** | **CODE** | USER-OWNED | слот лица = 2 | нет |
 | `deepthroat` | 5 шагов глубины (try/partial/full/рот/горло). Слоёв soft/high нет — уже после лица. Грудь наружу, она себе (пальцы по sluttiness). Оргазм только на финише в горло. Грубый текст не добавляли. | **CODE** | **CODE** | USER-OWNED | — | нет |
 
@@ -163,11 +163,11 @@ free:         mix + нобиль сестёр после A6
 
 Следующие шаги (не missing-проза):
 
-1. **Harass / кухня** — H2 сестёр, kitchen hook (в дереве уже есть незакрытые правки окон).  
-2. **Картинки / VIS** — stub + подписи, `SceneArtUseReal`.  
-3. **Рот Сандры** — USER-OWNED, не трогать без «можно править тексты».  
-4. **Опционально:** `mouth_show` сестёр подчистить (шоу вшито в swallow high).  
-5. **Не делать:** under_table; titjob сестёр; анилингус Сандры; бедро в рандом.
+1. **Kitchen hook Сандры** — **закрыт** (H1–H4 + policy + escalate-мост).  
+2. **H2 сестёр** — **закрыт**: protect/watch/ignore × beat × client (traveler/craftsman/merchant).  
+3. **`mouth_show` сестёр** — **E:** канон в comments/map (show = swallow high; late/debug only).  
+4. **Картинки / VIS** — stub + подписи (выходные).  
+5. **Рот Сандры** — USER-OWNED. **Не делать:** under_table; titjob сестёр; anil Сандры; бедро в free.
 
 ---
 

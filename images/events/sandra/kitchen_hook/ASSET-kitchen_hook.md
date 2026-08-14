@@ -9,7 +9,7 @@ Helper: `#SceneShowVisual` — path future + caption.
 
 | key | path (webp) | смысл |
 |-----|-------------|--------|
-| **notice_door_enter** | `images/events/sandra/kitchen_hook/notice_door_enter.webp` | зал: мужик заходит за кухонную занавеску/дверь |
+| **notice_door_enter** | `images/events/sandra/kitchen_hook/notice_door_enter.webp` | зал: мужик у кухонной **двери** / заходит на кухню |
 | bargain_harass | `.../bargain_harass.webp` | уговор harass у печи |
 | bargain_play | `.../bargain_play.webp` | уговор play |
 | bargain_refuse | `.../bargain_refuse.webp` | пьяный / отказ |
@@ -17,7 +17,7 @@ Helper: `#SceneShowVisual` — path future + caption.
 | watch_play | `.../watch_play.webp` | подсмотр play |
 | escalate | `.../escalate.webp` | мост play→missing |
 | protect | `.../protect.webp` | Стефан ворвался |
-| offscreen | `.../offscreen.webp` | зал, слушает звуки (дверь/занавеска) |
+| offscreen | `.../offscreen.webp` | зал, слушает звуки за **дверью** кухни |
 
 Missing peek/meet: через `HallMissingGirlShowImage` → `hall_missing/kitchen/...`
 

@@ -178,14 +178,17 @@
 
     ! ========== BEAT: protect — клиент УХОДИТ, без «залу ясно кто хозяин» ==========
     if $id = 'after_protect':
-        if $g = 'melissa':
-            $HallHarassmentAfterText = 'Вы подходите — достаточно твёрдо, без крика. Гость снимает руки с Мелиссы, бурчит себе под нос и отходит к столу, будто сам так решил. Она одёргивает платье, щёки горят: то ли от стыда, то ли от облегчения.'
-            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>За соседними столами кто-то присвистнул на прощание — не вам, а уходящей картинке. Взгляды всё ещё на её спине, не на хозяине.'
-        elseif $g = 'sandra':
-            $HallHarassmentAfterText = 'Вы обрываете гостя у печи. Он убирает руки, разворачивается и уходит в зал, не глядя вам в лицо. Сандра вытирает ладонь о передник — злость и жар кухни. Занавеска снова закрывает плиту: зрителей тут нет.'
-        else
-            $HallHarassmentAfterText = 'Вы вмешиваетесь. Гость отпускает Аманду, бормочет и уходит к своему месту. Она сжимает поднос, краснеет, выдыхает — неловко и стыдно, но уже легче. Поправляет вырез дрожащими от злости, не от паники, пальцами.'
-            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>У дальнего стола наклонили головы — досмотреть, как она оправляется. Не к вам: к ней.'
+        gs 'HallHarassAfterProtectFromClient'
+        if $HallHarassmentAfterText = '':
+            if $g = 'melissa':
+                $HallHarassmentAfterText = 'Вы подходите — достаточно твёрдо, без крика. Гость снимает руки с Мелиссы, бурчит себе под нос и отходит к столу, будто сам так решил. Она одёргивает платье, щёки горят: то ли от стыда, то ли от облегчения.'
+                $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>За соседними столами кто-то присвистнул на прощание — не вам, а уходящей картинке. Взгляды всё ещё на её спине, не на хозяине.'
+            elseif $g = 'sandra':
+                $HallHarassmentAfterText = 'Вы обрываете гостя у печи. Он убирает руки, разворачивается и уходит в зал, не глядя вам в лицо. Сандра вытирает ладонь о передник — злость и жар кухни. Кухонная дверь снова прикрывает плиту: зрителей тут нет.'
+            else
+                $HallHarassmentAfterText = 'Вы вмешиваетесь. Гость отпускает Аманду, бормочет и уходит к своему месту. Она сжимает поднос, краснеет, выдыхает — неловко и стыдно, но уже легче. Поправляет вырез дрожащими от злости, не от паники, пальцами.'
+                $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>У дальнего стола наклонили головы — досмотреть, как она оправляется. Не к вам: к ней.'
+            end
         end
 
     ! ========== BEAT: watch / ignore — см. FromBeat (тот же $HallHarassSceneBeat) ==========
@@ -327,11 +330,101 @@
     killvar '$g'
 ---
 
-! Видимая сцена (watch) по $HallHarassSceneBeat
-! кухня ($HallHarassConsequenceArea=kitchen / job): БЕЗ «соседний стол / свист зала»
+! --- client tags (зал): traveler / craftsman / rich_merchant ---
+! out: $HallHarassAfterClientTag (коротко «кто»), $HallHarassAfterClientAct (как действует)
+#HallHarassAfterClientBits
+    $cc = LCASE($HallHarassClient)
+    if $cc = '':
+        $cc = LCASE($HallMissingClient)
+    end
+    ! nom / gen (ладонь X) / dat (с X-ом) — без склейки «мастеровойа»
+    $HallHarassAfterClientTag = 'гость'
+    $HallHarassAfterClientGen = 'гостя'
+    $HallHarassAfterClientIns = 'гостем'
+    if $cc = 'traveler' or $cc = 'sailor':
+        $HallHarassAfterClientTag = 'моряк'
+        $HallHarassAfterClientGen = 'моряка'
+        $HallHarassAfterClientIns = 'моряком'
+    elseif $cc = 'craftsman' or $cc = 'local':
+        $HallHarassAfterClientTag = 'мастеровой'
+        $HallHarassAfterClientGen = 'мастерового'
+        $HallHarassAfterClientIns = 'мастеровым'
+    elseif $cc = 'rich_merchant' or $cc = 'merchant':
+        $HallHarassAfterClientTag = 'купец'
+        $HallHarassAfterClientGen = 'купца'
+        $HallHarassAfterClientIns = 'купцом'
+    elseif $cc = 'drunk_guest' or $cc = 'drunk':
+        $HallHarassAfterClientTag = 'пьяный'
+        $HallHarassAfterClientGen = 'пьяного'
+        $HallHarassAfterClientIns = 'пьяным'
+    end
+    killvar '$cc'
+---
+
+! protect: уход клиента × типаж × girl (зал / кухня)
+#HallHarassAfterProtectFromClient
+    gs 'HallHarassAfterClientBits'
+    $g = $HallHarassGirl
+    $HallHarassmentAfterText = ''
+    $ct = $HallHarassAfterClientTag
+
+    if $g = 'sandra' or $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
+        if $ct = 'моряк':
+            $HallHarassmentAfterText = 'Вы обрываете у печи. Моряк матерится, одёргивает пояс и проталкивается к двери в зал, не глядя вам в лицо. Сандра вытирает ладонь о передник — злость и жар кухни. Дверь снова прикрывает плиту.'
+        elseif $ct = 'мастеровой':
+            $HallHarassmentAfterText = 'Вы обрываете у печи. Мастеровой кряхтит, отпускает Сандру и пятится к двери, бормоча «свой человек…». Она вытирает ладонь о передник. Кухня снова только её.'
+        elseif $ct = 'купец':
+            $HallHarassmentAfterText = 'Вы обрываете у печи. Купец подбирает кошель, оправляет кафтан и спешит в зал, будто и не лапал. Сандра хлопает половником по котлу — порядок восстановлен.'
+        else
+            $HallHarassmentAfterText = 'Вы обрываете гостя у печи. Он убирает руки, разворачивается и уходит в зал, не глядя вам в лицо. Сандра вытирает ладонь о передник. Кухонная дверь снова прикрывает плиту.'
+        end
+    elseif $g = 'melissa':
+        if $ct = 'моряк':
+            $HallHarassmentAfterText = 'Вы подходите твёрдо, без крика. Моряк снимает руки с Мелиссы, сплёвывает в сторону и отходит к столу, будто сам так решил. Она одёргивает платье; щёки горят.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>За соседними столами присвистнули на прощание — не вам, а уходящей картинке. Взгляды на её спине.'
+        elseif $ct = 'мастеровой':
+            $HallHarassmentAfterText = 'Вы подходите. Мастеровой убирает ладонь с талии Мелиссы, бурчит «да ладно, не в службе» и садится обратно. Она поправляет вырез с иронией в глазах — злость и облегчение.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>У соседнего стола наклонили головы: досмотреть, как она оправляется. Не к стойке — к ней.'
+        elseif $ct = 'купец':
+            $HallHarassmentAfterText = 'Вы подходите. Купец отпускает Мелиссу, будто поправлял монету на столе, и отходит с деланным достоинством. Она одёргивает платье: «торговец».'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>Свист на прощание — на неё, не на хозяина.'
+        else
+            $HallHarassmentAfterText = 'Вы подходите — достаточно твёрдо, без крика. Гость снимает руки с Мелиссы, бурчит и отходит к столу. Она одёргивает платье, щёки горят.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>За соседними столами присвистнули — не вам, а уходящей картинке.'
+        end
+    else
+        ! amanda
+        if $ct = 'моряк':
+            $HallHarassmentAfterText = 'Вы вмешиваетесь. Моряк отпускает Аманду, бормочет портовое и уходит к лавке. Она сжимает поднос, краснеет, выдыхает — неловко, но легче. Поправляет вырез дрожащими пальцами.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>У дальнего стола наклонили головы — досмотреть, как она оправляется. Не к вам: к ней.'
+        elseif $ct = 'мастеровой':
+            $HallHarassmentAfterText = 'Вы вмешиваетесь. Мастеровой убирает руки, кряхтит «да ладно, не в службе» и садится. Аманда сжимает поднос, краснеет от злости и смущения, поправляет вырез.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>Взгляды на неё, не на стойку.'
+        elseif $ct = 'купец':
+            $HallHarassmentAfterText = 'Вы вмешиваетесь. Купец отпускает Аманду, будто случайно задел, и возвращается к кружке. Она сжимает поднос, румянец до ушей, поправляет вырез.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>У дальнего стола кто-то хмыкнул — на сцену, не на вас.'
+        else
+            $HallHarassmentAfterText = 'Вы вмешиваетесь. Гость отпускает Аманду, бормочет и уходит к своему месту. Она сжимает поднос, краснеет, выдыхает — неловко и стыдно, но уже легче.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>У дальнего стола наклонили головы — к ней, не к вам.'
+        end
+    end
+
+    killvar '$g'
+    killvar '$ct'
+    killvar '$HallHarassAfterClientTag'
+    killvar '$HallHarassAfterClientGen'
+    killvar '$HallHarassAfterClientIns'
+---
+
+! Видимая сцена (watch) по $HallHarassSceneBeat + client (сёстры)
+! кухня: БЕЗ «соседний стол / свист зала»
 #HallHarassAfterWatchFromBeat
+    gs 'HallHarassAfterClientBits'
     $g = $HallHarassGirl
     $b = $HallHarassSceneBeat
+    $ct = $HallHarassAfterClientTag
+    $cg = $HallHarassAfterClientGen
+    $ci = $HallHarassAfterClientIns
     $HallHarassmentAfterText = ''
     HallHarassAfterKitchen = 0
     if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen' or $g = 'sandra':
@@ -340,77 +433,174 @@
 
     if $b = 'hand_bare':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = 'У печи ладонь гостя уходит под подол — и замирает: белья нет. Сандра локтем осаживает, голос сухой; он хмыкает ей в ухо, не вам. Пар, звон крышки — только кухня.'
+            $HallHarassmentAfterText = 'У печи ладонь ' + $cg + ' уходит под подол — и замирает: белья нет. Сандра локтем осаживает, голос сухой; он хмыкает ей в ухо, не вам. Пар, звон крышки — только кухня.'
         elseif $g = 'melissa':
-            $HallHarassmentAfterText = 'Ладонь уходит под подол — трусиков нет. Мелисса вспыхивает, шипит, выкручивается; он смеётся ей. Зал: свист, шёпот «голая…», шеи к подолу — не к стойке.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Моряк ныряет ладонью под подол — трусиков нет. Мелисса вспыхивает, шипит, выкручивается; он ржёт ей в ухо. Зал: свист, шёпот «голая…», шеи к подолу.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Мастеровой суёт руку под подол — белья нет. Мелисса одёргивает с иронией и злостью; он ухмыляется. Свист и шёпот зала — на неё.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = 'Купец под юбкой натыкается на голое — замирает, потом смеётся. Мелисса шипит, выскальзывает. Зал тянет шеи к подолу, не к стойке.'
+            else
+                $HallHarassmentAfterText = 'Ладонь уходит под подол — трусиков нет. Мелисса вспыхивает, шипит, выкручивается. Зал: свист, шёпот «голая…».'
+            end
         else
-            $HallHarassmentAfterText = 'Рука под подол Аманды — без белья. Она краснеет, писк, выскальзывает. Зал: «глянь…», взгляды на неё, не на вас.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Моряк лезет под подол Аманды — без белья. Она краснеет, писк, выскальзывает. Зал: «глянь…», взгляды на неё.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Мастеровой под юбкой Аманды — голо. Она вспыхивает от неловкости, вырывается. Шёпот зала на неё, не на вас.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = 'Купец щупает под подолом — белья нет. Аманда писк, отступает с подносом. Взгляды на неё.'
+            else
+                $HallHarassmentAfterText = 'Рука под подол Аманды — без белья. Она краснеет, писк, выскальзывает. Зал: «глянь…», взгляды на неё, не на вас.'
+            end
         end
     elseif $b = 'grab_tits':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = 'Ладонь на груди Сандры у плиты. «Руки.» — сухо. Он усмехается ей и отпускает. Никакого «соседа за столом»: только пар и шипение рагу.'
+            $HallHarassmentAfterText = 'Ладонь ' + $cg + ' на груди Сандры у плиты. «Руки.» — сухо. Он усмехается ей и отпускает. Только пар и шипение рагу.'
         elseif $g = 'melissa':
-            $HallHarassmentAfterText = 'Гость мнёт грудь Мелиссы, смеётся ей в ключицу. Она одёргивает пальцы. У соседнего стола свист — на вырез, не на хозяина.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Моряк мнёт грудь Мелиссы, смеётся ей в ключицу. Она одёргивает пальцы с язвительным шипением. Свист — на вырез.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Мастеровой жмёт вырез Мелиссы, свойски. Она снимает ладонь: «Руки, дядька». У соседнего стола свист — на неё.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = 'Купец гладит грудь Мелиссы, будто цену щупает. Она одёргивает пальцы. Свист на вырез, не на хозяина.'
+            else
+                $HallHarassmentAfterText = 'Гость мнёт грудь Мелиссы, смеётся ей в ключицу. Она одёргивает пальцы. Свист — на вырез, не на хозяина.'
+            end
         else
-            $HallHarassmentAfterText = 'Пальцы на груди Аманды. «Отпустите, пожалуйста…» — смущённо, отступает. Взгляды на вырез, не на стойку.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Моряк кладёт пальцы на грудь Аманды. «Отпустите, пожалуйста…» — смущённо, отступает. Взгляды на вырез.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Мастеровой мнёт вырез Аманды. Она краснеет, просит отпустить, отступает с подносом. Взгляды на неё.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = 'Купец накрывает грудь Аманды ладонью, будто случайно. «Пожалуйста…» — она отступает. Взгляды на вырез, не на стойку.'
+            else
+                $HallHarassmentAfterText = 'Пальцы на груди Аманды. «Отпустите, пожалуйста…» — смущённо, отступает. Взгляды на вырез, не на стойку.'
+            end
         end
     elseif $b = 'grab_ass' or $b = 'hand_skirt':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = 'Шлепок по юбке у плиты. Сандра оборачивается тяжело; гость ухмыляется ей. Кухня: пар, запах мяса, ни свиста зала, ни «пригнулись под юбку» — здесь нет соседей за столом, только вы у двери и они у печи.'
+            $HallHarassmentAfterText = 'Шлепок ' + $cg + ' по юбке у плиты. Сандра оборачивается тяжело; он ухмыляется ей. Кухня: пар, запах мяса — только вы у двери и они у печи.'
         elseif $g = 'melissa':
-            $HallHarassmentAfterText = 'Ладонь на попе Мелиссы. Она шипит, вырывается. Кто-то пригнулся к подолу — на инцидент.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Моряк шлёпает Мелиссу по попе, ржёт. Она шипит, вырывается. Кто-то пригнулся к подолу — на инцидент.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Мастеровой лапает попу Мелиссы, свойски. Она выкручивается с колким «руки». Смешки соседей — на неё.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = 'Купец сжимает ягодицу Мелиссы, будто примеряет товар. Она одёргивает подол. Свист — на сцену.'
+            else
+                $HallHarassmentAfterText = 'Ладонь на попе Мелиссы. Она шипит, вырывается. Кто-то пригнулся к подолу — на инцидент.'
+            end
         else
-            $HallHarassmentAfterText = 'Рука на ягодице Аманды. Она вспыхивает от неловкости, одёргивает подол, отступает. Свист и смешки — на неё.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Моряк шлёпает Аманду по ягодице. Она вспыхивает от неловкости, одёргивает подол. Свист и смешки — на неё.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Мастеровой кладёт руку на попу Аманды. Она краснеет, отступает. Смешки — на неё, не на стойку.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = 'Купец сжимает подол Аманды сзади. Она вспыхивает, одёргивается. Взгляды на неё.'
+            else
+                $HallHarassmentAfterText = 'Рука на ягодице Аманды. Она вспыхивает от неловкости, одёргивает подол, отступает. Свист и смешки — на неё.'
+            end
         end
     elseif $b = 'wall':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = 'Сандру прижимают к каменной стене у печи. Она упирается ладонью и сдвигает его. Только они двое и жар — без зрителей из зала.'
+            $HallHarassmentAfterText = $ct + ' прижимает Сандру к каменной стене у печи. Она упирается ладонью и сдвигает его. Только они двое и жар — без зрителей из зала.'
+        elseif $g = 'melissa':
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Моряк вжимает Мелиссу к стойке. Она сдвигает его бедром, язвительно. Зал тянет шеи к сцене, не к вам.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Мастеровой припирает Мелиссу к стене. Она выкручивается, не крича. Шея зала — к ним.'
+            else
+                $HallHarassmentAfterText = $ct + ' нависает над Мелиссой у стены. Она сдвигает его. Зал смотрит на сцену, не на вас.'
+            end
         else
-            $HallHarassmentAfterText = $RealName[$g] + ' у стены, гость нависает. Она сдвигает его. Зал тянет шеи к сцене, не к вам.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Моряк прижимает Аманду к стене. Она смущённо, но твёрдо сдвигает его. Зал тянет шеи к ней.'
+            else
+                $HallHarassmentAfterText = $RealName[$g] + ' у стены, ' + $ct + ' нависает. Она сдвигает его. Зал тянет шеи к сцене, не к вам.'
+            end
         end
     elseif $b = 'drop_bend':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = 'Наклон у ларя — и ладонь сзади. Сандра вздрагивает, выпрямляется резко. На кухне никого, кто бы свистел снизу: только эхо о камень.'
+            $HallHarassmentAfterText = 'Наклон у ларя — и ладонь ' + $cg + ' сзади. Сандра вздрагивает, выпрямляется резко. На кухне никого, кто бы свистел снизу: только эхо о камень.'
+        elseif $g = 'melissa':
+            if $ct = 'купец':
+                $HallHarassmentAfterText = 'Монета/ложка — наклон; купец ладонью сзади. Мелисса вздрагивает, выпрямляется. Свист снизу стола: смотрели, куда ушла юбка.'
+            elseif $ct = 'моряк':
+                $HallHarassmentAfterText = 'Наклон — моряк шлёпает сзади. Мелисса шипит, выпрямляется. Свист снизу стола.'
+            else
+                $HallHarassmentAfterText = 'Наклон — ладонь ' + $cg + ' сзади. Мелисса вздрагивает. Свист снизу: куда ушла юбка.'
+            end
         else
-            $HallHarassmentAfterText = 'Наклон — ладонь сзади. ' + $RealName[$g] + ' вздрагивает. Свист снизу стола: смотрели, куда ушла юбка.'
+            if $ct = 'купец':
+                $HallHarassmentAfterText = 'Наклон за монетой — купец ладонью сзади. Аманда вздрагивает, краснеет. Свист снизу стола.'
+            else
+                $HallHarassmentAfterText = 'Наклон — ладонь ' + $cg + ' сзади. Аманда вздрагивает. Свист снизу стола: смотрели, куда ушла юбка.'
+            end
         end
     elseif $b = 'play_tip':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = 'Сандра не бежит: с гостем коротко и по-деловому, но держит. Серебро звенит о стол. Он занят ею у печи — вам не кивает.'
+            $HallHarassmentAfterText = 'Сандра не бежит: с ' + $ci + ' коротко и по-деловому, но держит. Серебро звенит о стол. Он занят ею у печи — вам не кивает.'
         elseif $g = 'melissa':
-            $HallHarassmentAfterText = 'Мелисса не ломает номер: улыбка, монета. Гость занят ею. Зал гудит на сцену у стола.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Мелисса не ломает номер: улыбка моряку, монета. Он занят ею. Зал гудит на сцену у стола.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Мелисса принимает монету мастерового, ирония в глазах, не сбрасывает руку сразу. Зал гудит на них.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = 'Мелисса улыбается купцу — серебро на ладони, поза «заказ». Он только о ней. Свист зала — на сцену.'
+            else
+                $HallHarassmentAfterText = 'Мелисса не ломает номер: улыбка, монета. Гость занят ею. Зал гудит на сцену у стола.'
+            end
         else
-            $HallHarassmentAfterText = 'Аманда краснеет и подаётся — монета. Гость только о ней. Свист зала — на них.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = 'Аманда краснеет и подаётся — моряк суёт монету. Он только о ней. Свист зала — на них.'
+            elseif $ct = 'мастеровой':
+                $HallHarassmentAfterText = 'Аманда принимает серебро мастерового, румянец, не сразу отступает. Взгляды зала на неё.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = 'Аманда краснеет — купец кладёт монету к вырезу. Подаётся. Свист — на них, не на стойку.'
+            else
+                $HallHarassmentAfterText = 'Аманда краснеет и подаётся — монета. Гость только о ней. Свист зала — на них.'
+            end
         end
     else
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = 'У печи гость не отпускает Сандру сразу — смех, руки; она выкручивается сама. Ни «зала», ни свиста: кухня закрыта занавеской.'
+            $HallHarassmentAfterText = 'У печи ' + $ct + ' не отпускает Сандру сразу — смех, руки; она выкручивается сама. Ни «зала», ни свиста: кухня за дверью.'
         else
-            $HallHarassmentAfterText = 'Гость не отпускает ' + $RealName[$g] + ' — смех, руки; она сама. Присвист на неё.'
+            $HallHarassmentAfterText = $ct + ' не отпускает ' + $RealName[$g] + ' — смех, руки; она сама. Присвист на неё.'
         end
     end
 
     if HallHarassSceneSlap = 1 and $b <> 'play_tip':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. Гость отшатывается к занавеске; Сандра поправляет передник, щёки горят, и снова к половнику.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. ' + $ct + ' отшатывается к двери; Сандра поправляет передник, щёки горят, и снова к половнику.'
         else
             if $g = 'amanda':
-                $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. Гость отшатывается; Аманда поправляет платье, щёки горят от злости и смущения — не от ужаса — и уходит к столам.'
+                $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. ' + $ct + ' отшатывается; Аманда поправляет платье, щёки горят от злости и смущения — не от ужаса — и уходит к столам.'
             else
-                $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. Гость отшатывается; она поправляет платье и уходит с горящими щеками.'
+                $HallHarassmentAfterText = $HallHarassmentAfterText + '<br><br>В конце — звонкая пощёчина. ' + $ct + ' отшатывается; она поправляет платье и уходит с горящими щеками.'
             end
         end
     end
 
     killvar '$g'
     killvar '$b'
+    killvar '$ct'
+    killvar '$cg'
+    killvar '$ci'
     killvar 'HallHarassAfterKitchen'
+    killvar '$HallHarassAfterClientTag'
+    killvar '$HallHarassAfterClientGen'
+    killvar '$HallHarassAfterClientIns'
 ---
 
-! Звуки ignore из ТОГО ЖЕ beat
+! Звуки ignore из ТОГО ЖЕ beat + client flavor
 #HallHarassAfterIgnoreFromBeat
+    gs 'HallHarassAfterClientBits'
     $g = $HallHarassGirl
     $b = $HallHarassSceneBeat
+    $ct = $HallHarassAfterClientTag
+    $cg = $HallHarassAfterClientGen
     $HallHarassmentAfterText = ''
     HallHarassAfterKitchen = 0
     if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen' or $g = 'sandra':
@@ -426,51 +616,81 @@
 
     if $b = 'hand_bare':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шорох ткани у печи. Хриплый смех. Сухой возглас Сандры. Звон крышки. Ничьего «ой, голая» из зала — туда не слышно; только их двое за дверью.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шорох ткани у печи. Хриплый смех ' + $cg + '. Сухой возглас Сандры. Звон крышки. Только они двое за дверью.'
         elseif $g = 'amanda':
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шорох подола. Смех клиента. Её смущённый смешок. Шёпот: «Ой… да у неё голая писька…» Вздох зала.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шорох подола. Портовой смех. Её смущённый смешок. Шёпот: «Ой… да у неё голая…» Вздох зала.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шелест юбки. Низкий купеческий смех. Её писк. Шёпот «голая…». Стук подноса.'
+            else
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шорох подола. Смех ' + $cg + '. Её смущённый смешок. Шёпот: «Ой… да у неё голая писька…» Вздох зала.'
+            end
         else
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шелест юбки. Смех. Шёпот «без…» и свист. Вздох. Стук подноса.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шелест юбки. Моряцкий ржач. Шёпот «без…» и свист. Вздох. Стук подноса.'
+            else
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шелест юбки. Смех ' + $cg + '. Шёпот «без…» и свист. Вздох. Стук подноса.'
+            end
         end
     elseif $b = 'grab_tits':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок ладони по ткани. Смех гостя. «Руки» — сухо, Сандра. Шорох передника. Шипение на сковороде.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок ладони по ткани. Смех ' + $cg + '. «Руки» — сухо, Сандра. Шорох передника. Шипение на сковороде.'
         else
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Смех ' + $RealName[$g] + '. Смех клиента. Шлепок по груди через платье. Присвист. Шорох.'
+            if $ct = 'моряк':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Смех ' + $RealName[$g] + '. Портовой хохот. Шлепок по груди через платье. Присвист. Шорох.'
+            elseif $ct = 'купец':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Тихий возглас ' + $RealName[$g] + '. Низкий смех купца. Шлепок по вырезу. Присвист.'
+            else
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Смех ' + $RealName[$g] + '. Смех ' + $cg + '. Шлепок по груди через платье. Присвист. Шорох.'
+            end
         end
     elseif $b = 'grab_ass' or $b = 'hand_skirt':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок по юбке. Его смех. Её тяжёлый выдох. Стук половника. Ни свиста «соседа» — кухня глушит зал.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок по юбке. Смех ' + $cg + '. Её тяжёлый выдох. Стук половника. Кухня глушит зал.'
         else
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок по юбке. Смех. Шелест. Одобрительный свист — сцене, не стойке.'
+            if $ct = 'мастеровой':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Свойский шлепок по юбке. Смех. Шелест. Одобрительный свист — сцене, не стойке.'
+            else
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Шлепок по юбке. Смех ' + $cg + '. Шелест. Одобрительный свист — сцене, не стойке.'
+            end
         end
     elseif $b = 'wall':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Глухой стук о камень. Его смех. Её выдох. Резкий шаг — оттолкнула.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Глухой стук о камень. Смех ' + $cg + '. Её выдох. Резкий шаг — оттолкнула.'
         else
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Стук о дерево. Смех. Выдох. Шаг — оттолкнула.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Стук о дерево. Смех ' + $cg + '. Выдох. Шаг — оттолкнула.'
         end
     elseif $b = 'drop_bend':
         if HallHarassAfterKitchen = 1:
             $HallHarassmentAfterText = $HallHarassmentAfterText + 'Звон миски. Шорох наклона. Шлепок сзади. Её вздох. Эхо кухни, без свиста снизу стола.'
         else
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Звон монеты. Наклон. Шлепок сзади. Свист снизу стола.'
+            if $ct = 'купец':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Звон монеты. Наклон. Шлепок купца сзади. Свист снизу стола.'
+            else
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Звон. Наклон. Шлепок ' + $cg + ' сзади. Свист снизу стола.'
+            end
         end
     elseif $b = 'play_tip':
         if HallHarassAfterKitchen = 1:
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Тихий смех. Звяканье серебра о дерево. Шорох. Довольный выдох. Пар. Без крика.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Тихий смех. Звяканье серебра о дерево. Шорох. Довольный выдох ' + $cg + '. Пар. Без крика.'
         else
-            $HallHarassmentAfterText = $HallHarassmentAfterText + 'Тихий смех. Серебро. Шорох. Гул зала на сцену. Без крика.'
+            if $ct = 'купец':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Тихий смех. Полновесное серебро. Шорох. Гул зала на сцену. Без крика.'
+            elseif $ct = 'моряк':
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Сиплый смех моряка. Серебро. Шорох. Гул зала на сцену.'
+            else
+                $HallHarassmentAfterText = $HallHarassmentAfterText + 'Тихий смех. Серебро ' + $cg + '. Шорох. Гул зала на сцену. Без крика.'
+            end
         end
     else
-        $HallHarassmentAfterText = $HallHarassmentAfterText + 'Смех. Шорох. Голос — слов не разобрать. Стук.'
+        $HallHarassmentAfterText = $HallHarassmentAfterText + 'Смех ' + $cg + '. Шорох. Голос — слов не разобрать. Стук.'
     end
 
     if HallHarassSceneSlap = 1 and $b <> 'play_tip':
         if HallHarassAfterKitchen = 1:
             $HallHarassmentAfterText = $HallHarassmentAfterText + ' Потом — звонкая пощёчина. Шаги к двери. Снова шипение печи.'
         else
-            $HallHarassmentAfterText = $HallHarassmentAfterText + ' Потом — пощёчина. Вздох зала. Шаги, уже ровнее.'
+            $HallHarassmentAfterText = $HallHarassmentAfterText + ' Потом — пощёчина. Вздох зала. Шаги ' + $cg + ', уже ровнее.'
         end
     else
         if HallHarassAfterKitchen = 1:
@@ -482,5 +702,10 @@
 
     killvar '$g'
     killvar '$b'
+    killvar '$ct'
+    killvar '$cg'
     killvar 'HallHarassAfterKitchen'
+    killvar '$HallHarassAfterClientTag'
+    killvar '$HallHarassAfterClientGen'
+    killvar '$HallHarassAfterClientIns'
 ---

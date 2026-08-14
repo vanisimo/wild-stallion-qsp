@@ -38,7 +38,7 @@
 | Файл | Что |
 |------|-----|
 | `hall_harassment_intro_text.qsps` | **Экран 1** — схватили (USER-OWNED) |
-| `hall_harassment_after_text.qsps` | **Экран 2** B+C — сцена, звуки, реплики |
+| `hall_harassment_after_text.qsps` | **Экран 2 / H2** B+C — сцена, звуки, реплики; **client** traveler/craftsman/merchant |
 | `girl_work_policy_talk_text.qsps` | **Экран 2** D — мост policy |
 | `hall_harassment.qsps` | логика, меню, картинки |
 | ~~не смотреть~~ `hall_harassment_text.qsps` | legacy / talk-recall; live after **не** отсюда |

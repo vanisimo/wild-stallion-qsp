@@ -180,6 +180,10 @@
     SandraKitchenOffscreen = 0
     SandraKitchenForceMissing = 0
     HallMissingBargainRefused = 0
+    HallHarassPolicyChosen = 0
+    HallHarassPolicyValue = 0
+    $SandraKitchenChoice = ''
+    $HallScenePolicySource = ''
 ---
 
 ! missing из play (α) — те же гейты, что HallHarassTryMissingFromPlay + личные missing
@@ -347,10 +351,22 @@
         *pl ' '
     end
 
+    ! H1: Подсмотреть → H2; Отвернуться → оффскрин (R3: без PhaseAdvance, без missing)
     gs 'ActUiPrepare', 'Подсмотреть', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         gt 'SandraKitchenFollow'
     end
+    gs 'ActUiPrepare', 'Не обращать внимания', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraKitchenNoticeIgnore'
+    end
+---
+
+! notice ignore: не заходили за дверь — только звуки, затем H4
+#SandraKitchenNoticeIgnore
+    $SandraKitchenChoice = 'ignore'
+    SandraKitchenOffscreen = 1
+    gt 'SandraKitchenAction'
 ---
 
 #SandraKitchenFollow
@@ -465,15 +481,17 @@
         $SandraKitchenChoice = 'watch'
         gs 'SandraKitchenTryEscalateFromWatch'
         if SandraKitchenEscalate = 1:
+            ! play→missing: уговор уже был на Follow — короткий мост, НЕ второй BargainStart
             $HallMissingGirl = 'sandra'
             $HallHarassGirl = 'sandra'
             $HallHarassClient = $SandraKitchenClient
             $HallMissingClient = $SandraKitchenClient
             HallMissingSkipNotice = 1
+            HallMissingFromPlay = 1
             if $SandraKitchenReturnLoc = '':
                 $SandraKitchenReturnLoc = 'TavernMain'
             end
-            gt 'HallMissingBargainStart', 'sandra', $SandraKitchenReturnLoc
+            gt 'SandraKitchenEscalateBridge'
         end
         gt 'SandraKitchenAction'
     else
@@ -561,7 +579,7 @@
     end
 ---
 
-! H4 — гость ушёл, она к тебе
+! H4 — гость ушёл, она к тебе (+ policy после harass/play, не после missing)
 #SandraKitchenAfter
     *clr
     clr
@@ -571,17 +589,108 @@
     end
 
     *pl '══════════════════════════════════════════════'
-    *pl ' КУХНЯ'
+    *pl ' ПОСЛЕ: КУХНЯ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    gs 'SandraKitchenShowImage', 'protect'
+
+    ! H4: гость ушёл — protect-кадр (она у двери) / ignore — звуки+порог
+    if $SandraKitchenChoice = 'ignore':
+        gs 'SandraKitchenShowImage', 'offscreen'
+    else
+        gs 'SandraKitchenShowImage', 'protect'
+    end
+    *pl ' '
     gs 'SandraKitchenPrintAfter'
     *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG SK H4] choice=' + $SandraKitchenChoice + ' beat=' + $SandraKitchenBeat + ' policy=' + STR(HallHarassPolicyChosen)
+        *pl ' '
+    end
+
+    ! policy after harass/play (как зал H3); missing уже свой after
+    $HallHarassGirl = 'sandra'
+    $HallHarassConsequenceArea = 'kitchen'
+    $HallHarassJob = 'kitchen'
+    $HallHarassEventLoc = 'SandraKitchenAfter'
+    $HallHarassReturnLoc = $SandraKitchenReturnLoc
+    if $SandraKitchenChoice = 'protect':
+        $HallHarassReaction = 'protect'
+    elseif $SandraKitchenChoice = 'watch':
+        $HallHarassReaction = 'watch'
+    else
+        $HallHarassReaction = 'ignore'
+    end
+    $PolicyTalkGirl = 'sandra'
+    $PolicyTalkArea = 'kitchen'
+    if LOC('GirlWorkPolicyTalkEnsureName') = 1:
+        gs 'GirlWorkPolicyTalkEnsureName', 'sandra'
+    end
+
+    if HallHarassPolicyChosen = 0:
+        if LOC('GirlWorkPolicyTalkPrintText') = 1:
+            gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
+            *pl ' '
+        end
+        gs 'SandraKitchenBuildPolicyMenu'
+        gs 'GetMenuOpenLinkHref', 'SandraKitchenPolicyMenu', 'Обсудить правило поведения'
+        *p $MenuOpenLinkHref + '.'
+        killvar '$MenuOpenLinkHref'
+        *pl ' '
+    else
+        if LOC('HallHarassmentShowPolicyReactionBlock') = 1:
+            gs 'HallHarassmentShowPolicyReactionBlock'
+            *pl ' '
+        elseif LOC('GirlWorkPolicyAssignmentReactionPrint') = 1:
+            gs 'GirlWorkPolicyAssignmentReactionPrint', 'sandra', 'kitchen', HallHarassPolicyValue
+            *pl ' '
+        end
+    end
 
     gs 'ActUiPrepare', 'Вернуться в зал', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt $SandraKitchenReturnLoc
     end
+---
+
+#SandraKitchenBuildPolicyMenu
+    gs 'Menu.Destroy', 'SandraKitchenPolicyMenu'
+    gs 'Menu.Create', 'SandraKitchenPolicyMenu'
+    gs 'MenuUiAdd', 'SandraKitchenPolicyMenu', 'Вести себя сдержанно', ''
+    gs 'Menu.AddModule', 'SandraKitchenPolicyMenu', {
+        gt 'SandraKitchenPolicyChoose', 1
+    }
+    if FamilyLiberationGateOpen = 1:
+        gs 'MenuUiAdd', 'SandraKitchenPolicyMenu', 'Решать самой', ''
+        gs 'Menu.AddModule', 'SandraKitchenPolicyMenu', {
+            gt 'SandraKitchenPolicyChoose', 2
+        }
+        gs 'MenuUiAdd', 'SandraKitchenPolicyMenu', 'Вести себя расковано', ''
+        gs 'Menu.AddModule', 'SandraKitchenPolicyMenu', {
+            gt 'SandraKitchenPolicyChoose', 3
+        }
+    end
+---
+
+#SandraKitchenPolicyChoose
+    HallHarassPolicyValue = ARGS[0]
+    if HallHarassPolicyValue < 1:
+        HallHarassPolicyValue = 1
+    end
+    if HallHarassPolicyValue > 3:
+        HallHarassPolicyValue = 3
+    end
+    if FamilyLiberationGateOpen = 0 and HallHarassPolicyValue > 1:
+        HallHarassPolicyValue = 1
+    end
+    $HallHarassGirl = 'sandra'
+    $HallHarassConsequenceArea = 'kitchen'
+    if LOC('GirlWorkPolicyTalkAfterHarassApply') = 1:
+        gs 'GirlWorkPolicyTalkAfterHarassApply', 'sandra', 'kitchen', HallHarassPolicyValue
+    end
+    HallHarassPolicyChosen = 1
+    HallEventDiscussed['sandra'] = 1
+    gt 'SandraKitchenAfter'
 ---
 
 #SandraKitchenWatchMissing
@@ -751,6 +860,9 @@
     KitchenHarassmentTime = 0
     SandraKitchenForceMissing = 0
     SandraKitchenEscalateChance = 28
+    HallHarassPolicyChosen = 0
+    HallHarassPolicyValue = 0
+    $SandraKitchenChoice = ''
 
     $SandraKitchenDbgMode = LCASE($ARGS[0])
     if $SandraKitchenDbgMode = '':

@@ -135,11 +135,24 @@ Explicit в минете = она себе (клитор + пальцы по slu
 
 ## Следующие шаги
 
-1. **Harass / кухня Сандры** — довести H2 сестёр (действие после выбора) и kitchen hook; дверь не занавеска. Код частично уже есть в `hall_harassment.qsps` (`HallHarassAfterStep`).
-2. **Картинки** — канон: нет пустых экранов; stub + `[VIS]` подпись; потом path.
+1. **Harass / кухня** — kitchen hook + **H2 сестёр after_beat × client** закрыты (2026-08-15).
+2. **Картинки** — канон: нет пустых экранов; stub + `[VIS]` подпись; потом path. Массовый sweep — `docs/plan-weekend-visual-sweep.md` (отложено).
 3. **Рот Сандры** — не трогать prose без явного «можно править тексты». Регистр на last page уже стоит.
-4. По желанию: подчистить мёртвый `mouth_show` сестёр (сюжетно вшит в swallow high).
+4. **`mouth_show` сестёр (вариант E, 2026-08):** канон в comments + map — show = swallow high; отдельная локация late/debug only. Prose/redirect/delete **не** делали.
 5. Не делать: `under_table`; titjob сестёр; анилингус Сандры; бедро в рандом; два финиша куни+анил в одном проходе.
+
+### Сделано в этой сессии (после pull)
+
+- Фикс escalate: `SandraKitchenChoose` watch+roll → `SandraKitchenEscalateBridge` → Scene.
+- Prose kitchen: без «занавески» в refuse/bridge.
+- **Kitchen hook доделан (H1–H4):**
+  - H1: «Подсмотреть» + «Не обращать внимания» (оффскрин без Follow)
+  - H3: protect/watch/offscreen × клиенты; escalate-мост × 3 клиента
+  - H4: «ПОСЛЕ: КУХНЯ», after-talk по choice, **policy** (сдержанно/сама/расковано) через `SandraKitchenPolicyChoose`
+  - Visual H4: protect (она у двери) / offscreen (ignore)
+- **H2 сестёр after_beat:** `HallHarassAfterClientBits` + protect/watch/ignore × girl × beat × client; без «занавески» на кухне.
+- **mouth_show сестёр (E):** comments в agent amanda/melissa + `ApplyPromise` + `ResolveSceneKey` + prose map; путь late/debug сохранён.
+- **Kitchen H3–H4 prose polish:** protect/watch/end/escalate/offscreen/after × клиенты; голос матери/хозяйки; escalate без «минет-меню» в мосте.
 
 ---
 
