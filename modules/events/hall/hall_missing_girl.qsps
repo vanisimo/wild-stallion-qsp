@@ -492,11 +492,11 @@
 
     if HallMissingActBand = 1:
         if HallMissingPrivateActRoll <= 25:
-            $HallMissingPrivateAct = 'petting'
+            $HallMissingPrivateAct = 'hug_waist'
         elseif HallMissingPrivateActRoll <= 45:
-            $HallMissingPrivateAct = 'tits_lick'
+            $HallMissingPrivateAct = 'look_tits'
         elseif HallMissingPrivateActRoll <= 65:
-            $HallMissingPrivateAct = 'pussy_touch'
+            $HallMissingPrivateAct = 'hug_waist'
         elseif HallMissingPrivateActRoll <= 85:
             $HallMissingPrivateAct = 'cock_touch'
         else:
@@ -518,7 +518,11 @@
         elseif HallMissingPrivateActRoll <= 55:
             $HallMissingPrivateAct = 'deepthroat'
         elseif HallMissingPrivateActRoll <= 80:
-            $HallMissingPrivateAct = 'anilingus'
+            if $HallMissingGirl = 'sandra':
+                $HallMissingPrivateAct = 'cuni'
+            else
+                $HallMissingPrivateAct = 'anilingus'
+            end
         elseif $HallMissingGirl = 'sandra' and HallMissingPrivateActRoll <= 92:
             $HallMissingPrivateAct = 'titjob'
         else:
@@ -576,6 +580,7 @@
         gt $HallMissingReturnLoc
     end
 
+    HallMissingCuniToAnilingus = 0
     gs 'HallMissingGirlEnsureName', $HallMissingGirl
     gs 'HallMissingGirlGetStage', $HallMissingGirl
 
@@ -797,13 +802,8 @@
     elseif $HallMissingChoice = 'watch':
         HallMissingGirlLastChoice[$HallMissingGirl] = 2
         gs 'HallMissingGirlApplyConsequences', 'peek'
-        gs 'HallMissingGirlPrintText', 'peek_scene'
-        *pl ' '
-        gs 'ActUiPrepare', 'Далее', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'HallMissingGirlMeet'
-        end
-        exit
+        gs 'HallMissingScenePageInit'
+        gt 'HallMissingGirlShowScene'
 
     elseif $HallMissingChoice = 'protect_hard':
         HallMissingGirlLastChoice[$HallMissingGirl] = 3
@@ -830,6 +830,358 @@
     end
 ---
 
+#HallMissingHandPickFinish
+    if HallMissingBargainExplicit = 1:
+        HallMissingHandPool = 3
+        if GirlNoPantiesWork[$HallMissingGirl] <> 1:
+            HallMissingHandPool = 4
+        end
+        HallMissingHandRoll = RAND(1, HallMissingHandPool)
+        if HallMissingHandRoll = 1:
+            $HallMissingHandFinish = 'mouth'
+        elseif HallMissingHandRoll = 2:
+            $HallMissingHandFinish = 'face'
+        elseif HallMissingHandRoll = 3:
+            $HallMissingHandFinish = 'breast'
+        else
+            $HallMissingHandFinish = 'panties'
+        end
+        killvar 'HallMissingHandPool'
+        killvar 'HallMissingHandRoll'
+    elseif $HallMissingGirl = 'sandra' or $HallMissingInitiative = 'high':
+        $HallMissingHandFinish = 'hands'
+    else
+        $HallMissingHandFinish = 'floor'
+    end
+---
+
+#HallMissingPrintSkirtAccess
+    $g = $HallMissingGirl
+    $mode = $ARGS[0]
+    if $mode = '':
+        $mode = 'pussy'
+    end
+    if $mode = 'thigh':
+        if HallMissingUniform >= 1:
+            if GirlNoPantiesWork[$g] = 1:
+                if $g = 'sandra':
+                    *pl 'Короткий подол, белья нет. До бедра сразу, складка уже близко.'
+                elseif $g = 'melissa':
+                    *pl 'Короткая форма, без белья. Бедро голое. Дальше в этой строфе не стояло.'
+                else
+                    *pl 'Короткий подол, белья нет. Ладонь по голому бедру, нос у складки.'
+                end
+            else
+                if $g = 'sandra':
+                    *pl 'Короткий подол. Бельё ещё на месте — только бедро.'
+                elseif $g = 'melissa':
+                    *pl 'Короткий подол. Бельё на месте. Бедро — да. Дальше — нет.'
+                else
+                    *pl 'Короткий подол. Бельё ещё закрывает. Только бедро.'
+                end
+            end
+        else
+            if $g = 'sandra':
+                *pl 'Длинная юбка. Он задирает выше колена. Дальше не лезет.'
+            elseif $g = 'melissa':
+                *pl 'Длинная юбка. Край выше колена. Скажите «бедро», не оду.'
+            else
+                *pl 'Длинная юбка. Он задирает выше колена. Она держит край.'
+            end
+        end
+    else
+        if HallMissingUniform >= 1:
+            if GirlNoPantiesWork[$g] = 1:
+                if $g = 'sandra':
+                    *pl 'Короткий подол, белья нет. До киски сразу.'
+                elseif $g = 'melissa':
+                    *pl 'Короткая форма, без белья. «Скромность» в этой главе не стояла.'
+                else
+                    *pl 'Короткий подол, белья нет — форма на голое.'
+                end
+            else
+                if $g = 'sandra':
+                    *pl 'Короткий подол. Бельё в сторону — не церемонится.'
+                elseif $g = 'melissa':
+                    *pl 'Короткий подол. Бельё сдвигает сама, как закладку.'
+                else
+                    *pl 'Короткий подол. Он сдвигает бельё в сторону.'
+                end
+            end
+        else
+            if $g = 'sandra':
+                *pl 'Длинная юбка. Он задирает к поясу. Она придерживает край.'
+            elseif $g = 'melissa':
+                *pl 'Длинная юбка. Задирает подол сама — меньше складок, меньше поэзии.'
+            else
+                *pl 'Длинная юбка. Он задирает к поясу. Она помогает краем, краснея.'
+            end
+        end
+    end
+    killvar '$g'
+    killvar '$mode'
+---
+
+#HallMissingPrintSelfFingers
+    gs 'HallMissingHugFingerCount'
+    if HallMissingHugFingers >= 4:
+        *pl 'Себе: клитор и четыре пальца.'
+    elseif HallMissingHugFingers >= 3:
+        *pl 'Себе: клитор и три пальца.'
+    elseif HallMissingHugFingers >= 2:
+        *pl 'Себе: клитор и два пальца.'
+    else
+        *pl 'Себе: клитор, один палец.'
+    end
+---
+
+#HallMissingRegisterSelfPlay
+    $g = $HallMissingGirl
+    masturbate[$g] += 1
+    if Args[0] = 1:
+        orgasms[$g] += 1
+    end
+    killvar '$g'
+---
+
+#HallMissingRegisterCuni
+    $g = $HallMissingGirl
+    sexacts[$g] += 1
+    cuniacts[$g] += 1
+    orgasms[$g] += 1
+    if HallMissingCuniAnilOn = 1:
+        anilingus[$g] += 1
+        cumbody[$g] += 1
+    elseif HallMissingBargainExplicit = 1:
+        cumbody[$g] += 1
+    end
+    killvar '$g'
+---
+
+#HallMissingRegisterMouth
+    $g = $HallMissingGirl
+    $k = $HallMissingSceneKey
+    sexacts[$g] += 1
+    oralacts[$g] += 1
+    hadoral[$g] = 1
+    if INSTR($k, 'deepthroat') > 0:
+        oraldeep[$g] += 1
+        if $HallMissingFinish = 'cum_throat':
+            oralcum[$g] += 1
+            oralswallow[$g] += 1
+        elseif $HallMissingFinish = 'cum_mouth':
+            oralcum[$g] += 1
+            oralswallow[$g] += 1
+        end
+    elseif INSTR($k, 'facial') > 0:
+        if $HallMissingFinish = 'cum_face_soft':
+            cumbody[$g] += 1
+        else
+            facialcum[$g] += 1
+            if $HallMissingFinish = 'cum_face_high' or HallMissingBargainExplicit = 1:
+                oralswallow[$g] += 1
+            end
+        end
+    elseif INSTR($k, 'swallow') > 0:
+        oralcum[$g] += 1
+        oralswallow[$g] += 1
+    elseif INSTR($k, 'show') > 0:
+        oralcum[$g] += 1
+        if HallMissingBargainExplicit = 1 or $HallMissingInitiative = 'high':
+            oralswallow[$g] += 1
+        end
+    elseif INSTR($k, 'taste') > 0:
+        oralcum[$g] += 1
+    else
+        oralcum[$g] += 1
+    end
+    killvar '$g'
+    killvar '$k'
+---
+
+#HallMissingRegisterLookTits
+    $g = $HallMissingGirl
+    if HallMissingBargainExplicit <> 1:
+        killvar '$g'
+        exit
+    end
+    sexacts[$g] += 1
+    cumbody[$g] += 1
+    killvar '$g'
+---
+
+#HallMissingRegisterTitjob
+    $g = $HallMissingGirl
+    sexacts[$g] += 1
+    tittyfuck[$g] += 1
+    cumbody[$g] += 1
+    if $HallMissingClient = 'traveler' or $HallMissingClient = 'sailor' or $HallMissingClientCock = 'big':
+        facialcum[$g] += 1
+        hadoral[$g] = 1
+    end
+    killvar '$g'
+---
+
+#HallMissingRegisterHand
+    $g = $HallMissingGirl
+    sexacts[$g] += 1
+    handjob[$g] += 1
+    if $HallMissingHandFinish = 'mouth':
+        oralacts[$g] += 1
+        oralcum[$g] += 1
+        hadoral[$g] = 1
+    elseif $HallMissingHandFinish = 'face':
+        facialcum[$g] += 1
+        hadoral[$g] = 1
+    elseif $HallMissingHandFinish = 'breast' or $HallMissingHandFinish = 'hands':
+        cumbody[$g] += 1
+    elseif $HallMissingHandFinish = 'panties':
+        cumpanties[$g] += 1
+    end
+    killvar '$g'
+---
+
+#HallMissingMeetStefanTail
+    if HallMissingBargainExplicit = 1 and $HallMissingGirl <> 'sandra':
+        HallMissingGst = RAND(1, 5)
+        *pl ' '
+        if HallMissingGst = 1:
+            *pl 'Вы ловите её за попу, сжимаете сквозь юбку. Она вздрагивает, не отскакивает сразу.'
+        elseif HallMissingGst = 2:
+            *pl 'Ладонь ложится ей на грудь, сжимаете. Сосок под тканью твёрдый.'
+        elseif HallMissingGst = 3:
+            *pl 'Она сама накрывает ваш пах ладонью — коротко, проверяя, стоит ли.'
+        elseif HallMissingGst = 4:
+            *pl 'Вы запускаете руку ей под юбку, гладите киску. Она кусает губу и смотрит на дверь.'
+        else
+            *pl 'Пальцы входят ей под юбку, в мокрое. Она всхлипывает и стискивает ваше запястье — не чтобы вынуть.'
+        end
+        killvar 'HallMissingGst'
+    end
+    if FamilyCorruptionStage >= 3 or sluttiness[$HallMissingGirl] >= 50:
+        *pl ' '
+        if $HallMissingGirl = 'sandra':
+            *pl '— Мам… — голос ниже обычного. — Если ещё раз так — не при клиенте.'
+        elseif $HallMissingGirl = 'melissa':
+            *pl '— Красивая теория. Практика у тебя в штанах спорит громче.'
+        else
+            *pl '— Ещё раз так сделаешь — я уже не сделаю вид, что не видел.'
+        end
+    end
+---
+
+#HallMissingHugFingerCount
+    HallMissingHugFingers = 1
+    if sluttiness[$HallMissingGirl] >= 100:
+        HallMissingHugFingers = 4
+    elseif sluttiness[$HallMissingGirl] >= 50:
+        HallMissingHugFingers = 3
+    elseif sluttiness[$HallMissingGirl] >= 30:
+        HallMissingHugFingers = 2
+    end
+---
+
+#HallMissingBargainPrintHugTail
+    *pl $HallLewdClientWho + ' не прячет рук — талия, попа, сжать, потрогать. Не «постоять красиво».'
+    *pl ' '
+    if $HallMissingGirl = 'sandra':
+        *pl '— Обними, пожми, потрогай, — ровно бросает Сандра. — Монету на стол. И без гвалта.'
+    elseif $HallMissingGirl = 'melissa':
+        *pl '— «Обнять». Скажите «посжимать», меньше поэзии. Спинтрии — на бочку. Темп потом покажете руками, не балладой.'
+    else
+        *pl '— Обнять… и потрогать, да? Ладно. Только… не сразу под юбку, ладно?'
+    end
+---
+
+#HallMissingScenePageInit
+    HallMissingScenePage = 1
+    HallMissingScenePageMax = 1
+    if $HallMissingSceneKey = '':
+        gs 'HallMissingResolveSceneKey'
+    end
+    if $HallMissingSceneKey <> '':
+        if LOC('HallMissingScene_' + $HallMissingSceneKey + '_3') = 1:
+            HallMissingScenePageMax = 3
+        elseif LOC('HallMissingScene_' + $HallMissingSceneKey + '_2') = 1:
+            HallMissingScenePageMax = 2
+        end
+        HallMissingCuniAnilOn = 0
+        if $HallMissingSceneKey = 'cuni_amanda' or $HallMissingSceneKey = 'cuni_melissa':
+            if HallMissingCuniToAnilingus = 1 or (HallMissingBargainExplicit = 1 and $HallMissingInitiative = 'high'):
+                if HallMissingScenePageMax >= 3:
+                    HallMissingCuniAnilOn = 1
+                end
+            else
+                if HallMissingScenePageMax >= 3:
+                    HallMissingScenePageMax = 2
+                end
+            end
+        end
+        if $HallMissingSceneKey = 'look_tits_amanda' or $HallMissingSceneKey = 'look_tits_melissa':
+            if HallMissingBargainExplicit <> 1:
+                HallMissingScenePageMax = 2
+            elseif LOC('HallMissingScene_' + $HallMissingSceneKey + '_3') = 1:
+                HallMissingScenePageMax = 3
+            end
+        end
+        if $HallMissingSceneKey = 'look_tits_sandra':
+            if HallMissingBargainExplicit = 1 and LOC('HallMissingScene_look_tits_sandra_4') = 1:
+                HallMissingScenePageMax = 4
+            else
+                HallMissingScenePageMax = 2
+            end
+        end
+        if $HallMissingSceneKey = 'hug_waist_amanda' or $HallMissingSceneKey = 'hug_waist_melissa' or $HallMissingSceneKey = 'hug_waist_sandra':
+            if HallMissingBargainExplicit = 1 and LOC('HallMissingScene_' + $HallMissingSceneKey + '_3') = 1:
+                HallMissingScenePageMax = 3
+            else
+                HallMissingScenePageMax = 2
+            end
+        end
+        if $HallMissingSceneKey = 'hand_amanda' or $HallMissingSceneKey = 'hand_melissa' or $HallMissingSceneKey = 'hand_sandra':
+            if LOC('HallMissingScene_' + $HallMissingSceneKey + '_2') = 1:
+                HallMissingScenePageMax = 2
+            end
+        end
+    end
+---
+
+! M3 — действие, по страницам (Далее)
+#HallMissingGirlShowScene
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $HallMissingGirl
+    end
+
+    if HallMissingScenePage < 1:
+        HallMissingScenePage = 1
+    end
+    if HallMissingScenePageMax < 1:
+        HallMissingScenePageMax = 1
+    end
+
+    gs 'HallMissingPrintHeader'
+    *pl ' '
+    gs 'HallMissingGirlPrintText', 'peek_scene'
+    *pl ' '
+
+    if HallMissingScenePage < HallMissingScenePageMax:
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            HallMissingScenePage += 1
+            gt 'HallMissingGirlShowScene'
+        end
+    else
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallMissingGirlMeet'
+        end
+    end
+---
+
 ! окно 4 — разговор после действия
 #HallMissingGirlMeet
     *clr
@@ -845,12 +1197,16 @@
     if $HallMissingChoice = 'protect_hard' or $HallMissingChoice = 'interrupt':
         gs 'HallMissingGirlPrintText', 'interrupt_after'
         *pl ' '
+        gs 'HallMissingMeetStefanTail'
+        *pl ' '
         gs 'PolicyEventChoiceConsequencePrint', 'hall_missing', 'protect_hard', $HallMissingGirl
         if LOC('SaveLastHallEvent') = 1:
             gs 'SaveLastHallEvent', 'hall_missing', $HallMissingGirl, 'Стефан вмешался, когда ' + $RealName[$HallMissingGirl] + ' пропала с клиентом.', 'interrupt'
         end
     else
         gs 'HallMissingGirlPrintText', 'peek_meet'
+        *pl ' '
+        gs 'HallMissingMeetStefanTail'
         *pl ' '
         gs 'PolicyEventChoiceConsequencePrint', 'hall_missing', 'watch', $HallMissingGirl
         if LOC('SaveLastHallEvent') = 1:
@@ -1322,28 +1678,36 @@ killvar '$HallMissingApplyChoice'
 
     if $pr = 'noble' or $fin = 'noble' or $HallMissingClient = 'noble':
         $HallMissingSceneKey = 'noble_' + $g
-    elseif $act = 'look_tits':
+    elseif $act = 'look_tits' or $act = 'tits_lick':
         $HallMissingSceneKey = 'look_tits_' + $g
-    elseif $act = 'hug_waist':
+        if $act = 'tits_lick':
+            HallMissingBargainExplicit = 1
+        end
+    elseif $act = 'hug_waist' or $act = 'petting' or $act = 'pussy_touch':
         $HallMissingSceneKey = 'hug_waist_' + $g
-    elseif $act = 'cock_touch_cloth':
-        $HallMissingSceneKey = 'cock_touch_cloth_' + $g
-    elseif $act = 'tits_lick':
-        $HallMissingSceneKey = 'tits_lick_' + $g
-    elseif $act = 'petting':
-        $HallMissingSceneKey = 'petting_' + $g
-    elseif $act = 'pussy_touch':
-        $HallMissingSceneKey = 'pussy_touch_' + $g
-    elseif $act = 'hand':
+        if $act = 'pussy_touch':
+            HallMissingBargainExplicit = 1
+        end
+    elseif $act = 'hand' or $act = 'cock_touch_cloth' or $act = 'cock_touch':
         $HallMissingSceneKey = 'hand_' + $g
     elseif $act = 'touch_thigh':
         $HallMissingSceneKey = 'touch_thigh_' + $g
     elseif $act = 'cuni':
         $HallMissingSceneKey = 'cuni_' + $g
     elseif $act = 'anilingus':
-        $HallMissingSceneKey = 'anilingus_' + $g
+        $HallMissingSceneKey = 'cuni_' + $g
+        if $g <> 'sandra':
+            HallMissingCuniToAnilingus = 1
+            HallMissingBargainExplicit = 1
+            $HallMissingInitiative = 'high'
+        end
     elseif $act = 'titjob':
-        $HallMissingSceneKey = 'titjob_' + $g
+        if $g = 'sandra':
+            $HallMissingSceneKey = 'titjob_sandra'
+        else
+            $HallMissingSceneKey = 'look_tits_' + $g
+            HallMissingBargainExplicit = 1
+        end
     elseif $act = 'deepthroat':
         $HallMissingSceneKey = 'deepthroat_' + $g
     elseif $act = 'mouth' or $act = 'mouth_balls':
@@ -1354,13 +1718,11 @@ killvar '$HallMissingApplyChoice'
         elseif $fin = 'show_mouth':
             $HallMissingSceneKey = 'mouth_show_' + $g
         elseif $fin = 'wipe':
-            $HallMissingSceneKey = 'mouth_wipe_' + $g
+            $HallMissingSceneKey = 'mouth_mid_' + $g
         elseif $fin = 'taste':
             $HallMissingSceneKey = 'mouth_taste_' + $g
-        elseif $fin = 'spit':
+        elseif $fin = 'spit' or $fin = 'hold_spit':
             $HallMissingSceneKey = 'mouth_spit_' + $g
-        elseif $fin = 'hold_spit':
-            $HallMissingSceneKey = 'mouth_hold_spit_' + $g
         else
             $HallMissingSceneKey = 'mouth_mid_' + $g
         end
@@ -1379,6 +1741,17 @@ killvar '$HallMissingApplyChoice'
         gs 'HallMissingResolveSceneKey'
     end
     $k = $HallMissingSceneKey
+
+    if HallMissingScenePage >= 2:
+        $HallMissingPagedLoc = 'HallMissingScene_' + $k + '_' + STR(HallMissingScenePage)
+        if LOC($HallMissingPagedLoc) = 1:
+            gs $HallMissingPagedLoc
+            killvar '$HallMissingPagedLoc'
+            killvar '$k'
+            exit
+        end
+        killvar '$HallMissingPagedLoc'
+    end
 
     ! нобиль multi-screen (sёстры): meet в конце цепочки, не сразу
     if $k = 'noble_amanda' or $k = 'noble_melissa':
@@ -1407,7 +1780,11 @@ killvar '$HallMissingApplyChoice'
     elseif $k = 'look_tits_melissa':
         gs 'HallMissingScene_look_tits_melissa'
     elseif $k = 'look_tits_sandra':
-        gs 'HallMissingScene_look_tits_sandra'
+        if HallMissingScenePage >= 2 and LOC('HallMissingScene_look_tits_sandra_2') = 1:
+            gs 'HallMissingScene_look_tits_sandra_2'
+        else
+            gs 'HallMissingScene_look_tits_sandra'
+        end
     elseif $k = 'hug_waist_amanda':
         gs 'HallMissingScene_hug_waist_amanda'
     elseif $k = 'hug_waist_melissa':
@@ -1425,7 +1802,11 @@ killvar '$HallMissingApplyChoice'
     elseif $k = 'tits_lick_melissa':
         gs 'HallMissingScene_tits_lick_melissa'
     elseif $k = 'tits_lick_sandra':
-        gs 'HallMissingScene_tits_lick_sandra'
+        if HallMissingScenePage >= 2 and LOC('HallMissingScene_tits_lick_sandra_2') = 1:
+            gs 'HallMissingScene_tits_lick_sandra_2'
+        else
+            gs 'HallMissingScene_tits_lick_sandra'
+        end
     elseif $k = 'petting_amanda':
         gs 'HallMissingScene_petting_amanda'
     elseif $k = 'petting_melissa':

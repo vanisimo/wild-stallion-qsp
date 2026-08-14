@@ -187,7 +187,8 @@
             HallMissingHardSubMax = 2
         elseif HallMissingHardStepIdx = 3:
             $HallMissingHardSlot = 'face'
-            HallMissingHardSubMax = 3
+            ! 0 soft на грудь → 1 high низ лица+рот → FlagFaceDone / Explicit
+            HallMissingHardSubMax = 2
         elseif HallMissingHardStepIdx = 4:
             $HallMissingHardSlot = 'throat'
             HallMissingHardSubMax = 5
@@ -333,6 +334,7 @@
 
     gs 'HallSceneV2EnsureFlags'
     gs 'HallMissingBargainEnsureFlags'
+    HallMissingCuniToAnilingus = 0
 
     gs 'HallMissingGirlNormalizeKey', $ARGS[0]
     $HallMissingGirl = $HallMissingGirlKey
@@ -408,6 +410,12 @@
         gs 'ShowGirlSidebar', $HallMissingGirl
     end
 
+    ! из harass play+смотреть: дверь уже видели → сразу уговор
+    if HallMissingSkipNotice = 1:
+        HallMissingSkipNotice = 0
+        gt 'HallMissingBargainTalk'
+    end
+
     *pl '══════════════════════════════════════════════'
     if $HallMissingGirl = 'sandra':
         *pl ' У КУХОННОЙ ДВЕРИ'
@@ -446,6 +454,12 @@
 
     gs 'HallMissingBargainShowImage'
     gs 'HallMissingBargainPrintText'
+    if $HallMissingPromise = 'hug_waist' or $HallMissingPromise = 'kitchen_waist_hug':
+        if HallMissingBargainRefused <> 1:
+            *pl ' '
+            gs 'HallMissingBargainPrintHugTail'
+        end
+    end
     *pl ' '
 
     if debug = 1:
@@ -742,56 +756,21 @@
     end
 
     if $p = 'look_tits' or $p = 'look_line':
-        if HallMissingForceHold = 1:
-            $HallMissingPrivateAct = 'look_tits'
-        elseif HallMissingBargainExplicit = 1 or $ph = 'free':
+        $HallMissingPrivateAct = 'look_tits'
+        if HallMissingBargainExplicit = 1:
             HallMissingPromiseBreak = 1
-            if $HallMissingGirl = 'sandra' and RAND(1, 100) <= 55:
-                $HallMissingPrivateAct = 'titjob'
-            else
-                $HallMissingPrivateAct = 'tits_lick'
-            end
-        elseif RAND(1, 100) <= 65:
-            HallMissingPromiseBreak = 1
-            $HallMissingPrivateAct = 'tits_lick'
-        else
-            $HallMissingPrivateAct = 'look_tits'
         end
 
     elseif $p = 'hug_waist' or $p = 'kitchen_waist_hug':
-        if HallMissingForceHold = 1:
-            $HallMissingPrivateAct = 'hug_waist'
-        elseif HallMissingBargainExplicit = 1 or $ph = 'free':
+        $HallMissingPrivateAct = 'hug_waist'
+        if HallMissingBargainExplicit = 1:
             HallMissingPromiseBreak = 1
-            if $HallMissingGirl = 'sandra' and RAND(1, 100) <= 45:
-                $HallMissingPrivateAct = 'cuni'
-            elseif RAND(1, 100) <= 40:
-                $HallMissingPrivateAct = 'pussy_touch'
-            else
-                $HallMissingPrivateAct = 'petting'
-            end
-        elseif RAND(1, 100) <= 60:
-            HallMissingPromiseBreak = 1
-            $HallMissingPrivateAct = 'petting'
-        else
-            $HallMissingPrivateAct = 'hug_waist'
         end
 
     elseif $p = 'touch_cock':
-        if HallMissingForceHold = 1:
-            $HallMissingPrivateAct = 'cock_touch_cloth'
-        elseif HallMissingBargainExplicit = 1 or $ph = 'free':
+        $HallMissingPrivateAct = 'hand'
+        if HallMissingBargainExplicit = 1:
             HallMissingPromiseBreak = 1
-            if $HallMissingGirl = 'sandra' and RAND(1, 100) <= 40:
-                $HallMissingPrivateAct = 'mouth'
-            else
-                $HallMissingPrivateAct = 'hand'
-            end
-        elseif RAND(1, 100) <= 65:
-            HallMissingPromiseBreak = 1
-            $HallMissingPrivateAct = 'hand'
-        else
-            $HallMissingPrivateAct = 'cock_touch_cloth'
         end
 
     elseif $p = 'bud_smell' or $p = 'piggy_look':
@@ -800,7 +779,8 @@
         elseif HallMissingCurSub = 1:
             $HallMissingPrivateAct = 'touch_thigh'
         elseif HallMissingCurSub = 2:
-            $HallMissingPrivateAct = 'pussy_touch'
+            $HallMissingPrivateAct = 'hug_waist'
+            HallMissingBargainExplicit = 1
             HallMissingPromiseBreak = 1
         else
             $HallMissingPrivateAct = 'cuni'
@@ -808,10 +788,11 @@
         end
 
     elseif $p = 'bud_cuni' or $p = 'piggy_cuni':
-        if HallMissingCurSub <= 0:
-            $HallMissingPrivateAct = 'cuni'
-        else
-            $HallMissingPrivateAct = 'anilingus'
+        $HallMissingPrivateAct = 'cuni'
+        if HallMissingCurSub > 0 and $HallMissingGirl <> 'sandra':
+            HallMissingCuniToAnilingus = 1
+            HallMissingBargainExplicit = 1
+            $HallMissingInitiative = 'high'
         end
 
     elseif $p = 'mouth_hard' or $p = 'mouth_spit' or $p = 'mouth_swallow' or $p = 'mouth_price' or $p = 'swallow_trade':
@@ -864,14 +845,13 @@
     elseif $p = 'facial':
         $HallMissingPrivateAct = 'mouth'
         if $HallMissingGirl = 'sandra' and HallMissingHardLadderDone['sandra'] = 1:
-            ! free terminal: на лицо (craftsman PreferFinish / CumHeavy в prose)
             $HallMissingFinish = 'cum_face'
+        elseif $HallMissingGirl <> 'sandra' and (HallMissingFlagFaceDone[$HallMissingGirl] = 1 or HallMissingBargainExplicit = 1):
+            $HallMissingFinish = 'cum_face_high'
         elseif HallMissingCurSub = 0:
             $HallMissingFinish = 'cum_face_soft'
-        elseif HallMissingCurSub = 1:
-            $HallMissingFinish = 'cum_face'
         else
-            $HallMissingFinish = 'cum_face_high'
+            $HallMissingFinish = 'cum_face'
         end
 
     elseif $p = 'deepthroat':
@@ -898,7 +878,11 @@
         end
 
     elseif $p = 'titjob':
-        $HallMissingPrivateAct = 'titjob'
+        if $HallMissingGirl = 'sandra':
+            $HallMissingPrivateAct = 'titjob'
+        else
+            $HallMissingPrivateAct = 'look_tits'
+        end
 
     elseif $p = 'noble':
         ! только amanda/melissa; экраны = HallMissingNobleScreens (1/2/3)
