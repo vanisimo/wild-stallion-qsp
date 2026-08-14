@@ -153,6 +153,7 @@ Explicit в минете = она себе (клитор + пальцы по slu
 - **H2 сестёр after_beat:** `HallHarassAfterClientBits` + protect/watch/ignore × girl × beat × client; без «занавески» на кухне.
 - **mouth_show сестёр (E):** comments в agent amanda/melissa + `ApplyPromise` + `ResolveSceneKey` + prose map; путь late/debug сохранён.
 - **Kitchen H3–H4 prose polish:** protect/watch/end/escalate/offscreen/after × клиенты; голос матери/хозяйки; escalate без «минет-меню» в мосте.
+- **Pack v1–v3 → missing:** hand Amanda/Melissa/Sandra, spit/cuni/meets Sandra; карта `docs/prose-hall-missing-pack-map.md`.
 
 ---
 

@@ -167,7 +167,7 @@ free:         mix + нобиль сестёр после A6
 2. **H2 сестёр** — **закрыт**: protect/watch/ignore × beat × client (traveler/craftsman/merchant).  
 3. **`mouth_show` сестёр** — **E:** канон в comments/map (show = swallow high; late/debug only).  
 4. **Картинки / VIS** — stub + подписи (выходные).  
-5. **Рот Сандры** — USER-OWNED. **Не делать:** under_table; titjob сестёр; anil Сандры; бедро в free.
+5. **Pack→missing (2026-08):** карта `docs/prose-hall-missing-pack-map.md` — hand A/M/S, spit/cuni/meets Сандры из v3; under_table/anil S не вшивать.
 
 ---
 
