@@ -136,7 +136,7 @@ Explicit в минете = она себе (клитор + пальцы по slu
 ## Следующие шаги
 
 1. **Harass / кухня** — kitchen hook + **H2 сестёр after_beat × client** закрыты (2026-08-15).
-2. **Картинки** — канон: нет пустых экранов; stub + `[VIS]` подпись; потом path. Массовый sweep — `docs/plan-weekend-visual-sweep.md` (отложено).
+2. **Картинки** — hall pipeline: harass/lewd/missing/noble/play_coach → stub+[VIS] / shipped. Инвентарь `docs/ASSET-hall-events-visual.md`. Полный sweep locations/actions — later (`plan-weekend-visual-sweep.md`).
 3. **Рот Сандры** — не трогать prose без явного «можно править тексты». Регистр на last page уже стоит.
 4. **`mouth_show` сестёр (вариант E, 2026-08):** канон в comments + map — show = swallow high; отдельная локация late/debug only. Prose/redirect/delete **не** делали.
 5. Не делать: `under_table`; titjob сестёр; анилингус Сандры; бедро в рандом; два финиша куни+анил в одном проходе.

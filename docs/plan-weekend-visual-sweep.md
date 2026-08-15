@@ -1,35 +1,29 @@
-# План на выходные: visual на всех экранах
+# План: visual на всех экранах
 
-**Статус:** отложено (не делать до напоминания)  
-**Когда:** суббота вечер / выходные  
-**Канон:** `AGENTS.md` — нет пустых экранов; stub + `[VIS]` подпись; `#SceneShowVisual`
+**Статус:** **hall/kitchen pass done** (2026-08) · full game inventory later  
+**Канон:** `AGENTS.md` · helper `#SceneShowVisual`  
+**Инвентарь:** `docs/ASSET-hall-events-visual.md`  
+**Verify:** `tools/verify_hall_kitchen_visuals.ps1`
 
-## Уже сделано
+## Сделано (hall/kitchen pipeline)
 
-- `#SceneShowVisual` — stub + caption + future path  
-- Kitchen hook Сандры — visual на каждом экране  
-- Missing agent (print dispatch) — visual + подпись  
-- Правило в `AGENTS.md`
+- Kitchen hook, missing peek/bargain/meet/noble  
+- Harass intro/after/policy + kitchen door notice  
+- Lewd hall + kitchen lewd + kitchen customer  
+- Noble attack, play coach  
+- Tavern hall look events (all *clr)  
+- Family reaction / choice talk / policy response talk  
+- Debug: girl memory panel, hall_scene_v2 probe  
+- `[VIS]` Russian caption; `debug=1` → `[VIS future] path`
 
-## Сделать на выходных (массовый проход)
+## Дальше (deferred)
 
-1. **Inventory** — экраны с `*clr` / `gt` без `ShowImage` / `SceneShowVisual` / location image:
-   - `modules/locations/**`
-   - `modules/events/**` (entry + resolve)
-   - `modules/actions/**` (диалоги, сундуки, окна, street sex…)
-2. **Stub + caption** на каждый найденный экран:
-   ```
-   gs 'SceneShowVisual', 'images/…/future_key', 'подпись: что на кадре'
-   ```
-3. **ASSET-списки** по папкам (`ASSET-*.md`) — path + смысл, без выдуманного арта.
-4. **Не** генерировать bulk art; только wiring + подписи.
-5. Спорные кадры — спросить владельца.
+1. Inventory `modules/locations/**`, `modules/actions/**`  
+2. Stub+caption на каждый *clr вне hall/kitchen  
+3. ASSET-листы по папкам  
+4. Не bulk-art  
 
 ## Не трогать
 
-- USER-OWNED prose (только logic + image call рядом)  
-- `qsp-project.json` без явной просьбы  
-
-## Напоминание
-
-Durable scheduler: напомнить в **субботу вечером** при подключении / срабатывании задачи.
+- USER-OWNED prose (только image call)  
+- `qsp-project.json` без просьбы  

@@ -481,27 +481,33 @@
 
 #KitchenLewdShowImage
     $KitchenLewdImageOutcome = LCASE($ARGS[0])
-
     if $KitchenLewdImageOutcome = '':
         $KitchenLewdImageOutcome = 'base'
     end
-
-    $KitchenLewdStubPath = 'images/common/hall_scene_stub.png'
-    $KitchenLewdFuturePath = 'images/events/sandra/kitchen_lewd/' + $KitchenLewdScene + '_' + $KitchenLewdImageOutcome + '.webp'
-
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'small'
+    if $KitchenLewdScene = '':
+        $KitchenLewdScene = 'pantry'
     end
 
-    if debug = 1:
-        *pl '[DEBUG KITCHEN LEWD IMAGE] stub: ' + $KitchenLewdStubPath
-        *pl '[DEBUG KITCHEN LEWD IMAGE] future: ' + $KitchenLewdFuturePath
+    $KitchenLewdFuturePath = 'images/events/sandra/kitchen_lewd/' + $KitchenLewdScene + '_' + $KitchenLewdImageOutcome
+    $KitchenLewdVisCap = 'кухня lewd: Сандра / ' + $KitchenLewdScene + ' / ' + $KitchenLewdImageOutcome + ' — кадр сцены у плиты/кладовой'
+
+    if HallLewdArtUseReal = 1 or KitchenLewdArtUseReal = 1:
+        SceneArtUseReal = 1
+    end
+    if LOC('SceneShowVisual') = 1:
+        gs 'SceneShowVisual', $KitchenLewdFuturePath, $KitchenLewdVisCap, 'large', 'webp'
+    elseif LOC('ShowImage') = 1:
+        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'large'
+        *pl '<center><small>[VIS] ' + $KitchenLewdVisCap + '</small></center>'
+        if debug = 1 or debug_images = 1:
+            *pl '<center><small>[VIS future] ' + $KitchenLewdFuturePath + '.webp</small></center>'
+        end
         *pl ' '
     end
 
     killvar '$KitchenLewdImageOutcome'
-    killvar '$KitchenLewdStubPath'
     killvar '$KitchenLewdFuturePath'
+    killvar '$KitchenLewdVisCap'
 ---
 
 #KitchenLewdDebugStart

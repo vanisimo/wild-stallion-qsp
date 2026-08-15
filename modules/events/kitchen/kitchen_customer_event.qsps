@@ -798,40 +798,48 @@ killvar '$KitchenCustomerApplyChoice'
 
 #KitchenCustomerShowImage
     $KitchenCustomerImageOutcome = LCASE($ARGS[0])
-
     if $KitchenCustomerImageOutcome = '':
         $KitchenCustomerImageOutcome = 'base'
     end
-
     if $KitchenCustomerGirl = '':
         exit
     end
-
     if $KitchenCustomerScene = '':
         $KitchenCustomerScene = 'bad_food'
     end
 
     KitchenCustomerUniform = GirlUniformLevel[$KitchenCustomerGirl]
-
     if KitchenCustomerUniform > 1:
         KitchenCustomerUniform = 1
     end
-
     if KitchenCustomerUniform < 0:
         KitchenCustomerUniform = 0
     end
 
     if $KitchenCustomerImageOutcome = 'base':
-        $KitchenCustomerImageAction = 'kitchen_customer/' + $KitchenCustomerScene
-        $KitchenCustomerImagePose = 'uniform' + STR(KitchenCustomerUniform) + '_base'
-    else:
-        $KitchenCustomerImageAction = 'kitchen_customer/reaction'
-        $KitchenCustomerImagePose = 'uniform' + STR(KitchenCustomerUniform) + '_' + $KitchenCustomerImageOutcome
+        $KitchenCustomerFuturePath = 'images/events/' + $KitchenCustomerGirl + '/kitchen_customer/' + $KitchenCustomerScene + '/uniform' + STR(KitchenCustomerUniform) + '_base'
+        $KitchenCustomerVisCap = 'кухня конфликт: ' + $KitchenCustomerGirl + ' / ' + $KitchenCustomerScene + ' (base u' + STR(KitchenCustomerUniform) + ') — клиент спорит у плиты'
+    else
+        $KitchenCustomerFuturePath = 'images/events/' + $KitchenCustomerGirl + '/kitchen_customer/reaction/uniform' + STR(KitchenCustomerUniform) + '_' + $KitchenCustomerImageOutcome
+        $KitchenCustomerVisCap = 'кухня конфликт: ' + $KitchenCustomerGirl + ' / reaction ' + $KitchenCustomerImageOutcome + ' — исход выбора Стефана'
     end
 
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'event', $KitchenCustomerGirl, $KitchenCustomerImageAction, $KitchenCustomerImagePose, 'webp', 'large'
+    if KitchenCustomerArtUseReal = 1:
+        SceneArtUseReal = 1
     end
+    if LOC('SceneShowVisual') = 1:
+        gs 'SceneShowVisual', $KitchenCustomerFuturePath, $KitchenCustomerVisCap, 'large', 'webp'
+    elseif LOC('ShowImage') = 1:
+        gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', 'large'
+        *pl '<center><small>[VIS] ' + $KitchenCustomerVisCap + '</small></center>'
+        if debug = 1 or debug_images = 1:
+            *pl '<center><small>[VIS future] ' + $KitchenCustomerFuturePath + '.webp</small></center>'
+        end
+        *pl ' '
+    end
+    killvar '$KitchenCustomerFuturePath'
+    killvar '$KitchenCustomerVisCap'
+    killvar '$KitchenCustomerImageOutcome'
 
     if debug = 1:
         *pl '[DEBUG KITCHEN IMAGE] expected: images/events/' + $KitchenCustomerGirl + '/' + $KitchenCustomerImageAction + '_' + $KitchenCustomerImagePose + '.webp'

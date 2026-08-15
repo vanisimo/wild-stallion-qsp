@@ -486,6 +486,9 @@
         *pl ' ПРАВИЛО ОБНОВЛЕНО'
         *pl '══════════════════════════════════════════════'
         *pl ' '
+        if LOC('SceneShowVisual') = 1:
+            gs 'SceneShowVisual', 'images/events/' + $HallHarassGirl + '/hall_harass/policy_updated', 'правило обновлено: ' + $HallHarassGirl + ' / ' + $HallHarassConsequenceArea + ' — реакция на policy', 'large', 'webp'
+        end
 
         if LOC('GirlWorkPolicyAssignmentReactionPrint') = 1:
             gs 'GirlWorkPolicyAssignmentReactionPrint', $HallHarassGirl, $HallHarassConsequenceArea, HallHarassPolicyValue
@@ -1918,15 +1921,36 @@
 ---
 
 #HallHarassmentShowIntroImage
-    ! 1) named art (только amanda/melissa)  2) legacy waitress_*  3) stub
+    ! 1) named art (amanda/melissa)  2) legacy waitress_*  3) SceneShowVisual stub+[VIS]
     gs 'HallHarassmentBuildArtKeys'
+
+    $HallHarassVisCap = 'harass intro: ' + $HallHarassGirl + ' T' + STR(HarassTier) + ' type' + STR(HallHarassType)
+    if $HallHarassJob = 'kitchen' or $HallHarassConsequenceArea = 'kitchen':
+        $HallHarassVisCap = $HallHarassVisCap + ' (кухня)'
+    end
+
+    ! future path без .webp для SceneShowVisual
+    $HallHarassVisFuture = $HallHarassFutureImagePath
+    HallHarassVisDot = INSTR($HallHarassVisFuture, '.webp')
+    if HallHarassVisDot > 0:
+        $HallHarassVisFuture = MID($HallHarassVisFuture, 1, HallHarassVisDot - 1)
+    end
+    killvar 'HallHarassVisDot'
 
     if LOC('ShowImagePath') = 1 and HallHarassHasShippedArt = 1 and $HallHarassArtBase <> '':
         gs 'ShowImagePath', $HallHarassArtBase, '', 'event', 'webp'
+        *pl '<center><small>[VIS] ' + $HallHarassVisCap + ' | ' + $HallHarassArtBase + '.webp</small></center>'
+        *pl ' '
     elseif LOC('ShowImagePath') = 1 and HallHarassHasShippedArt = 1 and $HallHarassLegacyArtBase <> '':
         gs 'ShowImagePath', $HallHarassLegacyArtBase, '', 'event', 'webp'
+        *pl '<center><small>[VIS] ' + $HallHarassVisCap + ' | legacy ' + $HallHarassLegacyArtBase + '</small></center>'
+        *pl ' '
+    elseif LOC('SceneShowVisual') = 1:
+        gs 'SceneShowVisual', $HallHarassVisFuture, $HallHarassVisCap, 'large', 'webp'
     elseif LOC('ShowImage') = 1:
-        gs 'ShowImage', 'common', '', 'hall_harass_stub', '', 'png', 'small'
+        gs 'ShowImage', 'common', '', 'hall_harass_stub', '', 'png', 'large'
+        *pl '<center><small>[VIS] ' + $HallHarassVisCap + '</small></center>'
+        *pl ' '
     end
 
     if debug = 1:
@@ -1936,6 +1960,8 @@
         *pl '[DEBUG HALL IMAGE] stub: ' + $HallHarassStubImagePath
         *pl ' '
     end
+    killvar '$HallHarassVisCap'
+    killvar '$HallHarassVisFuture'
 ---
 
 #HallHarassmentShowImage
@@ -2002,16 +2028,30 @@
         $HallHarassReactionArtBase = 'images/events/' + $HallImageGirl + '/hall_harass/reaction_' + $HallImageReaction
     end
 
+    $HallHarassVisCap = 'harass after: ' + $HallImageGirl + ' / ' + $HallImageReaction
+    if $HallImageJob = 'kitchen' or $HallHarassConsequenceArea = 'kitchen':
+        $HallHarassVisCap = $HallHarassVisCap + ' (кухня)'
+    end
+    $HallHarassVisFuture = 'images/events/' + $HallImageGirl + '/hall_harass/reaction_' + $HallImageReaction
+
     if LOC('ShowImagePath') = 1 and HallHarassHasShippedReaction = 1 and $HallHarassReactionArtBase <> '':
         gs 'ShowImagePath', $HallHarassReactionArtBase, '', 'event', 'webp'
+        *pl '<center><small>[VIS] ' + $HallHarassVisCap + ' | ' + $HallHarassReactionArtBase + '.webp</small></center>'
+        *pl ' '
+    elseif LOC('SceneShowVisual') = 1:
+        gs 'SceneShowVisual', $HallHarassVisFuture, $HallHarassVisCap, 'large', 'webp'
     elseif LOC('ShowImage') = 1:
-        gs 'ShowImage', 'common', '', 'hall_harass_stub', '', 'png', 'small'
+        gs 'ShowImage', 'common', '', 'hall_harass_stub', '', 'png', 'large'
+        *pl '<center><small>[VIS] ' + $HallHarassVisCap + '</small></center>'
+        *pl ' '
     end
 
     if debug = 1:
         *pl '[DEBUG HALL IMAGE] reaction shipped=' + STR(HallHarassHasShippedReaction) + ' path: ' + $HallHarassReactionArtBase
         *pl ' '
     end
+    killvar '$HallHarassVisCap'
+    killvar '$HallHarassVisFuture'
 
     killvar '$HallImageGirl'
     killvar '$HallImageJob'
