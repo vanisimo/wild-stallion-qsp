@@ -275,6 +275,32 @@ gs 'ShowImage', 'sex', $girl, $type, $pose, 'webp', $size
 ---
 
 ! ================================================
+! VisPrintCaption — подпись кадра + debug future (для ShowImagePath-веток)
+! ARGS[0]=русская подпись  ARGS[1]=future path без ext  ARGS[2]=ext (webp|png|jpg)
+#VisPrintCaption
+    $VisCapText = $ARGS[0]
+    $VisCapFuture = $ARGS[1]
+    $VisCapExt = LCASE($ARGS[2])
+    if $VisCapExt = '':
+        $VisCapExt = 'webp'
+    end
+    if $VisCapText = '':
+        $VisCapText = 'scene'
+    end
+    *pl '<center><small>[VIS] ' + $VisCapText + '</small></center>'
+    if debug = 1 or debug_images = 1:
+        if $VisCapFuture <> '':
+            *pl '<center><small>[VIS future] ' + $VisCapFuture + '.' + $VisCapExt + '</small></center>'
+        else
+            *pl '<center><small>[VIS future] (path empty)</small></center>'
+        end
+    end
+    *pl ' '
+    killvar '$VisCapText'
+    killvar '$VisCapFuture'
+    killvar '$VisCapExt'
+---
+
 ! SceneShowVisual — КАНОН: нет экранов без картинки
 ! ARGS[0] = future path без расширения (куда ляжет ассет)
 ! ARGS[1] = подпись / ключ ассета (обязательно, чтобы не терять)
@@ -313,17 +339,7 @@ gs 'ShowImage', 'sex', $girl, $type, $pose, 'webp', $size
         gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', $SceneVisSize
     end
 
-    ! подпись — всегда: что должно быть на кадре (для арта и QA)
-    *pl '<center><small>[VIS] ' + $SceneVisCaption + '</small></center>'
-    ! debug / debug_images: явный future path ассета
-    if debug = 1 or debug_images = 1:
-        if $SceneVisFuture <> '':
-            *pl '<center><small>[VIS future] ' + $SceneVisFuture + '.' + $SceneVisExt + ' (ArtUseReal=' + STR(SceneArtUseReal) + ')</small></center>'
-        else
-            *pl '<center><small>[VIS future] (path empty)</small></center>'
-        end
-    end
-    *pl ' '
+    gs 'VisPrintCaption', $SceneVisCaption, $SceneVisFuture, $SceneVisExt
 
     killvar '$SceneVisFuture'
     killvar '$SceneVisCaption'

@@ -82,12 +82,36 @@ keys: closed · already_looked · look_intro · waitress_attention · cleaning_a
 
 ## 5. Deferred (out of this pass)
 
+**Inventory (static, 2026-08):** under `modules/events/**` **outside** `hall/` and `kitchen/` — **53 files, 174 `*clr`** not wired in this pass. By folder:
+
+| Folder | files | *clr | Note |
+|--------|------:|-----:|------|
+| `tavern/` | 12 | 34 | ambient/work events outside hall_look |
+| `dance/` | 9 | 33 | dance arc |
+| `melissa/` | 7 | 22 | character modules |
+| `family/` | 4 | 15 | council/home arcs |
+| `sandra/` | 3 | 12 | non-kitchen sandra events |
+| `inga/` | 3 | 11 | guard arc |
+| `becky/` | 2 | 9 | home chain |
+| `eddie/` | 1 | 9 | eddie arc |
+| `engine/` | 1 | 7 | event engine |
+| `legare/` | 1 | 6 | legare |
+| `visits/` | 1 | 4 | visits |
+| `church/` | 4 | 4 | church/spy |
+| `amanda/` | 1 | 2 | amanda events |
+| `port/` | 1 | 2 | port |
+| `shops/` | 1 | 2 | shops |
+| `georgette/` | 1 | 1 | georgette |
+| `quests/` | 1 | 1 | quests |
+| **total outside hall/kitchen** | **53** | **174** | wire in later VIS pass |
+
+Also deferred:
+
 | Area | Reason |
 |------|--------|
-| `modules/locations/**` full entry screens | often already have location work images; inventory later |
-| `modules/actions/**` sex/dialog every screen | large; not hall pipeline |
-| church / port / dance event packs | separate arcs |
-| Real `.webp` generation | non-goal |
+| `modules/locations/**` entry screens | often location work images already |
+| `modules/actions/**` sex/dialog | large; separate pass |
+| Real `.webp` bulk generation | non-goal |
 
 ---
 
@@ -96,3 +120,4 @@ keys: closed · already_looked · look_intro · waitress_attention · cleaning_a
 1. Rebuild `game.qsp`  
 2. `debug=1` → каждый hall/kitchen event: stub/real + `[VIS]` + `[VIS future]`  
 3. `powershell -File tools/verify_hall_kitchen_visuals.ps1` → fail=0  
+4. Spot-check: NobleAttack (SceneShowVisual), PlayCoach CanOffer=0 (stub), missing/kitchen ShowImage fallback (VisPrintCaption)  
