@@ -32,8 +32,11 @@ foreach ($d in $dirs) {
       $body = $parts[$p + 1]
       if ($body -notmatch '(?m)^\s*\*clr\s*$') { continue }
       $ok = [bool]($body -match $visualRe)
-      if (-not $ok -and $body -match "gt 'HallHarassment'|gt 'KitchenHarassment'|gt 'HallMissingGirl|gt 'HallMissingBargain|RenderScreen") {
-        $ok = $true
+      # Pure dispatch only (no *pl/*p). gt inside act: is not a visual paint.
+      if (-not $ok) {
+        $hasPl = ($body -match '(?m)^\s*\*pl\b') -or ($body -match '(?m)^\s*\*p\b')
+        $hasGt = $body -match '(?m)^\s*gt\s'
+        if ($hasGt -and -not $hasPl) { $ok = $true }
       }
       if ($ok) { Ok "$rel #$loc" } else { Fail "$rel #$loc no visual helper in location body" }
     }
@@ -91,14 +94,16 @@ if ($sbody -match 'SceneShowVisual' -and ($sbody -match 'VisPrintCaption' -or $s
   Fail "SandraKitchenShowImage missing VisPrintCaption/future on fallback"
 }
 
-# deferred inventory file must exist and mention modules/events outside hall/kitchen
+# ASSET doc: either deferred inventory (legacy) or game-wide wiring status
 $asset = Get-Content (Join-Path $root 'docs\ASSET-hall-events-visual.md') -Raw
-if ($asset -match 'Deferred' -and $asset -match 'modules/events' -and $asset -match 'dance' -and $asset -match 'family' -and $asset -match '174') {
+if ($asset -match 'Game-wide wiring' -and $asset -match 'verify_gamewide_visuals' -and $asset -match 'SceneShowVisual') {
+  Ok "ASSET doc records game-wide visual wiring + gamewide verifier"
+} elseif ($asset -match 'Deferred' -and $asset -match 'modules/events' -and $asset -match 'dance' -and $asset -match 'family' -and $asset -match '174') {
   Ok "ASSET doc lists deferred modules/events *clr outside hall/kitchen"
 } elseif ($asset -match 'Deferred' -and $asset -match 'dance' -and $asset -match 'family' -and $asset -match 'tavern') {
   Ok "ASSET doc lists deferred event folders"
 } else {
-  Fail "ASSET deferred list incomplete for modules/events outside hall/kitchen"
+  Fail "ASSET doc missing game-wide wiring status or deferred inventory"
 }
 
 $header = "visual inventory verify`nroot=$root`npass=$pass fail=$fail`n"

@@ -4,6 +4,7 @@
 **Код:** `modules/events/hall/hall_harassment.qsps`, `modules/events/kitchen/kitchen_harassment.qsps`  
 **Тексты:** `hall_harassment_intro_text.qsps` (intro), `hall_harassment_text.qsps` (after/policy), kitchen text  
 **Связано:** `docs/design-hall-scene-unified.md` (lewd/missing + пороги), `docs/economy.md` §0c, offense days, state.md  
+**soft/high/Explicit + лестницы missing (сводка):** `docs/design-hall-soft-high-explicit-ladders.md`
 
 Единые кнопки/policy/лестница зала — в **design-hall-scene-unified.md**.
 

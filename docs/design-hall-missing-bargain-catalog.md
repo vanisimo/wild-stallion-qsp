@@ -1,7 +1,8 @@
 # Каталог уговоров hall missing — обсуждение (продолжение)
 
 **Дата:** 2026-07-30 (обновлено: **v0.17** E:\promt.txt canon, Сандра кухня без зала, A4–A6 оральное единство уговора)  
-**Статус:** после FlagFaceDone (сёстры) / progress-флага (Сандра): **все** уговоры + ответы **откровенные** (soft и hard); soft-слоты живут + S3; уговор A4–A6 единый на минет, расширение услуг внутри сцен missing; Сандра — всё на кухне без зала.
+**Статус:** после FlagFaceDone (сёстры) / progress-флага (Сандра): **все** уговоры + ответы **откровенные** (soft и hard); soft-слоты живут + S3; уговор A4–A6 единый на минет, расширение услуг внутри сцен missing; Сандра — всё на кухне без зала.  
+**Сводка гейтов / soft→high→Explicit / что в коде:** `docs/design-hall-soft-high-explicit-ladders.md`
 **Код:** phase machine in `hall_missing_bargain.qsps`; prose уговора в `hall_missing_bargain_text.qsps`; backup `archive/hall_missing_text_v016_backup/`  
 **Обида / отказ / нобиль-dig / rumor в уговоре:** `docs/design-hall-missing-bargain-offense.md` (2026-08)
 

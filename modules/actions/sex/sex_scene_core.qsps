@@ -13,6 +13,7 @@
 ! ================================================
 
 #SexSceneStart
+
     gs 'NormalizeGirlKey', $ARGS[0]
     $SexGirl = $GirlKey
     $SexReturnLoc = $ARGS[1]
@@ -39,6 +40,7 @@
         *clr
         clr
         cla
+        gs 'SceneShowVisual', 'images/actions/sex/sex_scene/sex_scene_start', 'sex scene: ошибка — нет имени девушки', 'large', 'webp'
         *pl 'Ошибка: SexSceneStart вызван без имени девушки.'
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
@@ -55,6 +57,7 @@
         *clr
         clr
         cla
+        gs 'SceneShowVisual', 'images/actions/sex/sex_scene/sex_scene_start', 'sex scene: отказ / нельзя начать', 'large', 'webp'
         *pl '══════════════════════════════════════════════'
         *pl ' ИНТИМНАЯ СЦЕНА'
         *pl '══════════════════════════════════════════════'
@@ -88,6 +91,7 @@
 ! ================================================
 
 #CanStartSexScene
+
     gs 'NormalizeGirlKey', $ARGS[0]
     $SexCheckGirl = $GirlKey
 
@@ -193,6 +197,7 @@
 ! ================================================
 
 #SexSceneEnsureIntimStage
+
     gs 'NormalizeGirlKey', $ARGS[0]
     $SexStageGirl = $GirlKey
 
@@ -223,6 +228,7 @@
 ! ================================================
 
 #SexSceneInitState
+
     gs 'NormalizeGirlKey', $ARGS[0]
     $SexGirl = $GirlKey
 
@@ -305,6 +311,7 @@
 ! ================================================
 
 #SexSceneMain
+
     *clr
     clr
     cla
@@ -381,6 +388,7 @@
 ! ================================================
 
 #SexSceneShowStatusPanel
+
     PanelCustomActive = 1
 
     clr
@@ -457,6 +465,7 @@
 ! ================================================
 
 #SexSceneBuildMenu
+
     gs 'Menu.Destroy', 'SexSceneMenu'
     gs 'Menu.Create', 'SexSceneMenu'
     gs 'SexSceneCalcMenuUnlocks'
@@ -512,6 +521,7 @@
 ---
 
 #SexSceneBuildMenuPhase1
+
     gs 'Menu.Add', 'SexSceneMenu', 'Целовать'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionKiss'
@@ -543,6 +553,7 @@
 ---
 
 #SexSceneBuildMenuPhase2
+
     gs 'Menu.Add', 'SexSceneMenu', 'Лизать киску'
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionCuni'
@@ -597,6 +608,7 @@
 ! ================================================
 
 #SexSceneBuildFinishMenu
+
     if $SexActType = 'blowjob':
         gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить в рот', 'intim'
         gs 'Menu.AddModule', 'SexSceneMenu', {
@@ -663,6 +675,7 @@
 ! ================================================
 
 #SexSceneBuildAfterFinishMenu
+
     gs 'CanCumToday'
 
     if Result = 1 or debug = 1:
@@ -684,6 +697,7 @@
 ! ================================================
 
 #SexSceneCalcCumPlayStage
+
     gs 'EnsureGirlData', $SexGirl
     gs 'SexSceneEnsureIntimStage', $SexGirl
 
@@ -797,6 +811,7 @@
 ---
 
 #SexSceneCalcAtmStage
+
     gs 'EnsureGirlData', $SexGirl
 
     SexAtmStage = 0
@@ -876,6 +891,7 @@
 ! ================================================
 
 #SexSceneCalcMenuUnlocks
+
     SexSceneRimUnlocked = 0
     SexSceneAnalUnlocked = 0
     SexSceneAnalWarmed = 0
@@ -973,6 +989,7 @@
 ! ================================================
 
 #SexSceneActionLook
+
     if SexScenePhase < 2:
         gt 'SexSceneMain'
     end
@@ -984,6 +1001,7 @@
 ---
 
 #SexSceneActionUndress
+
     $SexUndressMode = LCASE($ARGS[0])
 
     gs 'SexSceneCalcMenuUnlocks'
@@ -1024,6 +1042,7 @@
 ! ================================================
 
 #SexSceneUpdatePlayerOut
+
     gs 'CanCumToday'
 
     if Result = 0 and debug = 0:
@@ -1040,6 +1059,7 @@
 ! ================================================
 
 #SexSceneRejectPlayerPenis
+
     SexScenePenisRejected = 0
     gs 'SexSceneUpdatePlayerOut'
 
@@ -1055,6 +1075,7 @@
 ! ================================================
 
 #SexSceneCalcGirlOrgasmCap
+
     SexGirlOrgasmCap = 0
 
     if $SexGirl = 'amanda':
@@ -1067,6 +1088,7 @@
 ---
 
 #SexSceneOnGirlOrgasmCounted
+
     gs 'SexSceneCalcGirlOrgasmCap'
 
     if SexGirlOrgasmCap <= 0:
@@ -1086,6 +1108,7 @@
 ---
 
 #SexSceneTryMarathonGossipPending
+
     if $SexGirl <> 'amanda' and $SexGirl <> 'melissa' and $SexGirl <> 'sandra':
         exit
     end
@@ -1115,6 +1138,7 @@
 ---
 
 #SexSceneRejectGirlExhausted
+
     SexSceneGirlExhaustedRejected = 0
 
     if SexGirlExhausted = 1:
@@ -1129,6 +1153,7 @@
 ! ================================================
 
 #SexSceneApplyPlayerGain
+
     gs 'SexSceneUpdatePlayerOut'
 
     if SexPlayerOut = 1 and debug = 0:
@@ -1173,6 +1198,7 @@
 ! ================================================
 
 #SexSceneActionKiss
+
     if SexScenePhase >= 2 or SexSceneKissCount >= 2:
         gt 'SexSceneMain'
     end
@@ -1211,6 +1237,7 @@
 ! ================================================
 
 #SexSceneActionCaress
+
     if SexScenePhase >= 2 or SexSceneGropeCount >= 2:
         gt 'SexSceneMain'
     end
@@ -1250,6 +1277,7 @@
 ! ================================================
 
 #SexSceneActionCuni
+
     if SexScenePhase < 2:
         gt 'SexSceneMain'
     end
@@ -1318,6 +1346,7 @@
 ! ================================================
 
 #SexSceneActionBlowjob
+
     if SexScenePhase < 2:
         gt 'SexSceneMain'
     end
@@ -1413,6 +1442,7 @@
 ! ================================================
 
 #SexSceneActionVaginal
+
     if SexScenePhase < 2:
         gt 'SexSceneMain'
     end
@@ -1499,6 +1529,7 @@
 ! ================================================
 
 #SexSceneActionRim
+
     if SexScenePhase < 2:
         gt 'SexSceneMain'
     end
@@ -1537,6 +1568,7 @@
 ! ================================================
 
 #SexSceneActionRimjob
+
     if SexScenePhase < 2:
         gt 'SexSceneMain'
     end
@@ -1598,6 +1630,7 @@
 ! ================================================
 
 #SexSceneActionAnal
+
     if SexScenePhase < 2:
         gt 'SexSceneMain'
     end
@@ -1663,6 +1696,7 @@
 ! ================================================
 
 #SexSceneAfterAction
+
     SexSimultaneousOrgasm = 0
 
     gs 'SexSceneClampValues'
@@ -1709,6 +1743,7 @@
 ! ================================================
 
 #SexSceneCheckGirlOrgasm
+
     SexGirlOrgasmNow = 0
 
     if SexGirlArousal >= 100:
@@ -1804,6 +1839,7 @@
 ! ================================================
 
 #SexSceneRegisterFinish
+
     $SexFinishPlace = LCASE($ARGS[0])
 
     if $SexFinishPlace = 'inside':
@@ -1822,6 +1858,7 @@
 ---
 
 #SexSceneActionFinish
+
     $SexFinishPlace = LCASE($ARGS[0])
     SexSimultaneousOrgasm = 0
     SexSceneMode = 1
@@ -1936,6 +1973,7 @@
 ! ================================================
 
 #SexSceneCalcHoldBackChance
+
     gs 'EnsureGirlData', $SexGirl
 
     SexHoldBackChance = 28
@@ -1967,6 +2005,7 @@
 ! ================================================
 
 #SexSceneActionHoldBack
+
     if SexSceneHoldBackUsed = 1:
         gt 'SexSceneMain'
     end
@@ -2009,6 +2048,7 @@
 ! ================================================
 
 #SexSceneActionRest
+
     SexScenePenetrationActive = 0
     gs 'CanCumToday'
 
@@ -2045,6 +2085,7 @@
 ! ================================================
 
 #SexSceneActionAfterTalk
+
     if SexGirlCameInScene > 0:
         $SexLastText = $RealName[$SexGirl] + ' остаётся рядом с вами. После случившегося между вами повисает уже совсем другая тишина.'
     else
@@ -2060,6 +2101,7 @@
 ! ================================================
 
 #SexSceneTextAction
+
     $SexTextAction = LCASE($ARGS[0])
 
     if $SexGirl = 'amanda' or $SexGirl = 'melissa' or $SexGirl = 'sandra' or $SexGirl = 'becky':
@@ -2159,10 +2201,12 @@
 ! ================================================
 
 #SexSceneEnd
+
     *clr
     clr
     cla
 
+    gs 'SceneShowVisual', 'images/actions/sex/sex_scene/sex_scene_end', 'ЗАВЕРШЕНИЕ БЛИЗОСТИ', 'large', 'webp'
     gs 'EnsureGirlData', $SexGirl
 
     *pl '══════════════════════════════════════════════'
@@ -2344,6 +2388,7 @@
 ! ================================================
 
 #SexSceneClampValues
+
     SexPlayerArousal = SexPlayerArousal + 0
 
     if SexPlayerArousal < 0:

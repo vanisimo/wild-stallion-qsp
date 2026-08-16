@@ -80,44 +80,55 @@ keys: closed · already_looked · look_intro · waitress_attention · cleaning_a
 
 ---
 
-## 5. Deferred (out of this pass)
+## 5. Game-wide wiring (2026-08)
 
-**Inventory (static, 2026-08):** under `modules/events/**` **outside** `hall/` and `kitchen/` — **53 files, 174 `*clr`** not wired in this pass. By folder:
+**Status:** structural pass **done** — every connected `*clr` location body has stub/real path via `SceneShowVisual` / `VisPrintCaption` / domain `*ShowImage` / location image helpers.
 
-| Folder | files | *clr | Note |
-|--------|------:|-----:|------|
-| `tavern/` | 12 | 34 | ambient/work events outside hall_look |
-| `dance/` | 9 | 33 | dance arc |
-| `melissa/` | 7 | 22 | character modules |
-| `family/` | 4 | 15 | council/home arcs |
-| `sandra/` | 3 | 12 | non-kitchen sandra events |
-| `inga/` | 3 | 11 | guard arc |
-| `becky/` | 2 | 9 | home chain |
-| `eddie/` | 1 | 9 | eddie arc |
-| `engine/` | 1 | 7 | event engine |
-| `legare/` | 1 | 6 | legare |
-| `visits/` | 1 | 4 | visits |
-| `church/` | 4 | 4 | church/spy |
-| `amanda/` | 1 | 2 | amanda events |
-| `port/` | 1 | 2 | port |
-| `shops/` | 1 | 2 | shops |
-| `georgette/` | 1 | 1 | georgette |
-| `quests/` | 1 | 1 | quests |
-| **total outside hall/kitchen** | **53** | **174** | wire in later VIS pass |
+**Inventory:** ~301 `*clr` under `modules/{events,locations,actions,core,menu,npc,debug}`  
+**Wired this pass:** ~215 overlays that previously had no visual helper (events outside hall/kitchen, actions/sex, shops overlays, core/debug panels).  
+**Already had painters:** hall/kitchen helpers, `ShowLocationImage` / `ShowLocationTimeImage` / `TavernMainShowLocationImage` / engine ambient events, shop main screens.
 
-Also deferred:
+**Verify:**
 
-| Area | Reason |
-|------|--------|
-| `modules/locations/**` entry screens | often location work images already |
-| `modules/actions/**` sex/dialog | large; separate pass |
-| Real `.webp` bulk generation | non-goal |
+```
+powershell -File tools/verify_hall_kitchen_visuals.ps1   # fail=0 (hall/kitchen gate)
+powershell -File tools/verify_gamewide_visuals.ps1       # fail=0 (all connected *clr)
+```
+
+Future path keys for newly wired overlays follow:
+
+`images/{module_path_without_qsps}/{location_snake}`  
+example: `images/events/dance/friday_dance/friday_dance_mayor_speech`
+
+---
+
+## 5b. SFW art batch (2026-08, moderation-aware)
+
+**Shipped:** **24** high-traffic SFW plates as `.webp` (+ `.png` twin) at SceneShowVisual keys.  
+**List:** `tools/art_batch_sfw_keys.txt`  
+**Verify:** `powershell -File tools/verify_art_batch_files.ps1` → fail=0  
+**Style masters:** `images/common/style_masters/` (plaza, tavern, shop, street, office, home)
+
+| Family | Examples |
+|--------|----------|
+| Plaza / Friday dances | `friday_dance_*`, Legare notice/dance start |
+| Tavern | bar work, supply status, hall look, kitchen door notice, uniform talk, Legare supply talk |
+| Town | mayor office, Becky porch, dinner, port alley, Draupnir shop, Irma uniform offer |
+| Family | daily aftermath, offense days talk |
+
+**Show real art in player:** `#SceneShowVisual` uses future path only when **`SceneArtUseReal = 1`** (else stub + `[VIS]`). Domain helpers (harass/missing/kitchen) already flip this flag when their own shipped art exists. For QA of this batch: set `SceneArtUseReal = 1` in save/debug (or temporarily in `GameInit` for a playtest).
+
+**Deferred (moderation / explicit):** group_sex, sex_scene, intimacy_kinks hard, after_sex, hard missing/lewd, church sex, dark-alley sex launch, etc. — stay on **stub** + caption; do not invent fake “safe sex” plates. Full inventory buckets: session scratch / re-run classifier from `SceneShowVisual` paths.
+
+Still **non-goal:** bulk explicit packs; full 200+ key art fill.
 
 ---
 
 ## 6. QA
 
 1. Rebuild `game.qsp`  
-2. `debug=1` → каждый hall/kitchen event: stub/real + `[VIS]` + `[VIS future]`  
+2. `debug=1` → event overlays: stub/real + `[VIS]` + `[VIS future]`  
 3. `powershell -File tools/verify_hall_kitchen_visuals.ps1` → fail=0  
-4. Spot-check: NobleAttack (SceneShowVisual), PlayCoach CanOffer=0 (stub), missing/kitchen ShowImage fallback (VisPrintCaption)  
+4. `powershell -File tools/verify_gamewide_visuals.ps1` → fail=0  
+5. `powershell -File tools/verify_art_batch_files.ps1` → fail=0  
+6. Spot-check: FridayDanceMayorSpeech, plaza observe, mayor office, bar work, kitchen door (SFW batch); NobleAttack / missing still domain helpers  
