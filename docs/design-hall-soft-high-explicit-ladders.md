@@ -107,7 +107,7 @@ end
 | **hand / touch_cock** | cloth → осторожно | bare / ритм | finish mouth/face/panties |
 | **touch_thigh / H0 smell** | нюх, восхищение, «молодость» | целует, мокро | пальцы + оргазм / cuni bridge |
 | **cuni** | снаружи, осторожно | язык внутрь, она жмёт | + пальцы/anil page3 (сёстры late) |
-| **mouth** | wipe / taste (ранний sub) | spit / hold_spit | swallow high; show = late/debug (E) |
+| **mouth** | **wipe/taste = МОСТ soft\|high only** (S-AM-06; Explicit clamp→high) | spit / hold_spit | swallow high; show = late/debug (E). Free-random: **без** wipe/taste |
 | **facial** | soft на грудь (sub0) | низ лица + рот | high face; FlagFaceDone |
 | **deepthroat** | try / partial | full | cum_mouth / cum_throat |
 

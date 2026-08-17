@@ -205,3 +205,14 @@ HANDJOB (ему):
 ---
 
 *Источник истины runtime: `hall_missing_girl.qsps` §HugFingerCount / PrintSelfFingers; prose — agent text.*
+
+---
+
+## Changelog ladder (2026-08, Amanda)
+
+| | |
+|--|--|
+| **S-AM-04 touch_thigh** | **снят** с h0a / free-random; legacy → `hug_waist` |
+| **h0a** | look_tits → hug → hug Explicit → cuni (**без** thigh) |
+| **S-AM-06 wipe/taste** | только **soft\|high** мост к spit/swallow; Explicit в сцене = high |
+| **free mouth** | terminals spit/swallow only, **не** wipe/taste |
