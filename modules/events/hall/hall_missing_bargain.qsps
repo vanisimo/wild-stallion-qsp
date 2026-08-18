@@ -177,19 +177,22 @@
             HallMissingHardStepIdx = 0
         end
         if HallMissingHardStepIdx = 0:
+            ! look → hug → hug+пальцы → cuni
             $HallMissingHardSlot = 'h0a'
             HallMissingHardSubMax = 4
         elseif HallMissingHardStepIdx = 1:
+            ! 06 wipe/taste → 07 spit A → 08 spit B → 09 swallow
             $HallMissingHardSlot = 'mouth'
             HallMissingHardSubMax = 5
         elseif HallMissingHardStepIdx = 2:
             $HallMissingHardSlot = 'h0b'
             HallMissingHardSubMax = 2
         elseif HallMissingHardStepIdx = 3:
+            ! 1 грудь → 2 низ лица → 3 на лицо → FlagFaceDone
             $HallMissingHardSlot = 'face'
-            ! 0 soft на грудь → 1 high низ лица+рот → FlagFaceDone / Explicit
-            HallMissingHardSubMax = 2
+            HallMissingHardSubMax = 3
         elseif HallMissingHardStepIdx = 4:
+            ! try пол → partial грудь → full лицо → рот → горло
             $HallMissingHardSlot = 'throat'
             HallMissingHardSubMax = 5
         else
@@ -829,12 +832,13 @@
             end
         else
             ! сёстры mouth×5 first-show: wipe → taste → spit → hold_spit → swallow
-            ! wipe/taste = МОСТ soft/high (S-AM-06), не free-random terminal
-            ! free (ladder done): только terminals spit/swallow — без wipe/taste
-            ! finish=show_mouth НЕ выдаём (show = beat внутри swallow high). Late/debug only.
+            ! wipe/taste = МОСТ soft/high (S-AM-06), не free-random
+            ! spit / hold_spit = first-show only (отказ глотать). После глотка в free не крутить.
+            ! free (ladder done): swallow (09) и show (S-AM-11). Без wipe/taste/spit.
+            ! show first-show на лесенке не выдаём (после 09, только random).
             if HallMissingHardLadderDone[$HallMissingGirl] = 1:
-                if RAND(1, 100) <= 45:
-                    $HallMissingFinish = 'spit'
+                if $HallMissingGirl = 'amanda' and RAND(1, 100) <= 50:
+                    $HallMissingFinish = 'show_mouth'
                 else
                     $HallMissingFinish = 'swallow'
                 end
@@ -862,20 +866,28 @@
             $HallMissingFinish = 'cum_face_high'
         elseif HallMissingCurSub = 0:
             $HallMissingFinish = 'cum_face_soft'
-        else
+        elseif HallMissingCurSub = 1:
             $HallMissingFinish = 'cum_face'
+        else
+            $HallMissingFinish = 'cum_face_high'
         end
 
     elseif $p = 'deepthroat':
         $HallMissingPrivateAct = 'deepthroat'
         if $HallMissingGirl = 'sandra' and HallMissingHardLadderDone['sandra'] = 1:
-            ! free DT: finish по типажу (купец → в рот; иначе горло)
             if $HallMissingClientPreferFinish = 'cum_mouth':
                 $HallMissingFinish = 'cum_mouth'
             elseif $HallMissingClientPreferFinish = 'cum_face':
                 $HallMissingFinish = 'cum_mouth'
             else
                 $HallMissingFinish = 'cum_throat'
+            end
+        elseif $HallMissingGirl <> 'sandra' and HallMissingHardLadderDone[$HallMissingGirl] = 1:
+            ! free: только финиши, не try/partial/full
+            if RAND(1, 100) <= 50:
+                $HallMissingFinish = 'cum_throat'
+            else
+                $HallMissingFinish = 'cum_mouth'
             end
         elseif HallMissingCurSub <= 0:
             $HallMissingFinish = 'try'

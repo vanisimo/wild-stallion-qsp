@@ -53,7 +53,8 @@
 ```
 soft_intro (×3): look_tits → hug_waist → hand   (cloth слит в hand)
 soft_play  (×3): те же + иногда cuni / titjob Сандра
-hard сёстры:  h0a(4) → рот(5) → h0b(2) → лицо(2) → горло(5) → free
+hard сёстры:  h0a(4) → рот(5) → h0b(2) → лицо(**3**) → горло(5) → free
+Канон Аманды: `docs/design-hall-missing-amanda-ladder.md` (утверждено).
 hard Сандра:  рот×6 (mid → swallow → show → facial → DT рот → DT горло)
 free:         mix + нобиль сестёр после A6
 ```
@@ -123,13 +124,13 @@ free:         mix + нобиль сестёр после A6
 |----|-----------------|--------|---------|--------|----------|------------|
 | `mouth_wipe` | Короткий отсос, вытерла | **→ mid** | **→ mid** | короткий | слит | нет |
 | `mouth_taste` | Только вкус | **CODE** (1 экран) | **CODE** (1 экран) | короткий | — | нет |
-| `mouth_spit` | В рот → сплюнула. Mid: не «ещё не умею». | **CODE** (2 экрана, v3 A вшит) | **CODE** (2 экрана, v3 B вшит) | **CODE** + PACK C | Сандра USER-OWNED — не трогать | да, если hard уже открыт |
-| `mouth_hold_spit` | Подержала, сплюнула | **→ spit** | **→ spit** | короткий | слит со spit | нет |
-| `mouth_mid` | Минет, finish в рот, вытерла (не глоток) | **CODE** (2 экрана, mom-line craftsman) | **CODE** (2 экрана, mom-line стыд) | **CODE** | — | да first hard |
+| `mouth_spit` | First-show. Экраны 1–2 минет (soft/high, **без Explicit**). Лесенка: **A** сразу сплюнула → **B** (`hold_spit`) показала на языке и сплюнула → 09. Free нет. | **CODE** 3 экр. | **CODE** | **CODE** | Сандра USER-OWNED | да, если hard уже открыт |
+| `mouth_hold_spit` | **Концовка B** той же сцены spit (S-AM-08). | → spit_3 | → spit | короткий | не отдельный акт | нет |
+| `mouth_mid` | **Сёстры:** слит в swallow. Mom-line = вставка в 09, только craftsman: first всегда, free ~40%. | → 09 | → 09 | **CODE** Сандра first | — | да first hard |
 | `mouth_swallow` | Грудь наружу. soft: яйца+рука→глоток; **high: покажи→глоток** (= сестринский show); Explicit (после лица): шлепки/мат/она себе/оргазм/глоток. First swallow до лица — без Explicit. | **CODE** | **CODE** | USER-OWNED | — | нет |
-| `mouth_show` | **Сёстры:** НЕ first-show; «покажи» = swallow high. Локация late/debug (`finish=show_mouth`). **Сандра:** hard sub2, USER-OWNED. | late/debug | late/debug | **CODE** first | не redirect/delete без запроса | нет |
-| `facial` | Грудь наружу. 1-й soft на грудь → 2-й high низ лица+рот → FlagFaceDone/Explicit. Повтор: на лицо, покрасуйся, собирает, ест. | **CODE** | **CODE** | USER-OWNED | слот лица = 2 | нет |
-| `deepthroat` | 5 шагов глубины (try/partial/full/рот/горло). Слоёв soft/high нет — уже после лица. Грудь наружу, она себе (пальцы по sluttiness). Оргазм только на финише в горло. Грубый текст не добавляли. | **CODE** | **CODE** | USER-OWNED | — | нет |
+| `mouth_show` | **Аманда:** полноценная (покажи→глотни→почисть). Не на лесенке. **Free после лесенки** — рандом с 09. Мелисса пока → swallow. Сандра: hard sub2, USER-OWNED. | **CODE** free | → swallow | **CODE** first | — | нет |
+| `facial` | **3 визита:** 1 на грудь (тон soft/high) → 2 низ лица+рот (тон soft/high) → 3 на лицо + `FlagFaceDone`/`Explicit`. Free: только Explicit (покрасуйся, собирает, ест). | **CODE** | тонкий | USER-OWNED | слот лица = **3** | нет |
+| `deepthroat` | После лица, Explicit, без soft/high. Одно начало. try/partial/full — заглушки, он не кончает. cum_mouth / **cum_throat полная**. Free: только рот/горло. | **CODE** | тонкий | USER-OWNED | см. `design-hall-missing-amanda-ladder.md` | нет |
 
 ### 3.5 Особые
 
@@ -137,7 +138,7 @@ free:         mix + нобиль сестёр после A6
 |----|-----------------|--------|----------|------------|
 | `noble` | Дворянин, подсобка, 1–3 экрана | сёстры код+проза; Сандра **off** | не тащить на кухню | нет |
 | under_table | ~~Рот под столом зала~~ | PACK §5 | **РЕЖЕМ** — не писать, не вшивать | — |
-| mom-line | Мастеровой про дочь/мать | вшит в `mouth_mid` craftsman (Аманда +жар / Мелисса стыд) и DT; не отдельный акт | Сандра hand USER-OWNED | нет |
+| mom-line | Мастеровой про мать | вставка в `mouth_swallow` (Аманда +жар / Мелисса стыд). Не отдельный акт. | Сандра hand USER-OWNED | нет |
 
 ---
 

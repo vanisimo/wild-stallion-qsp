@@ -922,6 +922,17 @@
     killvar '$mode'
 ---
 
+#HallMissingSwallowMomPick
+    HallMissingSwallowMom = 0
+    if $HallMissingClient = 'craftsman' or $HallMissingClient = 'local':
+        if HallMissingHardLadderDone[$HallMissingGirl] <> 1:
+            HallMissingSwallowMom = 1
+        elseif RAND(1, 100) <= 40:
+            HallMissingSwallowMom = 1
+        end
+    end
+---
+
 #HallMissingPrintSelfFingers
     gs 'HallMissingHugFingerCount'
     if HallMissingHugFingers >= 4:
@@ -972,6 +983,10 @@
         elseif $HallMissingFinish = 'cum_mouth':
             oralcum[$g] += 1
             oralswallow[$g] += 1
+        elseif $HallMissingFinish = 'full':
+            facialcum[$g] += 1
+        elseif $HallMissingFinish = 'partial':
+            cumbody[$g] += 1
         end
     elseif INSTR($k, 'facial') > 0:
         if $HallMissingFinish = 'cum_face_soft':
@@ -1738,16 +1753,24 @@ killvar '$HallMissingApplyChoice'
         elseif $fin = 'swallow':
             $HallMissingSceneKey = 'mouth_swallow_' + $g
         elseif $fin = 'show_mouth':
-            ! сёстры: late/debug (first-show show = swallow high). Сандра: hard sub2.
+            ! Аманда: free после лесенки. Сандра: hard sub2. Мелисса: локация → swallow.
             $HallMissingSceneKey = 'mouth_show_' + $g
         elseif $fin = 'wipe':
-            $HallMissingSceneKey = 'mouth_mid_' + $g
+            if $g = 'sandra':
+                $HallMissingSceneKey = 'mouth_mid_' + $g
+            else
+                $HallMissingSceneKey = 'mouth_taste_' + $g
+            end
         elseif $fin = 'taste':
             $HallMissingSceneKey = 'mouth_taste_' + $g
         elseif $fin = 'spit' or $fin = 'hold_spit':
             $HallMissingSceneKey = 'mouth_spit_' + $g
         else
-            $HallMissingSceneKey = 'mouth_mid_' + $g
+            if $g = 'sandra':
+                $HallMissingSceneKey = 'mouth_mid_' + $g
+            else
+                $HallMissingSceneKey = 'mouth_swallow_' + $g
+            end
         end
     else
         $HallMissingSceneKey = 'petting_' + $g

@@ -107,9 +107,9 @@ end
 | **hand / touch_cock** | cloth → осторожно | bare / ритм | finish mouth/face/panties |
 | **touch_thigh / H0 smell** | нюх, восхищение, «молодость» | целует, мокро | пальцы + оргазм / cuni bridge |
 | **cuni** | снаружи, осторожно | язык внутрь, она жмёт | + пальцы/anil page3 (сёстры late) |
-| **mouth** | **wipe/taste = МОСТ soft\|high only** (S-AM-06; Explicit clamp→high) | spit / hold_spit | swallow high; show = late/debug (E). Free-random: **без** wipe/taste |
-| **facial** | soft на грудь (sub0) | низ лица + рот | high face; FlagFaceDone |
-| **deepthroat** | try / partial | full | cum_mouth / cum_throat |
+| **mouth** | **wipe/taste = МОСТ soft\|high only** (S-AM-06; Explicit clamp→high) | spit / hold_spit = **first-show only** (07/08) | 09 swallow; **11 show = full, free-random после лесенки** (не first-show). Free: 09 или 11, без wipe/taste/spit |
+| **facial** | визит 1: на грудь (тон soft/high) | визит 2: низ лица+рот (тон soft/high) | визит 3: на лицо → FlagFaceDone / Explicit. Free: только Explicit |
+| **deepthroat** | try **на пол** / partial **на грудь** / full **на лицо** (одно начало) | — (слоёв нет, уже Explicit) | cum_mouth / cum_throat в free |
 
 #### После сцены — `HallMissingMeet_*` (встреча со Стефаном)
 
@@ -168,7 +168,7 @@ HardStepMax = **5** (steps 0..4):
 | 0 | **h0a** | 4 | piggy_look / **bud_smell** (M) | look → thigh → hug+break → **cuni** |
 | 1 | **mouth** | 5 | mouth_hard | wipe → taste → spit → hold_spit → **swallow** |
 | 2 | **h0b** | 2 | piggy_cuni / bud_cuni | cuni; sub>0 → anil flag + Explicit |
-| 3 | **face** | 2 | facial | soft face → high face → **FlagFaceDone** |
+| 3 | **face** | **3** | facial | грудь → низ лица → **на лицо + FlagFaceDone** |
 | 4 | **throat** | 5 | deepthroat | try → partial → full → cum_mouth → cum_throat |
 
 После закрытия **mouth**: NobleUnlock **2**.  
