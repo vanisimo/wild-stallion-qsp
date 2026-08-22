@@ -102,25 +102,33 @@ example: `images/events/dance/friday_dance/friday_dance_mayor_speech`
 
 ---
 
-## 5b. SFW art batch (2026-08, moderation-aware)
+## 5b. SFW art batches (2026-08, moderation-aware)
 
-**Shipped:** **24** high-traffic SFW plates as `.webp` (+ `.png` twin) at SceneShowVisual keys.  
-**List:** `tools/art_batch_sfw_keys.txt`  
+**Combined list:** `tools/art_batch_sfw_keys.txt` (**73** keys)  
 **Verify:** `powershell -File tools/verify_art_batch_files.ps1` → fail=0  
-**Style masters:** `images/common/style_masters/` (plaza, tavern, shop, street, office, home)
+**Style masters:** `images/common/style_masters/` (plaza, tavern, shop, street, office, home, church)
+
+### Batch-1 (places + some story frames)
+Plaza / tavern / town / family ambient — see prior table.
+
+### Batch-2 locations/objects only (no people)
+**List:** `tools/art_batch_sfw_keys_b2_locations.txt` (**19** keys)  
+**Canon:** **no NPC/people plates** until character identity canon exists — empty rooms, props, desks, doors, crates.
 
 | Family | Examples |
 |--------|----------|
-| Plaza / Friday dances | `friday_dance_*`, Legare notice/dance start |
-| Tavern | bar work, supply status, hall look, kitchen door notice, uniform talk, Legare supply talk |
-| Town | mayor office, Becky porch, dinner, port alley, Draupnir shop, Irma uniform offer |
-| Family | daily aftermath, offense days talk |
+| Supply / engine | `tavern_supply_emergency_action`, `event_rat_infestation` |
+| Shops / orders | Draupnir upgrades (empty counter), Irma uniform order confirm/buy stacks |
+| Debug / ledgers | event_state, knowledge, schedule, day events, dispatcher (desk/hall empty) |
+| Gates | `play_coach/blocked` (closed door) |
 
-**Show real art in player:** `#SceneShowVisual` uses future path only when **`SceneArtUseReal = 1`** (else stub + `[VIS]`). Domain helpers (harass/missing/kitchen) already flip this flag when their own shipped art exists. For QA of this batch: set `SceneArtUseReal = 1` in save/debug (or temporarily in `GameInit` for a playtest).
+**Show real art in player:** `#SceneShowVisual` uses future path only when **`SceneArtUseReal = 1`** (else stub + `[VIS]`).
 
-**Deferred (moderation / explicit):** group_sex, sex_scene, intimacy_kinks hard, after_sex, hard missing/lewd, church sex, dark-alley sex launch, etc. — stay on **stub** + caption; do not invent fake “safe sex” plates. Full inventory buckets: session scratch / re-run classifier from `SceneShowVisual` paths.
+**Deferred:**
+- **Explicit / sex / hard missing** — stub + caption  
+- **People / talk / dance with characters** (~86 keys) — wait for NPC canon; do not invent faces  
 
-Still **non-goal:** bulk explicit packs; full 200+ key art fill.
+Still **non-goal:** bulk explicit packs; full character sheets.
 
 ---
 
