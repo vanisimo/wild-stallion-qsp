@@ -208,11 +208,12 @@ HANDJOB (ему):
 
 ---
 
-## Changelog ladder (2026-08, Amanda)
+## Changelog ladder (2026-08, Amanda + Melissa)
 
 | | |
 |--|--|
-| **S-AM-04 touch_thigh** | **снят** с h0a / free-random; legacy → `hug_waist` |
+| **S-AM-04 / S-ML-04 touch_thigh** | **снят** с h0a / free-random; legacy → `hug_waist` |
 | **h0a** | look_tits → hug → hug Explicit → cuni (**без** thigh) |
-| **S-AM-06 wipe/taste** | только **soft\|high** мост к spit/swallow; Explicit в сцене = high |
+| **S-AM-06 / S-ML-07 wipe/taste** | только **soft\|high** мост к spit/swallow; Explicit в сцене = high |
 | **free mouth** | terminals spit/swallow only, **не** wipe/taste |
+| **Verify** | `tools/verify_hall_missing_ladder.ps1` |
