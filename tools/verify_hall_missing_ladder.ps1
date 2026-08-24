@@ -13,7 +13,8 @@ function Fail([string]$m) { $script:fail++; $lines.Add("FAIL $m") }
 
 $bargain = [System.IO.File]::ReadAllText((Join-Path $root 'modules\events\hall\hall_missing_bargain.qsps'))
 $girl = [System.IO.File]::ReadAllText((Join-Path $root 'modules\events\hall\hall_missing_girl.qsps'))
-$amanda = [System.IO.File]::ReadAllText((Join-Path $root 'modules\events\hall\hall_missing_agent_amanda_text.qsps'))
+$amandaPath = if (Test-Path (Join-Path $root 'modules\events\hall\hall_missing_amanda_text.qsps')) { Join-Path $root 'modules\events\hall\hall_missing_amanda_text.qsps' } else { Join-Path $root 'modules\events\hall\hall_missing_agent_amanda_text.qsps' }
+$amanda = [System.IO.File]::ReadAllText($amandaPath)
 $melissa = [System.IO.File]::ReadAllText((Join-Path $root 'modules\events\hall\hall_missing_agent_melissa_text.qsps'))
 
 # piggy_look / bud_smell must not assign touch_thigh

@@ -161,13 +161,14 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | Sandra reveals Stefan birth / Lermont |
 | `modules/locations/town/mayor_office_text.qsps` | mayor office / clerk / first talk / magistrate |
 | `modules/events/family/family_council_text.qsps` | family dinner council (6 screens) → liberation gate |
-| `modules/events/hall/hall_missing_agent_amanda_text.qsps` | Amanda missing scenes (USER-OWNED) |
+| `modules/events/hall/hall_missing_amanda_text.qsps` | Amanda missing scenes (**USER-OWNED / ЗАВЕРШЕНО** — не трогать без явного запроса пользователя; при любых изменениях, даже пакетных, спрашивать пользователя) |
 | `modules/events/hall/hall_missing_agent_melissa_text.qsps` | Melissa missing scenes (USER-OWNED) |
 | `modules/events/hall/hall_missing_agent_sandra_text.qsps` | Sandra missing scenes (USER-OWNED) |
 
 **Rules for agents:**
 
 - Do **not** rewrite, “polish”, or regenerate the prose in these files without an explicit user ask («можно править тексты» / equivalent).
+- **`hall_missing_amanda_text.qsps`** полностью завершён: не трогать файл без прямого запроса пользователя. Если требуются какие-либо изменения (даже пакетные/структурные), **обязательно сначала спросить пользователя**.
 - Before any redesign or bulk rewrite of these files — **ask the user first**.
 - If a bugfix must touch the file: change **only** structure/logic/`if`/`end`/gates; **keep the user’s strings** verbatim unless the user is fixing typos themselves.
 - Prefer reporting typos/logic notes in chat over silent rewrites.
