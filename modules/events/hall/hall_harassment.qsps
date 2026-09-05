@@ -195,10 +195,76 @@
         *pl ' '
     end
 
-    gs 'ActUiPrepare', 'Далее', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'HallHarassmentAfterContinue'
+    ! Двухфазный прерыватель (Канон v2.2):
+    ! При выборе «watch» на Tier 2 или Tier 3 — поздний выбор на Экране 2A
+    if $HallHarassReaction = 'watch' and HarassTier >= 2 and HallHarassLateInterrupted = 0:
+        gs 'ActUiPrepare', 'Довольно. Вмешаться сейчас', 'protect'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallHarassmentLateProtect'
+        end
+
+        gs 'ActUiPrepare', 'Продолжать смотреть', 'watch'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallHarassmentWatchContinue'
+        end
+    else
+        gs 'ActUiPrepare', 'Далее', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'HallHarassmentAfterContinue'
+        end
     end
+---
+
+#HallHarassmentLateProtect
+    HallHarassLateInterrupted = 1
+    $HallHarassReaction = 'protect_hard'
+    $HallHarassSceneBeat = 'after_protect'
+
+    HarassDayEchoOccurred = 1
+    $HarassDayEchoGirl = $HallHarassGirl
+    $HarassDayEchoReaction = 'protect_late'
+    $HarassDayEchoStance = $HarassGirlStance
+    HarassDayEchoTier = HarassTier
+
+    HallHarassAfterStep = 2
+    if $HallHarassReturnLoc = '':
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+    gt 'HallHarassment', $HallHarassReturnLoc
+---
+
+#HallHarassmentWatchContinue
+    HallHarassLateInterrupted = 0
+
+    HarassDayEchoOccurred = 1
+    $HarassDayEchoGirl = $HallHarassGirl
+    $HarassDayEchoReaction = 'watch'
+    $HarassDayEchoStance = $HarassGirlStance
+    HarassDayEchoTier = HarassTier
+
+    if LOC('HallHarassTryMissingFromPlay') = 1:
+        gs 'HallHarassTryMissingFromPlay'
+
+        if HallHarassMissingTriggered = 1:
+            HallMissingSkipNotice = 1
+            if LOC('HallMissingBargainStart') = 1:
+                gt 'HallMissingBargainStart', $HallHarassGirl, $HallHarassReturnLoc
+            elseif LOC('HallMissingGirlStartFromPlay') = 1:
+                gt 'HallMissingGirlStartFromPlay', $HallHarassGirl, $HallHarassReturnLoc
+            end
+            exit
+        else
+            HallMissingBargainDone = 0
+            $HallMissingPromise = ''
+            HallMissingPromiseBreak = 0
+        end
+    end
+
+    HallHarassAfterStep = 2
+    if $HallHarassReturnLoc = '':
+        $HallHarassReturnLoc = 'TavernMain'
+    end
+    gt 'HallHarassment', $HallHarassReturnLoc
 ---
 
 #HallHarassmentAfterContinue
@@ -264,20 +330,33 @@
     end
     $HallHarassOffenseDebug = ''
 
-    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
+    if SandraWitnessedIgnore = 1:
+        *pl 'В приоткрытой двери кухни на миг мелькнул силуэт Сандры. Встретившись со Стефаном тяжёлым, немигающим взглядом, она с глухим стуком притянула створку двери.'
+        *pl ' '
+        SandraWitnessedIgnore = 0
+    end
+
+    if GirlWorkPolicy[$PolicyTalkGirl] = 1:
+        $CurrentPolicyName = 'вести себя сдержанно'
+    elseif GirlWorkPolicy[$PolicyTalkGirl] = 3:
+        $CurrentPolicyName = 'вести себя раскованно'
+    else
+        $CurrentPolicyName = 'решать самой по обстановке'
+    end
+
+    *pl $RealName[$PolicyTalkGirl] + ' помнит ваше указание: <i>' + $CurrentPolicyName + '</i>.'
     *pl ' '
     gs 'HallHarassmentBuildPolicyMenu'
     if HallHarassPolicyChosen = 0:
-        gs 'GetMenuOpenLinkHref', 'HallHarassPolicyMenu', 'Обсудить правило поведения'
-        *p $MenuOpenLinkHref + '.'
+        gs 'GetMenuOpenLinkHref', 'HallHarassPolicyMenu', '[Сменить наказ]'
+        *pl $MenuOpenLinkHref
         killvar '$MenuOpenLinkHref'
         *pl ' '
-    end
-
-    if HallHarassPolicyChosen = 1:
-        *pl ' '
+    else
         gs 'HallHarassmentShowPolicyReactionBlock'
+        *pl ' '
     end
+    killvar '$CurrentPolicyName'
 
     killvar '$PolicyTalkGirl'
     killvar '$PolicyTalkArea'
@@ -567,21 +646,31 @@
         HallHarassAfterStep = 1
     end
 
-    ! v2 α: play + watch/ignore → шанс missing (без after-policy harass)
-    if LOC('HallHarassTryMissingFromPlay') = 1:
-        gs 'HallHarassTryMissingFromPlay'
+    ! Эхо на вечер (Канон v2.2)
+    HarassDayEchoOccurred = 1
+    $HarassDayEchoGirl = $HallHarassGirl
+    $HarassDayEchoReaction = $HallHarassReaction
+    $HarassDayEchoStance = $HarassGirlStance
+    HarassDayEchoTier = HarassTier
 
-        if HallHarassMissingTriggered = 1:
-            HallMissingSkipNotice = 1
-            if LOC('HallMissingBargainStart') = 1:
-                gt 'HallMissingBargainStart', $HallHarassGirl, $HallHarassReturnLoc
-            elseif LOC('HallMissingGirlStartFromPlay') = 1:
-                gt 'HallMissingGirlStartFromPlay', $HallHarassGirl, $HallHarassReturnLoc
+    ! v2.2: Missing при ignore проверяется сразу; для watch (T2/T3) проверка идёт на втором шаге «Продолжать смотреть»
+    if $HallHarassReaction = 'ignore':
+        if LOC('HallHarassTryMissingFromPlay') = 1:
+            gs 'HallHarassTryMissingFromPlay'
+
+            if HallHarassMissingTriggered = 1:
+                HallMissingSkipNotice = 1
+                if LOC('HallMissingBargainStart') = 1:
+                    gt 'HallMissingBargainStart', $HallHarassGirl, $HallHarassReturnLoc
+                elseif LOC('HallMissingGirlStartFromPlay') = 1:
+                    gt 'HallMissingGirlStartFromPlay', $HallHarassGirl, $HallHarassReturnLoc
+                end
+                exit
+            else
+                HallMissingBargainDone = 0
+                $HallMissingPromise = ''
+                HallMissingPromiseBreak = 0
             end
-        else
-            HallMissingBargainDone = 0
-            $HallMissingPromise = ''
-            HallMissingPromiseBreak = 0
         end
     end
 
@@ -1318,6 +1407,14 @@
         SandraFamilyConcern += 1
     end
 
+    ! Сандра в дверях кухни видит бездействие Стефана на ранних стадиях (Канон v2.2)
+    if ($HallHarassGirl = 'amanda' or $HallHarassGirl = 'melissa') and FamilyCorruptionStage <= 1 and HarassTier >= 2:
+        SandraWitnessedIgnore = 1
+        if LOC('OffenseDaysRegisterMismatchProtect') = 1:
+            gs 'OffenseDaysRegisterMismatchProtect', 'sandra', 'daughter_no_protect'
+        end
+    end
+
     $HallHarassTalkReaction = 'ignore'
     $HallHarassEventText = 'Стефан не вмешался, когда к ' + $RealName[$HallHarassGirl] + ' приставал посетитель.'
 ---
@@ -1625,116 +1722,46 @@
 ---
 
 #HallHarassmentPickType
-    ! T1/T2: types 1-4
-    ! T3: types 1-5; 1-3 чаще, 4 wall ~19%, 5 drop ~15%
+    ! v2.2: 4 живые бытовые ситуации зала (поднос, лестница, протирка стола, проход/колени)
     $HallHarassSubScene = ''
     HallHarassUnderTableCock = 0
     $HallHarassUnderReact = ''
 
-    if HarassTier >= 3:
-        HallHarassTypeRoll = RAND(1, 100)
+    HallHarassType = RAND(1, 4)
 
-        if HallHarassTypeRoll <= 22:
-            HallHarassType = 1
-        elseif HallHarassTypeRoll <= 44:
-            HallHarassType = 2
-        elseif HallHarassTypeRoll <= 66:
-            HallHarassType = 3
-        elseif HallHarassTypeRoll <= 85:
-            HallHarassType = 4
-        else:
-            HallHarassType = 5
-        end
-
-        killvar 'HallHarassTypeRoll'
-        gs 'HallHarassmentPickSubScene'
-    else:
-        HallHarassType = RAND(1, 4)
+    if HallHarassType = 1:
+        $HallHarassSituationKey = 'tray'
+    elseif HallHarassType = 2:
+        $HallHarassSituationKey = 'ladder'
+    elseif HallHarassType = 3:
+        $HallHarassSituationKey = 'table_wipe'
+    else
+        $HallHarassSituationKey = 'lap_seat'
     end
+
+    gs 'HallHarassmentPickSubScene'
 ---
 
 #HallHarassmentPickSubScene
-    ! T3 type 3 = crotch_pull on_crotch | on_face
-    ! T3 type 4 = wall; type 5 = drop_cutlery | drop_coin
     $HallHarassSubScene = ''
 
     if HarassTier < 3:
         exit
     end
 
-    if HallHarassType = 3:
-        if RAND(1, 100) <= 45:
-            $HallHarassSubScene = 'on_face'
-        else:
-            $HallHarassSubScene = 'on_crotch'
-        end
-        exit
-    end
-
-    if HallHarassType = 4:
-        $HallHarassSubScene = 'wall'
-        exit
-    end
-
-    if HallHarassType <> 5:
-        exit
-    end
-
-    if RAND(1, 2) = 1:
-        $HallHarassSubScene = 'drop_cutlery'
-    else:
-        $HallHarassSubScene = 'drop_coin'
+    if HallHarassType = 2:
+        ! T3 ladder: соскальзывание со ступеньки ягодицами на лицо гостя
+        $HallHarassSubScene = 'on_face'
+    elseif HallHarassType = 3:
+        ! T3 table_wipe: падение назад на колени / в пах гостю
+        $HallHarassSubScene = 'on_crotch'
     end
 ---
 
 #HallHarassmentPickUnderTableCock
-    ! Член только под столом ЗАЛА: drop_coin + гейты. Кухня — никогда.
+    ! Канон v2.1/v2.2: сцена под столом и доставание члена в зале полностью исключены
     HallHarassUnderTableCock = 0
     $HallHarassUnderReact = ''
-
-    if $HallHarassSubScene <> 'drop_coin':
-        exit
-    end
-
-    ! лапанье / visibility; cock только зал
-    $HallHarassUnderReact = 'groping'
-
-    if $HallHarassConsequenceArea = 'kitchen' or $HallHarassJob = 'kitchen':
-        exit
-    end
-
-    ! low slut + policy «сдержанно» → только лапанье
-    if sluttiness[$HallHarassGirl] < 35 and GirlWorkPolicy[$HallHarassGirl] = 1:
-        exit
-    end
-
-    if FamilyLiberationGateOpen = 0:
-        exit
-    end
-
-    if FamilyCorruptionStage < 3:
-        exit
-    end
-
-    ! не на самом первом harass в кампании
-    if HallHarassEverOccurred = 0:
-        exit
-    end
-
-    HallHarassUnderTableCock = 1
-
-    ! реакция harassment only: flee | coin (touch/hold → lewd/missing, не здесь)
-    if $HarassGirlStance = 'provoke' or sluttiness[$HallHarassGirl] >= 50:
-        $HallHarassUnderReact = 'coin'
-    elseif $HarassGirlStance = 'resist' or sluttiness[$HallHarassGirl] < 40:
-        $HallHarassUnderReact = 'flee'
-    else:
-        if RAND(1, 2) = 1:
-            $HallHarassUnderReact = 'flee'
-        else:
-            $HallHarassUnderReact = 'coin'
-        end
-    end
 ---
 
 #HallHarassmentCalculateStance

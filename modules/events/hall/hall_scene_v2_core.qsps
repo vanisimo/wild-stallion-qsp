@@ -90,7 +90,7 @@
         $HallPleasantClient = $HallHarassClient
     end
 
-    ! пьяный горожанин — всегда антипатия
+    ! пьяный гость — всегда антипатия (Канон v2.2)
     if $HallPleasantClient = 'drunk_guest' or $HallPleasantClient = 'drunk':
         HallClientPleasant = 0
         killvar '$HallPleasantGirl'
@@ -98,19 +98,8 @@
         exit
     end
 
-    if $HallPleasantGirl = 'amanda':
-        if $HallPleasantClient = 'craftsman' or $HallPleasantClient = 'traveler':
-            HallClientPleasant = 1
-        end
-    elseif $HallPleasantGirl = 'melissa':
-        if $HallPleasantClient = 'rich_merchant' or $HallPleasantClient = 'merchant':
-            HallClientPleasant = 1
-        end
-    elseif $HallPleasantGirl = 'sandra':
-        if $HallPleasantClient = 'rich_merchant' or $HallPleasantClient = 'merchant' or $HallPleasantClient = 'craftsman':
-            HallClientPleasant = 1
-        end
-    end
+    ! Канон v2.2: все прочие клиенты (купец, мастеровой, путешественник) подходят для развития сцены
+    HallClientPleasant = 1
 
     killvar '$HallPleasantGirl'
     killvar '$HallPleasantClient'
@@ -118,7 +107,7 @@
 
 ! --------------------------------
 ! Stance v2: resist | mixed(endure) | provoke(play)
-! play только PlayCoached + pleasant + FamCorrupt≥3 + rare
+! play только PlayCoached + приятный клиент + FamCorrupt>=3 + без обиды
 ! --------------------------------
 #HallHarassmentCalculateStanceV2
     gs 'HallSceneV2EnsureFlags'
@@ -136,6 +125,11 @@
         gs 'HallClientCheckPleasant', $HallHarassGirl, $HallHarassClient
     end
 
+    ! Активная обида на Стефана блокирует стойку play и раскрепощение
+    if GirlOffenseDays[$HallHarassGirl] > 0:
+        exit
+    end
+
     ! endure / mixed
     if sluttiness[$HallHarassGirl] >= 35 and FamilyCorruptionStage >= 2:
         $HarassGirlStance = 'mixed'
@@ -147,7 +141,7 @@
         end
     end
 
-    ! play / provoke — жёсткий gейт coach + pleasant
+    ! play / provoke — жёсткий гейт coach + приятный клиент + gate + FamCorrupt>=3
     if PlayCoached[$HallHarassGirl] < 1:
         exit
     end
@@ -330,13 +324,11 @@
         gs 'HallMissingApplyClientFlavorTags'
     end
 
-    ! place: wall → storage; drop → under_table; kitchen girl → kitchen
+    ! place: wall/drop → storage; stairs → stairs; kitchen girl → kitchen
     if $HallMissingGirl = 'sandra':
         $HallMissingPlace = 'kitchen'
-    elseif HarassTier >= 3 and HallHarassType = 4:
+    elseif HarassTier >= 3 and (HallHarassType = 4 or HallHarassType = 5):
         $HallMissingPlace = 'storage'
-    elseif HarassTier >= 3 and HallHarassType = 5:
-        $HallMissingPlace = 'under_table'
     elseif HarassTier >= 3 and HallHarassType = 3:
         if RAND(1, 2) = 1:
             $HallMissingPlace = 'storage'
@@ -345,12 +337,10 @@
         end
     else
         HallMissingPlaceRoll = RAND(1, 100)
-        if HallMissingPlaceRoll <= 40:
+        if HallMissingPlaceRoll <= 55:
             $HallMissingPlace = 'storage'
-        elseif HallMissingPlaceRoll <= 70:
-            $HallMissingPlace = 'stairs'
         else:
-            $HallMissingPlace = 'under_table'
+            $HallMissingPlace = 'stairs'
         end
         killvar 'HallMissingPlaceRoll'
     end
