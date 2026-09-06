@@ -1,6 +1,7 @@
 ! ================================================
 ! FILE: modules/events/tavern/tavern_day_events.qsps
 ! MODULE: events/tavern
+! [AI-WORKED] Текст переработан / дополнен ассистентом
 ! Нейтральные дневные события таверны
 ! Не заменяет tavern_event_dispatcher (сцены с девушками в зале)
 ! ================================================
@@ -54,32 +55,48 @@
 
     gs 'TavernDayEventCanRoll'
 
-    if TavernDayEventCanRoll = 1:
+    ! Если Сандре вчера подарили специи и она на кухне — гарантированно запускаем «Вкусную кухню»!
+    if SandraSpicesGiftPending = 1 and jobkitchen['sandra'] = 1:
+        SandraSpicesGiftPending = 0
+        gs 'TavernDayEventStartDeliciousKitchen'
+    end
+
+    if TavernDayEventCanRoll = 1 and TavernDayEventActive = 0:
         TavernDayEventRoll = RAND(1, 100)
 
-        if TavernDayEventRoll <= 25:
+        if TavernDayEventRoll <= 35:
             TavernDayEventPick = RAND(1, 100)
 
-            if TavernDayEventPick <= 14:
+            if TavernDayEventPick <= 12:
                 gs 'TavernDayEventStartCaravan'
-            elseif TavernDayEventPick <= 26:
+            elseif TavernDayEventPick <= 22:
                 gs 'TavernDayEventStartRats'
-            elseif TavernDayEventPick <= 36:
+            elseif TavernDayEventPick <= 30:
                 gs 'TavernDayEventStartBrawl'
-            elseif TavernDayEventPick <= 46:
+            elseif TavernDayEventPick <= 38:
                 gs 'TavernDayEventStartGuard'
-            elseif TavernDayEventPick <= 58:
+            elseif TavernDayEventPick <= 48:
                 gs 'TavernDayEventStartHarvest'
-            elseif TavernDayEventPick <= 68:
+            elseif TavernDayEventPick <= 56:
                 gs 'TavernDayEventStartMinstrels'
-            elseif TavernDayEventPick <= 76:
+            elseif TavernDayEventPick <= 64:
                 gs 'TavernDayEventStartStorm'
-            elseif TavernDayEventPick <= 84:
+            elseif TavernDayEventPick <= 72:
                 gs 'TavernDayEventStartPilgrims'
-            elseif TavernDayEventPick <= 92:
+            elseif TavernDayEventPick <= 80:
                 gs 'TavernDayEventStartBroken'
-            else:
+            elseif TavernDayEventPick <= 86:
                 gs 'TavernDayEventStartThief'
+            elseif TavernDayEventPick <= 93:
+                ! Положительное событие: Вкусная кухня
+                if jobkitchen['sandra'] = 1:
+                    gs 'TavernDayEventStartDeliciousKitchen'
+                else:
+                    gs 'TavernDayEventStartTavernPraise'
+                end
+            else:
+                ! Положительное событие: Похвала трактиру / Знатные гости
+                gs 'TavernDayEventStartTavernPraise'
             end
 
             killvar 'TavernDayEventPick'
@@ -358,6 +375,10 @@
 
     TavernDayEventProfitBonus = -RAND(10, 25)
     TavernDayEventReputationBonus = 2
+
+    if jobkitchen['sandra'] = 1:
+        SandraTrust += 1
+    end
 ---
 
 #TavernDayEventStartBroken
@@ -409,6 +430,60 @@
     TavernDayEventReputationBonus = -1
 ---
 
+#TavernDayEventStartDeliciousKitchen
+    $TavernDayEventId = 'delicious_kitchen'
+    TavernDayEventActive = 1
+
+    ! Приток посетителей благодаря молве о пряной кухне
+    tavernvisitors += RAND(12, 22)
+    if tavernvisitors > 85:
+        tavernvisitors = 85
+    end
+
+    ! Повышенная выручка и отличная репутация
+    TavernDayEventProfitBonus = RAND(35, 65)
+    TavernDayEventReputationBonus = 2
+    tavern_reputation += 2
+    if tavern_reputation > 100:
+        tavern_reputation = 100
+    end
+
+    ! Чаевые Сандре от сытых гостей
+    gs 'AwardGirlTipsFromBase', 'sandra', RAND(10, 18)
+    SandraTrust += 1
+    SandraRespect += 1
+---
+
+#TavernDayEventStartTavernPraise
+    $TavernDayEventId = 'tavern_praise'
+    TavernDayEventActive = 1
+
+    ! Приятный наплыв довольных гостей
+    tavernvisitors += RAND(8, 16)
+    if tavernvisitors > 85:
+        tavernvisitors = 85
+    end
+
+    ! Прибыль и рост репутации
+    TavernDayEventProfitBonus = RAND(25, 50)
+    TavernDayEventReputationBonus = 2
+    tavern_reputation += 2
+    if tavern_reputation > 100:
+        tavern_reputation = 100
+    end
+
+    ! Чаевые работающим официанткам
+    if jobwaitress['amanda'] = 1:
+        gs 'AwardGirlTipsFromBase', 'amanda', RAND(4, 8)
+    end
+    if jobwaitress['melissa'] = 1:
+        gs 'AwardGirlTipsFromBase', 'melissa', RAND(4, 8)
+    end
+    if jobwaitress['sandra'] = 1:
+        gs 'AwardGirlTipsFromBase', 'sandra', RAND(4, 8)
+    end
+---
+
 #TavernDayEventApplyWorkDaySummary
     if TavernDayEventActive = 0 or $TavernDayEventId = '':
         exit
@@ -435,7 +510,7 @@
 
     gs 'TavernDayEventMorningTextId'
     gs 'TavernDayEventText', $TavernDayEventMorningTextId
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
 
     killvar '$TavernDayEventMorningTextId'
     killvar '$TavernDayEventText'
@@ -458,7 +533,7 @@
     end
 
     *pl ' '
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
     killvar '$TavernDayEventText'
 ---
 
@@ -493,7 +568,7 @@
     gs 'TavernDayEventText', $TavernDayEventCarryOverTextId + '_morning'
     *pl ' '
     *pl 'Незаконченный ремонт:'
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
 
     killvar '$TavernDayEventCarryOverTextId'
     killvar '$TavernDayEventText'
@@ -519,7 +594,7 @@
     TavernDayEventHallDescPrinted = 1
 
     gs 'TavernDayEventText', $TavernDayEventCarryOverTextId + '_hall'
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
 
     killvar '$TavernDayEventCarryOverTextId'
     killvar '$TavernDayEventText'
@@ -550,7 +625,7 @@
 
     gs 'TavernDayEventHallTextId'
     gs 'TavernDayEventText', $TavernDayEventHallTextId
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
 
     killvar '$TavernDayEventHallTextId'
     killvar '$TavernDayEventText'
@@ -677,12 +752,12 @@
     *pl ' СТОЛЯР ДРАУПНИР'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
     *pl ' '
     gs 'FormatSpintry', TavernDayRepairCost
     $FormatSpintry_TavernDayRepairCost = $FormatSpintry
     killvar '$FormatSpintry'
-    *p 'Драупнир называет цену: <b>' + $FormatSpintry_TavernDayRepairCost + '</b>. Работу обещает закончить к вечеру прямо в трактире.'
+    *pl 'Драупнир называет цену: <b>' + $FormatSpintry_TavernDayRepairCost + '</b>. Работу обещает закончить к вечеру прямо в трактире.'
 
     killvar '$TavernDayEventCarpenterVisitTextId'
     killvar '$TavernDayEventText'
@@ -722,14 +797,14 @@
     *pl ' СТОЛЯР ДРАУПНИР'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
 
     if TavernDayRepairCost > 0:
         *pl ' '
         gs 'FormatSpintry', TavernDayRepairCost
         $FormatSpintry_TavernDayRepairCost = $FormatSpintry
         killvar '$FormatSpintry'
-        *p 'Оплачено: ' + $FormatSpintry_TavernDayRepairCost + '. Столяр придёт в трактир к вечеру.'
+        *pl 'Оплачено: ' + $FormatSpintry_TavernDayRepairCost + '. Столяр придёт в трактир к вечеру.'
     end
 
     killvar '$TavernDayEventText'
@@ -751,7 +826,7 @@
     *pl ' СТОЛЯР ДРАУПНИР'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
     *pl ' '
     gs 'FormatSpintry', TavernDayRepairCost - money
     $FormatSpintry_TavernDayRepairGap = $FormatSpintry
@@ -759,7 +834,7 @@
     gs 'FormatSpintry', money
     $FormatSpintry_money = $FormatSpintry
     killvar '$FormatSpintry'
-    *p 'Нужно ещё <b>' + $FormatSpintry_TavernDayRepairGap + '</b>. Сейчас у вас ' + $FormatSpintry_money + '.'
+    *pl 'Нужно ещё <b>' + $FormatSpintry_TavernDayRepairGap + '</b>. Сейчас у вас ' + $FormatSpintry_money + '.'
 
     killvar '$TavernDayEventText'
     *pl ' '
@@ -785,7 +860,7 @@
     *pl ' СТОЛЯР ДРАУПНИР'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
 
     killvar '$TavernDayEventText'
     *pl ' '
@@ -836,12 +911,12 @@
     *pl ' РЕМОНТ ЗАКАЗАН'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
     *pl ' '
     gs 'FormatSpintry', TavernDayRepairCost
     $FormatSpintry_TavernDayRepairCost = $FormatSpintry
     killvar '$FormatSpintry'
-    *p 'Списано <b>' + $FormatSpintry_TavernDayRepairCost + '</b>. К вечеру загляните в главный зал — Драупнир закончит работу там.'
+    *pl 'Списано <b>' + $FormatSpintry_TavernDayRepairCost + '</b>. К вечеру загляните в главный зал — Драупнир закончит работу там.'
 
     killvar '$TavernDayEventText'
     *pl ' '
@@ -882,12 +957,12 @@
     *pl ' РЕМОНТ В ЗАЛЕ'
     *pl '──────────────────────────────────────────────'
     *pl ' '
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
     *pl ' '
     gs 'FormatSpintry', TavernDayRepairCost
     $FormatSpintry_TavernDayRepairCost = $FormatSpintry
     killvar '$FormatSpintry'
-    *p 'Работа оплачена заранее: <b>' + $FormatSpintry_TavernDayRepairCost + '</b>.'
+    *pl 'Работа оплачена заранее: <b>' + $FormatSpintry_TavernDayRepairCost + '</b>.'
 
     killvar '$TavernDayEventCarpenterEveningTextId'
     killvar '$TavernDayEventText'
@@ -912,7 +987,7 @@
     *pl ' '
 
     gs 'TavernDayEventText', 'staff_busy_talk'
-    *p $TavernDayEventText
+    *pl $TavernDayEventText
     killvar '$TavernDayEventText'
 
     *pl ' '
@@ -974,6 +1049,10 @@
         gs 'TavernDayEventStartBroken'
     elseif $TavernDayEventDebugForceId = 'thief':
         gs 'TavernDayEventStartThief'
+    elseif $TavernDayEventDebugForceId = 'delicious_kitchen':
+        gs 'TavernDayEventStartDeliciousKitchen'
+    elseif $TavernDayEventDebugForceId = 'tavern_praise':
+        gs 'TavernDayEventStartTavernPraise'
     else:
         killvar '$TavernDayEventDebugForceId'
         exit

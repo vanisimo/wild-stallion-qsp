@@ -1,5 +1,7 @@
 ! ================================================
 ! FILE: modules/events/kitchen/kitchen_customer_event.qsps
+! MODULE: events/kitchen
+! [AI-WORKED] Текст переработан / дополнен ассистентом
 ! Попытка автозапуска
 ! ARGS[0] — куда возвращаться после события
 ! ================================================
@@ -86,61 +88,10 @@
 
     gs 'KitchenCustomerGetStage', $KitchenCustomerCheckGirl
 
-    KitchenCustomerChance = 6
-
-    if KitchenCustomerStage = 0:
-        KitchenCustomerChance = 4
-    elseif KitchenCustomerStage = 1:
-        KitchenCustomerChance = 8
-    elseif KitchenCustomerStage = 2:
-        KitchenCustomerChance = 14
-    elseif KitchenCustomerStage = 3:
-        KitchenCustomerChance = 22
-    else:
-        KitchenCustomerChance = 32
-    end
-
-    if GirlUniformLevel[$KitchenCustomerCheckGirl] = 1:
-        KitchenCustomerChance += 4
-    end
-
-    if GirlNoPantiesWork[$KitchenCustomerCheckGirl] = 1:
-        KitchenCustomerChance += 5
-    end
-
-    if GirlKitchenPolicy[$KitchenCustomerCheckGirl] = 1:
-        KitchenCustomerChance -= 8
-    elseif GirlKitchenPolicy[$KitchenCustomerCheckGirl] = 3:
-        KitchenCustomerChance += 6
-    end
-
-    if TavernReputation < 25:
-        KitchenCustomerChance += 5
-    end
-
-    if TavernScandal > 60:
-        KitchenCustomerChance += 6
-    end
-
-    if $KitchenCustomerCheckGirl = 'sandra' and FamilyCorruptionStage < 2:
-        KitchenCustomerChance -= 6
-    end
-
-    if KitchenCustomerChance < 2:
-        KitchenCustomerChance = 2
-    end
-
-    if KitchenCustomerChance > 55:
-        KitchenCustomerChance = 55
-    end
-
-    if RAND(1, 100) <= KitchenCustomerChance:
-        KitchenCustomerCandidateCount += 1
-        $KitchenCustomerCandidate[KitchenCustomerCandidateCount] = $KitchenCustomerCheckGirl
-    end
+    KitchenCustomerCandidateCount += 1
+    $KitchenCustomerCandidate[KitchenCustomerCandidateCount] = $KitchenCustomerCheckGirl
 
     killvar '$KitchenCustomerCheckGirl'
-    killvar 'KitchenCustomerChance'
 ---
 
 ! ================================================
@@ -317,6 +268,32 @@
 #KitchenCustomerPickScene
     $KitchenCustomerScene = 'bad_food'
 
+    if $TavernDayEventId = 'delicious_kitchen':
+        KitchenCustomerComplimentRoll = RAND(1, 100)
+        if KitchenCustomerComplimentRoll <= 65:
+            $KitchenCustomerScene = 'compliment_food'
+            killvar 'KitchenCustomerComplimentRoll'
+            exit
+        end
+        killvar 'KitchenCustomerComplimentRoll'
+    elseif $TavernDayEventId = 'tavern_praise':
+        KitchenCustomerComplimentRoll = RAND(1, 100)
+        if KitchenCustomerComplimentRoll <= 50:
+            $KitchenCustomerScene = 'compliment_food'
+            killvar 'KitchenCustomerComplimentRoll'
+            exit
+        end
+        killvar 'KitchenCustomerComplimentRoll'
+    elseif TavernReputation >= 40:
+        KitchenCustomerComplimentRoll = RAND(1, 100)
+        if KitchenCustomerComplimentRoll <= 25:
+            $KitchenCustomerScene = 'compliment_food'
+            killvar 'KitchenCustomerComplimentRoll'
+            exit
+        end
+        killvar 'KitchenCustomerComplimentRoll'
+    end
+
     if $KitchenCustomerGirl = 'sandra' and KitchenCustomerStage >= 1:
         KitchenCustomerSatisfiedRoll = RAND(1, 100)
         KitchenCustomerSatisfiedChance = 8 + KitchenCustomerStage * 4
@@ -476,7 +453,11 @@
     gs 'KitchenCustomerShowImage', 'base'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' КОНФЛИКТ НА КУХНЕ'
+    if $KitchenCustomerScene = 'compliment_food':
+        *pl ' БЛАГОДАРНОСТЬ НА КУХНЕ'
+    else:
+        *pl ' КОНФЛИКТ НА КУХНЕ'
+    end
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
@@ -489,20 +470,22 @@
         *pl ' '
     end
 
-    gs 'PolicyEventContextPrintStart', $KitchenCustomerGirl, 'kitchen'
-
-    *pl ' '
+    if $KitchenCustomerScene <> 'compliment_food':
+        gs 'PolicyEventContextPrintStart', $KitchenCustomerGirl, 'kitchen'
+        *pl ' '
+    end
 
     gs 'KitchenCustomerPrintDecisionThoughts'
 
     *pl ' '
 
-    gs 'PolicyEventReactionPrint', $KitchenCustomerGirl, 'kitchen', $KitchenCustomerScene, $KitchenCustomerReturnLoc
-    *pl ' '
+    if $KitchenCustomerScene <> 'compliment_food':
+        gs 'PolicyEventReactionPrint', $KitchenCustomerGirl, 'kitchen', $KitchenCustomerScene, $KitchenCustomerReturnLoc
+        *pl ' '
 
-    gs 'PolicyEventSceneVariationPrint', $KitchenCustomerGirl, 'kitchen', 'start'
-
-    *pl ' '
+        gs 'PolicyEventSceneVariationPrint', $KitchenCustomerGirl, 'kitchen', 'start'
+        *pl ' '
+    end
 
     gs 'PolicyEventDebugPrintStart', 'KITCHEN EVENT', $KitchenCustomerGirl, KitchenCustomerStage, KitchenCustomerScore, 'scene', $KitchenCustomerScene, $KitchenCustomerClient, KitchenCustomerUniform, GirlKitchenPolicy[$KitchenCustomerGirl]
 
@@ -523,6 +506,11 @@
 ! ================================================
 
 #KitchenCustomerPrintDecisionThoughts
+    if $KitchenCustomerScene = 'compliment_food':
+        *pl 'Стефан видит, как довольный гость расплывается в улыбке от отличной еды. Похвала стряпухе на кухне — редкая и ценная вещь, укрепляющая доброе имя трактира.'
+        exit
+    end
+
     gs 'KitchenCustomerCanUseClientChoice', $KitchenCustomerGirl
 
     ! один блок мыслей: client-choice — про кассу, иначе — общий kitchen
@@ -537,23 +525,42 @@
     gs 'Menu.Destroy', 'KitchenCustomerMenu'
     gs 'Menu.Create', 'KitchenCustomerMenu'
 
-    gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Жёстко пресечь', ''
-    gs 'Menu.AddModule', 'KitchenCustomerMenu', {
-        gt 'KitchenCustomerResolve', 'stop', $KitchenCustomerReturnLoc
-    }
-
-    gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Дать ей решить самой', ''
-    gs 'Menu.AddModule', 'KitchenCustomerMenu', {
-        gt 'KitchenCustomerResolve', 'let_her', $KitchenCustomerReturnLoc
-    }
-
-    gs 'KitchenCustomerCanUseClientChoice', $KitchenCustomerGirl
-
-    if KitchenCustomerClientChoiceAllowed = 1:
-        gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Закрыть глаза ради клиента', ''
+    if $KitchenCustomerScene = 'compliment_food':
+        gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Разделить похвалу с девушкой', ''
         gs 'Menu.AddModule', 'KitchenCustomerMenu', {
-            gt 'KitchenCustomerResolve', 'client', $KitchenCustomerReturnLoc
+            gt 'KitchenCustomerResolve', 'praise_share', $KitchenCustomerReturnLoc
         }
+
+        gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Принять похвалу как хозяин', ''
+        gs 'Menu.AddModule', 'KitchenCustomerMenu', {
+            gt 'KitchenCustomerResolve', 'praise_host', $KitchenCustomerReturnLoc
+        }
+
+        if beernum >= 1 or winenum >= 1:
+            gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Угостить гостя за счёт заведения', ''
+            gs 'Menu.AddModule', 'KitchenCustomerMenu', {
+                gt 'KitchenCustomerResolve', 'praise_treat', $KitchenCustomerReturnLoc
+            }
+        end
+    else:
+        gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Жёстко пресечь', ''
+        gs 'Menu.AddModule', 'KitchenCustomerMenu', {
+            gt 'KitchenCustomerResolve', 'stop', $KitchenCustomerReturnLoc
+        }
+
+        gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Дать ей решить самой', ''
+        gs 'Menu.AddModule', 'KitchenCustomerMenu', {
+            gt 'KitchenCustomerResolve', 'let_her', $KitchenCustomerReturnLoc
+        }
+
+        gs 'KitchenCustomerCanUseClientChoice', $KitchenCustomerGirl
+
+        if KitchenCustomerClientChoiceAllowed = 1:
+            gs 'MenuUiAdd', 'KitchenCustomerMenu', 'Закрыть глаза ради клиента', ''
+            gs 'Menu.AddModule', 'KitchenCustomerMenu', {
+                gt 'KitchenCustomerResolve', 'client', $KitchenCustomerReturnLoc
+            }
+        end
     end
 ---
 
@@ -644,7 +651,11 @@
     end
 
     *pl '══════════════════════════════════════════════'
-    *pl ' КОНФЛИКТ НА КУХНЕ'
+    if $KitchenCustomerScene = 'compliment_food':
+        *pl ' БЛАГОДАРНОСТЬ НА КУХНЕ'
+    else:
+        *pl ' КОНФЛИКТ НА КУХНЕ'
+    end
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
@@ -663,13 +674,20 @@
         gs 'KitchenCustomerShowImage', 'client'
         gs 'KitchenCustomerPrintText', 'client'
 
+    elseif $KitchenCustomerChoice = 'praise_share' or $KitchenCustomerChoice = 'praise_host' or $KitchenCustomerChoice = 'praise_treat':
+        gs 'KitchenCustomerApplyConsequences', $KitchenCustomerChoice
+        gs 'KitchenCustomerShowImage', $KitchenCustomerChoice
+        gs 'KitchenCustomerPrintText', $KitchenCustomerChoice
+
     else:
         $KitchenCustomerChoice = 'let_her'
         gs 'KitchenCustomerApplyConsequences', 'let_her'
         gs 'KitchenCustomerPrintText', 'let_her'
     end
 
-    gs 'PolicyEventChoiceConsequencePrint', 'kitchen', $KitchenCustomerChoice, $KitchenCustomerGirl
+    if $KitchenCustomerScene <> 'compliment_food':
+        gs 'PolicyEventChoiceConsequencePrint', 'kitchen', $KitchenCustomerChoice, $KitchenCustomerGirl
+    end
 
     *pl ' '
 
@@ -682,7 +700,7 @@
         *pl ' '
     end
 
-    if LOC('GirlWorkPolicyTalkKitchen') = 1:
+    if $KitchenCustomerScene <> 'compliment_food' and LOC('GirlWorkPolicyTalkKitchen') = 1:
         gs 'ActUiPrepare', 'Поговорить с ней о правилах на кухне', 'kitchen'
         act $ActUiLabel, $ActUiIconPath:
             gt 'GirlWorkPolicyTalkKitchen', $KitchenCustomerGirl, $KitchenCustomerReturnLoc
@@ -748,6 +766,49 @@
         if KitchenCustomerStage < 2:
             GirlTrustStefan[$KitchenCustomerGirl] -= 1
             GirlRebellion[$KitchenCustomerGirl] += 1
+        end
+
+    elseif $KitchenCustomerApplyChoice = 'praise_share':
+        gs 'AwardGirlTipsFromBase', $KitchenCustomerGirl, 10
+        GirlTrustStefan[$KitchenCustomerGirl] += 2
+        TavernReputation += 1
+        tavern_reputation += 1
+        if $KitchenCustomerGirl = 'sandra':
+            SandraTrust += 2
+            SandraRespect += 1
+        elseif $KitchenCustomerGirl = 'melissa':
+            MelissaTrustStefan += 2
+            MelissaRespectStefan += 1
+        elseif $KitchenCustomerGirl = 'amanda':
+            AmandaTrustStefan += 2
+        end
+
+    elseif $KitchenCustomerApplyChoice = 'praise_host':
+        money += RAND(8, 16)
+        TavernReputation += 1
+        tavern_reputation += 1
+        if $KitchenCustomerGirl = 'sandra':
+            SandraRespect += 1
+        elseif $KitchenCustomerGirl = 'melissa':
+            MelissaRespectStefan += 1
+        end
+
+    elseif $KitchenCustomerApplyChoice = 'praise_treat':
+        if beernum >= 1:
+            beernum -= 1
+        elseif winenum >= 1:
+            winenum -= 1
+        end
+        TavernReputation += 2
+        tavern_reputation += 2
+        tavernvisitors += RAND(3, 6)
+        GirlTrustStefan[$KitchenCustomerGirl] += 1
+        if $KitchenCustomerGirl = 'sandra':
+            SandraTrust += 1
+        elseif $KitchenCustomerGirl = 'melissa':
+            MelissaTrustStefan += 1
+        elseif $KitchenCustomerGirl = 'amanda':
+            AmandaTrustStefan += 1
         end
     end
 
