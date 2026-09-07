@@ -164,6 +164,14 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/hall/hall_missing_amanda_text.qsps` | Amanda missing scenes (**USER-OWNED / ЗАВЕРШЕНО** — не трогать без явного запроса пользователя; при любых изменениях, даже пакетных, спрашивать пользователя) |
 | `modules/events/hall/hall_missing_agent_melissa_text.qsps` | Melissa missing scenes (**USER-OWNED / ЗАВЕРШЕНО** — не трогать без явного запроса пользователя; при любых изменениях, даже пакетных, спрашивать пользователя) |
 | `modules/events/hall/hall_missing_agent_sandra_text.qsps` | Sandra missing scenes (USER-OWNED) |
+| `modules/events/sandra/sandra_lermont_letter_text.qsps` | Sandra Lermont letter |
+| `modules/actions/dialogs/sandra_lermont_letter_talk_text.qsps` | talk with Sandra about Lermont letter |
+| `modules/locations/shops/irma_dance_dress_text.qsps` | Irma dance dress buy / try |
+| `modules/locations/shops/irma_uniform_offer_text.qsps` | Irma uniform offer dialog |
+| `modules/locations/shops/irma_uniform_orders_text.qsps` | Irma uniform orders dialog |
+| `modules/events/dance/friday_dance_text.qsps` | Friday dance speeches and rumors |
+| `modules/events/church/church_sunday_service_text.qsps` | Sunday morning church service texts |
+| `modules/events/sandra/sandra_draupnir_friday_text.qsps` | Sandra Friday Draupnir visits |
 
 **Rules for agents:**
 

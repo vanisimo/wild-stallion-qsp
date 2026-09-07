@@ -102,7 +102,32 @@
 
     *pl 'Сегодня: ' + $WeekDay + ', ' + STR(day) + ' ' + $MonthName + ' ' + STR(year) + ' года.'
     *pl 'Время суток: ' + $TimeOfDay
+
+    if week = 3:
+        *pl '<i>В порт прибыл столичный корабль с редкими товарами. Сегодня и завтра — приёмные дни в мэрии.</i>'
+    elseif week = 4:
+        *pl '<i>Завтра вечером — танцы на площади. Сегодня приёмный день в мэрии.</i>'
+    elseif week = 5:
+        *pl '<i>Сегодня пятница: вечером на площади соберётся весь город на танцы.</i>'
+    elseif week = 6:
+        *pl '<i>Суббота: оживлённый базарный день в городе.</i>'
+    elseif week = 7:
+        *pl '<i>Воскресенье: обычные лавки закрыты. Утром — служба в соборе Ильматера, в полдень — исповеди.</i>'
+    end
+
     *pl ' '
+
+    if AmandaDanceDressSelfBuyAnnounced = 1:
+        *pl '<i>Аманда накопила денег и сама купила платье для танцев у Ирмы! Теперь она сможет ходить на пятничные танцы.</i>'
+        *pl ' '
+        AmandaDanceDressSelfBuyAnnounced = 0
+    end
+
+    if MelissaDanceDressSelfBuyAnnounced = 1:
+        *pl '<i>Мелисса оплатила пошив платья для танцев из своих сбережений! Теперь она сможет ходить на пятничные танцы.</i>'
+        *pl ' '
+        MelissaDanceDressSelfBuyAnnounced = 0
+    end
 
     if SandraStaffGirlsReactionRunToday = 1:
         gs 'SandraStaffGirlsMorningSummaryText'
@@ -190,6 +215,19 @@
     $FormatSpintry_TavernCityTaxTotal = $FormatSpintry
     killvar '$FormatSpintry'
     *pl 'Уплачено городу всего: ' + $FormatSpintry_TavernCityTaxTotal
+
+    if MayorClerkAdviceGiven = 1 and MayorFirstTalkDone = 0:
+        gs 'MayorCityTaxGateIsReady'
+        if MayorCityTaxGateReady = 1:
+            *pl '<b>Требование клерка (налоги):</b> Выполнено! Планка удержана ' + STR(MayorCityTaxDailyGateDays) + ' дня подряд.'
+        else:
+            if LastDayCityTax >= MayorCityTaxDailyGate:
+                *pl '<b>Требование клерка (налоги):</b> Вчера норма выполнена! Серия: ' + STR(MayorCityTaxStreak) + ' из ' + STR(MayorCityTaxDailyGateDays) + ' дн. подряд (нужно от ' + STR(MayorCityTaxDailyGate) + ' монет/день).'
+            else:
+                *pl '<b>Требование клерка (налоги):</b> Вчера налог ниже нормы (' + STR(LastDayCityTax) + ' из ' + STR(MayorCityTaxDailyGate) + ' монет). Серия сброшена: ' + STR(MayorCityTaxStreak) + ' из ' + STR(MayorCityTaxDailyGateDays) + ' дн.'
+            end
+        end
+    end
 
     if LastDayRepairCost > 0:
         LastDayNetProfit = LastDayProfit - LastDayRepairCost
@@ -464,28 +502,40 @@
 
 #ProcessIntimacyDressSelfBuy
     if AmandaDanceDressSelfBuyDay <= 0:
-        AmandaDanceDressSelfBuyDay = 28
+        AmandaDanceDressSelfBuyDay = 14
     end
 
     if MelissaDanceDressSelfBuyDay <= 0:
-        MelissaDanceDressSelfBuyDay = 35
+        MelissaDanceDressSelfBuyDay = 21
     end
 
-    if day = AmandaDanceDressSelfBuyDay and AmandaDanceDressReady = 0 and AmandaDanceDressOrdered = 0 and Friends['amanda'] > 8:
-        AmandaDanceDressReady = 1
-        AmandaDanceDressSelfBought = 1
+    if AmandaDanceDressReady = 0 and AmandaDanceDressOrdered = 0:
+        if (AmandaMoney >= 70 and day >= 8) or day >= AmandaDanceDressSelfBuyDay:
+            if AmandaMoney >= 70:
+                AmandaMoney -= 70
+            end
+            AmandaDanceDressReady = 1
+            AmandaDanceDressSelfBought = 1
+            AmandaDanceDressSelfBuyAnnounced = 1
 
-        if debug = 1:
-            *pl '[DEBUG] Аманда сама купила платье для танцев (день ' + STR(day) + ').'
+            if debug = 1:
+                *pl '[DEBUG] Аманда сама купила платье для танцев (день ' + STR(day) + ').'
+            end
         end
     end
 
-    if day = MelissaDanceDressSelfBuyDay and MelissaDanceDressReady = 0 and MelissaDanceDressOrdered = 0 and Friends['melissa'] > 8:
-        MelissaDanceDressReady = 1
-        MelissaDanceDressSelfBought = 1
+    if MelissaDanceDressReady = 0 and MelissaDanceDressOrdered = 0:
+        if (MelissaMoney >= 70 and day >= 12) or day >= MelissaDanceDressSelfBuyDay:
+            if MelissaMoney >= 70:
+                MelissaMoney -= 70
+            end
+            MelissaDanceDressReady = 1
+            MelissaDanceDressSelfBought = 1
+            MelissaDanceDressSelfBuyAnnounced = 1
 
-        if debug = 1:
-            *pl '[DEBUG] Мелисса сама купила платье для танцев (день ' + STR(day) + ').'
+            if debug = 1:
+                *pl '[DEBUG] Мелисса сама купила платье для танцев (день ' + STR(day) + ').'
+            end
         end
     end
 ---

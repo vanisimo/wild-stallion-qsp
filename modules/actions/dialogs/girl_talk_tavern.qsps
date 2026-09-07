@@ -21,6 +21,7 @@
     GirlTalkTavernPortShipHookReady = 0
     GirlTalkTavernDayHookReady = 0
     GirlTalkTavernRepairHookReady = 0
+    GirlTalkTavernDanceDressHookReady = 0
 
     gs 'GirlTalkTavernHasPortShipHook', $GirlTalkTavernGirl
 
@@ -53,6 +54,15 @@
                 $GirlTalkTavernRepairHookKey = $GirlTalkTavernGirl + '_' + STR(day)
                 GirlTalkTavernRepairHookDiscussed[$GirlTalkTavernRepairHookKey] = 1
                 killvar '$GirlTalkTavernRepairHookKey'
+            else:
+                gs 'GirlTalkTavernHasDanceDressHook', $GirlTalkTavernGirl
+
+                if GirlTalkTavernDanceDressHookReady = 1:
+                    gs 'GirlTalkTavernPrintDanceDressHint', $GirlTalkTavernGirl
+                    $GirlTalkTavernDanceDressHookKey = $GirlTalkTavernGirl + '_' + STR(day)
+                    GirlTalkDanceDressHookDiscussed[$GirlTalkTavernDanceDressHookKey] = 1
+                    killvar '$GirlTalkTavernDanceDressHookKey'
+                end
             end
         end
     end
@@ -66,6 +76,7 @@
     killvar 'GirlTalkTavernPortShipHookReady'
     killvar 'GirlTalkTavernDayHookReady'
     killvar 'GirlTalkTavernRepairHookReady'
+    killvar 'GirlTalkTavernDanceDressHookReady'
 ---
 
 #GirlTalkTavernHasHallHook
@@ -181,4 +192,92 @@
     end
 
     killvar '$GirlTalkTavernText'
+---
+
+#GirlTalkTavernHasDanceDressHook
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GirlTalkTavernHookGirl = $GirlKey
+
+    GirlTalkTavernDanceDressHookReady = 0
+
+    if $GirlTalkTavernHookGirl <> 'amanda' and $GirlTalkTavernHookGirl <> 'melissa':
+        killvar '$GirlTalkTavernHookGirl'
+        exit
+    end
+
+    if week <> 3 and week <> 4:
+        killvar '$GirlTalkTavernHookGirl'
+        exit
+    end
+
+    $GirlTalkTavernDanceDressKey = $GirlTalkTavernHookGirl + '_' + STR(day)
+
+    if GirlTalkDanceDressHookDiscussed[$GirlTalkTavernDanceDressKey] = 1:
+        killvar '$GirlTalkTavernHookGirl'
+        killvar '$GirlTalkTavernDanceDressKey'
+        exit
+    end
+
+    if $GirlTalkTavernHookGirl = 'amanda':
+        if AmandaDanceDressReady = 1 or AmandaDanceDressSelfBought = 1:
+            killvar '$GirlTalkTavernHookGirl'
+            killvar '$GirlTalkTavernDanceDressKey'
+            exit
+        end
+
+        if AmandaDanceDressFittingDue = 1:
+            GirlTalkTavernDanceDressHookReady = 1
+        elseif AmandaDanceDressAgreed = 1 and AmandaDanceDressOrdered = 0:
+            GirlTalkTavernDanceDressHookReady = 1
+        elseif AmandaDanceDressOrdered = 0 and Friends['amanda'] > 10:
+            GirlTalkTavernDanceDressHookReady = 1
+        end
+    elseif $GirlTalkTavernHookGirl = 'melissa':
+        if MelissaDanceDressReady = 1 or MelissaDanceDressSelfBought = 1:
+            killvar '$GirlTalkTavernHookGirl'
+            killvar '$GirlTalkTavernDanceDressKey'
+            exit
+        end
+
+        if MelissaDanceDressFittingDue = 1:
+            GirlTalkTavernDanceDressHookReady = 1
+        elseif MelissaDanceDressAgreed = 1 and MelissaDanceDressOrdered = 0:
+            GirlTalkTavernDanceDressHookReady = 1
+        elseif MelissaDanceDressOrdered = 0 and Friends['melissa'] > 10:
+            GirlTalkTavernDanceDressHookReady = 1
+        end
+    end
+
+    killvar '$GirlTalkTavernHookGirl'
+    killvar '$GirlTalkTavernDanceDressKey'
+---
+
+#GirlTalkTavernPrintDanceDressHint
+    $DanceDressHintGirl = LCASE($ARGS[0])
+
+    if $DanceDressHintGirl = 'amanda':
+        if AmandaDanceDressFittingDue = 1:
+            *pl ' '
+            *pl '— Стефан, моё платье готово к примерке! — с нетерпением шепчет Аманда. — Пойдём к Ирме, я хочу поскорее его надеть!'
+        elseif AmandaDanceDressAgreed = 1 and AmandaDanceDressOrdered = 0:
+            *pl ' '
+            *pl '— Ты помнишь, что мы договаривались сходить к Ирме насчёт платья? — тихо напоминает Аманда. — Пятница близко, модистка не успеет сшить, если мы затянем!'
+        elseif AmandaDanceDressOrdered = 0 and Friends['amanda'] > 10:
+            *pl ' '
+            *pl '— Кстати, о пятнице... — Аманда чуть заминается, теребя край фартука. — На площади опять будут танцы. Все девчонки придут в новых платьях от Ирмы, а мне и пойти не в чем... Слушай, Стефан, выкроишь со мной часок заглянуть к модистке? Сама я не потяну, да и Ирма без тебя заказ не оформит.'
+        end
+    elseif $DanceDressHintGirl = 'melissa':
+        if MelissaDanceDressFittingDue = 1:
+            *pl ' '
+            *pl '— Ирма передала, что ждёт нас на примерку, — спокойно говорит Мелисса, хотя в глазах пляшут искорки. — Надо зайти до вечера.'
+        elseif MelissaDanceDressAgreed = 1 and MelissaDanceDressOrdered = 0:
+            *pl ' '
+            *pl '— Не забудь: мы собирались к модистке заказать наряд к пятнице, — замечает Мелисса. — Ирма берёт время на пошив, так что лучше не тянуть до последнего.'
+        elseif MelissaDanceDressOrdered = 0 and Friends['melissa'] > 10:
+            *pl ' '
+            *pl '— И ещё кое-что, — Мелисса отрывается от счёта, бросая строгий, но чуть смущённый взгляд. — В пятницу вечером ярмарочная площадь встанет на уши из-за танцев. Появиться там в повседневном платье — значит расписаться в собственной несостоятельности. Если найдёшь время дойти со мной до лавки Ирмы, я выберу что-то строгое и приличное. Подумай об этом.'
+        end
+    end
+
+    killvar '$DanceDressHintGirl'
 ---

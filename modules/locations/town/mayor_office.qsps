@@ -15,6 +15,10 @@
     if TaxPercent <= 0:
         TaxPercent = 10
     end
+
+    if MayorFirstTalkDone = 1 and MayorFirstTalkDay <= 0:
+        MayorFirstTalkDay = 1
+    end
 ---
 
 #MayorOfficeShowClerkImage
@@ -38,7 +42,6 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/locations/town/mayor_office/mayor_office', 'кабинет мэра', 'large', 'webp'
     gs 'AddGlobalButtons'
     gs 'MayorOfficeInit'
     gs 'IsBusinessOpen', 'mayor'
@@ -49,6 +52,7 @@
     *pl ' '
 
     if BusinessOpen = 0:
+        gs 'ShowImagePath', 'images/locations/town/mayor_office/mayor_office', '', 'location', 'webp'
         gs 'MayorOfficeClosedText'
 
         *pl ' '
@@ -84,6 +88,13 @@
     if MayorClerkAdviceGiven = 1 and MayorFirstTalkDone = 0:
         act '<b>Доложить о делах</b>', 'images/common/ui/tavern.png':
             gt 'MayorOfficeWorkoffGate'
+        end
+    end
+
+    if MayorFirstTalkDone = 1 and MayorSecondTalkDone = 0:
+        gs 'ActUiPrepare', 'Повторный приём у мэра', 'mayor'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOfficeSecondAudienceGate'
         end
     end
 
@@ -242,6 +253,32 @@
     gs 'MayorOfficeBribeNoMoneyText'
 
     *pl ' '
+
+    gs 'ActUiPrepare', 'Спросить о другом способе', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeClerkNoMoneyAlternative'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeClerkNoMoneyAlternative
+
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowClerkImage'
+    gs 'MayorOfficeClerkNoMoneyAlternativeText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Слушать совет', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeClerkAdviceTalk'
+    end
 
     gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -418,6 +455,7 @@
     MayorWorkoffSignOk = 0
     MayorWorkoffStaffOk = 0
     MayorWorkoffProfitOk = 0
+    MayorWorkoffSuitOk = 0
 
     if TavernUpgradeSignDone = 1:
         MayorWorkoffSignOk = 1
@@ -427,13 +465,17 @@
         MayorWorkoffStaffOk = 1
     end
 
+    if StefanRespectableSuit = 1:
+        MayorWorkoffSuitOk = 1
+    end
+
     if MayorWorkoffProfitDays >= 2:
         MayorWorkoffProfitOk = 1
     elseif tavern_reputation >= 45:
         MayorWorkoffProfitOk = 1
     end
 
-    if MayorWorkoffSignOk = 1 and MayorWorkoffStaffOk = 1 and MayorWorkoffProfitOk = 1:
+    if MayorWorkoffSignOk = 1 and MayorWorkoffStaffOk = 1 and MayorWorkoffProfitOk = 1 and MayorWorkoffSuitOk = 1:
         MayorWorkoffReady = 1
     end
 ---
@@ -448,30 +490,38 @@
 
     gs 'MayorOfficeWorkoffReportIntroText'
 
-    if MayorCityTaxGateReady = 0:
-        gs 'MayorOfficeWorkoffNeedTaxText'
-
+    if MayorCityTaxGateReady = 0 or MayorWorkoffReady = 0:
         *pl ' '
+        *pl '<b>Статус требований клерка для аудиенции:</b>'
 
-        gs 'ActUiPrepare', 'Вернуться в мэрию', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MayorOffice'
+        if MayorCityTaxGateReady = 1:
+            *pl '✓ <b>Налоги:</b> Планка удержана (серия ' + STR(MayorCityTaxStreak) + '/' + STR(MayorCityTaxDailyGateDays) + ' дн.).'
+        else:
+            gs 'MayorOfficeWorkoffNeedTaxText'
         end
 
-        exit
-    end
-
-    if MayorWorkoffReady = 0:
-        if MayorWorkoffSignOk = 0:
+        if MayorWorkoffSignOk = 1:
+            *pl '✓ <b>Вывеска:</b> Новая вывеска от Драупнира украшает фасад.'
+        else:
             gs 'MayorOfficeWorkoffNeedSignText'
         end
 
-        if MayorWorkoffStaffOk = 0:
+        if MayorWorkoffStaffOk = 1:
+            *pl '✓ <b>Персонал:</b> Помощница для уборки нанята.'
+        else:
             gs 'MayorOfficeWorkoffNeedStaffText'
         end
 
-        if MayorWorkoffProfitOk = 0:
+        if MayorWorkoffProfitOk = 1:
+            *pl '✓ <b>Доходы и репутация:</b> Заведение держит стабильную кассу.'
+        else:
             gs 'MayorOfficeWorkoffNeedProfitText'
+        end
+
+        if MayorWorkoffSuitOk = 1:
+            *pl '✓ <b>Одежда:</b> Приличный костюм от Ирмы надет.'
+        else:
+            gs 'MayorOfficeWorkoffNeedSuitText'
         end
 
         *pl ' '
@@ -508,6 +558,10 @@
 
     MayorFirstTalkDone = 1
 
+    if MayorFirstTalkDay <= 0:
+        MayorFirstTalkDay = day
+    end
+
     if tavern_reputation < 100:
         tavern_reputation += 3
 
@@ -532,6 +586,7 @@
 
     cls
 
+    gs 'MayorOfficeShowMayorImage'
     gs 'MayorOfficeMayorTalkText'
 
     *pl ' '
@@ -542,10 +597,147 @@
     end
 ---
 
+#MayorOfficeSecondAudienceGate
+
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowClerkImage'
+
+    if StefanRespectableSuit = 0:
+        gs 'MayorOfficeWorkoffNeedSuitText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    if day < MayorFirstTalkDay + 7:
+        gs 'MayorOfficeSecondAudienceNotYetText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOffice'
+        end
+
+        exit
+    end
+
+    gs 'MayorOfficeSecondAudienceReadyText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Войти в кабинет мэра', 'mayor'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeSecondTalk'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeSecondTalk
+
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowMayorImage'
+    gs 'MayorOfficeSecondTalkOfficialText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '— Что вы предлагаете, господин мэр?', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeSecondTalkOffer'
+    end
+---
+
+#MayorOfficeSecondTalkOffer
+
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowMayorImage'
+    gs 'MayorOfficeSecondTalkOfferText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '— Я всё понял, господин мэр...', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeSecondTalkRebuttal'
+    end
+---
+
+#MayorOfficeSecondTalkRebuttal
+
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowMayorImage'
+    gs 'MayorOfficeSecondTalkRebuttalText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '— Мама?! Мама ходит к вам, чтобы...', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeSecondTalkMotherReveal'
+    end
+---
+
+#MayorOfficeSecondTalkMotherReveal
+
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'MayorOfficeShowMayorImage'
+    gs 'MayorOfficeSecondTalkMotherRevealText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Выйти из кабинета', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeSecondTalkThoughts'
+    end
+---
+
+#MayorOfficeSecondTalkThoughts
+
+    cls
+
+    gs 'MayorOfficeInit'
+    gs 'ShowImagePath', 'images/locations/town/mayor_office/mayor_office', '', 'location', 'webp'
+    gs 'MayorOfficeSecondTalkThoughtsText'
+
+    MayorSecondTalkDone = 1
+    PlayerKnows_MayorUsesSandra = 1
+    PlayerKnows_MayorIrmaAffair = 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_MayorSecondTalk_1'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Улица Трипербан', 'street'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---
+
 #MayorOfficeMagistrateGate
 
     cls
 
+    gs 'MayorOfficeShowClerkImage'
     gs 'MayorOfficeMagistrateGateText'
 
     *pl ' '
@@ -582,6 +774,8 @@
     if charisma < 30:
         BirthCertificateMagistrateFee += 20
     end
+
+    gs 'MayorOfficeShowClerkMoneyImage'
 
     *pl '══════════════════════════════════════════════'
     *pl ' МАГИСТРАТ'

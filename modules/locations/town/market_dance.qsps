@@ -66,6 +66,11 @@
         killvar '$FridayDanceSponsorStallText'
     end
 
+    if StefanRespectableSuit = 0:
+        *pl ' '
+        *pl '<i>Вы ловите на себе оценивающие взгляды: горожане надели лучшее праздничное платье, а на вас всё та же заношенная одежда. В таком виде неловко выходить в центр круга — стоит купить приличный костюм у Ирмы.</i>'
+    end
+
     *pl ' '
 
     if FridayDancesCount >= 5:
@@ -176,41 +181,39 @@
         gt 'FridayDanceNpcTalkMenu', 'MarketDance'
     end
 
-    if $GirlLocation['becky'] = 'DanceHall' and LOC('BeckyDance') = 1:
-        act '<b>Бекки</b>', 'images/common/ui/actions/dance.png':
-            gt 'BeckyDance'
+    if StefanRespectableSuit = 1:
+        if $GirlLocation['becky'] = 'DanceHall' and LOC('BeckyDance') = 1:
+            act '<b>Бекки</b>', 'images/common/ui/actions/dance.png':
+                gt 'BeckyDance'
+            end
         end
-    end
 
-    if $GirlLocation['melissa'] = 'DanceHall' and LOC('MelissaDance') = 1:
-        act '<b>Мелисса</b>', 'images/common/ui/actions/dance.png':
-            if MelissaDanceDressReady = 0:
-                gt 'FridayDanceSisterLimited', 'melissa'
-            else:
+        if $GirlLocation['melissa'] = 'DanceHall' and LOC('MelissaDance') = 1:
+            act '<b>Мелисса</b>', 'images/common/ui/actions/dance.png':
                 gt 'MelissaDance'
             end
         end
-    end
 
-    if $GirlLocation['amanda'] = 'DanceHall' and LOC('AmandaDance') = 1 and AmandaDanceBlockedTonight = 0:
-        act '<b>Аманда</b>', 'images/common/ui/actions/dance.png':
-            if AmandaDanceDressReady = 0:
-                gt 'FridayDanceSisterLimited', 'amanda'
-            else:
+        if $GirlLocation['amanda'] = 'DanceHall' and LOC('AmandaDance') = 1 and AmandaDanceBlockedTonight = 0:
+            act '<b>Аманда</b>', 'images/common/ui/actions/dance.png':
                 gt 'AmandaDance'
             end
         end
-    end
 
-    if $GirlLocation['inga'] = 'DanceHall' and IngaDanceUnlocked = 0 and IngaFridayMet = 0 and LOC('IngaDanceMeet') = 1:
-        gs 'FormatNpcTalkLink', 'inga', 'gt ''IngaDanceMeet'''
-        *pl $NpcTalkLink
-        killvar '$NpcTalkLink'
-    end
+        if $GirlLocation['inga'] = 'DanceHall' and IngaDanceUnlocked = 0 and IngaFridayMet = 0 and LOC('IngaDanceMeet') = 1:
+            gs 'FormatNpcTalkLink', 'inga', 'gt ''IngaDanceMeet'''
+            *pl $NpcTalkLink
+            killvar '$NpcTalkLink'
+        end
 
-    if $GirlLocation['inga'] = 'DanceHall' and IngaDanceUnlocked = 1 and LOC('IngaDance') = 1:
-        act '<b>Инга</b>', 'images/common/ui/actions/dance.png':
-            gt 'IngaDance'
+        if $GirlLocation['inga'] = 'DanceHall' and IngaDanceUnlocked = 1 and LOC('IngaDance') = 1:
+            act '<b>Инга</b>', 'images/common/ui/actions/dance.png':
+                gt 'IngaDance'
+            end
+        end
+    else:
+        act '<b>Танцевать (нужен приличный костюм)</b>', 'images/common/ui/actions/dance.png':
+            gt 'FridayDanceStefanNoSuit'
         end
     end
 
