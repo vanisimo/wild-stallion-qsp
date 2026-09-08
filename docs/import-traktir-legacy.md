@@ -548,7 +548,17 @@ flowchart LR
 - [ ] `modules/locations/town/drevo_shrine_text.qsps`
 - [ ] `modules/npc/shops/irma_drevo_talk.qsps`
 - [ ] `modules/events/georgette/georgette_backstory_text.qsps`
-- [ ] Дополнение `modules/actions/dialogs/talk_with_becky.qsps`
-- [ ] `modules/events/becky/becky_home_chain.qsps`
+- [x] Дополнение `modules/actions/dialogs/talk_with_becky.qsps`
+- [x] `modules/events/becky/becky_home_chain.qsps`
+
+---
+
+## Временные графические ассеты (Legacy 0.05)
+
+Для реализации принципа **«VISUAL ON EVERY SCREEN (no empty screens)»** на период разработки в проект временно интегрированы оригинальные изображения из `Traktir Wild Stallion 0.05` (собор, служба, исповеди, домашняя цепочка Бекки, арка Эдди, пятничные танцы, городские кварталы, портреты NPC).
+
+Все эти файлы имеют статус **ВРЕМЕННЫХ (PLACEHOLDER)** и подлежат постепенной замене на чистовые рендеры.  
+Полный реестр и правила замены зафиксированы в документе:  
+`docs/ASSET-legacy-temporary-images.md`.
 
 *Подключение папок в `qsp-project.json` не менять без явной просьбы — файлы класть в уже connected `modules/events`, `modules/locations`, `modules/npc`.*
