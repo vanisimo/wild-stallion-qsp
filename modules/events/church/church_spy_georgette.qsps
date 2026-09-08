@@ -51,7 +51,14 @@
 
     gs 'ChurchSpyGeorgettePickScene'
 
+    ChurchSpyGeorgetteStep = 0
+    gt 'ChurchSpyGeorgetteStep'
+---
+
+#ChurchSpyGeorgetteStep
     cls
+
+    gs 'ChurchSpyGeorgetteShowImage'
 
     *pl '══════════════════════════════════════════════'
 
@@ -64,31 +71,9 @@
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if ChurchSpyWindowMechanismFound = 1:
-        gs 'ShowImage', 'georgett', 'normal', 'normal'
-    else:
-        gs 'ShowImage', 'church', 'window', 'ajar'
-    end
-
-    *pl ' '
-
     if ChurchSpyGeorgetteScene < 1:
         ChurchSpyGeorgetteScene = 1
     end
-
-    ChurchSpyGeorgetteTextScene = ChurchSpyGeorgetteScene
-    ChurchSpyGeorgetteTextStep = 0
-    gs 'ChurchSpyGeorgetteSceneText'
-    *p $ChurchSpyGeorgetteText
-
-    *pl ' '
-
-    ChurchSpyGeorgetteStep = 1
-    gt 'ChurchSpyGeorgetteStep'
----
-
-#ChurchSpyGeorgetteStep
-    gs 'ChurchSpyGeorgetteSceneStepMax'
 
     ChurchSpyGeorgetteTextScene = ChurchSpyGeorgetteScene
     ChurchSpyGeorgetteTextStep = ChurchSpyGeorgetteStep
@@ -97,7 +82,7 @@
     *pl ' '
 
     if ChurchSpyGeorgetteStep < ChurchSpyGeorgetteSceneStepMax:
-        act '<b>Слушать дальше</b>', 'images/common/ui/actions/look.png':
+        act '<b>Смотреть дальше</b>', 'images/common/ui/actions/look.png':
             ChurchSpyGeorgetteStep += 1
             gt 'ChurchSpyGeorgetteStep'
         end
@@ -115,6 +100,27 @@
 
     killvar '$ChurchSpyGeorgetteText'
     killvar 'ChurchSpyGeorgetteSceneStepMax'
+---
+
+#ChurchSpyGeorgetteShowImage
+    if ChurchSpyWindowMechanismFound = 0:
+        gs 'ShowImage', 'church', 'window', 'ajar'
+        exit
+    end
+
+    if ChurchSpyGeorgetteStep = 0:
+        gs 'ShowImage', 'georgett', 'ispoved', 'ispoved1'
+    elseif ChurchSpyGeorgetteStep = 1:
+        gs 'ShowImage', 'georgett', 'ispoved', 'ispovedstep2_1'
+    elseif ChurchSpyGeorgetteStep = 2:
+        gs 'ShowImage', 'georgett', 'ispoved', 'ispovedstep2_2'
+    elseif ChurchSpyGeorgetteStep = 3:
+        gs 'ShowImage', 'georgett', 'ispoved', 'ispovedstep3'
+    elseif ChurchSpyGeorgetteStep = 4:
+        gs 'ShowImage', 'georgett', 'ispoved', 'ispovedstep4'
+    else:
+        gs 'ShowImage', 'georgett', 'normal', 'normal'
+    end
 ---
 
 #ChurchSpyGeorgetteFinish

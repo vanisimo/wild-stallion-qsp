@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/events/church/church_confession_dynamic.qsps
 ! MODULE: events/church
-! Исповедь ГГ — воскресный полдень, B1 приоритет грехов
+! Исповедь ГГ — воскресный полдень, выбор грехов по мере накопления
 ! ================================================
 
 #ChurchConfessionCanStart
@@ -29,23 +29,28 @@
         exit
     end
 
-    if GeorgettePortSexDone = 1 and GeorgetteChurchAlone = 1 and GeorgetteFuckInChurch = 0 and week = 7 and time = 2:
-        $ChurchConfessionHint = 'Отец Герхард ждёт в комнате чистых сердец — но если на утренней службе вы не зашли с Жоржеттой в подсобку, исповедь о ней будет пустой болтовнёй.'
-        exit
-    end
-
     if LizaSawSexInChurch = 1 and GeorgetteConfessLizaSaw = 0 and week = 7 and time = 2:
-        $ChurchConfessionHint = 'Лизетта видела вас за колоннами. Падре ждёт не мелких грехов, а правды — на глазах у дочери.'
+        $ChurchConfessionHint = 'Лизетта видела вас в комнате чистых сердец. Падре ждёт не мелких грехов, а правды — на глазах у дочери.'
         exit
     end
 
     if GeorgetteFuckInChurch = 1 and GeorgetteConfessInChurch = 0 and week = 7 and time = 2:
-        $ChurchConfessionHint = 'После того, что было за колоннами, падре ждёт правды — не общих грехов, а конкретной.'
+        $ChurchConfessionHint = 'После того, что было в комнате чистых сердец, падре ждёт правды — не общих грехов, а конкретной.'
+        exit
+    end
+
+    if GeorgettePortSexDone = 1 and GeorgetteChurchAlone = 1 and GeorgetteFuckInChurch = 0 and week = 7 and time = 2:
+        $ChurchConfessionHint = 'Отец Герхард ждёт в комнате чистых сердец — но если на утренней службе вы не уединились с Жоржеттой в комнате чистых сердец, исповедь о ней будет пустой болтовнёй.'
         exit
     end
 
     if GeorgetteConfessBasic = 1 and GeorgetteConfessInChurch = 0 and GeorgetteFuckInChurch = 0 and GeorgettePortSexDone = 1 and week = 7 and time = 2:
         $ChurchConfessionHint = 'Вы уже признались в порту. Чтобы исповедь была о церкви, а не только о складах, на утренней службе нужно успеть больше.'
+        exit
+    end
+
+    if HadSex['sandra'] >= 1 and SandraConfessBasic = 0 and week = 7 and time = 2:
+        $ChurchConfessionHint = 'Грех с мачехой давит на сердце. Отец Герхард ждёт в комнате чистых сердец.'
         exit
     end
 ---
@@ -57,11 +62,90 @@
         gt 'ChurchSundayNoon'
     end
 
-    gs 'ChurchConfessionPickSin'
     gt 'ChurchPureHeartsConfession'
 ---
 
 #ChurchPureHeartsConfession
+    $ChurchConfessionChosenSin = $ARGS[0]
+
+    if $ChurchConfessionChosenSin = '':
+        cls
+
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' КОМНАТА ЧИСТЫХ СЕРДЕЦ'
+        gs 'PrintTitleLine', ' ИСПОВЕДЬ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'ShowImage', 'gerhard', 'normal', 'normal'
+
+        *pl ' '
+        *pl 'Вы входите в полумрак комнаты чистых сердец. За низкой резной перегородкой на широкой дубовой скамье сидит отец Герхард. Он степенно оглаживает холёную бороду и выжидательно смотрит на вас:'
+        *pl '<br>— Я слушаю тебя, сын мой. С какими прегрешениями ты пришёл к святому алтарю? Открой душу всеблагому Ильматеру чистосердечно — и церковь облегчит твоё бремя.'
+        *pl ' '
+
+        if LizaSawSexInChurch = 1 and GeorgetteConfessLizaSaw = 0:
+            act '<b>О том, как Лизетта видела близость в храме</b>', 'images/common/ui/actions/holy_circle.png':
+                gt 'ChurchPureHeartsConfession', 'georgette_liza_saw'
+            end
+        end
+
+        if GeorgetteFuckInChurch = 1 and GeorgetteConfessInChurch = 0:
+            act '<b>О близости с Жоржеттой в комнате чистых сердец</b>', 'images/common/ui/actions/holy_circle.png':
+                gt 'ChurchPureHeartsConfession', 'georgette_in_church'
+            end
+        end
+
+        if HadSex['georgett'] >= 1 and HadSex['lizette'] >= 1 and GeorgetteLizettePortConfess = 0:
+            act '<b>О ночных утехах с Жоржеттой и Лизеттой в порту</b>', 'images/common/ui/actions/holy_circle.png':
+                gt 'ChurchPureHeartsConfession', 'georgette_lizette_port'
+            end
+        end
+
+        if HadSex['lizette'] >= 1 and LizetteConfessBasic = 0:
+            act '<b>О ночах с юной Лизеттой в порту</b>', 'images/common/ui/actions/holy_circle.png':
+                gt 'ChurchPureHeartsConfession', 'lizette_basic'
+            end
+        end
+
+        if HadSex['georgett'] >= 1 and GeorgettePortSexDone = 1 and GeorgetteConfessBasic = 0:
+            act '<b>О ночных встречах с Жоржеттой в порту</b>', 'images/common/ui/actions/holy_circle.png':
+                gt 'ChurchPureHeartsConfession', 'georgette_basic'
+            end
+        end
+
+        if HadSex['sandra'] >= 1 and (SandraConfessBasic = 0 or ChurchConfessionSandraWeekDone < day):
+            act '<b>О плотской связи с мачехой Сандрой</b>', 'images/common/ui/actions/holy_circle.png':
+                gt 'ChurchPureHeartsConfession', 'sandra_stub'
+            end
+        end
+
+        if HadSex['amanda'] >= 1 and (AmandaConfessBasic = 0 or ChurchConfessionAmandaWeekDone < day):
+            act '<b>О тайной близости с сестрой Амандой</b>', 'images/common/ui/actions/holy_circle.png':
+                gt 'ChurchPureHeartsConfession', 'amanda_stub'
+            end
+        end
+
+        if HadSex['melissa'] >= 1 and (MelissaConfessBasic = 0 or ChurchConfessionMelissaWeekDone < day):
+            act '<b>О близости со старшей сестрой Мелиссой</b>', 'images/common/ui/actions/holy_circle.png':
+                gt 'ChurchPureHeartsConfession', 'melissa_stub'
+            end
+        end
+
+        act '<b>Обычные мирские прегрешения</b>', 'images/common/ui/actions/holy_circle.png':
+            gt 'ChurchPureHeartsConfession', 'minor'
+        end
+
+        act '<b>Передумать и выйти в зал</b>', 'images/common/ui/actions/return.png':
+            gt 'ChurchSundayNoon'
+        end
+
+        exit
+    end
+
+    $ChurchConfessionSinId = $ChurchConfessionChosenSin
+    killvar '$ChurchConfessionChosenSin'
+
     cls
 
     *pl '══════════════════════════════════════════════'
@@ -100,8 +184,14 @@
         $ChurchConfessionSinId = 'georgette_liza_saw'
     elseif GeorgetteConfessInChurch = 0 and GeorgetteFuckInChurch = 1:
         $ChurchConfessionSinId = 'georgette_in_church'
+    elseif GeorgetteLizettePortConfess = 0 and HadSex['georgett'] >= 1 and HadSex['lizette'] >= 1:
+        $ChurchConfessionSinId = 'georgette_lizette_port'
+    elseif LizetteConfessBasic = 0 and HadSex['lizette'] >= 1:
+        $ChurchConfessionSinId = 'lizette_basic'
     elseif GeorgetteConfessBasic = 0 and HadSex['georgett'] >= 1 and GeorgettePortSexDone = 1:
         $ChurchConfessionSinId = 'georgette_basic'
+    elseif HadSex['sandra'] >= 1 and ChurchConfessionSandraWeekDone < day:
+        $ChurchConfessionSinId = 'sandra_stub'
     elseif HadSex['amanda'] >= 1 and ChurchConfessionAmandaWeekDone < day:
         $ChurchConfessionSinId = 'amanda_stub'
     elseif HadSex['melissa'] >= 1 and ChurchConfessionMelissaWeekDone < day:
@@ -123,13 +213,27 @@
         end
 
         PriestConfessionCorruption += 1
+    elseif $ChurchConfessionApplyId = 'georgette_lizette_port':
+        GeorgetteLizettePortConfess = 1
+        GeorgetteConfessBasic = 1
+        LizetteConfessBasic = 1
+        PriestConfessionCorruption += 1
+    elseif $ChurchConfessionApplyId = 'lizette_basic':
+        LizetteConfessBasic = 1
+        PriestConfessionCorruption += 1
     elseif $ChurchConfessionApplyId = 'georgette_basic':
         GeorgetteConfessBasic = 1
         PriestConfessionCorruption += 1
+    elseif $ChurchConfessionApplyId = 'sandra_stub':
+        SandraConfessBasic = 1
+        ChurchConfessionSandraWeekDone = day + 7
+        PriestConfessionCorruption += 1
     elseif $ChurchConfessionApplyId = 'amanda_stub':
+        AmandaConfessBasic = 1
         ChurchConfessionAmandaWeekDone = day + 7
         PriestConfessionCorruption += 1
     elseif $ChurchConfessionApplyId = 'melissa_stub':
+        MelissaConfessBasic = 1
         ChurchConfessionMelissaWeekDone = day + 7
         PriestConfessionCorruption += 1
     end
