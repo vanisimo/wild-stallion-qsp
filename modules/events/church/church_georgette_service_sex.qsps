@@ -1,7 +1,9 @@
 ! ================================================
 ! FILE: modules/events/church/church_georgette_service_sex.qsps
 ! MODULE: events/church
-! Этап C2–C3: секс с Жоржеттой на воскресной службе (15 спинтарий)
+! Секс с Жоржеттой в комнате чистых сердец (воскресная служба)
+! Неинтерактивная нарративная сцена: Жоржетта на скамье
+! (наедине или с обучением Лизетты)
 ! ================================================
 
 #GeorgetteChurchSexCanOffer
@@ -47,6 +49,16 @@
         exit
     end
 
+    if GeorgetteChurchSexDoneDay = day:
+        $GeorgetteChurchSexBlockReason = 'already_today'
+        exit
+    end
+
+    if daily_cum_count >= max_daily_cum:
+        $GeorgetteChurchSexBlockReason = 'cum_limit'
+        exit
+    end
+
     GeorgetteChurchSexCanOffer = 1
     killvar '$GeorgetteChurchSexBlockReason'
 ---
@@ -70,6 +82,10 @@
         $GeorgetteChurchSexHint = 'Она кивает вам вежливо, но не подводит к разговору. Сначала поговорите с ней ночью в порту — хотя бы о её жизни.'
     elseif $GeorgetteChurchSexBlockReason = 'low_friends':
         $GeorgetteChurchSexHint = 'Жоржетта улыбается уголком губ, но не зовёт в подсобку. Ей ещё мало доверяют для такого риска.'
+    elseif $GeorgetteChurchSexBlockReason = 'already_today':
+        $GeorgetteChurchSexHint = 'Жоржетта лукаво подмигивает: на сегодня согрешений под носом у святого отца более чем достаточно.'
+    elseif $GeorgetteChurchSexBlockReason = 'cum_limit':
+        $GeorgetteChurchSexHint = 'Жоржетта усмехается: вы выглядите слишком уставшим, чтобы одолеть её на церковной лавке прямо сейчас.'
     else:
         $GeorgetteChurchSexHint = ''
     end
@@ -111,7 +127,7 @@
     gs 'ShowImage', 'georgett', 'normal', 'normal'
 
     *pl '══════════════════════════════════════════════'
-    gs 'PrintTitleLine', ' ЖОРЖЕТТА'
+    gs 'PrintTitleLine', ' ЖОРЖЕТТА В СОБОРЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
@@ -120,12 +136,17 @@
 
     *pl ' '
 
-    act '<b>Продолжить</b>', 'images/common/ui/actions/intim.png':
+    act '<b>Согласиться (15 спинтарий)</b>', 'images/common/ui/actions/intim.png':
         gt 'GeorgetteChurchSexPay', $GeorgetteChurchSexReturnLoc
     end
 
     act '<b>Отказаться</b>', 'images/common/ui/actions/return.png':
-        gt $GeorgetteChurchSexReturnLoc
+        $TargetReturn = $GeorgetteChurchSexReturnLoc
+        if $TargetReturn = '':
+            $TargetReturn = 'ChurchSundayService'
+        end
+        killvar '$GeorgetteChurchSexReturnLoc'
+        gt $TargetReturn
     end
 
     killvar '$GeorgetteChurchSexText'
@@ -139,33 +160,173 @@
         $GeorgetteChurchSexReturnLoc = 'ChurchSundayService'
     end
 
-    gs 'GeorgetteChurchSexCanOffer'
-
-    if GeorgetteChurchSexCanOffer = 0:
-        killvar 'GeorgetteChurchSexCanOffer'
-        gt $GeorgetteChurchSexReturnLoc
-    end
-
-    killvar 'GeorgetteChurchSexCanOffer'
-
     if money < 15:
+        cls
+        gs 'ShowImage', 'georgett', 'normal', 'normal'
         gs 'GeorgetteChurchSexText', 'no_money'
         gs 'PrintMainP', $GeorgetteChurchSexText
         killvar '$GeorgetteChurchSexText'
-        gt $GeorgetteChurchSexReturnLoc
+        act '<b>Вернуться в собор</b>', 'images/common/ui/actions/return.png':
+            $TargetReturn = $GeorgetteChurchSexReturnLoc
+            if $TargetReturn = '':
+                $TargetReturn = 'ChurchSundayService'
+            end
+            killvar '$GeorgetteChurchSexReturnLoc'
+            gt $TargetReturn
+        end
+        exit
     end
 
     money -= 15
-    GeorgetteChurchSexPaidActive = 1
     IntimStage['georgett'] = 5
 
     if otkroven['georgett'] < 18:
         otkroven['georgett'] = 18
     end
 
+    gt 'GeorgetteChurchSexStep1', $GeorgetteChurchSexReturnLoc
+---
+
+#GeorgetteChurchSexStep1
+
+    $GeorgetteChurchSexReturnLoc = $ARGS[0]
+
+    if $GeorgetteChurchSexReturnLoc = '':
+        $GeorgetteChurchSexReturnLoc = 'ChurchSundayService'
+    end
+
+    cls
+
+    if LizetteChurchWithGeorgette = 1:
+        gs 'ShowImagePath', 'images/events/church/georgette_church_sex/withliza1', '', 'event', 'jpg'
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' КОМНАТА ЧИСТЫХ СЕРДЕЦ — ЖОРЖЕТТА И ЛИЗЕТТА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        gs 'GeorgetteChurchSexText', 'enter_liza'
+    else:
+        gs 'ShowImagePath', 'images/events/church/georgette_church_sex/bench1', '', 'event', 'jpg'
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' КОМНАТА ЧИСТЫХ СЕРДЕЦ — ЖОРЖЕТТА НА ЛАВКЕ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        gs 'GeorgetteChurchSexText', 'enter_alone'
+    end
+
+    *p $GeorgetteChurchSexText
+    *pl ' '
+
+    act '<b>Подойти к лавке</b>', 'images/common/ui/actions/intim.png':
+        gt 'GeorgetteChurchSexStep2', $GeorgetteChurchSexReturnLoc
+    end
+
+    killvar '$GeorgetteChurchSexText'
+---
+
+#GeorgetteChurchSexStep2
+
+    $GeorgetteChurchSexReturnLoc = $ARGS[0]
+
+    if $GeorgetteChurchSexReturnLoc = '':
+        $GeorgetteChurchSexReturnLoc = 'ChurchSundayService'
+    end
+
+    cls
+
+    if LizetteChurchWithGeorgette = 1:
+        gs 'ShowImagePath', 'images/events/church/georgette_church_sex/withliza4', '', 'event', 'jpg'
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' УРОК ДЛЯ ЛИЗЕТТЫ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        gs 'GeorgetteChurchSexText', 'action_liza'
+    else:
+        gs 'ShowImagePath', 'images/events/church/georgette_church_sex/bench4', '', 'event', 'jpg'
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' СТРАСТЬ В ПОЛУМРАКЕ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        gs 'GeorgetteChurchSexText', 'action_alone'
+    end
+
+    *p $GeorgetteChurchSexText
+    *pl ' '
+
+    act '<b>Кончить</b>', 'images/common/ui/actions/intim.png':
+        gt 'GeorgetteChurchSexStepFinish', $GeorgetteChurchSexReturnLoc
+    end
+
+    killvar '$GeorgetteChurchSexText'
+---
+
+#GeorgetteChurchSexStepFinish
+
+    $GeorgetteChurchSexReturnLoc = $ARGS[0]
+
+    if $GeorgetteChurchSexReturnLoc = '':
+        $GeorgetteChurchSexReturnLoc = 'ChurchSundayService'
+    end
+
+    cls
+
+    if LizetteChurchWithGeorgette = 1:
+        gs 'ShowImagePath', 'images/events/church/georgette_church_sex/withliza6', '', 'event', 'jpg'
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' ЗАВЕРШЕНИЕ — НАГЛЯДНЫЙ УРОК'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        gs 'GeorgetteChurchSexText', 'finish_liza'
+    else:
+        gs 'ShowImagePath', 'images/events/church/georgette_church_sex/bench6', '', 'event', 'jpg'
+        *pl '══════════════════════════════════════════════'
+        gs 'PrintTitleLine', ' ЗАВЕРШЕНИЕ БЛИЗОСТИ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+        gs 'GeorgetteChurchSexText', 'finish_alone'
+    end
+
+    *p $GeorgetteChurchSexText
+    *pl ' '
+
+    gs 'RegisterPlayerCum'
     gs 'GeorgetteChurchSexApplyArcFlags'
 
-    gt 'SexSceneStart', 'georgett', 'GeorgetteChurchSexAfter', 'georgett_church_service'
+    Friends['georgett'] += 1
+    sluttiness['georgett'] += 1
+    vaginalacts['georgett'] += 1
+    sexacts['georgett'] += 1
+    cuminside['georgett'] += 1
+    orgasms['georgett'] += 1
+    GeorgetteChurchSexDoneDay = day
+
+    if LizetteChurchWithGeorgette = 1:
+        sluttiness['lizette'] += 2
+        otkroven['lizette'] += 2
+        Friends['lizette'] += 1
+        LizaSawSexInChurch = 1
+        gs 'ClampGirlSocialStats', 'lizette'
+    end
+
+    if TavernScandal < 100:
+        TavernScandal += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'georgett'
+
+    *pl ' '
+    gs 'PrintMainP', 'Вы быстро оправляете одежду и тихо выскальзываете обратно в собор, где служба подходит к своему полуденному завершению.'
+    *pl ' '
+
+    act '<b>Вернуться в собор</b>', 'images/common/ui/actions/return.png':
+        $TargetReturn = $GeorgetteChurchSexReturnLoc
+        if $TargetReturn = '':
+            $TargetReturn = 'ChurchSundayService'
+        end
+        killvar '$GeorgetteChurchSexReturnLoc'
+        gt $TargetReturn
+    end
+
+    killvar '$GeorgetteChurchSexText'
 ---
 
 #GeorgetteChurchSexApplyArcFlags
@@ -177,52 +338,4 @@
     if LizetteChurchWithGeorgette = 1 and LizaSawSexInChurch = 0:
         LizaSawSexInChurch = 1
     end
----
-
-#GeorgetteChurchSexAfter
-
-    *clr
-    clr
-    cla
-
-    gs 'SceneShowVisual', 'images/events/church/church_georgette_service_sex/georgette_church_sex_after', 'церковь: после с Жоржеттой', 'large', 'webp'
-    GeorgetteChurchSexPaidActive = 0
-
-    gs 'GeorgetteChurchSexApplyArcFlags'
-
-    gs 'GeorgetteChurchSexText', 'after'
-    *p $GeorgetteChurchSexText
-
-    Friends['georgett'] += 1
-    otkroven['georgett'] += 1
-
-    if TavernScandal < 100:
-        TavernScandal += 1
-    end
-
-    gs 'ClampGirlSocialStats', 'georgett'
-
-    if debug = 1:
-        *pl ' '
-        *pl '[DEBUG GEORGETTE CHURCH] GeorgetteFuckInChurch: ' + STR(GeorgetteFuckInChurch)
-        *pl '[DEBUG GEORGETTE CHURCH] LizetteChurchWithGeorgette: ' + STR(LizetteChurchWithGeorgette)
-        *pl '[DEBUG GEORGETTE CHURCH] LizaSawSexInChurch: ' + STR(LizaSawSexInChurch)
-        *pl '[DEBUG GEORGETTE CHURCH] TavernScandal: ' + STR(TavernScandal)
-    end
-
-    *pl ' '
-
-    gs 'PrintMainP', 'Служба ещё идёт. Когда прихожане разойдутся, наступит полдень — тогда можно исповедаться и обойти собор снаружи.'
-
-    *pl ' '
-
-    act '<b>Вернуться к службе</b>', 'images/common/ui/actions/return.png':
-        gt 'ChurchSundayService'
-    end
-
-    act '<b>Дождаться полдня</b>', 'images/common/ui/actions/holy_circle.png':
-        gs 'ChurchSundayServiceAdvanceToNoon'
-    end
-
-    killvar '$GeorgetteChurchSexText'
 ---

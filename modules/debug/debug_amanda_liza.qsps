@@ -11,7 +11,7 @@
 
     gs 'PanelDebugToolsHeader'
 
-    pl '<b>DEBUG: АМАНДА + ЛИЗЕТТА</b>'
+    pl '<b>DEBUG: АМАНДА + ЛИЗЕТТА (СПЛЕТНИ, ВИЗИТЫ, СЮЖЕТ)</b>'
     pl 'Сплетни (AmandaLizaTalk), визиты в зал/комнату, сюжетные ивенты.'
     pl ' '
 
@@ -24,13 +24,19 @@
     gs 'DebugAmandaLizaPrintGates'
     pl ' '
 
+    gs 'DebugAmandaLizaPrintPool'
+    pl ' '
+
+    gs 'DebugAmandaLizaPrintPhraseTester'
+    pl ' '
+
     gs 'DebugAmandaLizaPrintPresets'
     pl ' '
 
     gs 'DebugAmandaLizaPrintJumps'
     pl ' '
 
-    pl '<a href="exec:gs ''DebugAmandaLizaReset'' & gs ''DebugAmandaLizaPanel''">Сброс ветки Лизетты</a>'
+    pl '<a href="exec:gs ''DebugAmandaLizaReset'' & gs ''DebugAmandaLizaPanel''"><font color="#cc0000"><b>[Сброс ветки Лизетты]</b></font></a>'
     pl '<a href="exec:gs ''DebugAmandaArcPanel''">→ Панель intimacy-арки Аманды</a>'
 
     gs 'PanelDebugToolsBack'
@@ -41,13 +47,15 @@
     gs 'GetCitySchedulePhase'
     gs 'UpdateGirlLocations'
 
-    pl '<b>Контекст</b>'
-    pl 'День ' + STR(day) + ' | неделя ' + STR(week) + ' (' + $WeekDay + ') | время ' + STR(time) + ' (' + $TimeOfDay + ')'
-    pl 'Фаза: <b>' + $CitySchedulePhase + '</b>'
-    pl 'Локации: Аманда → ' + $GirlLocation['amanda'] + ' | Лизетта → ' + $GirlLocation['lizette']
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>КОНТЕКСТ</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl 'День: ' + STR(day) + ' | Неделя: ' + STR(week) + ' (' + $WeekDay + ') | Время: ' + STR(time) + ' (' + $TimeOfDay + ')'
+    pl 'Фаза города: <b>' + $CitySchedulePhase + '</b>'
+    pl 'Локации: Аманда -> <b>' + $GirlLocation['amanda'] + '</b> | Лизетта -> <b>' + $GirlLocation['lizette'] + '</b>'
 
     gs 'IsTavernOpen'
-    pl 'Трактир открыт: ' + STR(TavernOpen)
+    gs 'DebugAmandaLizaPrintBool', 'Трактир открыт (TavernOpen)', TavernOpen
 
     killvar '$CitySchedulePhase'
 ---
@@ -62,9 +70,9 @@
     end
 
     if DebugAmandaLizaBoolValue = 1:
-        pl $DebugAmandaLizaBoolLabel + ': <b><font color="#008000">да</font></b>'
+        pl $DebugAmandaLizaBoolLabel + ': <b><font color="#00aa00">[✓ ДА]</font></b>'
     else
-        pl $DebugAmandaLizaBoolLabel + ': <font color="#888888">нет</font>'
+        pl $DebugAmandaLizaBoolLabel + ': <font color="#888888">[✗ нет]</font>'
     end
 
     killvar '$DebugAmandaLizaBoolLabel'
@@ -74,50 +82,55 @@
 #DebugAmandaLizaPrintFlags
     gs 'AmandaLizetteEnsureVars'
 
-    pl '<b>Знакомство и визиты</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЗНАКОМСТВО И СТАТУС ВИЗИТОВ</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
     gs 'DebugAmandaLizaPrintBool', 'Порт witness (PortMeetWitnessed)', PortMeetWitnessed
-    gs 'DebugAmandaLizaPrintBool', 'Аманда встретила (AmandaMetLizette)', AmandaMetLizette
+    gs 'DebugAmandaLizaPrintBool', 'Аманда встретила Лизетту (AmandaMetLizette)', AmandaMetLizette
     gs 'DebugAmandaLizaPrintBool', 'Лизетта известна (LizetteKnown)', LizetteKnown
-    pl 'LizetteVisitStage: ' + STR(LizetteVisitStage) + ' (1=ждёт room_visit, 2=после)'
-    pl 'Hall visits нед / ready: ' + STR(AmandaLizaHallVisitsWeek) + ' / ' + STR(AmandaLizaHallVisitReady) + ' (день ' + STR(AmandaLizaHallVisitDay[day]) + ')'
-    pl 'Room talks неделя: ' + STR(AmandaLizaRoomTalksWeek) + ' | schedule week: ' + STR(AmandaLizaScheduleWeek)
-    pl 'Подслушано всего / ключ части дня: ' + STR(AmandaLizaTalkHeardCount) + ' / «' + $AmandaLizaTalkUsedKey + '»'
+    pl 'Стадия визитов (LizetteVisitStage): <b>' + STR(LizetteVisitStage) + '</b> (1=ждёт room_visit, 2=после)'
+    pl 'Визиты в зал нед / готовность: ' + STR(AmandaLizaHallVisitsWeek) + ' / ' + STR(AmandaLizaHallVisitReady) + ' (день: ' + STR(AmandaLizaHallVisitDay[day]) + ')'
+    pl 'Разговоры в комнате на неделе: ' + STR(AmandaLizaRoomTalksWeek) + ' | Неделя расписания: ' + STR(AmandaLizaScheduleWeek)
+    pl 'Подслушано всего: ' + STR(AmandaLizaTalkHeardCount) + ' | Ключ части дня: «' + $AmandaLizaTalkUsedKey + '»'
 
     pl ' '
-    pl '<b>Запреты и влияние</b>'
+    pl '<b>Запреты и бунт:</b>'
     gs 'DebugAmandaLizaPrintBool', 'Запрет (LizetteBanned)', LizetteBanned
     gs 'DebugAmandaLizaPrintBool', 'Строгий запрет (LizetteBanStrict)', LizetteBanStrict
     gs 'DebugAmandaLizaPrintBool', 'Тайный визит был (LizetteSecretVisit)', LizetteSecretVisit
-    pl 'AmandaLizaInfluence: ' + STR(AmandaLizaInfluence) + ' | Rebellion: ' + STR(AmandaRebellion) + ' | slut: ' + STR(sluttiness['amanda'])
+    pl 'Влияние Лизетты (AmandaLizaInfluence): ' + STR(AmandaLizaInfluence) + ' | Бунт (AmandaRebellion): ' + STR(AmandaRebellion) + ' | Развратность: ' + STR(sluttiness['amanda']) + ' | Откровенность: ' + STR(otkroven['amanda'])
 
     pl ' '
-    pl '<b>Анал / oral / marathon</b>'
-    gs 'DebugAmandaLizaPrintBool', 'AmandaHomeSex', AmandaHomeSex
-    gs 'DebugAmandaLizaPrintBool', 'Talk Лизетта анал (AnalTalkDone)', AmandaLizetteAnalTalkDone
-    pl 'AnalTalkCount: ' + STR(AmandaLizetteAnalTalkCount)
+    pl '<b>Интим, орал и марафон:</b>'
+    gs 'DebugAmandaLizaPrintBool', 'Домашний секс был (AmandaHomeSex)', AmandaHomeSex
+    gs 'DebugAmandaLizaPrintBool', 'Невинность (virginity)', virginity['amanda']
     gs 'AmandaOralEnsureVars'
-    pl 'AmandaOralStage: ' + STR(AmandaOralStage) + ' / 6'
-    pl 'GiveOrgasms amanda: ' + STR(GiveOrgasms['amanda'])
-    pl 'Marathon pending: ' + STR(SexMarathonGossipPending['amanda']) + ' | last day: ' + STR(SexMarathonGossipLastDay['amanda'])
+    pl 'Оральная стадия (AmandaOralStage): ' + STR(AmandaOralStage) + ' / 6 | Оргазмы от игрока: ' + STR(GiveOrgasms['amanda'])
+    gs 'DebugAmandaLizaPrintBool', 'Марафон ожидает сплетню (SexMarathonGossipPending)', SexMarathonGossipPending['amanda']
+    pl 'Последний день марафона: ' + STR(SexMarathonGossipLastDay['amanda'])
+    gs 'DebugAmandaLizaPrintBool', 'Разговор об анале был (AnalTalkDone)', AmandaLizetteAnalTalkDone
+    pl 'Счётчик намёков на анал (AnalTalkCount): ' + STR(AmandaLizetteAnalTalkCount) + ' (нужно 2 для разблокировки)'
 ---
 
 #DebugAmandaLizaPrintGates
-    pl '<b>Гейты сейчас</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ГЕЙТЫ ТЕКУЩЕГО МОМЕНТА</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
 
     gs 'AmandaLizetteInAmandaRoomNow'
-    pl 'Лизетта в комнате Аманды (вс день/вечер): ' + STR(AmandaLizetteInAmandaRoomNow)
+    gs 'DebugAmandaLizaPrintBool', 'Лизетта в комнате Аманды сейчас (вс день/вечер)', AmandaLizetteInAmandaRoomNow
     killvar 'AmandaLizetteInAmandaRoomNow'
 
     gs 'AmandaLizaRoomDoorCanShow'
-    pl 'Сцена закрытой двери (AmandaLizaRoomDoor): ' + STR(AmandaLizaRoomDoorCanShow)
+    gs 'DebugAmandaLizaPrintBool', 'Сцена закрытой двери доступна (AmandaLizaRoomDoor)', AmandaLizaRoomDoorCanShow
     killvar 'AmandaLizaRoomDoorCanShow'
 
     gs 'AmandaLizaTalkCanTrigger', 'tavernmain'
-    pl 'Подслушать в зале (CanTrigger): ' + STR(AmandaLizaTalkCanTrigger)
+    gs 'DebugAmandaLizaPrintBool', 'Подслушать в зале доступно (CanTrigger)', AmandaLizaTalkCanTrigger
     killvar 'AmandaLizaTalkCanTrigger'
 
     gs 'AmandaLizaTalkCanTrigger', 'amandaroom'
-    pl 'Пул болтовни в комнате (CanTrigger): ' + STR(AmandaLizaTalkCanTrigger)
+    gs 'DebugAmandaLizaPrintBool', 'Болтовня в комнате доступна (CanTrigger)', AmandaLizaTalkCanTrigger
     killvar 'AmandaLizaTalkCanTrigger'
 
     AmandaLizetteCanStart = 0
@@ -150,85 +163,119 @@
     end
 
     if AmandaLizetteCanStart = 1:
-        pl 'Сюжетный ивент AmandaLizetteTryEvent: <font color="#008000"><b>' + $AmandaLizetteNextEvent + '</b></font>'
+        pl 'Сюжетный ивент AmandaLizetteTryEvent: <b><font color="#00aa00">' + $AmandaLizetteNextEvent + '</font></b>'
     else
-        pl 'Сюжетный ивент AmandaLizetteTryEvent: <font color="#888888">нет</font>'
+        pl 'Сюжетный ивент AmandaLizetteTryEvent: <font color="#888888">[нет]</font>'
     end
 
     killvar 'AmandaLizetteCanStart'
     killvar '$AmandaLizetteNextEvent'
-
-    gs 'DebugAmandaLizaPrintPool'
 ---
 
 #DebugAmandaLizaPrintPool
     gs 'AmandaLizaTalkBuildPool'
 
-    pl 'Пул сплетен сейчас: <b>' + STR(AmandaLizaTalkPoolSize) + '</b> фраз (max tier ' + STR(AmandaLizaTalkPoolMax) + ')'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>АКТИВНЫЙ ПУЛ СПЛЕТЕН: ' + STR(AmandaLizaTalkPoolSize) + ' фраз (Tier max: ' + STR(AmandaLizaTalkPoolMax) + ')</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
 
-    if AmandaLizaTalkPoolSize >= 1:
-        pl '  [1] ' + $AmandaLizaTalkPool[1]
+    if AmandaLizaTalkPoolSize > 0:
+        DebugPoolIdx = 1
+        :DebugPoolLoop
+        if DebugPoolIdx <= AmandaLizaTalkPoolSize:
+            pl '  [' + STR(DebugPoolIdx) + '] <a href="exec:gs ''DebugAmandaLizaPreview'',''' + $AmandaLizaTalkPool[DebugPoolIdx] + '''">' + $AmandaLizaTalkPool[DebugPoolIdx] + '</a>'
+            DebugPoolIdx += 1
+            jump 'DebugPoolLoop'
+        end
+        killvar 'DebugPoolIdx'
+    else
+        pl '<font color="#cc6600">Пул пуст — ни одна фраза не проходит текущие гейты (slut, home sex, oral, запреты...).</font>'
+    end
+---
+
+#DebugAmandaLizaPrintPhraseTester
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ТЕСТЕР ТЕКСТОВ СПЛЕТЕН (КЛИК ДЛЯ ПРОСМОТРА)</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+
+    if $DebugAmandaLizaPreviewPhrase <> '':
+        pl '┌────────────────────────────────────────────────────────────'
+        pl '│ <b>ТЕКСТ ФРАЗЫ: [' + $DebugAmandaLizaPreviewPhrase + ']</b>  <a href="exec:gs ''DebugAmandaLizaClearPreview''">[x Скрыть]</a>'
+        pl '├────────────────────────────────────────────────────────────'
+        gs 'AmandaLizaTalkText', $DebugAmandaLizaPreviewPhrase
+        pl '│ ' + $AmandaLizaTalkText
+        killvar '$AmandaLizaTalkText'
+        pl '└────────────────────────────────────────────────────────────'
+        pl ' '
     end
 
-    if AmandaLizaTalkPoolSize >= 2:
-        pl '  [2] ' + $AmandaLizaTalkPool[2]
-    end
+    pl '<b>1. Наивные вопросы:</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''naive_children''">naive_children</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''naive_hole''">naive_hole</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''naive_not_only_kiss''">naive_not_only_kiss</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''naive_mother_many_kids''">naive_mother_many_kids</a>'
 
-    if AmandaLizaTalkPoolSize >= 3:
-        pl '  [3] ' + $AmandaLizaTalkPool[3]
-    end
+    pl '<b>2. Любопытство и Стефан:</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''curious_stefan''">curious_stefan</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''curious_oral''">curious_oral</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''curious_first_time''">curious_first_time</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''curious_before_wedding''">curious_before_wedding</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''stefan_brother_fuck''">stefan_brother_fuck</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''stefan_stairs''">stefan_stairs</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''stefan_anal''">stefan_anal</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''stefan_atm''">stefan_atm</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''stefan_rim_him''">stefan_rim_him</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''stefan_rim_her''">stefan_rim_her</a>'
 
-    if AmandaLizaTalkPoolSize >= 4:
-        pl '  [4] ' + $AmandaLizaTalkPool[4]
-    end
+    pl '<b>3. Постель и невинность:</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''bed_deflower_talk''">bed_deflower_talk</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''oral_but_virgin''">oral_but_virgin</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''whore_joy''">whore_joy</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''marriage_worry''">marriage_worry</a>'
 
-    if AmandaLizaTalkPoolSize >= 5:
-        pl '  [5] ' + $AmandaLizaTalkPool[5]
-    end
+    pl '<b>4. Запреты Стефана:</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''ban_legare_low''">ban_legare_low</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''ban_legare_high''">ban_legare_high</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''ban_lizette''">ban_lizette</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''ban_guys''">ban_guys</a>'
 
-    if AmandaLizaTalkPoolSize > 5:
-        pl '  … ещё ' + STR(AmandaLizaTalkPoolSize - 5) + ' в пуле'
-    end
+    pl '<b>5. Легаре:</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''legare_deflower''">legare_deflower</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''legare_suck_advice''">legare_suck_advice</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''legare_give_him''">legare_give_him</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''legare_married_rumors''">legare_married_rumors</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''legare_same_things''">legare_same_things</a>'
 
-    if AmandaLizaTalkPoolSize = 0:
-        pl '<font color="#CC6600">Пул пуст — фразы не проходят гейты (slut, home sex, oral…).</font>'
-    end
+    pl '<b>6. Советы Лизетты (опыт):</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''lizette_anal_hint''">lizette_anal_hint</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''lizette_oral_practice''">lizette_oral_practice</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''lizette_balls_hint''">lizette_balls_hint</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''lizette_atm_clean''">lizette_atm_clean</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''lizette_to_amanda_advice''">lizette_to_amanda_advice</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''lizette_rim_fair''">lizette_rim_fair</a>'
+
+    pl '<b>7. Свидетели и слухи:</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''witness_legare_hall''">witness_legare_hall</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''witness_legare_friday''">witness_legare_friday</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''witness_alley_player''">witness_alley_player</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''witness_neighbors''">witness_neighbors</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''witness_lewd_hall''">witness_lewd_hall</a>'
+
+    pl '<b>8. Марафон оргазмов и зеркало:</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''marathon_exhausted''">marathon_exhausted</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''amanda_dream_full_mirror''">amanda_dream_full_mirror</a>'
+
+    pl '<b>9. Атмосфера и обучение:</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPreview'',''ambient_dress_new''">ambient_dress_new</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''ambient_no_panties''">ambient_no_panties</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''ambient_sleep_naked''">ambient_sleep_naked</a> | <a href="exec:gs ''DebugAmandaLizaPreview'',''play_coach_amanda''">play_coach_amanda</a>'
+---
+
+#DebugAmandaLizaPreview
+    $DebugAmandaLizaPreviewPhrase = $ARGS[0]
+    gs 'DebugAmandaLizaPanel'
+---
+
+#DebugAmandaLizaClearPreview
+    killvar '$DebugAmandaLizaPreviewPhrase'
+    gs 'DebugAmandaLizaPanel'
 ---
 
 #DebugAmandaLizaPrintPresets
-    pl '<b>Как поймать болтовню в зале</b>'
-    pl '1) Не воскресенье, трактир открыт, Аманда в TavernMain.'
-    pl '2) Нужен визит Лизетты: AmandaLizaHallVisitReady = 1 (пресет или 25% при входе в зал).'
-    pl '3) Ключ части дня: $AmandaLizaTalkUsedKey пустой для текущих day+time.'
-    pl '4) Вход в активность зала → roll 40% → иначе кнопка «сразу в сцену» ниже.'
-    pl ' '
-
-    pl '<b>Пресеты</b>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetAfterPort'' & gs ''DebugAmandaLizaPanel''">После порта: witness + знакомство</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetHallVisit'' & gs ''DebugAmandaLizaPanel''">Рабочий день: визит Лизетты в зал (ready)</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetSundayRoom'' & gs ''DebugAmandaLizaPanel''">Воскресенье: обе в AmandaRoom, дверь</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetRoomVisitStory'' & gs ''DebugAmandaLizaPanel''">Воскресенье: сюжет room_visit (stage 1)</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetGossipRich'' & gs ''DebugAmandaLizaPanel''">Богатый пул сплетен (home sex, slut, oral)</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetMarathon8AndGossip'' & gs ''DebugAmandaLizaPanel''"><b>8 оргазмов (cap) + marathon pending + флаги Лизетты</b></a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetMarathon8AndGossip'' & gs ''DebugAmandaLizaForceHallTalk''"><b>То же + сразу подслушать в зале</b></a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetAnalTalkPath'' & gs ''DebugAmandaLizaPanel''">Путь к AnalTalk unlock (count 2)</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetSecretVisit'' & gs ''DebugAmandaLizaPanel''">Тайный визит после запрета</a>'
-    pl '<a href="exec:AmandaLizaHallVisitReady = 1 & AmandaLizaHallVisitDay[day] = 1 & gs ''DebugAmandaLizaPanel''">Только форс hall ready (без смены дня)</a>'
-    pl '<a href="exec:$AmandaLizaTalkUsedKey = '''' & gs ''DebugAmandaLizaPanel''">Сбросить ключ части дня (повтор overhear)</a>'
-    pl '<a href="exec:SexMarathonGossipPending[''amanda''] = 1 & gs ''DebugAmandaLizaPanel''">Marathon gossip pending</a>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ПРЕСЕТЫ СОСТОЯНИЙ</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetAfterPort'' & gs ''DebugAmandaLizaPanel''">[Пресет] После порта: witness + знакомство</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetHallVisit'' & gs ''DebugAmandaLizaPanel''">[Пресет] Будний день: визит Лизетты в зал (ready)</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetSundayRoom'' & gs ''DebugAmandaLizaPanel''">[Пресет] Воскресенье: обе в AmandaRoom (дверь)</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetRoomVisitStory'' & gs ''DebugAmandaLizaPanel''">[Пресет] Воскресенье: сюжет room_visit (stage 1)</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetGossipRich'' & gs ''DebugAmandaLizaPanel''">[Пресет] Богатый пул сплетен (home sex, slut 45, oral 4)</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetMarathon8AndGossip'' & gs ''DebugAmandaLizaPanel''"><b>[Пресет] 8 оргазмов + marathon pending + флаги Лизетты</b></a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetAnalTalkPath'' & gs ''DebugAmandaLizaPanel''">[Пресет] Путь к AnalTalk unlock (count 2)</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetSecretVisit'' & gs ''DebugAmandaLizaPanel''">[Пресет] Тайный ночной визит (запрет, бунт 5)</a>'
+    pl '  <a href="exec:AmandaLizaHallVisitReady = 1 & AmandaLizaHallVisitDay[day] = 1 & gs ''DebugAmandaLizaPanel''">[Быстрый форс] Hall ready = 1 (без смены дня)</a>'
+    pl '  <a href="exec:$AmandaLizaTalkUsedKey = '''' & gs ''DebugAmandaLizaPanel''">[Сбросить] Ключ части дня (повтор overhear)</a>'
+    pl '  <a href="exec:SexMarathonGossipPending[''amanda''] = 1 & gs ''DebugAmandaLizaPanel''">[Флаг] Включить Marathon pending</a>'
 ---
 
 #DebugAmandaLizaPrintJumps
-    pl '<b>Запуск сцен (без roll)</b>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetHallVisit'' & gs ''DebugAmandaLizaForceHallTalk''">Подслушать в зале → сцена</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetSundayRoom'' & gt ''AmandaLizaRoomDoor''">Закрытая дверь (вс)</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetSundayRoom'' & gt ''AmandaRoom''">AmandaRoom (редирект на дверь)</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetRoomVisitStory'' & gt ''AmandaRoom''">Сюжет: room_visit из комнаты</a>'
-    pl '<a href="exec:gs ''DebugAmandaLizaPresetSecretVisit'' & gt ''AmandaRoom''">Сюжет: secret_visit (ночь)</a>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЗАПУСК СЦЕН (1-КЛИК, БЕЗ ROLL) И ЛОКАЦИИ</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetHallVisit'' & gs ''DebugAmandaLizaForceHallTalk''">⚡ [Подслушать в зале (сразу в сцену)]</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetSundayRoom'' & gt ''AmandaLizaRoomDoor''">⚡ [Сцена у закрытой двери (AmandaLizaRoomDoor)]</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetRoomVisitStory'' & gt ''AmandaLizetteRoomVisit'',''TavernSecondFloor''">⚡ [Сюжет: room_visit (визит в комнату)]</a>'
+    pl '  <a href="exec:gs ''DebugAmandaLizaPresetSecretVisit'' & gt ''AmandaLizetteSecretVisit'',''TavernSecondFloor''">⚡ [Сюжет: secret_visit (тайный ночной визит)]</a>'
     pl ' '
-    pl '<b>Локации</b>'
-    pl '<a href="exec:gt ''TavernMain''">Зал трактира</a> | <a href="exec:gt ''TavernSecondFloor''">2-й этаж</a> | <a href="exec:gt ''AmandaRoom''">Комната Аманды</a>'
-    pl '<a href="exec:gt ''Port''">Порт</a> | <a href="exec:gs ''DebugPortChurchArcPresetAfterWitness'' & gt ''Port''">Порт после witness</a>'
+    pl '<b>Локации:</b>'
+    pl '  <a href="exec:gt ''TavernMain''">Зал трактира</a> | <a href="exec:gt ''TavernSecondFloor''">2-й этаж</a> | <a href="exec:gt ''AmandaRoom''">Комната Аманды</a> | <a href="exec:gt ''Port''">Порт</a>'
 ---
 
 #DebugAmandaLizaPresetBaseKnown
@@ -293,6 +340,8 @@
 #DebugAmandaLizaPresetRoomVisitStory
     gs 'DebugAmandaLizaPresetSundayRoom'
     LizetteVisitStage = 1
+    $GirlLocation['amanda'] = 'AmandaRoom'
+    $GirlLocation['lizette'] = 'AmandaRoom'
 ---
 
 #DebugAmandaLizaPresetGossipRich

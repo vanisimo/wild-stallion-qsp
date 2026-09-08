@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/debug/debug_port_church_arc.qsps
 ! MODULE: debug
-! Отладка арки Порт → Жоржетта → Церковь (этапы A–H)
+! Отладка арки Порт -> Жоржетта -> Церковь (этапы A-H)
 ! ================================================
 
 #DebugPortChurchArcPanel
@@ -12,106 +12,239 @@
     end
 
     gs 'PanelDebugToolsHeader'
+    gs 'GetDateTimeNames'
+    gs 'GetCitySchedulePhase'
+    gs 'UpdateGirlLocations'
 
-    pl 'DEBUG: ПОРТ → ЖОРЖЕТТА → ЦЕРКОВЬ (A–H)'
-    pl 'День ' + STR(day) + ', неделя ' + STR(week) + ', время ' + STR(time)
+    pl '<b>DEBUG: ПОРТ -> ЖОРЖЕТТА -> ЦЕРКОВЬ (ЭТАПЫ A-H)</b>'
+    pl 'День: ' + STR(day) + ' | Неделя: ' + STR(week) + ' (' + $WeekDay + ') | Время: ' + STR(time) + ' (' + $TimeOfDay + ')'
+    pl 'Фаза: <b>' + $CitySchedulePhase + '</b> | Деньги: ' + STR(money) + ' спинт. | Скандал: ' + STR(TavernScandal)
+    pl 'Локации: Аманда -> ' + $GirlLocation['amanda'] + ' | Жоржетта -> ' + $GirlLocation['georgett'] + ' | Лизетта -> ' + $GirlLocation['lizette']
     pl ' '
 
-    pl '--- Witness / Лизетта ---'
-    pl 'PortMeetWitnessed: ' + STR(PortMeetWitnessed)
-    pl 'AmandaMetLizette: ' + STR(AmandaMetLizette)
-    pl 'LizetteKnown: ' + STR(LizetteKnown)
-    pl 'AmandaAtPortShip: ' + STR(AmandaAtPortShip)
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЭТАП A: Корабль из столицы и встреча (Witness)</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    gs 'DebugPortChurchArcBool', 'Свидетель в порту (PortMeetWitnessed)', PortMeetWitnessed
+    gs 'DebugPortChurchArcBool', 'Аманда встретила Лизетту (AmandaMetLizette)', AmandaMetLizette
+    gs 'DebugPortChurchArcBool', 'Лизетта известна (LizetteKnown)', LizetteKnown
+    gs 'DebugPortChurchArcBool', 'Аманда у корабля (AmandaAtPortShip)', AmandaAtPortShip
+    pl '<b>Пресеты:</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetShipWednesday''">[Пресет A] Среда: корабль у причала, до свидетеля</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetAfterWitness''">[Пресет] После witness (B ждёт через 2-5 дней)</a>'
+    pl '<b>Переходы:</b>'
+    pl '  <a href="exec:gt ''Port''">⚡ В порт</a> | <a href="exec:gt ''PortAmandaLizetteInspect''">⚡ Осмотр у корабля (сцена witness)</a> | <a href="exec:gt ''PortCapitalShipMenu'',''Port''">⚡ Товары с корабля</a>'
     pl ' '
 
-    pl '--- Этап B ---'
-    pl 'GeorgetteSeekScheduled: ' + STR(GeorgetteSeekScheduled)
-    pl 'GeorgetteSeekStartDay: ' + STR(GeorgetteSeekStartDay)
-    pl 'GeorgetteSeekLizetteDone: ' + STR(GeorgetteSeekLizetteDone)
-    pl 'GeorgetteKnown: ' + STR(GeorgetteKnown)
-    pl 'GeorgettePortSexDone: ' + STR(GeorgettePortSexDone)
-    pl '--- Темы talk Жоржетты ---'
-    pl 'Bio: ' + STR(GeorgetteTalkBioDone) + ' | Port: ' + STR(GeorgetteTalkPortDone) + ' | Lizette: ' + STR(GeorgetteTalkLizetteDone)
-    pl 'Clients: ' + STR(GeorgetteTalkClientsDone) + ' | Sex: ' + STR(GeorgetteTalkSexDone) + ' | Family: ' + STR(GeorgetteTalkFamilyDone) + ' | Children: ' + STR(GeorgetteTalkChildrenDone)
-    pl 'Church intro: ' + STR(GeorgetteChurchIntroDone) + ' | afterSpy1: ' + STR(GeorgetteChurchAfterSpy1Done) + ' | recapPending: ' + STR(GeorgetteChurchRecapPending) + ' | lastScene: ' + STR(GeorgettePriestSpyLastScene)
-    pl 'LizSpy1: ' + STR(GeorgetteTalkLizetteSpy1Done) + ' | LizPriest: ' + STR(GeorgetteTalkLizettePriestReportDone) + ' | LizSpy2: ' + STR(GeorgetteTalkLizetteSpy2Done) + ' | Eddie: ' + STR(GeorgetteTalkEddieDone)
-    pl 'Lore idx port/bio/cl/fam/sex/ch: ' + STR(GeorgetteTalkPortStory) + '/' + STR(GeorgetteTalkBioStory) + '/' + STR(GeorgetteTalkClientsStory) + '/' + STR(GeorgetteTalkFamilyStory) + '/' + STR(GeorgetteTalkSexStory) + '/' + STR(GeorgetteTalkChildrenStory)
-    pl '--- Темы talk Лизетты ---'
-    pl 'Port: ' + STR(LizetteTalkPortDone) + ' | Bio: ' + STR(LizetteTalkBioDone) + ' | Gifts: ' + STR(LizetteTalkGiftsDone) + ' | Amanda: ' + STR(LizetteTalkAmandaDone) + ' | Mother: ' + STR(LizetteTalkMotherDone)
-    pl 'Lore idx port/bio/gifts/amanda/mother: ' + STR(LizetteTalkPortStory) + '/' + STR(LizetteTalkBioStory) + '/' + STR(LizetteTalkGiftsStory) + '/' + STR(LizetteTalkAmandaStory) + '/' + STR(LizetteTalkMotherStory)
-    pl '--- Темы talk Ирма ---'
-    pl 'Smalltalk: ' + STR(IrmaTalkSmalltalkDone) + ' | Shop: ' + STR(IrmaTalkShopDone)
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЭТАП B: Жоржетта ищет дочь / Ночной порт</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    gs 'DebugPortChurchArcBool', 'Поиск запланирован (GeorgetteSeekScheduled)', GeorgetteSeekScheduled
+    pl 'День старта поиска: ' + STR(GeorgetteSeekStartDay) + ' (текущий день: ' + STR(day) + ')'
+    gs 'DebugPortChurchArcBool', 'Ивент поиска завершён (GeorgetteSeekLizetteDone)', GeorgetteSeekLizetteDone
+    gs 'DebugPortChurchArcBool', 'Жоржетта известна (GeorgetteKnown)', GeorgetteKnown
+    gs 'DebugPortChurchArcBool', 'Секс в порту ночью был (GeorgettePortSexDone)', GeorgettePortSexDone
+    pl 'Отношения Жоржетта: Friends=' + STR(Friends['georgett']) + ' | Otkroven=' + STR(otkroven['georgett']) + ' | HadSex=' + STR(HadSex['georgett']) + ' | IntimStage=' + STR(IntimStage['georgett'])
+    pl '<b>Пресеты:</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSeekToday''">[Пресет B1] Поиск сегодня: Жоржетта у причала</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetAfterB''">[Пресет B2] После B: ночной порт (Жоржетта открыта)</a>'
+    pl '<b>Переходы:</b>'
+    pl '  <a href="exec:gt ''Port''">⚡ В порт</a> | <a href="exec:gt ''GeorgetteSeekLizetteEvent'',''Port''">⚡ Сцена поиска дочери</a>'
+    pl '  <a href="exec:time = 5 & gs ''UpdateGirlLocations'' & gt ''Port''">⚡ В ночной порт (time=5)</a> | <a href="exec:gt ''GeorgettePortNightPaySex'',''Port''">⚡ Нанять Жоржетту ночью (10 спинт.)</a> | <a href="exec:gt ''PortNightAlleyPeekStart''">⚡ Подглядеть в переулок</a>'
     pl ' '
 
-    pl '--- Этап C ---'
-    pl 'GeorgetteChurchAloneTargetDay: ' + STR(GeorgetteChurchAloneTargetDay)
-    pl 'GeorgetteChurchAlone: ' + STR(GeorgetteChurchAlone)
-    pl 'GeorgetteFuckInChurch: ' + STR(GeorgetteFuckInChurch)
-    pl 'GeorgetteConfessBasic: ' + STR(GeorgetteConfessBasic)
-    pl 'GeorgetteConfessLizaSaw: ' + STR(GeorgetteConfessLizaSaw)
-    pl 'GeorgettePriestSpySeen: ' + STR(GeorgettePriestSpySeen) + ' | stage: ' + STR(GeorgettePriestSpyStage) + ' / 7'
-    pl 'LizetteChurchWithGeorgette: ' + STR(LizetteChurchWithGeorgette)
-    pl 'LizaSawSexInChurch: ' + STR(LizaSawSexInChurch)
-    pl 'LizettePriestSpyStage: ' + STR(LizettePriestSpyStage)
-    pl 'LizettePriestSpySeen: ' + STR(LizettePriestSpySeen)
-    pl 'LizetteSexUnlocked: ' + STR(LizetteSexUnlocked)
-    pl 'ChurchSpyBasicUnlocked: ' + STR(ChurchSpyBasicUnlocked)
-    pl 'ChurchSpyWindowHint: ' + STR(ChurchSpyWindowHint)
-    pl 'ChurchSpyWindowUpgrade: ' + STR(ChurchSpyWindowUpgrade)
-    pl 'ChurchSpyWindowGearGossipHeard: ' + STR(ChurchSpyWindowGearGossipHeard)
-    pl 'ChurchSpyWindowMechanismFound: ' + STR(ChurchSpyWindowMechanismFound)
-    pl 'ChurchSundayNoonVisitCount: ' + STR(ChurchSundayNoonVisitCount)
-    pl 'ChurchConfessionDoneDay: ' + STR(ChurchConfessionDoneDay)
-    pl 'ChurchSpyListenDoneDay: ' + STR(ChurchSpyListenDoneDay)
-    pl 'ChurchSpyGeorgetteSkipDay: ' + STR(ChurchSpyGeorgetteSkipDay)
-    pl 'ChurchSpyLizetteAct2ReadyDay: ' + STR(ChurchSpyLizetteAct2ReadyDay)
-    pl 'ChurchServiceRumorCount: ' + STR(ChurchServiceRumorCount) + ' (day ' + STR(ChurchServiceRumorDay) + ')'
-    pl 'LizetteProstPort: ' + STR(LizetteProstPort)
-    pl 'LizetteProstPortStartDay: ' + STR(LizetteProstPortStartDay)
-    pl 'PortAlleyPeekCount: ' + STR(PortAlleyPeekCount)
-    pl 'LizetteLegarePortSeen: ' + STR(LizetteLegarePortSeen)
-    pl 'Friends[georgett]: ' + STR(Friends['georgett'])
-    pl 'HadSex[georgett]: ' + STR(HadSex['georgett'])
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЭТАП C: Воскресная служба — Жоржетта одна / Секс в ризнице</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    gs 'DebugPortChurchArcBool', 'Жоржетта одна на службе (GeorgetteChurchAlone)', GeorgetteChurchAlone
+    gs 'DebugPortChurchArcBool', 'Секс в ризнице был (GeorgetteFuckInChurch)', GeorgetteFuckInChurch
+    pl 'Целевой день службы: ' + STR(GeorgetteChurchAloneTargetDay)
+    pl '<b>Пресеты:</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSundayC''">[Пресет C1] Вс утро: служба, Жоржетта одна</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetAfterC''">[Пресет C2] После C: секс совершён, полдень</a>'
+    pl '<b>Переходы:</b>'
+    pl '  <a href="exec:gt ''ChurchSundayService''">⚡ На службу (ChurchSundayService)</a> | <a href="exec:gt ''GeorgetteChurchSexStart'',''ChurchSundayService''">⚡ Секс с Жоржеттой в ризнице (15 спинт.)</a> | <a href="exec:gt ''ChurchSundayNoon''">⚡ Полдень у собора</a>'
     pl ' '
 
-    pl '--- Быстрые пресеты ---'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetShipWednesday''">Среда: корабль, до witness (A)</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterWitness''">После witness (B ждёт next_day)</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSeekToday''">B сегодня: ивент в порту</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterB''">После B: ночной порт</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayC''">Воскресенье C1: служба + Жоржетта</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterC''">После C: секс в соборе был</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayD''">Воскресенье D: полдень, исповедь</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayE''">Воскресенье E: spy Жоржетта сцена 1</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetAfterE''">После E: ночь в порту + talk</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayF''">Воскресенье F: Лизетта на службе</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayF2''">F2: дочь видела секс + полдень исповедь</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayG1''">Воскресенье G1: spy Лизетта акт 1</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayG2''">Воскресенье G2: spy Лизетта акт 2</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcPresetSundayH''">После G2: ночной порт H</a>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЭТАП D: Воскресный полдень — Исповедь о грехе</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    gs 'DebugPortChurchArcBool', 'Исповедь Жоржетты базовая (GeorgetteConfessBasic)', GeorgetteConfessBasic
+    gs 'DebugPortChurchArcBool', 'Исповедь о сексе в церкви (GeorgetteConfessInChurch)', GeorgetteConfessInChurch
+    pl 'День последней исповеди Стефана: ' + STR(ChurchConfessionDoneDay)
+    pl '<b>Пресеты:</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSundayD''">[Пресет D] Вс полдень: исповедь у отца Герхарда</a>'
+    pl '<b>Переходы:</b>'
+    pl '  <a href="exec:gt ''ChurchConfessionStart''">⚡ Исповедальня отца Герхарда</a> | <a href="exec:gt ''ChurchSundayNoon''">⚡ Собрание у собора в полдень</a>'
     pl ' '
 
-    pl '--- Spy Жоржетта: сцена 1–7 (полдень, окно, исповедь сегодня) ---'
-    pl '<a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''1''">Сцена 1</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''2''">2</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''3''">3</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''4''">4</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''5''">5</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''6''">6</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''7''">7</a>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЭТАП E: Окно — Шпионаж за Жоржеттой (Сцены 1-7)</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    gs 'DebugPortChurchArcBool', 'Подсказка окна (ChurchSpyWindowHint)', ChurchSpyWindowHint
+    gs 'DebugPortChurchArcBool', 'Механизм найден (ChurchSpyWindowMechanismFound)', ChurchSpyWindowMechanismFound
+    gs 'DebugPortChurchArcBool', 'Окно приоткрыто (ChurchSpyWindowUpgrade)', ChurchSpyWindowUpgrade
+    gs 'DebugPortChurchArcBool', 'Шпионаж Жоржетты виден (GeorgettePriestSpySeen)', GeorgettePriestSpySeen
+    pl 'Текущая стадия spy Жоржетты: <b>' + STR(GeorgettePriestSpyStage) + ' / 7</b>'
+    gs 'DebugPortChurchArcBool', 'Ожидает recap в порту (GeorgetteChurchRecapPending)', GeorgetteChurchRecapPending
+    pl 'Последняя увиденная сцена: ' + STR(GeorgettePriestSpyLastScene)
+    pl '<b>Выбор сцены (полдень, механизм открыт):</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''1''">[Сцена 1]</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''2''">[2]</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''3''">[3]</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''4''">[4]</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''5''">[5]</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''6''">[6]</a> | <a href="exec:gs ''DebugPortChurchArcSetGeorgetteSpyScene'',''7''">[7]</a>'
+    pl '<b>Пресеты:</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSundayE''">[Пресет E] Вс полдень: сцена 1 готова</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetAfterE''">[Пресет После E] Ночь в порту: разговор о Герхарде</a>'
+    pl '<b>Переходы:</b>'
+    pl '  <a href="exec:gt ''ChurchWalkAroundStart''">⚡ Прогулка у собора (к окну)</a> | <a href="exec:gt ''ChurchSpyGeorgetteStart''">⚡ Сразу запустить Spy за Жоржеттой</a>'
     pl ' '
 
-    pl '--- Переходы ---'
-    pl '<a href="exec:gt ''Port''">Порт</a> | <a href="exec:gt ''Church''">Церковь</a> | <a href="exec:gt ''PortCapitalShipMenu'',''Port''">Корабль</a>'
-    pl '<a href="exec:gt ''ChurchSundayService''">Служба (если вс/утро)</a>'
-    pl '<a href="exec:gt ''ChurchSundayNoon''">Полдень (если вс/полдень)</a>'
-    pl '<a href="exec:gt ''ChurchWalkAroundStart''">У окна (прогулка у собора)</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcGiveWindowHint''">+ hint окна (как у лавки Бекки)</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcGiveWindowMechanism''">+ механизм найден (окно приоткрыто)</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcUnlockGeorgetteTalks''">+ все темы Жоржетты</a>'
-    pl '<a href="exec:gs ''DebugPortChurchArcUnlockLizetteTalks''">+ все темы Лизетты</a>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЭТАП F: Воскресная служба — Жоржетта с Лизеттой</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    gs 'DebugPortChurchArcBool', 'Лизетта с Жоржеттой на службе (LizetteChurchWithGeorgette)', LizetteChurchWithGeorgette
+    gs 'DebugPortChurchArcBool', 'Лизетта видела секс в церкви (LizaSawSexInChurch)', LizaSawSexInChurch
+    gs 'DebugPortChurchArcBool', 'Жоржетта исповедалась что дочь видела (GeorgetteConfessLizaSaw)', GeorgetteConfessLizaSaw
+    pl '<b>Пресеты:</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSundayF''">[Пресет F1] Вс утро: Лизетта на службе с матерью</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSundayF2''">[Пресет F2] Лизетта видела секс + полдень исповедь</a>'
+    pl '<b>Переходы:</b>'
+    pl '  <a href="exec:gt ''ChurchSundayService''">⚡ На службу</a> | <a href="exec:gt ''ChurchConfessionStart''">⚡ На исповедь</a>'
+    pl ' '
+
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЭТАП G: Окно — Шпионаж за Лизеттой (Акты 1 и 2)</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl 'Стадия spy Лизетты: <b>' + STR(LizettePriestSpyStage) + '</b> (0=ждёт Акт 1, 1=ждёт Акт 2, 2=завершено)'
+    gs 'DebugPortChurchArcBool', 'Spy Лизетты виден сегодня (LizettePriestSpySeen)', LizettePriestSpySeen
+    pl 'День готовности Акта 2: ' + STR(ChurchSpyLizetteAct2ReadyDay)
+    pl '<b>Пресеты:</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSundayG1''">[Пресет G1] Вс полдень: spy Лизетта Акт 1</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSundayG2''">[Пресет G2] Вс полдень: spy Лизетта Акт 2</a>'
+    pl '<b>Переходы:</b>'
+    pl '  <a href="exec:gt ''ChurchSpyLizetteStart''">⚡ Сразу запустить Spy Лизетты</a> | <a href="exec:gt ''ChurchWalkAroundStart''">⚡ Прогулка у окна собора</a>'
+    pl ' '
+
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЭТАП H: Ночной порт — Лизетта на причале</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    gs 'DebugPortChurchArcBool', 'Лизетта работает в ночном порту (LizetteProstPort)', LizetteProstPort
+    gs 'DebugPortChurchArcBool', 'Секс с Лизеттой открыт (LizetteSexUnlocked)', LizetteSexUnlocked
+    pl 'День начала работы Лизетты: ' + STR(LizetteProstPortStartDay)
+    pl 'Отношения Лизетта: Friends=' + STR(Friends['lizette']) + ' | Otkroven=' + STR(otkroven['lizette']) + ' | HadSex=' + STR(HadSex['lizette']) + ' | IntimStage=' + STR(IntimStage['lizette'])
+    pl '<b>Пресеты:</b>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcPresetSundayH''">[Пресет H] Ночной порт: Лизетта работает, секс открыт</a>'
+    pl '<b>Переходы:</b>'
+    pl '  <a href="exec:time = 5 & gs ''UpdateGirlLocations'' & gt ''Port''">⚡ В ночной порт (time=5)</a> | <a href="exec:gs ''PortProstNightHire'',''Port'',''lizette''">⚡ Нанять Лизетту (10 спинт.)</a> | <a href="exec:gs ''PortProstNightHire'',''Port'',''georgett''">⚡ Нанять Жоржетту (10 спинт.)</a>'
+    pl ' '
+
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ТЕМЫ РАЗГОВОРОВ И МЕХАНИЗМЫ</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl 'Жоржетта: Bio=' + STR(GeorgetteTalkBioDone) + ' | Port=' + STR(GeorgetteTalkPortDone) + ' | Lizette=' + STR(GeorgetteTalkLizetteDone) + ' | Clients=' + STR(GeorgetteTalkClientsDone) + ' | Sex=' + STR(GeorgetteTalkSexDone) + ' | Family=' + STR(GeorgetteTalkFamilyDone) + ' | Children=' + STR(GeorgetteTalkChildrenDone)
+    pl 'Сюжетные Жоржетты: ChurchIntro=' + STR(GeorgetteChurchIntroDone) + ' | SpyRecap=' + STR(GeorgetteChurchRecapPending) + ' | LizSpy1=' + STR(GeorgetteTalkLizetteSpy1Done) + ' | LizPriest=' + STR(GeorgetteTalkLizettePriestReportDone) + ' | LizSpy2=' + STR(GeorgetteTalkLizetteSpy2Done) + ' | Eddie=' + STR(GeorgetteTalkEddieDone)
+    pl 'Lore индексы Жоржетты (Port/Bio/Clients/Family/Sex/Children): ' + STR(GeorgetteTalkPortStory) + '/' + STR(GeorgetteTalkBioStory) + '/' + STR(GeorgetteTalkClientsStory) + '/' + STR(GeorgetteTalkFamilyStory) + '/' + STR(GeorgetteTalkSexStory) + '/' + STR(GeorgetteTalkChildrenStory)
+    pl 'Лизетта: Port=' + STR(LizetteTalkPortDone) + ' | Bio=' + STR(LizetteTalkBioDone) + ' | Gifts=' + STR(LizetteTalkGiftsDone) + ' | Amanda=' + STR(LizetteTalkAmandaDone) + ' | Mother=' + STR(LizetteTalkMotherDone)
+    pl 'Lore индексы Лизетты (Port/Bio/Gifts/Amanda/Mother): ' + STR(LizetteTalkPortStory) + '/' + STR(LizetteTalkBioStory) + '/' + STR(LizetteTalkGiftsStory) + '/' + STR(LizetteTalkAmandaStory) + '/' + STR(LizetteTalkMotherStory)
+    pl 'Ирма: Smalltalk=' + STR(IrmaTalkSmalltalkDone) + ' | Shop=' + STR(IrmaTalkShopDone)
+    pl ' '
+    pl '  <a href="exec:gs ''DebugPortChurchArcUnlockGeorgetteTalks''">[+ Открыть все темы Жоржетты]</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcUnlockLizetteTalks''">[+ Открыть все темы Лизетты]</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcGiveWindowHint''">[+ Дать намёк на окно собора]</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcGiveWindowMechanism''">[+ Механизм окна найден (окно приоткрыто)]</a>'
+    pl '  <a href="exec:gs ''DebugPortChurchArcResetDaily''">[Сбросить лимиты сегодняшнего дня (исповедь, подслушивание)]</a>'
+    pl ' '
+
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<b>ЛОКАЦИИ И СБРОС</b>'
+    pl '<b>══════════════════════════════════════════════════</b>'
+    pl '<a href="exec:gt ''Port''">Порт</a> | <a href="exec:gt ''Church''">Церковь</a> | <a href="exec:gt ''TavernMain''">Зал трактира</a> | <a href="exec:gt ''TavernSecondFloor''">2-й этаж</a> | <a href="exec:gt ''AmandaRoom''">Комната Аманды</a>'
+    pl ' '
+    pl '<a href="exec:gs ''DebugPortChurchArcReset'' & gs ''DebugPortChurchArcPanel''"><font color="#cc0000"><b>[Полный сброс арки Порт -> Церковь]</b></font></a>'
     pl ' '
 
     gs 'PanelDebugToolsBack'
 ---
 
+#DebugPortChurchArcBool
+    $DebugArcBoolLabel = $ARGS[0]
+    DebugArcBoolVal = ARGS[1]
+
+    if $DebugArcBoolLabel = '':
+        killvar '$DebugArcBoolLabel'
+        exit
+    end
+
+    if DebugArcBoolVal = 1:
+        pl $DebugArcBoolLabel + ': <b><font color="#00aa00">[✓ ДА]</font></b>'
+    else
+        pl $DebugArcBoolLabel + ': <font color="#888888">[✗ нет]</font>'
+    end
+
+    killvar '$DebugArcBoolLabel'
+    killvar 'DebugArcBoolVal'
+---
+
+#DebugPortChurchArcResetDaily
+    ChurchConfessionDoneDay = 0
+    ChurchSpyListenDoneDay = 0
+    ChurchAfterSermonDoneDay = 0
+    ChurchSpyGeorgetteSkipDay = 0
+    GeorgettePortNightGone = 0
+    LizettePortNightGone = 0
+    PortNightSkipEntryRoll = 0
+    PortAlleyPeekCount = 0
+    gs 'DebugPortChurchArcPanel'
+---
+
+#DebugPortChurchArcReset
+    PortMeetWitnessed = 0
+    AmandaMetLizette = 0
+    LizetteKnown = 0
+    AmandaAtPortShip = 0
+    GeorgetteKnown = 0
+    GeorgetteSeekScheduled = 0
+    GeorgetteSeekStartDay = 0
+    GeorgetteSeekLizetteDone = 0
+    GeorgettePortSexDone = 0
+    GeorgetteChurchAlone = 0
+    GeorgetteChurchAloneTargetDay = 0
+    GeorgetteFuckInChurch = 0
+    GeorgetteConfessBasic = 0
+    GeorgetteConfessInChurch = 0
+    GeorgetteConfessLizaSaw = 0
+    GeorgettePriestSpySeen = 0
+    GeorgettePriestSpyStage = 0
+    GeorgetteChurchIntroDone = 0
+    GeorgetteChurchAfterSpy1Done = 0
+    GeorgetteChurchRecapPending = 0
+    GeorgettePriestSpyLastScene = 0
+    LizetteChurchWithGeorgette = 0
+    LizetteChurchWithGeorgetteTargetDay = 0
+    LizaSawSexInChurch = 0
+    LizettePriestSpyStage = 0
+    LizettePriestSpySeen = 0
+    LizetteSexUnlocked = 0
+    ChurchSpyBasicUnlocked = 0
+    ChurchSpyWindowHint = 0
+    ChurchSpyWindowUpgrade = 0
+    ChurchSpyWindowGearGossipHeard = 0
+    ChurchSpyWindowMechanismFound = 0
+    ChurchSundayNoonVisitCount = 0
+    ChurchConfessionDoneDay = 0
+    ChurchSpyListenDoneDay = 0
+    ChurchSpyGeorgetteSkipDay = 0
+    ChurchSpyLizetteAct2ReadyDay = 0
+    LizetteProstPort = 0
+    LizetteProstPortStartDay = 0
+    PortAlleyPeekCount = 0
+    LizetteLegarePortSeen = 0
+    gs 'UpdateGirlLocations'
+    gs 'DebugPortChurchArcPanel'
+---
+
 #DebugPortChurchArcPresetShipWednesday
     week = 3
     time = 2
+    gs 'IsTavernOpen'
     PortMeetWitnessed = 0
     AmandaMetLizette = 0
     LizetteKnown = 0
@@ -123,7 +256,9 @@
     GeorgetteChurchAlone = 0
     GeorgetteChurchAloneTargetDay = 0
     GeorgetteFuckInChurch = 0
-    gs 'UpdateGirlLocations'
+    AmandaAtPortShip = 1
+    $GirlLocation['amanda'] = 'Port'
+    $GirlLocation['lizette'] = 'Port'
     gs 'DebugPortChurchArcPanel'
 ---
 
@@ -307,7 +442,9 @@
     gs 'DebugPortChurchArcPresetSundayC'
     gs 'DebugPortChurchArcSetGeorgetteRelations', 'c2'
     GeorgetteChurchAlone = 0
+    time = 2
     TavernScandal += 1
+    gs 'UpdateGirlLocations'
     gs 'DebugPortChurchArcPanel'
 ---
 

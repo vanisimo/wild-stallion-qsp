@@ -30,7 +30,7 @@
 
     gs 'FormatTextByStyle', $ChurchServiceLinkLabel, 'npc_link'
     gs 'NpcTalkIconInline'
-    $ChurchServiceMenuLink = $NpcTalkIconInline + ' <a href="exec:gs ''ChurchSundayServiceShowMenu'', ''' + $ChurchServiceLinkId + '''">' + $FormattedText + '</a>'
+    $ChurchServiceMenuLink = '<a style="text-decoration:none; color:#C59B3F; font-weight:bold; border-bottom:1px dotted rgba(197,155,63,0.6);" href="exec:gs ''ChurchSundayServiceShowMenu'', ''' + $ChurchServiceLinkId + '''">' + $NpcTalkIconInline + $FormattedText + '</a>'
 
     killvar '$FormattedText'
     killvar '$NpcTalkIconInline'
@@ -130,21 +130,21 @@
     $ChurchServiceImageTarget = LCASE($ARGS[0])
 
     if $ChurchServiceImageTarget = 'gerhard':
-        gs 'ShowImage', 'gerhard', 'normal', 'normal'
+        gs 'ShowImagePath', 'images/events/church/sunday_service/sermon_gerhard', '', 'event', 'jpg'
     elseif $ChurchServiceImageTarget = 'mayor':
-        gs 'ShowImage', 'church', 'general', 'normal'
+        gs 'ShowImagePath', 'images/events/church/sunday_service/mayor', '', 'event', 'jpg'
     elseif $ChurchServiceImageTarget = 'irma':
-        gs 'ShowImage', 'irma', 'shop', 'talk', 'normal'
+        gs 'ShowImagePath', 'images/portraits/irma/portrait1', '', 'portrait', 'jpg'
     elseif $ChurchServiceImageTarget = 'becky':
-        gs 'ShowImage', 'becky', 'shop', 'normal', 'normal'
+        gs 'ShowImagePath', 'images/events/church/sunday_service/sermon_becky', '', 'event', 'jpg'
     elseif $ChurchServiceImageTarget = 'legare':
-        gs 'ShowImage', 'clarissa', 'shop', 'normal', 'normal'
+        gs 'ShowImagePath', 'images/events/church/sunday_service/sermon_alber', '', 'event', 'jpg'
     elseif $ChurchServiceImageTarget = 'family':
-        gs 'ShowImage', 'sandra', 'normal', 'normal'
+        gs 'ShowImagePath', 'images/events/church/sunday_service/sermon_amanda', '', 'event', 'jpg'
     elseif $ChurchServiceImageTarget = 'georgette':
-        gs 'ShowImage', 'georgett', 'normal', 'normal'
+        gs 'ShowImagePath', 'images/events/church/sunday_service/sermon_georgett', '', 'event', 'jpg'
     else:
-        gs 'ShowImage', 'church', 'general', 'normal'
+        gs 'ShowImage', 'church', 'general', 'interior'
     end
 
     killvar '$ChurchServiceImageTarget'
@@ -242,7 +242,7 @@
 ---
 
 #ChurchSundayServicePrintIntro
-    gs 'ChurchSundayServiceEmbedMenuLink', 'отец Герхард', 'gerhard'
+    gs 'ChurchSundayServiceEmbedMenuLink', 'Отец Герхард', 'gerhard'
     $ChurchIntroGerhard = $ChurchServiceMenuLink
     killvar '$ChurchServiceMenuLink'
 
@@ -258,29 +258,33 @@
     $ChurchIntroBecky = $ChurchServiceMenuLink
     killvar '$ChurchServiceMenuLink'
 
-    gs 'ChurchSundayServiceEmbedMenuLink', 'семья виноторговца Легаре', 'legare'
+    gs 'ChurchSundayServiceEmbedMenuLink', 'Альбер Легаре', 'legare'
     $ChurchIntroLegare = $ChurchServiceMenuLink
     killvar '$ChurchServiceMenuLink'
 
-    gs 'ChurchSundayServiceEmbedMenuLink', 'своей семьёй', 'family'
+    gs 'ChurchSundayServiceEmbedMenuLink', 'Ваша семья', 'family'
     $ChurchIntroFamily = $ChurchServiceMenuLink
     killvar '$ChurchServiceMenuLink'
 
-    $ChurchServiceText = 'Собор наполнен звуками голосов. ' + $ChurchIntroGerhard + ' у алтаря; прихожане осеняют себя священным кругом перед молитвой.'
-    $ChurchServiceText += '<br><br>На почётном месте — мэр города ' + $ChurchIntroMayor + '. В тени колонны видна портниха ' + $ChurchIntroIrma + '. Чуть дальше в зале — ' + $ChurchIntroBecky + ' со своими детьми.'
-    $ChurchServiceText += '<br><br>' + $ChurchIntroLegare + ' стоят позади мэра и раскланиваются со знакомыми. Вы стоите рядом ' + $ChurchIntroFamily + '.'
+    $ChurchServiceText = 'Собор наполнен звуками голосов. Прихожане осеняют себя священным кругом перед молитвой.'
+    $ChurchServiceText += '<br><br>' + $ChurchIntroGerhard + ' — стоит у алтаря перед собравшимися.'
+    $ChurchServiceText += '<br>' + $ChurchIntroMayor + ' — мэр города на почётном месте.'
+    $ChurchServiceText += '<br>' + $ChurchIntroLegare + ' — городской виноторговец с женой стоят позади мэра и раскланиваются со знакомыми.'
+    $ChurchServiceText += '<br>' + $ChurchIntroIrma + ' — портниха стоит в тени колонны.'
+    $ChurchServiceText += '<br>' + $ChurchIntroBecky + ' — чуть дальше в зале со своими детьми.'
+    $ChurchServiceText += '<br>' + $ChurchIntroFamily + ' — Сандра, Мелисса и Аманда стоят рядом с вами.'
 
     if GeorgetteKnown = 1 and (GeorgetteChurchAlone = 1 or LizetteChurchWithGeorgette = 1) and $GirlLocation['georgett'] = 'Church':
         gs 'ChurchSundayServiceEmbedMenuLink', 'Жоржетта', 'georgette'
         $ChurchIntroGeorgette = $ChurchServiceMenuLink
         killvar '$ChurchServiceMenuLink'
-        $ChurchServiceText += '<br><br>За спинами прихожан мелькает ' + $ChurchIntroGeorgette + ' — вы уже знаете, кто это.'
+        $ChurchServiceText += '<br>' + $ChurchIntroGeorgette + ' — мелькает за спинами прихожан.'
         killvar '$ChurchIntroGeorgette'
     else:
-        gs 'ChurchSundayServiceEmbedMenuLink', 'чья-то тень', 'shadow'
+        gs 'ChurchSundayServiceEmbedMenuLink', 'Чья-то тень', 'shadow'
         $ChurchIntroShadow = $ChurchServiceMenuLink
         killvar '$ChurchServiceMenuLink'
-        $ChurchServiceText += '<br><br>За спинами прихожан мелькает ' + $ChurchIntroShadow + ', но вы не можете понять, кто это.'
+        $ChurchServiceText += '<br>' + $ChurchIntroShadow + ' — мелькает за спинами прихожан, но лица не разглядеть.'
         killvar '$ChurchIntroShadow'
     end
 
