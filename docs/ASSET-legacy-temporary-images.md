@@ -115,6 +115,43 @@
 
 ---
 
+## 9. Порт: Жоржетта и Лизетта (модули modules/events/port/ и georgette/)
+* Портреты и сайдбар:
+  * `images/portraits/georgett/` (portrait1..4, talk_calm, talk_happy, talk_angry, talk_tired, strip01..11, stripsperm010..111).
+  * `images/portraits/lizette/` (portrait1..2, talk_calm, talk_happy, talk_angry, talk_tired).
+* Ночной переулок порта (`images/events/port/night_alley/`):
+  * Жоржетта (9 сцен): georgett_sailors_1, georgett_townsman_1, georgett_oral_1, georgett_wall_1, georgett_anal_1, georgett_dp_1, georgett_priest_1, georgett_eddie_1, georgett_eddie_mommy_1.
+  * Лизетта (9 сцен): lizette_sailors_1, lizette_young_1, lizette_townsman_1, lizette_oral_1, lizette_wall_1, lizette_barrel_1, lizette_legare_1, lizette_legare_oral_1, lizette_legare_take_1.
+* Ночные свидания и наём:
+  * `images/events/georgette/georgette_port_night/georgette_port_after_sex` — утро после свидания со Стефаном.
+  * `images/events/port/port_prost_night/port_prost_night_after_georg` — утро после наёма Жоржетты в порту.
+  * `images/events/port/port_prost_night/port_prost_night_after_liz` — утро после наёма Лизетты в порту.
+* Поиски и встречи у корабля:
+  * `images/events/port/georgette_seek/lizette_peek_1` — сцена поисков дочери Жоржеттой у ящиков причала.
+  * `images/events/port/amanda_lizette/` (morning, day, evening, night) — Аманда знакомится с Лизеттой у трапа корабля.
+* Полный legacy-миррор: `images/georgett/` (Port, portevents, portraits, church, sex, Glory, ispoved).
+
+---
+
+## 10. Интимные сцены: Аманда и Стефан (ГГ) (модули modules/actions/sex/ и modules/events/family/)
+* Замена текстовых плейсхолдеров на реальные кадры legacy 0.05 (`images/sex/amanda/`):
+  * Прелюдия (`foreplay/`): undress, touch.
+  * Вагинальный секс (`vaginal/`): missionary_enter, missionary_slow, missionary_orgasm, missionary_repeat, doggy_learn, side_learn.
+  * Финал оргазма (`finish/`): prompt (готов кончить), inside (внутрь), outside (на лицо/живот).
+  * Комната Аманды (`room/`):
+    * Ночная сорочка (`nightgown_*`): idle, kiss, petting, hug, blowjob, cuni, handjob, talk, talk_done, after_night, evening_talk, unlock.
+    * Обнажённая (`naked_*`): idle, sleep, kiss, petting, hug, blowjob, cuni, handjob, talk, talk_done, after_night, evening_talk, unlock.
+  * Оральные ласки (`oral/`): cuni, blowjob, minet1..minet12 (полная цепочка глубокого минета).
+  * Поцелуи и ласки (`kiss/`, `touch/`): kiss, kissnaked, grope1, grope2.
+  * Анальный секс (`anal/`): enter, slow, doggy, missionary.
+  * После близости (`after/`): after_sex, angry, cumpussy, cumpussyangry.
+* Присутствие в комнате (`images/locations/`):
+  * `amanda_room_{morning|day|night}_{nightgown|naked}_{pose}` — реальные фоновые кадры с Амандой на кровати в одежде и без.
+* Полный legacy-миррор (`images/amanda/` и `images/events/amanda/`):
+  * sexroom (37 файлов), Room (4 файла), RandomSex (6 файлов), sexafterdance (12 файлов), gloryfirst (15 файлов).
+
+---
+
 ## Правила замены при подготовке чистовых рендеров:
 1. При появлении чистового рендера заменять файл по указанному относительному пути в images/.
 2. Сохранять чистовой файл преимущественно как .webp (и .png для UI/иконок).

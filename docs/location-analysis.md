@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 437
-- Locations: 3033
-- Locations with direct incoming calls: 2609
-- Locations without direct incoming calls: 424
-- Review candidates without direct incoming calls: 154
+- Locations: 3035
+- Locations with direct incoming calls: 2610
+- Locations without direct incoming calls: 425
+- Review candidates without direct incoming calls: 155
 - Classified entry/helper locations without direct incoming calls: 270
 - Dynamic call sites: 2
 
@@ -25,6 +25,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 7 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
+| `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 180 | `modules/events` |
 | `ChurchSundayServiceInspectIrma` | `modules/events/church/church_sunday_service.qsps` | 117 | `modules/events` |
 | `ChurchSundayServiceInspectMayor` | `modules/events/church/church_sunday_service.qsps` | 112 | `modules/events` |
 | `ChurchSundayServiceRumorAct` | `modules/events/church/church_sunday_rumors.qsps` | 40 | `modules/events` |
@@ -279,7 +280,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `FridayDanceMelissaDressReadyText` | `modules/events/dance/friday_dance_text.qsps` | 228 | `entry/helper` |
 | `FridayDanceMelissaTalkText` | `modules/events/dance/friday_dance_text.qsps` | 232 | `entry/helper` |
 | `FridayDanceTreatText` | `modules/events/dance/friday_dance_text.qsps` | 163 | `entry/helper` |
-| `GeorgetteChurchSexStart` | `modules/events/church/church_georgette_service_sex.qsps` | 97 | `entry/helper` |
+| `GeorgetteChurchSexStart` | `modules/events/church/church_georgette_service_sex.qsps` | 83 | `entry/helper` |
 | `GetBeckyShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 297 | `entry/helper` |
 | `GetNpcGtLinkHref` | `modules/menu/npc/npc_clickable_link.qsps` | 354 | `entry/helper` |
 | `GetRandomTalkPhraseFromTable` | `modules/core/system/functions.qsps` | 24 | `entry/helper` |
@@ -400,7 +401,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `PanelToggleGirlJob` | `modules/menu/panels/panel_tavern_info.qsps` | 301 | `entry/helper` |
 | `PanelUiGoodLine` | `modules/menu/system/panel_ui.qsps` | 244 | `entry/helper` |
 | `PanelUiMenuAdd` | `modules/menu/system/panel_ui.qsps` | 256 | `entry/helper` |
-| `PrintCityScheduleHint` | `modules/core/time/business_schedule.qsps` | 521 | `entry/helper` |
+| `PrintCityScheduleHint` | `modules/core/time/business_schedule.qsps` | 525 | `entry/helper` |
 | `PrintMainFmt` | `modules/core/text/text_format.qsps` | 398 | `entry/helper` |
 | `PrintMainFmtP` | `modules/core/text/text_format.qsps` | 402 | `entry/helper` |
 | `PrintPanelFmt` | `modules/core/text/text_format.qsps` | 406 | `entry/helper` |
@@ -461,22 +462,22 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ClampGirlSocialStats` | 132 |
 | `TavernMain` | 123 |
 | `PrintThoughtLine` | 109 |
-| `ShowImage` | 92 |
+| `ShowImage` | 97 |
 | `ShowGirlSidebar` | 92 |
 | `Menu.Create` | 89 |
 | `FormatSpintry` | 87 |
+| `PrintTitleLine` | 85 |
 | `Menu.Destroy` | 83 |
-| `PrintTitleLine` | 83 |
 | `UpdateGirlLocations` | 76 |
-| `PrintMainP` | 69 |
+| `PrintMainP` | 68 |
 | `RegisterSex` | 65 |
-| `SexSceneMain` | 46 |
 | `GirlTalkResult` | 46 |
+| `SexSceneMain` | 46 |
 | `SaveLastHallEvent` | 45 |
 | `AmandaLizaTalkPoolTry` | 43 |
 | `BeckyShop` | 42 |
-| `Menu.AddCondition` | 42 |
 | `MarketDance` | 42 |
+| `Menu.AddCondition` | 42 |
 
 ## Dynamic Call Sites
 

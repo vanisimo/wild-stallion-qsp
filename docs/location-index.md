@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 437
-- Locations: 3033
+- Locations: 3035
 
 ## modules/actions
 
@@ -508,8 +508,8 @@ Generated from active project files in `qsp-project.json`.
 | `FormatTextWarn` | `modules/core/text/text_format.qsps` | 343 |
 | `GameInit` | `modules/core/system/game_init.qsps` | 8 |
 | `GetBeckyShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 297 |
-| `GetCitySchedulePhase` | `modules/core/time/business_schedule.qsps` | 136 |
-| `GetCurrentShopSeller` | `modules/core/time/business_schedule.qsps` | 358 |
+| `GetCitySchedulePhase` | `modules/core/time/business_schedule.qsps` | 140 |
+| `GetCurrentShopSeller` | `modules/core/time/business_schedule.qsps` | 362 |
 | `GetDateTimeNames` | `modules/core/time/get_date_time_names.qsps` | 7 |
 | `GetGirlJobPower` | `modules/core/girls/girl_job.qsps` | 152 |
 | `GetGirlLocationText` | `modules/core/girls/girl_location.qsps` | 141 |
@@ -596,12 +596,12 @@ Generated from active project files in `qsp-project.json`.
 | `IntimRegisterPlayerCumSoft` | `modules/core/girls/girl_intim_menu.qsps` | 64 |
 | `IntimScene` | `modules/core/girls/girl_intim_menu.qsps` | 146 |
 | `IntimSoftProgress` | `modules/core/girls/girl_intim_menu.qsps` | 102 |
-| `IsBusinessOpen` | `modules/core/time/business_schedule.qsps` | 196 |
-| `IsCapitalShipAvailable` | `modules/core/time/business_schedule.qsps` | 481 |
-| `IsMayorOfficeOpen` | `modules/core/time/business_schedule.qsps` | 439 |
+| `IsBusinessOpen` | `modules/core/time/business_schedule.qsps` | 200 |
+| `IsCapitalShipAvailable` | `modules/core/time/business_schedule.qsps` | 485 |
+| `IsMayorOfficeOpen` | `modules/core/time/business_schedule.qsps` | 443 |
 | `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 322 |
-| `IsShopOpen` | `modules/core/time/business_schedule.qsps` | 314 |
-| `IsTavernOpen` | `modules/core/time/business_schedule.qsps` | 294 |
+| `IsShopOpen` | `modules/core/time/business_schedule.qsps` | 318 |
+| `IsTavernOpen` | `modules/core/time/business_schedule.qsps` | 298 |
 | `KnowledgeEventIdByHallEvent` | `modules/core/knowledge/event_knowledge_ids.qsps` | 84 |
 | `KnowledgeEventIdsInit` | `modules/core/knowledge/event_knowledge_ids.qsps` | 11 |
 | `KnowledgeRegisterFact` | `modules/core/system/compatibility_aliases.qsps` | 6 |
@@ -670,7 +670,7 @@ Generated from active project files in `qsp-project.json`.
 | `PortCapitalShipGiftActs` | `modules/core/gifts/gift_registry.qsps` | 233 |
 | `PortraitPanelResolvePath` | `modules/core/show_image/show_portrait_to_panel.qsps` | 9 |
 | `PrepareSkipDays` | `modules/core/time/skip_days.qsps` | 7 |
-| `PrintCityScheduleHint` | `modules/core/time/business_schedule.qsps` | 521 |
+| `PrintCityScheduleHint` | `modules/core/time/business_schedule.qsps` | 525 |
 | `PrintFmt` | `modules/core/text/text_format.qsps` | 374 |
 | `PrintGirlRoomPresenceP` | `modules/core/girls/girl_room_presence.qsps` | 52 |
 | `PrintGirlTavernEventState` | `modules/core/tavern/tavern_event_state_core.qsps` | 317 |
@@ -1377,13 +1377,13 @@ Generated from active project files in `qsp-project.json`.
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 |
 | `BuildDraupnirTalkMenu` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 258 |
 | `CheckAmandaEvents` | `modules/events/amanda/amanda_events.qsps` | 7 |
-| `ChurchConfessionApplySin` | `modules/events/church/church_confession_dynamic.qsps` | 112 |
+| `ChurchConfessionApplySin` | `modules/events/church/church_confession_dynamic.qsps` | 202 |
 | `ChurchConfessionCanStart` | `modules/events/church/church_confession_dynamic.qsps` | 7 |
 | `ChurchConfessionDynamicText` | `modules/events/church/church_confession_dynamic_text.qsps` | 8 |
 | `ChurchConfessionHintText` | `modules/events/church/church_confession_dynamic.qsps` | 25 |
-| `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 96 |
-| `ChurchConfessionStart` | `modules/events/church/church_confession_dynamic.qsps` | 53 |
-| `ChurchPureHeartsConfession` | `modules/events/church/church_confession_dynamic.qsps` | 64 |
+| `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 180 |
+| `ChurchConfessionStart` | `modules/events/church/church_confession_dynamic.qsps` | 58 |
+| `ChurchPureHeartsConfession` | `modules/events/church/church_confession_dynamic.qsps` | 68 |
 | `ChurchRenderStreetExit` | `modules/events/church/church_core.qsps` | 11 |
 | `ChurchServiceRumorCanStart` | `modules/events/church/church_sunday_rumors.qsps` | 7 |
 | `ChurchSpyBeckyCheckAvailable` | `modules/events/church/church_spy_becky.qsps` | 7 |
@@ -1401,15 +1401,16 @@ Generated from active project files in `qsp-project.json`.
 | `ChurchSpyBeckyStart` | `modules/events/church/church_spy_becky.qsps` | 77 |
 | `ChurchSpyBeckyStep` | `modules/events/church/church_spy_becky.qsps` | 93 |
 | `ChurchSpyBeckyStepText` | `modules/events/church/church_spy_becky_text.qsps` | 18 |
-| `ChurchSpyCoreText` | `modules/events/church/church_spy_core_text.qsps` | 7 |
+| `ChurchSpyCoreText` | `modules/events/church/church_spy_core_text.qsps` | 8 |
 | `ChurchSpyGenericStart` | `modules/events/church/church_spy_core.qsps` | 81 |
 | `ChurchSpyGeorgetteCheckAvailable` | `modules/events/church/church_spy_core.qsps` | 7 |
-| `ChurchSpyGeorgetteFinish` | `modules/events/church/church_spy_georgette.qsps` | 120 |
+| `ChurchSpyGeorgetteFinish` | `modules/events/church/church_spy_georgette.qsps` | 126 |
 | `ChurchSpyGeorgettePickScene` | `modules/events/church/church_spy_georgette.qsps` | 27 |
 | `ChurchSpyGeorgetteSceneStepMax` | `modules/events/church/church_spy_georgette.qsps` | 9 |
-| `ChurchSpyGeorgetteSceneText` | `modules/events/church/church_spy_georgette_text.qsps` | 8 |
+| `ChurchSpyGeorgetteSceneText` | `modules/events/church/church_spy_georgette_text.qsps` | 9 |
+| `ChurchSpyGeorgetteShowImage` | `modules/events/church/church_spy_georgette.qsps` | 105 |
 | `ChurchSpyGeorgetteStart` | `modules/events/church/church_spy_georgette.qsps` | 45 |
-| `ChurchSpyGeorgetteStep` | `modules/events/church/church_spy_georgette.qsps` | 90 |
+| `ChurchSpyGeorgetteStep` | `modules/events/church/church_spy_georgette.qsps` | 58 |
 | `ChurchSpyLizetteCheckAvailable` | `modules/events/church/church_spy_core.qsps` | 48 |
 | `ChurchSpyLizetteFinishAct1` | `modules/events/church/church_spy_lizette.qsps` | 100 |
 | `ChurchSpyLizetteFinishAct2` | `modules/events/church/church_spy_lizette.qsps` | 113 |
@@ -1585,16 +1586,17 @@ Generated from active project files in `qsp-project.json`.
 | `FridayDanceTreatText` | `modules/events/dance/friday_dance_text.qsps` | 163 |
 | `GeorgetteChurchAloneSchedule` | `modules/events/georgette/georgette_church_arc.qsps` | 7 |
 | `GeorgetteChurchAloneTryActivate` | `modules/events/georgette/georgette_church_arc.qsps` | 31 |
-| `GeorgetteChurchSexApplyArcFlags` | `modules/events/church/church_georgette_service_sex.qsps` | 332 |
-| `GeorgetteChurchSexApproach` | `modules/events/church/church_georgette_service_sex.qsps` | 108 |
+| `GeorgetteChurchSexApplyArcFlags` | `modules/events/church/church_georgette_service_sex.qsps` | 319 |
+| `GeorgetteChurchSexApproach` | `modules/events/church/church_georgette_service_sex.qsps` | 94 |
 | `GeorgetteChurchSexCanOffer` | `modules/events/church/church_georgette_service_sex.qsps` | 9 |
+| `GeorgetteChurchSexHint` | `modules/events/church/church_georgette_service_sex_text.qsps` | 8 |
 | `GeorgetteChurchSexHintText` | `modules/events/church/church_georgette_service_sex.qsps` | 66 |
-| `GeorgetteChurchSexPay` | `modules/events/church/church_georgette_service_sex.qsps` | 155 |
-| `GeorgetteChurchSexStart` | `modules/events/church/church_georgette_service_sex.qsps` | 97 |
-| `GeorgetteChurchSexStep1` | `modules/events/church/church_georgette_service_sex.qsps` | 190 |
-| `GeorgetteChurchSexStep2` | `modules/events/church/church_georgette_service_sex.qsps` | 226 |
-| `GeorgetteChurchSexStepFinish` | `modules/events/church/church_georgette_service_sex.qsps` | 262 |
-| `GeorgetteChurchSexText` | `modules/events/church/church_georgette_service_sex_text.qsps` | 8 |
+| `GeorgetteChurchSexPay` | `modules/events/church/church_georgette_service_sex.qsps` | 141 |
+| `GeorgetteChurchSexStart` | `modules/events/church/church_georgette_service_sex.qsps` | 83 |
+| `GeorgetteChurchSexStep1` | `modules/events/church/church_georgette_service_sex.qsps` | 176 |
+| `GeorgetteChurchSexStep2` | `modules/events/church/church_georgette_service_sex.qsps` | 212 |
+| `GeorgetteChurchSexStepFinish` | `modules/events/church/church_georgette_service_sex.qsps` | 248 |
+| `GeorgetteChurchSexText` | `modules/events/church/church_georgette_service_sex_text.qsps` | 29 |
 | `GeorgetteFirstMeet` | `modules/events/georgette/georgette_lizette_intro.qsps` | 9 |
 | `GeorgetteLizetteDebugMenu` | `modules/events/georgette/georgette_lizette_intro.qsps` | 134 |
 | `GeorgetteLizetteIntroText` | `modules/events/georgette/georgette_lizette_intro_text.qsps` | 12 |
