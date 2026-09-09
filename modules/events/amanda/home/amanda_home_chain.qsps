@@ -1,0 +1,242 @@
+! ================================================
+! FILE: modules/events/amanda/home/amanda_home_chain.qsps
+! MODULE: events/amanda/home
+! Домашняя лестница Аманды (player-path)
+! ================================================
+
+#AmandaHomeIsRestingAfterIntim
+
+    AmandaHomeRestingAfterIntim = 0
+
+    if AmandaHomeUnlocked = 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if AmandaHomeSex = 1 and SexUsedToday['amanda'] = 1:
+        AmandaHomeRestingAfterIntim = 1
+        exit
+    end
+
+    if AmandaHomeSex = 1:
+        exit
+    end
+
+    if AmandaHomeStepToday = 0:
+        exit
+    end
+
+    if AmandaHomeStage < 7:
+        exit
+    end
+
+    if AmandaFirstNightDone = 0 and AmandaHomeStage < 8:
+        exit
+    end
+
+    AmandaHomeRestingAfterIntim = 1
+---
+
+#AmandaHomeCanAdvance
+
+    AmandaHomeCanAdvance = 0
+
+    if AmandaHomeUnlocked = 0:
+        exit
+    end
+
+    if AmandaHomeSex = 1:
+        exit
+    end
+
+    if AmandaHomeStepToday = 1:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'AmandaRoom':
+        exit
+    end
+
+    if AmandaHomeStage >= 6:
+        exit
+    end
+
+    AmandaHomeCanAdvance = 1
+---
+
+#AmandaHomeStep
+
+    gs 'AmandaHomeCanAdvance'
+
+    if AmandaHomeCanAdvance = 0:
+        gt 'AmandaRoom'
+    end
+
+    if AmandaHomeStage = 0:
+        $AmandaHomeStepKey = 'hug'
+    elseif AmandaHomeStage = 1:
+        $AmandaHomeStepKey = 'kiss'
+    elseif AmandaHomeStage = 2:
+        $AmandaHomeStepKey = 'petting'
+    elseif AmandaHomeStage = 3:
+        $AmandaHomeStepKey = 'handjob'
+    elseif AmandaHomeStage = 4:
+        $AmandaHomeStepKey = 'blowjob'
+    elseif AmandaHomeStage = 5:
+        $AmandaHomeStepKey = 'cuni'
+    else:
+        gt 'AmandaRoom'
+    end
+
+    gs 'AmandaHomeStepText', $AmandaHomeStepKey
+
+    cls
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА АМАНДЫ — БЛИЗОСТЬ'
+
+    gs 'AmandaHomeShowStepImage', $AmandaHomeStepKey
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    if debug = 1:
+        gs 'AmandaHomeFirstSexResolveContext'
+        *pl '[DEBUG AMANDA LADDER] step=' + $AmandaHomeStepKey + ' context=' + $AmandaFirstSexContext + ' LegareFirstSexDone=' + STR(AmandaLegareFirstSexDone) + ' PlayerKnowsRace=' + STR(PlayerKnows_AmandaLegareFridayRace)
+        killvar '$AmandaFirstSexContext'
+    end
+
+    AmandaHomeStage += 1
+    AmandaHomeStepToday = 1
+    AmandaPlayerPath += 1
+
+    if $AmandaHomeStepKey = 'hug':
+        Friends['amanda'] += 1
+        love['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'kiss':
+        KissCount['amanda'] += 1
+        love['amanda'] += 1
+        otkroven['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'petting':
+        CaressCount['amanda'] += 1
+        otkroven['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'handjob':
+        CaressCount['amanda'] += 1
+        sluttiness['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'blowjob':
+        BlowjobCount['amanda'] += 1
+        OralCount['amanda'] += 1
+        oralacts['amanda'] += 1
+        sluttiness['amanda'] += 1
+    elseif $AmandaHomeStepKey = 'cuni':
+        CuniCount['amanda'] += 1
+        OralCount['amanda'] += 1
+        otkroven['amanda'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+    killvar '$AmandaHomeStepKey'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaHomePreSex
+
+    gs 'AmandaHomeFirstSexCanStart'
+
+    if AmandaHomeFirstSexCanStart = 0:
+        gt 'AmandaRoom'
+    end
+
+    gs 'AmandaHomeStepText', 'presex'
+
+    cls
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА АМАНДЫ — ПЕРЕД ПЕРВЫМ РАЗОМ'
+
+    gs 'AmandaHomeShowStepImage', 'presex'
+
+    *p $AmandaHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Продолжить', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaHomeFirstSexTalk'
+    end
+---
+
+#AmandaHomeAfterSex
+
+    gs 'AmandaHomeAfterSexText'
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/family/amanda_home_chain/amanda_home_after_sex', 'ПОСЛЕ', 'large', 'webp'
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $AmandaHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в коридор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+
+    gs 'ActUiPrepare', 'Остаться в комнате', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaDanceLeaveHome
+
+    AmandaHomeUnlocked = 1
+    AmandaDanceEnded = 1
+    AmandaPlayerPath += 2
+
+    if LOC('AmandaDanceLeaveHomeText') = 1:
+        gs 'AmandaDanceLeaveHomeText'
+    else:
+        $AmandaDanceLastText = 'Вы уводите Аманду с площади в трактир.'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/family/amanda_home_chain/amanda_dance_leave_home', 'УХОД С ТАНЦЕВ', 'large', 'webp'
+    *pl '══════════════════════════════════════════════'
+    *pl ' УХОД С ТАНЦЕВ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $AmandaDanceLastText
+    *pl ' '
+
+    $GirlLocation['amanda'] = 'AmandaRoom'
+
+    gs 'ActUiPrepare', 'Пойти в комнату Аманды', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+

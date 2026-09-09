@@ -1,0 +1,538 @@
+! ================================================
+! FILE: modules/events/legare/legare_first_conflict.qsps
+! [AI-WORKED] Текст переработан / дополнен ассистентом
+! Первый настоящий конфликт с Легаре
+! Версия: tavern conflict v1 / compact menu
+! Назначение:
+! - продолжить ветку после AmandaLegareConflictWithLegareReady
+! - перевести личный конфликт вокруг Аманды в торговое давление
+! - открыть первые проблемы с поставками вина/пива
+! - дать пути: жёсткий конфликт, осторожная сделка, Кларисса, временное отступление
+!
+! Тексты берутся из:
+! modules/events/tavern/legare_first_conflict_text.qsps
+!
+! Вызов из:
+! modules/locations/tavern_main.qsps
+! через #LegareFirstConflictCanStart
+! ================================================
+
+#LegareFirstConflictCanStart
+
+    LegareFirstConflictCanStart = 0
+
+    if AmandaLegareConflictWithLegareReady <> 1:
+        exit
+    end
+
+    if LegareFirstConflictStage > 0:
+        exit
+    end
+
+    if time >= 5:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if LegareConflictStage >= 7:
+        exit
+    end
+
+    LegareFirstConflictCanStart = 1
+---
+
+! ================================================
+! FILE: modules/events/legare/legare_first_conflict.qsps
+! Вход в конфликт
+! ================================================
+
+#LegareFirstConflictStart
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/tavern/legare_first_conflict/legare_first_conflict_start', 'ЛЕГАРЕ И ТРАКТИР', 'large', 'webp'
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/tavern/legare_conflict', 'first_conflict', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ И ТРАКТИР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('LegareFirstConflictIntroText') = 1:
+        gs 'LegareFirstConflictIntroText'
+    else:
+        *p 'Легаре приходит в трактир уже не как обычный поставщик. Теперь в его вежливости слишком много угрозы.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE CONFLICT] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG LEGARE CONFLICT] ClarissaAlliance: ' + STR(ClarissaAgainstLegareAlliance)
+        *pl '[DEBUG LEGARE CONFLICT] AmandaMajorResult: ' + STR(AmandaLegareMajorRiskResult)
+        *pl '[DEBUG LEGARE CONFLICT] TavernScandal: ' + STR(TavernScandal)
+        *pl ' '
+    end
+
+    gs 'LegareFirstConflictBuildMenu'
+
+    *p 'Как говорить с <a href="exec:gs ''Menu.Show'', ''LegareFirstConflictMenu''">Легаре</a>?'
+---
+
+! ================================================
+! FILE: modules/events/legare/legare_first_conflict.qsps
+! Меню первого конфликта
+! ================================================
+
+#LegareFirstConflictBuildMenu
+
+    gs 'Menu.Destroy', 'LegareFirstConflictMenu'
+    gs 'Menu.Create', 'LegareFirstConflictMenu'
+
+    gs 'MenuUiAdd', 'LegareFirstConflictMenu', 'Говорить спокойно, но твёрдо', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'calm_firm'
+    }
+
+    gs 'MenuUiAdd', 'LegareFirstConflictMenu', 'Жёстко предупредить его об Аманде', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'hard_warning'
+    }
+
+    gs 'MenuUiAdd', 'LegareFirstConflictMenu', 'Напомнить, что он поставщик, а не хозяин', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'supplier_place'
+    }
+
+    if ClarissaAgainstLegareAlliance = 1 or ClarissaSecretAllianceHint = 1:
+        gs 'MenuUiAdd', 'LegareFirstConflictMenu', 'Намекнуть, что Кларисса уже всё понимает', ''
+        gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+            gt 'LegareFirstConflictAction', 'clarissa_hint'
+        }
+    end
+
+    gs 'MenuUiAdd', 'LegareFirstConflictMenu', 'Проявить осмотрительность: трактиру нужны поставки, а Аманда решает сама', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'save_supplies'
+    }
+
+    gs 'MenuUiAdd', 'LegareFirstConflictMenu', 'Выгнать Легаре из трактира', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'LegareFirstConflictAction', 'kick_out'
+    }
+
+    gs 'MenuUiAdd', 'LegareFirstConflictMenu', 'Вернуться в главный зал', ''
+    gs 'Menu.AddModule', 'LegareFirstConflictMenu', {
+        gt 'TavernMain'
+    }
+---
+
+! ================================================
+! FILE: modules/events/legare/legare_first_conflict.qsps
+! Обработка выбора
+! ================================================
+
+#LegareFirstConflictAction
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/tavern/legare_first_conflict/legare_first_conflict_action', 'ПЕРВЫЙ КОНФЛИКТ С ЛЕГАРЕ', 'large', 'webp'
+    $LegareConflictChoice = LCASE($ARGS[0])
+
+    LegareFirstConflictStage = 1
+    AmandaLegareConflictWithLegareReady = 0
+
+    ! 0 — осмотрительность / деловой компромисс
+    ! 1 — холодное предупреждение
+    ! 2 — Легаре повышает цены
+    ! 3 — частичная угроза поставкам
+    ! 4 — открытый публичный конфликт
+    LegareFirstConflictResult = 0
+
+    if $LegareConflictChoice = 'calm_firm':
+        LegareFirstConflictResult = 1
+        LegareConflictStage += 1
+        MelissaRespectStefan += 1
+        AmandaTrustStefan += 1
+        LegareSupplyPressureReady = 1
+
+    elseif $LegareConflictChoice = 'hard_warning':
+        LegareFirstConflictResult = 2
+        LegareConflictStage += 2
+        MelissaRespectStefan += 1
+        AmandaTrustStefan += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+        LegarePricesRaised = 1
+        LegareSupplyPressureReady = 1
+
+    elseif $LegareConflictChoice = 'supplier_place':
+        LegareFirstConflictResult = 3
+        LegareConflictStage += 2
+        TavernReputation += 1
+        TavernScandal += 1
+        LegarePricesRaised = 1
+        LegareWinePressure = 1
+        LegareSupplyPressureReady = 1
+
+    elseif $LegareConflictChoice = 'clarissa_hint':
+        LegareFirstConflictResult = 1
+        LegareConflictStage += 1
+        ClarissaTrustStefan += 1
+        ClarissaAgainstLegareAlliance = 1
+        ClarissaPrivateTalkReady = 1
+        LegareSupplyPressureReady = 1
+
+    elseif $LegareConflictChoice = 'save_supplies':
+        LegareFirstConflictResult = 0
+        LegareConflictStage -= 1
+        LegareHumiliatedStefan = 0
+        LegarePrudentDealDone = 1
+        LegarePricesRaised = 0
+        LegareWinePressure = 0
+        LegareBeerPressure = 0
+
+        if LegareConflictStage < 0:
+            LegareConflictStage = 0
+        end
+
+        if AmandaLegareInterest >= 4:
+            AmandaLegareInterest += 1
+        else:
+            AmandaTrustStefan -= 1
+            if AmandaTrustStefan < 0:
+                AmandaTrustStefan = 0
+            end
+        end
+
+        MelissaControlNeed += 1
+
+    elseif $LegareConflictChoice = 'kick_out':
+        LegareFirstConflictResult = 4
+        LegareConflictStage += 3
+        TavernScandal += 2
+        TavernScandalLevel += 1
+        MelissaRespectStefan += 1
+        AmandaTrustStefan += 1
+        LegarePricesRaised = 1
+        LegareWinePressure = 1
+        LegareBeerPressure = 1
+        LegareSupplyPressureReady = 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if ClarissaTrustStefan < 0:
+        ClarissaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    LegareFirstConflictAfterTalkReady = 1
+    MelissaLegareConflictTalkReady = 1
+
+    if LegareFirstConflictResult >= 2:
+        ClarissaLegareConflictTalkReady = 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРВЫЙ КОНФЛИКТ С ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('LegareFirstConflictActionText') = 1:
+        gs 'LegareFirstConflictActionText', $LegareConflictChoice
+    else:
+        *pl 'Разговор с Легаре заканчивается тяжёлым напряжением.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE CONFLICT] Choice: ' + $LegareConflictChoice
+        *pl '[DEBUG LEGARE CONFLICT] Result: ' + STR(LegareFirstConflictResult)
+        *pl '[DEBUG LEGARE CONFLICT] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG LEGARE CONFLICT] PricesRaised: ' + STR(LegarePricesRaised)
+        *pl '[DEBUG LEGARE CONFLICT] WinePressure: ' + STR(LegareWinePressure)
+        *pl '[DEBUG LEGARE CONFLICT] BeerPressure: ' + STR(LegareBeerPressure)
+        *pl '[DEBUG LEGARE CONFLICT] SupplyPressureReady: ' + STR(LegareSupplyPressureReady)
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в главный зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+
+    killvar '$LegareConflictChoice'
+---
+
+! ================================================
+! FILE: modules/events/legare/legare_first_conflict.qsps
+! Разговоры после первого конфликта
+! ================================================
+
+#AmandaTalkAboutLegareFirstConflict
+    *clr
+    clr
+    cla
+    $AmandaConflictReturnLoc = $ARGS[0]
+    if $AmandaConflictReturnLoc = '':
+        $AmandaConflictReturnLoc = 'TavernMain'
+    end
+    if LOC($AmandaConflictReturnLoc) = 0:
+        $AmandaConflictReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/legare_first_conflict/amanda_talk_legare_conflict', 'РАЗГОВОР С АМАНДОЙ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    LegareFirstConflictAfterTalkReady = 0
+    LegareFirstConflictAfterTalkDone = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА О ВИЗИТЕ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaTalkAboutLegareFirstConflictIntroText') = 1:
+        gs 'AmandaTalkAboutLegareFirstConflictIntroText'
+    end
+
+    *pl ' '
+
+    if LegarePrudentDealDone = 1:
+        gs 'ActUiPrepare', 'Объяснить осмотрительность: дело важнее, а она взрослая', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaTalkAboutLegareFirstConflictAction', 'prudent', $AmandaConflictReturnLoc
+        end
+    elseif LegareFirstConflictResult = 1 or LegareFirstConflictResult = 2 or LegareFirstConflictResult = 3:
+        gs 'ActUiPrepare', 'Сказать, что ты защитил её и осадил купца', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaTalkAboutLegareFirstConflictAction', 'defended', $AmandaConflictReturnLoc
+        end
+    else:
+        gs 'ActUiPrepare', 'Предостеречь её от опасности купца', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaTalkAboutLegareFirstConflictAction', 'warn_danger', $AmandaConflictReturnLoc
+        end
+    end
+---
+
+#AmandaTalkAboutLegareFirstConflictAction
+    *clr
+    clr
+    cla
+    $AmandaTalkChoice = LCASE($ARGS[0])
+    $AmandaConflictReturnLoc = $ARGS[1]
+    if $AmandaConflictReturnLoc = '':
+        $AmandaConflictReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/legare_first_conflict/amanda_talk_legare_conflict', 'РАЗГОВОР С АМАНДОЙ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА О ВИЗИТЕ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaTalkAboutLegareFirstConflictActionText') = 1:
+        gs 'AmandaTalkAboutLegareFirstConflictActionText', $AmandaTalkChoice
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AmandaConflictReturnLoc
+    end
+    killvar '$AmandaTalkChoice'
+---
+
+#MelissaTalkAboutLegareFirstConflict
+    *clr
+    clr
+    cla
+    $MelissaConflictReturnLoc = $ARGS[0]
+    if $MelissaConflictReturnLoc = '':
+        $MelissaConflictReturnLoc = 'TavernMain'
+    end
+    if LOC($MelissaConflictReturnLoc) = 0:
+        $MelissaConflictReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/legare_first_conflict/melissa_talk_legare_conflict', 'РАЗГОВОР С МЕЛИССОЙ', 'large', 'webp'
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    MelissaLegareConflictTalkReady = 0
+    MelissaLegareConflictTalkDone = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА О ССОРЕ С ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareFirstConflictIntroText') = 1:
+        gs 'MelissaTalkAboutLegareFirstConflictIntroText'
+    end
+
+    *pl ' '
+
+    if LegarePrudentDealDone = 1:
+        gs 'ActUiPrepare', 'Объяснить практичный расчёт с бочками', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MelissaTalkAboutLegareFirstConflictAction', 'prudent', $MelissaConflictReturnLoc
+        end
+    elseif LegareFirstConflictResult = 4:
+        gs 'ActUiPrepare', 'Сказать, что наглецов нужно выставлять за дверь', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MelissaTalkAboutLegareFirstConflictAction', 'scandal', $MelissaConflictReturnLoc
+        end
+    else:
+        gs 'ActUiPrepare', 'Сказать, что ты осадил купца и не дашь сестру в обиду', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MelissaTalkAboutLegareFirstConflictAction', 'firm', $MelissaConflictReturnLoc
+        end
+    end
+---
+
+#MelissaTalkAboutLegareFirstConflictAction
+    *clr
+    clr
+    cla
+    $MelissaTalkChoice = LCASE($ARGS[0])
+    $MelissaConflictReturnLoc = $ARGS[1]
+    if $MelissaConflictReturnLoc = '':
+        $MelissaConflictReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/legare_first_conflict/melissa_talk_legare_conflict', 'РАЗГОВОР С МЕЛИССОЙ', 'large', 'webp'
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА О ССОРЕ С ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareFirstConflictActionText') = 1:
+        gs 'MelissaTalkAboutLegareFirstConflictActionText', $MelissaTalkChoice
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $MelissaConflictReturnLoc
+    end
+    killvar '$MelissaTalkChoice'
+---
+
+#ClarissaTalkAboutLegareFirstConflict
+    *clr
+    clr
+    cla
+    $ClarissaConflictReturnLoc = $ARGS[0]
+    if $ClarissaConflictReturnLoc = '':
+        $ClarissaConflictReturnLoc = 'TavernMain'
+    end
+    if LOC($ClarissaConflictReturnLoc) = 0:
+        $ClarissaConflictReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/legare_first_conflict/clarissa_talk_legare_conflict', 'РАЗГОВОР С КЛАРИССОЙ', 'large', 'webp'
+    gs 'EnsureGirlData', 'clarissa'
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    ClarissaLegareConflictTalkReady = 0
+    ClarissaLegareConflictTalkDone = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА О ПОВЕДЕНИИ МУЖА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutLegareFirstConflictIntroText') = 1:
+        gs 'ClarissaTalkAboutLegareFirstConflictIntroText'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Честно рассказать о поведении её мужа', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaTalkAboutLegareFirstConflictAction', 'tell_truth', $ClarissaConflictReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Сгладить углы: просто поспорили о ценах', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaTalkAboutLegareFirstConflictAction', 'soften', $ClarissaConflictReturnLoc
+    end
+---
+
+#ClarissaTalkAboutLegareFirstConflictAction
+    *clr
+    clr
+    cla
+    $ClarissaTalkChoice = LCASE($ARGS[0])
+    $ClarissaConflictReturnLoc = $ARGS[1]
+    if $ClarissaConflictReturnLoc = '':
+        $ClarissaConflictReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/legare_first_conflict/clarissa_talk_legare_conflict', 'РАЗГОВОР С КЛАРИССОЙ', 'large', 'webp'
+    gs 'EnsureGirlData', 'clarissa'
+    gs 'ShowGirlSidebar', 'clarissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА О ПОВЕДЕНИИ МУЖА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('ClarissaTalkAboutLegareFirstConflictActionText') = 1:
+        gs 'ClarissaTalkAboutLegareFirstConflictActionText', $ClarissaTalkChoice
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $ClarissaConflictReturnLoc
+    end
+    killvar '$ClarissaTalkChoice'
+---
+
+! ================================================
+! FILE: modules/events/legare/legare_first_conflict.qsps
+! Debug-сброс
+! ================================================
+
+#LegareFirstConflictDebugReset
+
+    LegareFirstConflictCanStart = 0
+    LegareFirstConflictStage = 0
+    LegareFirstConflictResult = 0
+    LegareFirstConflictAfterTalkReady = 0
+    LegareSupplyPressureReady = 0
+    LegarePricesRaised = 0
+    LegareWinePressure = 0
+    LegareBeerPressure = 0
+    LegareHumiliatedStefan = 0
+    LegarePrudentDealDone = 0
+    LegareFirstConflictAfterTalkDone = 0
+    MelissaLegareConflictTalkReady = 0
+    MelissaLegareConflictTalkDone = 0
+    ClarissaLegareConflictTalkReady = 0
+    ClarissaLegareConflictTalkDone = 0
+---
