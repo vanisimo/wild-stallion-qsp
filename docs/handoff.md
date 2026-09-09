@@ -1,20 +1,20 @@
 # Handoff
 
 Документ для продолжения с другой машины.  
-**Актуальная сессия:** [`docs/session-handoff-2026-07-14.md`](session-handoff-2026-07-14.md) — читать **первым**.  
+**Актуальная сессия:** [`docs/session-handoff-2026-09-09.md`](session-handoff-2026-09-09.md) — читать **первым**.  
 Также: `docs/state.md`, `docs/design-character-intimacy-arc.md` (§ live-NTR + § Обида-дни), `docs/economy.md` (§0–0c), `AGENTS.md`.
 
 **Репозиторий:** `vanisimo/wild-stallion-qsp`, ветка `main`  
 **Локально:** `E:\TraKtir`
 
-### Срез 2026-07-14 (кратко)
+### Срез 2026-09-09 (кратко)
 
 | | |
 |--|--|
-| **Код** | 4b: Защитить/Наблюдать/Отвернуться + policy сдержанно/сама/расковано; гейт `FamilyLiberationGateOpen` (`4e49b23`) |
-| **Дизайн** | чистый/mixed/dirty; live-NTR; OffenseDays (dual protect **K=3** накопление); audit step_aside |
-| **TODO код** | step_aside/leave never hidden FirstSex; OffenseDays v1; 4c тексты |
-| **Полный handoff** | `docs/session-handoff-2026-07-14.md` |
+| **Код** | Канон соборной службы (Легаре, Жоржетта/Лизетта, семья); City Rumors Engine (`modules/core/rumors/`); окно/шестерёнка Драупнира через Сандру и Бекки; предыстория Клариссы (богатство купца, согласие, откровение Мелиссе); затухание стыда Сандры по `FamilyCorruptionStage`. |
+| **Дизайн** | Полная интеграция правок из promt.txt и уточнённого лора (Лермонты не угасают; шестерёнка окна — официальный заказ). |
+| **TODO код** | Плеерное тестирование воскресного цикла; пул диалогов Ирмы/Инги; синхронизация сплетен с пятничными танцами. |
+| **Полный handoff** | [`docs/session-handoff-2026-09-09.md`](session-handoff-2026-09-09.md) |
 
 ---
 

@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 437
-- Locations: 3035
-- Locations with direct incoming calls: 2610
-- Locations without direct incoming calls: 425
-- Review candidates without direct incoming calls: 155
+- Locations: 3037
+- Locations with direct incoming calls: 2613
+- Locations without direct incoming calls: 424
+- Review candidates without direct incoming calls: 154
 - Classified entry/helper locations without direct incoming calls: 270
 - Dynamic call sites: 2
 
@@ -26,14 +26,13 @@ These locations have no direct literal incoming calls and are not classified as 
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
 | `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 180 | `modules/events` |
-| `ChurchSundayServiceInspectIrma` | `modules/events/church/church_sunday_service.qsps` | 117 | `modules/events` |
-| `ChurchSundayServiceInspectMayor` | `modules/events/church/church_sunday_service.qsps` | 112 | `modules/events` |
-| `ChurchSundayServiceRumorAct` | `modules/events/church/church_sunday_rumors.qsps` | 40 | `modules/events` |
+| `ChurchSundayServiceInspectIrma` | `modules/events/church/church_sunday_service.qsps` | 119 | `modules/events` |
+| `ChurchSundayServiceInspectMayor` | `modules/events/church/church_sunday_service.qsps` | 114 | `modules/events` |
 | `ChurchSundayServiceShowMenu` | `modules/events/church/church_sunday_service_menus.qsps` | 41 | `modules/events` |
-| `ChurchSundayServiceTalkBecky` | `modules/events/church/church_sunday_service.qsps` | 102 | `modules/events` |
-| `ChurchSundayServiceTalkFamily` | `modules/events/church/church_sunday_service.qsps` | 92 | `modules/events` |
-| `ChurchSundayServiceTalkGeorgette` | `modules/events/church/church_sunday_service.qsps` | 107 | `modules/events` |
-| `ChurchSundayServiceTalkLegare` | `modules/events/church/church_sunday_service.qsps` | 97 | `modules/events` |
+| `ChurchSundayServiceTalkBecky` | `modules/events/church/church_sunday_service.qsps` | 104 | `modules/events` |
+| `ChurchSundayServiceTalkFamily` | `modules/events/church/church_sunday_service.qsps` | 94 | `modules/events` |
+| `ChurchSundayServiceTalkGeorgette` | `modules/events/church/church_sunday_service.qsps` | 109 | `modules/events` |
+| `ChurchSundayServiceTalkLegare` | `modules/events/church/church_sunday_service.qsps` | 99 | `modules/events` |
 | `ChurchUiHolyCircleIcon` | `modules/events/church/church_core.qsps` | 7 | `modules/events` |
 | `ChurchWeekdayShowGerhardMenu` | `modules/events/church/church_weekday_menus.qsps` | 16 | `modules/events` |
 | `ClarissaIntimAfterSex` | `modules/events/legare/clarissa_intim_arc.qsps` | 201 | `modules/events` |
@@ -340,7 +339,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IrmaAmandaDanceDressBuyText` | `modules/events/family/amanda_home_chain_text.qsps` | 317 | `entry/helper` |
 | `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 | `entry/helper` |
 | `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 | `entry/helper` |
-| `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 344 | `entry/helper` |
+| `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 352 | `entry/helper` |
 | `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 322 | `entry/helper` |
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 19 | `entry/helper` |
 | `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 972 | `entry/helper` |
@@ -453,31 +452,31 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1008 |
+| `ActUiPrepare` | 1011 |
 | `Menu.AddModule` | 474 |
 | `MenuUiAdd` | 462 |
-| `SceneShowVisual` | 257 |
+| `SceneShowVisual` | 258 |
 | `NormalizeGirlKey` | 198 |
 | `EnsureGirlData` | 181 |
 | `ClampGirlSocialStats` | 132 |
 | `TavernMain` | 123 |
 | `PrintThoughtLine` | 109 |
-| `ShowImage` | 97 |
+| `ShowImage` | 104 |
 | `ShowGirlSidebar` | 92 |
 | `Menu.Create` | 89 |
 | `FormatSpintry` | 87 |
-| `PrintTitleLine` | 85 |
+| `PrintTitleLine` | 87 |
 | `Menu.Destroy` | 83 |
 | `UpdateGirlLocations` | 76 |
-| `PrintMainP` | 68 |
+| `PrintMainP` | 71 |
 | `RegisterSex` | 65 |
-| `GirlTalkResult` | 46 |
 | `SexSceneMain` | 46 |
+| `GirlTalkResult` | 46 |
 | `SaveLastHallEvent` | 45 |
 | `AmandaLizaTalkPoolTry` | 43 |
+| `Menu.AddCondition` | 42 |
 | `BeckyShop` | 42 |
 | `MarketDance` | 42 |
-| `Menu.AddCondition` | 42 |
 
 ## Dynamic Call Sites
 

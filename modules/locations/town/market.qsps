@@ -81,7 +81,54 @@
         end
     end
 
+    if time >= 1 and time <= 4 and LOC('CityRumorsGetText') = 1:
+        gs 'ActUiPrepare', 'Прислушаться к разговорам', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MarketRumors'
+        end
+    end
+
     act '<b>Улица Трипербан</b>', 'images/common/ui/actions/street.png':
         gt 'Street'
+    end
+---
+
+#MarketRumors
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/locations/market/market', 'Шум торговых рядов на рынке', 'large', 'jpg'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' СЛУХИ НА РЫНКЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'CityRumorsGetText', 'becky'
+
+    if $CityRumorText <> '':
+        *pl $CityRumorText
+    else:
+        *pl 'Торговцы спорят о ценах на муку, пересчитывают медяки и зазывают покупателей к лоткам.'
+    end
+
+    if $CityRumorPickedKey = 'tavern_scandal' or $CityRumorPickedKey = 'girls_behavior' or $CityRumorPickedKey = 'kitchen_sandra' or $CityRumorPickedKey = 'legare_amanda':
+        *pl ' '
+        if FamilyCorruptionStage <= 1:
+            *pl '<i>Если Сандра услышит подобные толки на рынке за покупками, ей наверняка будет неловко перед кумушками, хотя она привыкла держать лицо.</i>'
+        elseif FamilyCorruptionStage <= 3:
+            *pl '<i>Сандра, закупая провизию на рынке, наверняка слышала эти сплетни, но лишь сдержанно усмехнулась: за годы бурной молодости она привыкла к пересудам, а выгода важнее кривотолков.</i>'
+        else:
+            *pl '<i>Сандра давно не обращает внимания на пересуды рыночных торговок: в семье теперь свои порядки.</i>'
+        end
+    end
+
+    killvar '$CityRumorText'
+
+    *pl ' '
+
+    act '<b>Назад на площадь</b>', 'images/common/ui/actions/return.png':
+        gt 'Market'
     end
 ---

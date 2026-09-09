@@ -24,13 +24,10 @@
     if ChurchServiceRumorDay <> day:
         ChurchServiceRumorDay = day
         ChurchServiceRumorCount = 0
+        killvar 'ChurchServiceRumorHeardToday'
     end
 
     if ChurchServiceRumorCount >= 3:
-        exit
-    end
-
-    if GeorgetteChurchAlone = 1 or LizetteChurchWithGeorgette = 1:
         exit
     end
 
@@ -44,7 +41,8 @@
         exit
     end
 
-    act '<b>Прислушаться к слухам</b>', 'images/common/ui/actions/look.png':
+    gs 'ActUiPrepare', 'Прислушаться к слухам', 'look'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'ChurchSundayServiceRumor'
     end
 
@@ -61,53 +59,65 @@
     if ChurchServiceRumorDay <> day:
         ChurchServiceRumorDay = day
         ChurchServiceRumorCount = 0
+        killvar 'ChurchServiceRumorHeardToday'
     end
 
     ChurchServiceRumorCount += 1
+    CityRumorTotal += 1
 
     cls
 
-    gs 'ShowImage', 'church', 'general', 'interior'
+    gs 'SceneShowVisual', 'images/events/church/sunday_service/rumors', 'Шёпот прихожан в соборе', 'large', 'webp'
 
     *pl '══════════════════════════════════════════════'
     gs 'PrintTitleLine', ' СЛУХИ В СОБОРЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
-    if ChurchServiceRumorCount > 3:
-        gs 'ChurchSundayServiceText', 'rumor_done'
+    gs 'CityRumorsGetText', 'church'
+
+    if $CityRumorText <> '':
+        *p $CityRumorText
     else:
-        if PlayerKnows_MayorIrmaAffair = 0:
-            ChurchServiceRumorPick = 1
-            PlayerKnows_MayorIrmaAffair = 1
+        gs 'ChurchSundayServiceText', 'rumor_1'
+        *p $ChurchServiceText
+        killvar '$ChurchServiceText'
+    end
+
+    if $CityRumorPickedKey = 'tavern_scandal' or $CityRumorPickedKey = 'kitchen_sandra' or $CityRumorPickedKey = 'girls_behavior' or $CityRumorPickedKey = 'legare_amanda':
+        *pl ' '
+        if FamilyCorruptionStage <= 1:
+            *pl '<i>Сандра на соседней скамье слышит этот приглушённый шепоток за спиной. Она замирает, стиснув пальцы на молитвеннике: перед соседками и отцом Герхардом неловко, но она с гордостью держит лицо, не позволяя себе дать слабину.</i>'
+        elseif FamilyCorruptionStage <= 3:
+            *pl '<i>Сандра краем уха ловит пересуды за спиной, но лишь сдержанно хмыкает и поправляет шаль. Ей не привыкать к сплетням ещё с бурной молодости — стыд перед собором уже не жжёт, а трактир и доход семьи важнее чужих языков.</i>'
         else:
-            ChurchServiceRumorPick = RAND(1, 5)
+            *pl '<i>Сандра слышит пересуды и лишь равнодушно усмехается. Прежний стыд перед святошами давно сошёл на нет — в доме теперь свои порядки, и городские сплетни её больше не трогают.</i>'
         end
-
-        gs 'ChurchSundayServiceText', 'rumor_' + STR(ChurchServiceRumorPick)
     end
 
-    *p $ChurchServiceText
-
-    if ChurchRumorSeed < 3 and ChurchServiceRumorCount <= 3:
-        ChurchRumorSeed += 1
-    end
+    killvar '$CityRumorText'
 
     *pl ' '
 
     if ChurchServiceRumorCount < 3:
         gs 'PrintMainP', 'Ещё ' + STR(3 - ChurchServiceRumorCount) + ' раз можно прислушаться, пока служба не кончится.'
+        *pl ' '
+        gs 'ActUiPrepare', 'Прислушаться ещё', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchSundayServiceRumor'
+        end
     else:
         gs 'PrintMainP', 'На этой службе вы уже выслушали весь шёпот прихожан.'
     end
 
     *pl ' '
 
-    act '<b>В зал</b>', 'images/common/ui/actions/return.png':
+    gs 'ActUiPrepare', 'В зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'ChurchSundayService'
     end
 
     killvar '$ChurchServiceText'
-    killvar 'ChurchServiceRumorPick'
+    killvar '$ChurchServiceRumorKey'
     killvar 'ChurchServiceRumorCanStart'
 ---

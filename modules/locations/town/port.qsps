@@ -119,6 +119,13 @@
         killvar 'PortCapitalShipAvailable'
     end
 
+    if time <> 5:
+        gs 'ActUiPrepare', 'Прислушаться к разговорам', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortRumors'
+        end
+    end
+
     if Friends['eddie'] >= 8 and LOC('PortAlley') = 1:
         act '<b>Подворотня</b>', 'images/common/ui/actions/look.png':
             gt 'PortAlley'
@@ -127,5 +134,33 @@
 
     act '<b>Улица Трипербан</b>', 'images/common/ui/actions/street.png':
         gt 'Street'
+    end
+---
+
+#PortRumors
+    cls
+
+    gs 'SceneShowVisual', 'images/locations/port/general', 'Шум причала и разговоры матросов', 'large', 'jpg'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' СЛУХИ В ПОРТУ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'CityRumorsGetText', 'port'
+
+    if $CityRumorText <> '':
+        *p $CityRumorText
+    else:
+        *p 'Матросы и купцы переговариваются о ценах на рыбу, попутном ветре и тяжести ящиков.'
+    end
+
+    killvar '$CityRumorText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Назад к причалу', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Port'
     end
 ---

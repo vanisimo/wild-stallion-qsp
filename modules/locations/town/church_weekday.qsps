@@ -30,6 +30,10 @@
         end
     end
 
+    act '<b>Кувшины с даром Таро</b>', 'images/common/ui/actions/gift.png':
+        gt 'ChurchTaroUrns'
+    end
+
     gs 'ChurchRenderStreetExit'
 ---
 
@@ -95,5 +99,45 @@
 
     act '<b>Назад в зал</b>', 'images/common/ui/actions/return.png':
         gt 'Church'
+    end
+---
+
+#ChurchTaroUrns
+    cls
+
+    gs 'AddGlobalButtons'
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' ДАР ТАРО — БЛАГОСЛОВЕНИЕ ИЛЬМАТЕРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ShowImage', 'church', 'general', 'normal'
+
+    *pl ' '
+
+    gs 'ChurchWeekdayText', 'taro_urns'
+    *p $ChurchWeekdayText
+    killvar '$ChurchWeekdayText'
+
+    *pl ' '
+
+    if PlayerHasTaro < 5:
+        act '<b>Набрать порошок в мешочек</b>', 'images/common/ui/actions/gift.png':
+            PlayerHasTaro = 5
+            *pl ' '
+            gs 'PrintMainP', 'Ты зачерпываешь из глиняного кувшина несколько щедрых горстей серого порошка и ссыпаешь в небольшой холщовый мешочек. Теперь у тебя есть запас благословения Ильматера для бритья и ухода за собой.'
+            *pl ' '
+            act '<b>Отойти от кувшинов</b>', 'images/common/ui/actions/return.png':
+                gt 'ChurchInterior'
+            end
+        end
+    else:
+        *pl '<span style="color:#888"><i>Твой мешочек полон порошка Таро — запаса с лихвой хватит на долгое время.</i></span>'
+        *pl ' '
+    end
+
+    act '<b>Отойти от кувшинов</b>', 'images/common/ui/actions/return.png':
+        gt 'ChurchInterior'
     end
 ---
