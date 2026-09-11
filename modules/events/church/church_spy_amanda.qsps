@@ -1,0 +1,139 @@
+! ================================================
+! FILE: modules/events/church/church_spy_amanda.qsps
+! MODULE: events/church
+! Подслушивание исповеди Аманды у отца Герхарда
+! Исповедь о реальных похождениях (Стефан, Легаре, парни с улицы)
+! Задел под будущее соблазнение Аманды Герхардом
+! ================================================
+
+#ChurchSpyAmandaCheckAvailable
+    ChurchSpyAmandaReady = 0
+
+    if week <> 7 or time <> 2:
+        exit
+    end
+
+    if ChurchSpyAmandaDoneDay = day:
+        exit
+    end
+
+    if ChurchSpyWindowMechanismFound = 0 and ChurchSpyBasicUnlocked = 0:
+        exit
+    end
+
+    gs 'UpdateGirlLocations'
+    if $GirlLocation['amanda'] <> 'Church':
+        exit
+    end
+
+    ChurchSpyAmandaReady = 1
+---
+
+#ChurchSpyAmandaStart
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_confession_intro', 'ИСПОВЕДЬ АМАНДЫ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    ChurchSpyAmandaDoneDay = day
+    ChurchSpyListenDoneDay = day
+    ChurchSpyAmandaSeenCount += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'intro'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    ! Определение реальных похождений Аманды
+    AmandaConfessStefan = 0
+    AmandaConfessLegare = 0
+    AmandaConfessBoys = 0
+
+    if AmandaHomeStage >= 2 or HadVaginalWithPlayer['amanda'] >= 1 or AmandaHomeSex = 1 or CaressCount['amanda'] >= 1 or BlowjobCount['amanda'] >= 1:
+        AmandaConfessStefan = 1
+    end
+
+    if AmandaLegareFirstSexDone = 1 or Fact_AmandaLegareFridayAlley = 1 or AmandaLegareAnalDone = 1 or AmandaLegareInterest >= 2:
+        AmandaConfessLegare = 1
+    end
+
+    if AmandaNeighborBoysStage >= 1 or AmandaNeighborBoysAnalDone = 1 or AmandaEscapeWorkCount >= 1:
+        AmandaConfessBoys = 1
+    end
+
+    ! Блоки признаний по реальным грехам
+    if AmandaConfessStefan = 1:
+        gs 'ChurchSpyAmandaText', 'confess_stefan'
+        *pl $AmandaConfessText
+        *pl ' '
+    end
+
+    if AmandaConfessLegare = 1:
+        gs 'ChurchSpyAmandaText', 'confess_legare'
+        *pl $AmandaConfessText
+        *pl ' '
+    end
+
+    if AmandaConfessBoys = 1:
+        gs 'ChurchSpyAmandaText', 'confess_boys'
+        *pl $AmandaConfessText
+        *pl ' '
+    end
+
+    if AmandaConfessStefan = 0 and AmandaConfessLegare = 0 and AmandaConfessBoys = 0:
+        gs 'ChurchSpyAmandaText', 'confess_innocent'
+        *pl $AmandaConfessText
+        *pl ' '
+    end
+
+    killvar '$AmandaConfessText'
+    killvar 'AmandaConfessStefan'
+    killvar 'AmandaConfessLegare'
+    killvar 'AmandaConfessBoys'
+
+    ! Ответ отца Герхарда (отпущение грехов и семена для будущего соблазнения)
+    gs 'ChurchSpyAmandaText', 'gerhard_response'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'outro'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    ! Регистрация фактов и гейтов под будущую ветку
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', $KE_ChurchAmandaConfession
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', $KE_ChurchAmandaConfession, 'witness'
+    end
+
+    PlayerKnows_AmandaChurchConfession = 1
+    GerhardKnowsAmandaSins = 1
+    GerhardTargetsAmanda = 1
+    PlayerKnows_GerhardEyesAmanda = 1
+
+    AmandaTrustStefan += 1
+    love['amanda'] += 1
+    otkroven['amanda'] += 2
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayNoon'
+    end
+---

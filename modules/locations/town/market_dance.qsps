@@ -97,8 +97,17 @@
     end
 
     *pl ' '
+    *pl '<b>Знакомые на площади:</b>'
+    *pl 'У колоннад и торговых рядов прогуливаются дамы: Бекки Блэнкеншип, госпожа Кларисса Легаре, Инга и портниха Ирма.'
+    if AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
+        *pl 'Неподалёку сияет в праздничном платье Аманда.'
+    end
+    if MelissaDanceDressReady = 1:
+        *pl 'У помоста менестрелей с интересом слушает стихи Мелисса.'
+    end
+    *pl 'Среди мужчин выделяются богатый купец Альбер Легаре и рыжий Эдди с кружкой пива в руке.'
+    *pl ' '
 
-    ! ====================== АВТО-СОБЫТИЯ: АМАНДА / ЛЕГАРЕ ======================
     !
     ! ВАЖНО:
     ! Здесь больше нет кнопок:
@@ -164,66 +173,77 @@
     ! ====================== ОБЫЧНЫЕ ДЕЙСТВИЯ ТАНЦЕВ ======================
 
     if FridayDanceMayorSpeechSeen = 0:
-        act '<b>Речь мэра</b>', 'images/common/ui/actions/mayor.png':
+        gs 'ActUiPrepare', 'Речь господина мэра', 'mayor'
+        act $ActUiLabel, $ActUiIconPath:
             gt 'FridayDanceMayorSpeech', 'MarketDance'
         end
     end
 
-    act '<b>Наблюдать</b>', 'images/common/ui/actions/look.png':
+    gs 'ActUiPrepare', 'Окинуть взглядом площадь', 'look'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'FridayDanceObserve', 'MarketDance'
     end
 
-    act '<b>Слухи</b>', 'images/common/ui/actions/talk.png':
+    gs 'ActUiPrepare', 'Пройтись по площади', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'FridayDanceRumor', 'MarketDance'
     end
 
-    act '<b>Знакомые</b>', 'images/common/ui/actions/look.png':
-        gt 'FridayDanceNpcTalkMenu', 'MarketDance'
+    ! ====================== ПЕРСОНАЖИ НА ПЛОЩАДИ ======================
+
+    if AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
+        gs 'ActUiPrepare', 'Аманда', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FridayDanceNpcCard', 'amanda'
+        end
     end
 
-    if StefanRespectableSuit = 1:
-        if $GirlLocation['becky'] = 'DanceHall' and LOC('BeckyDance') = 1:
-            act '<b>Бекки</b>', 'images/common/ui/actions/dance.png':
-                gt 'BeckyDance'
-            end
+    if MelissaDanceDressReady = 1:
+        gs 'ActUiPrepare', 'Мелисса', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FridayDanceNpcCard', 'melissa'
         end
+    end
 
-        if $GirlLocation['melissa'] = 'DanceHall' and LOC('MelissaDance') = 1:
-            act '<b>Мелисса</b>', 'images/common/ui/actions/dance.png':
-                gt 'MelissaDance'
-            end
-        end
+    gs 'ActUiPrepare', 'Бекки Блэнкеншип', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FridayDanceNpcCard', 'becky'
+    end
 
-        if $GirlLocation['amanda'] = 'DanceHall' and LOC('AmandaDance') = 1 and AmandaDanceBlockedTonight = 0:
-            act '<b>Аманда</b>', 'images/common/ui/actions/dance.png':
-                gt 'AmandaDance'
-            end
-        end
+    gs 'ActUiPrepare', 'Кларисса Легаре', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FridayDanceNpcCard', 'clarissa'
+    end
 
-        if $GirlLocation['inga'] = 'DanceHall' and IngaDanceUnlocked = 0 and IngaFridayMet = 0 and LOC('IngaDanceMeet') = 1:
-            gs 'FormatNpcTalkLink', 'inga', 'gt ''IngaDanceMeet'''
-            *pl $NpcTalkLink
-            killvar '$NpcTalkLink'
-        end
+    gs 'ActUiPrepare', 'Инга', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FridayDanceNpcCard', 'inga'
+    end
 
-        if $GirlLocation['inga'] = 'DanceHall' and IngaDanceUnlocked = 1 and LOC('IngaDance') = 1:
-            act '<b>Инга</b>', 'images/common/ui/actions/dance.png':
-                gt 'IngaDance'
-            end
-        end
-    else:
-        act '<b>Танцевать (нужен приличный костюм)</b>', 'images/common/ui/actions/dance.png':
-            gt 'FridayDanceStefanNoSuit'
-        end
+    gs 'ActUiPrepare', 'Модистка Ирма', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FridayDanceNpcCard', 'irma'
+    end
+
+    gs 'ActUiPrepare', 'Эдди', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FridayDanceNpcCard', 'eddie'
+    end
+
+    gs 'ActUiPrepare', 'Альбер Легаре', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FridayDanceNpcCard', 'legare'
     end
 
     if debug = 1:
-        act '<b>DEBUG: танцы</b>', 'images/common/ui/debug.png':
+        gs 'ActUiPrepare', 'DEBUG: танцы', 'debug'
+        act $ActUiLabel, $ActUiIconPath:
             gt 'FridayDanceDebugMenu', 'MarketDance'
         end
     end
 
-    act '<b>Улица Трипербан</b>', 'images/common/ui/actions/street.png':
+    gs 'ActUiPrepare', 'Улица Трипербан', 'street'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'Street'
     end
 ---

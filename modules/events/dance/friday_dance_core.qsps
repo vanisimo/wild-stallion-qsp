@@ -28,6 +28,23 @@
         FridayDanceNpcTalkCount = 0
         FridayDanceSponsorBoostApplied = 0
         BeckyFridayContactToday = 0
+
+        ! Состояния на площади на этот вечер:
+        ! 1. Кларисса и Легаре (1 = танцуют вместе, 2 = Легаре ушел к девицам/Аманде -> Кларисса одна, 3 = стоят беседуют)
+        ClarissaLegareState = RAND(1, 3)
+
+        ! 2. Мелисса и менестрель Элрик (1 = слушает балладу о королевах, 0 = у края площади)
+        MelissaMinstrelState = RAND(0, 1)
+
+        ! 3. Инга и Лукас (1 = танцуют с Лукасом, 0 = Инга одна)
+        IngaLucasState = RAND(0, 1)
+
+        ! 4. Бекки и Эдди (если секс-ветка закрыта, шанс что Эдди приглашает мать)
+        if BeckyEddieDone = 1:
+            BeckyEddieState = RAND(0, 1)
+        else:
+            BeckyEddieState = 0
+        end
     end
 
     if FridayDanceSponsored = 1 and FridayDanceSponsorBoostApplied = 0:
@@ -227,6 +244,27 @@
     *p $FridayDanceText
     *pl ' '
 
+    ! Динамические заметки по ключевым фигурам на площади:
+    if MelissaMinstrelState = 1 and MelissaDanceDressReady = 1:
+        *pl '<i>У помоста менестрелей толпятся восторженные слушатели — среди них вы замечаете Мелиссу в праздничном платье. Бард Элрик поёт прямо для неё.</i>'
+    end
+
+    if IngaLucasState = 1:
+        *pl '<i>В кругу танцующих мелькает Инга: крепкий широкоплечий парень, кузнечный подмастерье Лукас, уверенно кружит её среди зевак.</i>'
+    end
+
+    if ClarissaLegareState = 1:
+        *pl '<i>Месье Легаре чинно ведёт под руку свою супругу Клариссу. Они улыбаются на публику с безупречной светской вежливостью.</i>'
+    elseif ClarissaLegareState = 2:
+        *pl '<i>Госпожа Кларисса Легаре стоит в одиночестве у каменной балюстрады, с затаённой прохладной досадой наблюдая за мужем.</i>'
+    end
+
+    if BeckyEddieDone = 1 and BeckyEddieState = 1:
+        *pl '<i>Рыжий Эдди вовсю кружит в танце свою пышнотелую матушку Бекки, придерживая её за бёдра под громкий смех вдовы.</i>'
+    end
+
+    *pl ' '
+
     gs 'FridayDanceAdvanceRound'
 
     gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
@@ -237,7 +275,7 @@
 
 ! ================================================
 ! FILE: modules/events/dance/friday_dance_core.qsps
-! Слухи горожан
+! Слухи горожан (Пройтись по площади)
 ! Возврат напрямую в MarketDance
 ! ================================================
 
@@ -248,10 +286,19 @@
     cla
 
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_rumor', 'ГОРОДСКИЕ СЛУХИ', 'large', 'webp'
-    gs 'FridayDanceRumorText'
+
+    if LOC('CityRumorsPickKey') = 1:
+        gs 'CityRumorsPickKey'
+        gs 'CityRumorsText', $CityRumorPickedKey, 'dance'
+        $FridayDanceText = $CityRumorText
+    end
+
+    if $FridayDanceText = '':
+        gs 'FridayDanceRumorText'
+    end
 
     *pl '══════════════════════════════════════════════'
-    *pl ' ГОРОДСКИЕ СЛУХИ'
+    *pl ' ПРОЙТИСЬ ПО ПЛОЩАДИ: ГОРОДСКИЕ СЛУХИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
     *p $FridayDanceText
@@ -277,108 +324,20 @@
 
 ! ================================================
 ! FILE: modules/events/dance/friday_dance_core.qsps
-! Меню знакомых NPC на танцах
-! Возврат напрямую в MarketDance
+! Карточка взаимодействия с NPC на танцах
 ! ================================================
 
-#FridayDanceNpcTalkMenu
-
-    *clr
-    clr
-    cla
-
-    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_npc_talk_menu', 'ЗНАКОМЫЕ НА ПЛОЩАДИ', 'large', 'webp'
-    gs 'UpdateGirlLocations'
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ЗНАКОМЫЕ НА ПЛОЩАДИ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-    *p 'Вы оглядываетесь, пытаясь понять, кто из знакомых пришёл сегодня на танцы.'
-    *pl ' '
-
-    if $GirlLocation['sandra'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Подойти к Сандре', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'sandra'
-        end
-    end
-
-    if $GirlLocation['melissa'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Подойти к Мелиссе', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'melissa'
-        end
-    end
-
-    if $GirlLocation['amanda'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Подойти к Аманде', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'amanda'
-        end
-    end
-
-    if $GirlLocation['becky'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Подойти к Бекки', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'becky'
-        end
-    end
-
-    if $GirlLocation['clarissa'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Подойти к Клариссе', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'clarissa'
-        end
-    end
-
-    if $GirlLocation['legare'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Понаблюдать за Легаре', 'look'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'legare'
-        end
-    end
-
-    if $GirlLocation['lizette'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Заметить Лизетту', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'lizette'
-        end
-    end
-
-    if $GirlLocation['georgett'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Поговорить с Жоржеттой', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'georgett'
-        end
-    end
-
-    if $GirlLocation['irma'] = 'DanceHall':
-        gs 'ActUiPrepare', 'Поговорить с Ирмой', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcTalk', 'irma'
-        end
-    end
-
-    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MarketDance'
-    end
----
-
-! ================================================
-! FILE: modules/events/dance/friday_dance_core.qsps
-! Короткая сцена с выбранным NPC на танцах
-! Возврат напрямую в MarketDance
-! ================================================
-
-#FridayDanceNpcTalk
+#FridayDanceNpcCard
 
     gs 'NormalizeGirlKey', $ARGS[0]
     $DanceNpc = $GirlKey
 
     if $DanceNpc = '':
-        msg 'Ошибка: FridayDanceNpcTalk вызван без NPC.'
+        $DanceNpc = LCASE($ARGS[0])
+    end
+
+    if $DanceNpc = '':
+        msg 'Ошибка: FridayDanceNpcCard вызван без NPC.'
         gt 'MarketDance'
     end
 
@@ -386,62 +345,435 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_npc_talk', 'РАЗГОВОР НА ТАНЦАХ', 'large', 'webp'
-    if $RealName[$DanceNpc] = '':
-        gs 'EnsureGirlData', $DanceNpc
-    end
+    gs 'EnsureGirlData', $DanceNpc
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_card_' + $DanceNpc, 'НА ТАНЦАХ: ' + UCASE($RealName[$DanceNpc]), 'large', 'webp'
 
-    gs 'FridayDanceNpcTalkText', $DanceNpc
+    gs 'FridayDanceCardText', $DanceNpc
 
     *pl '══════════════════════════════════════════════'
-    *pl ' РАЗГОВОР НА ТАНЦАХ'
+    *pl ' ВЫ ПОДОШЛИ К ' + UCASE($RealName[$DanceNpc])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *p $FridayDanceCardDesc
+    *pl ' '
+
+    ! -----------------------------------------------
+    ! МЕЛИССА
+    ! -----------------------------------------------
+    if $DanceNpc = 'melissa':
+        if MelissaMinstrelState = 1:
+            gs 'ActUiPrepare', 'Подслушать разговор с бардом', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'MelissaMinstrelEavesdrop'
+            end
+
+            gs 'ActUiPrepare', 'Подойти и отвлечь Мелиссу', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'MelissaMinstrelDistract'
+            end
+        else:
+            gs 'ActUiPrepare', 'Поболтать о книгах и музыке', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'FridayDanceNpcCardTalk', 'melissa'
+            end
+
+            if StefanRespectableSuit = 1:
+                gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'MelissaDance'
+                end
+            else:
+                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'FridayDanceStefanNoSuit', 'melissa'
+                end
+            end
+        end
+
+    ! -----------------------------------------------
+    ! АМАНДА
+    ! -----------------------------------------------
+    elseif $DanceNpc = 'amanda':
+        gs 'ActUiPrepare', 'Поболтать с сестрой', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FridayDanceNpcCardTalk', 'amanda'
+        end
+
+        if StefanRespectableSuit = 1:
+            gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaDance'
+            end
+        else:
+            gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'FridayDanceStefanNoSuit', 'amanda'
+            end
+        end
+
+    ! -----------------------------------------------
+    ! БЕККИ
+    ! -----------------------------------------------
+    elseif $DanceNpc = 'becky':
+        if BeckyEddieState = 1 and BeckyEddieDone = 1:
+            gs 'ActUiPrepare', 'Наблюдать за танцем Эдди и Бекки', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'BeckyEddieDanceObserve'
+            end
+        else:
+            gs 'ActUiPrepare', 'Поболтать с вдовой Блэнкеншип', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'FridayDanceNpcCardTalk', 'becky'
+            end
+
+            if StefanRespectableSuit = 1:
+                gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'BeckyDance'
+                end
+            else:
+                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'FridayDanceStefanNoSuit', 'becky'
+                end
+            end
+        end
+
+    ! -----------------------------------------------
+    ! ИНГА
+    ! -----------------------------------------------
+    elseif $DanceNpc = 'inga':
+        if IngaLucasState = 1:
+            gs 'ActUiPrepare', 'Наблюдать за танцем Инги и Лукаса', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IngaLucasDanceObserve'
+            end
+        else:
+            gs 'ActUiPrepare', 'Поболтать с Ингой', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'FridayDanceNpcCardTalk', 'inga'
+            end
+
+            if StefanRespectableSuit = 1:
+                if IngaDanceUnlocked = 1:
+                    gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
+                    act $ActUiLabel, $ActUiIconPath:
+                        gt 'IngaDance'
+                    end
+                else:
+                    gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
+                    act $ActUiLabel, $ActUiIconPath:
+                        gt 'FridayDanceIngaBoyfriendRefusal'
+                    end
+                end
+            else:
+                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'FridayDanceStefanNoSuit', 'inga'
+                end
+            end
+        end
+
+    ! -----------------------------------------------
+    ! КЛАРИССА
+    ! -----------------------------------------------
+    elseif $DanceNpc = 'clarissa':
+        if ClarissaLegareState = 1:
+            gs 'ActUiPrepare', 'Наблюдать за танцем супругов Легаре', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'ClarissaLegareDanceObserve'
+            end
+        elseif ClarissaLegareState = 2:
+            gs 'ActUiPrepare', 'Поболтать с госпожой Легаре', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'FridayDanceNpcCardTalk', 'clarissa'
+            end
+
+            if StefanRespectableSuit = 1:
+                gs 'ActUiPrepare', 'Пригласить госпожу Легаре на танец', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'ClarissaDance'
+                end
+            else:
+                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'FridayDanceStefanNoSuit', 'clarissa'
+                end
+            end
+        else:
+            gs 'ActUiPrepare', 'Поговорить с четой Легаре', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'FridayDanceNpcCardTalk', 'clarissa'
+            end
+        end
+
+    ! -----------------------------------------------
+    ! ИРМА
+    ! -----------------------------------------------
+    elseif $DanceNpc = 'irma':
+        gs 'ActUiPrepare', 'Поболтать с модисткой Ирмой', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FridayDanceNpcCardTalk', 'irma'
+        end
+
+    ! -----------------------------------------------
+    ! ЭДДИ
+    ! -----------------------------------------------
+    elseif $DanceNpc = 'eddie':
+        gs 'ActUiPrepare', 'Поговорить с Эдди', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TalkWithEddie', 'MarketDance'
+        end
+
+    ! -----------------------------------------------
+    ! ЛЕГАРЕ
+    ! -----------------------------------------------
+    elseif $DanceNpc = 'legare':
+        gs 'ActUiPrepare', 'Поговорить с Альбером Легаре', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FridayDanceNpcCardTalk', 'legare'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#FridayDanceNpcCardTalk
+    $TalkNpc = LCASE($ARGS[0])
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_talk_' + $TalkNpc, 'БЕСЕДА: ' + UCASE($RealName[$TalkNpc]), 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР: ' + UCASE($RealName[$TalkNpc])
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $TalkNpc = 'melissa':
+        *pl 'Вы отводите Мелиссу к колоннаде и заводите разговор о столичных книгах и балладах. Сестра с жаром делится мыслями о поэзии, радуясь, что хоть кто-то в трактире способен поддержать возвышенную тему.'
+        Friends['melissa'] += 1
+    elseif $TalkNpc = 'amanda':
+        *pl 'Вы болтаете с Амандой о ярмарочных новостях и её новом наряде. Сестра весело щебечет, сыплет шутками и с гордостью ловит взгляды проходящих парней.'
+        Friends['amanda'] += 1
+    elseif $TalkNpc = 'becky':
+        *pl 'Вдова Блэнкеншип звонко хохочет над вашими шутками, охотно делясь новостями с рынка и сетуя на то, как тяжело бедной вдове управляться с большой лавкой без мужской руки.'
+        Friends['becky'] += 1
+    elseif $TalkNpc = 'inga':
+        *pl 'Инга немного успокаивается в вашем присутствии. Она тихо рассказывает, как помогала матери готовить праздничные пироги, и признаётся, что шумная толпа её немного пугает.'
+        Friends['inga'] += 1
+    elseif $TalkNpc = 'clarissa':
+        *pl 'Госпожа Легаре благосклонно принимает вашу вежливую беседу. Вы обсуждаете городские дела и виноторговлю. Кларисса тонко улыбается, оценивая ваш ум и сдержанность.'
+        Friends['clarissa'] += 1
+    elseif $TalkNpc = 'irma':
+        *pl 'Портниха Ирма с лукавым прищуром делится наблюдениями: какие дамы сэкономили на кружевах, а кто заказал шелка не по карману. Разговор получается живым и забавным.'
+        Friends['irma'] += 1
+    elseif $TalkNpc = 'legare':
+        *pl 'Месье Легаре цедит вино и коротко бросает замечания о столичных налогах и поставках эля. Он держится высокомерно, но признаёт в вас хозяина доходного заведения.'
+        LegareDanceSeen += 1
+    end
+
+    *pl ' '
+    gs 'FridayDanceAdvanceRound'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+
+    killvar '$TalkNpc'
+---
+
+#MelissaMinstrelEavesdrop
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/melissa_minstrel_eavesdrop', 'МЕЛИССА И ЭЛРИК', 'large', 'webp'
+
+    if MelissaMinstrelAffairStage < 0:
+        MelissaMinstrelAffairStage = 0
+    end
+
+    MelissaMinstrelAffairStage += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДСЛУШАТЬ: МЕЛИССА И ЭЛРИК'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if MelissaMinstrelAffairStage = 1:
+        *pl 'Вы неслышно встаёте за каменную колонну у помоста. Элрик берет нежный аккорд на лютне и, склоняясь к Мелиссе, проникновенно шепчет:'
+        *pl ' '
+        *pl '— Ваша стать, госпожа... в ней нет суетности обычных трактирных девиц. Вы напоминаете мне царственную королеву Алисию из древних преданий — ту, что правила мудро и карала легкомыслие. Такие, как вы, вдохновляют слагать поэмы, а не просто пустые куплеты.'
+        *pl ' '
+        *pl 'Мелисса заливается краской удовольствия. Её спина выпрямляется, в глазах сияет гордость — менестрель попал в самую суть её сокровенных грёз.'
+    elseif MelissaMinstrelAffairStage = 2:
+        *pl 'Вы наблюдаете из тени галереи. Музыка стихла на перерыв. Элрик спускается с помоста прямо к Мелиссе, держа в руке кубок сладкого южного вина.'
+        *pl ' '
+        *pl '— Моя королева скучает среди этой шумной черни? — бард улыбается и смело берет её за тонкие пальцы. — Ваши руки созданы перелистывать фолианты мудрецов, а не разливать брагу...'
+        *pl ' '
+        *pl 'Мелисса смущённо опускает ресницы, но пальцы не отнимает. Элрик делает шаг ближе и осторожно касается ладонью её талии. Сестра лишь слегка вздрагивает, завороженная его речами.'
+    elseif MelissaMinstrelAffairStage = 3:
+        *pl 'Элрик увлекает Мелиссу в полумрак арочного прохода под ратушей. Вы осторожно ступаете следом по каменным плитам.'
+        *pl ' '
+        *pl '— Зачем скрывать огонь, моя королева?.. — шепчет бард, прижимая девушку к холодному камню. Его рука скользит по её спине.'
+        *pl ' '
+        *pl 'Мелисса пытается что-то возразить о приличиях, но Элрик мягко накрывает её губы своими. Сестра замирает, а затем судорожно отвечает на поцелуй, прижимаясь к бродячему поэту всем телом.'
+    else:
+        *pl 'Элрик горячо шепчет что-то на ухо Мелиссе, кивая в сторону ночной улицы, ведущей к реке и постоялым дворам. Мелисса колеблется, часто дышит и оглядывается на огни площади — бард явно склоняет её покинуть праздник вместе с ним.'
+    end
+
+    *pl ' '
+    gs 'FridayDanceAdvanceRound'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#MelissaMinstrelDistract
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/melissa_minstrel_distract', 'ОТВЛЕЧЬ МЕЛИССУ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВМЕШАТЕЛЬСТВО: МЕЛИССА И ЭЛРИК'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Вы решительно подходите к помосту и становитесь прямо между Мелиссой и бардом, громко окликая сестру:'
+    *pl '— Мелисса! Хватит витать в облаках, дома дела не ждут, да и матушка просила не задерживаться у бродячих музыкантов.'
+    *pl ' '
+    *pl 'Элрик на мгновение замирает, окинув вас оценивающим взглядом, но быстро надевает вежливую маску светского менестреля, кланяется и отступает назад к лютне: «Прошу прощения, благородные господа. Музыка не должна сеять раздор».'
+    *pl ' '
+    *pl 'Мелисса вспыхивает от гнева, её глаза мечут молнии:'
+    *pl '— Стефан! Вечно ты лезешь со своими кабацкими замашками! Не позорь меня перед культурным человеком! Ты только и умеешь, что бочки считать, а в настоящем искусстве ничего не смыслишь!'
+    *pl ' '
+    *pl 'Она раздражённо отворачивается и отходит к другому краю площади. Впрочем, чары менестреля на этот вечер разрушены.'
+    *pl ' '
+
+    MelissaMinstrelState = 0
+    gs 'FridayDanceAdvanceRound'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#BeckyEddieDanceObserve
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/becky_eddie_dance_observe', 'ЭДДИ И БЕККИ В КРУГУ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СЕМЕЙНЫЙ ТАНЕЦ БЛЭНКЕНШИПОВ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Вы с усмешкой наблюдаете за тем, как рыжий Эдди выводит свою мать в центр площади. Парень явно навеселе — его руки без малейшего стеснения сжимают пышные, сочные бёдра Бекки, прижимая вдову к себе куда теснее, чем положено сыну.'
+    *pl ' '
+    *pl 'Бекки запрокидывает голову и заливисто смеётся, её роскошная грудь ходит ходуном в глубоком декольте. Горожане вокруг добродушно улыбаются: мол, надо же, какой заботливый сынок у почтенной торговки!'
+    *pl ' '
+    *pl 'Мелодия подходит к концу. Эдди что-то шепчет матери прямо в разгорячённое ушко. Бекки слегка краснеет, томно прикусывает губу и кивает. Парень подмигивает вам через плечо и ведёт захмелевшую мать прочь с площади:'
+    *pl '— Мамуля сегодня перебрала сладкой наливочки... отведу её в спаленку, уложу под одеялко.'
+    *pl ' '
+    *pl 'Вы провожаете их взглядом. Семейные забавы Блэнкеншипов явно продолжатся дома.'
+    *pl ' '
+
+    BeckyEddieState = 0
+    gs 'FridayDanceAdvanceRound'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#IngaLucasDanceObserve
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/inga_lucas_dance_observe', 'ИНГА И ЛУКАС', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЕЦ ИНГИ И ЛУКАСА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Инга кружится в танце с крепким широкоплечим кузнечным подмастерьем Лукасом. Лукас держит девушку властно и грубовато, его широкие ладони лежат на её талии, не позволяя отстраниться ни на дюйм.'
+    *pl 'Инга смущённо улыбается, стараясь не встречаться взглядом с другими мужчинами.'
+    *pl ' '
+    *pl 'Когда музыка смолкает, Лукас не отпускает её руки. Он властно тянет Ингу в сторону тёмных переулков за рыбными складами.'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Проследить за ними в подворотню', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaLucasAlleySpy'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к празднику', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'FridayDanceAdvanceRound'
+        gt 'MarketDance'
+    end
+---
+
+#ClarissaLegareDanceObserve
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/clarissa_legare_dance_observe', 'ЧЕТА ЛЕГАРЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЕЦ ЧЕТЫ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Вы наблюдаете за танцем четы Легаре. Альбер и Кларисса движутся с безупречным изяществом благородной пары. На их лицах сияют вежливые светские улыбки, предназначенные для завистливых глаз горожан.'
+    *pl 'Они оба прекрасно знают слабости друг друга: Альбер падок на молоденьких вертихвосток, а Кларисса умеет извлекать выгоду из своего положения и сохранять ледяное самообладание.'
+    *pl 'Вмешиваться в их танец бессмысленно — публичный этикет они соблюдают идеально.'
+    *pl ' '
+
+    gs 'FridayDanceAdvanceRound'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#FridayDanceIngaBoyfriendRefusal
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_inga_refusal', 'ОТКАЗ ИНГИ', 'large', 'webp'
+    gs 'FridayDanceIngaRefusalBoyfriendText'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОТКАЗ ИНГИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
     *p $FridayDanceText
     *pl ' '
 
-    FridayDanceNpcTalkCount += 1
-
-    if $DanceNpc = 'becky':
-        gs 'BeckyFridayContactRegister'
-    end
-
-    if $DanceNpc = 'amanda':
-        AmandaPublicAttention += 1
-    elseif $DanceNpc = 'melissa':
-        MelissaFamilyConcern += 1
-    elseif $DanceNpc = 'sandra':
-        SandraFamilyConcern += 1
-    elseif $DanceNpc = 'clarissa':
-        ClarissaDanceSeen += 1
-    elseif $DanceNpc = 'legare':
-        LegareDanceSeen += 1
-    elseif $DanceNpc = 'lizette':
-        AmandaLizaInfluence += 1
-    elseif $DanceNpc = 'georgett':
-        GeorgettePublicSeen += 1
-    end
-
-    if debug = 1:
-        *pl '[DEBUG DANCE] NPC: ' + $DanceNpc
-        *pl '[DEBUG DANCE] FridayDanceNpcTalkCount: ' + STR(FridayDanceNpcTalkCount)
-        *pl '[DEBUG DANCE] return: MarketDance'
-        *pl ' '
-    end
-
+    IngaArcStarted = 1
     gs 'FridayDanceAdvanceRound'
 
-    gs 'ActUiPrepare', 'Вернуться к знакомым', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'FridayDanceNpcTalkMenu'
-    end
-
-    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'MarketDance'
     end
-
-    killvar '$DanceNpc'
 ---
 
 ! ================================================

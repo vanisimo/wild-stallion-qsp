@@ -40,6 +40,9 @@
     gs 'DebugAmandaPrintLizaGossipBlock'
     pl ' '
 
+    gs 'DebugAmandaPrintWorkAndChurch'
+    pl ' '
+
     gs 'DebugAmandaPrintNextHint'
     pl ' '
 
@@ -237,6 +240,31 @@
     pl 'Marathon pending amanda: ' + STR(SexMarathonGossipPending['amanda']) + ' | last day: ' + STR(SexMarathonGossipLastDay['amanda'])
     pl '<a href="exec:AmandaLizaHallVisitReady = 1 & AmandaLizaHallVisitDay[day] = 1 & gs ''DebugAmandaArcPanel''">форс визит в зал</a>'
     pl '<a href="exec:SexMarathonGossipPending[''amanda''] = 1 & gs ''DebugAmandaArcPanel''">форс marathon pending</a>'
+---
+
+#DebugAmandaPrintWorkAndChurch
+    pl '<b>Смена в трактире и собор</b>'
+    if LOC('AmandaEscapeWorkCanStart') = 1:
+        gs 'AmandaEscapeWorkCanStart'
+        gs 'DebugAmandaPrintBool', 'Побег со смены CanStart', AmandaEscapeWorkCanStart
+        pl 'Прогулов сыграно: ' + STR(AmandaEscapeWorkCount) + ' | сегодня: ' + STR(AmandaEscapeWorkDoneDay = day)
+        pl '  <a href="exec:gt ''AmandaEscapeWorkStart'', ''TavernMain''">⚡ Запустить побег со смены (AmandaEscapeWork)</a>'
+        pl '  <a href="exec:AmandaLegareInterest = 3 & AmandaEscapeWorkDoneDay = 0 & jobwaitress[''amanda''] = 1 & TavernOpen = 1 & time = 3 & gt ''AmandaEscapeWorkStart'', ''TavernMain''">⚡ Побег с Легаре</a>'
+        pl '  <a href="exec:AmandaLegareInterest = 0 & AmandaNeighborBoysStage = 1 & AmandaEscapeWorkDoneDay = 0 & jobwaitress[''amanda''] = 1 & TavernOpen = 1 & time = 3 & gt ''AmandaEscapeWorkStart'', ''TavernMain''">⚡ Побег с соседями (флирт)</a>'
+        pl '  <a href="exec:AmandaLegareInterest = 0 & AmandaNeighborBoysStage = 2 & sluttiness[''amanda''] = 25 & AmandaEscapeWorkDoneDay = 0 & jobwaitress[''amanda''] = 1 & TavernOpen = 1 & time = 3 & gt ''AmandaEscapeWorkStart'', ''TavernMain''">⚡ Побег с соседями (минет)</a>'
+        pl '  <a href="exec:AmandaLegareInterest = 0 & AmandaNeighborBoysStage = 3 & sluttiness[''amanda''] = 40 & AmandaEscapeWorkDoneDay = 0 & jobwaitress[''amanda''] = 1 & TavernOpen = 1 & time = 3 & gt ''AmandaEscapeWorkStart'', ''TavernMain''">⚡ Побег с соседями (секс)</a>'
+        pl '  <a href="exec:AmandaLegareInterest = 0 & AmandaNeighborBoysStage = 4 & sluttiness[''amanda''] = 55 & AmandaEscapeWorkDoneDay = 0 & jobwaitress[''amanda''] = 1 & TavernOpen = 1 & time = 3 & gt ''AmandaEscapeWorkStart'', ''TavernMain''">⚡ Побег с соседями (группа)</a>'
+        killvar 'AmandaEscapeWorkCanStart'
+    end
+    pl ' '
+    if LOC('ChurchSpyAmandaCheckAvailable') = 1:
+        gs 'ChurchSpyAmandaCheckAvailable'
+        gs 'DebugAmandaPrintBool', 'Исповедь Аманды CanStart', ChurchSpyAmandaReady
+        gs 'DebugAmandaPrintBool', 'ГГ подслушал исповедь', PlayerKnows_AmandaChurchConfession
+        pl '  <a href="exec:gt ''ChurchSpyAmandaStart''">⚡ Запустить исповедь Аманды (ChurchSpyAmanda)</a>'
+        pl '  <a href="exec:week = 7 & time = 2 & ChurchSpyAmandaDoneDay = 0 & $GirlLocation[''amanda''] = ''Church'' & ChurchSpyBasicUnlocked = 1 & gt ''ChurchSpyAmandaStart''">⚡ Исповедь (форс гейтов)</a>'
+        killvar 'ChurchSpyAmandaReady'
+    end
 ---
 
 #DebugAmandaPrintSocialBlock
@@ -474,6 +502,11 @@
     AmandaMelissaThreesomeReady = 0
     AmandaLegareMmfDone = 0
     GirlUniformLevel['amanda'] = 0
+    AmandaEscapeWorkCount = 0
+    AmandaEscapeWorkDoneDay = 0
+    ChurchSpyAmandaDoneDay = 0
+    ChurchSpyAmandaSeenCount = 0
+    PlayerKnows_AmandaChurchConfession = 0
 ---
 
 #DebugAmandaJumpFirstSex

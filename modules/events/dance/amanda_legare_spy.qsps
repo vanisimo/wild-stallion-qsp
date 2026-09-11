@@ -1,0 +1,606 @@
+! ================================================
+! FILE: modules/events/dance/amanda_legare_spy.qsps
+! Слежка за Амандой и Легаре после танца
+! Версия: legare spy v1
+!
+! Легаре приглашает Аманду "прогуляться" — задний двор его лавки.
+! Стефан следит из-за бочек. Легаре МОЖЕТ лишить Аманду невинности.
+! У Легаре нет ограничений по домашней лестнице.
+!
+! Тип сцены зависит от:
+!   - virginity['amanda']        — девственница или нет
+!   - AmandaLegareInterest       — насколько Аманда увлечена Легаре
+!   - LegareAmandaInterest       — насколько Легаре настроен решительно
+!   - AmandaLegareSexDone        — был ли уже секс с Легаре
+!   - AmandaLegareSuckDone       — был ли уже минет с Легаре
+!
+! Вход:
+!   gt 'AmandaLegareSpyStart'
+!   Или автоматически через FridayDanceCore при
+!   AmandaLegareSpyReady = 1 и AmandaLegareSpyDone = 0
+!
+! Тексты:
+!   modules/events/dance/amanda_legare_spy_text.qsps
+! ================================================
+
+! -----------------------------------------------
+! Проверка: можно ли запустить слежку в эту пятницу
+! -----------------------------------------------
+
+#AmandaLegareSpyCanStart
+
+    AmandaLegareSpyCanStart = 0
+
+    if AmandaLegareSpyReady <> 1:
+        exit
+    end
+
+    if AmandaLegareSpyDoneToday = 1:
+        exit
+    end
+
+    if AmandaLegareDanceResult < 2:
+        ! Легаре не пригласил Аманду или танец не зашёл дальше талии
+        exit
+    end
+
+    if LegareAmandaInterest < 2:
+        exit
+    end
+
+    AmandaLegareSpyCanStart = 1
+---
+
+! -----------------------------------------------
+! Сброс флагов на новый день/неделю
+! -----------------------------------------------
+
+#AmandaLegareSpyReset
+
+    AmandaLegareSpyCanStart = 0
+    AmandaLegareSpyReady = 0
+    AmandaLegareSpyDoneToday = 0
+    AmandaLegareSpyStage = 0
+    AmandaLegareSpyInterrupted = 0
+    AmandaLegareSpyPlayerKnows = 0
+    $AmandaLegareSpySexType = ''
+    killvar 'AmandaLegareSpyCanStart'
+---
+
+! -----------------------------------------------
+! Определить тип сцены (что будет происходить)
+! 'talk'    — только разговор, ничего не вышло
+! 'suck'    — Аманда делает минет, Легаре кончает ей в рот или на лицо
+! 'suck2'   — повторный минет (уже бывало)
+! 'deflower'— Легаре лишает Аманду девственности
+! 'sex'     — секс (Аманда уже не девственница, первый раз с Легаре)
+! 'sex2'    — секс (уже бывало раньше)
+! -----------------------------------------------
+
+#AmandaLegareSpyGetSexType
+
+    $AmandaLegareSpySexType = 'talk'
+
+    if LegareAmandaInterest < 3:
+        ! Легаре пока осторожен — только разговор
+        exit
+    end
+
+    if virginity['amanda'] = 1:
+        if LegareAmandaInterest >= 5 and AmandaLegareInterest >= 4:
+            $AmandaLegareSpySexType = 'deflower'
+        elseif LegareAmandaInterest >= 4 or AmandaLegareInterest >= 3:
+            $AmandaLegareSpySexType = 'suck'
+        else:
+            $AmandaLegareSpySexType = 'talk'
+        end
+    else:
+        if AmandaLegareSexDone = 1:
+            $AmandaLegareSpySexType = 'sex2'
+        elseif AmandaLegareSuckDone = 1:
+            if LegareAmandaInterest >= 4:
+                $AmandaLegareSpySexType = 'sex'
+            else:
+                $AmandaLegareSpySexType = 'suck2'
+            end
+        else:
+            if LegareAmandaInterest >= 5:
+                $AmandaLegareSpySexType = 'sex'
+            else:
+                $AmandaLegareSpySexType = 'suck'
+            end
+        end
+    end
+---
+
+! -----------------------------------------------
+! Точка входа — Стефан видит как Легаре уводит Аманду
+! -----------------------------------------------
+
+#AmandaLegareSpyStart
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_spy/spy_start', 'ЛЕГАРЕ УВОДИТ АМАНДУ', 'large', 'webp'
+
+    AmandaLegareSpyDoneToday = 1
+    AmandaLegareSpyStage = 1
+    AmandaLegareSpyReady = 0
+
+    gs 'AmandaLegareSpyGetSexType'
+
+    gs 'EnsureGirlData', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ УВОДИТ АМАНДУ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSpyStartText') = 1:
+        gs 'AmandaLegareSpyStartText'
+    else:
+        *pl 'После танца Легаре негромко говорит что-то Аманде на ухо.'
+        *pl 'Она оглядывается. Потом идёт за ним.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE SPY] SexType: ' + $AmandaLegareSpySexType
+        *pl '[DEBUG LEGARE SPY] LegareInterest: ' + STR(LegareAmandaInterest)
+        *pl '[DEBUG LEGARE SPY] AmandaInterest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG LEGARE SPY] virginity: ' + STR(virginity['amanda'])
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Последовать за ними', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareSpyBackyard'
+    end
+
+    gs 'ActUiPrepare', 'Подойти к Аманде — остановить', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareSpyIntercept'
+    end
+
+    gs 'ActUiPrepare', 'Отвернуться — не моё дело', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareSpyIgnore'
+    end
+---
+
+! -----------------------------------------------
+! Стефан перехватывает Аманду до того как ушли
+! -----------------------------------------------
+
+#AmandaLegareSpyIntercept
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_spy/spy_intercept', 'ПЕРЕХВАТ', 'large', 'webp'
+
+    AmandaLegareSpyInterrupted = 1
+    LegareConflictStage += 1
+    AmandaTrustStefan += 1
+    AmandaLegareInterest -= 1
+    LegareAmandaInterest -= 1
+
+    if AmandaLegareInterest < 0:
+        AmandaLegareInterest = 0
+    end
+    if LegareAmandaInterest < 0:
+        LegareAmandaInterest = 0
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРЕХВАТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSpyInterceptText') = 1:
+        gs 'AmandaLegareSpyInterceptText'
+    else:
+        *pl 'Вы оказываетесь рядом прежде чем они успевают уйти.'
+        *pl 'Легаре смотрит спокойно, с ленивой полуулыбкой — будто так и было задумано.'
+        *pl 'Аманда краснеет. Не ясно, рада она или нет.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! -----------------------------------------------
+! Стефан отворачивается — ничего не делает
+! -----------------------------------------------
+
+#AmandaLegareSpyIgnore
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_spy/spy_ignore', 'ПЛОЩАДЬ БЕЗ НЕЁ', 'large', 'webp'
+
+    AmandaLegareSpyPlayerKnows = 0
+    AmandaNpcPath += 1
+    AmandaLegareInterest += 1
+    LegareAmandaInterest += 1
+
+    ! Если Стефан не следил — событие всё равно происходит, но он не знает деталей
+    if $AmandaLegareSpySexType = 'deflower':
+        virginity['amanda'] = 0
+        AmandaLegareSexDone = 1
+        AmandaLegareDeflowerDone = 1
+        AmandaNpcPath += 1
+        sluttiness['amanda'] += 3
+        gs 'PregnancyCheck', 'amanda', 'inside', 1, 'legare'
+    elseif $AmandaLegareSpySexType = 'sex' or $AmandaLegareSpySexType = 'sex2':
+        AmandaLegareSexDone = 1
+        AmandaNpcPath += 1
+        sluttiness['amanda'] += 2
+        gs 'PregnancyCheck', 'amanda', 'inside', 1, 'legare'
+    elseif $AmandaLegareSpySexType = 'suck' or $AmandaLegareSpySexType = 'suck2':
+        AmandaLegareSuckDone = 1
+        sluttiness['amanda'] += 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЛОЩАДЬ БЕЗ НЕЁ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSpyIgnoreText') = 1:
+        gs 'AmandaLegareSpyIgnoreText'
+    else:
+        *pl 'Вы остаётесь у края площади. Аманда идёт за Легаре и скрывается за углом.'
+        *pl 'Что произошло потом — вы не знаете. Только видите, как она возвращается минут через двадцать.'
+        *pl 'Одежда в порядке. Лицо — нет.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! -----------------------------------------------
+! Стефан следует за ними — задний двор лавки
+! -----------------------------------------------
+
+#AmandaLegareSpyBackyard
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_spy/spy_backyard_arrive', 'ЗАДНИЙ ДВОР', 'large', 'webp'
+
+    AmandaLegareSpyPlayerKnows = 1
+    AmandaLegareSpyStage = 2
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗАДНИЙ ДВОР ЛАВКИ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSpyBackyardText') = 1:
+        gs 'AmandaLegareSpyBackyardText'
+    else:
+        *pl 'Задний двор лавки. Штабель бочек с вином, старая повозка. Узкий проход между ними.'
+        *pl 'Вы заходите с другой стороны бочек — незаметно. Уже слышны их голоса.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Прислушаться', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareSpyListen'
+    end
+
+    gs 'ActUiPrepare', 'Выйти и вмешаться', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareSpyYell'
+    end
+---
+
+! -----------------------------------------------
+! Стефан слушает разговор перед тем как начнётся
+! -----------------------------------------------
+
+#AmandaLegareSpyListen
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_spy/spy_listen', 'СЛУШАЮ ИЗ-ЗА БОЧЕК', 'large', 'webp'
+
+    AmandaLegareSpyStage = 3
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗА БОЧКАМИ — СЛУШАЮ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSpyListenText') = 1:
+        gs 'AmandaLegareSpyListenText'
+    else:
+        *pl '«А ваша жена, месье? Дети?» — слышите вы голос Аманды.'
+        *pl '«Элоиза сама умная женщина, она понимает, что у мужчины бывают свои дела.»'
+        *pl '«Это... честно?»'
+        *pl '«Это реально, дорогая. Гораздо реальнее, чем то, чего от жизни ждёшь в твоём возрасте.»'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Смотреть что будет дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareSpyScene', 0
+    end
+
+    gs 'ActUiPrepare', 'Рявкнуть на них — всё прервать', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareSpyYell'
+    end
+
+    gs 'ActUiPrepare', 'Уйти молча', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        AmandaLegareSpyPlayerKnows = 0
+        gt 'AmandaLegareSpyIgnore'
+    end
+---
+
+! -----------------------------------------------
+! Стефан выкрикивает из-за бочек
+! -----------------------------------------------
+
+#AmandaLegareSpyYell
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_spy/spy_yell', 'ОКРИК ИЗ-ЗА БОЧЕК', 'large', 'webp'
+
+    AmandaLegareSpyInterrupted = 1
+    LegareConflictStage += 1
+    AmandaLegareInterest -= 1
+    LegareAmandaInterest -= 1
+
+    if AmandaLegareInterest < 0:
+        AmandaLegareInterest = 0
+    end
+    if LegareAmandaInterest < 0:
+        LegareAmandaInterest = 0
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОКРИК ИЗ-ЗА БОЧЕК'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSpyYellText') = 1:
+        gs 'AmandaLegareSpyYellText'
+    else:
+        *pl '«Аманда!» — рявкаете вы из-за штабеля бочек.'
+        *pl 'Тишина.'
+        *pl '«Стефан?!» — её голос сразу становится другим.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! -----------------------------------------------
+! Основная сцена — то что Стефан видит из-за бочек
+! stage: шаги сцены (0, 1, 2, 3...)
+! -----------------------------------------------
+
+#AmandaLegareSpyScene
+
+    *clr
+    clr
+    cla
+
+    AmandaLegareSpySceneStep = ARGS[0]
+
+    $AmandaLegareSpySceneImg = 'spy_scene_' + STR(MIN(AmandaLegareSpySceneStep + 1, 4))
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_spy/' + $AmandaLegareSpySceneImg, 'ЗА БОЧКАМИ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗА БОЧКАМИ — СМОТРЮ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSpySceneText') = 1:
+        gs 'AmandaLegareSpySceneText', $AmandaLegareSpySexType, AmandaLegareSpySceneStep
+    else:
+        *pl '[сцена ' + STR(AmandaLegareSpySceneStep) + ' / тип: ' + $AmandaLegareSpySexType + ']'
+    end
+
+    *pl ' '
+
+    ! Определяем конец сцены
+    AmandaLegareSpyMaxStep = 2
+    if $AmandaLegareSpySexType = 'deflower' or $AmandaLegareSpySexType = 'sex' or $AmandaLegareSpySexType = 'sex2':
+        AmandaLegareSpyMaxStep = 3
+    end
+
+    if debug = 1:
+        *pl '[DEBUG SPY SCENE] Step: ' + STR(AmandaLegareSpySceneStep) + ' / Max: ' + STR(AmandaLegareSpyMaxStep)
+        *pl '[DEBUG SPY SCENE] SexType: ' + $AmandaLegareSpySexType
+        *pl ' '
+    end
+
+    if AmandaLegareSpySceneStep < AmandaLegareSpyMaxStep:
+        ! Ещё не конец — можно смотреть дальше или прервать
+
+        gs 'ActUiPrepare', 'Смотреть дальше', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareSpyScene', AmandaLegareSpySceneStep + 1
+        end
+
+        gs 'ActUiPrepare', 'Рявкнуть — прервать', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareSpyYell'
+        end
+
+        gs 'ActUiPrepare', 'Уйти молча', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareSpyFinish', 0
+        end
+
+    else:
+        ! Финал сцены — применяем последствия
+
+        gs 'AmandaLegareSpyApplyConsequences'
+
+        gs 'ActUiPrepare', 'Дождаться когда они выйдут', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareSpyFinish', 1
+        end
+
+        gs 'ActUiPrepare', 'Уйти молча', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareSpyFinish', 0
+        end
+    end
+
+    killvar 'AmandaLegareSpySceneStep'
+    killvar 'AmandaLegareSpyMaxStep'
+    killvar '$AmandaLegareSpySceneImg'
+---
+
+! -----------------------------------------------
+! Применение последствий — что произошло
+! -----------------------------------------------
+
+#AmandaLegareSpyApplyConsequences
+
+    if $AmandaLegareSpySexType = 'deflower':
+        virginity['amanda'] = 0
+        AmandaLegareSexDone = 1
+        AmandaLegareDeflowerDone = 1
+        AmandaLegareDeflowerPlayerSaw = AmandaLegareSpyPlayerKnows
+        AmandaNpcPath += 2
+        sluttiness['amanda'] += 3
+        AmandaScandalLevel += 2
+        TavernScandal += 1
+        AmandaPublicAttention += 1
+        gs 'PregnancyCheck', 'amanda', 'inside', 1, 'legare'
+        LegareAmandaInterest += 2
+        AmandaLegareInterest += 2
+
+    elseif $AmandaLegareSpySexType = 'sex':
+        AmandaLegareSexDone = 1
+        AmandaNpcPath += 1
+        sluttiness['amanda'] += 2
+        AmandaScandalLevel += 1
+        TavernScandal += 1
+        gs 'PregnancyCheck', 'amanda', 'inside', 1, 'legare'
+        LegareAmandaInterest += 1
+        AmandaLegareInterest += 1
+
+    elseif $AmandaLegareSpySexType = 'sex2':
+        AmandaNpcPath += 1
+        sluttiness['amanda'] += 1
+        gs 'PregnancyCheck', 'amanda', 'inside', 1, 'legare'
+        LegareAmandaInterest += 1
+
+    elseif $AmandaLegareSpySexType = 'suck':
+        AmandaLegareSuckDone = 1
+        sluttiness['amanda'] += 1
+        LegareAmandaInterest += 1
+        AmandaLegareInterest += 1
+
+    elseif $AmandaLegareSpySexType = 'suck2':
+        sluttiness['amanda'] += 1
+        LegareAmandaInterest += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'amanda_legare_backyard_' + $AmandaLegareSpySexType
+    end
+
+    if AmandaLegareSpyPlayerKnows = 1:
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'amanda_legare_backyard_' + $AmandaLegareSpySexType, 'witness'
+        end
+    end
+---
+
+! -----------------------------------------------
+! Финал — Стефан уходит или дожидается
+! waitedForThem: 1 = дождался, 0 = ушёл сам
+! -----------------------------------------------
+
+#AmandaLegareSpyFinish
+
+    *clr
+    clr
+    cla
+
+    AmandaLegareSpyFinishWaited = ARGS[0]
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_spy/spy_finish', 'КОНЕЦ СЛЕЖКИ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВОЗВРАЩЕНИЕ НА ПЛОЩАДЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareSpyFinishText') = 1:
+        gs 'AmandaLegareSpyFinishText', AmandaLegareSpyFinishWaited, $AmandaLegareSpySexType
+    else:
+        if AmandaLegareSpyFinishWaited = 1:
+            *pl 'Вы дожидаетесь пока они выйдут. Легаре провожает Аманду до угла и уходит с видом человека, который хорошо провёл время.'
+            *pl 'Аманда идёт чуть медленнее, чем обычно.'
+        else:
+            *pl 'Вы уходите первым. Не хотите знать, как это заканчивается.'
+        end
+    end
+
+    *pl ' '
+
+    MelissaLegareWarningReady = 1
+    AmandaLegareNextRiskReady = 1
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+
+    killvar 'AmandaLegareSpyFinishWaited'
+---
+
+#AmandaLegareSpyDebugReset
+
+    AmandaLegareSpyCanStart = 0
+    AmandaLegareSpyReady = 0
+    AmandaLegareSpyDoneToday = 0
+    AmandaLegareSpyStage = 0
+    AmandaLegareSpyInterrupted = 0
+    AmandaLegareSpyPlayerKnows = 0
+    AmandaLegareSuckDone = 0
+    AmandaLegareSexDone = 0
+    AmandaLegareDeflowerDone = 0
+    AmandaLegareDeflowerPlayerSaw = 0
+    $AmandaLegareSpySexType = ''
+    killvar 'AmandaLegareSpyCanStart'
+---

@@ -17,6 +17,12 @@
 
     $GuyName = 'eddie'
 
+    if $ARGS[0] <> '':
+        $EddieTalkReturnLoc = $ARGS[0]
+    elseif $EddieTalkReturnLoc = '':
+        $EddieTalkReturnLoc = 'BeckyShop'
+    end
+
     if LOC('InitEddie') = 1:
         gs 'InitEddie'
     end
@@ -41,17 +47,26 @@
         Talked['eddie'] += 1
     }
 
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Поболтать о личных вещах', ''
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Поболтать о девушках', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
-        'Вы болтаете с Эдди о девушках и о том, кто сколько выпил.'
-        dynamic 'if Talked[''eddie'']<=2 and Rand(1,2)=1 and Friends[''eddie'']<=10:
-            ''Вы немного сдружились с Эдди.''
-            Friends[''eddie'']+=1
+        gs 'EddieTalkGirlsBoastText'
+        *pl $EddieArcText
+        if Friends['eddie'] < 10:
+            Friends['eddie'] += 1
         end
-        if Talked[''eddie'']>2: ''Ничего нового из разговора вы не узнали.'''
         Talked['eddie'] += 1
     }
     gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(Friends['eddie']>=5,-1,0)"
+
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Рассказать о девушках в трактире', ''
+    gs 'Menu.AddModule', 'MenuEddieTalk', {
+        gs 'EddieTalkTavernGirlsText'
+        *pl $EddieArcText
+        EddieTalkedTavernGirls = 1
+        Friends['eddie'] += 1
+        Talked['eddie'] += 1
+    }
+    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(Friends['eddie']>=5 and EddieTalkedTavernGirls=0,-1,0)"
 
     gs 'MenuUiAdd', 'MenuEddieTalk', 'Предложить помочь с мамой', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
@@ -82,9 +97,14 @@
     }
     gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyEddieDone=1 and EddieBestFriend=0 and Friends['eddie']>=18 and Talked['eddie']<2,-1,0)"
 
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Вернуться в лавку', ''
+    gs 'MenuUiAdd', 'MenuEddieTalk', 'Вернуться', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
-        gt 'BeckyShop'
+        if $EddieTalkReturnLoc = '':
+            $EddieTalkReturnLoc = 'BeckyShop'
+        end
+        $TmpLoc = $EddieTalkReturnLoc
+        killvar '$EddieTalkReturnLoc'
+        gt $TmpLoc
     }
 
     gs 'Menu.Show', 'MenuEddieTalk'

@@ -1,0 +1,136 @@
+! ================================================
+! FILE: modules/events/dance/clarissa_dance.qsps
+! MODULE: events/dance
+! Пятничный танец с Клариссой Легаре (танец-реванш)
+! ================================================
+
+#ClarissaDance
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'clarissa'
+
+    if ClarissaDanceDay <> day:
+        ClarissaDanceDay = day
+        ClarissaDanceStep = 0
+        ClarissaDanceEnded = 0
+        ClarissaDanceWaist = 0
+        ClarissaDanceAss = 0
+        $ClarissaDanceLastText = ''
+    end
+
+    gs 'SceneShowVisual', 'images/events/dance/clarissa_dance/clarissa_dance', 'ТАНЕЦ С КЛАРИССОЙ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ТАНЕЦ С КЛАРИССОЙ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $ClarissaDanceLastText <> '':
+        *p $ClarissaDanceLastText
+    elseif ClarissaDanceStep = 0:
+        *p 'Кларисса грациозно принимает вашу руку. Её шелковое платье шуршит, взгляд спокоен, но в уголках губ играет едва заметная усмешка — госпожа Легаре не прочь показать мужу и всему городу, что она ничуть не обделена вниманием.'
+    end
+
+    *pl ' '
+
+    if ClarissaDanceEnded = 1:
+        gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MarketDance'
+        end
+        exit
+    end
+
+    gs 'Menu.Destroy', 'ClarissaDanceMenu'
+    gs 'Menu.Create', 'ClarissaDanceMenu'
+
+    if ClarissaDanceStep = 0:
+        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Кружиться в вальсе', ''
+        gs 'Menu.AddModule', 'ClarissaDanceMenu', {
+            gt 'ClarissaDanceAction', 'dance'
+        }
+    end
+
+    if ClarissaDanceStep >= 1 and ClarissaDanceWaist = 0:
+        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Положить руку на талию', ''
+        gs 'Menu.AddModule', 'ClarissaDanceMenu', {
+            gt 'ClarissaDanceAction', 'waist'
+        }
+    end
+
+    if ClarissaDanceStep >= 1 and ClarissaDanceAss = 0:
+        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Опустить руку на попу', ''
+        gs 'Menu.AddModule', 'ClarissaDanceMenu', {
+            gt 'ClarissaDanceAction', 'ass'
+        }
+    end
+
+    if ClarissaDanceStep >= 1:
+        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Чинно завершить танец', ''
+        gs 'Menu.AddModule', 'ClarissaDanceMenu', {
+            gt 'ClarissaDanceAction', 'finish'
+        }
+    end
+
+    gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Отойти', ''
+    gs 'Menu.AddModule', 'ClarissaDanceMenu', {
+        ClarissaDanceEnded = 1
+        gt 'MarketDance'
+    }
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''ClarissaDanceMenu''">делать</a>?'
+---
+
+#ClarissaDanceAction
+    $ClarissaAction = LCASE($ARGS[0])
+
+    gs 'EnsureGirlData', 'clarissa'
+
+    if $ClarissaAction = 'dance':
+        ClarissaDanceStep = 1
+        Friends['clarissa'] += 1
+        $ClarissaDanceLastText = 'Вы уверенно ведете Клариссу в круг танцующих. Она движется с безупречной осанкой благородной дамы, ловя на себе взгляды мужа и почтенных горожан. Напряжение в её плечах постепенно тает.'
+
+    elseif $ClarissaAction = 'waist':
+        if Friends['clarissa'] >= 6:
+            ClarissaDanceStep = 2
+            ClarissaDanceWaist = 1
+            Friends['clarissa'] += 1
+            otkroven['clarissa'] += 1
+            $ClarissaDanceLastText = 'Вы осторожно перемещаете ладонь на ее тонкую талию, притягивая госпожу Легаре чуть ближе, чем велит светский этикет. Кларисса бросает на вас внимательный взгляд из-под ресниц, но не противится: «А вы дерзки, мастер Стефан... Впрочем, не могу сказать, что это дурно».'
+        else:
+            $ClarissaDanceLastText = 'Кларисса слегка отстраняется, не позволяя сократить дистанцию: «Не спешите, Стефан. Всему свое время и место».'
+        end
+
+    elseif $ClarissaAction = 'ass':
+        if Friends['clarissa'] >= 8 and (sluttiness['clarissa'] >= 15 or otkroven['clarissa'] >= 15):
+            ClarissaDanceStep = 3
+            ClarissaDanceAss = 1
+            Friends['clarissa'] += 1
+            sluttiness['clarissa'] += 1
+            otkroven['clarissa'] += 1
+            $ClarissaDanceLastText = 'Под прикрытием складок платья ваша ладонь соскальзывает ниже, на округлую, упругую ягодицу госпожи Легаре. Кларисса едва слышно втягивает воздух сквозь зубы, ее щеки слегка розовеют. Она не сбрасывает вашу руку, но шепчет в самое ухо: «Стефан... вы ходите по лезвию ножа. Если Альбер заметит — скандала не миновать... но святой Ильматер, как же это будоражит кровь».'
+        else:
+            ! Спокойный, но твердый отпор зрелой женщины
+            Friends['clarissa'] -= 1
+            if Friends['clarissa'] < 0:
+                Friends['clarissa'] = 0
+            end
+            ClarissaDanceEnded = 1
+            gs 'FridayDanceAdvanceRound'
+            $ClarissaDanceLastText = 'Кларисса с безупречным светским спокойствием отстраняется и окидывает вас прохладным взглядом: «Мастер Стефан, вы забываетесь. Держите дистанцию, если хотите сохранить репутацию приличного человека». Сделав вид, что просто решила взять бокал вина у слуги, она с достоинством удаляется к свите мэра.'
+        end
+
+    elseif $ClarissaAction = 'finish':
+        ClarissaDanceStep = 4
+        ClarissaDanceEnded = 1
+        Friends['clarissa'] += 2
+        gs 'FridayDanceAdvanceRound'
+        $ClarissaDanceLastText = 'Музыка стихает. Вы галантно склоняете голову, целуя пальцы Клариссы. Она тепло улыбается вам: «Благодарю за прекрасный танец, мастер Стефан. Вы скрасили этот вечер куда лучше, чем я ожидала». С этими словами она плавно возвращается к галерее.'
+    end
+
+    killvar '$ClarissaAction'
+    gt 'ClarissaDance'
+---

@@ -35,8 +35,26 @@
         AmandaDanceEnded = 1
     end
 
+    if $AmandaDanceArt = '':
+        if AmandaDanceStage = 0:
+            $AmandaDanceArt = 'wait' + STR(RAND(1, 2))
+        elseif AmandaDanceKiss = 1:
+            $AmandaDanceArt = 'YouKiss'
+        elseif AmandaDanceAssGrip = 1:
+            $AmandaDanceArt = 'YouClose'
+        elseif AmandaDanceAss = 1:
+            $AmandaDanceArt = 'YouDance'
+        elseif AmandaDanceWaist = 1:
+            $AmandaDanceArt = 'YouClose'
+        elseif AmandaDanceStage >= 1:
+            $AmandaDanceArt = 'YouInvite1'
+        else:
+            $AmandaDanceArt = 'wait1'
+        end
+    end
+
     if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'amanda', 'dance', 'dance', 'normal'
+        gs 'ShowImage', 'amanda', 'dance', $AmandaDanceArt
     end
 
     *pl '══════════════════════════════════════════════'
@@ -100,12 +118,14 @@
 
     $AmandaDanceHandPosition = ''
     $AmandaDanceLastText = ''
+    $AmandaDanceArt = ''
 ---
 
 #AmandaDanceOffend
     AmandaDanceEnded = 1
     AmandaDanceBlockedTonight = 1
     AmandaRebellion += 1
+    $AmandaDanceArt = 'YouDanceAngry'
 
     if Friends['amanda'] > 0:
         Friends['amanda'] -= 1
@@ -163,7 +183,7 @@
         }
     end
 
-    if AmandaDanceKiss = 1 and AmandaDanceAlley = 0 and AmandaHomeStage >= 1:
+    if AmandaDanceKiss = 1 and AmandaDanceAlley = 0 and AmandaHomeStage >= 3:
         gs 'AmandaDanceAlleyCanOffer'
 
         if AmandaDanceAlleyCanOffer = 1:
@@ -174,6 +194,13 @@
         end
 
         killvar 'AmandaDanceAlleyCanOffer'
+    end
+
+    if AmandaDanceStage >= 1 and AmandaHomeStage >= 3:
+        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Увести с танцев домой (обнимашки)', ''
+        gs 'Menu.AddModule', 'AmandaDanceMenu', {
+            gt 'AmandaDanceLeaveHome'
+        }
     end
 
     gs 'MenuUiAdd', 'AmandaDanceMenu', 'Закончить танец', ''
@@ -195,6 +222,7 @@
 
     if $AmandaDanceAction = 'talk':
         AmandaDanceEnded = 1
+        $AmandaDanceArt = 'YouInvite1'
 
         if Friends[$AmandaDanceGirl] >= 7:
             $AmandaDanceLastText = 'Вы болтаете с Амандой о ерунде. Она слушает вежливо, но явно ждёт, когда музыка снова зазовёт её в круг.'
@@ -216,6 +244,7 @@
         if Friends[$AmandaDanceGirl] >= 8 and sluttiness[$AmandaDanceGirl] > 15:
             AmandaDanceStage = 1
             AmandaDanceStep = 1
+            $AmandaDanceArt = 'YouInvite2'
             Friends[$AmandaDanceGirl] += 1
             AmandaPublicAttention += 1
             AmandaPlayerPath += 1
@@ -223,12 +252,14 @@
         elseif Friends[$AmandaDanceGirl] >= 5 and sluttiness[$AmandaDanceGirl] >= 5:
             AmandaDanceStage = 1
             AmandaDanceStep = 1
+            $AmandaDanceArt = 'YouInvite1'
             Friends[$AmandaDanceGirl] += 1
             AmandaPublicAttention += 1
             AmandaPlayerPath += 1
             $AmandaDanceLastText = '«Ты же брат, зачем мне с тобой танцевать?» — но она всё-таки берёт вашу руку и вскоре кружится с вами.'
         else
             AmandaDanceEnded = 1
+            $AmandaDanceArt = 'YouDanceAngry'
             $AmandaDanceLastText = '«Ты что, сдурел?!» — Аманда отступает. Расстроенный отказом, вы остаётесь у колоннады один.'
         end
 
@@ -239,6 +270,18 @@
             AmandaDanceStep = AmandaDanceMaxStep
         end
 
+        if AmandaDanceKiss = 1:
+            $AmandaDanceArt = 'YouKiss'
+        elseif AmandaDanceAssGrip = 1:
+            $AmandaDanceArt = 'YouClose'
+        elseif AmandaDanceAss = 1:
+            $AmandaDanceArt = 'YouDance'
+        elseif AmandaDanceWaist = 1:
+            $AmandaDanceArt = 'YouClose'
+        else:
+            $AmandaDanceArt = 'YouInvite2'
+        end
+
         AmandaPublicAttention += 1
         $AmandaDanceLastText = 'Вы продолжаете кружиться в танце с Амандой.'
 
@@ -247,6 +290,7 @@
             AmandaDanceStage = 2
             AmandaDanceStep = 2
             AmandaDanceWaist = 1
+            $AmandaDanceArt = 'YouClose'
             $AmandaDanceHandPosition = 'waist'
             Friends[$AmandaDanceGirl] += 1
             otkroven[$AmandaDanceGirl] += 1
@@ -256,6 +300,7 @@
             AmandaDanceStage = 2
             AmandaDanceStep = 2
             AmandaDanceWaist = 1
+            $AmandaDanceArt = 'YouDanceWorry'
             $AmandaDanceHandPosition = 'waist'
             Friends[$AmandaDanceGirl] += 1
             otkroven[$AmandaDanceGirl] += 1
@@ -271,6 +316,7 @@
             AmandaDanceStage = 3
             AmandaDanceStep = 3
             AmandaDanceAss = 1
+            $AmandaDanceArt = 'YouClose'
             $AmandaDanceHandPosition = 'ass'
             otkroven[$AmandaDanceGirl] += 1
             sluttiness[$AmandaDanceGirl] += 1
@@ -281,6 +327,7 @@
             AmandaDanceStage = 3
             AmandaDanceStep = 3
             AmandaDanceAss = 1
+            $AmandaDanceArt = 'YouDance'
             $AmandaDanceHandPosition = 'ass'
             otkroven[$AmandaDanceGirl] += 1
             sluttiness[$AmandaDanceGirl] += 1
@@ -289,6 +336,7 @@
             $AmandaDanceLastText = '«Стефан, что ты делаешь?!» — шепчет она, но танцевать не перестаёт.'
         elseif Friends[$AmandaDanceGirl] >= 5 and sluttiness[$AmandaDanceGirl] >= 9:
             AmandaDanceStep += 1
+            $AmandaDanceArt = 'YouDanceWorry'
             $AmandaDanceHandPosition = 'waist'
             otkroven[$AmandaDanceGirl] += 1
             $AmandaDanceLastText = '«Стефан, что ты делаешь?!» — Аманда передвигает ваши руки обратно на талию.'
@@ -302,6 +350,7 @@
             AmandaDanceStage = 4
             AmandaDanceStep = 4
             AmandaDanceAssGrip = 1
+            $AmandaDanceArt = 'YouClose'
             $AmandaDanceHandPosition = 'ass2'
             otkroven[$AmandaDanceGirl] += 1
             sluttiness[$AmandaDanceGirl] += 1
@@ -312,6 +361,7 @@
             AmandaDanceStage = 4
             AmandaDanceStep = 4
             AmandaDanceAssGrip = 1
+            $AmandaDanceArt = 'YouDance'
             $AmandaDanceHandPosition = 'ass2'
             otkroven[$AmandaDanceGirl] += 1
             sluttiness[$AmandaDanceGirl] += 1
@@ -320,6 +370,7 @@
             $AmandaDanceLastText = '«Стефанчик, мы же брат и сестра…» — шепчет она, но не отстраняется.'
         elseif Friends[$AmandaDanceGirl] >= 7 and sluttiness[$AmandaDanceGirl] >= 13:
             AmandaDanceStep += 1
+            $AmandaDanceArt = 'YouDanceWorry'
             $AmandaDanceHandPosition = 'waist'
             $AmandaDanceLastText = '«Стефан, что ты делаешь?!» — Аманда возвращает ваши руки на талию.'
         else
@@ -328,10 +379,15 @@
         end
 
     elseif $AmandaDanceAction = 'kiss':
-        if Friends[$AmandaDanceGirl] >= 10 and sluttiness[$AmandaDanceGirl] > 21:
+        if AmandaHomeStage < 1 and KissCount[$AmandaDanceGirl] = 0:
+            AmandaDanceStep += 1
+            $AmandaDanceArt = 'YouDanceWorry'
+            $AmandaDanceLastText = '«Стефан, ты что, с ума сошёл?!» — Аманда испуганно отстраняется и прижимает пальцы к губам, озираясь по сторонам. — «На нас же вся площадь смотрит!»'
+        elseif Friends[$AmandaDanceGirl] >= 10 and sluttiness[$AmandaDanceGirl] > 21:
             AmandaDanceStage = 5
             AmandaDanceStep = 5
             AmandaDanceKiss = 1
+            $AmandaDanceArt = 'YouKiss'
             love[$AmandaDanceGirl] += 1
             otkroven[$AmandaDanceGirl] += 1
             AmandaPlayerPath += 1
@@ -342,6 +398,7 @@
             AmandaDanceStage = 5
             AmandaDanceStep = 5
             AmandaDanceKiss = 1
+            $AmandaDanceArt = 'YouKiss'
             love[$AmandaDanceGirl] += 1
             otkroven[$AmandaDanceGirl] += 1
             AmandaPlayerPath += 1
@@ -350,6 +407,7 @@
             $AmandaDanceLastText = 'Аманда откликается на поцелуй без особого энтузиазма, но не отстраняется.'
         elseif Friends[$AmandaDanceGirl] >= 7 and sluttiness[$AmandaDanceGirl] >= 13:
             AmandaDanceStep += 1
+            $AmandaDanceArt = 'YouDanceWorry'
             $AmandaDanceLastText = '«Стефанчик, я же твоя сестра!» — Аманда отстраняется.'
         else
             gs 'AmandaDanceOffend'
@@ -361,6 +419,7 @@
         AmandaDanceStep = 6
         AmandaDanceAlley = 1
         AmandaDanceEnded = 1
+        $AmandaDanceArt = 'YouClose'
 
         AmandaPlayerPath += 1
         AmandaSecretiveness += 1
@@ -390,9 +449,8 @@
     clr
     cla
 
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'amanda', 'dance', 'alley', 'intro'
-    end
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/dance/amanda/YouClose', 'Уход с танцев в переулок', 'large', 'webp'
 
     *pl '══════════════════════════════════════════════'
     *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'

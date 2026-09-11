@@ -1,0 +1,512 @@
+! ================================================
+! FILE: modules/events/tavern/amanda_escape_work.qsps
+! MODULE: events/tavern
+! Побег Аманды со смены в зале (Escape from work)
+! С Легаре или соседскими парнями
+! Возможность прервать до начала акта (анти-НТР) или наблюдать
+! ================================================
+
+#AmandaEscapeWorkCanStart
+    AmandaEscapeWorkCanStart = 0
+
+    gs 'IsTavernOpen'
+    if TavernOpen = 0:
+        exit
+    end
+
+    if week = 7:
+        exit
+    end
+
+    if week = 5 and time = 4:
+        exit
+    end
+
+    if time < 2 or time > 4:
+        exit
+    end
+
+    if jobwaitress['amanda'] = 0 and jobwhore['amanda'] = 0:
+        exit
+    end
+
+    if AmandaEscapeWorkDoneDay = day:
+        exit
+    end
+
+    if AmandaRebellion < 2 and sluttiness['amanda'] < 12 and AmandaSecretiveness < 2 and AmandaLegareInterest < 1 and AmandaNeighborBoysStage = 0:
+        exit
+    end
+
+    AmandaEscapeWorkCanStart = 1
+---
+
+#AmandaEscapeWorkTryAutoStart
+    $AmandaEscapeReturnLoc = $ARGS[0]
+
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    if LOC($AmandaEscapeReturnLoc) = 0:
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    if LOC('AmandaEscapeWorkCanStart') = 1:
+        gs 'AmandaEscapeWorkCanStart'
+
+        if AmandaEscapeWorkCanStart = 1:
+            AmandaEscapeRoll = RAND(1, 100)
+
+            if AmandaEscapeRoll <= 25 or debug = 1:
+                killvar 'AmandaEscapeRoll'
+                AmandaEscapeWorkDoneDay = day
+                AmandaEscapeWorkCount += 1
+                gt 'AmandaEscapeWorkStart', $AmandaEscapeReturnLoc
+            end
+
+            killvar 'AmandaEscapeRoll'
+        end
+    end
+---
+
+#AmandaEscapeWorkStart
+    *clr
+    clr
+    cla
+
+    $AmandaEscapeReturnLoc = $ARGS[0]
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    ! Выбор партнёра для побега: Легаре или соседские парни
+    if AmandaLegareInterest >= 1 and (RAND(1, 2) = 1 or AmandaNeighborBoysStage = 0):
+        $AmandaEscapePartner = 'legare'
+        $AmandaEscapePartnerName = 'Легаре'
+        $AmandaCatchSceneType = 'legare'
+    else:
+        $AmandaEscapePartner = 'neighbor'
+        EscapeBoyRoll = RAND(1, 3)
+        if EscapeBoyRoll = 1:
+            $AmandaEscapePartnerName = 'Ханс'
+        elseif EscapeBoyRoll = 2:
+            $AmandaEscapePartnerName = 'Курт'
+        else:
+            $AmandaEscapePartnerName = 'Феликс'
+        end
+        killvar 'EscapeBoyRoll'
+
+        ! Определение уровня интимности с парнями по гейтам
+        if AmandaNeighborBoysStage >= 4 or AmandaAlleyMmfDone = 1 or (sluttiness['amanda'] >= 50 and AmandaNeighborBoysStage >= 2):
+            $AmandaCatchSceneType = 'neighbor_group'
+        elseif AmandaNeighborBoysStage >= 3 or (sluttiness['amanda'] >= 35 and AmandaNeighborBoysStage >= 2):
+            $AmandaCatchSceneType = 'neighbor_sex'
+        elseif AmandaNeighborBoysStage >= 2 or sluttiness['amanda'] >= 22:
+            $AmandaCatchSceneType = 'neighbor_blowjob'
+        else:
+            $AmandaCatchSceneType = 'neighbor_early'
+        end
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_start', 'АМАНДА УШЛА СО СМЕНЫ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА ИСЧЕЗЛА СО СМЕНЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaEscapeWorkText', 'intro'
+    *pl $EscapeWorkText
+    killvar '$EscapeWorkText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Проверить задний двор', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkSearch', 'yard', $AmandaEscapeReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Проверить переулок за трактиром', 'road'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkSearch', 'alley', $AmandaEscapeReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Спросить Сандру на кухне', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkSearch', 'sandra', $AmandaEscapeReturnLoc
+    end
+---
+
+#AmandaEscapeWorkSearch
+    *clr
+    clr
+    cla
+
+    $EscapeSearchPlace = LCASE($ARGS[0])
+    $AmandaEscapeReturnLoc = $ARGS[1]
+
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    if $EscapeSearchPlace = 'sandra':
+        gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_sandra', 'КУХНЯ ТРАКТИРА', 'large', 'webp'
+        *pl '══════════════════════════════════════════════'
+        *pl ' КУХНЯ ТРАКТИРА'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'AmandaEscapeWorkText', 'search_sandra'
+        *pl $EscapeWorkText
+        killvar '$EscapeWorkText'
+        *pl ' '
+
+        if $AmandaEscapePartner = 'legare':
+            gs 'ActUiPrepare', 'Броситься в переулок за трактиром', 'road'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaEscapeWorkSearch', 'alley', $AmandaEscapeReturnLoc
+            end
+            gs 'ActUiPrepare', 'Проверить задний двор на всякий случай', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaEscapeWorkSearch', 'yard', $AmandaEscapeReturnLoc
+            end
+        else:
+            gs 'ActUiPrepare', 'Броситься на задний двор к сараю', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaEscapeWorkSearch', 'yard', $AmandaEscapeReturnLoc
+            end
+            gs 'ActUiPrepare', 'Проверить переулок за трактиром', 'road'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaEscapeWorkSearch', 'alley', $AmandaEscapeReturnLoc
+            end
+        end
+
+        gs 'ActUiPrepare', 'Плюнуть и вернуться в зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $AmandaEscapeReturnLoc
+        end
+
+    else:
+        gt 'AmandaEscapeWorkCatch', $EscapeSearchPlace, $AmandaEscapeReturnLoc
+    end
+
+    killvar '$EscapeSearchPlace'
+---
+
+#AmandaEscapeWorkCatch
+    *clr
+    clr
+    cla
+
+    $EscapeCatchPlace = LCASE($ARGS[0])
+    $AmandaEscapeReturnLoc = $ARGS[1]
+
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    if $EscapeCatchPlace = 'yard':
+        gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_yard', 'ЗАДНИЙ ДВОР — ПОБЕГ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_alley', 'ПЕРЕУЛОК — ПОБЕГ', 'large', 'webp'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОБЕГ СО СМЕНЫ: ИЗ УЗКОГО УКРЫТИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    ! Описание увиденного ДО начала полового акта
+    gs 'AmandaEscapeWorkText', 'catch_spot', $AmandaCatchSceneType
+    *pl $EscapeWorkText
+    killvar '$EscapeWorkText'
+
+    *pl ' '
+
+    ! Ключевая развилка: прервать до начала (для игроков без НТР) или наблюдать дальше
+    gs 'ActUiPrepare', 'Вмешаться немедленно (прервать до начала!)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkInterrupt', $EscapeCatchPlace, $AmandaEscapeReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Не вмешиваться (наблюдать из укрытия)', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkWatch', $EscapeCatchPlace, $AmandaEscapeReturnLoc
+    end
+---
+
+#AmandaEscapeWorkInterrupt
+    *clr
+    clr
+    cla
+
+    $EscapeCatchPlace = LCASE($ARGS[0])
+    $AmandaEscapeReturnLoc = $ARGS[1]
+
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    if $EscapeCatchPlace = 'yard':
+        gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_yard', 'ПРЕРВАТЬ ПОБЕГ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_alley', 'ПРЕРВАТЬ ПОБЕГ', 'large', 'webp'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СТЕФАН ВМЕШАЛСЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaEscapeWorkText', 'interrupt', $AmandaCatchSceneType
+    *pl $EscapeWorkText
+    killvar '$EscapeWorkText'
+
+    *pl ' '
+
+    ! Варианты разговора при прерывании
+    if AmandaProhibitGuys = 1:
+        gs 'ActUiPrepare', 'Напомнить о строгом запрете на парней', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaEscapeWorkConfront', 'ban', $AmandaEscapeReturnLoc
+        end
+    end
+
+    gs 'ActUiPrepare', 'Строго потребовать немедленно вернуться к работе', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkConfront', 'strict', $AmandaEscapeReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Прижать к стене и по-хозяйски наказать поцелуем', 'flirt'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkConfront', 'claim', $AmandaEscapeReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Спокойно поговорить и предостеречь от глупостей', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkConfront', 'talk', $AmandaEscapeReturnLoc
+    end
+---
+
+#AmandaEscapeWorkWatch
+    *clr
+    clr
+    cla
+
+    $EscapeCatchPlace = LCASE($ARGS[0])
+    $AmandaEscapeReturnLoc = $ARGS[1]
+
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    if $EscapeCatchPlace = 'yard':
+        gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_yard', 'НАБЛЮДЕНИЕ ИЗ ТЕНИ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_alley', 'НАБЛЮДЕНИЕ ИЗ ТЕНИ', 'large', 'webp'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' НАБЛЮДЕНИЕ ИЗ УКРЫТИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    ! Регистрация последствий наблюдения за половым актом
+    sluttiness['amanda'] += 2
+    AmandaNpcPath += 1
+    AmandaScandalLevel += 1
+    arousal += 25
+
+    if $AmandaCatchSceneType = 'neighbor_blowjob':
+        oralacts['amanda'] += 1
+    elseif $AmandaCatchSceneType = 'neighbor_sex':
+        vaginalacts['amanda'] += 1
+    elseif $AmandaCatchSceneType = 'neighbor_group':
+        oralacts['amanda'] += 1
+        vaginalacts['amanda'] += 1
+        AmandaAlleyMmfDone = 1
+    end
+
+    PlayerKnows_AmandaEscapeEscapade = 1
+
+    gs 'AmandaEscapeWorkText', 'watch_scene', $AmandaCatchSceneType
+    *pl $EscapeWorkText
+    killvar '$EscapeWorkText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Выйти из укрытия к Аманде', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkPostWatchConfront', $AmandaEscapeReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Тихо вернуться в зал трактира', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkWatchLeave', $AmandaEscapeReturnLoc
+    end
+---
+
+#AmandaEscapeWorkPostWatchConfront
+    *clr
+    clr
+    cla
+
+    $AmandaEscapeReturnLoc = $ARGS[0]
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_confront', 'ПОСЛЕ УВИДЕННОГО', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СТЕФАН ВЫХОДИТ ИЗ ТЕНИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaEscapeWorkText', 'post_watch_confront_intro'
+    *pl $EscapeWorkText
+    killvar '$EscapeWorkText'
+
+    *pl ' '
+
+    ! Действия после увиденного
+    if $AmandaCatchSceneType = 'neighbor_blowjob' or $AmandaCatchSceneType = 'neighbor_sex' or $AmandaCatchSceneType = 'neighbor_group':
+        gs 'ActUiPrepare', 'Отчитать за бесстыдство прямо у стен трактира', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaEscapeWorkConfront', 'shameless', $AmandaEscapeReturnLoc
+        end
+    end
+
+    if AmandaProhibitGuys = 1:
+        gs 'ActUiPrepare', 'Напомнить о строгом запрете на парней', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaEscapeWorkConfront', 'ban', $AmandaEscapeReturnLoc
+        end
+    end
+
+    gs 'ActUiPrepare', 'Прижать к стене и воспользоваться её жаром', 'flirt'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkConfront', 'claim', $AmandaEscapeReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Строго потребовать немедленно вернуться к работе', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaEscapeWorkConfront', 'strict', $AmandaEscapeReturnLoc
+    end
+---
+
+#AmandaEscapeWorkWatchLeave
+    *clr
+    clr
+    cla
+
+    $AmandaEscapeReturnLoc = $ARGS[0]
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_start', 'ВОЗВРАЩЕНИЕ В ЗАЛ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВОЗВРАЩЕНИЕ В ЗАЛ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaEscapeWorkText', 'watch_quiet_leave'
+    *pl $EscapeWorkText
+    killvar '$EscapeWorkText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться за стойку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar '$AmandaEscapePartner'
+        killvar '$AmandaEscapePartnerName'
+        killvar '$AmandaCatchSceneType'
+        gt $AmandaEscapeReturnLoc
+    end
+---
+
+#AmandaEscapeWorkConfront
+    *clr
+    clr
+    cla
+
+    $ConfrontChoice = LCASE($ARGS[0])
+    $AmandaEscapeReturnLoc = $ARGS[1]
+
+    if $AmandaEscapeReturnLoc = '':
+        $AmandaEscapeReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_confront', 'РАЗГОВОР С АМАНДОЙ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С АМАНДОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $ConfrontChoice = 'ban':
+        if AmandaRebellion >= 3:
+            AmandaRebellion += 1
+            AmandaWorkDiscipline -= 1
+            AmandaTrustStefan -= 1
+            gs 'AmandaEscapeWorkText', 'choice_ban_rebel'
+        else:
+            AmandaRebellion -= 2
+            AmandaWorkDiscipline += 2
+            AmandaTrustStefan += 2
+            love['amanda'] += 1
+            gs 'AmandaEscapeWorkText', 'choice_ban_guilt'
+        end
+
+    elseif $ConfrontChoice = 'shameless':
+        AmandaRebellion -= 2
+        AmandaWorkDiscipline += 2
+        sluttiness['amanda'] += 1
+        AmandaScandalLevel += 1
+        gs 'AmandaEscapeWorkText', 'choice_shameless'
+
+    elseif $ConfrontChoice = 'claim':
+        sluttiness['amanda'] += 1
+        KissCount['amanda'] += 1
+        AmandaPlayerPath += 2
+        love['amanda'] += 1
+        AmandaWorkDiscipline += 1
+        gs 'AmandaEscapeWorkText', 'choice_claim'
+
+    elseif $ConfrontChoice = 'strict':
+        AmandaWorkDiscipline += 2
+        tavern_cleanliness += 1
+        tavern_reputation += 1
+        AmandaRebellion += 1
+        gs 'AmandaEscapeWorkText', 'choice_strict'
+
+    elseif $ConfrontChoice = 'talk':
+        AmandaTrustStefan += 3
+        Friends['amanda'] += 2
+        AmandaWorkDiscipline += 1
+        AmandaRebellion -= 1
+        gs 'AmandaEscapeWorkText', 'choice_talk'
+    end
+
+    *pl $EscapeWorkText
+    killvar '$EscapeWorkText'
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к делам трактира', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar '$AmandaEscapePartner'
+        killvar '$AmandaEscapePartnerName'
+        killvar '$AmandaCatchSceneType'
+        gt $AmandaEscapeReturnLoc
+    end
+
+    killvar '$ConfrontChoice'
+---
