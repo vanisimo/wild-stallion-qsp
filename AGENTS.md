@@ -132,7 +132,7 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/becky/becky_dance_text.qsps` | Becky dances |
 | `modules/events/becky/becky_talk_text.qsps` | Becky talk |
 | `modules/events/eddie/eddie_arc_text.qsps` | Eddie arc |
-| `modules/events/amanda/amanda_liza_talk_text.qsps` | Amanda + Lizette overhear |
+| `modules/events/amanda/lizette/amanda_liza_talk_text.qsps` | Amanda + Lizette overhear |
 | `modules/events/church/church_spy_lizette_text.qsps` | church spy Lizette |
 | `modules/events/hall/hall_family_reactions_text.qsps` | family reactions to hall |
 | `modules/events/hall/hall_family_state_text.qsps` | family state after hall choice |
@@ -154,7 +154,7 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/actions/dialogs/girl_talk_family_text.qsps` | family talk |
 | `modules/actions/sex/sex_scene_text.qsps` | SexScene narratives |
 | `modules/core/gifts/gift_simple_text.qsps` | gifts cheap/expensive |
-| `modules/events/family/amanda_home_first_sex_text.qsps` | Amanda home first sex |
+| `modules/events/amanda/home/amanda_home_first_sex_text.qsps` | Amanda home first sex |
 | `modules/events/family/birth_certificate_text.qsps` | birth certificate |
 | `modules/events/sandra/sandra_staff_girls_reaction_text.qsps` | staff hire reactions |
 | `modules/events/family/act1_moral_unlock_text.qsps` | Act1 moral morning thoughts |

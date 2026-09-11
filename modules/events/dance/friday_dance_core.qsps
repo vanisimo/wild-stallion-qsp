@@ -287,21 +287,32 @@
 
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_rumor', 'ГОРОДСКИЕ СЛУХИ', 'large', 'webp'
 
-    if LOC('CityRumorsPickKey') = 1:
-        gs 'CityRumorsPickKey'
-        gs 'CityRumorsText', $CityRumorPickedKey, 'dance'
-        $FridayDanceText = $CityRumorText
-    end
-
-    if $FridayDanceText = '':
-        gs 'FridayDanceRumorText'
-    end
+    gs 'CityRumorsGetText', 'dance'
 
     *pl '══════════════════════════════════════════════'
     *pl ' ПРОЙТИСЬ ПО ПЛОЩАДИ: ГОРОДСКИЕ СЛУХИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $FridayDanceText
+
+    if $CityRumorText <> '':
+        *p $CityRumorText
+    else:
+        gs 'FridayDanceRumorText'
+        *p $FridayDanceText
+    end
+
+    if $CityRumorPickedKey = 'tavern_scandal' or $CityRumorPickedKey = 'kitchen_sandra' or $CityRumorPickedKey = 'girls_behavior' or $CityRumorPickedKey = 'legare_amanda':
+        *pl ' '
+        if FamilyCorruptionStage <= 1:
+            *pl '<i>Если Сандра или сёстры услышат эти пересуды на площади, им будет не по себе среди почтенных горожан. Впрочем, Сандра с юности умеет гордо держать подбородок и делать вид, что чужие толки её не касаются.</i>'
+        elseif FamilyCorruptionStage <= 3:
+            *pl '<i>Слухи о трактире разносятся по площади, но семью это уже мало трогает. Сандра лишь усмехается: на танцах всегда чешут языками, а доход трактира и свобода семьи важнее чужих вздохов.</i>'
+        else:
+            *pl '<i>Горожане могут чесать языками сколько угодно: в «Жеребце» и в семье давно свои правила, и на ханжеские сплетни всем глубоко плевать.</i>'
+        end
+    end
+
+    killvar '$CityRumorText'
     *pl ' '
 
     FridayDanceRumorCount += 1
@@ -310,6 +321,7 @@
     if debug = 1:
         *pl '[DEBUG DANCE] CityRumorLevel: ' + STR(CityRumorLevel)
         *pl '[DEBUG DANCE] FridayDanceRumorCount: ' + STR(FridayDanceRumorCount)
+        *pl '[DEBUG DANCE] PickedKey: ' + $CityRumorPickedKey
         *pl '[DEBUG DANCE] return: MarketDance'
         *pl ' '
     end
@@ -1039,6 +1051,11 @@
     act $ActUiLabel, $ActUiIconPath:
         FridayDanceMayorSpeechSeen = 0
         gt 'FridayDanceDebugMenu'
+    end
+
+    gs 'ActUiPrepare', 'Тест: слухи на площади', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FridayDanceRumor'
     end
 
     gs 'ActUiPrepare', 'Вернуться к танцам', 'return'

@@ -1,0 +1,132 @@
+! ================================================
+! FILE: modules/events/amanda/lizette/port_amanda_lizette.qsps
+! Аманда знакомится с Лизеттой у корабля из столицы
+! Witness через осмотр с главного порта
+! Большие тексты: modules/events/port/port_amanda_lizette_text.qsps
+! ================================================
+
+#PortAmandaLizetteSceneActive
+    PortAmandaSceneActive = 0
+
+    if PortMeetWitnessed = 1:
+        exit
+    end
+
+    if AmandaMetLizette = 1:
+        exit
+    end
+
+    if AmandaAtPortShip <> 1:
+        exit
+    end
+
+    gs 'PortCapitalShipCheck'
+
+    if PortCapitalShipAvailable = 0 and debug = 0:
+        exit
+    end
+
+    PortAmandaSceneActive = 1
+---
+
+#PortAmandaLizetteEmbedAmandaLink
+    gs 'FormatTextByStyle', 'Аманда', 'npc_link'
+    gs 'NpcTalkIconInline'
+    $PortAmandaSceneLink = $NpcTalkIconInline + ' <a href="exec:gs ''PortAmandaLizetteShowAmandaMenu''">' + $FormattedText + '</a>'
+
+    killvar '$FormattedText'
+    killvar '$NpcTalkIconInline'
+---
+
+#PortAmandaLizetteShowAmandaMenu
+    gs 'PortAmandaLizetteBuildAmandaMenu'
+    gs 'Menu.Show', 'PortAmandaSceneMenu'
+---
+
+#PortAmandaLizetteBuildAmandaMenu
+    gs 'Menu.Destroy', 'PortAmandaSceneMenu'
+    gs 'Menu.Create', 'PortAmandaSceneMenu'
+
+    gs 'MenuUiAdd', 'PortAmandaSceneMenu', 'Осмотреть', 'look'
+    gs 'Menu.AddModule', 'PortAmandaSceneMenu', {
+        gt 'PortAmandaLizetteInspect'
+    }
+---
+
+#PortAmandaLizettePrintPortScene
+    gs 'PortAmandaLizetteEmbedAmandaLink'
+
+    gs 'PortAmandaLizetteText', 'port_scene'
+    $PortAmandaSceneLine = $PortAmandaLizetteText + ' ' + $PortAmandaSceneLink + ' '
+
+    gs 'PortAmandaLizetteText', 'port_scene_tail'
+    $PortAmandaSceneLine += $PortAmandaLizetteText
+
+    killvar '$PortAmandaSceneLink'
+    killvar '$PortAmandaLizetteText'
+---
+
+#PortAmandaLizetteRegisterWitness
+    if PortMeetWitnessed = 1:
+        exit
+    end
+
+    AmandaLizaInfluence += 2
+    AmandaPublicAttention += 1
+    AmandaSecretiveness += 1
+
+    PortMeetWitnessed = 1
+    AmandaMetLizette = 1
+    LizetteKnown = 1
+    LizetteVisitStage = 1
+    $LizetteSourceKnown = 'port_amanda'
+
+    gs 'UpdateGirlLocations'
+---
+
+#PortAmandaLizetteInspect
+    cls
+
+    gs 'PortAmandaLizetteRegisterWitness'
+
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/events/port/amanda_lizette'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    gs 'PrintTitleLine', ' У ТРАПА КОРАБЛЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'PortAmandaLizetteText', 'inspect'
+    *p $PortAmandaLizetteText
+    killvar '$PortAmandaLizetteText'
+
+    *pl ' '
+
+    act '<b>Назад в порт</b>', 'images/common/ui/actions/return.png':
+        gt 'Port'
+    end
+---
+
+#PortAmandaLizetteTryMeet
+    $PortAmandaReturnLoc = $ARGS[0]
+
+    if $PortAmandaReturnLoc = '':
+        $PortAmandaReturnLoc = 'Port'
+    end
+
+    gs 'PortAmandaLizetteSceneActive'
+
+    if PortAmandaSceneActive = 1:
+        killvar 'PortAmandaSceneActive'
+        gt 'PortAmandaLizetteInspect'
+    end
+
+    killvar 'PortAmandaSceneActive'
+    killvar '$PortAmandaReturnLoc'
+---
+
+#PortAmandaLizetteMeet
+    gt 'PortAmandaLizetteInspect'
+---

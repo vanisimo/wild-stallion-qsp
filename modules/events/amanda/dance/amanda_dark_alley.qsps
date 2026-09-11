@@ -1,0 +1,916 @@
+﻿! ================================================
+! FILE: modules/events/dance/amanda_dark_alley.qsps
+! ╨Я╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╤П ╨┐╨╛╤Б╨╗╨╡ ╤В╨░╨╜╤Ж╨░ ╤Б ╨Р╨╝╨░╨╜╨┤╨╛╨╣
+! ╨Т╨╡╤А╤Б╨╕╤П: FridayDance / compact alley scene v2
+! ╨Э╨░╨╖╨╜╨░╤З╨╡╨╜╨╕╨╡:
+! - ╤Б╤О╨╢╨╡╤В╨╜╤Л╨╣ ╨╕╨▓╨╡╨╜╤В ╨┐╨╛╤Б╨╗╨╡ ╨┐╤П╤В╨╜╨╕╤З╨╜╨╛╨│╨╛ ╤В╨░╨╜╤Ж╨░ ╤Б ╨Р╨╝╨░╨╜╨┤╨╛╨╣
+! - ╨┐╨╡╤В╤В╨╕╨╜╨│ ╨┐╨╛╨┤ ╤О╨▒╨║╨╛╨╣
+! - ╨╝╨╕╨╜╨╡╤В (2 ╤Н╨║╤А╨░╨╜╨░ + ╤Д╨╕╨╜╨░╨╗) ╤Б ╨┐╤А╨╛╨▓╨╡╤А╨║╨╛╨╣ ╨│╨╗╤Г╨▒╨╕╨╜╤Л ╨│╨╛╤А╨╗╨░ ╨╕ ╨║╨╛╤А╤А╤Г╨┐╤Ж╨╕╨╕
+! - ╨┐╨╛╨╗╨╜╨╛╤Ж╨╡╨╜╨╜╤Л╨╣ ╤Б╨╡╨║╤Б (╤Б╤В╨╡╨╜╨░ / ╨░╤А╨▒╨░, ╨▓╨░╨│╨╕╨╜╨░╨╗╤М╨╜╤Л╨╣ / ╨░╨╜╨░╨╗╤М╨╜╤Л╨╣ + ATM ╨┐╤А╨╛╨▓╨╡╤А╨║╨░)
+! - ╨╖╨░╤Б╤В╤Г╨║╨╕╨▓╨░╨╜╨╕╨╡ ╤Б╨╛╤Б╨╡╨┤╤Б╨║╨╕╨╝╨╕ ╨┐╨░╤А╨╜╤П╨╝╨╕ (10 ╨▓╨░╤А╨╕╨░╨╜╤В╨╛╨▓ ╤Б ╤А╨╡╨░╨║╤Ж╨╕╨╡╨╣ ╨┐╨╛ ╤А╨░╨╖╨▓╤А╨░╤Й╤С╨╜╨╜╨╛╤Б╤В╨╕)
+! - ╨╕╨╜╤В╨╡╨│╤А╨░╤Ж╨╕╤П ╤Б ╨╛╨▒╤Й╨╕╨╝╨╕ ╤Б╤З╨╡╤В╤З╨╕╨║╨░╨╝╨╕ ╤Б╨╡╨║╤Б╨░ ╨╕ ╤Б╨╡╨╝╤П╨╕╨╖╨▓╨╡╤А╨╢╨╡╨╜╨╕╨╣
+!
+! ╨в╨╡╨║╤Б╤В╤Л ╨▒╨╡╤А╤Г╤В╤Б╤П ╨╕╨╖:
+! modules/events/dance/amanda_dark_alley_text.qsps
+!
+! ╨Т╤Е╨╛╨┤ ╤Б╤О╨┤╨░ ╨╕╨┤╤С╤В ╨╕╨╖:
+! modules/events/dance/amanda_dance.qsps
+! ╤З╨╡╤А╨╡╨╖ ╨╗╨╛╨║╨░╤В╨╛╤А #AmandaDanceAlleyEvent
+! ================================================
+
+#AmandaDanceAlleyCanOffer
+
+    AmandaDanceAlleyCanOffer = 0
+
+    if AmandaHomeStage < 3:
+        exit
+    end
+
+    if AmandaDanceKiss = 0:
+        exit
+    end
+
+    if AmandaDanceAlley = 1:
+        exit
+    end
+
+    AmandaDanceAlleyCanOffer = 1
+---
+
+
+#AmandaDanceAlleyEvent
+
+    *clr
+    clr
+    cla
+
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    if $RealName[$AmandaAlleyGirl] = '':
+        $RealName[$AmandaAlleyGirl] = '╨Р╨╝╨░╨╜╨┤╨░'
+    end
+
+    if AmandaAlleyDay <> day:
+        gs 'AmandaDanceAlleyReset'
+    end
+
+    if AmandaAlleyStage = 0:
+        AmandaAlleyStage = 1
+        AmandaAlleyRisk = 10 + AmandaDancePublicRisk + AmandaPublicAttention / 5
+        AmandaSecretiveness += 1
+    end
+
+    SceneArtUseReal = 1
+    if AmandaAlleyPetting = 1:
+        gs 'SceneShowVisual', 'images/events/amanda/grope/dresspanties', '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨Я╨Ю╨Ф ╨о╨С╨Ъ╨г', 'large', 'webp'
+    elseif AmandaAlleyClose = 1:
+        gs 'SceneShowVisual', 'images/dance/amanda/YouClose', '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨Ю╨С╨к╨п╨в╨Ш╨п', 'large', 'webp'
+    elseif AmandaAlleyKiss = 1:
+        gs 'SceneShowVisual', 'images/dance/amanda/YouKiss', '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨Я╨Ю╨ж╨Х╨Ы╨г╨Щ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/dance/amanda/YouClose', '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш', 'large', 'webp'
+    end
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyMainText') = 1:
+        gs 'AmandaDanceAlleyMainText'
+    else:
+        if $AmandaAlleyLastText <> '':
+            *p $AmandaAlleyLastText
+        else:
+            *p '╨Т╤Л ╤Б ╨Р╨╝╨░╨╜╨┤╨╛╨╣ ╨╛╤В╤Е╨╛╨┤╨╕╤В╨╡ ╤Б ╤И╤Г╨╝╨╜╨╛╨╣ ╨┐╨╗╨╛╤Й╨░╨┤╨╕ ╨▓ ╤В╤С╨╝╨╜╤Л╨╣ ╨┐╤А╨╛╤Е╨╛╨┤ ╨╝╨╡╨╢╨┤╤Г ╨┤╨╛╨╝╨░╨╝╨╕.'
+            *p '╨Ь╤Г╨╖╤Л╨║╨░ ╨▓╤Б╤С ╨╡╤Й╤С ╤Б╨╗╤Л╤И╨╜╨░, ╨╜╨╛ ╨╖╨┤╨╡╤Б╤М ╨║╨░╨╢╨┤╤Л╨╣ ╨╖╨▓╤Г╨║ ╨║╨░╨╢╨╡╤В╤Б╤П ╨╛╨┐╨░╤Б╨╜╨╡╨╡.'
+        end
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG ALLEY] Stage: ' + STR(AmandaAlleyStage)
+        *pl '[DEBUG ALLEY] Risk: ' + STR(AmandaAlleyRisk)
+        *pl '[DEBUG ALLEY] Kiss: ' + STR(AmandaAlleyKiss)
+        *pl '[DEBUG ALLEY] Close: ' + STR(AmandaAlleyClose)
+        *pl '[DEBUG ALLEY] Petting: ' + STR(AmandaAlleyPetting)
+        *pl '[DEBUG ALLEY] AfterSex: ' + STR(AmandaAlleyAfterSex)
+        *pl '[DEBUG ALLEY] Caught: ' + STR(AmandaAlleyCaught)
+        *pl '[DEBUG ALLEY] IntimStage Amanda: ' + STR(IntimStage[$AmandaAlleyGirl])
+        *pl ' '
+    end
+
+    gs 'AmandaDanceAlleyBuildMenu'
+
+    *p '╨з╤В╨╛ ╨▓╤Л ╨▒╤Г╨┤╨╡╤В╨╡ <a href="exec:gs ''Menu.Show'', ''AmandaAlleyMenu''">╨┤╨╡╨╗╨░╤В╤М</a>?'
+---
+
+#AmandaDanceAlleyReset
+
+    AmandaAlleyDay = day
+    AmandaAlleyStage = 0
+    AmandaAlleyRisk = 0
+    AmandaAlleyKiss = 0
+    AmandaAlleyClose = 0
+    AmandaAlleyPetting = 0
+    AmandaAlleyPlace = 0
+    AmandaAlleyPeeperTriggered = 0
+    AmandaDanceSleep = 0
+    AmandaAlleyAfterSex = 0
+    AmandaAlleyCaught = 0
+    $AmandaAlleyLastText = ''
+---
+
+#AmandaDanceAlleyBuildMenu
+
+    gs 'Menu.Destroy', 'AmandaAlleyMenu'
+    gs 'Menu.Create', 'AmandaAlleyMenu'
+
+    gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨Ю╨│╨╗╤П╨┤╨╡╤В╤М╤Б╤П', ''
+    gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+        gt 'AmandaDanceAlleyAction', 'look'
+    }
+
+    if AmandaAlleyKiss = 0:
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨Я╨╛╤Ж╨╡╨╗╨╛╨▓╨░╤В╤М', ''
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'kiss'
+        }
+    end
+
+    if AmandaAlleyKiss = 1 and AmandaAlleyClose = 0:
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨Я╤А╨╕╨╢╨░╤В╤М ╨▒╨╗╨╕╨╢╨╡', ''
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'close'
+        }
+    end
+
+    if AmandaAlleyClose = 1:
+        if AmandaAlleyPetting = 0:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨Ч╨░╨╗╨╡╨╖╤В╤М ╨┐╨╛╨┤ ╤О╨▒╨║╤Г ╨▓ ╤В╤А╤Г╤Б╨╕╨║╨╕ (╨┐╨╡╤В╤В╨╕╨╜╨│)', ''
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleyAction', 'petting'
+            }
+        else:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨Я╨╛╨╗╨░╤Б╨║╨░╤В╤М ╨┐╨╛╨┤ ╤О╨▒╨║╨╛╨╣', ''
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleyAction', 'petting'
+            }
+        end
+
+
+        if (AmandaHomeStage >= 3 or BlowjobCount['amanda'] >= 1 or oralacts['amanda'] >= 1):
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨Ь╨╕╨╜╨╡╤В ╨▓ ╨┐╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╨╡', ''
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleyBlowjob'
+            }
+        end
+
+        if (AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1):
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨Я╨╛╨╗╨╜╨╛╤Ж╨╡╨╜╨╜╨░╤П ╨▒╨╗╨╕╨╖╨╛╤Б╤В╤М ╨▓ ╨┐╨╡╤А╨╡╤Г╨╗╨║╨╡', ''
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleySex'
+            }
+        else:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨Я╤А╨╛╨┤╨╛╨╗╨╢╨╕╤В╤М ╨▒╨╗╨╕╨╖╨╛╤Б╤В╤М', ''
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleyToSexScene'
+            }
+        end
+    end
+
+    if AmandaHomeStage >= 3 and (AmandaAlleyKiss = 1 or AmandaAlleyClose = 1):
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨г╨╣╤В╨╕ ╨▓╨╝╨╡╤Б╤В╨╡ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А (╨╛╨▒╨╜╨╕╨╝╨░╤И╨║╨╕)', ''
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceLeaveHome'
+        }
+    end
+
+    gs 'MenuUiAdd', 'AmandaAlleyMenu', '╨г╨╣╤В╨╕ ╤Б ╨┐╨╗╨╛╤Й╨░╨┤╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', ''
+    gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+        gt 'AmandaDanceAlleyEnd'
+    }
+---
+
+#AmandaDanceAlleyAction
+
+    $AmandaAlleyAction = LCASE($ARGS[0])
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    if $AmandaAlleyAction = 'look':
+        AmandaAlleyRisk += 2
+
+    elseif $AmandaAlleyAction = 'kiss':
+        AmandaAlleyKiss = 1
+        AmandaAlleyStage = 2
+        AmandaAlleyRisk += 5
+
+        Friends[$AmandaAlleyGirl] += 1
+        love[$AmandaAlleyGirl] += 1
+        otkroven[$AmandaAlleyGirl] += 1
+        AmandaPlayerPath += 1
+        AmandaSecretiveness += 1
+
+    elseif $AmandaAlleyAction = 'close':
+        AmandaAlleyClose = 1
+        AmandaAlleyStage = 3
+        AmandaAlleyRisk += 8
+
+        love[$AmandaAlleyGirl] += 1
+        otkroven[$AmandaAlleyGirl] += 1
+        sluttiness[$AmandaAlleyGirl] += 1
+        AmandaScandalLevel += 1
+        AmandaSecretiveness += 1
+
+    elseif $AmandaAlleyAction = 'petting':
+        AmandaAlleyPetting = 1
+        AmandaAlleyStage = 4
+        AmandaAlleyRisk += 10
+
+        love[$AmandaAlleyGirl] += 1
+        otkroven[$AmandaAlleyGirl] += 1
+        sluttiness[$AmandaAlleyGirl] += 1
+        AmandaScandalLevel += 1
+        AmandaSecretiveness += 1
+
+    else:
+        AmandaAlleyRisk += 1
+    end
+
+    if LOC('AmandaDanceAlleyActionText') = 1:
+        gs 'AmandaDanceAlleyActionText', $AmandaAlleyAction
+    else:
+        if $AmandaAlleyAction = 'look':
+            $AmandaAlleyLastText = '╨Т╤Л ╨╛╨│╨╗╤П╨┤╤Л╨▓╨░╨╡╤В╨╡╤Б╤М. ╨Я╤А╨╛╤Е╨╛╨┤ ╨║╨░╨╢╨╡╤В╤Б╤П ╨┐╤Г╤Б╤В╤Л╨╝, ╨╜╨╛ ╤Б ╨┐╨╗╨╛╤Й╨░╨┤╨╕ ╨▓╤Б╤С ╨╡╤Й╤С ╨┤╨╛╨╜╨╛╤Б╤П╤В╤Б╤П ╨│╨╛╨╗╨╛╤Б╨░.'
+        elseif $AmandaAlleyAction = 'kiss':
+            $AmandaAlleyLastText = '╨Т╤Л ╤Ж╨╡╨╗╤Г╨╡╤В╨╡ ╨Р╨╝╨░╨╜╨┤╤Г. ╨Ю╨╜╨░ ╨┐╤А╨╕╤Б╨╗╤Г╤И╨╕╨▓╨░╨╡╤В╤Б╤П ╨║ ╤И╨░╨│╨░╨╝ ╨╜╨░ ╨┐╨╗╨╛╤Й╨░╨┤╨╕, ╨╜╨╛ ╨╜╨╡ ╨╛╤В╤Б╤В╤А╨░╨╜╤П╨╡╤В╤Б╤П.'
+        elseif $AmandaAlleyAction = 'close':
+            $AmandaAlleyLastText = '╨Т╤Л ╨┐╤А╨╕╤В╤П╨│╨╕╨▓╨░╨╡╤В╨╡ ╨╡╤С ╨▒╨╗╨╕╨╢╨╡. ╨Р╨╝╨░╨╜╨┤╨░ ╨╛╨│╨╗╤П╨┤╤Л╨▓╨░╨╡╤В╤Б╤П, ╨╜╨╛ ╨╛╤Б╤В╨░╤С╤В╤Б╤П ╤А╤П╨┤╨╛╨╝.'
+        elseif $AmandaAlleyAction = 'petting':
+            $AmandaAlleyLastText = '╨Т╤Л ╨╛╤Б╤В╨╛╤А╨╛╨╢╨╜╨╛ ╨╗╨░╤Б╨║╨░╨╡╤В╨╡ ╨Р╨╝╨░╨╜╨┤╤Г ╨┐╨╛╨┤ ╤О╨▒╨║╨╛╨╣. ╨Ю╨╜╨░ ╤Б╨╝╤Г╤Й╤С╨╜╨╜╨╛ ╨▓╨╖╨┤╤А╨░╨│╨╕╨▓╨░╨╡╤В, ╨╜╨╛ ╨╜╨╡ ╨╛╤В╤Б╤В╤А╨░╨╜╤П╨╡╤В╤Б╤П.'
+        else:
+            $AmandaAlleyLastText = '╨Т╤Л ╨╖╨░╨┤╨╡╤А╨╢╨╕╨▓╨░╨╡╤В╨╡╤Б╤М ╨▓ ╨┐╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╨╡ ╨╡╤Й╤С ╨╜╨░ ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ ╨╝╨│╨╜╨╛╨▓╨╡╨╜╨╕╨╣.'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', $AmandaAlleyGirl
+    gs 'AmandaDanceAlleyRiskCheck'
+
+    killvar '$AmandaAlleyAction'
+
+    gt 'AmandaDanceAlleyEvent'
+---
+
+#AmandaDanceAlleyRiskCheck
+
+    AmandaAlleyRoll = RAND(1, 100)
+    AmandaAlleyChance = AmandaAlleyRisk
+
+    if AmandaAlleyChance > 60:
+        AmandaAlleyChance = 60
+    end
+
+    if AmandaAlleyRoll <= AmandaAlleyChance:
+        AmandaAlleyCaught += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+        AmandaScandalLevel += 1
+
+        if LOC('AmandaDanceAlleyRiskText') = 1:
+            gs 'AmandaDanceAlleyRiskText'
+        else:
+            $AmandaAlleyLastText += '<br><br>╨б ╤Г╨╗╨╕╤Ж╤Л ╨┤╨╛╨╜╨╛╤Б╨╕╤В╤Б╤П ╤З╤Г╨╢╨╛╨╣ ╨│╨╛╨╗╨╛╤Б. ╨Т╤Л ╨╛╨▒╨░ ╨╜╨░ ╨╝╨│╨╜╨╛╨▓╨╡╨╜╨╕╨╡ ╨╖╨░╨╝╨╕╤А╨░╨╡╤В╨╡.'
+        end
+    end
+
+    killvar 'AmandaAlleyRoll'
+    killvar 'AmandaAlleyChance'
+---
+
+#AmandaAlleyPeepersInit
+
+    $AmandaAlleyBoyName[0] = '╨в╨╛╨╝╨░╤Б'
+    $AmandaAlleyBoyDesc[0] = '╤Б╤Л╨╜ ╨╝╤П╤Б╨╜╨╕╨║╨░ ╤Б ╤А╤Л╨╜╨║╨░'
+    $AmandaAlleyBoyName[1] = '╨Я╨╕╤В╨╡╤А'
+    $AmandaAlleyBoyDesc[1] = '╨┐╨╛╨┤╨╝╨░╤Б╤В╨╡╤А╤М╨╡ ╨║╤Г╨╖╨╜╨╡╤Ж╨░'
+    $AmandaAlleyBoyName[2] = '╨С╤А╤Г╨╜╨╛'
+    $AmandaAlleyBoyDesc[2] = '╨┐╨░╤А╨╡╨╜╤С╨║ ╨╕╨╖ ╨┐╨╛╤А╤В╨╛╨▓╤Л╤Е ╨┤╨╛╨║╨╛╨▓'
+    $AmandaAlleyBoyName[3] = '╨Ы╤О╨║'
+    $AmandaAlleyBoyDesc[3] = '╨┐╨╛╨╝╨╛╤Й╨╜╨╕╨║ ╨╝╨╡╨╗╤М╨╜╨╕╨║╨░'
+    $AmandaAlleyBoyName[4] = '╨е╨░╨╜╤Б'
+    $AmandaAlleyBoyDesc[4] = '╨┐╨╗╨╡╨╝╤П╨╜╨╜╨╕╨║ ╨┐╨╡╨║╨░╤А╤П'
+    $AmandaAlleyBoyName[5] = '╨Ь╨╕╨║╨░'
+    $AmandaAlleyBoyDesc[5] = '╤Б╨╛╤Б╨╡╨┤╤Б╨║╨╕╨╣ ╤Б╨╛╤А╨▓╨░╨╜╨╡╤Ж'
+    $AmandaAlleyBoyName[6] = '╨Ю╤В╤В╨╛'
+    $AmandaAlleyBoyDesc[6] = '╤Б╤Л╨╜ ╨║╨╛╨╢╨╡╨▓╨╜╨╕╨║╨░'
+    $AmandaAlleyBoyName[7] = '╨п╨║╨╛╨▒'
+    $AmandaAlleyBoyDesc[7] = '╨┐╨╛╨┤╤А╤Г╤З╨╜╤Л╨╣ ╨┐╨╗╨╛╤В╨╜╨╕╨║╨░'
+    $AmandaAlleyBoyName[8] = '╨д╨╕╨╜╨╜'
+    $AmandaAlleyBoyDesc[8] = '╨║╨╛╨╜╤О╤Е ╤Б ╨┐╨╛╤Б╤В╨╛╤П╨╗╨╛╨│╨╛ ╨┤╨▓╨╛╤А╨░'
+    $AmandaAlleyBoyName[9] = '╨Щ╨╡╨╜╤Б'
+    $AmandaAlleyBoyDesc[9] = '╤А╤Л╨▒╨░╤Ж╨║╨╕╨╣ ╨┐╨╛╨┤╨╝╨░╤Б╤В╨╡╤А╤М╨╡'
+---
+
+#AmandaAlleyCheckPeeper
+
+    if AmandaAlleyPeeperTriggered = 1:
+        exit
+    end
+
+    AmandaAlleyPeeperRoll = RAND(1, 100)
+
+    if AmandaAlleyPeeperRoll <= 30:
+        AmandaAlleyPeeperTriggered = 1
+        gs 'AmandaAlleyPeepersInit'
+        AmandaAlleyBoyIdx = RAND(0, 9)
+        $AmandaAlleyCurrentBoy = $AmandaAlleyBoyName[AmandaAlleyBoyIdx]
+        $AmandaAlleyCurrentBoyDesc = $AmandaAlleyBoyDesc[AmandaAlleyBoyIdx]
+
+        AmandaAlleyCaught += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+        AmandaScandalLevel += 1
+
+        gt 'AmandaAlleyPeeperCaught'
+    end
+---
+
+#AmandaAlleyPeeperCaught
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨б╨Т╨Ш╨Ф╨Х╨в╨Х╨Ы╨м', 'large', 'webp'
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш тАФ ╨б╨Т╨Ш╨Ф╨Х╨в╨Х╨Ы╨м'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaAlleyPeeperText') = 1:
+        gs 'AmandaAlleyPeeperText', $AmandaAlleyCurrentBoy, $AmandaAlleyCurrentBoyDesc
+    else:
+        *pl '╨Т╨╜╨╡╨╖╨░╨┐╨╜╨╛ ╨▓ ╤В╨╕╤И╨╕╨╜╨╡ ╨┐╨╡╤А╨╡╤Г╨╗╨║╨░ ╤А╨░╨╖╨┤╨░╤С╤В╤Б╤П ╤И╨╛╤А╨╛╤Е тАФ ╨╖╨░ ╨▓╨░╨╝╨╕ ╨║╤В╨╛-╤В╨╛ ╨╜╨░╨▒╨╗╤О╨┤╨░╨╡╤В!'
+    end
+
+    *pl ' '
+
+    if sluttiness['amanda'] < 25:
+        AmandaHomeUnlocked = 1
+        AmandaDanceEnded = 1
+        AmandaDanceSleep = 1
+        SexUsedToday['amanda'] = 1
+        FridayDancesCount = 5
+        $GirlLocation['amanda'] = 'AmandaRoom'
+        gs 'ActUiPrepare', '╨г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    elseif sluttiness['amanda'] < 45:
+        gs 'ActUiPrepare', '╨г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaDanceAlleyEnd'
+        end
+    else:
+        if $AmandaAlleyResumeAction = 'blowjob':
+            gs 'ActUiPrepare', '╨Я╤А╨╛╨┤╨╛╨╗╨╢╨╕╤В╤М ╨╝╨╕╨╜╨╡╤В', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaDanceAlleyBlowjobBuild'
+            end
+        elseif $AmandaAlleyResumeAction = 'sex':
+            gs 'ActUiPrepare', '╨Я╤А╨╛╨┤╨╛╨╗╨╢╨╕╤В╤М ╨▒╨╗╨╕╨╖╨╛╤Б╤В╤М', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaDanceAlleySexBuild', $AmandaAlleySexBranch
+            end
+        end
+
+        gs 'ActUiPrepare', '╨Ч╨░╨║╨╛╨╜╤З╨╕╤В╤М ╨╕ ╤Г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaDanceAlleyEnd'
+        end
+    end
+---
+
+#AmandaDanceAlleyToSexScene
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/fuck1', '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш', 'large', 'webp'
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+    gs 'SexSceneEnsureIntimStage', $AmandaAlleyGirl
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if AmandaHomeSex = 0 and HadVaginalWithPlayer['amanda'] = 0:
+        if LOC('AmandaDanceAlleyHomeGateText') = 1:
+            gs 'AmandaDanceAlleyHomeGateText'
+        else:
+            *p '╨Р╨╝╨░╨╜╨┤╨░ ╨╛╤В╤Б╤В╤А╨░╨╜╤П╨╡╤В╤Б╤П ╨╕ ╤В╨╕╤Е╨╛ ╨│╨╛╨▓╨╛╤А╨╕╤В, ╤З╤В╨╛ ╨╖╨┤╨╡╤Б╤М тАФ ╤Б╨╗╨╕╤И╨║╨╛╨╝. ╨б╨╜╨░╤З╨░╨╗╨░ ╨╡╨╣ ╨╜╤Г╨╢╨╜╨╛ ╨┤╨╛╨▓╨╡╤А╨╕╤В╤М╤Б╤П ╨▓╨░╨╝ ╨┐╨╛-╨╜╨░╤Б╤В╨╛╤П╤Й╨╡╨╝╤Г, ╨┤╨╛╨╝╨░, ╨▒╨╡╨╖ ╤З╤Г╨╢╨╕╤Е ╨│╨╗╨░╨╖.'
+            *p '╨Я╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╤П ╨┐╨╛╤Б╨╗╨╡ ╤В╨░╨╜╤Ж╨░ ╨╝╨╛╨╢╨╡╤В ╨┐╨╛╨┤╨╛╨╢╨┤╨░╤В╤М тАФ ╨┤╨╛╨╝╨░ ╨▒╤Г╨┤╨╡╤В ╤Б╨┐╨╛╨║╨╛╨╣╨╜╨╡╨╡.'
+        end
+
+        *pl ' '
+
+        if (AmandaHomeStage >= 3 or BlowjobCount['amanda'] >= 1 or oralacts['amanda'] >= 1):
+            gs 'ActUiPrepare', '╨б╨╛╨│╨╗╨░╤Б╨╕╤В╤М╤Б╤П ╨╜╨░ ╨╝╨╕╨╜╨╡╤В', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaDanceAlleyBlowjob'
+            end
+        end
+
+        if AmandaHomeStage >= 3:
+            gs 'ActUiPrepare', '╨Я╨╛╨╣╤В╨╕ ╨▓╨╝╨╡╤Б╤В╨╡ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaDanceLeaveHome'
+            end
+        end
+
+        gs 'ActUiPrepare', '╨Т╨╡╤А╨╜╤Г╤В╤М╤Б╤П ╨▓ ╨┐╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╤О', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaDanceAlleyEvent'
+        end
+
+        gs 'ActUiPrepare', '╨г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaDanceAlleyEnd'
+        end
+
+        exit
+    end
+
+    if IntimStage[$AmandaAlleyGirl] < 1:
+        *p '╨Р╨╝╨░╨╜╨┤╨░ ╤А╨╡╨╖╨║╨╛ ╨║╨░╤З╨░╨╡╤В ╨│╨╛╨╗╨╛╨▓╨╛╨╣. ╨Я╨╛╤Б╨╗╨╡ ╤В╨░╨╜╤Ж╨░ ╨╛╨╜╨░ ╨┐╨╛╨╖╨▓╨╛╨╗╨╕╨╗╨░ ╤Б╨╡╨▒╨╡ ╨▒╨╛╨╗╤М╤И╨╡ ╨╛╨▒╤Л╤З╨╜╨╛╨│╨╛, ╨╜╨╛ ╨║ ╨╜╨░╤Б╤В╨╛╤П╤Й╨╡╨╣ ╨▒╨╗╨╕╨╖╨╛╤Б╤В╨╕ ╨┐╨╛╨║╨░ ╨╜╨╡ ╨│╨╛╤В╨╛╨▓╨░.'
+        *pl ' '
+
+        gs 'ActUiPrepare', '╨Т╨╡╤А╨╜╤Г╤В╤М╤Б╤П ╨▓ ╨┐╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╤О', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaDanceAlleyEvent'
+        end
+
+        gs 'ActUiPrepare', '╨г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaDanceAlleyEnd'
+        end
+
+        exit
+    end
+
+    AmandaAlleyAfterSex = 1
+    AmandaPlayerAlleySexEver = 1
+    AmandaSecretiveness += 1
+    AmandaScandalLevel += 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'amanda_alley_player'
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'amanda_alley_player', 'witness'
+    end
+
+    if LOC('AmandaDanceAlleyBeforeSexText') = 1:
+        gs 'AmandaDanceAlleyBeforeSexText'
+    else:
+        *p '╨Т╤Л ╨╛╤Б╤В╨░╤С╤В╨╡╤Б╤М ╤Б ╨Р╨╝╨░╨╜╨┤╨╛╨╣ ╨▓ ╤В╨╡╨╜╨╕ ╨┐╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╨╕. ╨Х╤С ╨┤╤Л╤Е╨░╨╜╨╕╨╡ ╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤Б╤П ╤В╨╕╤И╨╡, ╨╜╨╛ ╨╜╨░╨┐╤А╤П╨╢╨╡╨╜╨╕╨╡ ╨╝╨╡╨╢╨┤╤Г ╨▓╨░╨╝╨╕ ╤Г╨╢╨╡ ╨╜╨╡ ╨╕╤Б╤З╨╡╨╖╨░╨╡╤В.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '╨Я╤А╨╛╨┤╨╛╨╗╨╢╨╕╤В╤М', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SexSceneStart', 'amanda', 'MarketDance', 'alley'
+    end
+
+    gs 'ActUiPrepare', '╨Ю╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М╤Б╤П ╨╕ ╤Г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyEnd'
+    end
+---
+
+#AmandaDanceAlleyBlowjob
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    $AmandaAlleyGirl = 'amanda'
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    if AmandaOralStage >= 5 or oraldeep[$AmandaAlleyGirl] > 0 or (sluttiness[$AmandaAlleyGirl] >= 45 and oralacts[$AmandaAlleyGirl] >= 8):
+        $OralArt = 'minet3'
+    elseif sluttiness[$AmandaAlleyGirl] >= 25 or oralacts[$AmandaAlleyGirl] >= 3:
+        $OralArt = 'minet2'
+    else:
+        $OralArt = 'minet1'
+    end
+
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $OralArt, '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨Ь╨Ш╨Э╨Х╨в', 'large', 'webp'
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш тАФ ╨Ь╨Ш╨Э╨Х╨в'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyBlowjobText') = 1:
+        gs 'AmandaDanceAlleyBlowjobText'
+    else:
+        *p '╨Р╨╝╨░╨╜╨┤╨░ ╨╛╨┐╤Г╤Б╨║╨░╨╡╤В╤Б╤П ╨╜╨░ ╨║╨╛╨╗╨╡╨╜╨╕ ╨┐╤А╤П╨╝╨╛ ╨▓ ╨┐╤Л╨╗╤М╨╜╨╛╨╣ ╤В╨╡╨╝╨╜╨╛╤В╨╡ ╨┐╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╨╕.'
+        *p '╨Ю╨╜╨░ ╨▓╨╖╨┤╤А╨░╨│╨╕╨▓╨░╨╡╤В ╨╛╤В ╨║╨░╨╢╨┤╨╛╨│╨╛ ╨┤╨╛╨╜╨╛╤Б╤П╤Й╨╡╨│╨╛╤Б╤П ╤Б ╨┐╨╗╨╛╤Й╨░╨┤╨╕ ╨╖╨▓╤Г╨║╨░, ╨╜╨╛ ╨┐╨╛╤Б╨╗╤Г╤И╨╜╨╛ ╨▒╨╡╤А╤С╤В ╨▓╨░╤И ╤З╨╗╨╡╨╜ ╨▓ ╤А╨╛╤В.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '╨Я╤А╨╛╨┤╨╛╨╗╨╢╨░╤В╤М', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyBlowjobBuild'
+    end
+
+    if AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1:
+        gs 'ActUiPrepare', '╨Я╤А╨╕╨┐╨╛╨┤╨╜╤П╤В╤М ╨╡╤С ╨╕ ╨┐╨╡╤А╨╡╨╣╤В╨╕ ╨║ ╤Б╨╡╨║╤Б╤Г', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaDanceAlleySex'
+        end
+    end
+
+    gs 'ActUiPrepare', '╨Ю╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М╤Б╤П ╨╕ ╤Г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyEnd'
+    end
+
+    killvar '$OralArt'
+---
+
+#AmandaDanceAlleyBlowjobBuild
+
+    $AmandaAlleyResumeAction = 'blowjob'
+    gs 'AmandaAlleyCheckPeeper'
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/minet4', '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨Ь╨Ш╨Э╨Х╨в ╨Т ╨а╨Р╨Ч╨У╨Р╨а╨Х', 'large', 'webp'
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш тАФ ╨Ь╨Ш╨Э╨Х╨в'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyBlowjobBuildText') = 1:
+        gs 'AmandaDanceAlleyBlowjobBuildText'
+    else:
+        *pl '╨в╨╡╨╝╨┐ ╨╗╨░╤Б╨║ ╤Б╤В╤А╨╡╨╝╨╕╤В╨╡╨╗╤М╨╜╨╛ ╨╜╨░╤А╨░╤Б╤В╨░╨╡╤В. ╨а╨░╨╖╨▓╤П╨╖╨║╨░ ╨╜╨╡╤Г╨╝╨╛╨╗╨╕╨╝╨╛ ╨▒╨╗╨╕╨╖╨║╨░.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '╨Ъ╨╛╨╜╤З╨╕╤В╤М ╨▓ ╤А╨╛╤В', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyBlowjobFinish', 'mouth'
+    end
+
+    gs 'ActUiPrepare', '╨Ъ╨╛╨╜╤З╨╕╤В╤М ╨╜╨░ ╨╗╨╕╤Ж╨╛', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyBlowjobFinish', 'face'
+    end
+
+    gs 'ActUiPrepare', '╨Ъ╨╛╨╜╤З╨╕╤В╤М ╨╜╨░ ╨┐╨╗╨░╤В╤М╨╡', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyBlowjobFinish', 'dress'
+    end
+---
+
+#AmandaDanceAlleyBlowjobFinish
+
+    $FinishOral = $ARGS[0]
+    $AmandaAlleyGirl = 'amanda'
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    AmandaAlleyAfterSex = 1
+    AmandaAlleyBlowjobDone = 1
+    AmandaPlayerAlleySexEver = 1
+    AmandaSecretiveness += 1
+    AmandaScandalLevel += 1
+    sluttiness[$AmandaAlleyGirl] += 1
+    love[$AmandaAlleyGirl] += 1
+    BlowjobCount[$AmandaAlleyGirl] += 1
+    oralacts[$AmandaAlleyGirl] += 1
+    AmandaPlayerPath += 1
+
+    gs 'RegisterPlayerCum'
+
+    if $FinishOral = 'mouth':
+        cummouth[$AmandaAlleyGirl] += 1
+        oralcum[$AmandaAlleyGirl] += 1
+        oralswallow[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'oral', 1, 1
+        $FinishOralArt = 'minet5'
+    elseif $FinishOral = 'face':
+        cumface[$AmandaAlleyGirl] += 1
+        facialcum[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'facial', 0, 1
+        $FinishOralArt = 'cumface'
+    else:
+        cumoutside[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'oral', 0, 1
+        $FinishOralArt = 'minet5'
+    end
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $FinishOralArt, '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨д╨Ш╨Э╨Р╨Ы ╨Ь╨Ш╨Э╨Х╨в╨Р', 'large', 'webp'
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш тАФ ╨Ь╨Ш╨Э╨Х╨в'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyBlowjobFinishText') = 1:
+        gs 'AmandaDanceAlleyBlowjobFinishText', $FinishOral
+    else:
+        *pl '╨У╨╛╤А╤П╤З╨░╤П ╤А╨░╨╖╤А╤П╨┤╨║╨░ ╨╜╨░╨║╤А╤Л╨▓╨░╨╡╤В ╨▓╨░╤Б ╨▓ ╤В╨╡╨╝╨╜╨╛╤В╨╡ ╨┐╨╡╤А╨╡╤Г╨╗╨║╨░.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '╨г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyEnd'
+    end
+
+    killvar '$AmandaAlleyGirl'
+    killvar '$FinishOral'
+    killvar '$FinishOralArt'
+---
+
+#AmandaDanceAlleySex
+
+    $AmandaAlleyGirl = 'amanda'
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    if AmandaHomeSex = 0 and HadVaginalWithPlayer['amanda'] = 0:
+        gt 'AmandaDanceAlleyToSexScene'
+    end
+
+    if AmandaAlleyPlace = 0:
+        AmandaAlleyPlace = RAND(1, 2)
+    end
+
+    if AmandaAlleyPlace = 2:
+        $AmandaAlleyPlaceName = 'arba'
+        $SexStartArt = 'fuckarba1'
+    else:
+        $AmandaAlleyPlaceName = 'wall'
+        $SexStartArt = 'fuck1'
+    end
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $SexStartArt, '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨С╨Ы╨Ш╨Ч╨Ю╨б╨в╨м', 'large', 'webp'
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш тАФ ╨С╨Ы╨Ш╨Ч╨Ю╨б╨в╨м'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleySexStartText') = 1:
+        gs 'AmandaDanceAlleySexStartText', $AmandaAlleyPlaceName
+    else:
+        *pl '╨Т╤Л ╨╛╤Б╤В╨░╤С╤В╨╡╤Б╤М ╤Б ╨Р╨╝╨░╨╜╨┤╨╛╨╣ ╨▓ ╤В╨╡╨╜╨╕ ╨┐╨╡╤А╨╡╤Г╨╗╨║╨░, ╨┐╤А╨╡╨┤╨░╨▓╨░╤П╤Б╤М ╤Б╤В╤А╨░╤Б╤В╨╕.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '╨Я╤А╨╛╨┤╨╛╨╗╨╢╨░╤В╤М', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleySexBuild', 'vaginal'
+    end
+
+    if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0:
+        gs 'ActUiPrepare', '╨Я╨╡╤А╨╡╨╣╤В╨╕ ╨║ ╨┐╨╛╨┐╨║╨╡ (╨░╨╜╨░╨╗)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaDanceAlleySexBuild', 'anal'
+        end
+    end
+
+    gs 'ActUiPrepare', '╨Ю╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М╤Б╤П ╨╕ ╤Г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyEnd'
+    end
+
+    killvar '$SexStartArt'
+---
+
+#AmandaDanceAlleySexBuild
+
+    $AmandaAlleySexBranch = $ARGS[0]
+    $AmandaAlleyResumeAction = 'sex'
+
+    gs 'AmandaAlleyCheckPeeper'
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    if $AmandaAlleySexBranch = 'anal':
+        $SexBuildArt = 'fuck2'
+    else:
+        if AmandaAlleyPlace = 2:
+            $SexBuildArt = 'fuckarba2'
+        else:
+            $SexBuildArt = 'fuck3'
+        end
+    end
+
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $SexBuildArt, '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨Т ╨а╨Р╨Ч╨У╨Р╨а╨Х ╨С╨Ы╨Ш╨Ч╨Ю╨б╨в╨Ш', 'large', 'webp'
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш тАФ ╨С╨Ы╨Ш╨Ч╨Ю╨б╨в╨м'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleySexBuildText') = 1:
+        gs 'AmandaDanceAlleySexBuildText', $AmandaAlleySexBranch
+    else:
+        *pl '╨в╨╛╨╗╤З╨║╨╕ ╤Б╤В╨░╨╜╨╛╨▓╤П╤В╤Б╤П ╨│╨╗╤Г╨▒╨╢╨╡ ╨╕ ╤Г╨▓╨╡╤А╨╡╨╜╨╜╨╡╨╡, ╨┐╤А╨╕╨▒╨╗╨╕╨╢╨░╤П ╤Д╨╕╨╜╨░╨╗.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '╨Ъ╨╛╨╜╤З╨╕╤В╤М ╨▓╨╜╤Г╤В╤А╤М', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleySexFinish', $AmandaAlleySexBranch, 'inside'
+    end
+
+    gs 'ActUiPrepare', '╨Ъ╨╛╨╜╤З╨╕╤В╤М ╤Б╨╜╨░╤А╤Г╨╢╨╕', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleySexFinish', $AmandaAlleySexBranch, 'outside'
+    end
+
+    gs 'ActUiPrepare', '╨Ъ╨╛╨╜╤З╨╕╤В╤М ╨╜╨░ ╨╗╨╕╤Ж╨╛', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleySexFinish', $AmandaAlleySexBranch, 'face'
+    end
+
+    gs 'ActUiPrepare', '╨Ъ╨╛╨╜╤З╨╕╤В╤М ╨▓ ╤А╨╛╤В', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleySexFinish', $AmandaAlleySexBranch, 'mouth'
+    end
+
+    killvar '$SexBuildArt'
+---
+
+#AmandaDanceAlleySexFinish
+
+    $AmandaAlleySexBranch = $ARGS[0]
+    $FinishType = $ARGS[1]
+    $AmandaAlleyGirl = 'amanda'
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    AmandaAlleyAfterSex = 1
+    AmandaPlayerAlleySexEver = 1
+    AmandaSecretiveness += 1
+    AmandaScandalLevel += 1
+    sluttiness[$AmandaAlleyGirl] += 1
+    love[$AmandaAlleyGirl] += 1
+    AmandaPlayerPath += 1
+
+    ! ATM gate check: anal to mouth
+    if $AmandaAlleySexBranch = 'anal' and $FinishType = 'mouth':
+        $SexGirl = $AmandaAlleyGirl
+        gs 'SexSceneCalcAtmStage'
+        if SexAtmStage = 0:
+            $FinishType = 'refuse_atm'
+        end
+    end
+
+    gs 'RegisterPlayerCum'
+
+    if $FinishType = 'inside':
+        cuminside[$AmandaAlleyGirl] += 1
+        if $AmandaAlleySexBranch = 'anal':
+            analcum[$AmandaAlleyGirl] += 1
+        else:
+            vaginalcum[$AmandaAlleyGirl] += 1
+        end
+        gs 'RegisterSex', $AmandaAlleyGirl, $AmandaAlleySexBranch, 1, 1
+        $FinishSexArt = 'fuck4'
+
+    elseif $FinishType = 'outside':
+        cumoutside[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, $AmandaAlleySexBranch, 0, 1
+        $FinishSexArt = 'fuck4'
+
+    elseif $FinishType = 'face' or $FinishType = 'refuse_atm':
+        cumface[$AmandaAlleyGirl] += 1
+        facialcum[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'facial', 0, 1
+        $FinishSexArt = 'cumface'
+
+    elseif $FinishType = 'mouth':
+        cummouth[$AmandaAlleyGirl] += 1
+        oralcum[$AmandaAlleyGirl] += 1
+        oralswallow[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'oral', 1, 1
+        $FinishSexArt = 'cumface'
+    end
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $FinishSexArt, '╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п тАФ ╨д╨Ш╨Э╨Р╨Ы ╨С╨Ы╨Ш╨Ч╨Ю╨б╨в╨Ш', 'large', 'webp'
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Я╨Ю╨Ф╨Т╨Ю╨а╨Ю╨в╨Э╨п ╨г ╨Я╨Ы╨Ю╨й╨Р╨Ф╨Ш тАФ ╨д╨Ш╨Э╨Р╨Ы'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleySexFinishText') = 1:
+        gs 'AmandaDanceAlleySexFinishText', $AmandaAlleySexBranch, $FinishType
+    else:
+        *pl '╨С╤Г╤А╨╜╨░╤П ╤А╨░╨╖╤А╤П╨┤╨║╨░ ╨╛╤Б╤В╨░╨▓╨╗╤П╨╡╤В ╨▓╨░╤Б ╨╛╨▒╨╛╨╕╤Е ╤В╤П╨╢╨╡╨╗╨╛ ╨┤╤Л╤И╨░╤Й╨╕╨╝╨╕ ╨▓ ╤В╨╡╨╝╨╜╨╛╤В╨╡ ╨┐╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╨╕.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '╨г╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaDanceAlleyEnd'
+    end
+
+    killvar '$AmandaAlleyGirl'
+    killvar '$AmandaAlleySexBranch'
+    killvar '$FinishType'
+    killvar '$FinishSexArt'
+---
+
+
+#AmandaDanceAlleyEnd
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/dance/amanda/wait1', '╨Т╨Ю╨Ч╨Т╨а╨Р╨й╨Х╨Э╨Ш╨Х ╨Т ╨в╨а╨Р╨Ъ╨в╨Ш╨а', 'large', 'webp'
+    $AmandaAlleyGirl = 'amanda'
+
+    gs 'EnsureGirlData', $AmandaAlleyGirl
+
+    if AmandaAlleyAfterSex = 1:
+        AmandaPlayerAlleySexEver = 1
+    end
+
+    AmandaHomeUnlocked = 1
+    FridayDancesCount = 5
+    AmandaDanceEnded = 1
+    AmandaDanceSleep = 1
+    SexUsedToday['amanda'] = 1
+    $GirlLocation['amanda'] = 'AmandaRoom'
+
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' ╨Т╨Ю╨Ч╨Т╨а╨Р╨й╨Х╨Э╨Ш╨Х ╨Т ╨в╨а╨Р╨Ъ╨в╨Ш╨а'
+    *pl 'тХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХРтХР'
+    *pl ' '
+
+    if LOC('AmandaDanceAlleyEndText') = 1:
+        gs 'AmandaDanceAlleyEndText'
+    else:
+        *p '╨Я╨╛╤Б╨╗╨╡ ╤Б╨╗╤Г╤З╨╕╨▓╤И╨╡╨│╨╛╤Б╤П ╨▓ ╨┐╨╛╨┤╨▓╨╛╤А╨╛╤В╨╜╨╡ ╨╛╤Б╤В╨░╨▓╨░╤В╤М╤Б╤П ╨╜╨░ ╨┐╨╗╨╛╤Й╨░╨┤╨╕ ╨╜╨╡╤В ╤Б╨╝╤Л╤Б╨╗╨░. ╨Т╤Л ╤Б ╨Р╨╝╨░╨╜╨┤╨╛╨╣ ╨┐╨╛╨║╨╕╨┤╨░╨╡╤В╨╡ ╤П╤А╨╝╨░╤А╨║╤Г ╨╕ ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╨╡╤В╨╡╤Б╤М ╨┤╨╛╨╝╨╛╨╣ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', '╨Т╨╛╨╣╤В╨╕ ╨▓ ╤В╤А╨░╨║╤В╨╕╤А', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+
+    killvar '$AmandaAlleyGirl'
+---

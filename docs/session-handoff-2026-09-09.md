@@ -81,6 +81,13 @@
 - `modules/locations/town/port.qsps`
 - `modules/locations/town/market.qsps`
 - `modules/events/hall/hall_rumors.qsps`
+- `modules/events/amanda/amanda_liza_talk_text.qsps`
+- `modules/events/amanda/amanda_lizette.qsps`
+- `modules/events/amanda/amanda_lizette_text.qsps`
+- `modules/events/church/church_weekday_text.qsps`
+- `modules/locations/town/church_weekday.qsps`
+- `modules/events/dance/friday_dance_core.qsps`
+- `modules/events/visits/sunday_irma_inga_talk_pick.qsps`
 - `docs/handoff.md`
 
 ---
@@ -124,3 +131,30 @@ powershell -ExecutionPolicy Bypass -File scripts/check.ps1
    - Дополнить/отбалансировать пул диалогов при необходимости (швейная машинка, жрица Древа, сержант Грюн, кузнец Лукас).
 3. **Пятничные танцы**:
    - Синхронизировать реакцию горожан на танцах с новым движком сплетен.
+
+---
+
+## 5. Завершённая работа сессии
+
+1. **Динамические реакции на воскресной службе (`church_sunday_service_text.qsps`)**:
+   - Интегрированы реакции на Стефана в зависимости от интимного опыта (`HadSex`) со всеми женщинами (Сандра, Мелисса, Аманда, Кларисса, Бекки, Инга, Жоржетта, Лизетта, Ирма).
+   - Интегрированы особые реакции Альбера Легаре при активном конфликте (`LegareConflictStage >= 2`).
+
+2. **Литературная переработка церкви в будни (`church_weekday_text.qsps`, `church_weekday.qsps`)**:
+   - Глубокие атмосферные тексты будничного собора, отца Герхарда, ящика пожертвований и кувшинов с порошком Таро по канону Ильматера.
+
+3. **Слухи на пятничных танцах (`friday_dance_core.qsps`)**:
+   - Связаны с единым движком городских слухов `CityRumorsGetText, 'dance'` с реакцией семьи по `FamilyCorruptionStage`.
+
+4. **Пул диалогов Ирмы и Инги (`sunday_irma_inga_talk_pick.qsps`)**:
+   - Сбалансированы 4 уровня подслушивания: посох предков Древа Ирмы, швейная машинка Инги, сержант Грюн, кузнец Лукас.
+
+5. **Полный рерайт подслушивания Аманды и Лизетты (`amanda_liza_talk_text.qsps`)**:
+   - Переработаны все 42 ветки диалогов девушек на сеновале / за бочками.
+   - Голоса приведены к канону: живая эмоциональная 18-летняя Аманда и уверенная столичная Лизетта («твоё тело принадлежит только тебе»). Устранены устаревшие треш-фразы, соблюдён канон Ильматера.
+
+6. **Полный рерайт сюжетной ветки Аманды и Лизетты (`amanda_lizette_text.qsps`, `amanda_lizette.qsps`)**:
+   - Все 15 текстовых веток переписаны на каноническое повествование от лица Стефана («Ты» вместо казённого «Вы»).
+   - Устранён баг с `\n\n` (заменён на валидный HTML `<br><br>`).
+   - Добавлены живые диалоги Стефана, Аманды и Лизетты во всех выборах (спокойный подход, игнорирование, строгий запрет, ночной визит в спальню, поимка с поличным, решение о запрете/свободе, тайный ночной визит).
+   - В `amanda_lizette.qsps` на все 7 экранов добавлены вызовы `SceneShowVisual` (`tavern_hall_amanda_lizette.png`, `amanda_room_lizette_visit_night.png`) в строгом соответствии с правилом «VISUAL ON EVERY SCREEN».
