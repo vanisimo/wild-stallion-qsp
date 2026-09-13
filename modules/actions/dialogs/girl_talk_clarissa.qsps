@@ -8,6 +8,8 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
+    gs 'GirlTalkRootAppendPersonalMenu'
+
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке вина', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'wine_shop'
@@ -31,13 +33,6 @@
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
-        }
-    end
-
-    if LOC('ClarissaShopTalk') = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить в лавке', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'ClarissaShopTalk', $TalkReturnLoc
         }
     end
 
@@ -77,17 +72,6 @@
             gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Особая близость', 'intim'
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
                 gt 'ClarissaAnalSceneStart'
-            }
-        end
-    end
-
-    if LOC('ClarissaLegareReconcileCanStart') = 1:
-        gs 'ClarissaLegareReconcileCanStart'
-
-        if ClarissaLegareReconcileCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О примирении с Альбером', 'talk'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'ClarissaLegareReconcileStart'
             }
         end
     end
@@ -153,19 +137,32 @@
     gs 'GirlTalkWineShopPrintText', 'intro'
     gs 'GirlTalkWineShopPrintText', 'context'
 
-    Friends['clarissa'] += 1
-    trading += 1
+    $WineShopKey = 'clarissa_' + STR(day)
+    if ClarissaWineShopDoneToday[$WineShopKey] = 0:
+        ClarissaWineShopDoneToday[$WineShopKey] = 1
+        trading += 1
+        if Friends['clarissa'] < 12:
+            Friends['clarissa'] += 1
+        end
+    end
+    killvar '$WineShopKey'
 ---
 
 #GirlTalkClarissaHomeRun
     gs 'GirlTalkClarissaHomePrintText', 'intro'
     gs 'GirlTalkClarissaHomePrintText', 'context'
 
-    Friends['clarissa'] += 1
-
-    if love['clarissa'] > 0:
-        love['clarissa'] += 1
+    $ClarissaHomeKey = 'clarissa_home_' + STR(day)
+    if ClarissaHomeDoneToday[$ClarissaHomeKey] = 0:
+        ClarissaHomeDoneToday[$ClarissaHomeKey] = 1
+        if Friends['clarissa'] < 12:
+            Friends['clarissa'] += 1
+        end
+        if love['clarissa'] > 0 and love['clarissa'] < 10:
+            love['clarissa'] += 1
+        end
     end
+    killvar '$ClarissaHomeKey'
 
     if ClarissaJealousy > 0 and AmandaLegareFirstSexDone = 1:
         ClarissaTrustStefan += 1
@@ -192,4 +189,25 @@
     end
 
     killvar '$GirlTalkClarissaHomeText'
+---
+
+#GirlTalkClarissaPaternityRun
+    gs 'GirlTalkClarissaPaternityPrintText', 'intro'
+    gs 'GirlTalkClarissaPaternityPrintText', 'context'
+
+    ClarissaPaternityTalkDone = 1
+    Friends['clarissa'] += 2
+    otkroven['clarissa'] += 2
+    ClarissaTrustStefan += 1
+    gs 'ClampGirlSocialStats', 'clarissa'
+---
+
+#GirlTalkClarissaPaternityPrintText
+    gs 'GirlTalkClarissaPaternityText', $ARGS[0]
+
+    if $GirlTalkClarissaPaternityText <> '':
+        *p $GirlTalkClarissaPaternityText
+    end
+
+    killvar '$GirlTalkClarissaPaternityText'
 ---

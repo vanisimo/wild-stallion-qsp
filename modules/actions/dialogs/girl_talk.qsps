@@ -97,232 +97,12 @@
         gs 'Menu.Show', 'GirlTalkMainMenu'
     end
 
-    if $TalkGirl = 'amanda' or $TalkGirl = 'melissa':
-        gs 'DanceDressEscortCanStart', $TalkGirl
-
-        if DanceDressEscortCanStart = 1:
-            act '<b>Идти к Ирме вместе</b>', 'images/common/ui/actions/travel.png':
-                gt 'IrmaDanceDressEscortStart', $TalkGirl, $TalkReturnLoc
-            end
-        end
-
-        gs 'DanceDressFittingEscortCanStart', $TalkGirl
-
-        if DanceDressFittingEscortCanStart = 1:
-            act '<b>Примерка у Ирмы</b>', 'images/common/ui/actions/shop.png':
-                gt 'IrmaDanceDressEscortStart', $TalkGirl, $TalkReturnLoc
-            end
-        end
-
-        killvar 'DanceDressEscortCanStart'
-        killvar 'DanceDressFittingEscortCanStart'
-    end
-
-    if GirlConflictLevel[$TalkGirl] > 0 and GirlConflictUntilDay[$TalkGirl] < day and GirlConflictAfterTalkLevel[$TalkGirl] < GirlConflictLevel[$TalkGirl]:
-        gs 'ActUiPrepare', 'Поговорить о недавней ссоре', 'talk'
+    if GirlTalkPersonalMenuActive = 1:
+        gs 'ActUiPrepare', 'К обычным темам', 'return'
         act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlConflictAfterTalk', $TalkGirl, $TalkReturnLoc
-        end
-    end
-
-    ! ====================== АМАНДА / ЛЕГАРЕ: ПОСЛЕДСТВИЯ ТАНЦЕВ ======================
-
-    if $TalkGirl = 'amanda' and AmandaLegareTalkReady = 1 and LOC('AmandaTalkAboutLegare') = 1:
-        gs 'ActUiPrepare', 'Поговорить о Легаре', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'AmandaTalkAboutLegare', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'melissa' and MelissaLegareWarningSeen = 1 and MelissaLegarePrivateTalkDone = 0 and LOC('MelissaTalkAboutLegare') = 1:
-        gs 'ActUiPrepare', 'Поговорить о предупреждении насчёт Легаре', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaTalkAboutLegare', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'clarissa' and ClarissaTalkAboutAmandaReady = 1 and ClarissaTalkAboutAmandaDone = 0 and LOC('ClarissaTalkAboutLegareAmanda') = 1:
-        gs 'ActUiPrepare', 'Поговорить о Легаре и Аманде', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'ClarissaTalkAboutLegareAmanda', $TalkReturnLoc
-        end
-    end
-
-    ! ====================== АМАНДА / ЛЕГАРЕ: ЛИЧНЫЙ РАЗГОВОР ПОСЛЕ ТАНЦЕВ ======================
-
-    if $TalkGirl = 'amanda' and LOC('AmandaLegarePrivateAftermathCanTalk') = 1:
-        gs 'AmandaLegarePrivateAftermathCanTalk'
-
-        if AmandaLegarePrivateAftermathCanTalk = 1:
-            gs 'ActUiPrepare', 'Спросить о разговоре с Легаре', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLegarePrivateAftermath', $TalkReturnLoc
-            end
-        end
-    end
-
-    if $TalkGirl = 'melissa' and Fact_AmandaLegarePrivateTalk = 1 and MelissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegarePrivate') = 1:
-        gs 'ActUiPrepare', 'Поговорить об Аманде и Легаре', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'clarissa' and Fact_AmandaLegarePrivateTalk = 1 and ClarissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegarePrivate') = 1:
-        gs 'ActUiPrepare', 'Поговорить о личном разговоре Легаре с Амандой', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'ClarissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
-        end
-    end
-
-    ! ====================== АМАНДА / ЛЕГАРЕ: ВЫХОД ИЗ ТРАКТИРА ======================
-
-    if $TalkGirl = 'amanda' and LOC('AmandaLegareOutsideAftermathCanTalk') = 1:
-        gs 'AmandaLegareOutsideAftermathCanTalk'
-
-        if AmandaLegareOutsideAftermathCanTalk = 1:
-            gs 'ActUiPrepare', 'Поговорить о выходе к Легаре', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLegareOutsideAftermath', $TalkReturnLoc
-            end
-        end
-    end
-
-    if $TalkGirl = 'melissa' and MelissaAmandaLegareOutsideTalkReady = 1 and MelissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareOutside') = 1:
-        gs 'ActUiPrepare', 'Поговорить о выходе Аманды из трактира', 'tavern'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'clarissa' and ClarissaAmandaLegareOutsideTalkReady = 1 and ClarissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareOutside') = 1:
-        gs 'ActUiPrepare', 'Поговорить о том, что Легаре искал Аманду', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'ClarissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'melissa' and MelissaFirstPathChoiceDone = 0 and LOC('MelissaFirstPathChoiceCanStart') = 1:
-        gs 'MelissaFirstPathChoiceCanStart'
-
-        if MelissaFirstPathChoiceCanStart = 1:
-            gs 'ActUiPrepare', 'Поговорить о менестреле и ваших отношениях', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'MelissaFirstPathChoiceStart', $TalkReturnLoc
-            end
-        end
-    end
-
-    if $TalkGirl = 'melissa' and LOC('MelissaProhibitMinstrelTalkCanOffer') = 1:
-        gs 'MelissaProhibitMinstrelTalkCanOffer'
-
-        if MelissaProhibitMinstrelTalkCanOffer = 1:
-            gs 'ActUiPrepare', 'Поговорить о встречах с менестрелем', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'MelissaProhibitMinstrelTalk', $TalkReturnLoc
-            end
-        end
-    end
-
-    if $TalkGirl = 'amanda' and AmandaPathChoiceDone = 0 and LOC('AmandaPathChoiceCanStart') = 1:
-        gs 'AmandaPathChoiceCanStart'
-
-        if AmandaPathChoiceCanStart = 1:
-            gs 'ActUiPrepare', 'Поговорить о Легаре и ваших отношениях', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaPathChoiceStart', $TalkReturnLoc
-            end
-        end
-    end
-
-    ! ====================== АМАНДА / ЛЕГАРЕ: КРУПНЫЙ РИСК ======================
-
-    if $TalkGirl = 'amanda' and LOC('AmandaLegareMajorAftermathCanTalk') = 1:
-        gs 'AmandaLegareMajorAftermathCanTalk'
-
-        if AmandaLegareMajorAftermathCanTalk = 1:
-            gs 'ActUiPrepare', 'Поговорить о том, что случилось с Легаре', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaLegareMajorAftermath', $TalkReturnLoc
-            end
-        end
-    end
-
-    if $TalkGirl = 'melissa' and MelissaAmandaLegareMajorRiskTalkReady = 1 and MelissaAmandaLegareMajorRiskDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareMajor') = 1:
-        gs 'ActUiPrepare', 'Поговорить о пропаже Аманды', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'clarissa' and ClarissaAmandaLegareMajorRiskTalkReady = 1 and ClarissaAmandaLegareMajorRiskDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareMajor') = 1:
-        gs 'ActUiPrepare', 'Поговорить с Клариссой о Легаре', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'ClarissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
-        end
-    end
-
-    ! ====================== ЛЕГАРЕ: ПЕРВЫЙ КОНФЛИКТ ======================
-
-    if $TalkGirl = 'amanda' and LegareFirstConflictAfterTalkReady = 1 and LegareFirstConflictAfterTalkDone = 0 and LOC('AmandaTalkAboutLegareFirstConflict') = 1:
-        gs 'ActUiPrepare', 'Поговорить о визите купца Легаре', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'AmandaTalkAboutLegareFirstConflict', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'melissa' and MelissaLegareConflictTalkReady = 1 and MelissaLegareConflictTalkDone = 0 and LOC('MelissaTalkAboutLegareFirstConflict') = 1:
-        gs 'ActUiPrepare', 'Поговорить о ссоре с Легаре', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaTalkAboutLegareFirstConflict', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'clarissa' and ClarissaLegareConflictTalkReady = 1 and ClarissaLegareConflictTalkDone = 0 and LOC('ClarissaTalkAboutLegareFirstConflict') = 1:
-        gs 'ActUiPrepare', 'Поговорить о поведении Легаре', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'ClarissaTalkAboutLegareFirstConflict', $TalkReturnLoc
-        end
-    end
-
-       ! ====================== КЛАРИССА: ОБХОДНЫЕ ПОСТАВКИ ======================
-
-    if $TalkGirl = 'clarissa' and ClarissaSupplyTalkReady = 1 and LOC('ClarissaTalkAboutSupplyRoute') = 1:
-        gs 'ActUiPrepare', 'Поговорить о тайных поставках', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'ClarissaTalkAboutSupplyRoute', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'melissa' and MelissaLegareSupplyTalkReady = 1 and MelissaLegareSupplyTalkDone = 0 and LOC('MelissaTalkAboutLegareSupply') = 1:
-        gs 'ActUiPrepare', 'Поговорить о проблемах с поставками', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaTalkAboutLegareSupply', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'clarissa' and LOC('MarkClarissaSupplyAftermathReady') = 1:
-        gs 'MarkClarissaSupplyAftermathReady'
-
-        if ClarissaSupplyAftermathReady = 1 and LOC('ClarissaTalkAboutSupplyAftermath') = 1:
-            gs 'ActUiPrepare', 'Поговорить о риске тайных поставок', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'ClarissaTalkAboutSupplyAftermath', $TalkReturnLoc
-            end
-        end
-    end
-
-    if $TalkGirl = 'clarissa' and ClarissaLegareSuspicionTalkReady = 1 and ClarissaLegareSuspicionTalkDone = 0 and LOC('ClarissaTalkAboutLegareSuspicion') = 1:
-        gs 'ActUiPrepare', 'Поговорить о подозрениях Легаре', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'ClarissaTalkAboutLegareSuspicion', $TalkReturnLoc
-        end
-    end
-
-    if $TalkGirl = 'melissa' and MelissaLegareSuspicionTalkReady = 1 and MelissaLegareSuspicionTalkDone = 0 and LOC('MelissaTalkAboutLegareSuspicion') = 1:
-        gs 'ActUiPrepare', 'Поговорить о риске для Клариссы', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaTalkAboutLegareSuspicion', $TalkReturnLoc
+            GirlTalkPersonalMenuActive = 0
+            GirlTalkAutoOpenTalkMenu = 1
+            gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
         end
     end
 
@@ -575,6 +355,8 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
+    gs 'GirlTalkRootAppendPersonalMenu'
+
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О делах трактира', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'tavern'
@@ -587,25 +369,10 @@
         }
     end
 
-    if LOC('DanceDressTalkCanStart') = 1:
-        gs 'DanceDressTalkCanStart', $TalkGirl
-
-        if DanceDressTalkCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Платье для танцев', 'gift'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'dance_dress'
-            }
-        end
-
-        killvar 'DanceDressTalkCanStart'
-    end
-
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
     }
-
-    gs 'GirlTalkRootAppendPersonalMenu'
 
     if Friends[$TalkGirl] >= 12 or love[$TalkGirl] >= 10 or otkroven[$TalkGirl] >= 12:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
@@ -1181,6 +948,9 @@
     elseif $TalkTopic = 'clarissa_home':
         gs 'GirlTalkClarissaHomeRun', $TalkGirl
 
+    elseif $TalkTopic = 'clarissa_paternity':
+        gs 'GirlTalkClarissaPaternityRun', $TalkGirl
+
     elseif $TalkTopic = 'port_talk':
         gs 'GirlTalkLizettePortRun', $TalkGirl
 
@@ -1283,19 +1053,28 @@
         if TalkRoll <= TalkChance:
             *p 'Комплимент ей приятен. Она старается скрыть реакцию, но это получается не полностью.'
 
-            Friends[$TalkGirl] += 1
-            love[$TalkGirl] += 1
-            otkroven[$TalkGirl] += 1
+            $ComplimentKey = $TalkGirl + '_' + STR(day)
+            if GirlComplimentDay[$ComplimentKey] = 0:
+                GirlComplimentDay[$ComplimentKey] = 1
+                love[$TalkGirl] += 1
+                if Friends[$TalkGirl] < 12:
+                    Friends[$TalkGirl] += 1
+                end
+            end
+            killvar '$ComplimentKey'
         else:
             *p 'Она принимает комплимент сдержанно и быстро меняет тему.'
-
-            Friends[$TalkGirl] += 1
         end
 
     else:
         *p 'Вы немного разговариваете ни о чём.'
 
-        Friends[$TalkGirl] += 1
+        $SmallTalkDailyKey = $TalkGirl + '_' + STR(day)
+        if Friends[$TalkGirl] < 8 and GirlSmallTalkDay[$SmallTalkDailyKey] = 0:
+            GirlSmallTalkDay[$SmallTalkDailyKey] = 1
+            Friends[$TalkGirl] += 1
+        end
+        killvar '$SmallTalkDailyKey'
     end
 
     if TalkTopicUseful = 1:

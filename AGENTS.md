@@ -101,6 +101,7 @@ Follow the existing project style:
 - Use a header at the top of new or replaced files:
   - `FILE: ...`
   - `MODULE: ...`
+  - `! [AI-WORKED] Текст переработан / дополнен ассистентом DD.MM.YYYY` — обязательная метка с датой (числом работы с файлом) при любом создании, переработке или дополнении текстовых/сценарных файлов (`*_text.qsps`).
 - QSP locations use this pattern:
   - `#LocationName`
   - code body
@@ -172,6 +173,14 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/dance/friday_dance_text.qsps` | Friday dance speeches and rumors |
 | `modules/events/church/church_sunday_service_text.qsps` | Sunday morning church service texts |
 | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | Sandra Friday Draupnir visits |
+| `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | street intercept / fight / police / wake-up texts |
+| `modules/events/amanda/legare/amanda_legare_backyard_text.qsps` | backyard peeping behind barrels texts |
+| `modules/events/amanda/legare/amanda_legare_dance_arc_text.qsps` | complete Legare Friday dance arc texts (notice, invite, dance, observe, after-dance, 5th Friday race) |
+| `modules/events/amanda/legare/amanda_legare_talk_text.qsps` | talk about Legare aftermath texts (Amanda, Melissa, Clarissa) |
+| `modules/events/amanda/legare/amanda_legare_spy_text.qsps` | backyard spy peeping on Amanda and Legare texts |
+| `modules/events/amanda/neighbor_boys/amanda_neighbor_boys_text.qsps` | Amanda backyard neighbor boys encounters texts |
+| `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | Peter the giant blacksmith encounters texts |
+| `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | Jens and Bruno brothers encounters texts |
 
 **Rules for agents:**
 

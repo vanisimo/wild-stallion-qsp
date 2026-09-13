@@ -34,8 +34,12 @@
         exit
     end
 
-    if AmandaRebellion < 2 and sluttiness['amanda'] < 12 and AmandaSecretiveness < 2 and AmandaLegareInterest < 1 and AmandaNeighborBoysStage = 0:
-        exit
+    if AmandaLegareFirstSexDone = 1 or AmandaNeighborBoysStage >= 2 or AmandaAlleyMmfDone = 1:
+        ! Барьеры сняты после первого опыта
+    else:
+        if AmandaRebellion < 2 and sluttiness['amanda'] < 12 and AmandaSecretiveness < 2 and AmandaLegareInterest < 1 and AmandaNeighborBoysStage = 0:
+            exit
+        end
     end
 
     AmandaEscapeWorkCanStart = 1
@@ -56,15 +60,23 @@
         gs 'AmandaEscapeWorkCanStart'
 
         if AmandaEscapeWorkCanStart = 1:
+            if AmandaLegareFirstSexDone = 1 or AmandaNeighborBoysStage >= 2 or AmandaAlleyMmfDone = 1:
+                AmandaEscapeChance = 45
+            else:
+                AmandaEscapeChance = 25
+            end
+
             AmandaEscapeRoll = RAND(1, 100)
 
-            if AmandaEscapeRoll <= 25 or debug = 1:
+            if AmandaEscapeRoll <= AmandaEscapeChance or debug = 1:
+                killvar 'AmandaEscapeChance'
                 killvar 'AmandaEscapeRoll'
                 AmandaEscapeWorkDoneDay = day
                 AmandaEscapeWorkCount += 1
                 gt 'AmandaEscapeWorkStart', $AmandaEscapeReturnLoc
             end
 
+            killvar 'AmandaEscapeChance'
             killvar 'AmandaEscapeRoll'
         end
     end
@@ -321,12 +333,31 @@
 
     if $AmandaCatchSceneType = 'neighbor_blowjob':
         oralacts['amanda'] += 1
+        if AmandaNeighborBoysStage < 2:
+            AmandaNeighborBoysStage = 2
+        end
     elseif $AmandaCatchSceneType = 'neighbor_sex':
         vaginalacts['amanda'] += 1
+        if AmandaNeighborBoysStage < 3:
+            AmandaNeighborBoysStage = 3
+        end
     elseif $AmandaCatchSceneType = 'neighbor_group':
         oralacts['amanda'] += 1
         vaginalacts['amanda'] += 1
         AmandaAlleyMmfDone = 1
+        if AmandaNeighborBoysStage < 4:
+            AmandaNeighborBoysStage = 4
+        end
+    elseif $AmandaCatchSceneType = 'neighbor_early':
+        if AmandaNeighborBoysStage < 1:
+            AmandaNeighborBoysStage = 1
+        end
+    elseif $AmandaCatchSceneType = 'legare':
+        AmandaLegareInterest += 1
+    end
+
+    if AmandaNeighborBoysStage >= 2 or AmandaAlleyMmfDone = 1:
+        AmandaPathChoiceReady = 1
     end
 
     PlayerKnows_AmandaEscapeEscapade = 1

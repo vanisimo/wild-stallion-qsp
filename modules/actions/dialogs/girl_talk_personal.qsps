@@ -13,7 +13,7 @@
 
 #GirlTalkRootAppendPersonalMenu
     if GirlTalkPersonalAvailable = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Личный разговор', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', '★ Важный разговор', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gs 'GirlTalkPersonalOpenSubmenu'
         }
@@ -78,69 +78,414 @@
 ---
 
 #GirlTalkPersonalAddArcTopicsToMenu
-    if $TalkGirl = 'sandra' and LOC('SandraBirthRevealCanTalk') = 1:
-        gs 'SandraBirthRevealCanTalk'
+    ! Общая тема: недавняя ссора / примирение
+    if GirlConflictLevel[$TalkGirl] > 0 and GirlConflictUntilDay[$TalkGirl] < day and GirlConflictAfterTalkLevel[$TalkGirl] < GirlConflictLevel[$TalkGirl]:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить о недавней ссоре', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlConflictAfterTalk', $TalkGirl, $TalkReturnLoc
+        }
+    end
 
-        if SandraBirthRevealCanTalk = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том, что случилось в зале', ''
+    ! ==================== АМАНДА ====================
+    if $TalkGirl = 'amanda':
+        if AmandaLegareTalkReady = 1 and LOC('AmandaTalkAboutLegare') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О визите купца Легаре', 'talk'
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'SandraTalkAboutBirthSecret', $TalkReturnLoc
+                gt 'AmandaTalkAboutLegare', $TalkReturnLoc
             }
+        end
+
+        if LOC('AmandaLegarePrivateAftermathCanTalk') = 1:
+            gs 'AmandaLegarePrivateAftermathCanTalk'
+            if AmandaLegarePrivateAftermathCanTalk = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О ночном разговоре с Легаре', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'AmandaLegarePrivateAftermath', $TalkReturnLoc
+                }
+            end
+            killvar 'AmandaLegarePrivateAftermathCanTalk'
+        end
+
+        if LOC('AmandaLegareOutsideAftermathCanTalk') = 1:
+            gs 'AmandaLegareOutsideAftermathCanTalk'
+            if AmandaLegareOutsideAftermathCanTalk = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О встрече с Легаре у трактира', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'AmandaLegareOutsideAftermath', $TalkReturnLoc
+                }
+            end
+            killvar 'AmandaLegareOutsideAftermathCanTalk'
+        end
+
+        if AmandaPathChoiceDone = 0 and LOC('AmandaPathChoiceCanStart') = 1:
+            gs 'AmandaPathChoiceCanStart'
+            if AmandaPathChoiceCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Легаре и ваших отношениях', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'AmandaPathChoiceStart', $TalkReturnLoc
+                }
+            end
+            killvar 'AmandaPathChoiceCanStart'
+        end
+
+        if LOC('AmandaLegareMajorAftermathCanTalk') = 1:
+            gs 'AmandaLegareMajorAftermathCanTalk'
+            if AmandaLegareMajorAftermathCanTalk = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том, что случилось с Легаре', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'AmandaLegareMajorAftermath', $TalkReturnLoc
+                }
+            end
+            killvar 'AmandaLegareMajorAftermathCanTalk'
+        end
+
+        if LegareFirstConflictAfterTalkReady = 1 and LegareFirstConflictAfterTalkDone = 0 and LOC('AmandaTalkAboutLegareFirstConflict') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О ссоре с Легаре в трактире', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'AmandaTalkAboutLegareFirstConflict', $TalkReturnLoc
+            }
+        end
+
+        if LOC('DanceDressEscortCanStart') = 1:
+            gs 'DanceDressEscortCanStart', 'amanda'
+            if DanceDressEscortCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Идти к Ирме за платьем', 'travel'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'IrmaDanceDressEscortStart', 'amanda', $TalkReturnLoc
+                }
+            end
+            killvar 'DanceDressEscortCanStart'
+        end
+
+        if LOC('DanceDressFittingEscortCanStart') = 1:
+            gs 'DanceDressFittingEscortCanStart', 'amanda'
+            if DanceDressFittingEscortCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Примерка платья у Ирмы', 'shop'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'IrmaDanceDressEscortStart', 'amanda', $TalkReturnLoc
+                }
+            end
+            killvar 'DanceDressFittingEscortCanStart'
+        end
+
+        if LOC('DanceDressTalkCanStart') = 1:
+            gs 'DanceDressTalkCanStart', 'amanda'
+            if DanceDressTalkCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Платье для танцев', 'gift'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'GirlTalkResult', 'amanda', $TalkReturnLoc, 'dance_dress'
+                }
+            end
+            killvar 'DanceDressTalkCanStart'
         end
     end
 
-    if $TalkGirl = 'sandra' and LOC('SandraLermontLetterCanTalk') = 1:
-        gs 'SandraLermontLetterCanTalk'
-
-        if SandraLermontLetterCanTalk = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О письме в сундуке', ''
+    ! ==================== МЕЛИССА ====================
+    if $TalkGirl = 'melissa':
+        if MelissaLegareWarningSeen = 1 and MelissaLegarePrivateTalkDone = 0 and LOC('MelissaTalkAboutLegare') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О предупреждении насчёт Легаре', 'talk'
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'SandraTalkAboutLermontLetter', $TalkReturnLoc
+                gt 'MelissaTalkAboutLegare', $TalkReturnLoc
             }
+        end
+
+        if Fact_AmandaLegarePrivateTalk = 1 and MelissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegarePrivate') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О ночном разговоре Аманды с Легаре', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'MelissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
+            }
+        end
+
+        if MelissaAmandaLegareOutsideTalkReady = 1 and MelissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareOutside') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О выходе Аманды к Легаре', 'tavern'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'MelissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
+            }
+        end
+
+        if MelissaFirstPathChoiceDone = 0 and LOC('MelissaFirstPathChoiceCanStart') = 1:
+            gs 'MelissaFirstPathChoiceCanStart'
+            if MelissaFirstPathChoiceCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О менестреле и ваших отношениях', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'MelissaFirstPathChoiceStart', $TalkReturnLoc
+                }
+            end
+            killvar 'MelissaFirstPathChoiceCanStart'
+        end
+
+        if LOC('MelissaProhibitMinstrelTalkCanOffer') = 1:
+            gs 'MelissaProhibitMinstrelTalkCanOffer'
+            if MelissaProhibitMinstrelTalkCanOffer = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О запрете встреч с менестрелем', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'MelissaProhibitMinstrelTalk', $TalkReturnLoc
+                }
+            end
+            killvar 'MelissaProhibitMinstrelTalkCanOffer'
+        end
+
+        if MelissaAmandaLegareMajorRiskTalkReady = 1 and MelissaAmandaLegareMajorRiskDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareMajor') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О пропаже Аманды', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'MelissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
+            }
+        end
+
+        if MelissaLegareConflictTalkReady = 1 and MelissaLegareConflictTalkDone = 0 and LOC('MelissaTalkAboutLegareFirstConflict') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О ссоре с Легаре в трактире', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'MelissaTalkAboutLegareFirstConflict', $TalkReturnLoc
+            }
+        end
+
+        if MelissaLegareSupplyTalkReady = 1 and MelissaLegareSupplyTalkDone = 0 and LOC('MelissaTalkAboutLegareSupply') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О проблемах с поставками', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'MelissaTalkAboutLegareSupply', $TalkReturnLoc
+            }
+        end
+
+        if MelissaLegareSuspicionTalkReady = 1 and MelissaLegareSuspicionTalkDone = 0 and LOC('MelissaTalkAboutLegareSuspicion') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О риске для Клариссы', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'MelissaTalkAboutLegareSuspicion', $TalkReturnLoc
+            }
+        end
+
+        if LOC('DanceDressEscortCanStart') = 1:
+            gs 'DanceDressEscortCanStart', 'melissa'
+            if DanceDressEscortCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Идти к Ирме за платьем', 'travel'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'IrmaDanceDressEscortStart', 'melissa', $TalkReturnLoc
+                }
+            end
+            killvar 'DanceDressEscortCanStart'
+        end
+
+        if LOC('DanceDressFittingEscortCanStart') = 1:
+            gs 'DanceDressFittingEscortCanStart', 'melissa'
+            if DanceDressFittingEscortCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Примерка платья у Ирмы', 'shop'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'IrmaDanceDressEscortStart', 'melissa', $TalkReturnLoc
+                }
+            end
+            killvar 'DanceDressFittingEscortCanStart'
+        end
+
+        if LOC('DanceDressTalkCanStart') = 1:
+            gs 'DanceDressTalkCanStart', 'melissa'
+            if DanceDressTalkCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Платье для танцев', 'gift'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'GirlTalkResult', 'melissa', $TalkReturnLoc, 'dance_dress'
+                }
+            end
+            killvar 'DanceDressTalkCanStart'
         end
     end
 
-    if $TalkGirl = 'sandra' and LOC('SandraStaffHireCanTalk') = 1:
-        gs 'SandraStaffHireCanTalk'
+    ! ==================== САНДРА ====================
+    if $TalkGirl = 'sandra':
+        if LOC('SandraBirthRevealCanTalk') = 1:
+            gs 'SandraBirthRevealCanTalk'
+            if SandraBirthRevealCanTalk = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том, что случилось в зале', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'SandraTalkAboutBirthSecret', $TalkReturnLoc
+                }
+            end
+        end
 
-        if SandraStaffHireCanTalk = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О помощницах для трактира', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'SandraStaffHireTalk', $TalkReturnLoc
-            }
+        if LOC('SandraLermontLetterCanTalk') = 1:
+            gs 'SandraLermontLetterCanTalk'
+            if SandraLermontLetterCanTalk = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О письме в сундуке', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'SandraTalkAboutLermontLetter', $TalkReturnLoc
+                }
+            end
+        end
+
+        if LOC('SandraStaffHireCanTalk') = 1:
+            gs 'SandraStaffHireCanTalk'
+            if SandraStaffHireCanTalk = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О помощницах для трактира', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'SandraStaffHireTalk', $TalkReturnLoc
+                }
+            end
+        end
+
+        if LOC('SandraBeckyCrisisCanTalk') = 1:
+            gs 'SandraBeckyCrisisCanTalk'
+            if SandraBeckyCrisisCanTalk = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Выяснение отношений', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'SandraBeckyCrisisStart'
+                }
+            end
+        end
+
+        if LOC('FamilyCouncilMomHintCanTalk') = 1:
+            gs 'FamilyCouncilMomHintCanTalk'
+            if FamilyCouncilMomHintCanTalk = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Нам нужно поговорить', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'FamilyCouncilMomHintTalk'
+                }
+            end
         end
     end
 
     if LOC('SandraStaffGirlsReactionCanTalk') = 1:
         gs 'SandraStaffGirlsReactionCanTalk', $TalkGirl
-
         if SandraStaffGirlsReactionCanTalk = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О помощницах', ''
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О помощницах', 'talk'
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
                 gt 'SandraStaffGirlsReactionTalk', $TalkGirl, $TalkReturnLoc
             }
         end
     end
 
-    if $TalkGirl = 'sandra' and LOC('SandraBeckyCrisisCanTalk') = 1:
-        gs 'SandraBeckyCrisisCanTalk'
+    ! ==================== КЛАРИССА ====================
+    if $TalkGirl = 'clarissa':
+        if ClarissaPaternityTalkDone = 0:
+            if (PlayerKnows_ClarissaNotLegareDaughter = 1 or PlayerKnows_ClarissaLegareDarkBackstory = 1 or AlberVar['hearabouthiswife'] = 1 or MelissaClarissaTalkPhraseHeard['clarissa_legare_dark_backstory'] = 1) and (Friends['clarissa'] >= 8 or otkroven['clarissa'] >= 10 or love['clarissa'] >= 4):
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О её браке с Альбером и прошлом', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'clarissa_paternity'
+                }
+            end
+        end
 
-        if SandraBeckyCrisisCanTalk = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Выяснение отношений', ''
+        if ClarissaTalkAboutAmandaReady = 1 and ClarissaTalkAboutAmandaDone = 0 and LOC('ClarissaTalkAboutLegareAmanda') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Легаре и Аманде', 'talk'
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'SandraBeckyCrisisStart'
+                gt 'ClarissaTalkAboutLegareAmanda', $TalkReturnLoc
             }
+        end
+
+        if Fact_AmandaLegarePrivateTalk = 1 and ClarissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegarePrivate') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О личном разговоре Легаре с Амандой', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
+            }
+        end
+
+        if ClarissaAmandaLegareOutsideTalkReady = 1 and ClarissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareOutside') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том, что Легаре искал Аманду', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
+            }
+        end
+
+        if ClarissaAmandaLegareMajorRiskTalkReady = 1 and ClarissaAmandaLegareMajorRiskDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareMajor') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том, что случилось с Амандой', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
+            }
+        end
+
+        if ClarissaLegareConflictTalkReady = 1 and ClarissaLegareConflictTalkDone = 0 and LOC('ClarissaTalkAboutLegareFirstConflict') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О поведении Легаре в трактире', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaTalkAboutLegareFirstConflict', $TalkReturnLoc
+            }
+        end
+
+        if ClarissaSupplyTalkReady = 1 and LOC('ClarissaTalkAboutSupplyRoute') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О тайных поставках', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaTalkAboutSupplyRoute', $TalkReturnLoc
+            }
+        end
+
+        if LOC('MarkClarissaSupplyAftermathReady') = 1:
+            gs 'MarkClarissaSupplyAftermathReady'
+            if ClarissaSupplyAftermathReady = 1 and LOC('ClarissaTalkAboutSupplyAftermath') = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О риске тайных поставок', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'ClarissaTalkAboutSupplyAftermath', $TalkReturnLoc
+                }
+            end
+            killvar 'ClarissaSupplyAftermathReady'
+        end
+
+        if ClarissaLegareSuspicionTalkReady = 1 and ClarissaLegareSuspicionTalkDone = 0 and LOC('ClarissaTalkAboutLegareSuspicion') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подозрениях Легаре', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaTalkAboutLegareSuspicion', $TalkReturnLoc
+            }
+        end
+
+        if LOC('ClarissaLegareReconcileCanStart') = 1:
+            gs 'ClarissaLegareReconcileCanStart'
+            if ClarissaLegareReconcileCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О примирении с Альбером', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'ClarissaLegareReconcileStart'
+                }
+            end
+            killvar 'ClarissaLegareReconcileCanStart'
         end
     end
 
-    if $TalkGirl = 'sandra' and LOC('FamilyCouncilMomHintCanTalk') = 1:
-        gs 'FamilyCouncilMomHintCanTalk'
+    ! ==================== ИНГА ====================
+    if $TalkGirl = 'inga':
+        if LOC('IngaGuardComplaintCanStart') = 1:
+            gs 'IngaGuardComplaintCanStart'
+            if IngaGuardComplaintCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Спросить о проблеме со стражником', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'IngaGuardComplaintStart'
+                }
+            end
+            killvar 'IngaGuardComplaintCanStart'
+        end
 
-        if FamilyCouncilMomHintCanTalk = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Нам нужно поговорить', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'FamilyCouncilMomHintTalk'
-            }
+        if LOC('IngaGuardThanksCanStart') = 1:
+            gs 'IngaGuardThanksCanStart'
+            if IngaGuardThanksCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поблагодарить за помощь', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'IngaGuardThanks'
+                }
+            end
+            killvar 'IngaGuardThanksCanStart'
+        end
+
+        if LOC('IngaBeckyLucasGossipCanStart') = 1:
+            gs 'IngaBeckyLucasGossipCanStart'
+            if IngaBeckyLucasGossipCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Спросить про Лукаса и заднюю', 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'IngaBeckyLucasGossipStart'
+                }
+            end
+            killvar 'IngaBeckyLucasGossipCanStart'
+        end
+    end
+
+    ! ==================== ИРМА ====================
+    if $TalkGirl = 'irma':
+        if LOC('IrmaUniformOfferCanStart') = 1:
+            gs 'IrmaUniformOfferCanStart'
+            if IrmaUniformOfferCanStart = 1:
+                if IrmaUniformOfferDeclined = 0:
+                    $IrmaOfferTitle = 'Предложение Ирмы по форме'
+                else:
+                    $IrmaOfferTitle = 'Разговор о форме'
+                end
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', $IrmaOfferTitle, 'talk'
+                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                    gt 'IrmaUniformOfferStart', $TalkReturnLoc
+                }
+                killvar '$IrmaOfferTitle'
+            end
+            killvar 'IrmaUniformOfferCanStart'
         end
     end
 ---
@@ -166,10 +511,154 @@
         GirlTalkPersonalMinOtkroven = 18
     end
 
+    ! Недавняя ссора / примирение
+    if GirlConflictLevel[$GirlTalkPersonalGirl] > 0 and GirlConflictUntilDay[$GirlTalkPersonalGirl] < day and GirlConflictAfterTalkLevel[$GirlTalkPersonalGirl] < GirlConflictLevel[$GirlTalkPersonalGirl]:
+        GirlTalkPersonalStoryCount += 1
+    end
+
     gs 'GirlTalkPersonalCountHallTopics', $GirlTalkPersonalGirl
     GirlTalkPersonalStoryCount += GirlTalkPersonalHallTopicsCount
     killvar 'GirlTalkPersonalHallTopicsCount'
 
+    ! ==================== АМАНДА ====================
+    if $GirlTalkPersonalGirl = 'amanda':
+        if AmandaLegareTalkReady = 1 and LOC('AmandaTalkAboutLegare') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if LOC('AmandaLegarePrivateAftermathCanTalk') = 1:
+            gs 'AmandaLegarePrivateAftermathCanTalk'
+            if AmandaLegarePrivateAftermathCanTalk = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'AmandaLegarePrivateAftermathCanTalk'
+        end
+
+        if LOC('AmandaLegareOutsideAftermathCanTalk') = 1:
+            gs 'AmandaLegareOutsideAftermathCanTalk'
+            if AmandaLegareOutsideAftermathCanTalk = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'AmandaLegareOutsideAftermathCanTalk'
+        end
+
+        if AmandaPathChoiceDone = 0 and LOC('AmandaPathChoiceCanStart') = 1:
+            gs 'AmandaPathChoiceCanStart'
+            if AmandaPathChoiceCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'AmandaPathChoiceCanStart'
+        end
+
+        if LOC('AmandaLegareMajorAftermathCanTalk') = 1:
+            gs 'AmandaLegareMajorAftermathCanTalk'
+            if AmandaLegareMajorAftermathCanTalk = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'AmandaLegareMajorAftermathCanTalk'
+        end
+
+        if LegareFirstConflictAfterTalkReady = 1 and LegareFirstConflictAfterTalkDone = 0 and LOC('AmandaTalkAboutLegareFirstConflict') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if LOC('DanceDressEscortCanStart') = 1:
+            gs 'DanceDressEscortCanStart', 'amanda'
+            if DanceDressEscortCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'DanceDressEscortCanStart'
+        end
+
+        if LOC('DanceDressFittingEscortCanStart') = 1:
+            gs 'DanceDressFittingEscortCanStart', 'amanda'
+            if DanceDressFittingEscortCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'DanceDressFittingEscortCanStart'
+        end
+
+        if LOC('DanceDressTalkCanStart') = 1:
+            gs 'DanceDressTalkCanStart', 'amanda'
+            if DanceDressTalkCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'DanceDressTalkCanStart'
+        end
+    end
+
+    ! ==================== МЕЛИССА ====================
+    if $GirlTalkPersonalGirl = 'melissa':
+        if MelissaLegareWarningSeen = 1 and MelissaLegarePrivateTalkDone = 0 and LOC('MelissaTalkAboutLegare') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if Fact_AmandaLegarePrivateTalk = 1 and MelissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegarePrivate') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if MelissaAmandaLegareOutsideTalkReady = 1 and MelissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareOutside') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if MelissaFirstPathChoiceDone = 0 and LOC('MelissaFirstPathChoiceCanStart') = 1:
+            gs 'MelissaFirstPathChoiceCanStart'
+            if MelissaFirstPathChoiceCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'MelissaFirstPathChoiceCanStart'
+        end
+
+        if LOC('MelissaProhibitMinstrelTalkCanOffer') = 1:
+            gs 'MelissaProhibitMinstrelTalkCanOffer'
+            if MelissaProhibitMinstrelTalkCanOffer = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'MelissaProhibitMinstrelTalkCanOffer'
+        end
+
+        if MelissaAmandaLegareMajorRiskTalkReady = 1 and MelissaAmandaLegareMajorRiskDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareMajor') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if MelissaLegareConflictTalkReady = 1 and MelissaLegareConflictTalkDone = 0 and LOC('MelissaTalkAboutLegareFirstConflict') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if MelissaLegareSupplyTalkReady = 1 and MelissaLegareSupplyTalkDone = 0 and LOC('MelissaTalkAboutLegareSupply') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if MelissaLegareSuspicionTalkReady = 1 and MelissaLegareSuspicionTalkDone = 0 and LOC('MelissaTalkAboutLegareSuspicion') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if LOC('DanceDressEscortCanStart') = 1:
+            gs 'DanceDressEscortCanStart', 'melissa'
+            if DanceDressEscortCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'DanceDressEscortCanStart'
+        end
+
+        if LOC('DanceDressFittingEscortCanStart') = 1:
+            gs 'DanceDressFittingEscortCanStart', 'melissa'
+            if DanceDressFittingEscortCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'DanceDressFittingEscortCanStart'
+        end
+
+        if LOC('DanceDressTalkCanStart') = 1:
+            gs 'DanceDressTalkCanStart', 'melissa'
+            if DanceDressTalkCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'DanceDressTalkCanStart'
+        end
+    end
+
+    ! ==================== САНДРА ====================
     if $GirlTalkPersonalGirl = 'sandra':
         if LOC('SandraBirthRevealCanTalk') = 1:
             gs 'SandraBirthRevealCanTalk'
@@ -214,6 +703,98 @@
         end
     end
 
+    ! ==================== КЛАРИССА ====================
+    if $GirlTalkPersonalGirl = 'clarissa':
+        if ClarissaPaternityTalkDone = 0:
+            if (PlayerKnows_ClarissaNotLegareDaughter = 1 or PlayerKnows_ClarissaLegareDarkBackstory = 1 or AlberVar['hearabouthiswife'] = 1 or MelissaClarissaTalkPhraseHeard['clarissa_legare_dark_backstory'] = 1) and (Friends['clarissa'] >= 8 or otkroven['clarissa'] >= 10 or love['clarissa'] >= 4):
+                GirlTalkPersonalStoryCount += 1
+            end
+        end
+
+        if ClarissaTalkAboutAmandaReady = 1 and ClarissaTalkAboutAmandaDone = 0 and LOC('ClarissaTalkAboutLegareAmanda') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if Fact_AmandaLegarePrivateTalk = 1 and ClarissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegarePrivate') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if ClarissaAmandaLegareOutsideTalkReady = 1 and ClarissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareOutside') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if ClarissaAmandaLegareMajorRiskTalkReady = 1 and ClarissaAmandaLegareMajorRiskDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareMajor') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if ClarissaLegareConflictTalkReady = 1 and ClarissaLegareConflictTalkDone = 0 and LOC('ClarissaTalkAboutLegareFirstConflict') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if ClarissaSupplyTalkReady = 1 and LOC('ClarissaTalkAboutSupplyRoute') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if LOC('MarkClarissaSupplyAftermathReady') = 1:
+            gs 'MarkClarissaSupplyAftermathReady'
+            if ClarissaSupplyAftermathReady = 1 and LOC('ClarissaTalkAboutSupplyAftermath') = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'ClarissaSupplyAftermathReady'
+        end
+
+        if ClarissaLegareSuspicionTalkReady = 1 and ClarissaLegareSuspicionTalkDone = 0 and LOC('ClarissaTalkAboutLegareSuspicion') = 1:
+            GirlTalkPersonalStoryCount += 1
+        end
+
+        if LOC('ClarissaLegareReconcileCanStart') = 1:
+            gs 'ClarissaLegareReconcileCanStart'
+            if ClarissaLegareReconcileCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'ClarissaLegareReconcileCanStart'
+        end
+    end
+
+    ! ==================== ИНГА ====================
+    if $GirlTalkPersonalGirl = 'inga':
+        if LOC('IngaGuardComplaintCanStart') = 1:
+            gs 'IngaGuardComplaintCanStart'
+            if IngaGuardComplaintCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'IngaGuardComplaintCanStart'
+        end
+
+        if LOC('IngaGuardThanksCanStart') = 1:
+            gs 'IngaGuardThanksCanStart'
+            if IngaGuardThanksCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'IngaGuardThanksCanStart'
+        end
+
+        if LOC('IngaBeckyLucasGossipCanStart') = 1:
+            gs 'IngaBeckyLucasGossipCanStart'
+            if IngaBeckyLucasGossipCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'IngaBeckyLucasGossipCanStart'
+        end
+    end
+
+    ! ==================== ИРМА ====================
+    if $GirlTalkPersonalGirl = 'irma':
+        if LOC('IrmaUniformOfferCanStart') = 1:
+            gs 'IrmaUniformOfferCanStart'
+            if IrmaUniformOfferCanStart = 1:
+                GirlTalkPersonalStoryCount += 1
+            end
+            killvar 'IrmaUniformOfferCanStart'
+        end
+    end
+
+    ! ==================== ЛОРНЫЕ РАССКАЗЫ ПО ОТКРОВЕННОСТИ ====================
     if otkroven[$GirlTalkPersonalGirl] >= GirlTalkPersonalMinOtkroven:
         if $GirlTalkPersonalGirl = 'amanda':
             gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
@@ -225,10 +806,6 @@
             if GirlTalkPersonalStoryReady = 1:
                 GirlTalkPersonalStoryCount += 1
             end
-
-            gs 'GirlTalkPersonalBanOptionsCount', 'amanda'
-            GirlTalkPersonalStoryCount += GirlTalkPersonalBanOptionsCount
-            killvar 'GirlTalkPersonalBanOptionsCount'
 
         elseif $GirlTalkPersonalGirl = 'melissa':
             gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
@@ -277,6 +854,8 @@
         elseif AmandaNpcPath >= 12 or GirlNpcPath['amanda'] >= 12:
             GirlTalkPersonalStoryUnlocked = 1
         elseif FactHappened['amanda_dancewithlegare_1'] = 1 or FactHappened['amanda_waswithlegare'] = 1:
+            GirlTalkPersonalStoryUnlocked = 1
+        elseif AmandaLegareBackyardDone = 1 or AmandaLegareStreetInterceptDone = 1 or AlberVar['hearabouthiswife'] = 1 or AmandaVar['knowlegaresex'] = 1:
             GirlTalkPersonalStoryUnlocked = 1
         end
 
@@ -384,7 +963,7 @@
             GirlTalkPersonalBanOptionsCount += 1
         end
 
-        if AmandaLegareInterest >= 1 or AmandaLegareTalkDone = 1 or Fact_AmandaLegareOutsideMeet = 1 or FactHappened['amanda_dancewithlegare_1'] = 1:
+        if AmandaLegareInterest >= 1 or AmandaLegareTalkDone = 1 or Fact_AmandaLegareOutsideMeet = 1 or FactHappened['amanda_dancewithlegare_1'] = 1 or AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1:
             GirlTalkPersonalBanOptionsCount += 1
         end
 
@@ -469,7 +1048,7 @@
             }
         end
 
-        if AmandaLegareInterest >= 1 or AmandaLegareTalkDone = 1 or Fact_AmandaLegareOutsideMeet = 1 or FactHappened['amanda_dancewithlegare_1'] = 1:
+        if AmandaLegareInterest >= 1 or AmandaLegareTalkDone = 1 or Fact_AmandaLegareOutsideMeet = 1 or FactHappened['amanda_dancewithlegare_1'] = 1 or AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1:
             gs 'GirlTalkPersonalLegareBanned'
 
             if GirlTalkPersonalLegareBanned = 1:
@@ -500,6 +1079,18 @@
         killvar 'GirlTalkPersonalGuysBanCanShow'
 
     elseif $TalkGirl = 'melissa':
+        if MelissaMinstrelMet = 1:
+            if MelissaProhibitMinstrel = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить общение с менестрелем', ''
+            else
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить общение с менестрелем', ''
+            end
+
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'minstrel'
+            }
+        end
+
         gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
         if GirlTalkPersonalStoryReady = 1:
             gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О музыканте', ''
@@ -608,6 +1199,7 @@
     elseif $GirlTalkPersonalBanKind = 'guys':
         if AmandaProhibitGuys = 1:
             AmandaProhibitGuys = 0
+            AmandaProhibitDays = 0
             AmandaTrustStefan += 1
 
             if AmandaTrustStefan > 100:
@@ -617,6 +1209,11 @@
             $GirlTalkPendingNotice[$TalkGirl] = 'Вы разрешили Аманде встречаться с парнями в городе. Она улыбнулась — будто получила больше воздуха, чем ожидала.'
         else:
             AmandaProhibitGuys = 1
+            if AmandaLegareFirstSexDone = 1 or AmandaNeighborBoysStage >= 3 or AmandaAlleyMmfDone = 1:
+                AmandaProhibitDays = 3
+            else:
+                AmandaProhibitDays = 7
+            end
 
             if LOC('OffenseDaysBanImmediate') = 1:
                 gs 'OffenseDaysBanImmediate', 'amanda', 'ban_guys'
@@ -624,6 +1221,33 @@
 
             AmandaRebellion += 1
             $GirlTalkPendingNotice[$TalkGirl] = 'Вы запретили Аманде встречаться с парнями после смены. Она нахмурилась, но согласилась — пока вы хозяин трактира.'
+        end
+
+    elseif $GirlTalkPersonalBanKind = 'minstrel':
+        if MelissaProhibitMinstrel = 1:
+            MelissaProhibitMinstrel = 0
+            MelissaProhibitDays = 0
+            MelissaTrustStefan += 1
+
+            if MelissaTrustStefan > 100:
+                MelissaTrustStefan = 100
+            end
+
+            $GirlTalkPendingNotice[$TalkGirl] = 'Вы отменили запрет на встречи с менестрелем. Мелисса едва заметно кивнула — её взгляд стал чуть мягче.'
+        else:
+            MelissaProhibitMinstrel = 1
+            if MelissaMinstrelFirstSexDone = 1:
+                MelissaProhibitDays = 3
+            else:
+                MelissaProhibitDays = 7
+            end
+
+            if LOC('OffenseDaysBanImmediate') = 1:
+                gs 'OffenseDaysBanImmediate', 'melissa', 'ban_minstrel'
+            end
+
+            MelissaControlNeed += 1
+            $GirlTalkPendingNotice[$TalkGirl] = 'Вы запретили Мелиссе слушать менестреля и оставаться с ним наедине. Она холодно поджала губы.'
         end
     end
 

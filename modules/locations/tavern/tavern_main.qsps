@@ -66,6 +66,7 @@
     *pl ' '
 
     gs 'AmandaFirstSexMorningTryShow'
+    gs 'AmandaLegareAfterDanceMorningTryShow'
 
     if TavernMainOpen = 1 and time <> 5:
         ! Сандра: клиент на кухню — авто enter hall
@@ -253,6 +254,22 @@
     gs 'ShowSecondFloorRoomStatus', 'amanda', 'AmandaRoom', 'Комната Аманды'
 
     *pl ' '
+
+    if time = 5 and (sluttiness['melissa'] >= 30 or MelissaNpcPath >= 3 or FamilyCorruptionStage >= 2):
+        if AmandaBrothersMelissaTalkPending = 1:
+            *pl 'Из приоткрытой двери комнаты Мелиссы слышен взволнованный шёпот Аманды...'
+            gs 'ActUiPrepare', 'Подслушать разговор сестёр', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaBrothersNightTalkMelissa'
+            end
+        elseif AmandaBrothersMelissaTalkStage = 1 and day >= AmandaBrothersMelissaNextDay and AmandaBrothersMelissaTalkDone = 0:
+            *pl 'Из комнаты Мелиссы снова доносятся приглушённые голоса сестёр...'
+            gs 'ActUiPrepare', 'Подслушать повторный разговор', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaBrothersNightTalkMelissa'
+            end
+        end
+    end
 
     act '<b>Комната Стефана</b>', 'images/common/ui/actions/travel.png':
         gt 'PlayerRoom'

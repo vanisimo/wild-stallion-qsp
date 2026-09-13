@@ -68,8 +68,27 @@
     end
     end
 
-    Friends[$GirlTalkTavernGirl] += 1
-    management_skill += 1
+    $TavernTalkKey = $GirlTalkTavernGirl + '_' + STR(day)
+
+    if GirlTavernTalkDoneToday[$TavernTalkKey] = 0:
+        GirlTavernTalkDoneToday[$TavernTalkKey] = 1
+        management_skill += 1
+
+        if Friends[$GirlTalkTavernGirl] < 12:
+            Friends[$GirlTalkTavernGirl] += 1
+        end
+    end
+
+    if GirlTalkTavernPortShipHookReady = 1 or GirlTalkTavernHallHookReady = 1 or GirlTalkTavernDayHookReady = 1 or GirlTalkTavernRepairHookReady = 1 or GirlTalkTavernDanceDressHookReady = 1:
+        $TavernStoryBonusKey = $GirlTalkTavernGirl + '_story_' + STR(day)
+        if GirlTavernStoryBonusDone[$TavernStoryBonusKey] = 0:
+            GirlTavernStoryBonusDone[$TavernStoryBonusKey] = 1
+            Friends[$GirlTalkTavernGirl] += 1
+        end
+        killvar '$TavernStoryBonusKey'
+    end
+
+    killvar '$TavernTalkKey'
 
     killvar '$GirlTalkTavernGirl'
     killvar 'GirlTalkTavernHallHookReady'

@@ -136,6 +136,7 @@
     else:
         GiftInventory[$GiftId] -= 1
         GirlGiftCount[$GiftGirl] += 1
+        LastAttentionDay[$GiftGirl] = day
 
         gs 'GiftSimpleRegisterGive', $GiftGirl, $GiftId
         gs 'GiftSimpleNarrative', $GiftGirl, $GiftId
@@ -475,13 +476,18 @@
         end
     end
 
-    if love['amanda'] >= 10 or sluttiness['amanda'] >= 15 or otkroven['amanda'] >= 10:
+    if (love['amanda'] >= 10 or sluttiness['amanda'] >= 15 or otkroven['amanda'] >= 10) and AmandaMenuTalkDay <> day:
         gs 'ActUiPrepare', 'Личный разговор с Амандой', 'generic'
         act $ActUiLabel, $ActUiIconPath:
+            AmandaMenuTalkDay = day
             *p 'Вы решаете поговорить с Амандой о чём-то более личном.'
 
-            Friends['amanda'] += 1
-            otkroven['amanda'] += 1
+            if Friends['amanda'] < 14:
+                Friends['amanda'] += 1
+            end
+            if otkroven['amanda'] < 12:
+                otkroven['amanda'] += 1
+            end
 
             gs 'ActUiPrepare', 'Продолжить', 'generic'
             act $ActUiLabel, $ActUiIconPath:
@@ -516,12 +522,15 @@
         end
     end
 
-    if Friends['melissa'] >= 10 or love['melissa'] >= 10:
+    if (Friends['melissa'] >= 10 or love['melissa'] >= 10) and MelissaMenuTalkDay <> day:
         gs 'ActUiPrepare', 'Поговорить с Мелиссой без споров', 'talk'
         act $ActUiLabel, $ActUiIconPath:
+            MelissaMenuTalkDay = day
             *p 'Вы стараетесь поговорить с Мелиссой спокойно, без привычных колкостей.'
 
-            Friends['melissa'] += 1
+            if Friends['melissa'] < 14:
+                Friends['melissa'] += 1
+            end
 
             gs 'ActUiPrepare', 'Продолжить', 'generic'
             act $ActUiLabel, $ActUiIconPath:
@@ -530,12 +539,15 @@
         end
     end
 
-    if sluttiness['melissa'] >= 20:
+    if sluttiness['melissa'] >= 20 and MelissaProvokeDay <> day:
         gs 'ActUiPrepare', 'Провокационный разговор', 'generic'
         act $ActUiLabel, $ActUiIconPath:
+            MelissaProvokeDay = day
             *p 'Вы задеваете Мелиссу двусмысленной фразой. Она бросает на вас сердитый, но не совсем равнодушный взгляд.'
 
-            otkroven['melissa'] += 1
+            if otkroven['melissa'] < 15:
+                otkroven['melissa'] += 1
+            end
 
             gs 'ActUiPrepare', 'Продолжить', 'generic'
             act $ActUiLabel, $ActUiIconPath:
@@ -570,12 +582,15 @@
         end
     end
 
-    if Friends['sandra'] >= 10 or love['sandra'] >= 10:
+    if (Friends['sandra'] >= 10 or love['sandra'] >= 10) and SandraMenuTalkDay <> day:
         gs 'ActUiPrepare', 'Поговорить о делах семьи', 'talk'
         act $ActUiLabel, $ActUiIconPath:
+            SandraMenuTalkDay = day
             *p 'Вы обсуждаете с Сандрой дела семьи и трактира.'
 
-            Friends['sandra'] += 1
+            if Friends['sandra'] < 14:
+                Friends['sandra'] += 1
+            end
             management_skill += 1
 
             gs 'ActUiPrepare', 'Продолжить', 'generic'
@@ -585,12 +600,15 @@
         end
     end
 
-    if sluttiness['sandra'] >= 20:
+    if sluttiness['sandra'] >= 20 and SandraPersonalDay <> day:
         gs 'ActUiPrepare', 'Личный разговор с Сандрой', 'generic'
         act $ActUiLabel, $ActUiIconPath:
+            SandraPersonalDay = day
             *p 'Разговор с Сандрой становится более личным, чем обычно.'
 
-            otkroven['sandra'] += 1
+            if otkroven['sandra'] < 15:
+                otkroven['sandra'] += 1
+            end
 
             gs 'ActUiPrepare', 'Продолжить', 'generic'
             act $ActUiLabel, $ActUiIconPath:

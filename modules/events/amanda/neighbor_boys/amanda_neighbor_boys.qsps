@@ -1,7 +1,7 @@
 ! ================================================
-! FILE: modules/events/amanda/amanda_events.qsps
-! MODULE: events/amanda
-! Специальные события и ивенты для Аманды
+! FILE: modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps
+! MODULE: events/amanda/neighbor_boys
+! Ветка: Соседские парни (Ганс, Курт, Феликс) на заднем дворе трактира
 ! ================================================
 
 #CheckAmandaEvents
@@ -93,7 +93,7 @@
 
     AmandaNeighborBoysCanStart = 0
 
-    if AmandaLegareFirstSexDone = 0 and AmandaPlayerAlleySexEver = 0:
+    if AmandaLegareFirstSexDone = 0 and AmandaPlayerAlleySexEver = 0 and AmandaHomeSex = 0:
         exit
     end
 
@@ -146,24 +146,79 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'СОСЕДСКИЕ ПАРНИ', 'large', 'webp'
     $CurrentGirl = 'amanda'
     AmandaNeighborBoysToday = 1
     AmandaNeighborBoysStage += 1
 
     gs 'EnsureGirlData', 'amanda'
 
-    NeighborBoyRoll = RAND(1, 3)
+    NeighborBoyRoll = RAND(1, 10)
 
     if NeighborBoyRoll = 1:
-        $AmandaNeighborBoyName = 'Ханс'
+        killvar 'NeighborBoyRoll'
+        gt 'AmandaBoyGiantEvent'
     elseif NeighborBoyRoll = 2:
+        killvar 'NeighborBoyRoll'
+        gt 'AmandaBoyBrothersEvent'
+    elseif NeighborBoyRoll = 3:
+        $AmandaNeighborBoyName = 'Отто'
+        $AmandaNeighborBoyDesc = 'сын кожевенника'
+        AmandaNeighborBoyCurved = 1
+    elseif NeighborBoyRoll = 4:
+        $AmandaNeighborBoyName = 'Томас'
+        $AmandaNeighborBoyDesc = 'сын мясника'
+        AmandaNeighborBoyCurved = 0
+    elseif NeighborBoyRoll = 5:
+        $AmandaNeighborBoyName = 'Ханс'
+        $AmandaNeighborBoyDesc = 'племянник пекаря'
+        AmandaNeighborBoyCurved = 0
+    elseif NeighborBoyRoll = 6:
         $AmandaNeighborBoyName = 'Курт'
-    else:
+        $AmandaNeighborBoyDesc = 'подмастерье бондаря'
+        AmandaNeighborBoyCurved = 0
+    elseif NeighborBoyRoll = 7:
         $AmandaNeighborBoyName = 'Феликс'
+        $AmandaNeighborBoyDesc = 'подручный сапожника'
+        AmandaNeighborBoyCurved = 0
+    elseif NeighborBoyRoll = 8:
+        $AmandaNeighborBoyName = 'Люк'
+        $AmandaNeighborBoyDesc = 'помощник мельника'
+        AmandaNeighborBoyCurved = 0
+    elseif NeighborBoyRoll = 9:
+        $AmandaNeighborBoyName = 'Якоб'
+        $AmandaNeighborBoyDesc = 'подручный плотника'
+        AmandaNeighborBoyCurved = 0
+    else:
+        $AmandaNeighborBoyName = 'Финн'
+        $AmandaNeighborBoyDesc = 'конюх с постоялого двора'
+        AmandaNeighborBoyCurved = 0
     end
 
     killvar 'NeighborBoyRoll'
+
+    ! Проверка на случайного второго парня, если открыт групповой флаг
+    $AmandaNeighborBoyName2 = ''
+    if AmandaBoysGroupUnlocked = 1 and AmandaNeighborBoyCurved = 0:
+        if RAND(1, 100) <= 25:
+            SecondBoyRoll = RAND(1, 6)
+            if SecondBoyRoll = 1 and $AmandaNeighborBoyName <> 'Томас':
+                $AmandaNeighborBoyName2 = 'Томас'
+            elseif SecondBoyRoll = 2 and $AmandaNeighborBoyName <> 'Ханс':
+                $AmandaNeighborBoyName2 = 'Ханс'
+            elseif SecondBoyRoll = 3 and $AmandaNeighborBoyName <> 'Курт':
+                $AmandaNeighborBoyName2 = 'Курт'
+            elseif SecondBoyRoll = 4 and $AmandaNeighborBoyName <> 'Феликс':
+                $AmandaNeighborBoyName2 = 'Феликс'
+            elseif SecondBoyRoll = 5 and $AmandaNeighborBoyName <> 'Люк':
+                $AmandaNeighborBoyName2 = 'Люк'
+            elseif $AmandaNeighborBoyName <> 'Финн':
+                $AmandaNeighborBoyName2 = 'Финн'
+            end
+            killvar 'SecondBoyRoll'
+        end
+    end
+
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'Аманда и соседский парень на заднем дворе', 'large', 'webp'
 
     *pl '══════════════════════════════════════════════'
     *pl ' СОСЕДСКИЕ ПАРНИ'
@@ -173,8 +228,12 @@
     if LOC('AmandaNeighborBoysEventText') = 1:
         gs 'AmandaNeighborBoysEventText', AmandaNeighborBoysStage
     else:
-        *p 'Вы натыкаетесь на Аманду у заднего прохода трактира. Рядом — ' + $AmandaNeighborBoyName + ', соседский парень, слишком близко стоящий к ней.'
-        *p 'Она явно не ожидала, что вас увидят.'
+        if $AmandaNeighborBoyName2 <> '':
+            *pl 'Вы натыкаетесь на Аманду у служебного входа трактира. Рядом — ' + $AmandaNeighborBoyName + ' и ' + $AmandaNeighborBoyName2 + ', окружившие её вдвоём.'
+        else:
+            *pl 'Вы натыкаетесь на Аманду у служебного входа трактира. Рядом — ' + $AmandaNeighborBoyName + ', стоящий к ней слишком близко.'
+        end
+        *pl 'Она явно не ожидала, что её увидят.'
     end
 
     *pl ' '
@@ -225,7 +284,7 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'ПОСЛЕ ВСТРЕЧИ', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Исход встречи на заднем дворе', 'large', 'webp'
     $NeighborBoysChoice = LCASE($ARGS[0])
 
     if $NeighborBoysChoice = 'send_away':
@@ -296,7 +355,7 @@
     if LOC('AmandaNeighborBoysActionText') = 1:
         gs 'AmandaNeighborBoysActionText', $NeighborBoysChoice
     else:
-        *p 'Соседский парень исчезает в переулке. Аманда остаётся рядом — слишком тихая.'
+        *pl 'Соседский парень исчезает в переулке. Аманда остаётся рядом — слишком тихая.'
     end
 
     *pl ' '

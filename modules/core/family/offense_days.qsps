@@ -89,6 +89,28 @@
     GirlOffenseRightUsed[$OffenseStartGirl] = 0
     GirlOffenseApologizeDay[$OffenseStartGirl] = 0
 
+    if $OffenseStartGirl = 'amanda':
+        if $OffenseReason <> 'ban_guys' and $OffenseReason <> 'ban_unknown':
+            if AmandaProhibitGuys = 1 or AmandaProhibitDays > 0:
+                AmandaProhibitGuys = 0
+                AmandaProhibitDays = 0
+                if debug = 1:
+                    *pl '[DEBUG OFFENSE] Обида Аманды аннулировала запрет на встречи с парнями!'
+                end
+            end
+        end
+    elseif $OffenseStartGirl = 'melissa':
+        if $OffenseReason <> 'ban_minstrel' and $OffenseReason <> 'ban_unknown':
+            if MelissaProhibitMinstrel = 1 or MelissaProhibitDays > 0:
+                MelissaProhibitMinstrel = 0
+                MelissaProhibitDays = 0
+                if debug = 1:
+                    *pl '[DEBUG OFFENSE] Обида Мелиссы аннулировала запрет на встречи с менестрелем!'
+                end
+            end
+        end
+    end
+
     killvar '$OffenseStartGirl'
     killvar '$OffenseReason'
 ---
@@ -643,6 +665,48 @@
 
     gs 'OffenseDaysTickDecayMismatch'
     gs 'OffenseDaysTickDecayDays'
+    gs 'OffenseDaysTickBansAndAttention'
+---
+
+#OffenseDaysTickBansAndAttention
+
+    ! --- Аманда ---
+    if AmandaProhibitDays > 0:
+        AmandaDaysNoAtt = day - LastAttentionDay['amanda']
+        if AmandaDaysNoAtt >= 7:
+            AmandaProhibitDays -= 2
+        else:
+            AmandaProhibitDays -= 1
+        end
+        killvar 'AmandaDaysNoAtt'
+
+        if AmandaProhibitDays <= 0:
+            AmandaProhibitDays = 0
+            AmandaProhibitGuys = 0
+            if debug = 1:
+                *pl '[DEBUG OFFENSE] Срок запрета на парней для Аманды истёк.'
+            end
+        end
+    end
+
+    ! --- Мелисса ---
+    if MelissaProhibitDays > 0:
+        MelissaDaysNoAtt = day - LastAttentionDay['melissa']
+        if MelissaDaysNoAtt >= 7:
+            MelissaProhibitDays -= 2
+        else:
+            MelissaProhibitDays -= 1
+        end
+        killvar 'MelissaDaysNoAtt'
+
+        if MelissaProhibitDays <= 0:
+            MelissaProhibitDays = 0
+            MelissaProhibitMinstrel = 0
+            if debug = 1:
+                *pl '[DEBUG OFFENSE] Срок запрета на менестреля для Мелиссы истёк.'
+            end
+        end
+    end
 ---
 
 #OffenseDaysTickDecayDays
@@ -1049,6 +1113,7 @@
 
         Friends[$OffenseGirl] += 1
         GirlGiftCount[$OffenseGirl] += 1
+        LastAttentionDay[$OffenseGirl] = day
 
         ! Полная реакция подарка (в т.ч. «второй за день»), не короткий offense-only stub
         if LOC('GiftSimpleRegisterGive') = 1:
@@ -1084,6 +1149,7 @@
         Friends[$OffenseGirl] += 1
         love[$OffenseGirl] += 1
         GirlGiftCount[$OffenseGirl] += 1
+        LastAttentionDay[$OffenseGirl] = day
 
         if LOC('GiftSimpleRegisterGive') = 1:
             gs 'GiftSimpleRegisterGive', $OffenseGirl, 'gift_expensive'

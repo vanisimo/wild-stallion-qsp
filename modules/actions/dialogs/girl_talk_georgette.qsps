@@ -114,6 +114,8 @@
         exit
     end
 
+    gs 'GirlTalkRootAppendPersonalMenu'
+
     if GeorgetteKnown = 1:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О её жизни', 'talk'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
@@ -417,11 +419,15 @@
     end
 
     if TalkRoll <= TalkChance:
-        Friends['georgett'] += 1
-        love['georgett'] += 1
-        otkroven['georgett'] += 1
-    else:
-        Friends['georgett'] += 1
+        $ComplimentKey = 'georgett_' + STR(day)
+        if GirlComplimentDay[$ComplimentKey] = 0:
+            GirlComplimentDay[$ComplimentKey] = 1
+            love['georgett'] += 1
+            if Friends['georgett'] < 12:
+                Friends['georgett'] += 1
+            end
+        end
+        killvar '$ComplimentKey'
     end
 
     gs 'ClampGirlSocialStats', 'georgett'

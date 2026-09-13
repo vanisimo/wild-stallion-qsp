@@ -1,0 +1,231 @@
+! ================================================
+! FILE: modules/events/amanda/legare/amanda_legare_backyard.qsps
+! MODULE: events/amanda/legare
+! Логика сцены подглядывания за бочками на заднем дворе винной лавки
+! ================================================
+
+#AmandaLegareBackyardStart
+    *clr
+    clr
+    cla
+
+    CurSexStep = $ARGS[0]
+    SexType = $ARGS[1]
+
+    if CurSexStep = '' or CurSexStep < 0:
+        CurSexStep = 0
+    end
+
+    if CurSexStep = 0:
+        if oralacts['amanda'] = 0 and virginity['amanda'] = 1:
+            SexType = 0
+        elseif virginity['amanda'] = 1:
+            SexType = RAND(1, 2)
+        elseif HadVaginalWithPlayer['amanda'] = 1:
+            SexType = 3
+        else:
+            SexType = 4
+        end
+    end
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/backyard_barrels', 'ЗАДНИЙ ДВОР ЛАВКИ ЛЕГАРЕ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗАДНИЙ ДВОР ВИННОЙ ЛАВКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if CurSexStep = 0:
+        gs 'AmandaLegareBackyardStep0Text'
+    elseif CurSexStep = 1:
+        PlayerKnows_ClarissaNotLegareDaughter = 1
+        AlberVar['hearabouthiswife'] = 1
+        gs 'AmandaLegareBackyardStep1Text'
+    elseif CurSexStep = 2:
+        gs 'AmandaLegareBackyardStep2Text', SexType
+    elseif CurSexStep = 3:
+        if SexType = 2 and virginity['amanda'] = 1:
+            virginity['amanda'] = 0
+            AmandaLegareDeflowerDone = 1
+            vaginalacts['amanda'] += 1
+            sexacts['amanda'] += 1
+        elseif SexType = 0 or SexType = 1:
+            oralacts['amanda'] += 1
+            sexacts['amanda'] += 1
+        else:
+            vaginalacts['amanda'] += 1
+            sexacts['amanda'] += 1
+        end
+        gs 'AmandaLegareBackyardStep3Text', SexType
+    elseif CurSexStep = 4:
+        gs 'AmandaLegareBackyardStep4Text', SexType
+    elseif CurSexStep >= 5:
+        Fact_AmandaLegareFridayAlley = 1
+        PlayerKnows_AmandaLegareFridayRace = 1
+        sluttiness['amanda'] += 2
+        AmandaLegareInterest += 1
+
+        if SexType = 0 or SexType = 1:
+            gs 'AmandaLegareBackyardOralFinishText'
+        else:
+            FinishRoll = RAND(1, 2)
+            if FinishRoll = 1:
+                cuminside['amanda'] += 1
+                gs 'AmandaLegareBackyardFinishInsideText'
+            else:
+                gs 'AmandaLegareBackyardFinishOutsideText'
+            end
+            killvar 'FinishRoll'
+        end
+    end
+
+    *pl ' '
+
+    if CurSexStep < 5:
+        gs 'ActUiPrepare', 'Смотреть дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardStart', CurSexStep + 1, SexType
+        end
+
+        gs 'ActUiPrepare', 'Прервать окриком из-за бочек', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardInterrupt', CurSexStep, SexType
+        end
+
+        gs 'ActUiPrepare', 'Подать знак (шум / сбросить камень)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardReveal', CurSexStep, SexType
+        end
+
+        gs 'ActUiPrepare', 'Уйти в трактир', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardLeave'
+        end
+    else:
+        gs 'ActUiPrepare', 'Вернуться к трактиру', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Street'
+        end
+    end
+---
+
+#AmandaLegareBackyardInterrupt
+    *clr
+    clr
+    cla
+
+    CurSexStep = $ARGS[0]
+    SexType = $ARGS[1]
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/backyard_barrels', 'ОКРИК ИЗ-ЗА БОЧЕК', 'large', 'webp'
+
+    AmandaStefanIntimate = 0
+    if AmandaHomeSex = 1 or HadSex['amanda'] = 1 or oralacts['amanda'] > 0 or sexacts['amanda'] > 0:
+        AmandaStefanIntimate = 1
+    end
+
+    if AmandaTrustStefan >= AmandaRebellion and sluttiness['amanda'] < 25:
+        AmandaNesluh = 0
+    elseif AmandaStefanIntimate = 1:
+        AmandaNesluh = 2
+    else:
+        AmandaNesluh = 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОКРИК ИЗ-ЗА БОЧЕК'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareBackyardInterruptText', AmandaNesluh
+
+    *pl ' '
+
+    if AmandaNesluh = 0:
+        AmandaObeyedAfterDance = 1
+        AmandaTrustStefan += 1
+        gs 'ActUiPrepare', 'Вернуться в трактир', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    elseif AmandaNesluh = 1:
+        Fact_AmandaLegareFridayAlley = 1
+        gs 'ActUiPrepare', 'Плюнуть и пойти в трактир', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    else:
+        gs 'ActUiPrepare', 'Ничего не поделаешь — смотреть дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardStart', CurSexStep + 1, SexType
+        end
+
+        gs 'ActUiPrepare', 'Не могу на это смотреть — уйти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardLeave'
+        end
+    end
+
+    killvar 'AmandaStefanIntimate'
+---
+
+#AmandaLegareBackyardReveal
+    *clr
+    clr
+    cla
+
+    CurSexStep = $ARGS[0]
+    SexType = $ARGS[1]
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/backyard_barrels', 'ЗНАК ПРИСУТСТВИЯ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЗНАК ПРИСУТСТВИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareBackyardRevealText'
+
+    *pl ' '
+
+    if sluttiness['amanda'] >= 35:
+        gs 'ActUiPrepare', 'Смотреть дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardStart', CurSexStep + 1, SexType
+        end
+
+        gs 'ActUiPrepare', 'Уйти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardLeave'
+        end
+    else:
+        Fact_AmandaLegareFridayAlley = 1
+        gs 'ActUiPrepare', 'Уйти в трактир', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    end
+---
+
+#AmandaLegareBackyardLeave
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/backyard_barrels', 'ВОЗВРАЩЕНИЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВОЗВРАЩЕНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareBackyardLeaveText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к трактиру', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---

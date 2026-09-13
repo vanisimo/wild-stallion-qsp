@@ -1,0 +1,187 @@
+! ================================================
+! FILE: modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps
+! MODULE: events/amanda/neighbor_boys
+! Ветка: Питер (подмастерье кузнеца — огромный размер)
+! Поэтапное привыкание:
+! - Ранний визит: испуг при виде габаритов, развилка по оральному опыту (oralacts >= 5)
+! - Стадия 1 (sluttiness >= 45, sexacts >= 10): ласки и внешнее трение без проникновения
+! - Стадия 2 (sluttiness >= 50, sexacts >= 12): неполное, осторожное проникновение
+! - Стадия 3 (sluttiness >= 55, sexacts >= 15): полноценный контакт
+! ================================================
+
+#AmandaBoyGiantCanStart
+    AmandaBoyGiantCanStart = 1
+---
+
+#AmandaBoyGiantEvent
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'Питер-кузнец и Аманда на заднем дворе', 'large', 'webp'
+    $CurrentGirl = 'amanda'
+    AmandaNeighborBoysToday = 1
+    gs 'EnsureGirlData', 'amanda'
+
+    ! Определение доступной стадии Питера
+    if AmandaBoyGiantStage = 0:
+        ! Ранняя встреча
+        if sluttiness['amanda'] >= 45 and sexacts['amanda'] >= 10:
+            $GiantTargetStep = 'stage1_ready'
+        else:
+            $GiantTargetStep = 'early_fear'
+        end
+    elseif AmandaBoyGiantStage = 1:
+        if sluttiness['amanda'] >= 50 and sexacts['amanda'] >= 12:
+            $GiantTargetStep = 'stage2_ready'
+        else:
+            $GiantTargetStep = 'stage1_repeat'
+        end
+    else:
+        if sluttiness['amanda'] >= 55 and sexacts['amanda'] >= 15:
+            $GiantTargetStep = 'stage3_ready'
+        else:
+            $GiantTargetStep = 'stage2_repeat'
+        end
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПИТЕР-КУЗНЕЦ НА ЗАДНЕМ ДВОРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaBoyGiantEventText') = 1:
+        gs 'AmandaBoyGiantEventText', $GiantTargetStep
+    else:
+        *pl 'Широкоплечий Питер, подмастерье кузнеца, зажал Аманду за сараем.'
+    end
+
+    *pl ' '
+
+    gs 'AmandaBoyGiantBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaBoyGiantMenu''">делать</a>?'
+---
+
+#AmandaBoyGiantBuildMenu
+    gs 'Menu.Destroy', 'AmandaBoyGiantMenu'
+    gs 'Menu.Create', 'AmandaBoyGiantMenu'
+
+    gs 'MenuUiAdd', 'AmandaBoyGiantMenu', 'Прогнать кузнеца', ''
+    gs 'Menu.AddModule', 'AmandaBoyGiantMenu', {
+        gt 'AmandaBoyGiantAction', 'send_away'
+    }
+
+    gs 'MenuUiAdd', 'AmandaBoyGiantMenu', 'Спросить прямо', ''
+    gs 'Menu.AddModule', 'AmandaBoyGiantMenu', {
+        gt 'AmandaBoyGiantAction', 'ask'
+    }
+
+    if AmandaWatchNpcPath = 1 or FamilyCorruptionStage >= 2:
+        gs 'MenuUiAdd', 'AmandaBoyGiantMenu', 'Наблюдать издалека', ''
+        gs 'Menu.AddModule', 'AmandaBoyGiantMenu', {
+            gt 'AmandaBoyGiantAction', 'watch'
+        }
+    end
+
+    gs 'MenuUiAdd', 'AmandaBoyGiantMenu', 'Сделать вид, что не заметили', ''
+    gs 'Menu.AddModule', 'AmandaBoyGiantMenu', {
+        gt 'AmandaBoyGiantAction', 'ignore'
+    }
+---
+
+#AmandaBoyGiantAction
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Исход встречи с кузнецом', 'large', 'webp'
+    $GiantChoice = LCASE($ARGS[0])
+
+    if $GiantChoice = 'send_away':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaPlayerPath += 1
+        AmandaRebellion += 1
+        TavernScandal += 1
+
+    elseif $GiantChoice = 'ask':
+        AmandaTrustStefan += 1
+        AmandaSecretiveness += 1
+        AmandaNpcPath += 1
+
+    elseif $GiantChoice = 'watch':
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 2
+        AmandaSecretiveness += 1
+        TavernScandal += 1
+        AmandaScandalLevel += 1
+
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'amanda_neighbors_peek'
+        end
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'amanda_neighbors_peek', 'witness'
+        end
+
+        ! Разрешение сцены наблюдения
+        if $GiantTargetStep = 'early_fear':
+            if oralacts['amanda'] >= 5:
+                oralacts['amanda'] += 1
+                sluttiness['amanda'] += 1
+                AmandaBoyGiantOralDone = 1
+            end
+        elseif $GiantTargetStep = 'stage1_ready' or $GiantTargetStep = 'stage1_repeat':
+            AmandaBoyGiantStage = 1
+            sluttiness['amanda'] += 2
+            sexacts['amanda'] += 1
+        elseif $GiantTargetStep = 'stage2_ready' or $GiantTargetStep = 'stage2_repeat':
+            AmandaBoyGiantStage = 2
+            sluttiness['amanda'] += 2
+            vaginalacts['amanda'] += 1
+            sexacts['amanda'] += 1
+        elseif $GiantTargetStep = 'stage3_ready':
+            AmandaBoyGiantStage = 3
+            sluttiness['amanda'] += 3
+            vaginalacts['amanda'] += 1
+            cuminside['amanda'] += 1
+            sexacts['amanda'] += 1
+        end
+
+    elseif $GiantChoice = 'ignore':
+        AmandaNpcPath += 2
+        AmandaSecretiveness += 2
+        AmandaRebellion += 1
+        MelissaFamilyConcern += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ВСТРЕЧИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaBoyGiantActionText') = 1:
+        gs 'AmandaBoyGiantActionText', $GiantChoice, $GiantTargetStep
+    else:
+        *pl 'Питер исчезает в переулке, а Аманда возвращается в трактир.'
+    end
+
+    *pl ' '
+
+    if AmandaPathChoiceDone = 0:
+        AmandaPathChoiceReady = 1
+        if LOC('AmandaPathChoiceTryAutoStart') = 1:
+            gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+
+    killvar '$GiantChoice'
+    killvar '$GiantTargetStep'
+---

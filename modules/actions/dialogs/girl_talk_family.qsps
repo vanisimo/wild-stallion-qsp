@@ -27,11 +27,30 @@
         killvar '$GirlTalkFamilyHallHookKey'
     end
 
-    Friends[$GirlTalkFamilyGirl] += 1
+    $FamilyTalkKey = $GirlTalkFamilyGirl + '_' + STR(day)
 
-    if love[$GirlTalkFamilyGirl] > 0:
-        love[$GirlTalkFamilyGirl] += 1
+    if GirlFamilyTalkDoneToday[$FamilyTalkKey] = 0:
+        GirlFamilyTalkDoneToday[$FamilyTalkKey] = 1
+
+        if Friends[$GirlTalkFamilyGirl] < 12:
+            Friends[$GirlTalkFamilyGirl] += 1
+        end
+
+        if love[$GirlTalkFamilyGirl] > 0 and love[$GirlTalkFamilyGirl] < 10:
+            love[$GirlTalkFamilyGirl] += 1
+        end
     end
+
+    if GirlTalkFamilyHallHookReady = 1:
+        $FamilyStoryBonusKey = $GirlTalkFamilyGirl + '_family_story_' + STR(day)
+        if GirlFamilyStoryBonusDone[$FamilyStoryBonusKey] = 0:
+            GirlFamilyStoryBonusDone[$FamilyStoryBonusKey] = 1
+            Friends[$GirlTalkFamilyGirl] += 1
+        end
+        killvar '$FamilyStoryBonusKey'
+    end
+
+    killvar '$FamilyTalkKey'
 
     if FamilyTrust >= 55 and GirlTalkFamilyHallHookReady = 1 and ($LastHallChoiceType = 'protect' or $LastGirlChoiceType[$GirlTalkFamilyGirl] = 'protect'):
         GirlTrustStefan[$GirlTalkFamilyGirl] += 1

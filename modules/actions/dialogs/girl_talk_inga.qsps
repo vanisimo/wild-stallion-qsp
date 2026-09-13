@@ -8,38 +8,7 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    if LOC('IngaGuardComplaintCanStart') = 1:
-        gs 'IngaGuardComplaintCanStart'
-
-        if IngaGuardComplaintCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Спросить о проблеме со стражником', 'talk'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'IngaGuardComplaintStart'
-            }
-        end
-    end
-
-    if LOC('IngaGuardThanksCanStart') = 1:
-        gs 'IngaGuardThanksCanStart'
-
-        if IngaGuardThanksCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поблагодарить за помощь', 'talk'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'IngaGuardThanks'
-            }
-        end
-    end
-
-    if LOC('IngaBeckyLucasGossipCanStart') = 1:
-        gs 'IngaBeckyLucasGossipCanStart'
-
-        if IngaBeckyLucasGossipCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Спросить про Лукаса и заднюю', 'talk'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'IngaBeckyLucasGossipStart'
-            }
-        end
-    end
+    gs 'GirlTalkRootAppendPersonalMenu'
 
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и торговле', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
@@ -74,19 +43,32 @@
     gs 'GirlTalkShopPrintText', 'intro'
     gs 'GirlTalkShopPrintText', 'context'
 
-    Friends['inga'] += 1
-    trading += 1
+    $ShopTalkKey = 'inga_' + STR(day)
+    if IngaShopTalkDoneToday[$ShopTalkKey] = 0:
+        IngaShopTalkDoneToday[$ShopTalkKey] = 1
+        trading += 1
+        if Friends['inga'] < 12:
+            Friends['inga'] += 1
+        end
+    end
+    killvar '$ShopTalkKey'
 ---
 
 #GirlTalkBeckyFamilyRun
     gs 'GirlTalkBeckyFamilyPrintText', 'intro'
     gs 'GirlTalkBeckyFamilyPrintText', 'context'
 
-    Friends['inga'] += 1
-
-    if love['inga'] > 0:
-        love['inga'] += 1
+    $BeckyFamilyKey = 'inga_family_' + STR(day)
+    if IngaFamilyTalkDoneToday[$BeckyFamilyKey] = 0:
+        IngaFamilyTalkDoneToday[$BeckyFamilyKey] = 1
+        if Friends['inga'] < 12:
+            Friends['inga'] += 1
+        end
+        if love['inga'] > 0 and love['inga'] < 10:
+            love['inga'] += 1
+        end
     end
+    killvar '$BeckyFamilyKey'
 
     gs 'ClampGirlSocialStats', 'inga'
 ---

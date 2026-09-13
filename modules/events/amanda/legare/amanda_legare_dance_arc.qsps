@@ -1,0 +1,1537 @@
+! ================================================
+! FILE: modules/events/amanda/legare/amanda_legare_dance_arc.qsps
+! MODULE: events/amanda/legare
+! Полная танцевальная ветка Альберта Легаре и Аманды на пятничных танцах:
+! 1. Разблокировка и прогресс ветки
+! 2. Первое замечание (Auto-Notice)
+! 3. Приглашение на танец (Invite)
+! 4. Танец и реакции (Dance, Clarissa, Melissa)
+! 5. Наблюдение за танцем по шагам (DanceFloor)
+! 6. Разговор после танца (After Dance)
+! 7. 5-я пятница — гонка к подворотне (Friday Race)
+! ================================================
+
+! ================================================
+! РАЗДЕЛ 1: РАЗБЛОКИРОВКА И ПРОГРЕСС
+! ================================================
+
+#UpdateAmandaLegareBranchUnlock
+    if AmandaLegareBranchUnlocked = 1:
+        exit
+    end
+
+    ! Первый вариант открытия: Аманда уже сталкивалась с вниманием в зале.
+    if AmandaHallHarassmentStage >= 1 and AmandaPublicAttention >= 2:
+        AmandaLegareBranchUnlocked = 1
+    end
+
+    ! Второй вариант: Аманда достаточно долго работает в зале и стала заметной.
+    if AmandaWorkHallDays >= 3 and AmandaPublicAttention >= 3:
+        AmandaLegareBranchUnlocked = 1
+    end
+
+    ! Третий вариант: Откровенная форма резко повышает заметность Аманды.
+    if AmandaRevealingUniformSeen = 1 and AmandaPublicAttention >= 1:
+        AmandaLegareBranchUnlocked = 1
+    end
+
+    ! Четвёртый вариант: Скандальность Аманды уже вышла наружу.
+    if AmandaScandalLevel >= 1 and AmandaPublicAttention >= 2:
+        AmandaLegareBranchUnlocked = 1
+    end
+
+    if AmandaLegareBranchUnlocked = 1:
+        AmandaLegareBranchUnlockDay = day
+        AmandaLegareBranchUnlockWeek = week
+        AmandaLegareBranchUnlockTime = time
+    end
+---
+
+#AmandaLegareBranchDebugUnlock
+    AmandaLegareBranchUnlocked = 1
+    AmandaLegareBranchUnlockDay = day
+    AmandaLegareBranchUnlockWeek = week
+    AmandaLegareBranchUnlockTime = time
+---
+
+#AmandaFridayDanceAdvance
+    if week <> 5:
+        exit
+    end
+
+    if AmandaFridayDanceCountDay = day:
+        exit
+    end
+
+    AmandaFridayDanceCountDay = day
+    AmandaFridayDanceCount += 1
+---
+
+#AmandaLegareRaceWindowOpen
+    AmandaLegareRaceWindowOpen = 0
+
+    if AmandaFridayDanceCount >= 5:
+        AmandaLegareRaceWindowOpen = 1
+    elseif day >= 33 and week = 5:
+        AmandaLegareRaceWindowOpen = 1
+    end
+---
+
+! ================================================
+! РАЗДЕЛ 2: ПЕРВОЕ ЗАМЕЧАНИЕ (AUTO-NOTICE)
+! ================================================
+
+#AmandaLegareAutoNoticeCanStart
+
+    AmandaLegareAutoNoticeCanStart = 0
+
+    if LOC('UpdateAmandaLegareBranchUnlock') = 1:
+        gs 'UpdateAmandaLegareBranchUnlock'
+    end
+
+    if AmandaLegareBranchUnlocked <> 1:
+        exit
+    end
+
+    if AmandaLegareNoticeStage > 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'DanceHall':
+        exit
+    end
+
+    if $GirlLocation['legare'] <> 'DanceHall':
+        exit
+    end
+
+    ! Поддержка нескольких возможных флагов танца.
+    if AmandaDanceStage <= 0 and AmandaFirstDanceWithStefan <= 0 and DanceStefanAmandaDone <= 0 and AmandaDancedWithStefan <= 0:
+        exit
+    end
+
+    AmandaLegareAutoNoticeCanStart = 1
+---
+
+#AmandaLegareAutoNoticeStart
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_auto_notice/amanda_legare_auto_notice_start', 'Легаре наблюдает за Амандой у края площади', 'large', 'webp'
+    AmandaLegareNoticeStage = 1
+    LegareNoticedAmanda = 1
+    ClarissaSawLegareAmanda = 1
+    MelissaLegareWarningReady = 1
+    AmandaLegareTalkReady = 1
+    ClarissaTalkAboutAmandaReady = 1
+
+    AmandaLegareInviteReady = 1
+    AmandaLegareInviteDelay = 1
+
+    LegareAmandaInterest += 1
+    AmandaPublicAttention += 1
+    ClarissaJealousy += 1
+    MelissaFamilyConcern += 1
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/dance/amanda_legare', 'notice', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВЗГЛЯД У КРАЯ ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareAutoNoticeText') = 1:
+        gs 'AmandaLegareAutoNoticeText'
+    else:
+        *pl 'Когда музыка стихает, вы замечаете, что Легаре смотрит на Аманду слишком внимательно.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE NOTICE] BranchUnlocked: ' + STR(AmandaLegareBranchUnlocked)
+        *pl '[DEBUG LEGARE NOTICE] NoticeStage: ' + STR(AmandaLegareNoticeStage)
+        *pl '[DEBUG LEGARE NOTICE] InviteReady: ' + STR(AmandaLegareInviteReady)
+        *pl '[DEBUG LEGARE NOTICE] InviteDelay: ' + STR(AmandaLegareInviteDelay)
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#AmandaLegareAutoNoticeDebugReset
+
+    AmandaLegareNoticeStage = 0
+    LegareNoticedAmanda = 0
+    ClarissaSawLegareAmanda = 0
+    MelissaLegareWarningReady = 0
+    AmandaLegareTalkReady = 0
+    ClarissaTalkAboutAmandaReady = 0
+    AmandaLegareInviteReady = 0
+    AmandaLegareInviteDelay = 0
+---
+
+! ================================================
+! РАЗДЕЛ 3: ПРИГЛАШЕНИЕ НА ТАНЕЦ (INVITE)
+! ================================================
+
+#AmandaLegareInviteCanStart
+
+    AmandaLegareInviteCanStart = 0
+
+    if AmandaLegareBranchUnlocked <> 1:
+        exit
+    end
+
+    if AmandaLegareNoticeStage <= 0:
+        exit
+    end
+
+    if AmandaLegareInviteReady <> 1:
+        exit
+    end
+
+    if AmandaLegareInviteStage > 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'DanceHall':
+        exit
+    end
+
+    if $GirlLocation['legare'] <> 'DanceHall':
+        exit
+    end
+
+    AmandaLegareInviteCanStart = 1
+---
+
+#AmandaLegareInviteStart
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_invite/amanda_legare_invite_start', 'ПРИГЛАШЕНИЕ ЛЕГАРЕ', 'large', 'webp'
+    AmandaLegareInviteStage = 1
+    AmandaLegareInviteReady = 0
+    AmandaLegareInviteCanStart = 0
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/dance/amanda_legare', 'invite', 2
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРИГЛАШЕНИЕ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareInviteIntroText') = 1:
+        gs 'AmandaLegareInviteIntroText'
+    else:
+        *pl 'Легаре подходит к Аманде и протягивает руку, приглашая её на следующий танец.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE INVITE] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG LEGARE INVITE] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl '[DEBUG LEGARE INVITE] AmandaTrustStefan: ' + STR(AmandaTrustStefan)
+        *pl '[DEBUG LEGARE INVITE] AmandaRebellion: ' + STR(AmandaRebellion)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareInviteBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareInviteMenu''">делать</a>?'
+---
+
+#AmandaLegareInviteBuildMenu
+
+    gs 'Menu.Destroy', 'AmandaLegareInviteMenu'
+    gs 'Menu.Create', 'AmandaLegareInviteMenu'
+
+    gs 'MenuUiAdd', 'AmandaLegareInviteMenu', 'Спокойно вмешаться', ''
+    gs 'Menu.AddModule', 'AmandaLegareInviteMenu', {
+        gt 'AmandaLegareInviteAction', 'calm_intervene'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareInviteMenu', 'Довериться Аманде', ''
+    gs 'Menu.AddModule', 'AmandaLegareInviteMenu', {
+        gt 'AmandaLegareInviteAction', 'trust_amanda'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareInviteMenu', 'Осадить Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareInviteMenu', {
+        gt 'AmandaLegareInviteAction', 'hard_warning'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareInviteMenu', 'Не вмешиваться', ''
+    gs 'Menu.AddModule', 'AmandaLegareInviteMenu', {
+        gt 'AmandaLegareInviteAction', 'ignore'
+    }
+---
+
+#AmandaLegareInviteAction
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_invite/amanda_legare_invite_action', 'ПРИГЛАШЕНИЕ ЛЕГАРЕ', 'large', 'webp'
+    $InviteChoice = LCASE($ARGS[0])
+
+    AmandaLegareInviteResolved = 1
+    AmandaLegareAfterDanceReady = 1
+    AmandaLegareAfterDanceDelay = 1
+    MelissaLegareWarningReady = 1
+    ClarissaTalkAboutAmandaReady = 1
+
+    ! 0 — танца с Легаре не было
+    ! 1 — короткий вежливый танец
+    ! 2 — Аманда танцевала охотно
+    ! 3 — открытый конфликт / резкий запрет
+    AmandaLegareDanceResult = 0
+
+    if $InviteChoice = 'calm_intervene':
+        AmandaLegareDanceResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaPlayerPath += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 1
+        AmandaLegareInterest -= 1
+
+        if AmandaLegareInterest < 0:
+            AmandaLegareInterest = 0
+        end
+
+    elseif $InviteChoice = 'trust_amanda':
+        if AmandaTrustStefan >= AmandaRebellion:
+            AmandaLegareDanceResult = 1
+            AmandaTrustStefan += 1
+            Friends['amanda'] += 1
+        else:
+            AmandaLegareDanceResult = 2
+            AmandaRebellion += 1
+            AmandaLegareInterest += 1
+        end
+
+        AmandaPublicAttention += 1
+        LegareAmandaInterest += 1
+
+    elseif $InviteChoice = 'hard_warning':
+        AmandaLegareDanceResult = 3
+        AmandaLegareHardWarningUsed = 1
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 2
+        ClarissaJealousy += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+
+    elseif $InviteChoice = 'ignore':
+        AmandaLegareDanceResult = 2
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        AmandaNpcPath += 1
+        AmandaSecretiveness += 1
+        AmandaPublicAttention += 1
+        ClarissaJealousy += 1
+        MelissaFamilyConcern += 1
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРИГЛАШЕНИЕ ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareInviteActionText') = 1:
+        gs 'AmandaLegareInviteActionText', $InviteChoice
+    else:
+        *p 'Выбор сделан. Вечер продолжает катиться дальше, но взгляд Легаре уже никуда не исчез.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE INVITE] Choice: ' + $InviteChoice
+        *pl '[DEBUG LEGARE INVITE] DanceResult: ' + STR(AmandaLegareDanceResult)
+        *pl '[DEBUG LEGARE INVITE] AfterDanceReady: ' + STR(AmandaLegareAfterDanceReady)
+        *pl '[DEBUG LEGARE INVITE] AfterDanceDelay: ' + STR(AmandaLegareAfterDanceDelay)
+        *pl '[DEBUG LEGARE INVITE] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG LEGARE INVITE] ConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    if AmandaLegareDanceResult = 1 or AmandaLegareDanceResult = 2:
+        gs 'ActUiPrepare', 'Наблюдать за танцем Аманды и Легаре', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareDanceFloorStart'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+
+    killvar '$InviteChoice'
+---
+
+#AmandaLegareInviteDebugReset
+
+    AmandaLegareInviteCanStart = 0
+    AmandaLegareInviteStage = 0
+    AmandaLegareInviteReady = 0
+    AmandaLegareInviteDelay = 0
+    AmandaLegareInviteResolved = 0
+    AmandaLegareDanceResult = 0
+    AmandaLegareHardWarningUsed = 0
+    AmandaLegareAfterDanceReady = 0
+    AmandaLegareAfterDanceDelay = 0
+---
+
+! ================================================
+! РАЗДЕЛ 4: ТАНЕЦ И РЕАКЦИИ (DANCE, CLARISSA, MELISSA)
+! ================================================
+
+#AmandaLegareDanceCanStart
+
+    AmandaLegareDanceCanStart = 0
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if AmandaLegareNoticeStage > 0:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'DanceHall':
+        exit
+    end
+
+    if $GirlLocation['legare'] <> 'DanceHall':
+        exit
+    end
+
+    if AmandaDanceStage < 1 and AmandaPublicAttention < 2:
+        exit
+    end
+
+    AmandaLegareDanceCanStart = 1
+---
+
+#AmandaLegareDanceStart
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_dance/amanda_legare_dance_start', 'ЛЕГАРЕ ЗАМЕЧАЕТ АМАНДУ', 'large', 'webp'
+    gs 'UpdateGirlLocations'
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if LOC('ShowLocationTimeImage') = 1:
+        gs 'ShowLocationTimeImage', 'images/events/dance/amanda_legare'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ ЗАМЕЧАЕТ АМАНДУ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareDanceIntroText') = 1:
+        gs 'AmandaLegareDanceIntroText'
+    else:
+        *p 'Легаре замечает Аманду среди танцующих и смотрит на неё слишком внимательно.'
+        *p 'Кларисса тоже видит этот взгляд, а Мелисса настороженно следит за вашей реакцией.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE DANCE] AmandaDanceStage: ' + STR(AmandaDanceStage)
+        *pl '[DEBUG LEGARE DANCE] AmandaPublicAttention: ' + STR(AmandaPublicAttention)
+        *pl '[DEBUG LEGARE DANCE] AmandaLegareInterest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG LEGARE DANCE] ClarissaJealousy: ' + STR(ClarissaJealousy)
+        *pl '[DEBUG LEGARE DANCE] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareDanceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareDanceMenu''">делать</a>?'
+---
+
+#AmandaLegareDanceBuildMenu
+
+    gs 'Menu.Destroy', 'AmandaLegareDanceMenu'
+    gs 'Menu.Create', 'AmandaLegareDanceMenu'
+
+    gs 'MenuUiAdd', 'AmandaLegareDanceMenu', 'Понаблюдать за Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'AmandaLegareDanceAction', 'observe'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareDanceMenu', 'Подойти к Аманде', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'AmandaLegareDanceAction', 'approach_amanda'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareDanceMenu', 'Предупредить Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'AmandaLegareDanceAction', 'warn_legare'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareDanceMenu', 'Сделать вид, что не заметили', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'AmandaLegareDanceAction', 'ignore'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareDanceMenu', 'Вернуться к танцам', ''
+    gs 'Menu.AddModule', 'AmandaLegareDanceMenu', {
+        gt 'MarketDance'
+    }
+---
+
+#AmandaLegareDanceAction
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_dance/amanda_legare_dance_action', 'ЛЕГАРЕ И АМАНДА', 'large', 'webp'
+    $AmandaLegareDanceChoice = LCASE($ARGS[0])
+
+    AmandaLegareNoticeStage = 1
+    LegareNoticedAmanda = 1
+    ClarissaSawLegareAmanda = 1
+    MelissaLegareWarningReady = 1
+    AmandaLegareTalkReady = 1
+
+    if $AmandaLegareDanceChoice = 'observe':
+        AmandaLegareInterest += 1
+        LegareAmandaInterest += 1
+        AmandaPublicAttention += 1
+        ClarissaJealousy += 1
+        MelissaFamilyConcern += 1
+
+    elseif $AmandaLegareDanceChoice = 'approach_amanda':
+        AmandaTrustStefan += 1
+        AmandaPlayerPath += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        AmandaLegareInterest -= 1
+
+        if AmandaLegareInterest < 0:
+            AmandaLegareInterest = 0
+        end
+
+    elseif $AmandaLegareDanceChoice = 'warn_legare':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        LegareConflictStage += 1
+        ClarissaJealousy += 1
+        TavernScandal += 1
+        TavernScandalLevel += 1
+
+    elseif $AmandaLegareDanceChoice = 'ignore':
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        AmandaNpcPath += 1
+        AmandaSecretiveness += 1
+        AmandaPublicAttention += 1
+        ClarissaJealousy += 1
+        MelissaFamilyConcern += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ И АМАНДА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareDanceActionText') = 1:
+        gs 'AmandaLegareDanceActionText', $AmandaLegareDanceChoice
+    else:
+        *p 'Ваш выбор меняет настроение на площади. Легаре, Аманда, Кларисса и Мелисса делают свои выводы.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG LEGARE DANCE] Choice: ' + $AmandaLegareDanceChoice
+        *pl '[DEBUG LEGARE DANCE] AmandaLegareInterest: ' + STR(AmandaLegareInterest)
+        *pl '[DEBUG LEGARE DANCE] LegareAmandaInterest: ' + STR(LegareAmandaInterest)
+        *pl '[DEBUG LEGARE DANCE] ClarissaJealousy: ' + STR(ClarissaJealousy)
+        *pl '[DEBUG LEGARE DANCE] MelissaLegareWarningReady: ' + STR(MelissaLegareWarningReady)
+        *pl '[DEBUG LEGARE DANCE] LegareConflictStage: ' + STR(LegareConflictStage)
+        *pl ' '
+    end
+
+    if ClarissaLegareJealousSeen = 0:
+        gs 'ActUiPrepare', 'Посмотреть на Клариссу', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareClarissaReaction'
+        end
+    end
+
+    if MelissaLegareWarningSeen = 0:
+        gs 'ActUiPrepare', 'Поговорить с Мелиссой', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareMelissaWarning'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+
+    killvar '$AmandaLegareDanceChoice'
+---
+
+#AmandaLegareClarissaReaction
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_dance/amanda_legare_clarissa_reaction', 'КЛАРИССА НАБЛЮДАЕТ', 'large', 'webp'
+    ClarissaLegareJealousSeen = 1
+    ClarissaJealousy += 1
+    ClarissaTalkAboutAmandaReady = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КЛАРИССА НАБЛЮДАЕТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareClarissaReactionText') = 1:
+        gs 'AmandaLegareClarissaReactionText'
+    else:
+        *p 'Кларисса стоит у края площади и смотрит не на танцы, а на Легаре.'
+        *p 'Она заметила его интерес к Аманде.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG CLARISSA] ClarissaJealousy: ' + STR(ClarissaJealousy)
+        *pl '[DEBUG CLARISSA] ClarissaTalkAboutAmandaReady: ' + STR(ClarissaTalkAboutAmandaReady)
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Поговорить с Мелиссой', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareMelissaWarning'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#AmandaLegareMelissaWarning
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_dance/amanda_legare_melissa_warning', 'ПРЕДУПРЕЖДЕНИЕ МЕЛИССЫ', 'large', 'webp'
+    MelissaLegareWarningSeen = 1
+    MelissaLegareWarningReady = 0
+    MelissaFamilyConcern += 1
+    MelissaRespectStefan += 1
+    AmandaLegareTalkReady = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПРЕДУПРЕЖДЕНИЕ МЕЛИССЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareMelissaWarningText') = 1:
+        gs 'AmandaLegareMelissaWarningText'
+    else:
+        *p 'Мелисса тихо предупреждает вас, что Легаре слишком внимательно смотрит на Аманду.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG MELISSA] MelissaLegareWarningSeen: ' + STR(MelissaLegareWarningSeen)
+        *pl '[DEBUG MELISSA] AmandaLegareTalkReady: ' + STR(AmandaLegareTalkReady)
+        *pl '[DEBUG MELISSA] MelissaFamilyConcern: ' + STR(MelissaFamilyConcern)
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#AmandaLegareDanceDebugReset
+
+    AmandaLegareNoticeStage = 0
+    LegareNoticedAmanda = 0
+    LegareAmandaInterest = 0
+    ClarissaSawLegareAmanda = 0
+    ClarissaLegareJealousSeen = 0
+    ClarissaTalkAboutAmandaReady = 0
+    MelissaLegareWarningReady = 0
+    MelissaLegareWarningSeen = 0
+    AmandaLegareTalkReady = 0
+---
+
+! ================================================
+! РАЗДЕЛ 5: НАБЛЮДЕНИЕ ЗА ТАНЦЕМ ПО ШАГАМ (DANCE FLOOR)
+! ================================================
+
+#AmandaLegareDanceFloorStart
+    AmandaLegareDanceFloorStep = 1
+    AmandaLegareDanceFloorMaxAdvance = 1
+
+    if AmandaLegareInterest >= 4 and sluttiness['amanda'] >= 18:
+        AmandaLegareDanceFloorMaxAdvance = 6
+    elseif AmandaLegareInterest >= 3 and sluttiness['amanda'] >= 15:
+        AmandaLegareDanceFloorMaxAdvance = 5
+    elseif AmandaLegareInterest >= 2 and sluttiness['amanda'] >= 10:
+        AmandaLegareDanceFloorMaxAdvance = 4
+    elseif AmandaLegareInterest >= 1 and sluttiness['amanda'] >= 6:
+        AmandaLegareDanceFloorMaxAdvance = 3
+    elseif AmandaLegareInterest >= 1 or sluttiness['amanda'] >= 3:
+        AmandaLegareDanceFloorMaxAdvance = 2
+    end
+
+    if FridayDanceSponsored = 1:
+        AmandaLegareDanceFloorMaxAdvance += 1
+    end
+
+    if AmandaLegareDanceFloorMaxAdvance > 6:
+        AmandaLegareDanceFloorMaxAdvance = 6
+    end
+
+    gt 'AmandaLegareDanceFloorStepShow'
+---
+
+#AmandaLegareDanceFloorStepShow
+    *clr
+    clr
+    cla
+
+    SceneArtUseReal = 1
+    $StepArtIndex = STR(MIN(AmandaLegareDanceFloorStep, 3))
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare/alberdanceStep' + $StepArtIndex, 'АМАНДА И ЛЕГАРЕ: ТАНЕЦ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' НАБЛЮДЕНИЕ ЗА ТАНЦЕМ: ШАГ ' + STR(AmandaLegareDanceFloorStep)
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if AmandaLegareDanceFloorStep <= AmandaLegareDanceFloorMaxAdvance:
+        gs 'AmandaLegareDanceFloorStepText', STR(AmandaLegareDanceFloorStep)
+    else:
+        gs 'AmandaLegareDanceFloorStepText', 'loop'
+    end
+
+    AmandaPublicAttention += 1
+    sluttiness['amanda'] += 1
+    ClarissaJealousy += 1
+
+    if AmandaLegareInterest < 12 and RAND(1, 2) = 1:
+        AmandaLegareInterest += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    if AmandaLegareDanceFloorStep = 6:
+        *pl 'Музыка смолкает. Альбер крепко держит раскрасневшуюся Аманду под локоток, что-то шепчет ей на ушко и направляется в сторону тёмных переулков, ведущих к его винной лавке...'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Остановить их на выходе с площади', 'stop'
+        act $ActUiLabel, $ActUiIconPath:
+            AmandaLegareDanceFloorStep = 0
+            gt 'AmandaLegareStreetIntercept'
+        end
+
+        gs 'ActUiPrepare', 'Проследить за ними во двор лавки', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            AmandaLegareDanceFloorStep = 0
+            gt 'AmandaLegareBackyardStart'
+        end
+
+        gs 'ActUiPrepare', 'Дать им уйти и вернуться к празднику', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            AmandaLegareDanceFloorStep = 0
+            gt 'MarketDance'
+        end
+    else:
+        gs 'ActUiPrepare', 'Смотреть дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            AmandaLegareDanceFloorStep += 1
+            gt 'AmandaLegareDanceFloorStepShow'
+        end
+
+        gs 'ActUiPrepare', 'Вмешаться и разогнать их', 'stop'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareDanceFloorIntervene'
+        end
+
+        gs 'ActUiPrepare', 'Отойти к колоннаде', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            AmandaLegareDanceFloorStep = 0
+            gt 'MarketDance'
+        end
+    end
+---
+
+#AmandaLegareDanceFloorIntervene
+    *clr
+    clr
+    cla
+
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare/alberdanceStep1', 'ВМЕШАТЕЛЬСТВО В ТАНЕЦ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВМЕШАТЕЛЬСТВО: АМАНДА И ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareDanceFloorInterveneText', 'shout'
+    *pl ' '
+    gs 'AmandaLegareDanceFloorInterveneText', 'legare_leave'
+    *pl ' '
+
+    Friends['legare'] = MAX(Friends['legare'] - 4, 0)
+    LegareConflictStage += 1
+    TavernScandal += 1
+
+    if AmandaLegareInterest >= 3 or AmandaRebellion >= 3 or sluttiness['amanda'] >= 15:
+        gs 'AmandaLegareDanceFloorInterveneText', 'amanda_rebel'
+        AmandaRebellion += 1
+        Friends['amanda'] = MAX(Friends['amanda'] - 2, 0)
+    else:
+        gs 'AmandaLegareDanceFloorInterveneText', 'amanda_submit'
+        Friends['amanda'] = MAX(Friends['amanda'] - 1, 0)
+    end
+
+    AmandaLegareProhibited = 1
+    AmandaVar['alberprohibit'] = 1
+    AmandaDanceBlockedTonight = 1
+    AmandaDanceEnded = 1
+    FridayDancesCount += 1
+    AmandaLegareDanceFloorStep = 0
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к празднику', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! РАЗДЕЛ 6: РАЗГОВОР ПОСЛЕ ТАНЦА (AFTER DANCE)
+! ================================================
+
+#AmandaLegareAfterDanceCanStart
+
+    AmandaLegareAfterDanceCanStart = 0
+
+    if AmandaLegareAfterDanceReady <> 1:
+        exit
+    end
+
+    if AmandaLegareAfterDanceStage > 0:
+        exit
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'DanceHall':
+        exit
+    end
+
+    if $GirlLocation['legare'] <> 'DanceHall':
+        exit
+    end
+
+    AmandaLegareAfterDanceCanStart = 1
+---
+
+#AmandaLegareAfterDanceStart
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_after_dance/amanda_legare_after_dance_start', 'Легаре шепчет Аманде после танца', 'large', 'webp'
+    AmandaLegareAfterDanceStage = 1
+    AmandaLegareAfterDanceReady = 0
+    AmandaLegareAfterDanceCanStart = 0
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $RealName['amanda'] = '':
+        $RealName['amanda'] = 'Аманда'
+    end
+
+    if LOC('ShowEventImage') = 1:
+        gs 'ShowEventImage', 'images/events/dance/amanda_legare', 'after_dance', 2
+    end
+
+    gs 'AmandaLegareAfterDanceGetRisk'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПАРА СЛОВ ПОСЛЕ ТАНЦА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareAfterDanceIntroText') = 1:
+        gs 'AmandaLegareAfterDanceIntroText'
+    else:
+        *pl 'После танца Легаре пытается поймать момент и сказать Аманде пару слов без лишних ушей.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AFTER DANCE] Risk: ' + STR(AmandaLegareAfterDanceRisk)
+        *pl '[DEBUG AFTER DANCE] HardWarning: ' + STR(AmandaLegareHardWarningUsed)
+        *pl '[DEBUG AFTER DANCE] DanceResult: ' + STR(AmandaLegareDanceResult)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareAfterDanceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareAfterDanceMenu''">делать</a>?'
+---
+
+#AmandaLegareAfterDanceGetRisk
+
+    AmandaLegareAfterDanceRisk = 10
+
+    if AmandaLegareDanceResult = 1:
+        AmandaLegareAfterDanceRisk += 10
+    elseif AmandaLegareDanceResult = 2:
+        AmandaLegareAfterDanceRisk += 25
+    elseif AmandaLegareDanceResult = 3:
+        AmandaLegareAfterDanceRisk += 5
+    end
+
+    AmandaLegareAfterDanceRisk += AmandaLegareInterest * 5
+    AmandaLegareAfterDanceRisk += LegareAmandaInterest * 5
+    AmandaLegareAfterDanceRisk += AmandaRebellion * 3
+    AmandaLegareAfterDanceRisk += AmandaPublicAttention * 2
+    AmandaLegareAfterDanceRisk += AmandaSecretiveness * 2
+
+    if AmandaLegareHardWarningUsed = 1:
+        AmandaLegareAfterDanceRisk += 8
+    end
+
+    if MelissaWatchAmandaLegare = 1:
+        AmandaLegareAfterDanceRisk -= 10
+    end
+
+    if AmandaTrustStefan >= 5:
+        AmandaLegareAfterDanceRisk -= 10
+    end
+
+    if AmandaLegareAfterDanceRisk < 5:
+        AmandaLegareAfterDanceRisk = 5
+    end
+
+    if AmandaLegareAfterDanceRisk > 90:
+        AmandaLegareAfterDanceRisk = 90
+    end
+---
+
+#AmandaLegareAfterDanceBuildMenu
+
+    gs 'Menu.Destroy', 'AmandaLegareAfterDanceMenu'
+    gs 'Menu.Create', 'AmandaLegareAfterDanceMenu'
+
+    gs 'MenuUiAdd', 'AmandaLegareAfterDanceMenu', 'Подойти самому', ''
+    gs 'Menu.AddModule', 'AmandaLegareAfterDanceMenu', {
+        gt 'AmandaLegareAfterDanceAction', 'approach'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareAfterDanceMenu', 'Отправить Мелиссу', ''
+    gs 'Menu.AddModule', 'AmandaLegareAfterDanceMenu', {
+        gt 'AmandaLegareAfterDanceAction', 'send_melissa'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareAfterDanceMenu', 'Довериться Аманде', ''
+    gs 'Menu.AddModule', 'AmandaLegareAfterDanceMenu', {
+        gt 'AmandaLegareAfterDanceAction', 'trust_amanda'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareAfterDanceMenu', 'Отойти в сторону', ''
+    gs 'Menu.AddModule', 'AmandaLegareAfterDanceMenu', {
+        gt 'AmandaLegareAfterDanceAction', 'step_aside'
+    }
+---
+
+#AmandaLegareAfterDanceAction
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_after_dance/amanda_legare_after_dance_action', 'Исход разговора возле танцевальной площадки', 'large', 'webp'
+    $AfterDanceChoice = LCASE($ARGS[0])
+
+    gs 'AmandaLegareAfterDanceGetRisk'
+
+    AmandaLegareAfterDanceResolved = 1
+
+    ! 0 — Легаре не получил личного разговора
+    ! 1 — короткий разговор при людях
+    ! 2 — личный разговор состоялся, Стефан знает
+    ! 3 — личный разговор состоялся, Стефан не знает деталей
+    AmandaLegareAfterDanceResult = 0
+
+    if $AfterDanceChoice = 'approach':
+        AmandaLegareAfterDanceResult = 0
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        MelissaRespectStefan += 1
+        LegareConflictStage += 1
+
+        if AmandaLegareHardWarningUsed = 1:
+            LegareConflictStage += 1
+        end
+
+    elseif $AfterDanceChoice = 'send_melissa':
+        AmandaLegareAfterDanceResult = 0
+        MelissaWatchAmandaLegare = 1
+        MelissaTrustStefan += 1
+        MelissaRespectStefan += 1
+        MelissaControlNeed += 1
+        AmandaTrustStefan += 1
+
+    elseif $AfterDanceChoice = 'trust_amanda':
+        AfterDanceRoll = RAND(1, 100)
+        PlayerKnows_AmandaLegarePrivateTalk = 1
+        Fact_AmandaLegarePrivateTalk = 1
+
+        if AfterDanceRoll <= AmandaLegareAfterDanceRisk:
+            AmandaLegareAfterDanceResult = 2
+            AmandaLegareInterest += 1
+            LegareAmandaInterest += 1
+            AmandaSecretiveness += 1
+            AmandaNpcPath += 1
+            ClarissaJealousy += 1
+        else:
+            AmandaLegareAfterDanceResult = 1
+            AmandaTrustStefan += 1
+        end
+
+        killvar 'AfterDanceRoll'
+
+    elseif $AfterDanceChoice = 'step_aside':
+        AfterDanceRoll = RAND(1, 100)
+        Fact_AmandaLegarePrivateTalk = 1
+
+        if AfterDanceRoll <= AmandaLegareAfterDanceRisk:
+            AmandaLegareAfterDanceResult = 3
+            PlayerKnows_AmandaLegarePrivateTalk = 0
+            AmandaLegareInterest += 2
+            LegareAmandaInterest += 2
+            AmandaSecretiveness += 2
+            AmandaNpcPath += 1
+            ClarissaJealousy += 1
+            MelissaFamilyConcern += 1
+            TavernScandal += 1
+        else:
+            AmandaLegareAfterDanceResult = 1
+            PlayerKnows_AmandaLegarePrivateTalk = 0
+            AmandaLegareInterest += 1
+        end
+
+        killvar 'AfterDanceRoll'
+    end
+
+    ! Стабилизация цепочки:
+    AmandaLegareNextRiskReady = 1
+    MelissaLegareWarningReady = 1
+    ClarissaTalkAboutAmandaReady = 1
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    if AmandaTrustStefan < 0:
+        AmandaTrustStefan = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ТАНЦА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareAfterDanceActionText') = 1:
+        gs 'AmandaLegareAfterDanceActionText', $AfterDanceChoice
+    else:
+        *pl 'Момент прошёл, но Легаре явно не собирается исчезать из этой истории.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG AFTER DANCE] Choice: ' + $AfterDanceChoice
+        *pl '[DEBUG AFTER DANCE] Result: ' + STR(AmandaLegareAfterDanceResult)
+        *pl '[DEBUG AFTER DANCE] NextRiskReady: ' + STR(AmandaLegareNextRiskReady)
+        *pl '[DEBUG AFTER DANCE] FactPrivate: ' + STR(Fact_AmandaLegarePrivateTalk)
+        *pl '[DEBUG AFTER DANCE] PlayerKnowsPrivate: ' + STR(PlayerKnows_AmandaLegarePrivateTalk)
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+
+    killvar '$AfterDanceChoice'
+---
+
+#AmandaLegareAfterDanceDebugReset
+
+    AmandaLegareAfterDanceCanStart = 0
+    AmandaLegareAfterDanceReady = 0
+    AmandaLegareAfterDanceStage = 0
+    AmandaLegareAfterDanceResolved = 0
+    AmandaLegareAfterDanceResult = 0
+    AmandaLegareAfterDanceRisk = 0
+    Fact_AmandaLegarePrivateTalk = 0
+    PlayerKnows_AmandaLegarePrivateTalk = 0
+---
+
+! ================================================
+! РАЗДЕЛ 7: 5-Я ПЯТНИЦА — ГОНКА К ПОДВОРОТНЕ (FRIDAY RACE)
+! ================================================
+
+#AmandaLegareFridayRaceCanStart
+
+    AmandaLegareFridayRaceCanStart = 0
+
+    if AmandaLegareFridayRaceDone = 1:
+        if AmandaLegareFridayRaceSparkPending <> 1:
+            exit
+        end
+    end
+
+    if AmandaLegareFirstSexDone = 1:
+        exit
+    end
+
+    if AmandaHomeSex = 1:
+        if GirlOffenseDays['amanda'] = 0 and (day - LastAttentionDay['amanda'] < 7):
+            exit
+        end
+    end
+
+    if AmandaProhibitGuys = 1:
+        if GirlOffenseDays['amanda'] = 0 and (day - LastAttentionDay['amanda'] < 7):
+            exit
+        end
+    end
+
+    if week <> 5:
+        exit
+    end
+
+    if time <> 4:
+        exit
+    end
+
+    if AmandaDanceDressReady = 0:
+        exit
+    end
+
+    if LOC('AmandaLegareRaceWindowOpen') = 1:
+        gs 'AmandaLegareRaceWindowOpen'
+    end
+
+    if AmandaLegareRaceWindowOpen = 0:
+        exit
+    end
+
+    if AmandaLegareAfterDanceResolved <> 1:
+        exit
+    end
+
+    if AmandaLegareAfterDanceResult < 2:
+        if AmandaLegareDanceResult < 2:
+            exit
+        end
+    end
+
+    if AmandaLegareHardWarningUsed = 1 and LegareConflictStage >= 4:
+        exit
+    end
+
+    AmandaLegareFridayRaceCanStart = 1
+---
+
+#AmandaLegareFridayRaceTryStart
+
+    if LOC('AmandaLegareFridayRaceCanStart') = 1:
+        gs 'AmandaLegareFridayRaceCanStart'
+
+        if AmandaLegareFridayRaceCanStart = 1:
+            gt 'AmandaLegareFridayRaceStart'
+        end
+    end
+---
+
+#AmandaLegareFridayRaceStart
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_friday_race/amanda_legare_friday_race_start', 'ПЯТАЯ ПЯТНИЦА — ЛЕГАРЕ И АМАНДА', 'large', 'webp'
+    AmandaLegareFridayRaceDone = 1
+    AmandaLegareFridayRaceSoftNearMiss = 0
+    AmandaLegareFridayRaceWatchRollHard = 0
+
+    if AmandaLegareFridayRaceSparkPending = 1:
+        AmandaLegareFridayRaceSparkPending = 0
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЯТАЯ ПЯТНИЦА — ЛЕГАРЕ И АМАНДА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareFridayRaceIntroText') = 1:
+        gs 'AmandaLegareFridayRaceIntroText'
+    else:
+        *p 'Музыка стихает. Легаре подходит к Аманде слишком уверенно — и она не отходит сразу.'
+        *p 'Он жестом указывает на тёмный проход у края площади. Несколько горожан уже смотрят в вашу сторону.'
+    end
+
+    *pl ' '
+
+    if debug = 1:
+        *pl '[DEBUG FRIDAY RACE] FridayCount: ' + STR(AmandaFridayDanceCount)
+        *pl '[DEBUG FRIDAY RACE] Day: ' + STR(day)
+        *pl '[DEBUG FRIDAY RACE] HomeSex: ' + STR(AmandaHomeSex)
+        *pl '[DEBUG FRIDAY RACE] AfterDanceResult: ' + STR(AmandaLegareAfterDanceResult)
+        *pl ' '
+    end
+
+    gs 'AmandaLegareFridayRaceBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaLegareFridayRaceMenu''">делать</a>?'
+---
+
+#AmandaLegareFridayRaceBuildMenu
+
+    gs 'Menu.Destroy', 'AmandaLegareFridayRaceMenu'
+    gs 'Menu.Create', 'AmandaLegareFridayRaceMenu'
+
+    gs 'MenuUiAdd', 'AmandaLegareFridayRaceMenu', 'Остановить Легаре', ''
+    gs 'Menu.AddModule', 'AmandaLegareFridayRaceMenu', {
+        gt 'AmandaLegareStreetIntercept'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareFridayRaceMenu', 'Подойти к Аманде самому', ''
+    gs 'Menu.AddModule', 'AmandaLegareFridayRaceMenu', {
+        gt 'AmandaLegareFridayRaceAction', 'claim'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareFridayRaceMenu', 'Наблюдать издалека', ''
+    gs 'Menu.AddModule', 'AmandaLegareFridayRaceMenu', {
+        gt 'AmandaLegareBackyardStart'
+    }
+
+    gs 'MenuUiAdd', 'AmandaLegareFridayRaceMenu', 'Отойти — пусть решает сама', ''
+    gs 'Menu.AddModule', 'AmandaLegareFridayRaceMenu', {
+        gt 'AmandaLegareFridayRaceAction', 'step_aside'
+    }
+---
+
+#AmandaLegareFridayRaceAction
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/amanda_legare_friday_race/amanda_legare_friday_race_action', 'ПОДВОРОТНЯ У ПЛОЩАДИ', 'large', 'webp'
+    $FridayRaceChoice = LCASE($ARGS[0])
+
+    gs 'EnsureGirlData', 'amanda'
+
+    if $FridayRaceChoice = 'stop':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaPlayerPath += 1
+        LegareConflictStage += 2
+        AmandaLegareInterest -= 1
+
+        if AmandaLegareInterest < 0:
+            AmandaLegareInterest = 0
+        end
+
+        AmandaLegareFridayRaceResult = 0
+        PlayerKnows_AmandaLegareFridayRace = 1
+
+    elseif $FridayRaceChoice = 'claim':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 2
+        AmandaPlayerPath += 2
+        AmandaHomeUnlocked = 1
+        AmandaLegareFridayRaceResult = 1
+        PlayerKnows_AmandaLegareFridayRace = 1
+        LegareConflictStage += 1
+
+    elseif $FridayRaceChoice = 'watch':
+        AmandaLegareFridayRaceResult = 2
+        PlayerKnows_AmandaLegareFridayRace = 1
+        AmandaSecretiveness += 1
+        AmandaNpcPath += 1
+        AmandaLegareInterest += 1
+        LegareAmandaInterest += 1
+        TavernScandal += 1
+
+        FridayRaceRoll = RAND(1, 100)
+        FridayRaceChance = 35 + sluttiness['amanda'] / 2 + AmandaPublicAttention * 2
+
+        if FridayRaceChance > 75:
+            FridayRaceChance = 75
+        end
+
+        if FridayRaceRoll <= FridayRaceChance:
+            AmandaLegareFridayRaceWatchRollHard = 1
+        end
+
+        killvar 'FridayRaceRoll'
+        killvar 'FridayRaceChance'
+
+    elseif $FridayRaceChoice = 'step_aside':
+        AmandaLegareFridayRaceResult = 3
+        PlayerKnows_AmandaLegareFridayRace = 0
+        AmandaSecretiveness += 2
+        AmandaNpcPath += 2
+        GirlNpcPath['amanda'] += 2
+        AmandaLegareInterest += 2
+        LegareAmandaInterest += 2
+        MelissaFamilyConcern += 1
+        ClarissaJealousy += 1
+        TavernScandal += 1
+
+        FridayRaceRoll = RAND(1, 100)
+        FridayRaceChance = 45 + sluttiness['amanda'] / 2 + AmandaRebellion * 3 + AmandaPublicAttention * 2
+
+        if FridayRaceChance > 85:
+            FridayRaceChance = 85
+        end
+
+        if FridayRaceRoll <= FridayRaceChance:
+            AmandaLegareFridayRaceSoftNearMiss = 1
+            AmandaLegareFridayRaceSparkPending = 1
+            AmandaNpcPath += 2
+            GirlNpcPath['amanda'] += 2
+            AmandaLegareInterest += 2
+            LegareAmandaInterest += 2
+
+            if AmandaLegareFirstSexDone = 0:
+                AmandaLegareFirstSexDone = 1
+                Fact_AmandaLegareFridayAlley = 1
+                AmandaPathChoiceReady = 1
+
+                if virginity['amanda'] = 1:
+                    virginity['amanda'] = 0
+                    AmandaLegareDeflowerDone = 1
+                    vaginalacts['amanda'] += 1
+                    cuminside['amanda'] += 1
+                    sexacts['amanda'] += 1
+                else
+                    vaginalacts['amanda'] += 1
+                    cuminside['amanda'] += 1
+                    sexacts['amanda'] += 1
+                end
+
+                sluttiness['amanda'] += 3
+            end
+        end
+
+        killvar 'FridayRaceRoll'
+        killvar 'FridayRaceChance'
+    end
+
+    if LegareConflictStage > 7:
+        LegareConflictStage = 7
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaLegareFridayRaceActionText') = 1:
+        gs 'AmandaLegareFridayRaceActionText', $FridayRaceChoice
+    else:
+        *p 'Вечер делает свой вывод — и вы тоже.'
+    end
+
+    *pl ' '
+
+    if $FridayRaceChoice = 'watch':
+        if AmandaLegareFridayRaceWatchRollHard = 1:
+            gs 'AmandaLegareWitnessRegister', 'amanda_legare_peek_friday'
+        else
+            gs 'AmandaLegareWitnessRegister', 'amanda_legare_peek_friday_flirt'
+        end
+    end
+
+    AmandaLegarePeekReactionDone = 0
+    gs 'AmandaLegarePeekReactionStart', 'friday_race', 'MarketDance'
+
+    if AmandaLegarePeekReactionDone = 0:
+        gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MarketDance'
+        end
+    end
+
+    killvar '$FridayRaceChoice'
+---
+
+#AmandaLegareFridayRaceWatchCommitHard
+
+    if AmandaLegareFridayRaceWatchRollHard <> 1:
+        exit
+    end
+
+    if AmandaLegareFirstSexDone = 1:
+        AmandaLegareFridayRaceWatchRollHard = 0
+        exit
+    end
+
+    AmandaLegareFirstSexDone = 1
+    AmandaNpcPath += 3
+    GirlNpcPath['amanda'] += 3
+    AmandaPathChoiceReady = 1
+    Fact_AmandaLegareFridayAlley = 1
+    AmandaLegareFridayRaceWatchRollHard = 0
+
+    if virginity['amanda'] = 1:
+        virginity['amanda'] = 0
+        AmandaLegareDeflowerDone = 1
+        vaginalacts['amanda'] += 1
+        cuminside['amanda'] += 1
+        sexacts['amanda'] += 1
+    else
+        vaginalacts['amanda'] += 1
+        cuminside['amanda'] += 1
+        sexacts['amanda'] += 1
+    end
+
+    sluttiness['amanda'] += 3
+
+    if LOC('AmandaLegareFridayRaceWatchDetailText') = 1:
+        gs 'AmandaLegareFridayRaceWatchDetailText'
+    else:
+        *p 'Вы понимаете: он опередил вас. Первый раз случился не дома и не с вами — в подворотне на винной бочке, и Аманда вовсе не выглядела обиженной.'
+    end
+---
+
+#AmandaLegareFridayRaceWatchAbortHard
+
+    if AmandaLegareFridayRaceWatchRollHard <> 1:
+        exit
+    end
+
+    AmandaLegareFridayRaceWatchRollHard = 0
+    AmandaLegareFridayRaceSoftNearMiss = 1
+    AmandaLegareFridayRaceSparkPending = 1
+    AmandaNpcPath += 1
+    GirlNpcPath['amanda'] += 1
+---
+
+#AmandaLegareFridayRaceDebugReset
+
+    AmandaLegareFridayRaceDone = 0
+    AmandaLegareFridayRaceResult = 0
+    AmandaLegareFridayRaceSparkPending = 0
+    AmandaLegareFridayRaceSoftNearMiss = 0
+    AmandaLegareFridayRaceWatchRollHard = 0
+    PlayerKnows_AmandaLegareFridayRace = 0
+    Fact_AmandaLegareFridayAlley = 0
+    AmandaLegareFridayRaceCanStart = 0
+---

@@ -257,6 +257,9 @@
         *pl '<i>Месье Легаре чинно ведёт под руку свою супругу Клариссу. Они улыбаются на публику с безупречной светской вежливостью.</i>'
     elseif ClarissaLegareState = 2:
         *pl '<i>Госпожа Кларисса Легаре стоит в одиночестве у каменной балюстрады, с затаённой прохладной досадой наблюдая за мужем.</i>'
+        if AmandaLegareBranchUnlocked = 1 and AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
+            *pl '<i>В кругу танцующих мелькает Аманда: мессир Легаре уверенно кружит её в танце, обнимая за талию и ловя восхищённые взгляды вашей юной сестры.</i>'
+        end
     end
 
     if BeckyEddieDone = 1 and BeckyEddieState = 1:
@@ -264,6 +267,13 @@
     end
 
     *pl ' '
+
+    if ClarissaLegareState = 2 and AmandaLegareBranchUnlocked = 1 and AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
+        gs 'ActUiPrepare', 'Наблюдать за танцем Аманды и Легаре', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareDanceFloorStart'
+        end
+    end
 
     gs 'FridayDanceAdvanceRound'
 
@@ -406,20 +416,32 @@
     ! АМАНДА
     ! -----------------------------------------------
     elseif $DanceNpc = 'amanda':
-        gs 'ActUiPrepare', 'Поболтать с сестрой', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'FridayDanceNpcCardTalk', 'amanda'
-        end
-
-        if StefanRespectableSuit = 1:
-            gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
+        if ClarissaLegareState = 2 and AmandaLegareBranchUnlocked = 1 and AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
+            gs 'ActUiPrepare', 'Наблюдать за танцем с Легаре', 'look'
             act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaDance'
+                gt 'AmandaLegareDanceFloorStart'
+            end
+
+            gs 'ActUiPrepare', 'Вмешаться и разогнать их', 'stop'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaLegareDanceFloorIntervene'
             end
         else:
-            gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+            gs 'ActUiPrepare', 'Поболтать с сестрой', 'talk'
             act $ActUiLabel, $ActUiIconPath:
-                gt 'FridayDanceStefanNoSuit', 'amanda'
+                gt 'FridayDanceNpcCardTalk', 'amanda'
+            end
+
+            if StefanRespectableSuit = 1:
+                gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'AmandaDance'
+                end
+            else:
+                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'FridayDanceStefanNoSuit', 'amanda'
+                end
             end
         end
 
@@ -876,6 +898,7 @@
     *pl ' '
 
     Friends[$FridayDanceSisterGirl] += 1
+    LastAttentionDay[$FridayDanceSisterGirl] = day
 
     if $FridayDanceSisterGirl = 'amanda':
         AmandaPublicAttention += 1
@@ -919,6 +942,7 @@
     Friends[$FridayDanceSisterGirl] += 1
     sluttiness[$FridayDanceSisterGirl] += 1
     otkroven[$FridayDanceSisterGirl] += 1
+    LastAttentionDay[$FridayDanceSisterGirl] = day
 
     if $FridayDanceSisterGirl = 'amanda':
         AmandaPublicAttention += 1

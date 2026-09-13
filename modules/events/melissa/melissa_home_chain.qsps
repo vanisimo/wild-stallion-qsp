@@ -33,6 +33,12 @@
     end
 
     if Friends['melissa'] < 7 + MelissaHomeStage:
+        if MelissaMinstrelFirstSexDone = 0:
+            exit
+        end
+    end
+
+    if GirlOffenseDays['melissa'] > 0:
         exit
     end
 
@@ -80,6 +86,11 @@
     MelissaHomeStage += 1
     MelissaHomeStepToday = 1
     MelissaPlayerPath += 1
+    LastAttentionDay['melissa'] = day
+
+    if $MelissaHomeStepKey = 'handjob' or $MelissaHomeStepKey = 'blowjob' or $MelissaHomeStepKey = 'cuni':
+        LastSexDay['melissa'] = day
+    end
 
     if $MelissaHomeStepKey = 'hug':
         Friends['melissa'] += 1
@@ -183,6 +194,8 @@
     MelissaHomeUnlocked = 1
     MelissaDanceEnded = 1
     MelissaPlayerPath += 2
+    LastAttentionDay['melissa'] = day
+    LastSexDay['melissa'] = day
 
     if LOC('MelissaDanceLeaveHomeText') = 1:
         gs 'MelissaDanceLeaveHomeText'
@@ -246,6 +259,11 @@
 
     act 'Запретить встречи с ' + $MelissaMinstrelName:
         MelissaProhibitMinstrel = 1
+        if MelissaMinstrelFirstSexDone = 1:
+            MelissaProhibitDays = 3
+        else:
+            MelissaProhibitDays = 7
+        end
 
         if LOC('OffenseDaysBanImmediate') = 1:
             gs 'OffenseDaysBanImmediate', 'melissa', 'ban_minstrel'

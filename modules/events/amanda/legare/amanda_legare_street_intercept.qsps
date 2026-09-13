@@ -1,0 +1,510 @@
+! ================================================
+! FILE: modules/events/amanda/legare/amanda_legare_street_intercept.qsps
+! MODULE: events/amanda/legare
+! Перехват Аманды и Легаре на улице, драка, стража и утренние пробуждения
+! ================================================
+
+#AmandaLegareStreetIntercept
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_intercept', 'ПЕРЕХВАТ НА УЛИЦЕ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    AmandaStefanIntimate = 0
+    if AmandaHomeSex = 1 or HadSex['amanda'] = 1 or oralacts['amanda'] > 0 or sexacts['amanda'] > 0:
+        AmandaStefanIntimate = 1
+    end
+
+    if AmandaTrustStefan >= AmandaRebellion and sluttiness['amanda'] < 25:
+        AmandaNesluh = 0
+    elseif AmandaStefanIntimate = 1:
+        AmandaNesluh = 2
+    else:
+        AmandaNesluh = 1
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРЕХВАТ НА УЛИЦЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareStreetInterceptIntroText', AmandaNesluh
+
+    *pl ' '
+
+    if AmandaNesluh = 0:
+        AmandaObeyedAfterDance = 1
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaLegareInterest = MAX(0, AmandaLegareInterest - 1)
+
+        gs 'ActUiPrepare', 'Вернуться на площадь', 'dance'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MarketDance'
+        end
+
+        gs 'ActUiPrepare', 'Пойти в трактир', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    else:
+        gs 'ActUiPrepare', 'Дать им уйти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareStreetLetGo'
+        end
+
+        gs 'ActUiPrepare', 'Тайно проследить за ними', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareBackyardStart'
+        end
+
+        gs 'ActUiPrepare', 'Кулачный бой с месье Легаре', 'fight'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareStreetFight'
+        end
+
+        gs 'ActUiPrepare', 'Позвать городскую стражу', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegareStreetPolice'
+        end
+    end
+
+    killvar 'AmandaStefanIntimate'
+---
+
+#AmandaLegareStreetLetGo
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_intercept', 'ПАРОЧКА УХОДИТ', 'large', 'webp'
+    Fact_AmandaLegareFridayAlley = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПАРОЧКА УХОДИТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Будучи ошарашенным ответом сестры, вы остаётесь стоять посреди ночной улицы.'
+    *pl 'Аманда гордо удаляется под ручку с Альбером, скрываясь в темноте переулка.'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'dance'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+
+    gs 'ActUiPrepare', 'Пойти в трактир', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#AmandaLegareStreetFight
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/fight', 'ДРАКА НА УЛИЦЕ', 'large', 'webp'
+
+    ! Определение исхода драки: 1 — победа, 2 — нокаут Стефана, 3 — ничья со стражей
+    FightRoll = RAND(1, 3)
+    if strength >= 75 and FightRoll = 2:
+        FightRoll = 1
+    end
+
+    if FightRoll = 1:
+        gt 'AmandaLegareFightWin'
+    elseif FightRoll = 2:
+        gt 'AmandaLegareFightDefeat'
+    else:
+        gt 'AmandaLegareFightDraw'
+    end
+
+    killvar 'FightRoll'
+---
+
+#AmandaLegareFightWin
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/fight_win', 'ПОБЕДА В ДРАКЕ', 'large', 'webp'
+
+    AmandaLockedHomeAfterDance = 1
+    AmandaRebellion += 2
+    Friends['amanda'] = MAX(0, Friends['amanda'] - 1)
+    Friends['legare'] = MAX(0, Friends['legare'] - 4)
+    AmandaLegareInterest = MAX(0, AmandaLegareInterest - 2)
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОБЕДА В ДРАКЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareFightWinText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Спуститься в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#AmandaLegareFightDefeat
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/fight_lost', 'НОКАУТ НА МОСТОВОЙ', 'large', 'webp'
+    Fact_AmandaLegareFridayAlley = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОРАЖЕНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareFightDefeatText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Погрузиться во тьму...', 'sleep'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareKnockoutMorning'
+    end
+---
+
+#AmandaLegareFightDraw
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/fight_draw', 'СТРАЖА ОСТАНАВЛИВАЕТ ДРАКУ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВМЕШАТЕЛЬСТВО СТРАЖИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareFightDrawText'
+
+    *pl ' '
+    *pl 'Ваши деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    if money >= 15:
+        gs 'ActUiPrepare', 'Заплатить 15 мараведи штрафа', 'money'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegarePayFine'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Отказаться платить (в кутузку)', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareRefuseFine'
+    end
+---
+
+#AmandaLegarePayFine
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/fight_draw', 'ОПЛАТА ШТРАФА', 'large', 'webp'
+    money -= 15
+    AmandaTiedFightDone = 1
+    AmandaRebellion += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ШТРАФ ОПЛАЧЕН'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegarePayFineText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к трактиру', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---
+
+#AmandaLegareRefuseFine
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/police', 'ПОД КОНВОЕМ', 'large', 'webp'
+    Fact_AmandaLegareFridayAlley = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АРЕСТ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareRefuseFineText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Провести ночь в кутузке...', 'sleep'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareJailMorning'
+    end
+---
+
+#AmandaLegareStreetPolice
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/police', 'ГОРОДСКАЯ СТРАЖА', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВЫЗОВ СТРАЖИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if sluttiness['amanda'] < 25:
+        AmandaObeyedAfterDance = 1
+        AmandaTrustStefan += 1
+        gs 'AmandaLegareStreetPoliceModestText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться к трактиру', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Street'
+        end
+    else:
+        gs 'AmandaLegareStreetPoliceBoldText'
+
+        *pl ' '
+        *pl 'Ваши деньги: ' + STR(money) + ' мараведи.'
+        *pl ' '
+
+        if money >= 35:
+            gs 'ActUiPrepare', 'Дать страже 35 мараведи', 'money'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaLegarePoliceBribe'
+            end
+        end
+
+        gs 'ActUiPrepare', 'Отказаться платить', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaLegarePoliceNoBribe'
+        end
+    end
+---
+
+#AmandaLegarePoliceBribe
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/police', 'СТРАЖА ВЫРУЧАЕТ', 'large', 'webp'
+    money -= 35
+    AmandaLockedHomeAfterDance = 1
+    Friends['legare'] = MAX(0, Friends['legare'] - 2)
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СТРАЖА ВМЕШИВАЕТСЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegarePoliceBribeText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в трактир', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#AmandaLegarePoliceNoBribe
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_intercept', 'ЛЕГАРЕ УВОДИТ АМАНДУ', 'large', 'webp'
+    Fact_AmandaLegareFridayAlley = 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛЕГАРЕ УХОДИТ С АМАНДОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegarePoliceNoBribeText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Проводить их мрачным взглядом', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---
+
+#AmandaLegareKnockoutMorning
+    gs 'AdvanceCalendarOneDay'
+
+    SandraScore = Friends['sandra'] + SandraTrust + (SandraHomeSex * 10)
+    MelissaScore = Friends['melissa'] + MelissaTrustStefan + (MelissaHomeSex * 10)
+
+    if SandraScore >= MelissaScore:
+        gt 'AmandaLegareWakeupSandra'
+    else:
+        gt 'AmandaLegareWakeupMelissa'
+    end
+
+    killvar 'SandraScore'
+    killvar 'MelissaScore'
+---
+
+#AmandaLegareWakeupSandra
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/wakeup_sandra', 'ПРОБУЖДЕНИЕ В КОМНАТЕ САНДРЫ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА САНДРЫ — УТРО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    SandraNeedsOral = 0
+    if SandraHomeSex = 1 and (LastSexDay['sandra'] = 0 or (day - LastSexDay['sandra']) > 3):
+        SandraNeedsOral = 1
+    end
+
+    if SandraNeedsOral = 1:
+        LastSexDay['sandra'] = day
+        daily_cum_count += 1
+        cametoday = 1
+        Friends['sandra'] += 1
+        SandraTrust += 1
+
+        gs 'AmandaLegareWakeupSandraOralText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Подняться и пойти в зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    else:
+        Friends['sandra'] += 1
+
+        gs 'AmandaLegareWakeupSandraCareText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Поблагодарить и пойти в зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    end
+
+    killvar 'SandraNeedsOral'
+---
+
+#AmandaLegareWakeupMelissa
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/wakeup_melissa', 'ПРОБУЖДЕНИЕ В КОМНАТЕ МЕЛИССЫ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — УТРО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    MelissaNeedsSex = 0
+    if MelissaHomeSex = 1 and (LastSexDay['melissa'] = 0 or (day - LastSexDay['melissa']) > 3):
+        MelissaNeedsSex = 1
+    end
+
+    if MelissaNeedsSex = 1:
+        LastSexDay['melissa'] = day
+        daily_cum_count += 1
+        cametoday = 1
+        Friends['melissa'] += 1
+        MelissaTrustStefan += 1
+        vaginalacts['melissa'] += 1
+
+        gs 'AmandaLegareWakeupMelissaRidingText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Подняться и пойти в зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    else:
+        Friends['melissa'] += 1
+
+        gs 'AmandaLegareWakeupMelissaCareText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Подняться и пойти в зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernMain'
+        end
+    end
+
+    killvar 'MelissaNeedsSex'
+---
+
+#AmandaLegareJailMorning
+    gs 'AdvanceCalendarOneDay'
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/jail_morning', 'СТОРОЖКА ГОРОДСКОЙ СТРАЖИ', 'large', 'webp'
+    tavern_reputation = MAX(0, tavern_reputation - 2)
+    TavernScandal += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' УТРО У СТОРОЖКИ СТРАЖИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaLegareJailMorningText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Понуро вернуться в трактир', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#AmandaLegareAfterDanceMorningTryShow
+    if time <> 1:
+        exit
+    end
+
+    if AmandaLockedHomeAfterDance = 1:
+        AmandaLockedHomeAfterDance = 0
+        *pl ' '
+        gs 'AmandaLegareMorningLockedReactionText'
+        *pl ' '
+    elseif AmandaObeyedAfterDance = 1:
+        AmandaObeyedAfterDance = 0
+        *pl ' '
+        gs 'AmandaLegareMorningObeyedReactionText'
+        *pl ' '
+    elseif AmandaTiedFightDone = 1:
+        AmandaTiedFightDone = 0
+        *pl ' '
+        gs 'AmandaLegareMorningTiedReactionText'
+        *pl ' '
+    end
+---

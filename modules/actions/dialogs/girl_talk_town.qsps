@@ -19,6 +19,8 @@
         exit
     end
 
+    gs 'GirlTalkRootAppendPersonalMenu'
+
     if IrmaTalkSmalltalkDone = 1:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и заказах', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
@@ -41,23 +43,6 @@
     if LOC('GirlTalkAppendGiftMenuItems') = 1:
         gs 'GirlTalkAppendGiftMenuItems'
     end
-
-    if LOC('IrmaUniformOfferCanStart') = 1:
-        gs 'IrmaUniformOfferCanStart'
-
-        if IrmaUniformOfferCanStart = 1 and IrmaUniformOfferDeclined = 0:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Предложение Ирмы', 'talk'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'IrmaUniformOfferStart', $TalkReturnLoc
-            }
-        elseif IrmaUniformOfferDeclined = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разговор о форме', 'talk'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'IrmaUniformOfferStart', $TalkReturnLoc
-            }
-        end
-    end
-
 ---
 
 #GirlTalkBuildGretaStubMenu
@@ -86,6 +71,8 @@
 
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    gs 'GirlTalkRootAppendPersonalMenu'
 
     if TownTalkSmalltalkDone[$TownTalkGirl] = 1 or Friends[$TownTalkGirl] >= 3 or love[$TownTalkGirl] >= 2:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О городе', ''
@@ -120,8 +107,15 @@
     gs 'GirlTalkIrmaShopPrintText', 'context'
 
     IrmaTalkShopDone = 1
-    Friends['irma'] += 1
-    trading += 1
+    $IrmaShopDayKey = 'irma_' + STR(day)
+    if IrmaShopTalkDayDone[$IrmaShopDayKey] = 0:
+        IrmaShopTalkDayDone[$IrmaShopDayKey] = 1
+        trading += 1
+        if Friends['irma'] < 12:
+            Friends['irma'] += 1
+        end
+    end
+    killvar '$IrmaShopDayKey'
 ---
 
 #GirlTalkAfterSmalltalk
@@ -148,8 +142,15 @@
     gs 'GirlTalkTownLifePrintText', $TownTalkGirl, 'intro'
     gs 'GirlTalkTownLifePrintText', $TownTalkGirl, 'context'
 
-    TownTalkLifeDone[$TownTalkGirl] = 1
-    Friends[$TownTalkGirl] += 1
+    $TownLifeDayKey = $TownTalkGirl + '_' + STR(day)
+    if TownTalkLifeDayDone[$TownLifeDayKey] = 0:
+        TownTalkLifeDayDone[$TownLifeDayKey] = 1
+        TownTalkLifeDone[$TownTalkGirl] = 1
+        if Friends[$TownTalkGirl] < 12:
+            Friends[$TownTalkGirl] += 1
+        end
+    end
+    killvar '$TownLifeDayKey'
 
     killvar '$TownTalkGirl'
 ---
