@@ -987,7 +987,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaBoyGiantEvent` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 16 |
 | `AmandaBoyGiantEventText` | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | 13 |
 | `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 243 |
-| `AmandaBrothersNightTalkMelissaText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 269 |
+| `AmandaBrothersNightTalkMelissaText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 285 |
 | `AmandaDance` | `modules/events/amanda/dance/amanda_dance.qsps` | 13 |
 | `AmandaDanceAction` | `modules/events/amanda/dance/amanda_dance.qsps` | 213 |
 | `AmandaDanceActionText` | `modules/events/amanda/dance/amanda_dance_text.qsps` | 27 |
@@ -1320,9 +1320,9 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaLizaRoomDoor` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 84 |
 | `AmandaLizaRoomDoorCanShow` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 43 |
 | `AmandaLizaRoomDoorPeek` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 108 |
-| `AmandaLizaTalkApplyInfluence` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 499 |
-| `AmandaLizaTalkApplyPhraseEffects` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 543 |
-| `AmandaLizaTalkBuildPool` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 416 |
+| `AmandaLizaTalkApplyInfluence` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 599 |
+| `AmandaLizaTalkApplyPhraseEffects` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 643 |
+| `AmandaLizaTalkBuildPool` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 506 |
 | `AmandaLizaTalkCanTrigger` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 209 |
 | `AmandaLizaTalkGetPartKey` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 7 |
 | `AmandaLizaTalkGotoReturn` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 15 |
@@ -1332,8 +1332,8 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaLizaTalkPhraseEligible` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 31 |
 | `AmandaLizaTalkPhraseFactWitness` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 18 |
 | `AmandaLizaTalkPhraseOneShotOpen` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 7 |
-| `AmandaLizaTalkPickPhrase` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 465 |
-| `AmandaLizaTalkPoolTry` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 386 |
+| `AmandaLizaTalkPickPhrase` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 565 |
+| `AmandaLizaTalkPoolTry` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 476 |
 | `AmandaLizaTalkPrepareHallVisit` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 156 |
 | `AmandaLizaTalkResetWeeklyCounters` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 32 |
 | `AmandaLizaTalkShowHallImage` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 11 |

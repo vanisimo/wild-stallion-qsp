@@ -477,16 +477,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 89 |
 | `FormatSpintry` | 87 |
 | `RegisterSex` | 77 |
-| `PrintMainP` | 76 |
 | `UpdateGirlLocations` | 76 |
+| `PrintMainP` | 76 |
 | `MarketDance` | 58 |
+| `AmandaLizaTalkPoolTry` | 53 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 48 |
 | `Menu.Add` | 47 |
 | `SexSceneMain` | 46 |
 | `SaveLastHallEvent` | 45 |
 | `Menu.AddCondition` | 43 |
-| `AmandaLizaTalkPoolTry` | 43 |
-| `KnowledgeRegisterFact` | 41 |
 
 ## Dynamic Call Sites
 
