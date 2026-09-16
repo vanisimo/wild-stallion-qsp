@@ -37,12 +37,14 @@
         else:
             $GiantTargetStep = 'stage1_repeat'
         end
-    else:
+    elseif AmandaBoyGiantStage = 2:
         if sluttiness['amanda'] >= 55 and sexacts['amanda'] >= 15:
             $GiantTargetStep = 'stage3_ready'
         else:
             $GiantTargetStep = 'stage2_repeat'
         end
+    else:
+        $GiantTargetStep = 'stage3_repeat'
     end
 
     *pl '══════════════════════════════════════════════'
@@ -95,12 +97,17 @@
     clr
     cla
 
-    if $GiantTargetStep = 'early_fear':
-        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_giant_fear_closeup', 'Аманда опешила при виде Питера-кузнеца', 'large', 'webp'
+    $GiantChoice = LCASE($ARGS[0])
+
+    if $GiantChoice = 'watch':
+        if $GiantTargetStep = 'early_fear' and oralacts['amanda'] < 5:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_giant_fear_closeup', 'Аманда опешила при виде Питера-кузнеца', 'large', 'webp'
+        else:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'Питер-кузнец и Аманда за сараем', 'large', 'webp'
+        end
     else:
         gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Исход встречи с кузнецом', 'large', 'webp'
     end
-    $GiantChoice = LCASE($ARGS[0])
 
     if $GiantChoice = 'send_away':
         AmandaTrustStefan += 1
@@ -123,6 +130,9 @@
 
         if LOC('KnowledgeRegisterFact') = 1:
             gs 'KnowledgeRegisterFact', 'amanda_neighbors_peek'
+            if $GiantTargetStep = 'stage2_ready' or $GiantTargetStep = 'stage2_repeat' or $GiantTargetStep = 'stage3_ready' or $GiantTargetStep = 'stage3_repeat':
+                gs 'KnowledgeRegisterFact', 'amanda_boy_giant'
+            end
         end
         if LOC('KnowledgeRegisterPlayerKnows') = 1:
             gs 'KnowledgeRegisterPlayerKnows', 'amanda_neighbors_peek', 'witness'
@@ -136,15 +146,15 @@
                 AmandaBoyGiantOralDone = 1
             end
         elseif $GiantTargetStep = 'stage1_ready' or $GiantTargetStep = 'stage1_repeat':
-            AmandaBoyGiantStage = 1
+            AmandaBoyGiantStage = MAX(AmandaBoyGiantStage, 1)
             sluttiness['amanda'] += 2
             sexacts['amanda'] += 1
         elseif $GiantTargetStep = 'stage2_ready' or $GiantTargetStep = 'stage2_repeat':
-            AmandaBoyGiantStage = 2
+            AmandaBoyGiantStage = MAX(AmandaBoyGiantStage, 2)
             sluttiness['amanda'] += 2
             vaginalacts['amanda'] += 1
             sexacts['amanda'] += 1
-        elseif $GiantTargetStep = 'stage3_ready':
+        elseif $GiantTargetStep = 'stage3_ready' or $GiantTargetStep = 'stage3_repeat':
             AmandaBoyGiantStage = 3
             sluttiness['amanda'] += 3
             vaginalacts['amanda'] += 1
@@ -162,14 +172,60 @@
     gs 'ClampGirlSocialStats', 'amanda'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ ВСТРЕЧИ'
+    if $GiantChoice = 'watch' and not ($GiantTargetStep = 'early_fear' and oralacts['amanda'] < 5):
+        *pl ' КУЗНЕЦ-ВЕЛИКАН И АМАНДА: САМ АКТ'
+    else:
+        *pl ' ПОСЛЕ ВСТРЕЧИ'
+    end
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     if LOC('AmandaBoyGiantActionText') = 1:
-        gs 'AmandaBoyGiantActionText', $GiantChoice, $GiantTargetStep
+        gs 'AmandaBoyGiantActionText', $GiantChoice, $GiantTargetStep, 1
     else:
         *pl 'Питер исчезает в переулке, а Аманда возвращается в трактир.'
+    end
+
+    *pl ' '
+
+    if $GiantChoice = 'watch' and not ($GiantTargetStep = 'early_fear' and oralacts['amanda'] < 5):
+        gs 'ActUiPrepare', 'Дальше', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaBoyGiantActionScreen2'
+        end
+    else:
+        if AmandaPathChoiceDone = 0:
+            AmandaPathChoiceReady = 1
+            if LOC('AmandaPathChoiceTryAutoStart') = 1:
+                gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
+            end
+        end
+
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar '$GiantChoice'
+            killvar '$GiantTargetStep'
+            gt 'TavernMain'
+        end
+    end
+---
+
+#AmandaBoyGiantActionScreen2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Кульминация и исход встречи с кузнецом', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОСЛЕ ВСТРЕЧИ: КУЛЬМИНАЦИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaBoyGiantActionText') = 1:
+        gs 'AmandaBoyGiantActionText', 'watch', $GiantTargetStep, 2
+    else:
+        *pl 'Питер заправляет портки и исчезает в проулке, оставив запыхавшуюся Аманду в сарае.'
     end
 
     *pl ' '
@@ -183,9 +239,8 @@
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
+        killvar '$GiantChoice'
+        killvar '$GiantTargetStep'
         gt 'TavernMain'
     end
-
-    killvar '$GiantChoice'
-    killvar '$GiantTargetStep'
 ---

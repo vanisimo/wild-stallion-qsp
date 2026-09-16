@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 445
-- Locations: 3205
-- Locations with direct incoming calls: 2771
+- Locations: 3206
+- Locations with direct incoming calls: 2772
 - Locations without direct incoming calls: 434
 - Review candidates without direct incoming calls: 157
 - Classified entry/helper locations without direct incoming calls: 277
@@ -462,19 +462,19 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1183 |
+| `ActUiPrepare` | 1185 |
 | `Menu.AddModule` | 557 |
 | `MenuUiAdd` | 519 |
-| `SceneShowVisual` | 363 |
+| `SceneShowVisual` | 365 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 198 |
-| `ClampGirlSocialStats` | 152 |
-| `TavernMain` | 141 |
+| `ClampGirlSocialStats` | 153 |
+| `TavernMain` | 142 |
 | `ShowImage` | 102 |
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 95 |
-| `PrintTitleLine` | 89 |
 | `Menu.Destroy` | 89 |
+| `PrintTitleLine` | 89 |
 | `FormatSpintry` | 87 |
 | `RegisterSex` | 77 |
 | `UpdateGirlLocations` | 76 |

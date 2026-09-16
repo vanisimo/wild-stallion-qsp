@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 445
-- Locations: 3205
+- Locations: 3206
 
 ## modules/actions
 
@@ -980,9 +980,10 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaBoyBrothersEventText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 13 |
 | `AmandaBoyBrothersWatchStage1` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 304 |
 | `AmandaBoyBrothersWatchStage1Screen2` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 328 |
-| `AmandaBoyGiantAction` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 93 |
-| `AmandaBoyGiantActionText` | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | 39 |
-| `AmandaBoyGiantBuildMenu` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 66 |
+| `AmandaBoyGiantAction` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 95 |
+| `AmandaBoyGiantActionScreen2` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 213 |
+| `AmandaBoyGiantActionText` | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | 59 |
+| `AmandaBoyGiantBuildMenu` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 68 |
 | `AmandaBoyGiantCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 12 |
 | `AmandaBoyGiantEvent` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 16 |
 | `AmandaBoyGiantEventText` | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | 13 |
@@ -1507,13 +1508,13 @@ Generated from active project files in `qsp-project.json`.
 | `ChurchConfessionHintText` | `modules/events/church/church_confession_dynamic.qsps` | 25 |
 | `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 180 |
 | `ChurchConfessionStart` | `modules/events/church/church_confession_dynamic.qsps` | 58 |
-| `ChurchGerhardAmandaConfront` | `modules/events/church/church_spy_amanda.qsps` | 727 |
+| `ChurchGerhardAmandaConfront` | `modules/events/church/church_spy_amanda.qsps` | 761 |
 | `ChurchPureHeartsConfession` | `modules/events/church/church_confession_dynamic.qsps` | 68 |
 | `ChurchRenderStreetExit` | `modules/events/church/church_core.qsps` | 11 |
 | `ChurchServiceRumorCanStart` | `modules/events/church/church_sunday_rumors.qsps` | 7 |
-| `ChurchSpyAmandaBlockedSafe` | `modules/events/church/church_spy_amanda.qsps` | 699 |
+| `ChurchSpyAmandaBlockedSafe` | `modules/events/church/church_spy_amanda.qsps` | 733 |
 | `ChurchSpyAmandaCheckAvailable` | `modules/events/church/church_spy_amanda.qsps` | 9 |
-| `ChurchSpyAmandaRepeatLoop` | `modules/events/church/church_spy_amanda.qsps` | 605 |
+| `ChurchSpyAmandaRepeatLoop` | `modules/events/church/church_spy_amanda.qsps` | 622 |
 | `ChurchSpyAmandaStage1` | `modules/events/church/church_spy_amanda.qsps` | 65 |
 | `ChurchSpyAmandaStage1Screen2` | `modules/events/church/church_spy_amanda.qsps` | 149 |
 | `ChurchSpyAmandaStage2` | `modules/events/church/church_spy_amanda.qsps` | 198 |
@@ -1522,12 +1523,12 @@ Generated from active project files in `qsp-project.json`.
 | `ChurchSpyAmandaStage3Screen2` | `modules/events/church/church_spy_amanda.qsps` | 314 |
 | `ChurchSpyAmandaStage4` | `modules/events/church/church_spy_amanda.qsps` | 348 |
 | `ChurchSpyAmandaStage4Screen2` | `modules/events/church/church_spy_amanda.qsps` | 378 |
-| `ChurchSpyAmandaStage5` | `modules/events/church/church_spy_amanda.qsps` | 412 |
-| `ChurchSpyAmandaStage5Screen2` | `modules/events/church/church_spy_amanda.qsps` | 442 |
-| `ChurchSpyAmandaStage6` | `modules/events/church/church_spy_amanda.qsps` | 476 |
-| `ChurchSpyAmandaStage6Screen2` | `modules/events/church/church_spy_amanda.qsps` | 506 |
-| `ChurchSpyAmandaStage7` | `modules/events/church/church_spy_amanda.qsps` | 541 |
-| `ChurchSpyAmandaStage7Screen2` | `modules/events/church/church_spy_amanda.qsps` | 571 |
+| `ChurchSpyAmandaStage5` | `modules/events/church/church_spy_amanda.qsps` | 416 |
+| `ChurchSpyAmandaStage5Screen2` | `modules/events/church/church_spy_amanda.qsps` | 446 |
+| `ChurchSpyAmandaStage6` | `modules/events/church/church_spy_amanda.qsps` | 485 |
+| `ChurchSpyAmandaStage6Screen2` | `modules/events/church/church_spy_amanda.qsps` | 515 |
+| `ChurchSpyAmandaStage7` | `modules/events/church/church_spy_amanda.qsps` | 554 |
+| `ChurchSpyAmandaStage7Screen2` | `modules/events/church/church_spy_amanda.qsps` | 584 |
 | `ChurchSpyAmandaStart` | `modules/events/church/church_spy_amanda.qsps` | 39 |
 | `ChurchSpyAmandaText` | `modules/events/church/church_spy_amanda_text.qsps` | 8 |
 | `ChurchSpyBeckyCheckAvailable` | `modules/events/church/church_spy_becky.qsps` | 7 |
