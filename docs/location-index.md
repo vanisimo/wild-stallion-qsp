@@ -987,7 +987,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaBoyGiantEvent` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 16 |
 | `AmandaBoyGiantEventText` | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | 13 |
 | `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 243 |
-| `AmandaBrothersNightTalkMelissaText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 285 |
+| `AmandaBrothersNightTalkMelissaText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 256 |
 | `AmandaDance` | `modules/events/amanda/dance/amanda_dance.qsps` | 13 |
 | `AmandaDanceAction` | `modules/events/amanda/dance/amanda_dance.qsps` | 213 |
 | `AmandaDanceActionText` | `modules/events/amanda/dance/amanda_dance_text.qsps` | 27 |
@@ -1382,7 +1382,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaPathChoiceIntroText` | `modules/events/amanda/home/amanda_path_choice_text.qsps` | 8 |
 | `AmandaPathChoiceStart` | `modules/events/amanda/home/amanda_path_choice.qsps` | 80 |
 | `AmandaPathChoiceTryAutoStart` | `modules/events/amanda/home/amanda_path_choice.qsps` | 49 |
-| `AmandaPortShipHintText` | `modules/events/amanda/lizette/amanda_port_ship_hint_text.qsps` | 7 |
+| `AmandaPortShipHintText` | `modules/events/amanda/lizette/amanda_port_ship_hint_text.qsps` | 8 |
 | `AmandaPortShipIsAbsent` | `modules/events/amanda/lizette/amanda_port_ship_hint.qsps` | 7 |
 | `AmandaTalkAboutLegare` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 19 |
 | `AmandaTalkAboutLegareAction` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 111 |
