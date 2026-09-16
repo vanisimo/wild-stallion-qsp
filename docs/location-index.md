@@ -1326,7 +1326,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaLizaTalkCanTrigger` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 209 |
 | `AmandaLizaTalkGetPartKey` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 7 |
 | `AmandaLizaTalkGotoReturn` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 15 |
-| `AmandaLizaTalkListenScene` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 452 |
+| `AmandaLizaTalkListenScene` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 453 |
 | `AmandaLizaTalkOralSlutTier` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 37 |
 | `AmandaLizaTalkOverhearStart` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 344 |
 | `AmandaLizaTalkPhraseEligible` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 31 |
