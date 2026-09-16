@@ -81,6 +81,11 @@
 
     gs 'SceneShowVisual', 'images/events/amanda/legare/street_intercept', 'ПАРОЧКА УХОДИТ', 'large', 'webp'
     Fact_AmandaLegareFridayAlley = 1
+    AmandaLetGoAfterDance = 1
+    FridayStreetClashHappened = 1
+    FridayClashDay = day
+    $FridayClashType = 'letgo'
+    TavernScandal += 1
 
     *pl '══════════════════════════════════════════════'
     *pl ' ПАРОЧКА УХОДИТ'
@@ -133,6 +138,11 @@
     gs 'SceneShowVisual', 'images/events/amanda/legare/fight_win', 'ПОБЕДА В ДРАКЕ', 'large', 'webp'
 
     AmandaLockedHomeAfterDance = 1
+    FridayStreetClashHappened = 1
+    FridayClashDay = day
+    $FridayClashType = 'win'
+    tavern_reputation += 1
+    TavernScandal += 1
     AmandaRebellion += 2
     Friends['amanda'] = MAX(0, Friends['amanda'] - 1)
     Friends['legare'] = MAX(0, Friends['legare'] - 4)
@@ -160,6 +170,18 @@
 
     gs 'SceneShowVisual', 'images/events/amanda/legare/fight_lost', 'НОКАУТ НА МОСТОВОЙ', 'large', 'webp'
     Fact_AmandaLegareFridayAlley = 1
+    AmandaLegareFirstSexDone = 1
+    AmandaLegareNightWithAlber = 1
+    AmandaKnockedOutAfterDance = 1
+    FridayStreetClashHappened = 1
+    FridayClashDay = day
+    $FridayClashType = 'defeat'
+    tavern_reputation = MAX(0, tavern_reputation - 1)
+    TavernScandal += 1
+    AmandaLegareInterest = MIN(15, AmandaLegareInterest + 2)
+    sluttiness['amanda'] += 2
+    AmandaNpcPath = MAX(AmandaNpcPath, 2)
+    gs 'ClampGirlSocialStats', 'amanda'
 
     *pl '══════════════════════════════════════════════'
     *pl ' ПОРАЖЕНИЕ'
@@ -215,6 +237,10 @@
     gs 'SceneShowVisual', 'images/events/amanda/legare/fight_draw', 'ОПЛАТА ШТРАФА', 'large', 'webp'
     money -= 15
     AmandaTiedFightDone = 1
+    FridayStreetClashHappened = 1
+    FridayClashDay = day
+    $FridayClashType = 'tied'
+    TavernScandal += 1
     AmandaRebellion += 1
 
     *pl '══════════════════════════════════════════════'
@@ -239,6 +265,10 @@
 
     gs 'SceneShowVisual', 'images/events/amanda/legare/police', 'ПОД КОНВОЕМ', 'large', 'webp'
     Fact_AmandaLegareFridayAlley = 1
+    AmandaJailedAfterDance = 1
+    FridayStreetClashHappened = 1
+    FridayClashDay = day
+    $FridayClashType = 'jail'
 
     *pl '══════════════════════════════════════════════'
     *pl ' АРЕСТ'
@@ -307,6 +337,9 @@
     gs 'SceneShowVisual', 'images/events/amanda/legare/police', 'СТРАЖА ВЫРУЧАЕТ', 'large', 'webp'
     money -= 35
     AmandaLockedHomeAfterDance = 1
+    FridayStreetClashHappened = 1
+    FridayClashDay = day
+    $FridayClashType = 'police'
     Friends['legare'] = MAX(0, Friends['legare'] - 2)
 
     *pl '══════════════════════════════════════════════'
@@ -331,6 +364,11 @@
 
     gs 'SceneShowVisual', 'images/events/amanda/legare/street_intercept', 'ЛЕГАРЕ УВОДИТ АМАНДУ', 'large', 'webp'
     Fact_AmandaLegareFridayAlley = 1
+    AmandaLetGoAfterDance = 1
+    FridayStreetClashHappened = 1
+    FridayClashDay = day
+    $FridayClashType = 'police_letgo'
+    TavernScandal += 1
 
     *pl '══════════════════════════════════════════════'
     *pl ' ЛЕГАРЕ УХОДИТ С АМАНДОЙ'
@@ -350,17 +388,31 @@
 #AmandaLegareKnockoutMorning
     gs 'AdvanceCalendarOneDay'
 
-    SandraScore = Friends['sandra'] + SandraTrust + (SandraHomeSex * 10)
-    MelissaScore = Friends['melissa'] + MelissaTrustStefan + (MelissaHomeSex * 10)
+    *clr
+    clr
+    cla
 
-    if SandraScore >= MelissaScore:
+    gs 'SceneShowVisual', 'images/locations/tavern/tavern_room_morning', 'ПРОБУЖДЕНИЕ В ТРАКТИРЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СУББОТА, УТРО — ПРОБУЖДЕНИЕ В ТРАКТИРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Вы с трудом приходите в себя. В висках яростно стучит кровь, затылок ноет от тупой боли — ночное падение на мостовой дало о себе знать.'
+    *pl 'В памяти всплывают обрывки вчерашней драки: ухмылка Легаре, подлая подножка... и удаляющийся стук девичьих каблучков. Аманда не стала дожидаться, пока вы подниметесь, и ушла вслед за купцом в темноту переулка.'
+    *pl ' '
+    *pl 'Вас, потерявшего сознание, кто-то подобрал на улице и приволок домой в трактир. Сквозь полудрёму вы чувствуете тепло мягкой постели и слышите знакомые шаги в комнате...'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Открыть глаза в комнате матери (Сандра)', 'bed'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'AmandaLegareWakeupSandra'
-    else:
-        gt 'AmandaLegareWakeupMelissa'
     end
 
-    killvar 'SandraScore'
-    killvar 'MelissaScore'
+    gs 'ActUiPrepare', 'Открыть глаза в комнате сестры (Мелисса)', 'bed'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaLegareWakeupMelissa'
+    end
 ---
 
 #AmandaLegareWakeupSandra
@@ -493,18 +545,447 @@
 
     if AmandaLockedHomeAfterDance = 1:
         AmandaLockedHomeAfterDance = 0
+        AmandaSaturdayTalkReady = 1
         *pl ' '
         gs 'AmandaLegareMorningLockedReactionText'
         *pl ' '
     elseif AmandaObeyedAfterDance = 1:
         AmandaObeyedAfterDance = 0
+        AmandaSaturdayTalkReady = 1
         *pl ' '
         gs 'AmandaLegareMorningObeyedReactionText'
         *pl ' '
     elseif AmandaTiedFightDone = 1:
         AmandaTiedFightDone = 0
+        AmandaSaturdayTalkReady = 1
         *pl ' '
         gs 'AmandaLegareMorningTiedReactionText'
         *pl ' '
+    elseif AmandaKnockedOutAfterDance = 1:
+        AmandaKnockedOutAfterDance = 0
+        AmandaSaturdayTalkReady = 1
+        *pl ' '
+        gs 'AmandaLegareMorningKnockoutReactionText'
+        *pl ' '
+    elseif AmandaJailedAfterDance = 1:
+        AmandaJailedAfterDance = 0
+        AmandaSaturdayTalkReady = 1
+        *pl ' '
+        gs 'AmandaLegareMorningJailReactionText'
+        *pl ' '
+    elseif AmandaLetGoAfterDance = 1:
+        AmandaLetGoAfterDance = 0
+        AmandaSaturdayTalkReady = 1
+        *pl ' '
+        gs 'AmandaLegareMorningLetGoReactionText'
+        *pl ' '
     end
+---
+
+#FridayStreetClashPrintHallRumor
+    if FridayStreetClashHappened = 0:
+        exit
+    end
+
+    if week <> 6:
+        exit
+    end
+
+    if $FridayClashType = 'defeat':
+        gs 'PrintMainP', 'За дальним столом пара подвыпивших завсегдатаев негромко пересмеиваются, пересказывая утренним гостям, как хозяин «Дикого Жеребца» вчера ночью полез в драку со старым виноторговцем и поцеловал мостовую.'
+    elseif $FridayClashType = 'jail':
+        gs 'PrintMainP', 'По залу ходят негромкие шепотки: посетители бросают на вас любопытные взгляды, уже зная, что Стефан только на рассвете вышел из караулки стражи после ночного ареста.'
+    elseif $FridayClashType = 'win':
+        gs 'PrintMainP', 'У стойки слышны уважительные смешки горожан: до базара долетел слух, что трактирщик вчера от души впечатал кулак в челюсть месье Легаре, когда тот увивался вокруг его сестры.'
+    elseif $FridayClashType = 'tied':
+        gs 'PrintMainP', 'Гости за кружками эля оживлённо обсуждают ночной переполох у площади: по слухам, стражники содрали со Стефана и Легаре кругленькую сумму за ночную возню на мостовой.'
+    elseif $FridayClashType = 'police':
+        gs 'PrintMainP', 'Посетители переговариваются о ночном инциденте: говорят, на площади ночью стоял такой крик, что патрулю стражи пришлось растаскивать купца и трактирщика силой.'
+    elseif $FridayClashType = 'letgo' or $FridayClashType = 'police_letgo':
+        gs 'PrintMainP', 'Несколько зевак у очага вполголоса судачат о том, как старый лис Легаре вчера после танцев средь ночи увёл хорошенькую Аманду, а хозяин и слова поперёк не сказал.'
+    end
+---
+
+#AmandaTalkAboutLegareStreetClash
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_clash_amanda', 'РАЗГОВОР С АМАНДОЙ О НОЧНЫХ СОБЫТИЯХ', 'large', 'webp'
+    $LegareTalkReturnLoc = $ARGS[0]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С АМАНДОЙ: ПОСЛЕДСТВИЯ НОЧИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaTalkAboutLegareStreetClashIntroText') = 1:
+        gs 'AmandaTalkAboutLegareStreetClashIntroText'
+    else:
+        *pl 'Вы подходите к сестре, чтобы прояснить вчерашние события с Легаре.'
+    end
+
+    *pl ' '
+
+    gs 'AmandaTalkAboutLegareStreetClashBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''AmandaStreetClashTalkMenu''">Аманде</a>?'
+---
+
+#AmandaTalkAboutLegareStreetClashBuildMenu
+    gs 'Menu.Destroy', 'AmandaStreetClashTalkMenu'
+    gs 'Menu.Create', 'AmandaStreetClashTalkMenu'
+
+    gs 'MenuUiAdd', 'AmandaStreetClashTalkMenu', 'Он видит в тебе лёгкую добычу', ''
+    gs 'Menu.AddModule', 'AmandaStreetClashTalkMenu', {
+        gt 'AmandaTalkAboutLegareStreetClashAction', 'warn', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'AmandaStreetClashTalkMenu', 'Ты опозорила семью перед городом', ''
+    gs 'Menu.AddModule', 'AmandaStreetClashTalkMenu', {
+        gt 'AmandaTalkAboutLegareStreetClashAction', 'shame', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'AmandaStreetClashTalkMenu', 'Я беспокоился за тебя', ''
+    gs 'Menu.AddModule', 'AmandaStreetClashTalkMenu', {
+        gt 'AmandaTalkAboutLegareStreetClashAction', 'care', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'AmandaStreetClashTalkMenu', 'Никаких ночных прогулок. За работу!', ''
+    gs 'Menu.AddModule', 'AmandaStreetClashTalkMenu', {
+        gt 'AmandaTalkAboutLegareStreetClashAction', 'work', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'AmandaStreetClashTalkMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'AmandaStreetClashTalkMenu', {
+        gt $LegareTalkReturnLoc
+    }
+---
+
+#AmandaTalkAboutLegareStreetClashAction
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_clash_amanda_action', 'РАЗГОВОР С АМАНДОЙ', 'large', 'webp'
+    $AmandaClashChoice = LCASE($ARGS[0])
+    $LegareTalkReturnLoc = $ARGS[1]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+
+    AmandaSaturdayTalkReady = 0
+    AmandaSaturdayTalkDone = 1
+
+    if $AmandaClashChoice = 'warn':
+        AmandaLegareInterest = MAX(0, AmandaLegareInterest - 1)
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+    elseif $AmandaClashChoice = 'shame':
+        AmandaRebellion += 1
+        Friends['amanda'] = MAX(0, Friends['amanda'] - 1)
+    elseif $AmandaClashChoice = 'care':
+        AmandaTrustStefan += 2
+        Friends['amanda'] += 1
+        AmandaSecretiveness = MAX(0, AmandaSecretiveness - 1)
+    elseif $AmandaClashChoice = 'work':
+        AmandaWorkDiscipline += 2
+        AmandaRebellion += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С АМАНДОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaTalkAboutLegareStreetClashActionText') = 1:
+        gs 'AmandaTalkAboutLegareStreetClashActionText', $AmandaClashChoice
+    else:
+        *pl 'Аманда выслушивает вас и задумчиво опускает глаза.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $LegareTalkReturnLoc
+    end
+
+    killvar '$AmandaClashChoice'
+---
+
+#SandraTalkAboutLegareStreetClash
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_clash_sandra', 'САНДРА О НОЧНОЙ СТЫЧКЕ', 'large', 'webp'
+    $LegareTalkReturnLoc = $ARGS[0]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'sandra'
+    gs 'ShowGirlSidebar', 'sandra'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' САНДРА: ПЕРЕПОЛОХ ИЗ-ЗА ЛЕГАРЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('SandraTalkAboutLegareStreetClashIntroText') = 1:
+        gs 'SandraTalkAboutLegareStreetClashIntroText'
+    else:
+        *pl 'Сандра подходит к вам с взволнованным лицом.'
+    end
+
+    *pl ' '
+
+    gs 'SandraTalkAboutLegareStreetClashBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''SandraStreetClashTalkMenu''">Сандре</a>?'
+---
+
+#SandraTalkAboutLegareStreetClashBuildMenu
+    gs 'Menu.Destroy', 'SandraStreetClashTalkMenu'
+    gs 'Menu.Create', 'SandraStreetClashTalkMenu'
+
+    gs 'MenuUiAdd', 'SandraStreetClashTalkMenu', 'Я защищал честь семьи', ''
+    gs 'Menu.AddModule', 'SandraStreetClashTalkMenu', {
+        gt 'SandraTalkAboutLegareStreetClashAction', 'honor', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'SandraStreetClashTalkMenu', 'Легаре ещё поплатится за это', ''
+    gs 'Menu.AddModule', 'SandraStreetClashTalkMenu', {
+        gt 'SandraTalkAboutLegareStreetClashAction', 'revenge', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'SandraStreetClashTalkMenu', 'Надо строже следить за Амандой', ''
+    gs 'Menu.AddModule', 'SandraStreetClashTalkMenu', {
+        gt 'SandraTalkAboutLegareStreetClashAction', 'strict', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'SandraStreetClashTalkMenu', 'Не переживай, всё обошлось', ''
+    gs 'Menu.AddModule', 'SandraStreetClashTalkMenu', {
+        gt 'SandraTalkAboutLegareStreetClashAction', 'calm', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'SandraStreetClashTalkMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'SandraStreetClashTalkMenu', {
+        gt $LegareTalkReturnLoc
+    }
+---
+
+#SandraTalkAboutLegareStreetClashAction
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_clash_sandra_action', 'РАЗГОВОР С САНДРОЙ', 'large', 'webp'
+    $SandraClashChoice = LCASE($ARGS[0])
+    $LegareTalkReturnLoc = $ARGS[1]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'sandra'
+    gs 'ShowGirlSidebar', 'sandra'
+
+    SandraLegareClashTalkDone = 1
+
+    if $SandraClashChoice = 'honor':
+        SandraTrust += 1
+        FamilyTrust += 1
+        SandraRespect += 1
+        Friends['sandra'] += 1
+    elseif $SandraClashChoice = 'revenge':
+        SandraPragmatism += 1
+        Friends['legare'] = MAX(0, Friends['legare'] - 1)
+    elseif $SandraClashChoice = 'strict':
+        AmandaWorkDiscipline += 1
+        AmandaRebellion += 1
+        SandraRespect += 1
+    elseif $SandraClashChoice = 'calm':
+        SandraFamilyConcern = MAX(0, SandraFamilyConcern - 1)
+        SandraTrust += 1
+        Friends['sandra'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'sandra'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С САНДРОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('SandraTalkAboutLegareStreetClashActionText') = 1:
+        gs 'SandraTalkAboutLegareStreetClashActionText', $SandraClashChoice
+    else:
+        *pl 'Сандра вздыхает и качает головой, выслушав вас.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $LegareTalkReturnLoc
+    end
+
+    killvar '$SandraClashChoice'
+---
+
+#MelissaTalkAboutLegareStreetClash
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_clash_melissa', 'МЕЛИССА О НОЧНЫХ СОБЫТИЯХ', 'large', 'webp'
+    $LegareTalkReturnLoc = $ARGS[0]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕЛИССА: РАЗБОР НОЧНЫХ ПОСЛЕДСТВИЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareStreetClashIntroText') = 1:
+        gs 'MelissaTalkAboutLegareStreetClashIntroText'
+    else:
+        *pl 'Мелисса откладывает записи и скептически смотрит на вас.'
+    end
+
+    *pl ' '
+
+    gs 'MelissaTalkAboutLegareStreetClashBuildMenu'
+
+    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''MelissaStreetClashTalkMenu''">Мелиссе</a>?'
+---
+
+#MelissaTalkAboutLegareStreetClashBuildMenu
+    gs 'Menu.Destroy', 'MelissaStreetClashTalkMenu'
+    gs 'Menu.Create', 'MelissaStreetClashTalkMenu'
+
+    gs 'MenuUiAdd', 'MelissaStreetClashTalkMenu', 'Что ты предлагаешь делать с Легаре?', ''
+    gs 'Menu.AddModule', 'MelissaStreetClashTalkMenu', {
+        gt 'MelissaTalkAboutLegareStreetClashAction', 'plan', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'MelissaStreetClashTalkMenu', 'А что думаешь насчёт Аманды?', ''
+    gs 'Menu.AddModule', 'MelissaStreetClashTalkMenu', {
+        gt 'MelissaTalkAboutLegareStreetClashAction', 'amanda', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'MelissaStreetClashTalkMenu', 'Кулаки — единственный язык, который он понимает', ''
+    gs 'Menu.AddModule', 'MelissaStreetClashTalkMenu', {
+        gt 'MelissaTalkAboutLegareStreetClashAction', 'force', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'MelissaStreetClashTalkMenu', 'Надо думать о выручке и репутации', ''
+    gs 'Menu.AddModule', 'MelissaStreetClashTalkMenu', {
+        gt 'MelissaTalkAboutLegareStreetClashAction', 'business', $LegareTalkReturnLoc
+    }
+
+    gs 'MenuUiAdd', 'MelissaStreetClashTalkMenu', 'Вернуться', ''
+    gs 'Menu.AddModule', 'MelissaStreetClashTalkMenu', {
+        gt $LegareTalkReturnLoc
+    }
+---
+
+#MelissaTalkAboutLegareStreetClashAction
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/legare/street_clash_melissa_action', 'РАЗГОВОР С МЕЛИССОЙ', 'large', 'webp'
+    $MelissaClashChoice = LCASE($ARGS[0])
+    $LegareTalkReturnLoc = $ARGS[1]
+
+    if $LegareTalkReturnLoc = '':
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+    if LOC($LegareTalkReturnLoc) = 0:
+        $LegareTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'ShowGirlSidebar', 'melissa'
+
+    MelissaLegareClashTalkDone = 1
+
+    if $MelissaClashChoice = 'plan':
+        MelissaRespectStefan += 1
+        MelissaTrustStefan += 1
+        ClarissaRouteHint = 1
+        Friends['melissa'] += 1
+    elseif $MelissaClashChoice = 'amanda':
+        MelissaControlNeed += 1
+        MelissaFamilyConcern += 1
+        Friends['melissa'] += 1
+    elseif $MelissaClashChoice = 'force':
+        MelissaRespectStefan = MAX(0, MelissaRespectStefan - 1)
+        MelissaTrustStefan = MAX(0, MelissaTrustStefan - 1)
+    elseif $MelissaClashChoice = 'business':
+        MelissaRespectStefan += 1
+        management += 1
+        trading += 1
+        Friends['melissa'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С МЕЛИССОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('MelissaTalkAboutLegareStreetClashActionText') = 1:
+        gs 'MelissaTalkAboutLegareStreetClashActionText', $MelissaClashChoice
+    else:
+        *pl 'Мелисса с тонкой усмешкой делает пометку на пергаменте.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $LegareTalkReturnLoc
+    end
+
+    killvar '$MelissaClashChoice'
 ---

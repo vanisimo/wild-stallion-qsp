@@ -3,7 +3,7 @@
 ! MODULE: events/church
 ! Подслушивание исповеди Аманды у отца Герхарда
 ! Исповедь о реальных похождениях (Стефан, Легаре, парни с улицы)
-! Задел под будущее соблазнение Аманды Герхардом
+! Ветвление: Проверка чистоты (Этап 2) -> Шантаж/Защита (Не-NTR) vs Особое очищение (Этап 3, NTR)
 ! ================================================
 
 #ChurchSpyAmandaCheckAvailable
@@ -26,10 +26,43 @@
         exit
     end
 
+    ! Проверка интервала между сюжетными этапами (минимум 6 дней, следующее воскресенье)
+    if GerhardAmandaStage >= 1 and GerhardAmandaBlocked = 0 and GerhardAmandaLastStageDay > 0:
+        if day < GerhardAmandaLastStageDay + 6:
+            exit
+        end
+    end
+
     ChurchSpyAmandaReady = 1
 ---
 
 #ChurchSpyAmandaStart
+    if GerhardAmandaBlocked = 1:
+        gt 'ChurchSpyAmandaBlockedSafe'
+    elseif GerhardAmandaStage = 0:
+        gt 'ChurchSpyAmandaStage1'
+    elseif GerhardAmandaStage = 1:
+        gt 'ChurchSpyAmandaStage2'
+    elseif GerhardAmandaStage = 2:
+        gt 'ChurchSpyAmandaStage3'
+    elseif GerhardAmandaStage = 3:
+        gt 'ChurchSpyAmandaStage4'
+    elseif GerhardAmandaStage = 4:
+        gt 'ChurchSpyAmandaStage5'
+    elseif GerhardAmandaStage = 5:
+        gt 'ChurchSpyAmandaStage6'
+    elseif GerhardAmandaStage = 6:
+        gt 'ChurchSpyAmandaStage7'
+    else:
+        gt 'ChurchSpyAmandaRepeatLoop', 1
+    end
+---
+
+! ========================================================
+! ЭТАП 1: ПЕРВАЯ ИСПОВЕДЬ (2 ЭКРАНА)
+! ========================================================
+
+#ChurchSpyAmandaStage1
     *clr
     clr
     cla
@@ -40,6 +73,7 @@
     ChurchSpyAmandaDoneDay = day
     ChurchSpyListenDoneDay = day
     ChurchSpyAmandaSeenCount += 1
+    GerhardAmandaLastStageDay = day
 
     *pl '══════════════════════════════════════════════'
     *pl ' ИСПОВЕДЬ АМАНДЫ'
@@ -99,18 +133,36 @@
     killvar 'AmandaConfessLegare'
     killvar 'AmandaConfessBoys'
 
-    ! Ответ отца Герхарда (отпущение грехов и семена для будущего соблазнения)
+    ! Ответ отца Герхарда
     gs 'ChurchSpyAmandaText', 'gerhard_response'
     *pl $AmandaConfessText
     killvar '$AmandaConfessText'
 
     *pl ' '
 
+    gs 'ActUiPrepare', 'Далее', 'next'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSpyAmandaStage1Screen2'
+    end
+---
+
+#ChurchSpyAmandaStage1Screen2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_confession_outro', 'ЗАВЕРШЕНИЕ ИСПОВЕДИ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
     gs 'ChurchSpyAmandaText', 'outro'
     *pl $AmandaConfessText
     killvar '$AmandaConfessText'
 
-    ! Регистрация фактов и гейтов под будущую ветку
+    ! Регистрация фактов и гейтов
     if LOC('KnowledgeRegisterFact') = 1:
         gs 'KnowledgeRegisterFact', $KE_ChurchAmandaConfession
     end
@@ -123,6 +175,7 @@
     GerhardKnowsAmandaSins = 1
     GerhardTargetsAmanda = 1
     PlayerKnows_GerhardEyesAmanda = 1
+    GerhardAmandaStage = 1
 
     AmandaTrustStefan += 1
     love['amanda'] += 1
@@ -135,5 +188,589 @@
     gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'ChurchSundayNoon'
+    end
+---
+
+! ========================================================
+! ЭТАП 2: ИСПОВЕДЬ ОБ ОПЫТЕ И ПРОВЕРКА ЧИСТОТЫ (2 ЭКРАНА)
+! ========================================================
+
+#ChurchSpyAmandaStage2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_confession_stage2', 'ПРОВЕРКА ЧИСТОТЫ АМАНДЫ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    ChurchSpyAmandaDoneDay = day
+    ChurchSpyListenDoneDay = day
+    ChurchSpyAmandaSeenCount += 1
+    GerhardAmandaLastStageDay = day
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ПРОВЕРКА ЧИСТОТЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'intro_stage2'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    ! Признание в реальном опыте
+    if HadVaginalWithPlayer['amanda'] >= 1 or AmandaHomeSex = 1 or AmandaHomeStage >= 2:
+        gs 'ChurchSpyAmandaText', 'confess_stage2_stefan'
+    elseif AmandaLegareFirstSexDone = 1 or Fact_AmandaLegareFridayAlley = 1 or AmandaLegareAnalDone = 1 or AmandaLegareInterest >= 2:
+        gs 'ChurchSpyAmandaText', 'confess_stage2_legare'
+    elseif AmandaNeighborBoysStage >= 1 or AmandaNeighborBoysAnalDone = 1 or AmandaEscapeWorkCount >= 1:
+        gs 'ChurchSpyAmandaText', 'confess_stage2_boys'
+    else:
+        gs 'ChurchSpyAmandaText', 'confess_stage2_general'
+    end
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    ! Тактильный осмотр священника
+    gs 'ChurchSpyAmandaText', 'gerhard_touch_stage2'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Далее', 'next'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSpyAmandaStage2Screen2'
+    end
+---
+
+#ChurchSpyAmandaStage2Screen2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage2_outro', 'МЫСЛИ СТЕФАНА У ВИТРАЖА', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ПРОВЕРКА ЧИСТОТЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'outro_stage2'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    GerhardAmandaStage = 2
+    GerhardAmandaWarningAvailable = 1
+    sluttiness['amanda'] += 1
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayNoon'
+    end
+---
+
+! ========================================================
+! ЭТАП 3: ИНТИМНЫЙ ОСМОТР ПАСТЫРЕМ (2 ЭКРАНА)
+! ========================================================
+
+#ChurchSpyAmandaStage3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage3_exam', 'ИНТИМНЫЙ ОСМОТР ПАСТЫРЕМ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    ChurchSpyAmandaDoneDay = day
+    ChurchSpyListenDoneDay = day
+    ChurchSpyAmandaSeenCount += 1
+    GerhardAmandaLastStageDay = day
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ИСПЫТАНИЕ СМИРЕНИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage3_screen1'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Далее', 'next'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSpyAmandaStage3Screen2'
+    end
+---
+
+#ChurchSpyAmandaStage3Screen2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage3_outro', 'ЗАВЕРШЕНИЕ ОСМОТРА', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ИСПЫТАНИЕ СМИРЕНИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage3_screen2'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    GerhardAmandaStage = 3
+    GerhardAmandaWarningAvailable = 1
+    sluttiness['amanda'] += 1
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayNoon'
+    end
+---
+
+! ========================================================
+! ЭТАП 4: ПАСТЫРСКОЕ ПОСЛУШАНИЕ (ОРАЛЬНАЯ ФАЗА, 2 ЭКРАНА)
+! ========================================================
+
+#ChurchSpyAmandaStage4
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage4_oral', 'ПАСТЫРСКОЕ ПОСЛУШАНИЕ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    ChurchSpyAmandaDoneDay = day
+    ChurchSpyListenDoneDay = day
+    ChurchSpyAmandaSeenCount += 1
+    GerhardAmandaLastStageDay = day
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ПОСЛУШАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage4_screen1'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Далее', 'next'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSpyAmandaStage4Screen2'
+    end
+---
+
+#ChurchSpyAmandaStage4Screen2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage4_outro', 'ОТПУЩЕНИЕ ГРЕХОВ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ПОСЛУШАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage4_screen2'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    GerhardAmandaStage = 4
+    BlowjobCount['amanda'] += 1
+    sluttiness['amanda'] += 1
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayNoon'
+    end
+---
+
+! ========================================================
+! ЭТАП 5: ГЛУБОКОЕ ПОСЛУШАНИЕ С ПРОГЛОТОМ (2 ЭКРАНА)
+! ========================================================
+
+#ChurchSpyAmandaStage5
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage5_deep', 'ГЛУБОКОЕ ПОСЛУШАНИЕ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    ChurchSpyAmandaDoneDay = day
+    ChurchSpyListenDoneDay = day
+    ChurchSpyAmandaSeenCount += 1
+    GerhardAmandaLastStageDay = day
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ГЛУБОКОЕ ПОСЛУШАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage5_screen1'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Далее', 'next'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSpyAmandaStage5Screen2'
+    end
+---
+
+#ChurchSpyAmandaStage5Screen2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage5_outro', 'БЛАГОСЛОВЕНИЕ ИЛЬМАТЕРА', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ГЛУБОКОЕ ПОСЛУШАНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage5_screen2'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    GerhardAmandaStage = 5
+    BlowjobCount['amanda'] += 1
+    sluttiness['amanda'] += 1
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayNoon'
+    end
+---
+
+! ========================================================
+! ЭТАП 6: ПОЛНАЯ БЛИЗОСТЬ В СОБОРЕ (ВАГИНАЛЬНАЯ ФАЗА, 2 ЭКРАНА)
+! ========================================================
+
+#ChurchSpyAmandaStage6
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage6_sex', 'ТАЙНАЯ БЛИЗОСТЬ В КОМНАТЕ ЧИСТЫХ СЕРДЕЦ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    ChurchSpyAmandaDoneDay = day
+    ChurchSpyListenDoneDay = day
+    ChurchSpyAmandaSeenCount += 1
+    GerhardAmandaLastStageDay = day
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ТАЙНАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage6_screen1'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Далее', 'next'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSpyAmandaStage6Screen2'
+    end
+---
+
+#ChurchSpyAmandaStage6Screen2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage6_outro', 'ПЛОТСКОЕ ИСКУПЛЕНИЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ТАЙНАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage6_screen2'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    GerhardAmandaStage = 6
+    GerhardAmandaNtrDone = 1
+    HadSex['amanda'] += 1
+    sluttiness['amanda'] += 2
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayNoon'
+    end
+---
+
+! ========================================================
+! ЭТАП 7: ПОЛНОЕ ОЧИЩЕНИЕ (АНАЛЬНАЯ СВЯЗЬ, 2 ЭКРАНА)
+! ========================================================
+
+#ChurchSpyAmandaStage7
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage7_anal', 'ОСОБЫЙ ОБРЯД ОЧИЩЕНИЯ', 'large', 'webp'
+    gs 'EnsureGirlData', 'amanda'
+
+    ChurchSpyAmandaDoneDay = day
+    ChurchSpyListenDoneDay = day
+    ChurchSpyAmandaSeenCount += 1
+    GerhardAmandaLastStageDay = day
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ОСОБЫЙ ОБРЯД ОЧИЩЕНИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage7_screen1'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Далее', 'next'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSpyAmandaStage7Screen2'
+    end
+---
+
+#ChurchSpyAmandaStage7Screen2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_stage7_outro', 'ПОЛНАЯ ВЛАСТЬ ПАСТЫРЯ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ: ОСОБЫЙ ОБРЯД ОЧИЩЕНИЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'stage7_screen2'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    GerhardAmandaStage = 7
+    GerhardAmandaAnalDone = 1
+    sluttiness['amanda'] += 2
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayNoon'
+    end
+---
+
+! ========================================================
+! ОБЪЕДИНЁННЫЙ ПОВТОРЯЕМЫЙ ЦИКЛ ПОСЛЕ ЛЕСТНИЦЫ (4 ЭКРАНА)
+! ========================================================
+
+#ChurchSpyAmandaRepeatLoop
+    AmandaLoopStep = $ARGS[0]
+    if AmandaLoopStep <= 0:
+        AmandaLoopStep = 1
+    end
+
+    *clr
+    clr
+    cla
+
+    if AmandaLoopStep = 1:
+        gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_loop_phase1', 'ТАЙНЫЕ ВСТРЕЧИ: СМИРЕНИЕ', 'large', 'webp'
+
+        ChurchSpyAmandaDoneDay = day
+        ChurchSpyListenDoneDay = day
+        ChurchSpyAmandaSeenCount += 1
+        GerhardAmandaNtrRepeatCount += 1
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ИСПОВЕДЬ АМАНДЫ: ТАЙНЫЕ ВСТРЕЧИ В СОБОРЕ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'ChurchSpyAmandaText', 'loop_screen1'
+        *pl $AmandaConfessText
+        killvar '$AmandaConfessText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Далее (Близость на скамье)', 'next'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchSpyAmandaRepeatLoop', 2
+        end
+
+    elseif AmandaLoopStep = 2:
+        gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_loop_phase2', 'ТАЙНЫЕ ВСТРЕЧИ: БЛИЗОСТЬ', 'large', 'webp'
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ИСПОВЕДЬ АМАНДЫ: ТАЙНЫЕ ВСТРЕЧИ В СОБОРЕ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'ChurchSpyAmandaText', 'loop_screen2'
+        *pl $AmandaConfessText
+        killvar '$AmandaConfessText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Далее (Очищение)', 'next'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchSpyAmandaRepeatLoop', 3
+        end
+
+    elseif AmandaLoopStep = 3:
+        gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_loop_phase3', 'ТАЙНЫЕ ВСТРЕЧИ: ОЧИЩЕНИЕ', 'large', 'webp'
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ИСПОВЕДЬ АМАНДЫ: ТАЙНЫЕ ВСТРЕЧИ В СОБОРЕ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'ChurchSpyAmandaText', 'loop_screen3'
+        *pl $AmandaConfessText
+        killvar '$AmandaConfessText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Далее (Завершение)', 'next'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchSpyAmandaRepeatLoop', 4
+        end
+
+    else:
+        gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_loop_outro', 'ТАЙНЫЕ ВСТРЕЧИ: ФИНАЛ', 'large', 'webp'
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ИСПОВЕДЬ АМАНДЫ: ТАЙНЫЕ ВСТРЕЧИ В СОБОРЕ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        gs 'ChurchSpyAmandaText', 'loop_screen4'
+        *pl $AmandaConfessText
+        killvar '$AmandaConfessText'
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'AmandaLoopStep'
+            gt 'ChurchSundayNoon'
+        end
+    end
+---
+
+#ChurchSpyAmandaBlockedSafe
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/church/church_spy_amanda/amanda_confession_safe', 'БЕЗОПАСНАЯ ИСПОВЕДЬ АМАНДЫ', 'large', 'webp'
+
+    ChurchSpyAmandaDoneDay = day
+    ChurchSpyListenDoneDay = day
+    ChurchSpyAmandaSeenCount += 1
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ИСПОВЕДЬ АМАНДЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'ChurchSpyAmandaText', 'confess_blocked_safe'
+    *pl $AmandaConfessText
+    killvar '$AmandaConfessText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от окна в собор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayNoon'
+    end
+---
+
+#ChurchGerhardAmandaConfront
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/locations/church/gerhard_confront', 'РАЗГОВОР С ОТЦОМ ГЕРХАРДОМ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РАЗГОВОР С ОТЦОМ ГЕРХАРДОМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if GerhardAmandaStage = 2:
+        ! Безусловный успех шантажа (окно возможностей открыто)
+        gs 'ChurchSpyAmandaText', 'confront_success'
+        *pl $AmandaConfessText
+        killvar '$AmandaConfessText'
+
+        *pl ' '
+        *pl '<span style="color:#66CC66"><b>Вы надёжно защитили сестру от посягательств священника. Отец Герхард больше не посмеет переходить границы.</b></span>'
+
+        GerhardAmandaBlocked = 1
+        GerhardAmandaWarningAvailable = 0
+        tavern_reputation += 1
+        AmandaTrustStefan += 2
+        gs 'ClampGirlSocialStats', 'amanda'
+    else:
+        ! Запоздалая попытка шантажа (после 3 этапа)
+        gs 'ChurchSpyAmandaText', 'confront_cynical_refusal'
+        *pl $AmandaConfessText
+        killvar '$AmandaConfessText'
+
+        *pl ' '
+        *pl '<span style="color:#CC6666"><b>Священник цинично парировал ваши претензии. Момент для шантажа был упущен.</b></span>'
+
+        GerhardAmandaWarningAvailable = 0
+        GerhardAmandaLateBlackmailFailed = 1
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        if week = 7 and time = 2:
+            gt 'ChurchSundayNoon'
+        else:
+            gt 'ChurchWeekday'
+        end
     end
 ---
