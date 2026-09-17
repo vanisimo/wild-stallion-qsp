@@ -1,0 +1,265 @@
+! ================================================
+! FILE: modules/events/amanda/home/amanda_home_anal.qsps
+! MODULE: events/amanda/home
+! [AI-WORKED] Текст переработан / дополнен ассистентом 17.09.2026
+! Домашняя ветка открытия анала Аманды (4 шага)
+! 1. Разговор в комнате о запретном
+! 2. Покупка огурцов у Бекки (реакция на коррупцию)
+! 3. Ночное подглядывание за тренировкой в комнате
+! 4. Первый анальный опыт со Стефаном
+! ================================================
+
+#AmandaHomeAnalCanTalk
+    AmandaHomeAnalCanTalk = 0
+
+    if AmandaHomeSex = 0:
+        exit
+    end
+
+    if AmandaHomeAnalStage <> 0 or AmandaHomeAnalDone = 1:
+        exit
+    end
+
+    if sluttiness['amanda'] < 35 or otkroven['amanda'] < 15:
+        exit
+    end
+
+    if time < 4:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'AmandaRoom':
+        exit
+    end
+
+    AmandaHomeAnalCanTalk = 1
+---
+
+#AmandaHomeAnalTalk
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/home_anal/amanda_home_anal_talk', 'АМАНДА: РАЗГОВОР О ЗАПРЕТНОМ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — РАЗГОВОР О ЗАПРЕТНОМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeAnalText', 'talk'
+    *pl ' '
+
+    AmandaHomeAnalStage = 1
+    AmandaPlayerPath += 1
+    otkroven['amanda'] += 1
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaCucumberBeckyShopCanStart
+    AmandaCucumberBeckyShopCanStart = 0
+
+    if AmandaHomeAnalStage <> 1:
+        exit
+    end
+
+    if time <> 2 and time <> 3:
+        exit
+    end
+
+    if ShopOpen < 1:
+        exit
+    end
+
+    AmandaCucumberBeckyShopCanStart = 1
+---
+
+#AmandaCucumberBeckyShopEvent
+    *clr
+    clr
+    cla
+
+    if FamilyCorruptionStage >= 3 or sluttiness['amanda'] >= 50:
+        $BeckyCucumberTone = 'bold'
+        gs 'SceneShowVisual', 'images/events/amanda/home_anal/amanda_cucumber_becky_bold', 'АМАНДА В ЛАВКЕ БЕККИ: СМЕЛЫЙ ВЫБОР', 'large', 'webp'
+    else:
+        $BeckyCucumberTone = 'shy'
+        gs 'SceneShowVisual', 'images/events/amanda/home_anal/amanda_cucumber_becky_shy', 'АМАНДА В ЛАВКЕ БЕККИ: СМУЩЕНИЕ', 'large', 'webp'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛАВКА БЕККИ — НЕОБЫЧНАЯ ПОКУПКА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeAnalText', 'becky_shop', $BeckyCucumberTone
+    *pl ' '
+
+    AmandaHomeAnalStage = 2
+    sluttiness['amanda'] += 1
+
+    if $BeckyCucumberTone = 'bold':
+        AmandaNpcPath += 1
+    end
+
+    killvar '$BeckyCucumberTone'
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    gs 'ActUiPrepare', 'Остаться в лавке', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
+
+    gs 'ActUiPrepare', 'Выйти на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#AmandaCucumberNightPeepEvent
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/home_anal/amanda_cucumber_night_peep', 'НОЧНАЯ ТРЕНИРОВКА АМАНДЫ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — ТАЙНАЯ ТРЕНИРОВКА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeAnalText', 'night_peep'
+    *pl ' '
+
+    AmandaHomeAnalStage = 3
+    sluttiness['amanda'] += 2
+    otkroven['amanda'] += 1
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    gs 'ActUiPrepare', 'Тихо отойти в коридор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+---
+
+#AmandaHomeAnalStefanCanStart
+    AmandaHomeAnalStefanCanStart = 0
+
+    if AmandaHomeAnalStage <> 3:
+        exit
+    end
+
+    if time < 4:
+        exit
+    end
+
+    if $GirlLocation['amanda'] <> 'AmandaRoom':
+        exit
+    end
+
+    if SexUsedToday['amanda'] = 1:
+        exit
+    end
+
+    AmandaHomeAnalStefanCanStart = 1
+---
+
+#AmandaHomeAnalStefanLaunch
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/home_anal/amanda_home_anal_prep', 'ПОДГОТОВКА С МАСЛОМ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — ПОДГОТОВКА С МАСЛОМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeAnalText', 'stefan_prep'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Продолжить', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaHomeAnalStefanStep2'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+---
+
+#AmandaHomeAnalStefanStep2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/home_anal/amanda_home_anal_enter', 'ПЕРВЫЙ ВХОД', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — ПЕРВЫЙ ВХОД'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeAnalText', 'stefan_enter'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Продолжить', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaHomeAnalStefanStep3'
+    end
+---
+
+#AmandaHomeAnalStefanStep3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/home_anal/amanda_home_anal_climax', 'НАСЛАЖДЕНИЕ И БЛИЗОСТЬ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА АМАНДЫ — НАСЛАЖДЕНИЕ И БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'AmandaHomeAnalText', 'stefan_climax'
+    *pl ' '
+
+    AmandaHomeAnalStage = 4
+    AmandaHomeAnalDone = 1
+    analfromyou['amanda'] += 1
+    analvirgin['amanda'] = 0
+    analacts['amanda'] += 1
+    sluttiness['amanda'] += 4
+    otkroven['amanda'] += 4
+    love['amanda'] += 2
+    AmandaPlayerPath += 2
+
+    gs 'RegisterSex', 'amanda', 'anal', 1, 1
+
+    gs 'CanCumToday'
+    if Result = 1 or debug = 1:
+        gs 'RegisterPlayerCum'
+        cuminside['amanda'] += 1
+    end
+
+    LastSexDay['amanda'] = day
+    SexUsedToday['amanda'] = 1
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    gs 'ActUiPrepare', 'Остаться с Амандой', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'AmandaRoom'
+    end
+
+    gs 'ActUiPrepare', 'Выйти в коридор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+---

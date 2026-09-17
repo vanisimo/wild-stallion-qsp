@@ -1,0 +1,81 @@
+! ================================================
+! FILE: modules/core/family/npc_intimacy_tiers.qsps
+! MODULE: core/family
+! [AI-WORKED] Текст переработан / дополнен ассистентом 17.09.2026
+! Единая система порогов сексуального опыта и тиров интимности
+! (OralTier, VaginalTier, AnalTier)
+! ================================================
+
+#NpcSyncIntimacyTiers
+    $NpcTierGirl = LCASE($ARGS[0])
+
+    if $NpcTierGirl = '':
+        $NpcTierGirl = 'amanda'
+    end
+
+    ! ==================== ОРАЛЬНЫЙ ТИР ====================
+    ! Tier 0: брезгливость, зажатость губ, отказ глотать
+    ! Tier 1: базовый навык (oralacts >= 5, sluttiness >= 30)
+    ! Tier 2: уверенность (oralacts >= 15, sluttiness >= 50 или oralswallow >= 3)
+    ! Tier 3: глубокое горло / мастерство (oralacts >= 30, oraldeep >= 5, sluttiness >= 70)
+
+    OralTier[$NpcTierGirl] = 0
+
+    if oralacts[$NpcTierGirl] >= 30 and oraldeep[$NpcTierGirl] >= 5 and sluttiness[$NpcTierGirl] >= 70:
+        OralTier[$NpcTierGirl] = 3
+    elseif (oralacts[$NpcTierGirl] >= 15 and sluttiness[$NpcTierGirl] >= 50) or oralswallow[$NpcTierGirl] >= 3:
+        OralTier[$NpcTierGirl] = 2
+    elseif oralacts[$NpcTierGirl] >= 5 and sluttiness[$NpcTierGirl] >= 30:
+        OralTier[$NpcTierGirl] = 1
+    end
+
+    ! ==================== ВАГИНАЛЬНЫЙ ТИР ====================
+    ! Tier 0: девственница (virginity = 1)
+    ! Tier 1: первый опыт (vaginalacts >= 1, sluttiness >= 20)
+    ! Tier 2: опытная (vaginalacts >= 20, sluttiness >= 50)
+    ! Tier 3: предел вместимости (vaginalacts >= 40, sluttiness >= 75 или спец-подготовка)
+
+    VaginalTier[$NpcTierGirl] = 0
+
+    if virginity[$NpcTierGirl] = 0:
+        if (vaginalacts[$NpcTierGirl] >= 40 and sluttiness[$NpcTierGirl] >= 75) or ($NpcTierGirl = 'amanda' and AmandaMelissaTrainingDone = 1):
+            VaginalTier[$NpcTierGirl] = 3
+        elseif vaginalacts[$NpcTierGirl] >= 20 and sluttiness[$NpcTierGirl] >= 50:
+            VaginalTier[$NpcTierGirl] = 2
+        elseif vaginalacts[$NpcTierGirl] >= 1:
+            VaginalTier[$NpcTierGirl] = 1
+        end
+    end
+
+    ! ==================== АНАЛЬНЫЙ ТИР ====================
+    ! Tier 0: абсолютный запрет (analvirgin = 1)
+    ! Tier 1: открытие / домашний опыт (analvirgin = 0, analacts >= 1)
+    !         для Аманды требуется завершённый домашний этап: AmandaHomeAnalDone = 1
+    ! Tier 2: привыкание и удовольствие (analacts >= 10, sluttiness >= 65)
+    ! Tier 3: экстрим / парное / DP (analacts >= 25, sluttiness >= 85)
+
+    AnalTier[$NpcTierGirl] = 0
+
+    if analvirgin[$NpcTierGirl] = 0 and analacts[$NpcTierGirl] >= 1:
+        if $NpcTierGirl = 'amanda' and AmandaHomeAnalDone = 0:
+            AnalTier[$NpcTierGirl] = 0
+        elseif analacts[$NpcTierGirl] >= 25 and sluttiness[$NpcTierGirl] >= 85:
+            AnalTier[$NpcTierGirl] = 3
+        elseif analacts[$NpcTierGirl] >= 10 and sluttiness[$NpcTierGirl] >= 65:
+            AnalTier[$NpcTierGirl] = 2
+        else:
+            AnalTier[$NpcTierGirl] = 1
+        end
+    end
+
+    killvar '$NpcTierGirl'
+---
+
+#NpcSyncAllIntimacyTiers
+    gs 'NpcSyncIntimacyTiers', 'amanda'
+    gs 'NpcSyncIntimacyTiers', 'melissa'
+    gs 'NpcSyncIntimacyTiers', 'sandra'
+    gs 'NpcSyncIntimacyTiers', 'becky'
+    gs 'NpcSyncIntimacyTiers', 'clarissa'
+    gs 'NpcSyncIntimacyTiers', 'inga'
+---

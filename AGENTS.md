@@ -182,6 +182,8 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | Peter the giant blacksmith encounters texts |
 | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | Jens and Bruno brothers encounters texts |
 | `modules/events/amanda/neighbor_boys/amanda_melissa_training_text.qsps` | Amanda and Melissa night stretch training texts (3 visits) |
+| `modules/events/amanda/home/amanda_home_anal_text.qsps` | Amanda home anal arc texts (room talk, cucumber, peeping, first anal) |
+| `modules/events/amanda/neighbor_boys/amanda_boys_curved_text.qsps` | Otto the curved boy encounters texts |
 
 **Rules for agents:**
 

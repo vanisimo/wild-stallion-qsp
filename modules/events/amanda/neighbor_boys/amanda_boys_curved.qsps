@@ -1,0 +1,347 @@
+! ================================================
+! FILE: modules/events/amanda/neighbor_boys/amanda_boys_curved.qsps
+! MODULE: events/amanda/neighbor_boys
+! [AI-WORKED] Текст переработан / дополнен ассистентом 17.09.2026
+! Ветка: Отто («Кривой», сын кожевенника)
+! Особенности:
+! - Робкий, влюбчивый, приносит цветы, полностью ведомый Амандой
+! - Этап 1 (1 экран): ласка рукой, удивление изгибу
+! - Этап 2 (2 экрана): оральная ласка (процесс и финиш)
+! - Этап 3 (3 экрана): у борта телеги -> наездница в телеге (оргазм) -> финал
+! - Этап 4 (2 экрана): эксперимент в телеге сзади (только при AmandaHomeAnalDone = 1)
+! - Если AmandaHomeAnalDone = 0: вместо этапа 4 Аманда ведёт на повтор этапа 3 (вагинал)
+! - Повторяемый цикл (loop): единая сцена (орал -> вагинал ракурс -> возможный анал -> рандом финал)
+! ================================================
+
+#AmandaBoyCurvedCanStart
+    AmandaBoyCurvedCanStart = 1
+---
+
+#AmandaBoyCurvedEvent
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_intro', 'Отто у телеги с цветами', 'large', 'webp'
+    $CurrentGirl = 'amanda'
+    AmandaNeighborBoysToday = 1
+    gs 'EnsureGirlData', 'amanda'
+
+    ! Определение доступной стадии Отто
+    if AmandaBoyCurvedStage = 0:
+        if sluttiness['amanda'] >= 20 or AmandaNpcPath >= 5:
+            $CurvedTargetStep = 'stage1_ready'
+        else:
+            $CurvedTargetStep = 'early_intro'
+        end
+    elseif AmandaBoyCurvedStage = 1:
+        if sluttiness['amanda'] >= 30 and oralacts['amanda'] >= 2:
+            $CurvedTargetStep = 'stage2_ready'
+        else:
+            $CurvedTargetStep = 'stage1_repeat'
+        end
+    elseif AmandaBoyCurvedStage = 2:
+        if sluttiness['amanda'] >= 40 and vaginalacts['amanda'] >= 2:
+            $CurvedTargetStep = 'stage3_ready'
+        else:
+            $CurvedTargetStep = 'stage2_repeat'
+        end
+    elseif AmandaBoyCurvedStage = 3:
+        if AmandaHomeAnalDone = 1 and sluttiness['amanda'] >= 50:
+            $CurvedTargetStep = 'stage4_ready'
+        else:
+            $CurvedTargetStep = 'stage3_repeat'
+        end
+    else:
+        $CurvedTargetStep = 'loop'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ОТТО — СЫН КОЖЕВЕННИКА У ТЕЛЕГИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaBoyCurvedEventText') = 1:
+        gs 'AmandaBoyCurvedEventText', $CurvedTargetStep
+    else:
+        *pl 'Отто неловко топчется у телеги, сжимая в руках букетик цветов.'
+    end
+
+    *pl ' '
+
+    gs 'AmandaBoyCurvedBuildMenu'
+
+    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaBoyCurvedMenu''">делать</a>?'
+---
+
+#AmandaBoyCurvedBuildMenu
+    gs 'Menu.Destroy', 'AmandaBoyCurvedMenu'
+    gs 'Menu.Create', 'AmandaBoyCurvedMenu'
+
+    gs 'MenuUiAdd', 'AmandaBoyCurvedMenu', 'Прогнать парня', ''
+    gs 'Menu.AddModule', 'AmandaBoyCurvedMenu', {
+        gt 'AmandaBoyCurvedAction', 'send_away'
+    }
+
+    gs 'MenuUiAdd', 'AmandaBoyCurvedMenu', 'Спросить прямо', ''
+    gs 'Menu.AddModule', 'AmandaBoyCurvedMenu', {
+        gt 'AmandaBoyCurvedAction', 'ask'
+    }
+
+    if AmandaWatchNpcPath = 1 or FamilyCorruptionStage >= 2:
+        gs 'MenuUiAdd', 'AmandaBoyCurvedMenu', 'Наблюдать издалека', ''
+        gs 'Menu.AddModule', 'AmandaBoyCurvedMenu', {
+            gt 'AmandaBoyCurvedAction', 'watch'
+        }
+    end
+
+    gs 'MenuUiAdd', 'AmandaBoyCurvedMenu', 'Сделать вид, что не заметили', ''
+    gs 'Menu.AddModule', 'AmandaBoyCurvedMenu', {
+        gt 'AmandaBoyCurvedAction', 'ignore'
+    }
+---
+
+#AmandaBoyCurvedAction
+    *clr
+    clr
+    cla
+
+    $CurvedChoice = LCASE($ARGS[0])
+
+    if $CurvedChoice = 'send_away':
+        AmandaTrustStefan += 1
+        Friends['amanda'] += 1
+        AmandaPlayerPath += 1
+    elseif $CurvedChoice = 'ask':
+        AmandaTrustStefan += 1
+        AmandaSecretiveness += 1
+    elseif $CurvedChoice = 'watch':
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 1
+        LastSexDay['amanda'] = day
+
+        if $CurvedTargetStep = 'stage1_ready':
+            AmandaBoyCurvedStage = 1
+            sluttiness['amanda'] += 2
+            CaressCount['amanda'] += 1
+        elseif $CurvedTargetStep = 'stage2_ready':
+            AmandaBoyCurvedStage = 2
+            sluttiness['amanda'] += 2
+            oralacts['amanda'] += 1
+            sexacts['amanda'] += 1
+            oralswallow['amanda'] += 1
+        elseif $CurvedTargetStep = 'stage3_ready':
+            AmandaBoyCurvedStage = 3
+            sluttiness['amanda'] += 3
+            vaginalacts['amanda'] += 1
+            sexacts['amanda'] += 1
+            GiveOrgasms['amanda'] += 1
+        elseif $CurvedTargetStep = 'stage4_ready':
+            AmandaBoyCurvedStage = 4
+            AmandaBoyCurvedDone = 1
+            sluttiness['amanda'] += 4
+            analacts['amanda'] += 1
+            sexacts['amanda'] += 1
+        elseif $CurvedTargetStep = 'loop':
+            sluttiness['amanda'] += 2
+            sexacts['amanda'] += 1
+            vaginalacts['amanda'] += 1
+        end
+    elseif $CurvedChoice = 'ignore':
+        AmandaNpcPath += 1
+        AmandaSecretiveness += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    if $CurvedChoice = 'watch' and $CurvedTargetStep <> 'early_intro':
+        if $CurvedTargetStep = 'stage1_ready' or $CurvedTargetStep = 'stage1_repeat':
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_hand', 'Ласка рукой за телегой', 'large', 'webp'
+        elseif $CurvedTargetStep = 'stage2_ready' or $CurvedTargetStep = 'stage2_repeat':
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_oral_process', 'Оральная ласка за телегой', 'large', 'webp'
+        elseif $CurvedTargetStep = 'stage3_ready' or $CurvedTargetStep = 'stage3_repeat':
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_doggy', 'У борта телеги сзади', 'large', 'webp'
+        elseif $CurvedTargetStep = 'stage4_ready':
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_anal_process', 'Эксперимент сзади в телеге', 'large', 'webp'
+        elseif $CurvedTargetStep = 'loop':
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_oral_process', 'Оральная разминка за телегой', 'large', 'webp'
+        end
+    else:
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_intro', 'Исход встречи у телеги', 'large', 'webp'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    if $CurvedChoice = 'watch' and $CurvedTargetStep <> 'early_intro':
+        *pl ' АМАНДА И ОТТО: ЗА ТЕЛЕГОЙ'
+    else:
+        *pl ' ПОСЛЕ ВСТРЕЧИ'
+    end
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaBoyCurvedActionText') = 1:
+        gs 'AmandaBoyCurvedActionText', $CurvedChoice, $CurvedTargetStep, 1
+    else:
+        *pl 'Отто торопливо уходит, смущённо оглядываясь.'
+    end
+
+    *pl ' '
+
+    if $CurvedChoice = 'watch' and ($CurvedTargetStep = 'stage2_ready' or $CurvedTargetStep = 'stage2_repeat' or $CurvedTargetStep = 'stage3_ready' or $CurvedTargetStep = 'stage3_repeat' or $CurvedTargetStep = 'stage4_ready' or $CurvedTargetStep = 'loop'):
+        gs 'ActUiPrepare', 'Дальше', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaBoyCurvedActionScreen2'
+        end
+    else:
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar '$CurvedChoice'
+            killvar '$CurvedTargetStep'
+            gt 'TavernMain'
+        end
+    end
+---
+
+#AmandaBoyCurvedActionScreen2
+    *clr
+    clr
+    cla
+
+    if $CurvedTargetStep = 'stage2_ready' or $CurvedTargetStep = 'stage2_repeat':
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_oral_finish', 'Финал оральной ласки', 'large', 'webp'
+    elseif $CurvedTargetStep = 'stage3_ready' or $CurvedTargetStep = 'stage3_repeat':
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_cowgirl', 'Наездница в телеге', 'large', 'webp'
+    elseif $CurvedTargetStep = 'stage4_ready':
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_anal_finish', 'Финал в попку', 'large', 'webp'
+    elseif $CurvedTargetStep = 'loop':
+        CurvedLoopPos = RAND(1, 2)
+        if CurvedLoopPos = 1:
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_doggy', 'У борта телеги сзади', 'large', 'webp'
+        else:
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_cowgirl', 'Наездница в телеге', 'large', 'webp'
+        end
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ОТТО: ПРОДОЛЖЕНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaBoyCurvedActionText') = 1:
+        gs 'AmandaBoyCurvedActionText', $CurvedChoice, $CurvedTargetStep, 2
+    end
+
+    *pl ' '
+
+    if $CurvedTargetStep = 'stage3_ready' or $CurvedTargetStep = 'stage3_repeat' or $CurvedTargetStep = 'loop':
+        gs 'ActUiPrepare', 'Дальше', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaBoyCurvedActionScreen3'
+        end
+    else:
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar '$CurvedChoice'
+            killvar '$CurvedTargetStep'
+            gt 'TavernMain'
+        end
+    end
+---
+
+#AmandaBoyCurvedActionScreen3
+    *clr
+    clr
+    cla
+
+    if $CurvedTargetStep = 'stage3_ready' or $CurvedTargetStep = 'stage3_repeat':
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_finish', 'Финал в телеге', 'large', 'webp'
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' АМАНДА И ОТТО: ФИНАЛ В ТЕЛЕГЕ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        if LOC('AmandaBoyCurvedActionText') = 1:
+            gs 'AmandaBoyCurvedActionText', $CurvedChoice, $CurvedTargetStep, 3
+        end
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar '$CurvedChoice'
+            killvar '$CurvedTargetStep'
+            gt 'TavernMain'
+        end
+
+    elseif $CurvedTargetStep = 'loop':
+        CurvedLoopHadAnal = 0
+        if AmandaHomeAnalDone = 1 and RAND(1, 100) <= 50:
+            CurvedLoopHadAnal = 1
+        end
+
+        if CurvedLoopHadAnal = 1:
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_anal_process', 'Эксперимент сзади в телеге', 'large', 'webp'
+
+            *pl '══════════════════════════════════════════════'
+            *pl ' АМАНДА И ОТТО: ЭКСПЕРИМЕНТ СЗАДИ'
+            *pl '══════════════════════════════════════════════'
+            *pl ' '
+
+            if LOC('AmandaBoyCurvedActionText') = 1:
+                gs 'AmandaBoyCurvedActionText', $CurvedChoice, $CurvedTargetStep, 3
+            end
+
+            *pl ' '
+
+            gs 'ActUiPrepare', 'Дальше', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaBoyCurvedActionScreen4'
+            end
+        else:
+            gt 'AmandaBoyCurvedActionScreen4'
+        end
+    end
+---
+
+#AmandaBoyCurvedActionScreen4
+    *clr
+    clr
+    cla
+
+    if CurvedLoopHadAnal = 1:
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_anal_finish', 'Финал в попку', 'large', 'webp'
+        analacts['amanda'] += 1
+    else:
+        CurvedLoopFinish = RAND(1, 2)
+        if CurvedLoopFinish = 1:
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_oral_finish', 'Финал в рот', 'large', 'webp'
+            oralswallow['amanda'] += 1
+        else:
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_curved_cart_finish', 'Финал в телеге', 'large', 'webp'
+            cuminside['amanda'] += 1
+        end
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' АМАНДА И ОТТО: ЗАВЕРШЕНИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaBoyCurvedActionText') = 1:
+        gs 'AmandaBoyCurvedActionText', $CurvedChoice, $CurvedTargetStep, 4
+    end
+
+    *pl ' '
+
+    killvar 'CurvedLoopPos'
+    killvar 'CurvedLoopHadAnal'
+    killvar 'CurvedLoopFinish'
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar '$CurvedChoice'
+        killvar '$CurvedTargetStep'
+        gt 'TavernMain'
+    end
+---

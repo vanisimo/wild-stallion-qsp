@@ -1,7 +1,13 @@
 ! ================================================
 ! FILE: modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps
 ! MODULE: events/amanda/neighbor_boys
-! Ветка: Соседские парни (Ганс, Курт, Феликс) на заднем дворе трактира
+! [AI-WORKED] Текст переработан / дополнен ассистентом 17.09.2026
+! Ветка: Соседские парни (Томас, Ханс, Курт, Феликс, Люк, Якоб, Финн) на заднем дворе трактира
+! Архитектура:
+! - Одиночные встречи: орал (sluttiness < 35), вагинал в телеге (sluttiness >= 35), анал в телеге (AmandaHomeAnalDone = 1 и sluttiness >= 50)
+! - Парные встречи (2 парня): последовательные ступени 1 -> 2 -> 3 (гейт AmandaHomeAnalDone = 1) -> цикл
+! - Тройные встречи (3 парня): открываются после завершения ветки братьев (AmandaBoyBrothersStage >= 8 или AmandaBrothersTrained = 1)
+! - Все интимные сцены строго 2 экрана: процесс -> финал/развязка
 ! ================================================
 
 #CheckAmandaEvents
@@ -97,10 +103,6 @@
         exit
     end
 
-    if AmandaNeighborBoysStage >= 3:
-        exit
-    end
-
     if AmandaProhibitGuys = 1:
         exit
     end
@@ -140,6 +142,51 @@
     end
 ---
 
+#AmandaNeighborBoysSetBoyData
+    ! $ARGS[0] = слот ('1', '2', '3'), ARGS[1] = индекс (1..7)
+    _boySlot = $ARGS[0]
+    _boyIdx = ARGS[1]
+
+    if _boyIdx = 1:
+        $_tempName = 'Томас'
+        $_tempDesc = 'сын мясника'
+    elseif _boyIdx = 2:
+        $_tempName = 'Ханс'
+        $_tempDesc = 'племянник пекаря'
+    elseif _boyIdx = 3:
+        $_tempName = 'Курт'
+        $_tempDesc = 'подмастерье бондаря'
+    elseif _boyIdx = 4:
+        $_tempName = 'Феликс'
+        $_tempDesc = 'помощник сапожника'
+    elseif _boyIdx = 5:
+        $_tempName = 'Люк'
+        $_tempDesc = 'помощник мельника'
+    elseif _boyIdx = 6:
+        $_tempName = 'Якоб'
+        $_tempDesc = 'подручный плотника'
+    else:
+        $_tempName = 'Финн'
+        $_tempDesc = 'конюх с постоялого двора'
+    end
+
+    if _boySlot = '1':
+        $AmandaNeighborBoyName = $_tempName
+        $AmandaNeighborBoyDesc = $_tempDesc
+    elseif _boySlot = '2':
+        $AmandaNeighborBoyName2 = $_tempName
+        $AmandaNeighborBoyDesc2 = $_tempDesc
+    elseif _boySlot = '3':
+        $AmandaNeighborBoyName3 = $_tempName
+        $AmandaNeighborBoyDesc3 = $_tempDesc
+    end
+
+    killvar '_boySlot'
+    killvar '_boyIdx'
+    killvar '$_tempName'
+    killvar '$_tempDesc'
+---
+
 #AmandaNeighborBoysEvent
 
     *clr
@@ -168,74 +215,138 @@
         killvar 'NeighborBoyRoll'
         gt 'AmandaBoyBrothersEvent'
     elseif NeighborBoyRoll = 3:
-        $AmandaNeighborBoyName = 'Отто'
-        $AmandaNeighborBoyDesc = 'сын кожевенника'
-        AmandaNeighborBoyCurved = 1
-    elseif NeighborBoyRoll = 4:
-        $AmandaNeighborBoyName = 'Томас'
-        $AmandaNeighborBoyDesc = 'сын мясника'
-        AmandaNeighborBoyCurved = 0
-    elseif NeighborBoyRoll = 5:
-        $AmandaNeighborBoyName = 'Ханс'
-        $AmandaNeighborBoyDesc = 'племянник пекаря'
-        AmandaNeighborBoyCurved = 0
-    elseif NeighborBoyRoll = 6:
-        $AmandaNeighborBoyName = 'Курт'
-        $AmandaNeighborBoyDesc = 'подмастерье бондаря'
-        AmandaNeighborBoyCurved = 0
-    elseif NeighborBoyRoll = 7:
-        $AmandaNeighborBoyName = 'Феликс'
-        $AmandaNeighborBoyDesc = 'подручный сапожника'
-        AmandaNeighborBoyCurved = 0
-    elseif NeighborBoyRoll = 8:
-        $AmandaNeighborBoyName = 'Люк'
-        $AmandaNeighborBoyDesc = 'помощник мельника'
-        AmandaNeighborBoyCurved = 0
-    elseif NeighborBoyRoll = 9:
-        $AmandaNeighborBoyName = 'Якоб'
-        $AmandaNeighborBoyDesc = 'подручный плотника'
-        AmandaNeighborBoyCurved = 0
-    else:
-        $AmandaNeighborBoyName = 'Финн'
-        $AmandaNeighborBoyDesc = 'конюх с постоялого двора'
-        AmandaNeighborBoyCurved = 0
+        killvar 'NeighborBoyRoll'
+        gt 'AmandaBoyCurvedEvent'
     end
 
     killvar 'NeighborBoyRoll'
 
-    ! Проверка на случайного второго парня, если открыт групповой флаг
-    $AmandaNeighborBoyName2 = ''
-    if AmandaBoysGroupUnlocked = 1 and AmandaNeighborBoyCurved = 0:
+    ! Определение типа встречи в общем пуле: trio, pair или single
+    $NeighborEncounterType = 'single'
+
+    ! Проверка на трио: открыто после завершения ветки братьев
+    if AmandaBoyBrothersStage >= 8 or AmandaBrothersTrained = 1:
         if RAND(1, 100) <= 25:
-            SecondBoyRoll = RAND(1, 6)
-            if SecondBoyRoll = 1 and $AmandaNeighborBoyName <> 'Томас':
-                $AmandaNeighborBoyName2 = 'Томас'
-            elseif SecondBoyRoll = 2 and $AmandaNeighborBoyName <> 'Ханс':
-                $AmandaNeighborBoyName2 = 'Ханс'
-            elseif SecondBoyRoll = 3 and $AmandaNeighborBoyName <> 'Курт':
-                $AmandaNeighborBoyName2 = 'Курт'
-            elseif SecondBoyRoll = 4 and $AmandaNeighborBoyName <> 'Феликс':
-                $AmandaNeighborBoyName2 = 'Феликс'
-            elseif SecondBoyRoll = 5 and $AmandaNeighborBoyName <> 'Люк':
-                $AmandaNeighborBoyName2 = 'Люк'
-            elseif $AmandaNeighborBoyName <> 'Финн':
-                $AmandaNeighborBoyName2 = 'Финн'
-            end
-            killvar 'SecondBoyRoll'
+            $NeighborEncounterType = 'trio'
         end
     end
 
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'Аманда и соседский парень на заднем дворе', 'large', 'webp'
+    ! Проверка на пару: если не трио и открыт групповой флаг
+    if $NeighborEncounterType = 'single' and (AmandaBoysGroupUnlocked = 1 or AmandaBoyBrothersStage >= 5 or AmandaBoysPairStage > 0):
+        if RAND(1, 100) <= 40:
+            $NeighborEncounterType = 'pair'
+        end
+    end
+
+    ! Выбор персонажей из пула 7 парней
+    if $NeighborEncounterType = 'trio':
+        _b1 = RAND(1, 7)
+        _b2 = RAND(1, 6)
+        if _b2 >= _b1: _b2 += 1
+
+        _min = _b1
+        _max = _b2
+        if _min > _max:
+            _min = _b2
+            _max = _b1
+        end
+        _b3 = RAND(1, 5)
+        if _b3 >= _min: _b3 += 1
+        if _b3 >= _max: _b3 += 1
+
+        gs 'AmandaNeighborBoysSetBoyData', '1', _b1
+        gs 'AmandaNeighborBoysSetBoyData', '2', _b2
+        gs 'AmandaNeighborBoysSetBoyData', '3', _b3
+
+        killvar '_b1'
+        killvar '_b2'
+        killvar '_b3'
+        killvar '_min'
+        killvar '_max'
+
+    elseif $NeighborEncounterType = 'pair':
+        $AmandaNeighborBoyName3 = ''
+        $AmandaNeighborBoyDesc3 = ''
+
+        _b1 = RAND(1, 7)
+        _b2 = RAND(1, 6)
+        if _b2 >= _b1: _b2 += 1
+
+        gs 'AmandaNeighborBoysSetBoyData', '1', _b1
+        gs 'AmandaNeighborBoysSetBoyData', '2', _b2
+
+        killvar '_b1'
+        killvar '_b2'
+
+        ! Определение ступени парной встречи
+        if AmandaBoysPairStage = 0:
+            NeighborPairStep = 1
+        elseif AmandaBoysPairStage = 1:
+            NeighborPairStep = 2
+        elseif AmandaBoysPairStage = 2:
+            if AmandaHomeAnalDone = 1:
+                NeighborPairStep = 3
+            else
+                NeighborPairStep = 2
+            end
+        else
+            ! Цикл повторов (AmandaBoysPairStage >= 3)
+            if AmandaHomeAnalDone = 1:
+                NeighborPairStep = RAND(1, 3)
+            else
+                NeighborPairStep = RAND(1, 2)
+            end
+        end
+
+    else
+        ! Single (один парень)
+        $AmandaNeighborBoyName2 = ''
+        $AmandaNeighborBoyDesc2 = ''
+        $AmandaNeighborBoyName3 = ''
+        $AmandaNeighborBoyDesc3 = ''
+
+        _b1 = RAND(1, 7)
+        gs 'AmandaNeighborBoysSetBoyData', '1', _b1
+        killvar '_b1'
+
+        ! Определение формата одиночной встречи
+        if sluttiness['amanda'] < 35:
+            $SingleActionType = 'oral'
+        else
+            if AmandaHomeAnalDone = 1 and sluttiness['amanda'] >= 50:
+                if RAND(1, 2) = 1:
+                    $SingleActionType = 'cart_vaginal'
+                else
+                    $SingleActionType = 'cart_anal'
+                end
+            else
+                $SingleActionType = 'cart_vaginal'
+            end
+        end
+    end
+
+    NeighborFinishType = RAND(1, 3)
+
+    ! Показ вступительного визуала
+    if $NeighborEncounterType = 'trio':
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_trio_intro', 'Аманда и трое парней на заднем дворе', 'large', 'webp'
+    elseif $NeighborEncounterType = 'pair':
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_pair_intro', 'Аманда и двое парней на заднем дворе', 'large', 'webp'
+    else
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_single_intro', 'Аманда и соседский парень на заднем дворе', 'large', 'webp'
+    end
 
     *pl '══════════════════════════════════════════════'
-    *pl ' СОСЕДСКИЕ ПАРНИ'
+    *pl ' СОСЕДСКИЕ ПАРНИ НА ЗАДНЕМ ДВОРЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     if LOC('AmandaNeighborBoysEventText') = 1:
-        gs 'AmandaNeighborBoysEventText', AmandaNeighborBoysStage
+        gs 'AmandaNeighborBoysEventText'
     else:
-        if $AmandaNeighborBoyName2 <> '':
+        if $NeighborEncounterType = 'trio':
+            *pl 'Вы натыкаетесь на Аманду в глухом углу за сараем. Рядом — ' + $AmandaNeighborBoyName + ', ' + $AmandaNeighborBoyName2 + ' и ' + $AmandaNeighborBoyName3 + ', окружившие её втроём.'
+        elseif $NeighborEncounterType = 'pair':
             *pl 'Вы натыкаетесь на Аманду у служебного входа трактира. Рядом — ' + $AmandaNeighborBoyName + ' и ' + $AmandaNeighborBoyName2 + ', окружившие её вдвоём.'
         else:
             *pl 'Вы натыкаетесь на Аманду у служебного входа трактира. Рядом — ' + $AmandaNeighborBoyName + ', стоящий к ней слишком близко.'
@@ -255,12 +366,20 @@
     gs 'Menu.Destroy', 'AmandaNeighborBoysMenu'
     gs 'Menu.Create', 'AmandaNeighborBoysMenu'
 
-    gs 'MenuUiAdd', 'AmandaNeighborBoysMenu', 'Прогнать парня', ''
+    if $NeighborEncounterType = 'single':
+        gs 'MenuUiAdd', 'AmandaNeighborBoysMenu', 'Прогнать парня', ''
+    else:
+        gs 'MenuUiAdd', 'AmandaNeighborBoysMenu', 'Прогнать парней', ''
+    end
     gs 'Menu.AddModule', 'AmandaNeighborBoysMenu', {
         gt 'AmandaNeighborBoysAction', 'send_away'
     }
 
-    gs 'MenuUiAdd', 'AmandaNeighborBoysMenu', 'Спросить Аманду прямо', ''
+    if $NeighborEncounterType = 'single':
+        gs 'MenuUiAdd', 'AmandaNeighborBoysMenu', 'Спросить прямо', ''
+    else:
+        gs 'MenuUiAdd', 'AmandaNeighborBoysMenu', 'Окликнуть', ''
+    end
     gs 'Menu.AddModule', 'AmandaNeighborBoysMenu', {
         gt 'AmandaNeighborBoysAction', 'ask'
     }
@@ -291,58 +410,77 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Исход встречи на заднем дворе', 'large', 'webp'
     $NeighborBoysChoice = LCASE($ARGS[0])
 
+    ! Ветвление выбора Стефана: короткие выборы (1 экран) или интимное наблюдение/участие (2 экрана)
     if $NeighborBoysChoice = 'send_away':
         AmandaTrustStefan += 1
         Friends['amanda'] += 1
         AmandaPlayerPath += 1
         AmandaRebellion += 1
         TavernScandal += 1
+        gs 'ClampGirlSocialStats', 'amanda'
+
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_boys_action', 'Исход встречи на заднем дворе', 'large', 'webp'
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ПОСЛЕ ВСТРЕЧИ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        if LOC('AmandaNeighborBoysActionText') = 1:
+            gs 'AmandaNeighborBoysActionText', $NeighborBoysChoice, 1
+        else:
+            *pl 'Вы прогнали парней со двора. Аманда сердито возвращается к работе.'
+        end
+
+        *pl ' '
+
+        if AmandaPathChoiceDone = 0 and AmandaNeighborBoysStage >= 1:
+            AmandaPathChoiceReady = 1
+            if LOC('AmandaPathChoiceTryAutoStart') = 1:
+                gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
+            end
+        end
+
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'AmandaNeighborBoysCleanup'
+            gt 'TavernMain'
+        end
 
     elseif $NeighborBoysChoice = 'ask':
         AmandaTrustStefan += 1
         AmandaSecretiveness += 1
         AmandaNpcPath += 1
+        gs 'ClampGirlSocialStats', 'amanda'
 
-    elseif $NeighborBoysChoice = 'watch':
-        AmandaWatchNpcPath = 1
-        AmandaNpcPath += 2
-        AmandaSecretiveness += 1
-        TavernScandal += 1
-        AmandaScandalLevel += 1
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_boys_action', 'Исход встречи на заднем дворе', 'large', 'webp'
 
-        if sluttiness['amanda'] >= 42 or AmandaNeighborBoysStage >= 3:
-            oralacts['amanda'] += 1
+        *pl '══════════════════════════════════════════════'
+        *pl ' ПОСЛЕ ВСТРЕЧИ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        if LOC('AmandaNeighborBoysActionText') = 1:
+            gs 'AmandaNeighborBoysActionText', $NeighborBoysChoice, 1
+        else:
+            *pl 'Вы окликнули Аманду, и парень поспешил ретироваться.'
         end
 
-        if LOC('KnowledgeRegisterFact') = 1:
-            gs 'KnowledgeRegisterFact', 'amanda_neighbors_peek'
+        *pl ' '
+
+        if AmandaPathChoiceDone = 0 and AmandaNeighborBoysStage >= 1:
+            AmandaPathChoiceReady = 1
+            if LOC('AmandaPathChoiceTryAutoStart') = 1:
+                gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
+            end
         end
 
-        if LOC('KnowledgeRegisterPlayerKnows') = 1:
-            gs 'KnowledgeRegisterPlayerKnows', 'amanda_neighbors_peek', 'witness'
-        end
-
-    elseif $NeighborBoysChoice = 'join':
-        AmandaNpcPath += 3
-        sluttiness['amanda'] += 2
-        otkroven['amanda'] += 2
-        TavernScandal += 2
-        AmandaScandalLevel += 2
-        FamilyCorruptionStage += 1
-
-        if FamilyCorruptionStage > 5:
-            FamilyCorruptionStage = 5
-        end
-
-        if LOC('KnowledgeRegisterFact') = 1:
-            gs 'KnowledgeRegisterFact', 'amanda_neighbors_peek'
-        end
-
-        if LOC('KnowledgeRegisterPlayerKnows') = 1:
-            gs 'KnowledgeRegisterPlayerKnows', 'amanda_neighbors_peek', 'witness'
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'AmandaNeighborBoysCleanup'
+            gt 'TavernMain'
         end
 
     elseif $NeighborBoysChoice = 'ignore':
@@ -350,26 +488,200 @@
         AmandaSecretiveness += 2
         AmandaRebellion += 1
         MelissaFamilyConcern += 1
+        gs 'ClampGirlSocialStats', 'amanda'
+
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_boys_action', 'Исход встречи на заднем дворе', 'large', 'webp'
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ПОСЛЕ ВСТРЕЧИ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        if LOC('AmandaNeighborBoysActionText') = 1:
+            gs 'AmandaNeighborBoysActionText', $NeighborBoysChoice, 1
+        else:
+            *pl 'Вы сделали вид, что ничего не заметили, оставив их наедине.'
+        end
+
+        *pl ' '
+
+        if AmandaPathChoiceDone = 0 and AmandaNeighborBoysStage >= 1:
+            AmandaPathChoiceReady = 1
+            if LOC('AmandaPathChoiceTryAutoStart') = 1:
+                gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
+            end
+        end
+
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gs 'AmandaNeighborBoysCleanup'
+            gt 'TavernMain'
+        end
+
+    else
+        ! watch или join -> Экран 1 интимной сцены
+        if $NeighborEncounterType = 'trio':
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_trio_process', 'Трое парней и Аманда на сеновале', 'large', 'webp'
+        elseif $NeighborEncounterType = 'pair':
+            if NeighborPairStep = 1:
+                gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_pair_knees_process', 'Аманда на коленях между двумя парнями', 'large', 'webp'
+            elseif NeighborPairStep = 2:
+                gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_pair_allfours_process', 'Аманда на четвереньках между парнями', 'large', 'webp'
+            else
+                gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_pair_cart_double_process', 'Параллельная близость в телеге', 'large', 'webp'
+            end
+        else
+            if $SingleActionType = 'oral':
+                gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_single_oral_process', 'Оральные ласки за сараем: ' + $AmandaNeighborBoyName + ' и Аманда', 'large', 'webp'
+            elseif $SingleActionType = 'cart_vaginal':
+                gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_single_cart_vaginal_process', 'В телеге на сене: ' + $AmandaNeighborBoyName + ' и Аманда', 'large', 'webp'
+            else
+                gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_single_cart_anal_process', 'В телеге сзади: ' + $AmandaNeighborBoyName + ' и Аманда', 'large', 'webp'
+            end
+        end
+
+        *pl '══════════════════════════════════════════════'
+        *pl ' ЗА САРАЕМ НА ЗАДНЕМ ДВОРЕ'
+        *pl '══════════════════════════════════════════════'
+        *pl ' '
+
+        if LOC('AmandaNeighborBoysActionText') = 1:
+            gs 'AmandaNeighborBoysActionText', $NeighborBoysChoice, 1
+        else:
+            *pl 'Вы наблюдаете за разворачивающейся сценой за сараем.'
+        end
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Дальше', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaNeighborBoysActionScreen2'
+        end
+    end
+---
+
+#AmandaNeighborBoysActionScreen2
+
+    *clr
+    clr
+    cla
+
+    ! Экран 2: Финал и кульминация интимной сцены
+    if $NeighborEncounterType = 'trio':
+        gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_trio_finish', 'Тройной финал', 'large', 'webp'
+    elseif $NeighborEncounterType = 'pair':
+        if NeighborPairStep = 1:
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_pair_knees_finish', 'Финал двойных ласк на коленях', 'large', 'webp'
+        elseif NeighborPairStep = 2:
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_pair_allfours_finish', 'Финал близости с двух сторон', 'large', 'webp'
+        else
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_pair_cart_double_finish', 'Финал параллельной близости в телеге', 'large', 'webp'
+        end
+    else
+        if $SingleActionType = 'oral':
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_single_oral_finish', 'Финал оральных ласк', 'large', 'webp'
+        elseif $SingleActionType = 'cart_vaginal':
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_single_cart_vaginal_finish', 'Финал в телеге', 'large', 'webp'
+        else
+            gs 'SceneShowVisual', 'images/events/amanda/neighbor_boys/amanda_neighbor_single_cart_anal_finish', 'Финал сзади в телеге', 'large', 'webp'
+        end
     end
 
-    gs 'ClampGirlSocialStats', 'amanda'
-
     *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ ВСТРЕЧИ'
+    *pl ' ЗАВЕРШЕНИЕ БЛИЗОСТИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     if LOC('AmandaNeighborBoysActionText') = 1:
-        gs 'AmandaNeighborBoysActionText', $NeighborBoysChoice
+        gs 'AmandaNeighborBoysActionText', $NeighborBoysChoice, 2
     else:
-        *pl 'Соседский парень исчезает в переулке. Аманда остаётся рядом — слишком тихая.'
+        *pl 'Близость завершается, и возбуждённые участники приходят в себя.'
     end
 
     *pl ' '
 
+    ! Фиксация игровых параметров и статистики
+    AmandaWatchNpcPath = 1
+    AmandaNpcPath += 2
+    sluttiness['amanda'] += 2
+    TavernScandal += 1
+    LastSexDay['amanda'] = day
+
+    if $NeighborBoysChoice = 'join':
+        FamilyCorruptionStage += 1
+        if FamilyCorruptionStage > 5:
+            FamilyCorruptionStage = 5
+        end
+        TavernScandal += 1
+        AmandaScandalLevel += 1
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'amanda_neighbors_peek'
+    end
+
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'amanda_neighbors_peek', 'witness'
+    end
+
+    ! Статистика по типам сцен
+    if $NeighborEncounterType = 'single':
+        if $SingleActionType = 'oral':
+            oralacts['amanda'] += 1
+            oralswallow['amanda'] += 1
+        elseif $SingleActionType = 'cart_vaginal':
+            vaginalacts['amanda'] += 1
+            sexacts['amanda'] += 1
+            gs 'RegisterSex', 'amanda', 'vaginal', 0, 0
+        elseif $SingleActionType = 'cart_anal':
+            analacts['amanda'] += 1
+            sexacts['amanda'] += 1
+            gs 'RegisterSex', 'amanda', 'anal', 0, 0
+            AmandaNeighborBoysAnalDone = 1
+        end
+
+    elseif $NeighborEncounterType = 'pair':
+        if NeighborPairStep = 1:
+            oralacts['amanda'] += 1
+            CaressCount['amanda'] += 1
+            if AmandaBoysPairStage = 0:
+                AmandaBoysPairStage = 1
+            end
+        elseif NeighborPairStep = 2:
+            oralacts['amanda'] += 1
+            vaginalacts['amanda'] += 1
+            sexacts['amanda'] += 1
+            gs 'RegisterSex', 'amanda', 'vaginal', 0, 0
+            if AmandaBoysPairStage = 1:
+                AmandaBoysPairStage = 2
+            end
+        elseif NeighborPairStep = 3:
+            vaginalacts['amanda'] += 1
+            analacts['amanda'] += 1
+            sexacts['amanda'] += 1
+            gs 'RegisterSex', 'amanda', 'vaginal', 0, 0
+            gs 'RegisterSex', 'amanda', 'anal', 0, 0
+            AmandaNeighborBoysAnalDone = 1
+            if AmandaBoysPairStage = 2:
+                AmandaBoysPairStage = 3
+            end
+        end
+
+    elseif $NeighborEncounterType = 'trio':
+        oralacts['amanda'] += 1
+        vaginalacts['amanda'] += 1
+        analacts['amanda'] += 1
+        sexacts['amanda'] += 1
+        gs 'RegisterSex', 'amanda', 'vaginal', 0, 0
+        gs 'RegisterSex', 'amanda', 'anal', 0, 0
+        AmandaNeighborBoysAnalDone = 1
+        AmandaBoysTrioDone = 1
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
     if AmandaPathChoiceDone = 0 and AmandaNeighborBoysStage >= 1:
         AmandaPathChoiceReady = 1
-
         if LOC('AmandaPathChoiceTryAutoStart') = 1:
             gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
         end
@@ -377,10 +689,24 @@
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
+        gs 'AmandaNeighborBoysCleanup'
         gt 'TavernMain'
     end
+---
+
+#AmandaNeighborBoysCleanup
 
     killvar '$NeighborBoysChoice'
+    killvar '$NeighborEncounterType'
+    killvar '$SingleActionType'
+    killvar 'NeighborPairStep'
+    killvar 'NeighborFinishType'
+    killvar '$AmandaNeighborBoyName'
+    killvar '$AmandaNeighborBoyDesc'
+    killvar '$AmandaNeighborBoyName2'
+    killvar '$AmandaNeighborBoyDesc2'
+    killvar '$AmandaNeighborBoyName3'
+    killvar '$AmandaNeighborBoyDesc3'
 ---
 
 #AmandaNeighborBoysDebugReset
@@ -391,5 +717,12 @@
     AmandaNeighborBoysStarted = 0
     AmandaPlayerAlleySexEver = 0
     AmandaAlleyMmfDone = 0
+    AmandaBoysPairStage = 0
+    AmandaBoysTrioDone = 0
     $AmandaNeighborBoyName = ''
+    $AmandaNeighborBoyDesc = ''
+    $AmandaNeighborBoyName2 = ''
+    $AmandaNeighborBoyDesc2 = ''
+    $AmandaNeighborBoyName3 = ''
+    $AmandaNeighborBoyDesc3 = ''
 ---
