@@ -1,0 +1,211 @@
+! ================================================
+! FILE: modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps
+! MODULE: events/amanda/neighbor_boys
+! [AI-WORKED] Текст переработан / дополнен ассистентом 17.09.2026
+! USER-OWNED TEXT
+! Ночные разговоры и тренировки Аманды и Мелиссы (сцены в два экрана):
+! 1. Предварительный визит 1: отказ Мелиссы
+! 2. Предварительный визит 2: уговоры Аманды и согласие на подготовку
+! 3. Визит тренировки 1: 3 пальца (Экран 1: Аманда / Экран 2: Мелисса)
+! 4. Визит тренировки 2: 4 пальца (Экран 1: Аманда / Экран 2: Мелисса + квест на масло)
+! 5. Визит тренировки 3: кулак с маслом (Экран 1: Аманда / Экран 2: Мелисса)
+! 6. Визит тренировки 4: глубинная растяжка (Экран 1: Аманда / Экран 2: Мелисса $\to$ разморозка)
+! ================================================
+
+#AmandaMelissaNightTraining
+    *clr
+    clr
+    cla
+
+    $CurrentGirl = 'amanda'
+    gs 'EnsureGirlData', 'amanda'
+    gs 'EnsureGirlData', 'melissa'
+
+    if AmandaMelissaTrainingStage = 0 and AmandaBrothersMelissaTalkStage > 0:
+        AmandaMelissaTrainingStage = AmandaBrothersMelissaTalkStage
+    end
+
+    if AmandaMelissaTrainingStage = 0:
+        ! ПРЕДВАРИТЕЛЬНЫЙ ВИЗИТ 1: Отказ Мелиссы
+        AmandaMelissaTrainingStage = 1
+        AmandaMelissaNextDay = day + 2
+        AmandaMelissaTrainingPending = 0
+        AmandaBrothersMelissaTalkPending = 0
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 1
+        MelissaFamilyConcern += 1
+        FamilyCorruptionStage = MAX(FamilyCorruptionStage, 2)
+        $TrainingStep = 'talk1'
+
+    elseif AmandaMelissaTrainingStage = 1:
+        ! ПРЕДВАРИТЕЛЬНЫЙ ВИЗИТ 2: Повторный разговор, уговоры и согласие на подготовку
+        AmandaMelissaTrainingStage = 2
+        AmandaMelissaNextDay = day + 2
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 1
+        MelissaNpcPath += 1
+        sluttiness['amanda'] += 1
+        FamilyCorruptionStage = MAX(FamilyCorruptionStage, 2)
+        $TrainingStep = 'talk2'
+
+    elseif AmandaMelissaTrainingStage = 2:
+        ! ВИЗИТ ТРЕНИРОВКИ 1: Первый этап (3 пальца, дыхание, взаимные ласки)
+        AmandaMelissaTrainingStage = 3
+        AmandaMelissaNextDay = day + 2
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 1
+        sluttiness['amanda'] += 2
+        FamilyCorruptionStage = MAX(FamilyCorruptionStage, 3)
+        $TrainingStep = 'visit1'
+
+    elseif AmandaMelissaTrainingStage = 3:
+        ! ВИЗИТ ТРЕНИРОВКИ 2: Второй этап (4 пальца + квест на масло Диких земель)
+        AmandaMelissaTrainingStage = 4
+        AmandaMelissaNextDay = day + 2
+        AmandaWildOilQuest = 1
+        ! Заглушка: масло считается найденным, чтобы этапы тренировки с маслом были доступны
+        AmandaWildOilFound = 1
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 2
+        sluttiness['amanda'] += 2
+        FamilyCorruptionStage = MAX(FamilyCorruptionStage, 3)
+        $TrainingStep = 'visit2'
+
+    elseif AmandaMelissaTrainingStage = 4:
+        ! ВИЗИТ ТРЕНИРОВКИ 3: Третий этап (кулак с маслом Диких земель вширь + анилингус Мелиссе)
+        AmandaMelissaTrainingStage = 5
+        AmandaMelissaNextDay = day + 2
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 2
+        MelissaNpcPath += 2
+        sluttiness['amanda'] += 3
+        sluttiness['melissa'] += 2
+        FamilyCorruptionStage = MAX(FamilyCorruptionStage, 3)
+        $TrainingStep = 'visit3'
+
+    elseif AmandaMelissaTrainingStage = 5:
+        ! ВИЗИТ ТРЕНИРОВКИ 4: Четвёртый этап (глубокая растяжка, фистинг попки Мелиссы, снятие барьеров)
+        AmandaMelissaTrainingStage = 6
+        AmandaMelissaTrainingDone = 1
+        AmandaBrothersTrained = 1
+        AmandaGiantTrained = 1
+        AmandaWatchNpcPath = 1
+        AmandaNpcPath += 3
+        MelissaNpcPath += 3
+        sluttiness['amanda'] += 4
+        sluttiness['melissa'] += 3
+        FamilyCorruptionStage = MAX(FamilyCorruptionStage, 4)
+        $TrainingStep = 'visit4'
+
+    else:
+        $TrainingStep = 'visit4'
+    end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'amanda_brothers_confession'
+    end
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'amanda_brothers_confession', 'witness'
+    end
+
+    ! ЭКРАН 1
+    gs 'AmandaMelissaTrainingShowVisual', $TrainingStep, 1
+
+    *pl '══════════════════════════════════════════════'
+    if $TrainingStep = 'talk1' or $TrainingStep = 'talk2':
+        *pl ' НОЧНОЙ РАЗГОВОР В КОМНАТЕ МЕЛИССЫ'
+    else:
+        *pl ' НОЧНАЯ ПОДГОТОВКА: УРОК АМАНДЫ'
+    end
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaMelissaNightTrainingText') = 1:
+        gs 'AmandaMelissaNightTrainingText', $TrainingStep, 1
+    else:
+        *pl 'Вы тихо подходите к приоткрытой двери комнаты Мелиссы...'
+    end
+
+    *pl ' '
+
+    if $TrainingStep = 'visit1' or $TrainingStep = 'visit2' or $TrainingStep = 'visit3' or $TrainingStep = 'visit4':
+        gs 'ActUiPrepare', 'Дальше', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaMelissaNightTrainingScreen2'
+        end
+    else:
+        gs 'ActUiPrepare', 'Отойти от двери', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar '$TrainingStep'
+            gt 'TavernSecondFloor'
+        end
+    end
+---
+
+#AmandaMelissaNightTrainingScreen2
+    *clr
+    clr
+    cla
+
+    ! ЭКРАН 2
+    gs 'AmandaMelissaTrainingShowVisual', $TrainingStep, 2
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' НОЧНАЯ ПОДГОТОВКА: ОТВЕТНАЯ ЛАСКА МЕЛИССЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if LOC('AmandaMelissaNightTrainingText') = 1:
+        gs 'AmandaMelissaNightTrainingText', $TrainingStep, 2
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти от двери', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar '$TrainingStep'
+        gt 'TavernSecondFloor'
+    end
+---
+
+#AmandaMelissaTrainingShowVisual
+    $VStep = $ARGS[0]
+    VScreen = ARGS[1]
+
+    if $VStep = 'talk1':
+        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Аманда и Мелисса ночью: спор', 'large', 'webp'
+    elseif $VStep = 'talk2':
+        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Аманда и Мелисса ночью: сговор', 'large', 'webp'
+    elseif $VStep = 'visit1':
+        if VScreen = 1:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Первый этап: три пальца для Аманды', 'large', 'webp'
+        else:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Первый этап: ответная ласка киски Мелиссы', 'large', 'webp'
+        end
+    elseif $VStep = 'visit2':
+        if VScreen = 1:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Второй этап: четыре пальца и клитор Аманды', 'large', 'webp'
+        else:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Второй этап: пальчики в попке Мелиссы', 'large', 'webp'
+        end
+    elseif $VStep = 'visit3':
+        if VScreen = 1:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Третий этап: кулак с маслом Диких земель', 'large', 'webp'
+        else:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Третий этап: анилингус и ласка попки Мелиссы', 'large', 'webp'
+        end
+    elseif $VStep = 'visit4':
+        if VScreen = 1:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Четвёртый этап: глубокая растяжка и сквирт Аманды', 'large', 'webp'
+        else:
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Четвёртый этап: фистинг попки Мелиссы и сквирт', 'large', 'webp'
+        end
+    else:
+        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Аманда и Мелисса ночью', 'large', 'webp'
+    end
+---
+
+#AmandaBrothersNightTalkMelissa
+    ! Алиас для обратной совместимости
+    gt 'AmandaMelissaNightTraining'
+---

@@ -62,7 +62,7 @@
             $BrothersTargetStep = 'stage5_repeat'
         end
     elseif AmandaBoyBrothersStage = 6:
-        if AmandaBrothersTrained = 1:
+        if sluttiness['amanda'] >= 64:
             $BrothersTargetStep = 'stage7_ready'
         else:
             $BrothersTargetStep = 'stage6_repeat'
@@ -127,7 +127,6 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Исход встречи с братьями', 'large', 'webp'
     $BrothersChoice = LCASE($ARGS[0])
 
     if $BrothersChoice = 'send_away':
@@ -196,10 +195,15 @@
             sexacts['amanda'] += 2
             AmandaBrothersMelissaTalkPending = 1
         elseif $BrothersTargetStep = 'stage8_ready' or $BrothersTargetStep = 'stage8_repeat':
-            AmandaBoyBrothersStage = 8
-            sluttiness['amanda'] += 5
-            vaginalacts['amanda'] += 2
-            sexacts['amanda'] += 2
+            if AmandaBrothersTrained = 0:
+                AmandaBrothersMelissaTalkPending = 1
+                AmandaSecretiveness += 1
+            else:
+                AmandaBoyBrothersStage = 8
+                sluttiness['amanda'] += 5
+                vaginalacts['amanda'] += 2
+                sexacts['amanda'] += 2
+            end
         end
 
     elseif $BrothersChoice = 'ignore':
@@ -211,134 +215,67 @@
 
     gs 'ClampGirlSocialStats', 'amanda'
 
+    if $BrothersChoice = 'watch' and not ($BrothersTargetStep = 'early_refusal' or (($BrothersTargetStep = 'stage8_ready' or $BrothersTargetStep = 'stage8_repeat') and AmandaBrothersTrained = 0)):
+        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'Братья Йенс и Бруно с Амандой: сам акт', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Исход встречи с братьями', 'large', 'webp'
+    end
+
     *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ ВСТРЕЧИ'
+    if $BrothersChoice = 'watch' and not ($BrothersTargetStep = 'early_refusal' or (($BrothersTargetStep = 'stage8_ready' or $BrothersTargetStep = 'stage8_repeat') and AmandaBrothersTrained = 0)):
+        *pl ' БРАТЬЯ И АМАНДА: САМ АКТ'
+    else:
+        *pl ' ПОСЛЕ ВСТРЕЧИ'
+    end
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     if LOC('AmandaBoyBrothersActionText') = 1:
-        gs 'AmandaBoyBrothersActionText', $BrothersChoice, $BrothersTargetStep
+        gs 'AmandaBoyBrothersActionText', $BrothersChoice, $BrothersTargetStep, 1
     else:
         *pl 'Братья исчезают в переулке, довольно переговариваясь.'
     end
 
     *pl ' '
 
-    if AmandaPathChoiceDone = 0:
-        AmandaPathChoiceReady = 1
-        if LOC('AmandaPathChoiceTryAutoStart') = 1:
-            gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
+    if $BrothersChoice = 'watch' and not ($BrothersTargetStep = 'early_refusal' or (($BrothersTargetStep = 'stage8_ready' or $BrothersTargetStep = 'stage8_repeat') and AmandaBrothersTrained = 0)):
+        gs 'ActUiPrepare', 'Дальше', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AmandaBoyBrothersActionScreen2'
+        end
+    else:
+        if AmandaPathChoiceDone = 0:
+            AmandaPathChoiceReady = 1
+            if LOC('AmandaPathChoiceTryAutoStart') = 1:
+                gs 'AmandaPathChoiceTryAutoStart', 'TavernMain'
+            end
+        end
+
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar '$BrothersChoice'
+            killvar '$BrothersTargetStep'
+            gt 'TavernMain'
         end
     end
-
-    gs 'ActUiPrepare', 'Вернуться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'TavernMain'
-    end
-
-    killvar '$BrothersChoice'
-    killvar '$BrothersTargetStep'
 ---
 
-#AmandaBrothersNightTalkMelissa
+#AmandaBoyBrothersActionScreen2
     *clr
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Аманда и Мелисса ночью', 'large', 'webp'
-    $CurrentGirl = 'amanda'
-    gs 'EnsureGirlData', 'amanda'
-    gs 'EnsureGirlData', 'melissa'
-
-    if AmandaBrothersMelissaTalkStage = 0:
-        AmandaBrothersMelissaTalkStage = 1
-        AmandaBrothersMelissaNextDay = day + 2
-        AmandaBrothersMelissaTalkPending = 0
-        AmandaWatchNpcPath = 1
-        AmandaNpcPath += 1
-        MelissaFamilyConcern += 1
-        FamilyCorruptionStage = MAX(FamilyCorruptionStage, 2)
-        $BrothersNightStep = 'talk1'
-    else:
-        AmandaBrothersMelissaTalkStage = 2
-        AmandaBrothersMelissaTalkDone = 1
-        AmandaBrothersMelissaTalkPending = 0
-        AmandaBrothersTrained = 1
-        AmandaWatchNpcPath = 1
-        AmandaNpcPath += 2
-        MelissaNpcPath += 2
-        sluttiness['amanda'] += 3
-        sluttiness['melissa'] += 2
-        FamilyCorruptionStage = MAX(FamilyCorruptionStage, 3)
-        $BrothersNightStep = 'talk2'
-    end
-
-    if LOC('KnowledgeRegisterFact') = 1:
-        gs 'KnowledgeRegisterFact', 'amanda_brothers_confession'
-    end
-    if LOC('KnowledgeRegisterPlayerKnows') = 1:
-        gs 'KnowledgeRegisterPlayerKnows', 'amanda_brothers_confession', 'witness'
-    end
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Братья Йенс и Бруно с Амандой: окончание', 'large', 'webp'
 
     *pl '══════════════════════════════════════════════'
-    *pl ' НОЧНОЙ РАЗГОВОР В КОМНАТЕ МЕЛИССЫ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if LOC('AmandaBrothersNightTalkMelissaText') = 1:
-        gs 'AmandaBrothersNightTalkMelissaText', $BrothersNightStep
-    else:
-        *pl 'Вы тихо подходите к приоткрытой двери комнаты Мелиссы...'
-    end
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Отойти от двери', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'TavernSecondFloor'
-    end
-
-    killvar '$BrothersNightStep'
----
-
-#AmandaBoyBrothersWatchStage1
-    *clr
-    clr
-    cla
-
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'Йенс и Аманда у телеги', 'large', 'webp'
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ЗА САРАЕМ: ЙЕНС И АМАНДА'
+    *pl ' ПОСЛЕ ВСТРЕЧИ: ОКОНЧАНИЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
     if LOC('AmandaBoyBrothersActionText') = 1:
-        gs 'AmandaBoyBrothersActionText', 'watch_stage1_screen1'
-    end
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Дальше', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'AmandaBoyBrothersWatchStage1Screen2'
-    end
----
-
-#AmandaBoyBrothersWatchStage1Screen2
-    *clr
-    clr
-    cla
-
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Очередь Бруно у телеги', 'large', 'webp'
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' ЗА САРАЕМ: ОЧЕРЕДЬ БРУНО'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if LOC('AmandaBoyBrothersActionText') = 1:
-        gs 'AmandaBoyBrothersActionText', 'watch_stage1_screen2'
+        gs 'AmandaBoyBrothersActionText', 'watch', $BrothersTargetStep, 2
+    else:
+        *pl 'Братья заправляют штаны и исчезают в переулке, оставив запыхавшуюся Аманду приводить себя в порядок.'
     end
 
     *pl ' '
@@ -352,6 +289,8 @@
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
+        killvar '$BrothersChoice'
+        killvar '$BrothersTargetStep'
         gt 'TavernMain'
     end
 ---

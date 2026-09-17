@@ -10,7 +10,27 @@
 ! ================================================
 
 #AmandaBoyGiantCanStart
-    AmandaBoyGiantCanStart = 1
+    if AmandaBoyGiantStage = 0:
+        AmandaBoyGiantCanStart = 1
+    elseif AmandaBoyGiantStage = 1:
+        if sluttiness['amanda'] >= 50 and sexacts['amanda'] >= 12:
+            AmandaBoyGiantCanStart = 1
+        else:
+            AmandaBoyGiantCanStart = 0
+        end
+    elseif AmandaBoyGiantStage = 2:
+        if sluttiness['amanda'] >= 55 and sexacts['amanda'] >= 15 and AmandaGiantTrained = 1:
+            AmandaBoyGiantCanStart = 1
+        elseif sluttiness['amanda'] >= 55 and sexacts['amanda'] >= 15 and AmandaGiantTrained = 0:
+            AmandaBrothersMelissaTalkPending = 1
+            AmandaMelissaTrainingPending = 1
+            AmandaBoyGiantCanStart = 0
+        else:
+            AmandaBoyGiantCanStart = 0
+        end
+    else
+        AmandaBoyGiantCanStart = 1
+    end
 ---
 
 #AmandaBoyGiantEvent
@@ -35,16 +55,25 @@
         if sluttiness['amanda'] >= 50 and sexacts['amanda'] >= 12:
             $GiantTargetStep = 'stage2_ready'
         else:
-            $GiantTargetStep = 'stage1_repeat'
+            $GiantTargetStep = 'stage1_ready'
         end
     elseif AmandaBoyGiantStage = 2:
-        if sluttiness['amanda'] >= 55 and sexacts['amanda'] >= 15:
+        if sluttiness['amanda'] >= 55 and sexacts['amanda'] >= 15 and AmandaGiantTrained = 1:
             $GiantTargetStep = 'stage3_ready'
         else:
-            $GiantTargetStep = 'stage2_repeat'
+            if sluttiness['amanda'] >= 55 and sexacts['amanda'] >= 15 and AmandaGiantTrained = 0:
+                AmandaBrothersMelissaTalkPending = 1
+                AmandaMelissaTrainingPending = 1
+            end
+            $GiantTargetStep = 'stage2_ready'
         end
-    else:
-        $GiantTargetStep = 'stage3_repeat'
+    else
+        ! Завершённая ветка: пост-луп из двух отдельных сцен (минет или вагинальный секс)
+        if RAND(1, 2) = 1:
+            $GiantTargetStep = 'loop_oral'
+        else:
+            $GiantTargetStep = 'loop_sex'
+        end
     end
 
     *pl '══════════════════════════════════════════════'
@@ -102,6 +131,10 @@
     if $GiantChoice = 'watch':
         if $GiantTargetStep = 'early_fear' and oralacts['amanda'] < 5:
             gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_giant_fear_closeup', 'Аманда опешила при виде Питера-кузнеца', 'large', 'webp'
+        elseif $GiantTargetStep = 'loop_oral':
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_giant_oral_screen1', 'Аманда берёт исполинский член кузнеца в рот', 'large', 'webp'
+        elseif $GiantTargetStep = 'loop_sex':
+            gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_giant_sex_screen1', 'Питер-кузнец вбивает свой молот в лоно Аманды', 'large', 'webp'
         else:
             gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'Питер-кузнец и Аманда за сараем', 'large', 'webp'
         end
@@ -130,7 +163,7 @@
 
         if LOC('KnowledgeRegisterFact') = 1:
             gs 'KnowledgeRegisterFact', 'amanda_neighbors_peek'
-            if $GiantTargetStep = 'stage2_ready' or $GiantTargetStep = 'stage2_repeat' or $GiantTargetStep = 'stage3_ready' or $GiantTargetStep = 'stage3_repeat':
+            if $GiantTargetStep = 'stage2_ready' or $GiantTargetStep = 'stage3_ready' or $GiantTargetStep = 'loop_oral' or $GiantTargetStep = 'loop_sex':
                 gs 'KnowledgeRegisterFact', 'amanda_boy_giant'
             end
         end
@@ -145,17 +178,27 @@
                 sluttiness['amanda'] += 1
                 AmandaBoyGiantOralDone = 1
             end
-        elseif $GiantTargetStep = 'stage1_ready' or $GiantTargetStep = 'stage1_repeat':
+        elseif $GiantTargetStep = 'stage1_ready':
             AmandaBoyGiantStage = MAX(AmandaBoyGiantStage, 1)
             sluttiness['amanda'] += 2
             sexacts['amanda'] += 1
-        elseif $GiantTargetStep = 'stage2_ready' or $GiantTargetStep = 'stage2_repeat':
+        elseif $GiantTargetStep = 'stage2_ready':
             AmandaBoyGiantStage = MAX(AmandaBoyGiantStage, 2)
             sluttiness['amanda'] += 2
             vaginalacts['amanda'] += 1
             sexacts['amanda'] += 1
-        elseif $GiantTargetStep = 'stage3_ready' or $GiantTargetStep = 'stage3_repeat':
+        elseif $GiantTargetStep = 'stage3_ready':
             AmandaBoyGiantStage = 3
+            sluttiness['amanda'] += 3
+            vaginalacts['amanda'] += 1
+            cuminside['amanda'] += 1
+            sexacts['amanda'] += 1
+        elseif $GiantTargetStep = 'loop_oral':
+            sluttiness['amanda'] += 2
+            oralacts['amanda'] += 1
+            swallow['amanda'] += 1
+            sexacts['amanda'] += 1
+        elseif $GiantTargetStep = 'loop_sex':
             sluttiness['amanda'] += 3
             vaginalacts['amanda'] += 1
             cuminside['amanda'] += 1
@@ -173,7 +216,11 @@
 
     *pl '══════════════════════════════════════════════'
     if $GiantChoice = 'watch' and not ($GiantTargetStep = 'early_fear' and oralacts['amanda'] < 5):
-        *pl ' КУЗНЕЦ-ВЕЛИКАН И АМАНДА: САМ АКТ'
+        if $GiantTargetStep = 'loop_oral':
+            *pl ' КУЗНЕЦ-ВЕЛИКАН И АМАНДА: ОРАЛЬНЫЕ ЛАСКИ'
+        else:
+            *pl ' КУЗНЕЦ-ВЕЛИКАН И АМАНДА: САМ АКТ'
+        end
     else:
         *pl ' ПОСЛЕ ВСТРЕЧИ'
     end
@@ -215,7 +262,13 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Кульминация и исход встречи с кузнецом', 'large', 'webp'
+    if $GiantTargetStep = 'loop_oral':
+        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_giant_oral_screen2', 'Кузнец изливает густое семя в рот Аманде', 'large', 'webp'
+    elseif $GiantTargetStep = 'loop_sex' or $GiantTargetStep = 'stage3_ready':
+        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_giant_sex_screen2', 'Вздувшийся животик Аманды и зияющая щёлочка после великана', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Кульминация и исход встречи с кузнецом', 'large', 'webp'
+    end
 
     *pl '══════════════════════════════════════════════'
     *pl ' ПОСЛЕ ВСТРЕЧИ: КУЛЬМИНАЦИЯ'

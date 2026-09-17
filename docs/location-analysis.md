@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 445
-- Locations: 3206
-- Locations with direct incoming calls: 2772
-- Locations without direct incoming calls: 434
+- Source files: 447
+- Locations: 3208
+- Locations with direct incoming calls: 2775
+- Locations without direct incoming calls: 433
 - Review candidates without direct incoming calls: 157
-- Classified entry/helper locations without direct incoming calls: 277
+- Classified entry/helper locations without direct incoming calls: 276
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -18,7 +18,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | --- | --- | --- | --- |
 | `Act1IsHonestPhase` | `modules/events/family/act1_setup_core.qsps` | 7 | `modules/events` |
 | `AdvanceTimeWalk` | `modules/core/time/time_control.qsps` | 128 | `modules/core` |
-| `AmandaBoyBrothersWatchStage1` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 304 | `modules/events` |
+| `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 208 | `modules/events` |
 | `AmandaDanceAlleySexTransition` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 1032 | `modules/events` |
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 193 | `modules/events` |
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
@@ -181,7 +181,6 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | Location | File | Line | Kind |
 | --- | --- | --- | --- |
 | `AmandaBoyBrothersCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 13 | `entry/helper` |
-| `AmandaBoyGiantCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 12 | `entry/helper` |
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 | `entry/helper` |
 | `AmandaHomeAnalStart` | `modules/events/family/intimacy_kinks.qsps` | 432 | `entry/helper` |
 | `AmandaLegareAfterDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1166 | `entry/helper` |
@@ -210,7 +209,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaLegareTavernVisitDebugReset` | `modules/events/amanda/legare/amanda_legare_tavern_visit.qsps` | 385 | `entry/helper` |
 | `AmandaLegareTavernVisitTryAutoStart` | `modules/events/amanda/legare/amanda_legare_tavern_visit.qsps` | 68 | `entry/helper` |
 | `AmandaLizetteDebugMenu` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 183 | `entry/helper` |
-| `AmandaNeighborBoysDebugReset` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 379 | `entry/helper` |
+| `AmandaNeighborBoysDebugReset` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 386 | `entry/helper` |
 | `AmandaPathChoiceDebugReset` | `modules/events/amanda/home/amanda_path_choice.qsps` | 241 | `entry/helper` |
 | `ApplyTavernWorkDay` | `modules/core/tavern/tavern_income.qsps` | 526 | `entry/helper` |
 | `ArtLevelText` | `modules/core/init_npc/art_level_text.qsps` | 6 | `entry/helper` |
@@ -451,8 +450,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 1025 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 876 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 560 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 384 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 584 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 408 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 310 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -462,10 +461,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1185 |
+| `ActUiPrepare` | 1191 |
 | `Menu.AddModule` | 557 |
 | `MenuUiAdd` | 519 |
-| `SceneShowVisual` | 365 |
+| `SceneShowVisual` | 379 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 198 |
 | `ClampGirlSocialStats` | 153 |
@@ -473,8 +472,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowImage` | 102 |
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 95 |
-| `Menu.Destroy` | 89 |
 | `PrintTitleLine` | 89 |
+| `Menu.Destroy` | 89 |
 | `FormatSpintry` | 87 |
 | `RegisterSex` | 77 |
 | `UpdateGirlLocations` | 76 |

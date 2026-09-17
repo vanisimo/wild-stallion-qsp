@@ -256,17 +256,41 @@
     *pl ' '
 
     if time = 5 and (sluttiness['melissa'] >= 30 or MelissaNpcPath >= 3 or FamilyCorruptionStage >= 2):
-        if AmandaBrothersMelissaTalkPending = 1:
+        if (AmandaBrothersMelissaTalkPending = 1 or AmandaMelissaTrainingPending = 1) and AmandaMelissaTrainingStage = 0:
             *pl 'Из приоткрытой двери комнаты Мелиссы слышен взволнованный шёпот Аманды...'
             gs 'ActUiPrepare', 'Подслушать разговор сестёр', 'look'
             act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaBrothersNightTalkMelissa'
+                gt 'AmandaMelissaNightTraining'
             end
-        elseif AmandaBrothersMelissaTalkStage = 1 and day >= AmandaBrothersMelissaNextDay and AmandaBrothersMelissaTalkDone = 0:
-            *pl 'Из комнаты Мелиссы снова доносятся приглушённые голоса сестёр...'
-            gs 'ActUiPrepare', 'Подслушать повторный разговор', 'look'
+        elseif AmandaMelissaTrainingStage = 1 and day >= AmandaMelissaNextDay:
+            *pl 'Из комнаты Мелиссы снова доносятся голоса — Аманда пришла с уговорами...'
+            gs 'ActUiPrepare', 'Подслушать разговор сестёр (уговоры)', 'look'
             act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaBrothersNightTalkMelissa'
+                gt 'AmandaMelissaNightTraining'
+            end
+        elseif AmandaMelissaTrainingStage = 2 and day >= AmandaMelissaNextDay:
+            *pl 'В комнате Мелиссы горит свет — сёстры начинают первый урок...'
+            gs 'ActUiPrepare', 'Подглядывать за уроком (1-й этап: 3 пальца)', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaMelissaNightTraining'
+            end
+        elseif AmandaMelissaTrainingStage = 3 and day >= AmandaMelissaNextDay:
+            *pl 'Из комнаты Мелиссы слышны сдавленные вздохи — второй урок подготовки...'
+            gs 'ActUiPrepare', 'Подглядывать за уроком (2-й этап: 4 пальца)', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaMelissaNightTraining'
+            end
+        elseif AmandaMelissaTrainingStage = 4 and day >= AmandaMelissaNextDay and AmandaWildOilFound = 1:
+            *pl 'В комнате Мелиссы мерцает лампа — сёстры собираются применить масло из Диких земель...'
+            gs 'ActUiPrepare', 'Подглядывать за уроком (3-й этап: кулак с маслом)', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaMelissaNightTraining'
+            end
+        elseif AmandaMelissaTrainingStage = 5 and day >= AmandaMelissaNextDay and AmandaMelissaTrainingDone = 0:
+            *pl 'Из комнаты Мелиссы доносятся тихие стоны — сёстры начинают финальный четвёртый урок...'
+            gs 'ActUiPrepare', 'Подглядывать за уроком (4-й этап: глубинная растяжка)', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaMelissaNightTraining'
             end
         end
     end

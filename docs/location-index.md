@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 445
-- Locations: 3206
+- Source files: 447
+- Locations: 3208
 
 ## modules/actions
 
@@ -973,22 +973,20 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaAlleyPeepersInit` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 333 |
 | `AmandaAlleyPeeperText` | `modules/events/amanda/dance/amanda_dark_alley_text.qsps` | 249 |
 | `AmandaBoyBrothersAction` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 125 |
-| `AmandaBoyBrothersActionText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 92 |
+| `AmandaBoyBrothersActionScreen2` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 263 |
+| `AmandaBoyBrothersActionText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 104 |
 | `AmandaBoyBrothersBuildMenu` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 98 |
 | `AmandaBoyBrothersCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 13 |
 | `AmandaBoyBrothersEvent` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 17 |
 | `AmandaBoyBrothersEventText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 13 |
-| `AmandaBoyBrothersWatchStage1` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 304 |
-| `AmandaBoyBrothersWatchStage1Screen2` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 328 |
-| `AmandaBoyGiantAction` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 95 |
-| `AmandaBoyGiantActionScreen2` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 213 |
+| `AmandaBoyGiantAction` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 124 |
+| `AmandaBoyGiantActionScreen2` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 260 |
 | `AmandaBoyGiantActionText` | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | 59 |
-| `AmandaBoyGiantBuildMenu` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 68 |
+| `AmandaBoyGiantBuildMenu` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 97 |
 | `AmandaBoyGiantCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 12 |
-| `AmandaBoyGiantEvent` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 16 |
-| `AmandaBoyGiantEventText` | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | 13 |
-| `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 243 |
-| `AmandaBrothersNightTalkMelissaText` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers_text.qsps` | 256 |
+| `AmandaBoyGiantEvent` | `modules/events/amanda/neighbor_boys/amanda_boys_giant.qsps` | 36 |
+| `AmandaBoyGiantEventText` | `modules/events/amanda/neighbor_boys/amanda_boys_giant_text.qsps` | 18 |
+| `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 208 |
 | `AmandaDance` | `modules/events/amanda/dance/amanda_dance.qsps` | 13 |
 | `AmandaDanceAction` | `modules/events/amanda/dance/amanda_dance.qsps` | 213 |
 | `AmandaDanceActionText` | `modules/events/amanda/dance/amanda_dance_text.qsps` | 27 |
@@ -1357,16 +1355,20 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaLizetteSecretVisitChoice` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 641 |
 | `AmandaLizetteText` | `modules/events/amanda/lizette/amanda_lizette_text.qsps` | 16 |
 | `AmandaLizetteTryEvent` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 17 |
-| `AmandaNeighborBoysAction` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 281 |
+| `AmandaMelissaNightTraining` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 15 |
+| `AmandaMelissaNightTrainingScreen2` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 145 |
+| `AmandaMelissaNightTrainingText` | `modules/events/amanda/neighbor_boys/amanda_melissa_training_text.qsps` | 18 |
+| `AmandaMelissaTrainingShowVisual` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 171 |
+| `AmandaNeighborBoysAction` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 288 |
 | `AmandaNeighborBoysActionText` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys_text.qsps` | 81 |
 | `AmandaNeighborBoysAnalAction` | `modules/events/family/intimacy_kinks.qsps` | 313 |
 | `AmandaNeighborBoysAnalBuildMenu` | `modules/events/family/intimacy_kinks.qsps` | 290 |
 | `AmandaNeighborBoysAnalCanStart` | `modules/events/family/intimacy_kinks.qsps` | 195 |
 | `AmandaNeighborBoysAnalEvent` | `modules/events/family/intimacy_kinks.qsps` | 250 |
 | `AmandaNeighborBoysAnalTryStart` | `modules/events/family/intimacy_kinks.qsps` | 230 |
-| `AmandaNeighborBoysBuildMenu` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 246 |
+| `AmandaNeighborBoysBuildMenu` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 253 |
 | `AmandaNeighborBoysCanStart` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 92 |
-| `AmandaNeighborBoysDebugReset` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 379 |
+| `AmandaNeighborBoysDebugReset` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 386 |
 | `AmandaNeighborBoysEvent` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 143 |
 | `AmandaNeighborBoysEventText` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys_text.qsps` | 13 |
 | `AmandaNeighborBoysTryStart` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 123 |
@@ -3069,12 +3071,12 @@ Generated from active project files in `qsp-project.json`.
 | `TavernHallLookReturnToMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 84 |
 | `TavernHallLookTryRareBonusEvents` | `modules/locations/tavern/tavern_hall_activity.qsps` | 197 |
 | `TavernMain` | `modules/locations/tavern/tavern_main.qsps` | 11 |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 560 |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 384 |
-| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 489 |
-| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 336 |
-| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 326 |
-| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 302 |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 584 |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 408 |
+| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 513 |
+| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 360 |
+| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 350 |
+| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 326 |
 | `TavernManagement` | `modules/locations/tavern/tavern_management.qsps` | 7 |
 | `TavernPriceSettings` | `modules/locations/tavern/tavern_management.qsps` | 34 |
 | `TavernSecondFloor` | `modules/locations/tavern/tavern_main.qsps` | 222 |
