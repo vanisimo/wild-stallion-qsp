@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 455
-- Locations: 3272
-- Locations with direct incoming calls: 2818
-- Locations without direct incoming calls: 454
-- Review candidates without direct incoming calls: 164
+- Locations: 3280
+- Locations with direct incoming calls: 2824
+- Locations without direct incoming calls: 456
+- Review candidates without direct incoming calls: 166
 - Classified entry/helper locations without direct incoming calls: 290
 - Dynamic call sites: 2
 
@@ -152,6 +152,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `MelissaHomeAnalStep2` | `modules/events/melissa/melissa_home_anal.qsps` | 151 | `modules/events` |
 | `MelissaHomeAnalStep3` | `modules/events/melissa/melissa_home_anal.qsps` | 310 | `modules/events` |
 | `MelissaHomeAnalStepWaitingClarissa` | `modules/events/melissa/melissa_home_anal.qsps` | 247 | `modules/events` |
+| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 671 | `modules/events` |
+| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 622 | `modules/events` |
 | `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 299 | `modules/events` |
 | `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 997 | `modules/core` |
 | `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 991 | `modules/core` |
@@ -390,7 +392,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MelissaMinstrelFridayRaceDebugReset` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 318 | `entry/helper` |
 | `MelissaMinstrelHallMissingTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 459 | `entry/helper` |
 | `MelissaMinstrelThreesomeStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 313 | `entry/helper` |
-| `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 37 | `entry/helper` |
+| `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 41 | `entry/helper` |
 | `MelissaMusicianArcDebugReset` | `modules/events/melissa/melissa_musician_arc.qsps` | 751 | `entry/helper` |
 | `Menu.Chosen` | `modules/menu/system/otd_lib_menu.qsps` | 150 | `entry/helper` |
 | `Menu.Info` | `modules/menu/system/otd_lib_menu.qsps` | 13 | `entry/helper` |
@@ -482,13 +484,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1267 |
+| `ActUiPrepare` | 1279 |
 | `Menu.AddModule` | 573 |
 | `MenuUiAdd` | 537 |
-| `SceneShowVisual` | 467 |
+| `SceneShowVisual` | 477 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 172 |
+| `ClampGirlSocialStats` | 178 |
 | `TavernMain` | 149 |
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 95 |
@@ -499,14 +501,14 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `FormatSpintry` | 87 |
 | `PrintMainP` | 77 |
 | `UpdateGirlLocations` | 76 |
-| `MarketDance` | 64 |
+| `MarketDance` | 68 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `Market` | 50 |
 | `GirlTalkResult` | 49 |
 | `Menu.Add` | 47 |
 | `SexSceneMain` | 46 |
 | `SaveLastHallEvent` | 45 |
-| `Menu.AddCondition` | 43 |
 
 ## Dynamic Call Sites
 

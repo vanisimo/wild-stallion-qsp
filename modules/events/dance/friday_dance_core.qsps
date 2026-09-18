@@ -23,6 +23,7 @@
     if FridayDanceDay <> day:
         FridayDanceDay = day
         FridayDancesCount = 0
+        MelissaMinstrelDanceTick = 0
         FridayDanceMayorSpeechSeen = 0
         FridayDanceRumorCount = 0
         FridayDanceNpcTalkCount = 0
@@ -383,32 +384,27 @@
     ! МЕЛИССА
     ! -----------------------------------------------
     if $DanceNpc = 'melissa':
-        if MelissaMinstrelState = 1:
-            gs 'ActUiPrepare', 'Подслушать разговор с бардом', 'look'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'MelissaMinstrelEavesdrop'
+        if MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
+            MelissaMinstrelMet = 1
+            if RAND(1, 100) <= 75:
+                gt 'MelissaMinstrelDanceStageLook'
             end
+        end
 
-            gs 'ActUiPrepare', 'Подойти и отвлечь Мелиссу', 'talk'
+        gs 'ActUiPrepare', 'Поболтать о книгах и музыке', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FridayDanceNpcCardTalk', 'melissa'
+        end
+
+        if StefanRespectableSuit = 1:
+            gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
             act $ActUiLabel, $ActUiIconPath:
-                gt 'MelissaMinstrelDistract'
+                gt 'MelissaDance'
             end
         else:
-            gs 'ActUiPrepare', 'Поболтать о книгах и музыке', 'talk'
+            gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
             act $ActUiLabel, $ActUiIconPath:
-                gt 'FridayDanceNpcCardTalk', 'melissa'
-            end
-
-            if StefanRespectableSuit = 1:
-                gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
-                act $ActUiLabel, $ActUiIconPath:
-                    gt 'MelissaDance'
-                end
-            else:
-                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
-                act $ActUiLabel, $ActUiIconPath:
-                    gt 'FridayDanceStefanNoSuit', 'melissa'
-                end
+                gt 'FridayDanceStefanNoSuit', 'melissa'
             end
         end
 

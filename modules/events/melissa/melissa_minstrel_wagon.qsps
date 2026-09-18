@@ -20,8 +20,12 @@
         exit
     end
 
-    ! Доступно по пятницам вечером на танцах или среди недели при прогулке Мелиссы
-    if week <> 5 or time <> 4:
+    ! Доступно по пятницам вечером на танцах или во вторник днем/вечером
+    if week = 5 and time = 4:
+        ! OK
+    elseif week = 2 and (time >= 2 and time <= 4):
+        ! OK
+    else:
         if MelissaMinstrelWeekdayAllow <> 1:
             exit
         end
@@ -43,6 +47,8 @@
 ---
 
 #MelissaMinstrelWagonLaunch
+    killvar 'MelissaMinstrelWeekdayAllow'
+
     if MelissaMinstrelWagonStage = 0:
         gt 'MelissaMinstrelWagonScene1_1'
     elseif MelissaMinstrelWagonStage = 1:
@@ -52,7 +58,11 @@
     elseif MelissaMinstrelWagonStage = 3:
         gt 'MelissaMinstrelWagonScene4_1'
     else:
-        gt 'MarketDance'
+        if week = 5 and time = 4:
+            gt 'MarketDance'
+        else:
+            gt 'Market'
+        end
     end
 ---
 
@@ -110,7 +120,11 @@
 
     gs 'ActUiPrepare', 'Отойти от повозки', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'MarketDance'
+        if week = 5 and time = 4:
+            gt 'MarketDance'
+        else:
+            gt 'Market'
+        end
     end
 ---
 
@@ -170,7 +184,11 @@
 
     gs 'ActUiPrepare', 'Отойти от повозки', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'MarketDance'
+        if week = 5 and time = 4:
+            gt 'MarketDance'
+        else:
+            gt 'Market'
+        end
     end
 ---
 
@@ -232,7 +250,11 @@
 
     gs 'ActUiPrepare', 'Отойти от повозки', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'MarketDance'
+        if week = 5 and time = 4:
+            gt 'MarketDance'
+        else:
+            gt 'Market'
+        end
     end
 ---
 
@@ -303,7 +325,11 @@
 
     gs 'ActUiPrepare', 'Тихо уйти в ночь', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'MarketDance'
+        if week = 5 and time = 4:
+            gt 'MarketDance'
+        else:
+            gt 'Market'
+        end
     end
 ---
 
@@ -341,6 +367,290 @@
 
     gs 'ActUiPrepare', 'Увести Мелиссу на площадь', 'return'
     act $ActUiLabel, $ActUiIconPath:
+        if week = 5 and time = 4:
+            gt 'MarketDance'
+        else:
+            gt 'Market'
+        end
+    end
+---
+
+! ================================================
+! ПЯТНИЧНЫЕ ТАНЦЫ: НАБЛЮДЕНИЕ У ПОМОСТА МЕНЕСТРЕЛЯ
+! ================================================
+
+#MelissaMinstrelDanceStageLook
+    *clr
+    clr
+    cla
+
+    if MelissaMinstrelDanceTick = 0:
+        gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_listening', 'МЕЛИССА У ПОМОСТА МЕНЕСТРЕЛЯ', 'large', 'webp'
+    elseif MelissaMinstrelDanceTick = 1:
+        gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_beside', 'МЕНЕСТРЕЛЬ РЯДОМ С МЕЛИССОЙ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_kiss_hand', 'МЕНЕСТРЕЛЬ ЦЕЛУЕТ РУЧКУ МЕЛИССЫ', 'large', 'webp'
+    end
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОМОСТ МЕНЕСТРЕЛЕЙ: МЕЛИССА И ЭЛРИК'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'dance_stage_tick' + STR(MelissaMinstrelDanceTick)
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Наблюдать дальше', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gs 'FridayDanceAdvanceRound'
+        _roundsLeft = 5 - FridayDancesCount
+
+        if MelissaMinstrelDanceTick = 0:
+            if _roundsLeft <= 0:
+                gt 'MelissaMinstrelDanceDepart'
+            else:
+                MelissaMinstrelDanceTick = 1
+                gt 'MelissaMinstrelDanceStageLook'
+            end
+        elseif MelissaMinstrelDanceTick = 1:
+            if _roundsLeft <= 1 or RAND(1, 100) <= (5 - _roundsLeft) * 30:
+                gt 'MelissaMinstrelDanceDepart'
+            else:
+                MelissaMinstrelDanceTick = 2
+                gt 'MelissaMinstrelDanceStageLook'
+            end
+        else:
+            gt 'MelissaMinstrelDanceDepart'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вмешаться и окликнуть Мелиссу', 'stop'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelDanceInterrupt'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'MarketDance'
+    end
+---
+
+#MelissaMinstrelDanceDepart
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_depart', 'МЕНЕСТРЕЛЬ И МЕЛИССА УХОДЯТ ПОД РУЧКУ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' МЕНЕСТРЕЛЬ И МЕЛИССА УХОДЯТ С ТАНЦЕВ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+    *pl 'Они уходят с танцев вдвоём, взявшись под ручку...'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'dance_stage_depart'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Проследить за ними к повозке', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonLaunch'
+    end
+
+    gs 'ActUiPrepare', 'Вмешаться и разогнать', 'stop'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelDanceInterruptDepart'
+    end
+
+    gs 'ActUiPrepare', 'Не следить', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelDanceIgnoreDepart'
+    end
+---
+
+#MelissaMinstrelDanceInterrupt
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_interrupt', 'ВМЕШАТЕЛЬСТВО СТЕФАНА', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ВМЕШАТЕЛЬСТВО: ПОМОСТ МЕНЕСТРЕЛЕЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'dance_stage_interrupt'
+    *pl ' '
+
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelDanceTick = 0
+    MelissaTrustStefan += 1
+    MelissaPlayerPath += 1
+    gs 'ClampGirlSocialStats', 'melissa'
+    gs 'FridayDanceAdvanceRound'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#MelissaMinstrelDanceInterruptDepart
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_interrupt', 'РАЗОГНАТЬ В ПЕРЕУЛКЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЕРЕУЛОК: ВМЕШАТЕЛЬСТВО СТЕФАНА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'dance_stage_interrupt_depart'
+    *pl ' '
+
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelDanceTick = 0
+    MelissaTrustStefan += 1
+    MelissaPlayerPath += 1
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#MelissaMinstrelDanceIgnoreDepart
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_depart', 'ОНИ СКРЫЛИСЬ В ПОВОЗКЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЛОЩАДЬ: МЕЛИССА УШЛА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'dance_stage_ignore_depart'
+    *pl ' '
+
+    MelissaMinstrelWagonStage += 1
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelWagonLastDay = day
+    MelissaMusicianInterest += 1
+    MelissaNpcPath += 1
+    if MelissaMinstrelWagonStage >= 4:
+        MelissaMinstrelFirstSexDone = 1
+        Fact_MelissaMinstrelFridayAlley = 1
+        if virginity['melissa'] = 1:
+            virginity['melissa'] = 0
+        end
+    end
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! ВТОРНИК: МЕЛИССА У ПОВОЗКИ МЕНЕСТРЕЛЯ НА РЫНКЕ
+! ================================================
+
+#MelissaMinstrelTuesdaySpot
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_tuesday_spot', 'МЕЛИССА У ПОВОЗКИ МЕНЕСТРЕЛЯ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РЫНОК — МЕЛИССА У ПОВОЗКИ МЕНЕСТРЕЛЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'tuesday_market_spot'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Проследить в повозку', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        MelissaMinstrelWeekdayAllow = 1
+        gt 'MelissaMinstrelWagonLaunch'
+    end
+
+    gs 'ActUiPrepare', 'Окликнуть и разогнать', 'stop'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelTuesdayInterrupt'
+    end
+
+    gs 'ActUiPrepare', 'Пройти мимо (не следить)', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelTuesdayIgnore'
+    end
+---
+
+#MelissaMinstrelTuesdayInterrupt
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_tuesday_interrupt', 'РАЗОГНАТЬ У ПОВОЗКИ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РЫНОК — ВМЕШАТЕЛЬСТВО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'tuesday_market_interrupt'
+    *pl ' '
+
+    MelissaMinstrelWagonToday = 1
+    MelissaTrustStefan += 1
+    MelissaPlayerPath += 1
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#MelissaMinstrelTuesdayIgnore
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_tuesday_spot', 'ПОВОЗКА ЗАКРЫВАЕТСЯ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' РЫНОК — ПОВОЗКА ЗАКРЫВАЕТСЯ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'tuesday_market_ignore'
+    *pl ' '
+
+    MelissaMinstrelWagonStage += 1
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelWagonLastDay = day
+    MelissaMusicianInterest += 1
+    MelissaNpcPath += 1
+    if MelissaMinstrelWagonStage >= 4:
+        MelissaMinstrelFirstSexDone = 1
+        Fact_MelissaMinstrelFridayAlley = 1
+        if virginity['melissa'] = 1:
+            virginity['melissa'] = 0
+        end
+    end
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
     end
 ---

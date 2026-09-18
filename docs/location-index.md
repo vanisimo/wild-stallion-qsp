@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 455
-- Locations: 3272
+- Locations: 3280
 
 ## modules/actions
 
@@ -1440,7 +1440,7 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyEddieConfessionIntroText` | `modules/events/eddie/eddie_arc_text.qsps` | 34 |
 | `BeckyEddieConfessionPaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 38 |
 | `BeckyEddieConfessionUnpaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 42 |
-| `BeckyEddieDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 706 |
+| `BeckyEddieDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 702 |
 | `BeckyEddieHomeAfter` | `modules/events/eddie/eddie_arc.qsps` | 414 |
 | `BeckyEddieHomeFail` | `modules/events/eddie/eddie_arc.qsps` | 290 |
 | `BeckyEddieHomeFailText` | `modules/events/eddie/eddie_arc_text.qsps` | 66 |
@@ -1652,7 +1652,7 @@ Generated from active project files in `qsp-project.json`.
 | `ClarissaIntimStep` | `modules/events/legare/clarissa_intim_arc.qsps` | 105 |
 | `ClarissaIntimStepText` | `modules/events/legare/clarissa_intim_arc_text.qsps` | 7 |
 | `ClarissaIntimUnlockTry` | `modules/events/legare/clarissa_intim_arc.qsps` | 26 |
-| `ClarissaLegareDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 765 |
+| `ClarissaLegareDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 761 |
 | `ClarissaLegareReconcileCanStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 351 |
 | `ClarissaLegareReconcileStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 382 |
 | `ClarissaLegareReconcileText` | `modules/events/legare/clarissa_intim_arc_text.qsps` | 45 |
@@ -1737,40 +1737,40 @@ Generated from active project files in `qsp-project.json`.
 | `FamilyFirstSexTalkCount` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 185 |
 | `FamilyFirstSexTalkIntroText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 77 |
 | `FamilyFirstSexTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 357 |
-| `FridayDanceAdvanceRound` | `modules/events/dance/friday_dance_core.qsps` | 818 |
+| `FridayDanceAdvanceRound` | `modules/events/dance/friday_dance_core.qsps` | 814 |
 | `FridayDanceBeckyDanceText` | `modules/events/dance/friday_dance_text.qsps` | 220 |
 | `FridayDanceBeckyTalkText` | `modules/events/dance/friday_dance_text.qsps` | 212 |
 | `FridayDanceCardText` | `modules/events/dance/friday_dance_text.qsps` | 240 |
-| `FridayDanceDebugMenu` | `modules/events/dance/friday_dance_core.qsps` | 1033 |
-| `FridayDanceIngaBoyfriendRefusal` | `modules/events/dance/friday_dance_core.qsps` | 789 |
+| `FridayDanceDebugMenu` | `modules/events/dance/friday_dance_core.qsps` | 1029 |
+| `FridayDanceIngaBoyfriendRefusal` | `modules/events/dance/friday_dance_core.qsps` | 785 |
 | `FridayDanceIngaRefusalBoyfriendText` | `modules/events/dance/friday_dance_text.qsps` | 285 |
 | `FridayDanceInit` | `modules/events/dance/friday_dance_core.qsps` | 19 |
-| `FridayDanceMayorSpeech` | `modules/events/dance/friday_dance_core.qsps` | 189 |
+| `FridayDanceMayorSpeech` | `modules/events/dance/friday_dance_core.qsps` | 190 |
 | `FridayDanceMayorSpeechText` | `modules/events/dance/friday_dance_text.qsps` | 16 |
 | `FridayDanceMelissaDanceText` | `modules/events/dance/friday_dance_text.qsps` | 236 |
 | `FridayDanceMelissaDressReadyText` | `modules/events/dance/friday_dance_text.qsps` | 228 |
 | `FridayDanceMelissaTalkText` | `modules/events/dance/friday_dance_text.qsps` | 232 |
 | `FridayDanceNoDressText` | `modules/events/dance/friday_dance_text.qsps` | 173 |
-| `FridayDanceNpcCard` | `modules/events/dance/friday_dance_core.qsps` | 352 |
-| `FridayDanceNpcCardTalk` | `modules/events/dance/friday_dance_core.qsps` | 578 |
+| `FridayDanceNpcCard` | `modules/events/dance/friday_dance_core.qsps` | 353 |
+| `FridayDanceNpcCardTalk` | `modules/events/dance/friday_dance_core.qsps` | 574 |
 | `FridayDanceNpcTalkText` | `modules/events/dance/friday_dance_text.qsps` | 119 |
-| `FridayDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 231 |
+| `FridayDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 232 |
 | `FridayDanceObserveText` | `modules/events/dance/friday_dance_text.qsps` | 47 |
-| `FridayDanceRumor` | `modules/events/dance/friday_dance_core.qsps` | 292 |
+| `FridayDanceRumor` | `modules/events/dance/friday_dance_core.qsps` | 293 |
 | `FridayDanceRumorText` | `modules/events/dance/friday_dance_text.qsps` | 84 |
-| `FridayDanceSisterLimited` | `modules/events/dance/friday_dance_core.qsps` | 832 |
-| `FridayDanceSisterLimitedDance` | `modules/events/dance/friday_dance_core.qsps` | 919 |
+| `FridayDanceSisterLimited` | `modules/events/dance/friday_dance_core.qsps` | 828 |
+| `FridayDanceSisterLimitedDance` | `modules/events/dance/friday_dance_core.qsps` | 915 |
 | `FridayDanceSisterLimitedDanceText` | `modules/events/dance/friday_dance_text.qsps` | 199 |
-| `FridayDanceSisterLimitedTalk` | `modules/events/dance/friday_dance_core.qsps` | 877 |
+| `FridayDanceSisterLimitedTalk` | `modules/events/dance/friday_dance_core.qsps` | 873 |
 | `FridayDanceSisterLimitedTalkText` | `modules/events/dance/friday_dance_text.qsps` | 186 |
-| `FridayDanceSponsorApply` | `modules/events/dance/friday_dance_core.qsps` | 116 |
-| `FridayDanceSponsorApplyGirlBoost` | `modules/events/dance/friday_dance_core.qsps` | 148 |
-| `FridayDanceSponsorBoostGirl` | `modules/events/dance/friday_dance_core.qsps` | 158 |
-| `FridayDanceSponsorCanAfford` | `modules/events/dance/friday_dance_core.qsps` | 107 |
-| `FridayDanceSponsorPrompt` | `modules/events/dance/friday_dance_core.qsps` | 61 |
+| `FridayDanceSponsorApply` | `modules/events/dance/friday_dance_core.qsps` | 117 |
+| `FridayDanceSponsorApplyGirlBoost` | `modules/events/dance/friday_dance_core.qsps` | 149 |
+| `FridayDanceSponsorBoostGirl` | `modules/events/dance/friday_dance_core.qsps` | 159 |
+| `FridayDanceSponsorCanAfford` | `modules/events/dance/friday_dance_core.qsps` | 108 |
+| `FridayDanceSponsorPrompt` | `modules/events/dance/friday_dance_core.qsps` | 62 |
 | `FridayDanceSponsorPromptText` | `modules/events/dance/friday_dance_text.qsps` | 34 |
 | `FridayDanceSponsorStallText` | `modules/events/dance/friday_dance_text.qsps` | 38 |
-| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 969 |
+| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 965 |
 | `FridayDanceTreatText` | `modules/events/dance/friday_dance_text.qsps` | 163 |
 | `FridayStreetClashPrintHallRumor` | `modules/events/amanda/legare/amanda_legare_street_intercept.qsps` | 585 |
 | `GeorgetteChurchAloneSchedule` | `modules/events/georgette/georgette_church_arc.qsps` | 7 |
@@ -2343,7 +2343,7 @@ Generated from active project files in `qsp-project.json`.
 | `IngaLucasAnalSceneStart` | `modules/events/inga/inga_lucas_arc.qsps` | 187 |
 | `IngaLucasCucumberShop` | `modules/events/inga/inga_lucas_arc.qsps` | 327 |
 | `IngaLucasCucumberText` | `modules/events/inga/inga_lucas_arc_text.qsps` | 37 |
-| `IngaLucasDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 736 |
+| `IngaLucasDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 732 |
 | `IngaLucasInviteStart` | `modules/events/inga/inga_lucas_arc.qsps` | 52 |
 | `IngaLucasInviteText` | `modules/events/inga/inga_lucas_arc_text.qsps` | 17 |
 | `IngaLucasThreesome1Start` | `modules/events/inga/inga_lucas_arc.qsps` | 93 |
@@ -2518,8 +2518,13 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaMinstrelBackroomSpyDetailText` | `modules/events/melissa/melissa_minstrel_watch_reaction_text.qsps` | 70 |
 | `MelissaMinstrelBackroomStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 74 |
 | `MelissaMinstrelBackroomTryStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 63 |
-| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 675 |
-| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 626 |
+| `MelissaMinstrelDanceDepart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 438 |
+| `MelissaMinstrelDanceIgnoreDepart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 526 |
+| `MelissaMinstrelDanceInterrupt` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 471 |
+| `MelissaMinstrelDanceInterruptDepart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 499 |
+| `MelissaMinstrelDanceStageLook` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 382 |
+| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 671 |
+| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 622 |
 | `MelissaMinstrelFridayRaceAction` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 166 |
 | `MelissaMinstrelFridayRaceActionText` | `modules/events/melissa/melissa_minstrel_alley_race_text.qsps` | 14 |
 | `MelissaMinstrelFridayRaceBuildMenu` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 140 |
@@ -2555,19 +2560,22 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaMinstrelRaceWindowOpen` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 22 |
 | `MelissaMinstrelThreesomeCanOffer` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 282 |
 | `MelissaMinstrelThreesomeStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 313 |
+| `MelissaMinstrelTuesdayIgnore` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 623 |
+| `MelissaMinstrelTuesdayInterrupt` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 597 |
+| `MelissaMinstrelTuesdaySpot` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 565 |
 | `MelissaMinstrelWagonCanStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 12 |
-| `MelissaMinstrelWagonInterrupt` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 314 |
-| `MelissaMinstrelWagonLaunch` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 45 |
-| `MelissaMinstrelWagonScene1_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 63 |
-| `MelissaMinstrelWagonScene1_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 89 |
-| `MelissaMinstrelWagonScene2_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 121 |
-| `MelissaMinstrelWagonScene2_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 147 |
-| `MelissaMinstrelWagonScene3_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 181 |
-| `MelissaMinstrelWagonScene3_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 207 |
-| `MelissaMinstrelWagonScene4_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 243 |
-| `MelissaMinstrelWagonScene4_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 269 |
+| `MelissaMinstrelWagonInterrupt` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 340 |
+| `MelissaMinstrelWagonLaunch` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 49 |
+| `MelissaMinstrelWagonScene1_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 73 |
+| `MelissaMinstrelWagonScene1_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 99 |
+| `MelissaMinstrelWagonScene2_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 135 |
+| `MelissaMinstrelWagonScene2_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 161 |
+| `MelissaMinstrelWagonScene3_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 199 |
+| `MelissaMinstrelWagonScene3_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 225 |
+| `MelissaMinstrelWagonScene4_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 265 |
+| `MelissaMinstrelWagonScene4_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 291 |
 | `MelissaMinstrelWagonText` | `modules/events/melissa/melissa_minstrel_wagon_text.qsps` | 8 |
-| `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 37 |
+| `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 41 |
 | `MelissaMinstrelWatchReactionAction` | `modules/events/melissa/melissa_minstrel_watch_reaction.qsps` | 103 |
 | `MelissaMinstrelWatchReactionBuildMenu` | `modules/events/melissa/melissa_minstrel_watch_reaction.qsps` | 77 |
 | `MelissaMinstrelWatchReactionInterruptDefiantText` | `modules/events/melissa/melissa_minstrel_watch_reaction_text.qsps` | 21 |
@@ -3023,7 +3031,7 @@ Generated from active project files in `qsp-project.json`.
 | `KitchenShowLocationImage` | `modules/locations/tavern/kitchen.qsps` | 185 |
 | `Market` | `modules/locations/town/market.qsps` | 7 |
 | `MarketDance` | `modules/locations/town/market_dance.qsps` | 14 |
-| `MarketRumors` | `modules/locations/town/market.qsps` | 96 |
+| `MarketRumors` | `modules/locations/town/market.qsps` | 106 |
 | `MayorClerkWorkoffEvaluate` | `modules/locations/town/mayor_office.qsps` | 452 |
 | `MayorOffice` | `modules/locations/town/mayor_office.qsps` | 39 |
 | `MayorOfficeAudienceAlreadyDoneText` | `modules/locations/town/mayor_office_text.qsps` | 97 |

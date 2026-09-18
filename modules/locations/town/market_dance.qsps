@@ -73,7 +73,27 @@
 
     *pl ' '
 
+    if FridayDancesCount >= 4 and MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
+        *pl '<i>Взглянув в сторону помоста менестрелей, вы замечаете, что Мелиссы там уже нет: менестрель бережно увёл её под ручку в сторону жилых повозок...</i>'
+    end
+
     if FridayDancesCount >= 5:
+        if MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
+            MelissaMinstrelWagonStage += 1
+            MelissaMinstrelWagonToday = 1
+            MelissaMinstrelWagonLastDay = day
+            MelissaMusicianInterest += 1
+            MelissaNpcPath += 1
+            if MelissaMinstrelWagonStage >= 4:
+                MelissaMinstrelFirstSexDone = 1
+                Fact_MelissaMinstrelFridayAlley = 1
+                if virginity['melissa'] = 1:
+                    virginity['melissa'] = 0
+                end
+            end
+            gs 'ClampGirlSocialStats', 'melissa'
+        end
+
         *p 'Праздник подходит к концу. Музыканты играют тише, люди расходятся по домам, а площадь постепенно пустеет.'
         *pl ' '
 
@@ -103,8 +123,10 @@
         *pl 'Неподалёку сияет в праздничном платье Аманда.'
     end
     if MelissaDanceDressReady = 1:
-        if MelissaMinstrelMet = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
-            *pl 'Мелисса на мгновение оглядывается по сторонам и направляется к жилой повозке менестреля.'
+        if MelissaMinstrelWagonToday = 1:
+            *pl 'Мелисса задумчиво прогуливается у торговых рядов.'
+        elseif MelissaMinstrelDanceTick > 0:
+            *pl 'У помоста менестрелей Мелисса всё ещё заворожённо слушает Элрика.'
         else:
             *pl 'У помоста менестрелей с интересом слушает стихи Мелисса.'
         end
@@ -206,13 +228,6 @@
         gs 'ActUiPrepare', 'Мелисса', 'generic'
         act $ActUiLabel, $ActUiIconPath:
             gt 'FridayDanceNpcCard', 'melissa'
-        end
-    end
-
-    if MelissaMinstrelMet = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
-        gs 'ActUiPrepare', 'Повозка менестреля', 'look'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaMinstrelWagonLaunch'
         end
     end
 
