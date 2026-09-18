@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 453
-- Locations: 3259
+- Source files: 455
+- Locations: 3272
 
 ## modules/actions
 
@@ -422,7 +422,7 @@ Generated from active project files in `qsp-project.json`.
 | `AddTavernMomCleaningExpenses` | `modules/core/tavern/tavern_hired_staff.qsps` | 146 |
 | `AddTavernWorkExpenses` | `modules/core/tavern/tavern_income.qsps` | 307 |
 | `AdvanceCalendarOneDay` | `modules/core/time/next_day.qsps` | 341 |
-| `AdvanceMonthIfNeeded` | `modules/core/time/next_day.qsps` | 455 |
+| `AdvanceMonthIfNeeded` | `modules/core/time/next_day.qsps` | 456 |
 | `AdvanceOneDaySilent` | `modules/core/time/skip_days.qsps` | 206 |
 | `AdvanceTimeFromPanel` | `modules/core/system/refresh_location.qsps` | 55 |
 | `AdvanceTimePart` | `modules/core/system/compatibility_aliases.qsps` | 115 |
@@ -529,7 +529,7 @@ Generated from active project files in `qsp-project.json`.
 | `GetGirlWorkLoad` | `modules/core/girls/girl_job.qsps` | 90 |
 | `GetImageWidthByType` | `modules/core/show_image/image_debug_random.qsps` | 154 |
 | `GetLocationTimeSuffix` | `modules/core/show_image/show_location_image.qsps` | 25 |
-| `GetMonthDays` | `modules/core/time/next_day.qsps` | 475 |
+| `GetMonthDays` | `modules/core/time/next_day.qsps` | 476 |
 | `GetRandomTalkPhraseFromTable` | `modules/core/system/functions.qsps` | 24 |
 | `GetStefanAmandaTalk` | `modules/core/system/functions.qsps` | 75 |
 | `GetTavernReputationName` | `modules/core/tavern/tavern_reputation.qsps` | 52 |
@@ -570,7 +570,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 24 |
 | `GirlsDescShowPortrait` | `modules/core/init_npc/girls_desc.qsps` | 6 |
 | `GirlsInitAll` | `modules/core/init_npc/girls_init_all.qsps` | 21 |
-| `GirlsResetDailyFlags` | `modules/core/time/next_day.qsps` | 549 |
+| `GirlsResetDailyFlags` | `modules/core/time/next_day.qsps` | 550 |
 | `GirlTalkTopicIsUseful` | `modules/core/time/npc_talk_limits.qsps` | 127 |
 | `GirlWalletPurchaseTalkSet` | `modules/core/economy/girl_tips.qsps` | 164 |
 | `GuessImageType` | `modules/core/show_image/image_debug_random.qsps` | 117 |
@@ -701,7 +701,7 @@ Generated from active project files in `qsp-project.json`.
 | `PrintThoughtP` | `modules/core/text/text_format.qsps` | 445 |
 | `PrintTitleLine` | `modules/core/text/text_format.qsps` | 433 |
 | `ProcessFamilyWalletSpends` | `modules/core/economy/girl_wallet_spend.qsps` | 9 |
-| `ProcessIntimacyDressSelfBuy` | `modules/core/time/next_day.qsps` | 509 |
+| `ProcessIntimacyDressSelfBuy` | `modules/core/time/next_day.qsps` | 510 |
 | `ProcessNewDay` | `modules/core/system/compatibility_aliases.qsps` | 140 |
 | `ProcessSandraKitchenNewDish` | `modules/core/economy/girl_wallet_spend.qsps` | 180 |
 | `ProcessTavernWorkDay` | `modules/core/tavern/tavern_income.qsps` | 446 |
@@ -792,7 +792,7 @@ Generated from active project files in `qsp-project.json`.
 | `TalkWithClarissa` | `modules/core/system/compatibility_aliases.qsps` | 251 |
 | `TalkWithGerhard` | `modules/core/system/compatibility_aliases.qsps` | 259 |
 | `TalkWithNpcStub` | `modules/core/system/compatibility_aliases.qsps` | 263 |
-| `TavernDailyUpdate` | `modules/core/time/next_day.qsps` | 575 |
+| `TavernDailyUpdate` | `modules/core/time/next_day.qsps` | 576 |
 | `TavernEventStateDebugMenu` | `modules/core/tavern/tavern_event_state_core.qsps` | 529 |
 | `TavernEventStateNormalizeGirl` | `modules/core/tavern/tavern_event_state_core.qsps` | 606 |
 | `TavernEventStatePolicyName` | `modules/core/tavern/tavern_event_state_core.qsps` | 359 |
@@ -2555,6 +2555,19 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaMinstrelRaceWindowOpen` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 22 |
 | `MelissaMinstrelThreesomeCanOffer` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 282 |
 | `MelissaMinstrelThreesomeStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 313 |
+| `MelissaMinstrelWagonCanStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 12 |
+| `MelissaMinstrelWagonInterrupt` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 314 |
+| `MelissaMinstrelWagonLaunch` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 45 |
+| `MelissaMinstrelWagonScene1_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 63 |
+| `MelissaMinstrelWagonScene1_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 89 |
+| `MelissaMinstrelWagonScene2_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 121 |
+| `MelissaMinstrelWagonScene2_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 147 |
+| `MelissaMinstrelWagonScene3_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 181 |
+| `MelissaMinstrelWagonScene3_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 207 |
+| `MelissaMinstrelWagonScene4_1` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 243 |
+| `MelissaMinstrelWagonScene4_2` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 269 |
+| `MelissaMinstrelWagonText` | `modules/events/melissa/melissa_minstrel_wagon_text.qsps` | 8 |
+| `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 37 |
 | `MelissaMinstrelWatchReactionAction` | `modules/events/melissa/melissa_minstrel_watch_reaction.qsps` | 103 |
 | `MelissaMinstrelWatchReactionBuildMenu` | `modules/events/melissa/melissa_minstrel_watch_reaction.qsps` | 77 |
 | `MelissaMinstrelWatchReactionInterruptDefiantText` | `modules/events/melissa/melissa_minstrel_watch_reaction_text.qsps` | 21 |

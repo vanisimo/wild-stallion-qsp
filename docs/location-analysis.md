@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 453
-- Locations: 3259
-- Locations with direct incoming calls: 2806
-- Locations without direct incoming calls: 453
+- Source files: 455
+- Locations: 3272
+- Locations with direct incoming calls: 2818
+- Locations without direct incoming calls: 454
 - Review candidates without direct incoming calls: 164
-- Classified entry/helper locations without direct incoming calls: 289
+- Classified entry/helper locations without direct incoming calls: 290
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -390,6 +390,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MelissaMinstrelFridayRaceDebugReset` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 318 | `entry/helper` |
 | `MelissaMinstrelHallMissingTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 459 | `entry/helper` |
 | `MelissaMinstrelThreesomeStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 313 | `entry/helper` |
+| `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 37 | `entry/helper` |
 | `MelissaMusicianArcDebugReset` | `modules/events/melissa/melissa_musician_arc.qsps` | 751 | `entry/helper` |
 | `Menu.Chosen` | `modules/menu/system/otd_lib_menu.qsps` | 150 | `entry/helper` |
 | `Menu.Info` | `modules/menu/system/otd_lib_menu.qsps` | 13 | `entry/helper` |
@@ -481,24 +482,24 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1253 |
+| `ActUiPrepare` | 1267 |
 | `Menu.AddModule` | 573 |
 | `MenuUiAdd` | 537 |
-| `SceneShowVisual` | 458 |
+| `SceneShowVisual` | 467 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 167 |
+| `ClampGirlSocialStats` | 172 |
 | `TavernMain` | 149 |
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 95 |
 | `ShowImage` | 91 |
-| `PrintTitleLine` | 89 |
 | `Menu.Destroy` | 89 |
+| `PrintTitleLine` | 89 |
+| `RegisterSex` | 88 |
 | `FormatSpintry` | 87 |
-| `RegisterSex` | 87 |
 | `PrintMainP` | 77 |
 | `UpdateGirlLocations` | 76 |
-| `MarketDance` | 58 |
+| `MarketDance` | 64 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 49 |

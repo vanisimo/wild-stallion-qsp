@@ -1,0 +1,346 @@
+! ================================================
+! FILE: modules/events/melissa/melissa_minstrel_wagon.qsps
+! MODULE: events/melissa
+! [AI-WORKED] 19.09.2026
+! Встречи Мелиссы и менестреля в повозке (4 встречи по 2 экрана)
+! 1. Читает стихи -> падает лютня (срыв близости)
+! 2. Игра на лютне -> ласки сзади, пальцы под юбку, оргазм Мелиссы
+! 3. Игра на флейте -> урок дыхания (минет менестрелю)
+! 4. Книга о музе -> первый секс / проверка стихов
+! ================================================
+
+#MelissaMinstrelWagonCanStart
+    MelissaMinstrelWagonCanStart = 0
+
+    if MelissaMinstrelMet = 0:
+        exit
+    end
+
+    if MelissaMinstrelWagonToday = 1:
+        exit
+    end
+
+    ! Доступно по пятницам вечером на танцах или среди недели при прогулке Мелиссы
+    if week <> 5 or time <> 4:
+        if MelissaMinstrelWeekdayAllow <> 1:
+            exit
+        end
+    end
+
+    if MelissaMinstrelWagonStage >= 4:
+        exit
+    end
+
+    MelissaMinstrelWagonCanStart = 1
+---
+
+#MelissaMinstrelWagonTryStart
+    gs 'MelissaMinstrelWagonCanStart'
+
+    if MelissaMinstrelWagonCanStart = 1:
+        gt 'MelissaMinstrelWagonLaunch'
+    end
+---
+
+#MelissaMinstrelWagonLaunch
+    if MelissaMinstrelWagonStage = 0:
+        gt 'MelissaMinstrelWagonScene1_1'
+    elseif MelissaMinstrelWagonStage = 1:
+        gt 'MelissaMinstrelWagonScene2_1'
+    elseif MelissaMinstrelWagonStage = 2:
+        gt 'MelissaMinstrelWagonScene3_1'
+    elseif MelissaMinstrelWagonStage = 3:
+        gt 'MelissaMinstrelWagonScene4_1'
+    else:
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! ВСТРЕЧА 1: СТИХИ И УПАВШАЯ ЛЮТНЯ
+! ================================================
+
+#MelissaMinstrelWagonScene1_1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_poems', 'ПОВОЗКА МЕНЕСТРЕЛЯ — ЧТЕНИЕ СТИХОВ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — ПОЭТИЧЕСКИЙ СПОР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'scene1_1'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Смотреть, что будет дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonScene1_2'
+    end
+
+    gs 'ActUiPrepare', 'Постучать в повозку и окликнуть Мелиссу', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonInterrupt', 1
+    end
+---
+
+#MelissaMinstrelWagonScene1_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_lute_fall', 'УПАВШАЯ ЛЮТНЯ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — ЗВОН СТРУН'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'scene1_2'
+    *pl ' '
+
+    MelissaMinstrelWagonStage = 1
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelWagonLastDay = day
+    MelissaMusicianInterest += 2
+    MelissaNpcPath += 1
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Отойти от повозки', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! ВСТРЕЧА 2: ЛЮТНЯ, ОБЪЯТИЯ СО СПИНЫ И ОРГАЗМ МЕЛИССЫ
+! ================================================
+
+#MelissaMinstrelWagonScene2_1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_lute_play', 'ПОВОЗКА МЕНЕСТРЕЛЯ — МЕЛОДИЯ ЛЮТНИ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — ЗВУКИ ЛЮТНИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'scene2_1'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Смотреть дальше в щёлку', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonScene2_2'
+    end
+
+    gs 'ActUiPrepare', 'Постучать в дверь повозки', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonInterrupt', 2
+    end
+---
+
+#MelissaMinstrelWagonScene2_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_fingers_orgasm', 'ОБЪЯТИЯ СО СПИНЫ И ЛАСКА', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — ИСКУСНАЯ ИГРА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'scene2_2'
+    *pl ' '
+
+    MelissaMinstrelWagonStage = 2
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelWagonLastDay = day
+    MelissaMusicianInterest += 3
+    MelissaNpcPath += 2
+    sluttiness['melissa'] += 2
+    otkroven['melissa'] += 2
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Отойти от повозки', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! ВСТРЕЧА 3: ФЛЕЙТА И ОРАЛЬНЫЙ УРОК
+! ================================================
+
+#MelissaMinstrelWagonScene3_1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_flute_play', 'МЕЛИССА ИГРАЕТ НА ФЛЕЙТЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — УРОК МУЗЫКИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'scene3_1'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Наблюдать за уроком', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonScene3_2'
+    end
+
+    gs 'ActUiPrepare', 'Вмешаться и окликнуть', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonInterrupt', 3
+    end
+---
+
+#MelissaMinstrelWagonScene3_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_blowjob', 'УРОК ДЫХАНИЯ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — ОРАЛЬНАЯ ПРАКТИКА'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'scene3_2'
+    *pl ' '
+
+    MelissaMinstrelWagonStage = 3
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelWagonLastDay = day
+    MelissaMusicianInterest += 3
+    MelissaNpcPath += 2
+    sluttiness['melissa'] += 3
+    otkroven['melissa'] += 2
+    BlowjobCount['melissa'] += 1
+    OralCount['melissa'] += 1
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Отойти от повозки', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! ВСТРЕЧА 4: КНИГА О МУЗЕ И ПЕРВЫЙ СЕКС
+! ================================================
+
+#MelissaMinstrelWagonScene4_1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_book_talk', 'КНИГА О ЧУВСТВЕННОЙ МУЗЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — СПОР О ВДОХНОВЕНИИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'scene4_1'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Затаить дыхание и смотреть', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonScene4_2'
+    end
+
+    gs 'ActUiPrepare', 'Резко распахнуть дверь повозки', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonInterrupt', 4
+    end
+---
+
+#MelissaMinstrelWagonScene4_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_first_sex', 'СЛИЯНИЕ НА УЗКОЙ КРОВАТИ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — ВДОХНОВЕНИЕ ПЛОТИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'scene4_2'
+    *pl ' '
+
+    MelissaMinstrelWagonStage = 4
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelWagonLastDay = day
+    MelissaMinstrelFirstSexDone = 1
+    Fact_MelissaMinstrelFridayAlley = 1
+    Fact_MelissaMinstrelBackroomSex = 1
+    MelissaNpcPath += 3
+    sluttiness['melissa'] += 4
+    otkroven['melissa'] += 3
+
+    if virginity['melissa'] = 1:
+        virginity['melissa'] = 0
+    end
+
+    sexacts['melissa'] += 1
+    vaginalacts['melissa'] += 1
+    gs 'RegisterSex', 'melissa', 'vaginal', 0, 1
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Тихо уйти в ночь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+! ================================================
+! ВМЕШАТЕЛЬСТВО СТЕФАНА
+! ================================================
+
+#MelissaMinstrelWagonInterrupt
+    *clr
+    clr
+    cla
+
+    $WagonInterruptStage = $ARGS[0]
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_interrupt', 'ВМЕШАТЕЛЬСТВО СТЕФАНА', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОВОЗКА МЕНЕСТРЕЛЯ — ВМЕШАТЕЛЬСТВО'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaMinstrelWagonText', 'interrupt', $WagonInterruptStage
+    *pl ' '
+
+    MelissaMinstrelWagonToday = 1
+    MelissaTrustStefan += 1
+    MelissaPlayerPath += 1
+
+    if MelissaMusicianInterest > 0:
+        MelissaMusicianInterest -= 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+    killvar '$WagonInterruptStage'
+
+    gs 'ActUiPrepare', 'Увести Мелиссу на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
