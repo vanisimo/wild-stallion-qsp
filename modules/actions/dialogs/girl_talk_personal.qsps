@@ -86,6 +86,10 @@
         }
     end
 
+    if LOC('FamilyFirstSexTalkAddMenuItems') = 1:
+        gs 'FamilyFirstSexTalkAddMenuItems', $TalkGirl, $TalkReturnLoc
+    end
+
     ! ==================== АМАНДА ====================
     if $TalkGirl = 'amanda':
         if AmandaSaturdayTalkReady = 1 and AmandaSaturdayTalkDone = 0 and LOC('AmandaTalkAboutLegareStreetClash') = 1:
@@ -122,17 +126,6 @@
                 }
             end
             killvar 'AmandaLegareOutsideAftermathCanTalk'
-        end
-
-        if AmandaPathChoiceDone = 0 and LOC('AmandaPathChoiceCanStart') = 1:
-            gs 'AmandaPathChoiceCanStart'
-            if AmandaPathChoiceCanStart = 1:
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Легаре и ваших отношениях', 'talk'
-                gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                    gt 'AmandaPathChoiceStart', $TalkReturnLoc
-                }
-            end
-            killvar 'AmandaPathChoiceCanStart'
         end
 
         if LOC('AmandaLegareMajorAftermathCanTalk') = 1:
@@ -541,6 +534,12 @@
     GirlTalkPersonalStoryCount += GirlTalkPersonalHallTopicsCount
     killvar 'GirlTalkPersonalHallTopicsCount'
 
+    if LOC('FamilyFirstSexTalkCount') = 1:
+        gs 'FamilyFirstSexTalkCount', $GirlTalkPersonalGirl
+        GirlTalkPersonalStoryCount += FamilyFirstSexTalkAvailableCount
+        killvar 'FamilyFirstSexTalkAvailableCount'
+    end
+
     ! ==================== АМАНДА ====================
     if $GirlTalkPersonalGirl = 'amanda':
         if AmandaSaturdayTalkReady = 1 and AmandaSaturdayTalkDone = 0 and LOC('AmandaTalkAboutLegareStreetClash') = 1:
@@ -565,14 +564,6 @@
                 GirlTalkPersonalStoryCount += 1
             end
             killvar 'AmandaLegareOutsideAftermathCanTalk'
-        end
-
-        if AmandaPathChoiceDone = 0 and LOC('AmandaPathChoiceCanStart') = 1:
-            gs 'AmandaPathChoiceCanStart'
-            if AmandaPathChoiceCanStart = 1:
-                GirlTalkPersonalStoryCount += 1
-            end
-            killvar 'AmandaPathChoiceCanStart'
         end
 
         if LOC('AmandaLegareMajorAftermathCanTalk') = 1:

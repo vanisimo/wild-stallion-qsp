@@ -55,7 +55,8 @@ $visualRe = @(
   'HallMissingNobleShow',
   'SexSceneShowActionImage',
   'ShowGirlInLocation',
-  'ShowWorkImage'
+  'ShowWorkImage',
+  'AmandaMelissaTrainingShowVisual'
 ) -join '|'
 
 $linesOut = New-Object System.Collections.Generic.List[string]

@@ -1,6 +1,7 @@
 ! ================================================
 ! FILE: modules/events/melissa/melissa_dance.qsps
 ! MODULE: events/family
+! [AI-WORKED] 18.09.2026
 ! Пятничный танец с Мелиссой (player-path)
 ! Цепочка: танец → талия → поцелуй → шея → подворотня (гейт дома — PR-I9)
 ! ================================================
@@ -27,9 +28,7 @@
         gt 'FridayDanceSisterLimited', 'melissa'
     end
 
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'melissa', 'dance', 'dance', 'normal'
-    end
+    gs 'SceneShowVisual', 'images/dance/melissa/dance_normal', 'Танец с Мелиссой'
 
     *pl '══════════════════════════════════════════════'
     *pl ' ТАНЕЦ С МЕЛИССОЙ'
@@ -40,11 +39,11 @@
         gs 'MelissaDanceMainText'
     else:
         if $MelissaDanceLastText <> '':
-            *p $MelissaDanceLastText
+            *pl $MelissaDanceLastText
         elseif MelissaDanceStage = 0:
-            *p 'Мелисса стоит у края площади в новом платье. Она держится строже Аманды, но взгляд всё равно тянется к музыке.'
+            *pl 'Мелисса стоит у края площади в новом платье. Она держится строже Аманды, но взгляд всё равно тянется к музыке.'
         else:
-            *p 'Вы танцуете с Мелиссой на рыночной площади.'
+            *pl 'Вы танцуете с Мелиссой на рыночной площади.'
         end
     end
 
@@ -60,7 +59,7 @@
     end
 
     if MelissaDanceEnded = 1:
-        *p 'Танец с Мелиссой на сегодня уже закончен.'
+        *pl 'Танец с Мелиссой на сегодня уже закончен.'
         *pl ' '
 
         gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
@@ -97,53 +96,53 @@
     gs 'Menu.Create', 'MelissaDanceMenu'
 
     if MelissaDanceStage = 0:
-        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Танец', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Танец', 'dance'
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'dance'
         }
     else:
-        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Танец', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Танец', 'dance'
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'continue'
         }
     end
 
     if MelissaDanceStage >= 1 and MelissaDanceWaist = 0 and Friends['melissa'] >= 6:
-        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Талия', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Талия', 'intim'
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'waist'
         }
     end
 
     if MelissaDanceWaist = 1 and MelissaDanceKiss = 0 and Friends['melissa'] >= 8:
-        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Поцелуй', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Поцелуй', 'intim'
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'kiss'
         }
     end
 
     if MelissaDanceKiss = 1 and MelissaDanceNeck = 0:
-        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Поцелуй в шею', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Поцелуй в шею', 'intim'
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'neck'
         }
     end
 
     if MelissaDanceNeck = 1 and MelissaDanceAlley = 0:
-        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Подворотня', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Подворотня', 'intim'
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceAction', 'alley'
         }
     end
 
     if MelissaDanceKiss = 1 and MelissaHomeUnlocked = 0 and LOC('MelissaDanceLeaveHome') = 1:
-        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Уйти с Мелиссой в трактир', ''
+        gs 'MenuUiAdd', 'MelissaDanceMenu', 'Уйти с Мелиссой в трактир', 'return'
         gs 'Menu.AddModule', 'MelissaDanceMenu', {
             gt 'MelissaDanceLeaveHome'
         }
     end
 
-    gs 'MenuUiAdd', 'MelissaDanceMenu', 'Закончить танец', ''
+    gs 'MenuUiAdd', 'MelissaDanceMenu', 'Закончить танец', 'return'
     gs 'Menu.AddModule', 'MelissaDanceMenu', {
         MelissaDanceEnded = 1
         gt 'MarketDance'
@@ -248,14 +247,14 @@
     if LOC('MelissaDanceAlleyIntroText') = 1:
         gs 'MelissaDanceAlleyIntroText'
     else:
-        *p 'Мелисса останавливается у входа в тёмный проход и качает головой.'
-        *p '«Здесь — нет. Сначала дома, Стефан. Я не Аманда», — шепчет она.'
+        *pl 'Мелисса останавливается у входа в тёмный проход и качает головой.'
+        *pl '«Здесь — нет. Сначала дома, Стефан. Я не Аманда», — шепчет она.'
     end
 
     *pl ' '
 
     if MelissaHomeSex = 1 and LOC('MelissaDanceAlleyEvent') = 1:
-        gs 'ActUiPrepare', 'Продолжить в подворотне', 'generic'
+        gs 'ActUiPrepare', 'Продолжить в подворотне', 'intim'
         act $ActUiLabel, $ActUiIconPath:
             gt 'MelissaDanceAlleyEvent'
         end

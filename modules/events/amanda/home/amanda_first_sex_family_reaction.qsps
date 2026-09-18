@@ -1,60 +1,130 @@
 ! ================================================
 ! FILE: modules/events/amanda/home/amanda_first_sex_family_reaction.qsps
 ! MODULE: events/amanda/home
-! Утро, подозрения и прозрения после первого секса с Амандой
+! Утро, подозрения и последствия в семье
 ! ================================================
 
-#AmandaFirstSexMorningMarkPending
-    if AmandaHomeFirstVaginalRegistered = 0:
+#FamilyFirstSexMorningMarkPending
+    $IntimTargetGirl = $ARGS[0]
+
+    if $IntimTargetGirl = '':
+        $IntimTargetGirl = 'amanda'
+    end
+
+    if $IntimTargetGirl = 'amanda':
+        if AmandaHomeFirstVaginalRegistered = 0:
+            killvar '$IntimTargetGirl'
+            exit
+        end
+    elseif $IntimTargetGirl = 'melissa':
+        if MelissaHomeSex = 0:
+            killvar '$IntimTargetGirl'
+            exit
+        end
+    elseif $IntimTargetGirl = 'sandra':
+        if SandraHomeSex = 0:
+            killvar '$IntimTargetGirl'
+            exit
+        end
+    end
+
+    if FamilyFirstSexMorningShown[$IntimTargetGirl] = 1:
+        killvar '$IntimTargetGirl'
         exit
     end
 
-    if AmandaFirstSexMorningShown = 1:
-        exit
+    FamilyFirstSexMorningPending[$IntimTargetGirl] = 1
+
+    if $IntimTargetGirl = 'amanda':
+        AmandaFirstSexMorningPending = 1
     end
 
-    AmandaFirstSexMorningPending = 1
+    killvar '$IntimTargetGirl'
 ---
 
-#AmandaFirstSexMorningCanShow
-    AmandaFirstSexMorningCanShow = 0
+#AmandaFirstSexMorningMarkPending
+    gs 'FamilyFirstSexMorningMarkPending', 'amanda'
+---
 
-    if AmandaFirstSexMorningPending = 0:
-        exit
-    end
-
-    if AmandaFirstSexMorningShown = 1:
-        exit
-    end
-
-    if FamilyCorruptionStage >= 3:
-        AmandaFirstSexMorningPending = 0
-        exit
-    end
+#FamilyFirstSexMorningCanShow
+    FamilyFirstSexMorningCanShow = 0
+    $FamilyFirstSexMorningTargetGirl = ''
 
     if time <> 1:
         exit
     end
 
-    AmandaFirstSexMorningCanShow = 1
----
-
-#AmandaFirstSexMorningTryShow
-    gs 'AmandaFirstSexMorningCanShow'
-
-    if AmandaFirstSexMorningCanShow = 0:
+    if FamilyCorruptionStage >= 4:
         exit
     end
 
-    AmandaFirstSexMorningPending = 0
-    AmandaFirstSexMorningShown = 1
+    if FamilyFirstSexMorningPending['amanda'] = 1 and FamilyFirstSexMorningShown['amanda'] = 0:
+        FamilyFirstSexMorningCanShow = 1
+        $FamilyFirstSexMorningTargetGirl = 'amanda'
+        exit
+    elseif AmandaFirstSexMorningPending = 1 and AmandaFirstSexMorningShown = 0:
+        FamilyFirstSexMorningCanShow = 1
+        $FamilyFirstSexMorningTargetGirl = 'amanda'
+        exit
+    elseif FamilyFirstSexMorningPending['melissa'] = 1 and FamilyFirstSexMorningShown['melissa'] = 0:
+        FamilyFirstSexMorningCanShow = 1
+        $FamilyFirstSexMorningTargetGirl = 'melissa'
+        exit
+    elseif FamilyFirstSexMorningPending['sandra'] = 1 and FamilyFirstSexMorningShown['sandra'] = 0:
+        FamilyFirstSexMorningCanShow = 1
+        $FamilyFirstSexMorningTargetGirl = 'sandra'
+        exit
+    end
+---
 
-    if rand(1, 2) = 1:
-        $AmandaFirstSexMorningWitness = 'sandra'
-        GirlSuspectsAmandaStefan['sandra'] = 1
+#AmandaFirstSexMorningCanShow
+    gs 'FamilyFirstSexMorningCanShow'
+    AmandaFirstSexMorningCanShow = FamilyFirstSexMorningCanShow
+---
+
+#FamilyFirstSexMorningTryShow
+    gs 'FamilyFirstSexMorningCanShow'
+
+    if FamilyFirstSexMorningCanShow = 0:
+        exit
+    end
+
+    $IntimGirl = $FamilyFirstSexMorningTargetGirl
+
+    FamilyFirstSexMorningPending[$IntimGirl] = 0
+    FamilyFirstSexMorningShown[$IntimGirl] = 1
+
+    if $IntimGirl = 'amanda':
+        AmandaFirstSexMorningPending = 0
+        AmandaFirstSexMorningShown = 1
+    end
+
+    if $IntimGirl = 'amanda':
+        if rand(1, 2) = 1:
+            $WitnessGirl = 'sandra'
+        else
+            $WitnessGirl = 'melissa'
+        end
+    elseif $IntimGirl = 'melissa':
+        if rand(1, 2) = 1:
+            $WitnessGirl = 'sandra'
+        else
+            $WitnessGirl = 'amanda'
+        end
     else
-        $AmandaFirstSexMorningWitness = 'melissa'
-        GirlSuspectsAmandaStefan['melissa'] = 1
+        if rand(1, 2) = 1:
+            $WitnessGirl = 'melissa'
+        else
+            $WitnessGirl = 'amanda'
+        end
+    end
+
+    $FamilyFirstSexMorningWitness[$IntimGirl] = $WitnessGirl
+    GirlSuspectsFamilyIntim[$WitnessGirl, $IntimGirl] = 1
+
+    if $IntimGirl = 'amanda':
+        $AmandaFirstSexMorningWitness = $WitnessGirl
+        GirlSuspectsAmandaStefan[$WitnessGirl] = 1
     end
 
     FamilyTension += 3
@@ -63,91 +133,457 @@
         FamilyTension = 100
     end
 
-    gs 'AmandaFirstSexMorningText'
+    gs 'SceneShowVisual', 'images/events/family/morning_' + $IntimGirl, 'УТРО: ' + $RealName[$IntimGirl], 'large', 'webp'
 
     *pl ' '
     *pl '══════════════════════════════════════════════'
-    *pl ' УТРО ПОСЛЕ ПЕРВОЙ НОЧИ'
+    *pl ' УТРО В ДОМЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $AmandaHomeText
-    *pl ' '
 
-    killvar '$AmandaHomeText'
+    gs 'FamilyFirstSexMorningText', $IntimGirl, $WitnessGirl
+
+    killvar '$IntimGirl'
+    killvar '$WitnessGirl'
+    killvar '$FamilyFirstSexMorningTargetGirl'
+---
+
+#AmandaFirstSexMorningTryShow
+    gs 'FamilyFirstSexMorningTryShow'
+---
+
+#FamilyFirstSexMarkUnderstood
+    $WitnessGirl = $ARGS[0]
+    $TargetGirl = $ARGS[1]
+
+    if $WitnessGirl = '' or $TargetGirl = '':
+        killvar '$WitnessGirl'
+        killvar '$TargetGirl'
+        exit
+    end
+
+    FamilyIntimUnderstood[$WitnessGirl, $TargetGirl] = 1
+
+    if $WitnessGirl = 'melissa' and $TargetGirl = 'amanda':
+        MelissaAmandaStefanUnderstood = 1
+    elseif $WitnessGirl = 'sandra' and $TargetGirl = 'amanda':
+        SandraAmandaStefanUnderstood = 1
+    end
+
+    killvar '$WitnessGirl'
+    killvar '$TargetGirl'
 ---
 
 #AmandaFirstSexMarkMelissaUnderstood
-    if MelissaHomeSex = 0:
-        exit
-    end
-
-    if MelissaAmandaStefanUnderstood = 1:
-        exit
-    end
-
-    MelissaAmandaStefanUnderstood = 1
+    gs 'FamilyFirstSexMarkUnderstood', 'melissa', 'amanda'
 ---
 
 #AmandaFirstSexMarkSandraUnderstood
-    if SandraHomeSex = 0:
-        exit
+    gs 'FamilyFirstSexMarkUnderstood', 'sandra', 'amanda'
+---
+
+#FamilyFirstSexTalkCount
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $CountGirl = $GirlKey
+    FamilyFirstSexTalkAvailableCount = 0
+
+    if $CountGirl = 'sandra':
+        if (GirlSuspectsFamilyIntim['sandra', 'amanda'] = 1 or GirlSuspectsAmandaStefan['sandra'] = 1) and SandraAmandaSuspicionTalkDone = 0 and SandraHomeSex = 0 and FamilyCorruptionStage < 4:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if GirlSuspectsFamilyIntim['sandra', 'melissa'] = 1 and SandraMelissaSuspicionTalkDone = 0 and SandraHomeSex = 0 and FamilyCorruptionStage < 4:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if (SandraAmandaStefanUnderstood = 1 or FamilyIntimUnderstood['sandra', 'amanda'] = 1) and SandraAmandaUnderstoodTalkDone = 0:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if FamilyIntimUnderstood['sandra', 'melissa'] = 1 and SandraMelissaUnderstoodTalkDone = 0:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+    elseif $CountGirl = 'melissa':
+        if (GirlSuspectsFamilyIntim['melissa', 'amanda'] = 1 or GirlSuspectsAmandaStefan['melissa'] = 1) and MelissaAmandaTeaseDone = 0 and MelissaHomeSex = 0 and FamilyCorruptionStage < 4:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if GirlSuspectsFamilyIntim['melissa', 'sandra'] = 1 and MelissaSandraSuspicionTalkDone = 0 and MelissaHomeSex = 0 and FamilyCorruptionStage < 4:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if (MelissaAmandaStefanUnderstood = 1 or FamilyIntimUnderstood['melissa', 'amanda'] = 1) and MelissaAmandaUnderstoodTalkDone = 0:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if FamilyIntimUnderstood['melissa', 'sandra'] = 1 and MelissaSandraUnderstoodTalkDone = 0:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+    elseif $CountGirl = 'amanda':
+        if (FamilyFirstSexMorningShown['amanda'] = 1 or AmandaFirstSexMorningShown = 1) and AmandaFirstSexAmandaWorryTalkDone = 0 and FamilyCorruptionStage < 4:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if GirlSuspectsFamilyIntim['amanda', 'melissa'] = 1 and AmandaMelissaSuspicionTalkDone = 0 and AmandaHomeFirstVaginalRegistered = 0 and FamilyCorruptionStage < 4:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if GirlSuspectsFamilyIntim['amanda', 'sandra'] = 1 and AmandaSandraSuspicionTalkDone = 0 and AmandaHomeFirstVaginalRegistered = 0 and FamilyCorruptionStage < 4:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if FamilyIntimUnderstood['amanda', 'melissa'] = 1 and AmandaMelissaUnderstoodTalkDone = 0:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
+
+        if FamilyIntimUnderstood['amanda', 'sandra'] = 1 and AmandaSandraUnderstoodTalkDone = 0:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
     end
 
-    if SandraAmandaStefanUnderstood = 1:
-        exit
+    killvar '$CountGirl'
+---
+
+#FamilyFirstSexTalkAddMenuItems
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $MenuGirl = $GirlKey
+    $MenuReturnLoc = $ARGS[1]
+
+    if $MenuReturnLoc = '':
+        $MenuReturnLoc = 'TavernMain'
     end
 
-    SandraAmandaStefanUnderstood = 1
+    if $MenuGirl = 'sandra':
+        if (GirlSuspectsFamilyIntim['sandra', 'amanda'] = 1 or GirlSuspectsAmandaStefan['sandra'] = 1) and SandraAmandaSuspicionTalkDone = 0 and SandraHomeSex = 0 and FamilyCorruptionStage < 4:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подозрениях насчёт Аманды', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'sandra', 'amanda', 'suspicion', $TalkReturnLoc
+            }
+        end
+
+        if GirlSuspectsFamilyIntim['sandra', 'melissa'] = 1 and SandraMelissaSuspicionTalkDone = 0 and SandraHomeSex = 0 and FamilyCorruptionStage < 4:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подозрениях насчёт Мелиссы', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'sandra', 'melissa', 'suspicion', $TalkReturnLoc
+            }
+        end
+
+        if (SandraAmandaStefanUnderstood = 1 or FamilyIntimUnderstood['sandra', 'amanda'] = 1) and SandraAmandaUnderstoodTalkDone = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том утре с Амандой', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'sandra', 'amanda', 'understood', $TalkReturnLoc
+            }
+        end
+
+        if FamilyIntimUnderstood['sandra', 'melissa'] = 1 and SandraMelissaUnderstoodTalkDone = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том утре с Мелиссой', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'sandra', 'melissa', 'understood', $TalkReturnLoc
+            }
+        end
+
+    elseif $MenuGirl = 'melissa':
+        if (GirlSuspectsFamilyIntim['melissa', 'amanda'] = 1 or GirlSuspectsAmandaStefan['melissa'] = 1) and MelissaAmandaTeaseDone = 0 and MelissaHomeSex = 0 and FamilyCorruptionStage < 4:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том утре на кухне', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'melissa', 'amanda', 'suspicion', $TalkReturnLoc
+            }
+        end
+
+        if GirlSuspectsFamilyIntim['melissa', 'sandra'] = 1 and MelissaSandraSuspicionTalkDone = 0 and MelissaHomeSex = 0 and FamilyCorruptionStage < 4:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подозрениях насчёт мамы', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'melissa', 'sandra', 'suspicion', $TalkReturnLoc
+            }
+        end
+
+        if (MelissaAmandaStefanUnderstood = 1 or FamilyIntimUnderstood['melissa', 'amanda'] = 1) and MelissaAmandaUnderstoodTalkDone = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том утре с Амандой', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'melissa', 'amanda', 'understood', $TalkReturnLoc
+            }
+        end
+
+        if FamilyIntimUnderstood['melissa', 'sandra'] = 1 and MelissaSandraUnderstoodTalkDone = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том утре с мамой', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'melissa', 'sandra', 'understood', $TalkReturnLoc
+            }
+        end
+
+    elseif $MenuGirl = 'amanda':
+        if (FamilyFirstSexMorningShown['amanda'] = 1 or AmandaFirstSexMorningShown = 1) and AmandaFirstSexAmandaWorryTalkDone = 0 and FamilyCorruptionStage < 4:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подозрениях в доме', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'amanda', 'amanda', 'worry', $TalkReturnLoc
+            }
+        end
+
+        if GirlSuspectsFamilyIntim['amanda', 'melissa'] = 1 and AmandaMelissaSuspicionTalkDone = 0 and AmandaHomeFirstVaginalRegistered = 0 and FamilyCorruptionStage < 4:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подозрениях насчёт Мелиссы', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'amanda', 'melissa', 'suspicion', $TalkReturnLoc
+            }
+        end
+
+        if GirlSuspectsFamilyIntim['amanda', 'sandra'] = 1 and AmandaSandraSuspicionTalkDone = 0 and AmandaHomeFirstVaginalRegistered = 0 and FamilyCorruptionStage < 4:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подозрениях насчёт мамы', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'amanda', 'sandra', 'suspicion', $TalkReturnLoc
+            }
+        end
+
+        if FamilyIntimUnderstood['amanda', 'melissa'] = 1 and AmandaMelissaUnderstoodTalkDone = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том утре с Мелиссой', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'amanda', 'melissa', 'understood', $TalkReturnLoc
+            }
+        end
+
+        if FamilyIntimUnderstood['amanda', 'sandra'] = 1 and AmandaSandraUnderstoodTalkDone = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том утре с мамой', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'amanda', 'sandra', 'understood', $TalkReturnLoc
+            }
+        end
+    end
+
+    killvar '$MenuGirl'
+    killvar '$MenuReturnLoc'
+---
+
+#FamilyFirstSexTalkStart
+    *clr
+    clr
+    cla
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TargetGirl = $ARGS[1]
+    $TalkMode = $ARGS[2]
+    $TalkReturnLoc = $ARGS[3]
+
+    if $TargetGirl = '':
+        $TargetGirl = 'amanda'
+    end
+
+    if $TalkMode = '':
+        $TalkMode = 'suspicion'
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/family/talk_' + $TalkGirl + '_' + $TalkMode, 'РАЗГОВОР: ' + $RealName[$TalkGirl], 'large', 'webp'
+
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СЕМЕЙНЫЙ РАЗГОВОР: ' + $RealName[$TalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'FamilyFirstSexTalkIntroText', $TalkGirl, $TargetGirl, $TalkMode
+    *pl ' '
+
+    if $TalkGirl = 'sandra' and $TalkMode = 'suspicion':
+        gs 'ActUiPrepare', 'Отмахнуться', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'deny', $TalkReturnLoc
+        end
+
+        gs 'ActUiPrepare', 'Успокоить', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'calm', $TalkReturnLoc
+        end
+
+        gs 'ActUiPrepare', 'Сменить тему', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'deflect', $TalkReturnLoc
+        end
+
+    elseif $TalkGirl = 'melissa' and $TalkMode = 'suspicion':
+        gs 'ActUiPrepare', 'Пошутить в ответ', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'banter', $TalkReturnLoc
+        end
+
+        gs 'ActUiPrepare', 'Попросить о благоразумии', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'discretion', $TalkReturnLoc
+        end
+
+        gs 'ActUiPrepare', 'Оборвать разговор', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'dismiss', $TalkReturnLoc
+        end
+
+    elseif $TalkGirl = 'amanda' and $TalkMode = 'worry':
+        gs 'ActUiPrepare', 'Успокоить её', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'reassure', $TalkReturnLoc
+        end
+
+        gs 'ActUiPrepare', 'Призвать к осторожности', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'caution', $TalkReturnLoc
+        end
+
+    else
+        gs 'ActUiPrepare', 'Выслушать', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'listen', $TalkReturnLoc
+        end
+    end
+---
+
+#FamilyFirstSexTalkChoice
+    *clr
+    clr
+    cla
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TargetGirl = $ARGS[1]
+    $TalkMode = $ARGS[2]
+    $Choice = $ARGS[3]
+    $TalkReturnLoc = $ARGS[4]
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'SceneShowVisual', 'images/events/family/talk_react_' + $TalkGirl + '_' + $Choice, 'РЕАКЦИЯ: ' + $RealName[$TalkGirl], 'large', 'webp'
+
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' СЕМЕЙНЫЙ РАЗГОВОР: ' + $RealName[$TalkGirl]
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'FamilyFirstSexTalkChoiceText', $TalkGirl, $TargetGirl, $TalkMode, $Choice
+    *pl ' '
+
+    if $TalkGirl = 'sandra' and $TalkMode = 'suspicion':
+        FamilyIntimSuspicionTalkDone['sandra', $TargetGirl] = 1
+
+        if $TargetGirl = 'amanda':
+            SandraAmandaSuspicionTalkDone = 1
+        elseif $TargetGirl = 'melissa':
+            SandraMelissaSuspicionTalkDone = 1
+        end
+
+        if $Choice = 'deny':
+            AmandaFirstSexSandraTalkResponse = 1
+            FamilyTension += 4
+            SandraFamilyConcern += 1
+        elseif $Choice = 'calm':
+            AmandaFirstSexSandraTalkResponse = 2
+            FamilyTrust += 2
+            SandraTrust += 1
+        else
+            AmandaFirstSexSandraTalkResponse = 3
+            FamilyTension += 2
+        end
+
+    elseif $TalkGirl = 'melissa' and $TalkMode = 'suspicion':
+        FamilyIntimTeaseTalkDone['melissa', $TargetGirl] = 1
+
+        if $TargetGirl = 'amanda':
+            MelissaAmandaTeaseDone = 1
+        elseif $TargetGirl = 'sandra':
+            MelissaSandraSuspicionTalkDone = 1
+        end
+
+        if $Choice = 'banter':
+            Friends['melissa'] += 2
+            love['melissa'] += 1
+        elseif $Choice = 'discretion':
+            FamilyTrust += 1
+            MelissaTrustStefan += 1
+        else
+            FamilyTension += 3
+        end
+
+    elseif $TalkGirl = 'amanda' and $TalkMode = 'worry':
+        FamilyIntimWorryTalkDone['amanda'] = 1
+        AmandaFirstSexAmandaWorryTalkDone = 1
+
+        if $Choice = 'reassure':
+            AmandaTrustStefan += 2
+            love['amanda'] += 2
+        else
+            AmandaWorkDiscipline += 1
+            AmandaSecretiveness += 1
+        end
+
+    elseif $TalkMode = 'understood':
+        FamilyIntimUnderstoodTalkDone[$TalkGirl, $TargetGirl] = 1
+
+        if $TalkGirl = 'sandra':
+            if $TargetGirl = 'amanda':
+                SandraAmandaUnderstoodTalkDone = 1
+            elseif $TargetGirl = 'melissa':
+                SandraMelissaUnderstoodTalkDone = 1
+            end
+
+            FamilyCorruptionStage += 1
+            if FamilyCorruptionStage > 5:
+                FamilyCorruptionStage = 5
+            end
+
+        elseif $TalkGirl = 'melissa':
+            if $TargetGirl = 'amanda':
+                MelissaAmandaUnderstoodTalkDone = 1
+            elseif $TargetGirl = 'sandra':
+                MelissaSandraUnderstoodTalkDone = 1
+            end
+
+            MelissaTrustStefan += 2
+            FamilyTrust += 1
+
+        elseif $TalkGirl = 'amanda':
+            if $TargetGirl = 'melissa':
+                AmandaMelissaUnderstoodTalkDone = 1
+            elseif $TargetGirl = 'sandra':
+                AmandaSandraUnderstoodTalkDone = 1
+            end
+
+            AmandaTrustStefan += 1
+            FamilyTrust += 1
+        end
+    end
+
+    Friends[$TalkGirl] += 1
+
+    if love[$TalkGirl] > 0:
+        love[$TalkGirl] += 1
+    end
+
+    if FamilyTension > 100:
+        FamilyTension = 100
+    end
+
+    if FamilyTrust > 100:
+        FamilyTrust = 100
+    end
+
+    gs 'UsefulTalkRegister', $TalkGirl, 'family_aftermath'
+
+    killvar '$TalkGirl'
+    killvar '$TargetGirl'
+    killvar '$TalkMode'
+    killvar '$Choice'
+
+    gs 'GirlTalkAddReturnButton', $TalkReturnLoc
 ---
 
 #AmandaFirstSexFamilyTalkCanStart
-    gs 'NormalizeGirlKey', $ARGS[0]
-    $AmandaFirstSexTalkGirl = $GirlKey
-    $AmandaFirstSexTalkTopic = LCASE($ARGS[1])
-
     AmandaFirstSexFamilyTalkCanStart = 0
-    $AmandaFirstSexFamilyTalkMode = ''
-
-    if $AmandaFirstSexTalkGirl = '':
-        killvar '$AmandaFirstSexTalkGirl'
-        killvar '$AmandaFirstSexTalkTopic'
-        exit
-    end
-
-    if $AmandaFirstSexTalkTopic = 'daughters':
-        $AmandaFirstSexTalkTopic = 'family'
-    end
-
-    if $AmandaFirstSexTalkTopic <> 'family':
-        killvar '$AmandaFirstSexTalkGirl'
-        killvar '$AmandaFirstSexTalkTopic'
-        exit
-    end
-
-    if $AmandaFirstSexTalkGirl = 'sandra':
-        if SandraAmandaStefanUnderstood = 1 and SandraAmandaUnderstoodTalkDone = 0:
-            AmandaFirstSexFamilyTalkCanStart = 1
-            $AmandaFirstSexFamilyTalkMode = 'sandra_understood'
-        elseif SandraHomeSex = 0 and SandraAmandaSuspicionTalkDone = 0 and GirlSuspectsAmandaStefan['sandra'] >= 1 and FamilyCorruptionStage < 4:
-            AmandaFirstSexFamilyTalkCanStart = 1
-            $AmandaFirstSexFamilyTalkMode = 'sandra_suspicion'
-        end
-
-    elseif $AmandaFirstSexTalkGirl = 'melissa':
-        if MelissaAmandaStefanUnderstood = 1 and MelissaAmandaUnderstoodTalkDone = 0:
-            AmandaFirstSexFamilyTalkCanStart = 1
-            $AmandaFirstSexFamilyTalkMode = 'melissa_understood'
-        end
-
-    elseif $AmandaFirstSexTalkGirl = 'amanda':
-        if AmandaFirstSexAmandaWorryTalkDone = 0 and AmandaFirstSexMorningShown = 1 and FamilyCorruptionStage < 4:
-            AmandaFirstSexFamilyTalkCanStart = 1
-            $AmandaFirstSexFamilyTalkMode = 'amanda_worry'
-        end
-    end
-
-    killvar '$AmandaFirstSexTalkGirl'
-    killvar '$AmandaFirstSexTalkTopic'
 ---
 
 #AmandaFirstSexMelissaTeaseCanShow
@@ -161,7 +597,7 @@
         exit
     end
 
-    if GirlSuspectsAmandaStefan['melissa'] < 1:
+    if GirlSuspectsAmandaStefan['melissa'] < 1 and GirlSuspectsFamilyIntim['melissa', 'amanda'] < 1:
         exit
     end
 
@@ -174,98 +610,28 @@
 
 #AmandaFirstSexFamilyTalkStart
     gs 'NormalizeGirlKey', $ARGS[0]
-    $TalkGirl = $GirlKey
-    $TalkReturnLoc = $ARGS[1]
-    $TalkTopic = LCASE($ARGS[2])
+    $LegacyGirl = $GirlKey
+    $LegacyReturnLoc = $ARGS[1]
 
-    if $TalkReturnLoc = '':
-        $TalkReturnLoc = 'TavernMain'
-    end
-
-    cls
-
-    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if $AmandaFirstSexFamilyTalkMode = 'sandra_suspicion':
-        gs 'AmandaFirstSexSandraSuspicionTalkText'
-        *p $AmandaFirstSexFamilyTalkText
-        *pl ' '
-
-        gs 'ActUiPrepare', 'Отмахнуться', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gs 'AmandaFirstSexSandraSuspicionChoiceText', 'deny'
-            AmandaFirstSexSandraTalkResponse = 1
-            FamilyTension += 4
-            gt 'AmandaFirstSexFamilyTalkFinish'
+    if $LegacyGirl = 'sandra':
+        if SandraAmandaStefanUnderstood = 1 and SandraAmandaUnderstoodTalkDone = 0:
+            gt 'FamilyFirstSexTalkStart', 'sandra', 'amanda', 'understood', $LegacyReturnLoc
+        else
+            gt 'FamilyFirstSexTalkStart', 'sandra', 'amanda', 'suspicion', $LegacyReturnLoc
         end
-
-        gs 'ActUiPrepare', 'Успокоить', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gs 'AmandaFirstSexSandraSuspicionChoiceText', 'calm'
-            AmandaFirstSexSandraTalkResponse = 2
-            FamilyTrust += 2
-            gt 'AmandaFirstSexFamilyTalkFinish'
+    elseif $LegacyGirl = 'melissa':
+        if MelissaAmandaStefanUnderstood = 1 and MelissaAmandaUnderstoodTalkDone = 0:
+            gt 'FamilyFirstSexTalkStart', 'melissa', 'amanda', 'understood', $LegacyReturnLoc
+        else
+            gt 'FamilyFirstSexTalkStart', 'melissa', 'amanda', 'suspicion', $LegacyReturnLoc
         end
-
-        gs 'ActUiPrepare', 'Сменить тему', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gs 'AmandaFirstSexSandraSuspicionChoiceText', 'deflect'
-            AmandaFirstSexSandraTalkResponse = 3
-            FamilyTension += 2
-            gt 'AmandaFirstSexFamilyTalkFinish'
-        end
-
-    elseif $AmandaFirstSexFamilyTalkMode = 'sandra_understood':
-        gs 'AmandaFirstSexSandraUnderstoodTalkText'
-        *p $AmandaFirstSexFamilyTalkText
-        SandraAmandaUnderstoodTalkDone = 1
-        FamilyCorruptionStage += 1
-
-        if FamilyCorruptionStage > 5:
-            FamilyCorruptionStage = 5
-        end
-
-        gt 'AmandaFirstSexFamilyTalkFinish'
-
-    elseif $AmandaFirstSexFamilyTalkMode = 'melissa_understood':
-        gs 'AmandaFirstSexMelissaUnderstoodTalkText'
-        *p $AmandaFirstSexFamilyTalkText
-        MelissaAmandaUnderstoodTalkDone = 1
-        gt 'AmandaFirstSexFamilyTalkFinish'
-
-    elseif $AmandaFirstSexFamilyTalkMode = 'amanda_worry':
-        gs 'AmandaFirstSexAmandaWorryTalkText'
-        *p $AmandaFirstSexFamilyTalkText
-        AmandaFirstSexAmandaWorryTalkDone = 1
-        AmandaSecretiveness += 1
-        gt 'AmandaFirstSexFamilyTalkFinish'
-
+    elseif $LegacyGirl = 'amanda':
+        gt 'FamilyFirstSexTalkStart', 'amanda', 'amanda', 'worry', $LegacyReturnLoc
     else
-        gt $TalkReturnLoc
+        gt $LegacyReturnLoc
     end
 ---
 
 #AmandaFirstSexFamilyTalkFinish
-    if $AmandaFirstSexFamilyTalkMode = 'sandra_suspicion':
-        *p $AmandaFirstSexFamilyTalkText
-        SandraAmandaSuspicionTalkDone = 1
-        SandraFamilyConcern += 1
-    end
-
-    killvar '$AmandaFirstSexFamilyTalkText'
-    killvar '$AmandaFirstSexFamilyTalkMode'
-
-    Friends[$TalkGirl] += 1
-
-    if love[$TalkGirl] > 0:
-        love[$TalkGirl] += 1
-    end
-
-    *pl ' '
     gs 'GirlTalkAddReturnButton', $TalkReturnLoc
 ---

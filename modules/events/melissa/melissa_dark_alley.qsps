@@ -1,6 +1,7 @@
 ! ================================================
 ! FILE: modules/events/melissa/melissa_dark_alley.qsps
 ! MODULE: events/family
+! [AI-WORKED] 18.09.2026
 ! Подворотня с Мелиссой после домашнего первого
 ! ================================================
 
@@ -32,9 +33,9 @@
     if LOC('MelissaDanceAlleyMainText') = 1:
         gs 'MelissaDanceAlleyMainText'
     elseif $MelissaAlleyLastText <> '':
-        *p $MelissaAlleyLastText
+        *pl $MelissaAlleyLastText
     else:
-        *p 'Вы с Мелиссой отходите в тёмный проход. Она всё ещё оглядывается — но уже не отступает.'
+        *pl 'Вы с Мелиссой отходите в тёмный проход. Она всё ещё оглядывается — но уже не отступает.'
     end
 
     *pl ' '
@@ -60,33 +61,33 @@
     gs 'Menu.Destroy', 'MelissaAlleyMenu'
     gs 'Menu.Create', 'MelissaAlleyMenu'
 
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Оглядеться', ''
+    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Оглядеться', 'look'
     gs 'Menu.AddModule', 'MelissaAlleyMenu', {
         gt 'MelissaDanceAlleyAction', 'look'
     }
 
     if MelissaAlleyKiss = 0:
-        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Поцеловать', ''
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Поцеловать', 'intim'
         gs 'Menu.AddModule', 'MelissaAlleyMenu', {
             gt 'MelissaDanceAlleyAction', 'kiss'
         }
     end
 
     if MelissaAlleyKiss = 1 and MelissaAlleyClose = 0:
-        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Прижать ближе', ''
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Прижать ближе', 'intim'
         gs 'Menu.AddModule', 'MelissaAlleyMenu', {
             gt 'MelissaDanceAlleyAction', 'close'
         }
     end
 
     if MelissaAlleyClose = 1:
-        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Продолжить близость', ''
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Продолжить близость', 'intim'
         gs 'Menu.AddModule', 'MelissaAlleyMenu', {
             gt 'MelissaDanceAlleyToSexScene'
         }
     end
 
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Вернуться на площадь', ''
+    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Вернуться на площадь', 'return'
     gs 'Menu.AddModule', 'MelissaAlleyMenu', {
         gt 'MelissaDanceAlleyEnd'
     }
@@ -127,7 +128,7 @@
         if LOC('MelissaDanceAlleyHomeGateText') = 1:
             gs 'MelissaDanceAlleyHomeGateText'
         else:
-            *p 'Мелисса отстраняется: «Сначала дома. Я же говорила».'
+            *pl 'Мелисса отстраняется: «Сначала дома. Я же говорила».'
         end
 
         gs 'ActUiPrepare', 'Вернуться в подворотню', 'return'
@@ -135,7 +136,7 @@
             gt 'MelissaDanceAlleyEvent'
         end
 
-        gs 'ActUiPrepare', 'На площадь', 'generic'
+        gs 'ActUiPrepare', 'На площадь', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'MelissaDanceAlleyEnd'
         end
@@ -154,7 +155,7 @@
 
     MelissaAlleyAfterSex = 1
 
-    gs 'ActUiPrepare', 'Продолжить', 'generic'
+    gs 'ActUiPrepare', 'Продолжить', 'intim'
     act $ActUiLabel, $ActUiIconPath:
         gt 'SexSceneStart', 'melissa', 'MarketDance', 'melissa_alley'
     end

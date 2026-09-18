@@ -1,6 +1,7 @@
 ! ================================================
 ! FILE: modules/events/melissa/melissa_home_chain.qsps
 ! MODULE: events/family
+! [AI-WORKED] 18.09.2026
 ! Домашняя лестница Мелиссы (player-path)
 ! ================================================
 
@@ -80,7 +81,7 @@
     *pl ' КОМНАТА МЕЛИССЫ — БЛИЗОСТЬ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $MelissaHomeText
+    *pl $MelissaHomeText
     *pl ' '
 
     MelissaHomeStage += 1
@@ -145,7 +146,7 @@
     *pl ' ПЕРВАЯ БЛИЗОСТЬ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $MelissaHomeText
+    *pl $MelissaHomeText
     *pl ' '
 
     MelissaHomeFirstSexActive = 1
@@ -175,7 +176,7 @@
     *pl ' ПОСЛЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $MelissaHomeText
+    *pl $MelissaHomeText
     *pl ' '
 
     gs 'ActUiPrepare', 'Вернуться в коридор', 'return'
@@ -212,7 +213,7 @@
     *pl ' УХОД С ТАНЦЕВ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $MelissaDanceLastText
+    *pl $MelissaDanceLastText
     *pl ' '
 
     $GirlLocation['melissa'] = 'MelissaRoom'
@@ -235,7 +236,7 @@
     end
 
     if MelissaProhibitMinstrel = 1:
-        *p 'Вы уже запретили Мелиссе встречаться с менестрелем. Она помнит это — и обижается.'
+        *pl 'Вы уже запретили Мелиссе встречаться с менестрелем. Она помнит это — и обижается.'
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt $TalkReturnLoc
@@ -254,10 +255,11 @@
     *pl ' РАЗГОВОР О МЕНЕСТРЕЛЕ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *p $MelissaTalkText
+    *pl $MelissaTalkText
     *pl ' '
 
-    act 'Запретить встречи с ' + $MelissaMinstrelName:
+    gs 'ActUiPrepare', 'Запретить встречи с ' + $MelissaMinstrelName, 'talk'
+    act $ActUiLabel, $ActUiIconPath:
         MelissaProhibitMinstrel = 1
         if MelissaMinstrelFirstSexDone = 1:
             MelissaProhibitDays = 3
@@ -278,7 +280,7 @@
         end
 
         gs 'MelissaProhibitMinstrelDoneText'
-        *p $MelissaTalkText
+        *pl $MelissaTalkText
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt $TalkReturnLoc
