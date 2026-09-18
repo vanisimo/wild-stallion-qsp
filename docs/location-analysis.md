@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 451
-- Locations: 3241
-- Locations with direct incoming calls: 2792
+- Locations: 3243
+- Locations with direct incoming calls: 2794
 - Locations without direct incoming calls: 449
 - Review candidates without direct incoming calls: 160
 - Classified entry/helper locations without direct incoming calls: 289
@@ -147,7 +147,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 553 | `modules/locations` |
 | `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 558 | `modules/locations` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 150 | `modules/core` |
-| `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 207 | `modules/events` |
+| `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 251 | `modules/events` |
 | `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 299 | `modules/events` |
 | `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 997 | `modules/core` |
 | `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 991 | `modules/core` |
@@ -477,10 +477,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1236 |
+| `ActUiPrepare` | 1238 |
 | `Menu.AddModule` | 572 |
 | `MenuUiAdd` | 536 |
-| `SceneShowVisual` | 445 |
+| `SceneShowVisual` | 447 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 163 |
@@ -488,8 +488,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 95 |
 | `ShowImage` | 91 |
-| `Menu.Destroy` | 89 |
 | `PrintTitleLine` | 89 |
+| `Menu.Destroy` | 89 |
 | `FormatSpintry` | 87 |
 | `RegisterSex` | 86 |
 | `PrintMainP` | 77 |

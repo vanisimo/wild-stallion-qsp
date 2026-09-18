@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 451
-- Locations: 3241
+- Locations: 3243
 
 ## modules/actions
 
@@ -2466,8 +2466,8 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaDanceAlleyToSexScene` | `modules/events/melissa/melissa_dark_alley.qsps` | 120 |
 | `MelissaDanceBuildMenu` | `modules/events/melissa/melissa_dance.qsps` | 93 |
 | `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 271 |
-| `MelissaDanceLeaveHome` | `modules/events/melissa/melissa_home_chain.qsps` | 250 |
-| `MelissaDanceLeaveHomeText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 142 |
+| `MelissaDanceLeaveHome` | `modules/events/melissa/melissa_home_chain.qsps` | 294 |
+| `MelissaDanceLeaveHomeText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 263 |
 | `MelissaDanceMainText` | `modules/events/melissa/melissa_dance_text.qsps` | 8 |
 | `MelissaDanceReset` | `modules/events/melissa/melissa_dance.qsps` | 78 |
 | `MelissaDoubleAnalCanStart` | `modules/events/family/intimacy_kinks.qsps` | 695 |
@@ -2480,11 +2480,13 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaFirstPathChoiceStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 647 |
 | `MelissaFirstPathChoiceTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 630 |
 | `MelissaFridayDanceAdvance` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 8 |
-| `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 207 |
-| `MelissaHomeAfterSexText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 130 |
+| `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 251 |
+| `MelissaHomeAfterSexText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 239 |
 | `MelissaHomeCanAdvance` | `modules/events/melissa/melissa_home_chain.qsps` | 15 |
-| `MelissaHomeFirstSexLaunch` | `modules/events/melissa/melissa_home_chain.qsps` | 161 |
+| `MelissaHomeFirstSexLaunch` | `modules/events/melissa/melissa_home_chain.qsps` | 205 |
 | `MelissaHomeStep` | `modules/events/melissa/melissa_home_chain.qsps` | 56 |
+| `MelissaHomeStepAct` | `modules/events/melissa/melissa_home_chain.qsps` | 118 |
+| `MelissaHomeStepAfter` | `modules/events/melissa/melissa_home_chain.qsps` | 140 |
 | `MelissaHomeStepText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 8 |
 | `MelissaMinstrelAffairAdvance` | `modules/events/melissa/melissa_musician_arc.qsps` | 403 |
 | `MelissaMinstrelAnalCanStart` | `modules/events/family/intimacy_kinks.qsps` | 632 |
@@ -2553,10 +2555,10 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaMusicStageCanOffer` | `modules/events/melissa/melissa_music_stage.qsps` | 9 |
 | `MelissaMusicStageTalk` | `modules/events/melissa/melissa_music_stage.qsps` | 13 |
 | `MelissaMusicStageTalkText` | `modules/events/melissa/melissa_musician_arc_text.qsps` | 8 |
-| `MelissaProhibitMinstrelDoneText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 150 |
-| `MelissaProhibitMinstrelTalk` | `modules/events/melissa/melissa_home_chain.qsps` | 289 |
-| `MelissaProhibitMinstrelTalkCanOffer` | `modules/events/melissa/melissa_home_chain.qsps` | 353 |
-| `MelissaProhibitMinstrelTalkText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 146 |
+| `MelissaProhibitMinstrelDoneText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 271 |
+| `MelissaProhibitMinstrelTalk` | `modules/events/melissa/melissa_home_chain.qsps` | 333 |
+| `MelissaProhibitMinstrelTalkCanOffer` | `modules/events/melissa/melissa_home_chain.qsps` | 397 |
+| `MelissaProhibitMinstrelTalkText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 267 |
 | `MelissaTalkAboutAmandaLegareMajor` | `modules/events/amanda/legare/amanda_legare_major_aftermath.qsps` | 292 |
 | `MelissaTalkAboutAmandaLegareMajorText` | `modules/events/amanda/legare/amanda_legare_major_aftermath_text.qsps` | 94 |
 | `MelissaTalkAboutAmandaLegarePrivate` | `modules/events/amanda/legare/amanda_legare_private_aftermath.qsps` | 256 |
