@@ -986,7 +986,7 @@
     if IntimStage[$SexGirl] >= 4:
         if $SexGirl = 'amanda' and AmandaLizetteAnalTalkDone = 1:
             SexSceneRimUnlocked = 1
-        elseif $SexGirl = 'melissa' and MelissaAnalDiscoveryStage >= 3:
+        elseif $SexGirl = 'melissa' and (MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or MelissaHomeAnalStage >= 2 or MelissaAnalDiscoveryStage >= 3):
             SexSceneRimUnlocked = 1
         elseif $SexGirl <> 'amanda' and $SexGirl <> 'melissa':
             if otkroven[$SexGirl] >= 25 or sluttiness[$SexGirl] >= 35:
@@ -1003,7 +1003,7 @@
                 SexSceneAnalUnlocked = 1
             end
         elseif $SexGirl = 'melissa':
-            if MelissaHomeSex = 1 and MelissaAnalDiscoveryStage >= 3:
+            if MelissaHomeSex = 1 and (MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or MelissaAnalDiscoveryStage >= 3):
                 SexSceneAnalUnlocked = 1
             end
         elseif $SexGirl = 'sandra':
@@ -1041,6 +1041,10 @@
     SexSceneDeepthroatUnlocked = 0
 
     if $SexGirl = 'georgett' and (Friends['georgett'] >= 14 or GeorgettePortSexDone >= 1):
+        SexSceneDeepthroatUnlocked = 1
+    elseif DeepthroatUnlocked[$SexGirl] = 1:
+        SexSceneDeepthroatUnlocked = 1
+    elseif sluttiness[$SexGirl] >= 40 or BlowjobCount[$SexGirl] >= 3:
         SexSceneDeepthroatUnlocked = 1
     end
 
@@ -2310,6 +2314,8 @@
         $SexLastText = 'Вы уделяете ' + $RealName[$SexGirl] + ' всё внимание, и она постепенно перестаёт сдерживаться.'
     elseif $SexTextAction = 'blowjob':
         $SexLastText = $RealName[$SexGirl] + ' решается на более смелую близость. Смущение ещё заметно, но она уже не отступает.'
+    elseif $SexTextAction = 'deepthroat':
+        $SexLastText = $RealName[$SexGirl] + ' подаётся навстречу и принимает твой член глубоко в рот, сдерживая дыхание и глядя снизу вверх.'
     elseif $SexTextAction = 'vaginal':
         $SexLastText = 'Близость с ' + $RealName[$SexGirl] + ' становится полной. Теперь между вами уже почти не остаётся прежней дистанции.'
     elseif $SexTextAction = 'rest':
@@ -2462,6 +2468,10 @@
     if SexSceneHadActivity = 1:
         SexUsedToday[$SexGirl] = 1
         LastSexDay[$SexGirl] = day
+
+        if $SexGirl = 'melissa' and ($SexSceneContext = 'melissa_repeat' or $SexSceneReturnLoc = 'MelissaRoom'):
+            MelissaHomeNightCount += 1
+        end
     end
 
     killvar 'SexSceneHadActivity'
@@ -2481,11 +2491,14 @@
         end
     end
 
-    if $SexGirl = 'melissa' and MelissaAnalWithGgActive = 1:
+    if $SexGirl = 'melissa' and (MelissaAnalWithGgActive = 1 or MelissaHomeAnalActive = 1):
         MelissaAnalWithGgActive = 0
+        MelissaHomeAnalActive = 0
 
         if SexSceneHadAnal = 1:
+            MelissaHomeAnalDone = 1
             MelissaAnalWithGgDone = 1
+            MelissaAnalUnlocked = 1
             analvirgin['melissa'] = 0
             gs 'RegisterSex', 'melissa', 'anal', 1, 1
             sluttiness['melissa'] += 2

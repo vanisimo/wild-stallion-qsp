@@ -2,11 +2,11 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 451
-- Locations: 3243
-- Locations with direct incoming calls: 2794
-- Locations without direct incoming calls: 449
-- Review candidates without direct incoming calls: 160
+- Source files: 453
+- Locations: 3259
+- Locations with direct incoming calls: 2806
+- Locations without direct incoming calls: 453
+- Review candidates without direct incoming calls: 164
 - Classified entry/helper locations without direct incoming calls: 289
 - Dynamic call sites: 2
 
@@ -148,6 +148,10 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 558 | `modules/locations` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 150 | `modules/core` |
 | `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 251 | `modules/events` |
+| `MelissaHomeAnalStep1` | `modules/events/melissa/melissa_home_anal.qsps` | 66 | `modules/events` |
+| `MelissaHomeAnalStep2` | `modules/events/melissa/melissa_home_anal.qsps` | 151 | `modules/events` |
+| `MelissaHomeAnalStep3` | `modules/events/melissa/melissa_home_anal.qsps` | 310 | `modules/events` |
+| `MelissaHomeAnalStepWaitingClarissa` | `modules/events/melissa/melissa_home_anal.qsps` | 247 | `modules/events` |
 | `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 299 | `modules/events` |
 | `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 997 | `modules/core` |
 | `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 991 | `modules/core` |
@@ -162,8 +166,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 827 | `modules/events` |
 | `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 770 | `modules/events` |
 | `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 775 | `modules/events` |
-| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2259 | `modules/actions` |
-| `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1079 | `modules/actions` |
+| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2263 | `modules/actions` |
+| `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1083 | `modules/actions` |
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
 | `SparkQueueActKitchen` | `modules/core/tavern/spark_queue.qsps` | 237 | `modules/core` |
 | `SweetsShopBuyItem` | `modules/locations/shops/sweets_shop_buy.qsps` | 24 | `modules/locations` |
@@ -449,7 +453,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowDreamItemIfKnown` | `modules/core/gifts/gift_dream_images.qsps` | 32 | `entry/helper` |
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 511 | `entry/helper` |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 188 | `entry/helper` |
-| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 538 | `entry/helper` |
+| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 552 | `entry/helper` |
 | `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 184 | `entry/helper` |
 | `ShowPortrait` | `modules/core/show_image/show_image_helpers.qsps` | 179 | `entry/helper` |
 | `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 259 | `entry/helper` |
@@ -477,13 +481,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1238 |
-| `Menu.AddModule` | 572 |
-| `MenuUiAdd` | 536 |
-| `SceneShowVisual` | 447 |
+| `ActUiPrepare` | 1253 |
+| `Menu.AddModule` | 573 |
+| `MenuUiAdd` | 537 |
+| `SceneShowVisual` | 458 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 163 |
+| `ClampGirlSocialStats` | 167 |
 | `TavernMain` | 149 |
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 95 |
@@ -491,7 +495,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `PrintTitleLine` | 89 |
 | `Menu.Destroy` | 89 |
 | `FormatSpintry` | 87 |
-| `RegisterSex` | 86 |
+| `RegisterSex` | 87 |
 | `PrintMainP` | 77 |
 | `UpdateGirlLocations` | 76 |
 | `MarketDance` | 58 |

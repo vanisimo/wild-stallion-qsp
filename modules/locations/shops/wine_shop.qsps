@@ -147,6 +147,10 @@
 #WineShopRenderSellerLine
     if $CurrentSeller = 'clarissa':
         gs 'WineShopPrintGirlTalkInText', 'clarissa', 'Кларисса', 'За прилавком стоит ', ' — стройная светловолосая дочь виноторговца. Она знает сорта, считает быстро и не любит пустых разговоров у бочек.'
+
+        if MelissaClarissaAnalTalkPending = 1 and day > MelissaHomeAnalStage2Day:
+            *pl 'В глубине лавки, возле пузатых винных бочек, стоит Мелисса. Они с Клариссой о чём-то тихо и взволнованно перешёптываются.'
+        end
     else:
         gs 'WineShopPrintAlberTalkInText'
     end
@@ -298,6 +302,13 @@
 ---
 
 #WineShopRenderMainNavButtons
+    if MelissaClarissaAnalTalkPending = 1 and day > MelissaHomeAnalStage2Day and $CurrentSeller = 'clarissa':
+        act '<b>Подслушать подруг</b>', 'images/common/ui/actions/look.png':
+            killvar '$WineShopHoldTab'
+            gt 'MelissaClarissaAnalTalkShopScene'
+        end
+    end
+
     act '<b>Вино</b>', 'images/common/ui/actions/shop.png':
         gt 'WineShop', 'wine'
     end

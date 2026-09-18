@@ -1,0 +1,405 @@
+! ================================================
+! FILE: modules/events/melissa/melissa_home_anal.qsps
+! MODULE: events/melissa
+! [AI-WORKED] 18.09.2026
+! Домашняя ветка открытия анала Мелиссы (3 акта + беседа с Клариссой)
+! 1. Прилечь вместе: объятия со спины, трение, пробуждение интереса к трактатам
+! 2. Подготовка: масло, бережные ласки, чувственный оргазм Мелиссы, благодарность
+!    -> Разговор Мелиссы с Клариссой (в лавке Легаре или в воскресенье)
+! 3. Полная близость со Стефаном, открытие повторного анала
+! ================================================
+
+#MelissaHomeAnalCanStart
+    MelissaHomeAnalStepAvailable = 0
+    $MelissaHomeAnalMenuLabel = ''
+    $MelissaHomeAnalMenuTarget = ''
+
+    if MelissaHomeSex = 0:
+        exit
+    end
+
+    if time < 3:
+        exit
+    end
+
+    if $GirlLocation['melissa'] <> 'MelissaRoom':
+        exit
+    end
+
+    ! Шаг 1: Доступен после 5 ночей секса
+    if MelissaHomeAnalStage = 0 and MelissaHomeNightCount >= 5 and MelissaHomeAnalToday = 0:
+        MelissaHomeAnalStepAvailable = 1
+        $MelissaHomeAnalMenuLabel = 'Прилечь вместе'
+        $MelissaHomeAnalMenuTarget = 'MelissaHomeAnalStep1'
+        exit
+    end
+
+    ! Шаг 2: Масло и бережные ласки
+    if MelissaHomeAnalStage = 1 and MelissaHomeAnalToday = 0:
+        MelissaHomeAnalStepAvailable = 1
+        $MelissaHomeAnalMenuLabel = 'Особенная ласка (масло)'
+        $MelissaHomeAnalMenuTarget = 'MelissaHomeAnalStep2'
+        exit
+    end
+
+    ! Ожидание беседы с Клариссой
+    if MelissaHomeAnalStage = 2 and MelissaHomeAnalToday = 0:
+        MelissaHomeAnalStepAvailable = 1
+        $MelissaHomeAnalMenuLabel = 'Спросить об особенной близости'
+        $MelissaHomeAnalMenuTarget = 'MelissaHomeAnalStepWaitingClarissa'
+        exit
+    end
+
+    ! Шаг 3: Полная близость
+    if MelissaHomeAnalStage = 3 and MelissaHomeAnalToday = 0:
+        MelissaHomeAnalStepAvailable = 1
+        $MelissaHomeAnalMenuLabel = 'Особенная близость'
+        $MelissaHomeAnalMenuTarget = 'MelissaHomeAnalStep3'
+        exit
+    end
+---
+
+! ================================================
+! ШАГ 1: ОБЪЯТИЯ СО СПИНЫ И ИСКРА ИНТЕРЕСА
+! ================================================
+
+#MelissaHomeAnalStep1
+    gt 'MelissaHomeAnalStep1_Talk'
+---
+
+#MelissaHomeAnalStep1_Talk
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step1_talk', 'МЕЛИССА — ОБЪЯТИЯ В ПОЛУМРАКЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — ТИХИЙ ВЕЧЕР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step1_talk'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Прижать её ближе', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaHomeAnalStep1_Act'
+    end
+---
+
+#MelissaHomeAnalStep1_Act
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step1_act', 'МЕЛИССА — ДЫХАНИЕ И ДРОЖЬ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — СМУЩЕНИЕ И ТРАКТАТЫ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step1_act'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Успокоить её и согласиться подождать', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaHomeAnalStep1_After'
+    end
+---
+
+#MelissaHomeAnalStep1_After
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step1_after', 'МЕЛИССА — НЕЖНОСТЬ ПЕРЕД СНОМ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — СОГЛАСИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step1_after'
+    *pl ' '
+
+    MelissaHomeAnalStage = 1
+    MelissaHomeAnalToday = 1
+    MelissaHomeNightCount += 1
+    MelissaPlayerPath += 1
+    otkroven['melissa'] += 2
+    love['melissa'] += 1
+    LastAttentionDay['melissa'] = day
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Остаться с Мелиссой', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaRoom'
+    end
+
+    gs 'ActUiPrepare', 'Выйти в коридор', 'floor'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+---
+
+! ================================================
+! ШАГ 2: МАСЛО, ПАЛЬЦЫ, ОРГАЗМ И БЛАГОДАРНОСТЬ
+! ================================================
+
+#MelissaHomeAnalStep2
+    gt 'MelissaHomeAnalStep2_Talk'
+---
+
+#MelissaHomeAnalStep2_Talk
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step2_talk', 'МЕЛИССА — ПОДГОТОВКА С МАСЛОМ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — ПОДГОТОВКА С МАСЛОМ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step2_talk'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Согреть масло и начать ласку', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaHomeAnalStep2_Act'
+    end
+---
+
+#MelissaHomeAnalStep2_Act
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step2_act', 'МЕЛИССА — БЕРЕЖНОЕ ПРИКОСНОВЕНИЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — ЧУВСТВЕННЫЙ ВОСТОРГ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step2_act'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Обнять её и разделить восторг', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaHomeAnalStep2_After'
+    end
+---
+
+#MelissaHomeAnalStep2_After
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step2_after', 'МЕЛИССА — БЛАГОДАРНОСТЬ И РАЗДУМЬЯ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — БЛАГОДАРНОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step2_after'
+    *pl ' '
+
+    MelissaHomeAnalStage = 2
+    MelissaHomeAnalToday = 1
+    MelissaHomeAnalStage2Day = day
+    MelissaClarissaAnalTalkPending = 1
+    MelissaHomeNightCount += 1
+    sluttiness['melissa'] += 3
+    otkroven['melissa'] += 3
+    love['melissa'] += 2
+    BlowjobCount['melissa'] += 1
+    OralCount['melissa'] += 1
+
+    gs 'CanCumToday'
+    if Result = 1 or debug = 1:
+        gs 'RegisterPlayerCum'
+    end
+
+    LastSexDay['melissa'] = day
+    SexUsedToday['melissa'] = 1
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Остаться с Мелиссой', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaRoom'
+    end
+
+    gs 'ActUiPrepare', 'Выйти в коридор', 'floor'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+---
+
+! ================================================
+! ОЖИДАНИЕ БЕСЕДЫ С КЛАРИССОЙ
+! ================================================
+
+#MelissaHomeAnalStepWaitingClarissa
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_waiting_clarissa', 'МЕЛИССА — СМУЩЕНИЕ И РАЗДУМЬЯ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — РАЗГОВОР'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'waiting_clarissa'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Успокоить её', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaRoom'
+    end
+---
+
+! ================================================
+! БЕСЕДА С КЛАРИССОЙ В ЛАВКЕ ВИНА (БУДНИЙ ДЕНЬ)
+! ================================================
+
+#MelissaClarissaAnalTalkShopScene
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_clarissa_wine_shop_talk', 'ЛАВКА ЛЕГАРЕ — ОТКРОВЕННЫЙ РАЗГОВОР', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ЛАВКА ВИНОТОРГОВЦА ЛЕГАРЕ — РАЗГОВОР ПОДРУГ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'clarissa_shop_talk'
+    *pl ' '
+
+    MelissaClarissaAnalTalkPending = 0
+    MelissaClarissaAnalTalkDone = 1
+    MelissaHomeAnalStage = 3
+    MelissaClarissaBond += 3
+    sluttiness['melissa'] += 2
+    otkroven['melissa'] += 2
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Вернуться к прилавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'WineShop'
+    end
+
+    gs 'ActUiPrepare', 'Выйти на рынок', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! ================================================
+! ШАГ 3: ПОЛНАЯ БЛИЗОСТЬ СО СТЕФАНОМ
+! ================================================
+
+#MelissaHomeAnalStep3
+    gt 'MelissaHomeAnalStep3_Talk'
+---
+
+#MelissaHomeAnalStep3_Talk
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step3_talk', 'МЕЛИССА — ПОЛНОЕ ДОВЕРИЕ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — ПОЛНОЕ ДОВЕРИЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step3_talk'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Окружить её заботой и начать', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaHomeAnalStep3_Act'
+    end
+---
+
+#MelissaHomeAnalStep3_Act
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step3_act', 'МЕЛИССА — СЛИЯНИЕ И ВОСТОРГ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — ПЕРВАЯ БЛИЗОСТЬ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step3_act'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Завершить в крепких объятиях', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaHomeAnalStep3_After'
+    end
+---
+
+#MelissaHomeAnalStep3_After
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/home_anal/melissa_home_anal_step3_after', 'МЕЛИССА — СЧАСТЬЕ И ПОКОЙ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' КОМНАТА МЕЛИССЫ — СЧАСТЬЕ И ПОКОЙ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    gs 'MelissaHomeAnalText', 'step3_after'
+    *pl ' '
+
+    MelissaHomeAnalStage = 4
+    MelissaHomeAnalDone = 1
+    MelissaAnalWithGgDone = 1
+    MelissaAnalUnlocked = 1
+    analvirgin['melissa'] = 0
+    analfromyou['melissa'] += 1
+    analacts['melissa'] += 1
+    MelissaHomeNightCount += 1
+    MelissaPlayerPath += 3
+    sluttiness['melissa'] += 4
+    otkroven['melissa'] += 4
+    love['melissa'] += 3
+
+    gs 'RegisterSex', 'melissa', 'anal', 1, 1
+
+    gs 'CanCumToday'
+    if Result = 1 or debug = 1:
+        gs 'RegisterPlayerCum'
+        cuminside['melissa'] += 1
+    end
+
+    LastSexDay['melissa'] = day
+    SexUsedToday['melissa'] = 1
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Остаться с Мелиссой до утра', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaRoom'
+    end
+
+    gs 'ActUiPrepare', 'Выйти в коридор', 'floor'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
+    end
+---
