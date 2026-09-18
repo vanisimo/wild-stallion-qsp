@@ -1,8 +1,15 @@
 ! ================================================
 ! FILE: modules/events/melissa/melissa_home_chain.qsps
 ! MODULE: events/family
-! [AI-WORKED] 18.09.2026
-! Домашняя лестница Мелиссы (player-path)
+! [AI-WORKED] 18.09.2026: полная переработка и углубление характера Мелиссы
+! Домашняя лестница Мелиссы (player-path):
+! 0: Вечер за счетами и травяной чай
+! 1: «Королева Элеонора» и первый поцелуй
+! 2: Снятие доспехов: ласка у ночного окна
+! 3: Анатомический интерес и ласка рукой
+! 4: Власть Королевы: услада губ
+! 5: Падение крепости: ласка лона
+! 6: Решительный разговор перед первой ночью (дефлорация) -> SexScene -> утренняя реакция семьи
 ! ================================================
 
 #MelissaHomeCanAdvance
@@ -56,32 +63,50 @@
 
     if MelissaHomeStage = 0:
         $MelissaHomeStepKey = 'hug'
+        $MelissaStepVisual = 'images/events/melissa/melissa_home_chain/melissa_home_step_0'
+        $MelissaStepVisualCaption = 'Вечер за счетами и травяной чай'
+        $MelissaStepHeader = 'ВЕЧЕР ЗА СЧЕТАМИ И ТРАВЯНОЙ ЧАЙ'
     elseif MelissaHomeStage = 1:
         $MelissaHomeStepKey = 'kiss'
+        $MelissaStepVisual = 'images/events/melissa/melissa_home_chain/melissa_home_step_1'
+        $MelissaStepVisualCaption = 'Чтение романа и первый поцелуй'
+        $MelissaStepHeader = 'РЫЦАРСКИЙ РОМАН И ПЕРВЫЙ ПОЦЕЛУЙ'
     elseif MelissaHomeStage = 2:
         $MelissaHomeStepKey = 'petting'
+        $MelissaStepVisual = 'images/events/melissa/melissa_home_chain/melissa_home_step_2'
+        $MelissaStepVisualCaption = 'Снятие доспехов у ночного окна'
+        $MelissaStepHeader = 'СНЯТИЕ ДОСПЕХОВ: У НОЧНОГО ОКНА'
     elseif MelissaHomeStage = 3:
         $MelissaHomeStepKey = 'handjob'
+        $MelissaStepVisual = 'images/events/melissa/melissa_home_chain/melissa_home_step_3'
+        $MelissaStepVisualCaption = 'Анатомический интерес и ласка рукой'
+        $MelissaStepHeader = 'АНАТОМИЧЕСКИЙ ИНТЕРЕС И ЛАСКА РУКОЙ'
     elseif MelissaHomeStage = 4:
         $MelissaHomeStepKey = 'blowjob'
+        $MelissaStepVisual = 'images/events/melissa/melissa_home_chain/melissa_home_step_4'
+        $MelissaStepVisualCaption = 'Власть Королевы: услада губ'
+        $MelissaStepHeader = 'ВЛАСТЬ КОРОЛЕВЫ: УСЛАДА ГУБ'
     elseif MelissaHomeStage = 5:
         $MelissaHomeStepKey = 'cuni'
+        $MelissaStepVisual = 'images/events/melissa/melissa_home_chain/melissa_home_step_5'
+        $MelissaStepVisualCaption = 'Падение крепости: ласка лона'
+        $MelissaStepHeader = 'ПАДЕНИЕ КРЕПОСТИ: ЛАСКА ЛОНА'
     else:
         gt 'MelissaRoom'
     end
-
-    gs 'MelissaHomeStepText', $MelissaHomeStepKey
 
     *clr
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step', 'КОМНАТА МЕЛИССЫ — БЛИЗОСТЬ', 'large', 'webp'
+    gs 'SceneShowVisual', $MelissaStepVisual, $MelissaStepVisualCaption, 'large', 'webp'
     *pl '══════════════════════════════════════════════'
-    *pl ' КОМНАТА МЕЛИССЫ — БЛИЗОСТЬ'
+    *pl ' ' + $MelissaStepHeader
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *pl $MelissaHomeText
+
+    gs 'MelissaHomeStepText', $MelissaHomeStepKey
+
     *pl ' '
 
     MelissaHomeStage += 1
@@ -94,30 +119,38 @@
     end
 
     if $MelissaHomeStepKey = 'hug':
-        Friends['melissa'] += 1
+        Friends['melissa'] += 2
         love['melissa'] += 1
+        otkroven['melissa'] += 1
     elseif $MelissaHomeStepKey = 'kiss':
         KissCount['melissa'] += 1
-        love['melissa'] += 1
-        otkroven['melissa'] += 1
+        love['melissa'] += 2
+        otkroven['melissa'] += 2
     elseif $MelissaHomeStepKey = 'petting':
         CaressCount['melissa'] += 1
-        otkroven['melissa'] += 1
+        love['melissa'] += 2
+        otkroven['melissa'] += 2
     elseif $MelissaHomeStepKey = 'handjob':
         CaressCount['melissa'] += 1
         sluttiness['melissa'] += 1
+        otkroven['melissa'] += 2
     elseif $MelissaHomeStepKey = 'blowjob':
         BlowjobCount['melissa'] += 1
         OralCount['melissa'] += 1
-        sluttiness['melissa'] += 1
+        sluttiness['melissa'] += 2
+        love['melissa'] += 1
     elseif $MelissaHomeStepKey = 'cuni':
         CuniCount['melissa'] += 1
         OralCount['melissa'] += 1
-        otkroven['melissa'] += 1
+        otkroven['melissa'] += 3
+        love['melissa'] += 2
     end
 
     gs 'ClampGirlSocialStats', 'melissa'
     killvar '$MelissaHomeStepKey'
+    killvar '$MelissaStepVisual'
+    killvar '$MelissaStepVisualCaption'
+    killvar '$MelissaStepHeader'
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -135,18 +168,18 @@
         gt 'MelissaRoom'
     end
 
-    gs 'MelissaHomeStepText', 'presex'
-
     *clr
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_first_sex_launch', 'ПЕРВАЯ БЛИЗОСТЬ', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_first_sex_launch', 'РЕШИТЕЛЬНЫЙ ВЫБОР МЕЛИССЫ', 'large', 'webp'
     *pl '══════════════════════════════════════════════'
-    *pl ' ПЕРВАЯ БЛИЗОСТЬ'
+    *pl ' РЕШИТЕЛЬНЫЙ РАЗГОВОР ПЕРЕД ПЕРВОЙ НОЧЬЮ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
-    *pl $MelissaHomeText
+
+    gs 'MelissaHomeStepText', 'presex'
+
     *pl ' '
 
     MelissaHomeFirstSexActive = 1
@@ -156,37 +189,61 @@
         IntimStage['melissa'] = 5
     end
 
-    if otkroven['melissa'] < 15:
-        otkroven['melissa'] = 15
+    if otkroven['melissa'] < 20:
+        otkroven['melissa'] = 20
     end
 
-    gt 'SexSceneStart', 'melissa', 'MelissaHomeAfterSex', 'melissa_home_first'
+    gs 'ActUiPrepare', 'Сделать этот шаг вместе', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SexSceneStart', 'melissa', 'MelissaHomeAfterSex', 'melissa_home_first'
+    end
+
+    gs 'ActUiPrepare', 'Не торопить события', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaRoom'
+    end
 ---
 
 #MelissaHomeAfterSex
-
-    gs 'MelissaHomeAfterSexText'
 
     *clr
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_after_sex', 'ПОСЛЕ', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_after_sex', 'МЕЛИССА ПОСЛЕ ПЕРВОЙ НОЧИ', 'large', 'webp'
     *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ'
+    *pl ' УТРО ПОСЛЕ ПЕРВОЙ НОЧИ'
     *pl '══════════════════════════════════════════════'
-    *pl ' '
-    *pl $MelissaHomeText
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться в коридор', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'TavernSecondFloor'
-    end
+    gs 'MelissaHomeAfterSexText'
+
+    *pl ' '
+
+    MelissaHomeSex = 1
+    MelissaPlayerPath += 3
+    love['melissa'] += 3
+    otkroven['melissa'] += 3
+    LastSexDay['melissa'] = day
+    LastAttentionDay['melissa'] = day
+    virginity['melissa'] = 0
+    sexacts['melissa'] += 1
+    vaginalacts['melissa'] += 1
+    gs 'RegisterSex', 'melissa', 'vaginal', 1, 0
+
+    ! Регистрация события для утренней реакции семьи
+    gs 'FamilyFirstSexMorningMarkPending', 'melissa'
+
+    gs 'ClampGirlSocialStats', 'melissa'
 
     gs 'ActUiPrepare', 'Остаться в комнате', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'MelissaRoom'
+    end
+
+    gs 'ActUiPrepare', 'Выйти в коридор', 'floor'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernSecondFloor'
     end
 ---
 

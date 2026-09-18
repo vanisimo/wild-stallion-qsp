@@ -147,7 +147,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 553 | `modules/locations` |
 | `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 558 | `modules/locations` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 150 | `modules/core` |
-| `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 166 | `modules/events` |
+| `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 207 | `modules/events` |
 | `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 299 | `modules/events` |
 | `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 997 | `modules/core` |
 | `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 991 | `modules/core` |
@@ -477,13 +477,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1234 |
+| `ActUiPrepare` | 1236 |
 | `Menu.AddModule` | 572 |
 | `MenuUiAdd` | 536 |
 | `SceneShowVisual` | 445 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 162 |
+| `ClampGirlSocialStats` | 163 |
 | `TavernMain` | 149 |
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 95 |
@@ -491,7 +491,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 89 |
 | `PrintTitleLine` | 89 |
 | `FormatSpintry` | 87 |
-| `RegisterSex` | 85 |
+| `RegisterSex` | 86 |
 | `PrintMainP` | 77 |
 | `UpdateGirlLocations` | 76 |
 | `MarketDance` | 58 |
