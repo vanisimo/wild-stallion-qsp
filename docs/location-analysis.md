@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 455
-- Locations: 3284
-- Locations with direct incoming calls: 2826
+- Locations: 3286
+- Locations with direct incoming calls: 2828
 - Locations without direct incoming calls: 458
 - Review candidates without direct incoming calls: 168
 - Classified entry/helper locations without direct incoming calls: 290
@@ -387,7 +387,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `LegareSupplyPressureDebugReset` | `modules/events/legare/legare_supply_pressure.qsps` | 382 | `entry/helper` |
 | `LOC` | `modules/core/system/loc.qsps` | 9 | `entry/helper` |
 | `MayorOfficeBirthCertificateClerkText` | `modules/events/family/birth_certificate_text.qsps` | 40 | `entry/helper` |
-| `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 271 | `entry/helper` |
+| `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 274 | `entry/helper` |
 | `MelissaFlirt` | `modules/actions/flirts/flirts.qsps` | 24 | `entry/helper` |
 | `MelissaMinstrelBackroomDebugReset` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 318 | `entry/helper` |
 | `MelissaMinstrelBackroomTryStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 63 | `entry/helper` |
@@ -486,14 +486,14 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1278 |
+| `ActUiPrepare` | 1280 |
 | `Menu.AddModule` | 576 |
 | `MenuUiAdd` | 540 |
-| `SceneShowVisual` | 479 |
+| `SceneShowVisual` | 480 |
 | `EnsureGirlData` | 210 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 178 |
-| `TavernMain` | 149 |
+| `TavernMain` | 150 |
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 96 |
 | `ShowImage` | 91 |
@@ -502,11 +502,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `RegisterSex` | 88 |
 | `FormatSpintry` | 87 |
 | `PrintMainP` | 77 |
-| `UpdateGirlLocations` | 76 |
+| `UpdateGirlLocations` | 77 |
 | `MarketDance` | 71 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
-| `Market` | 50 |
+| `Market` | 51 |
 | `GirlTalkResult` | 49 |
 | `Menu.Add` | 47 |
 | `SexSceneMain` | 46 |

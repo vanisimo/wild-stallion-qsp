@@ -1272,3 +1272,57 @@
 
     killvar '$DanceRefuseTarget'
 ---
+
+#FridayDanceAfter
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_aftermath', 'ПОСЛЕ ТАНЦЕВ: ПЛОЩАДЬ ПУСТЕЕТ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЯТНИЧНЫЙ ВЕЧЕР — ПОСЛЕ ТАНЦЕВ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
+        MelissaMinstrelWagonStage += 1
+        MelissaMinstrelWagonToday = 1
+        MelissaMinstrelWagonLastDay = day
+        MelissaMusicianInterest += 1
+        MelissaNpcPath += 1
+        if MelissaMinstrelWagonStage >= 4:
+            MelissaMinstrelFirstSexDone = 1
+            Fact_MelissaMinstrelFridayAlley = 1
+            if virginity['melissa'] = 1:
+                virginity['melissa'] = 0
+            end
+        end
+        gs 'ClampGirlSocialStats', 'melissa'
+    end
+
+    if LOC('FridayDanceAfterText') = 1:
+        gs 'FridayDanceAfterText'
+        *p $FridayDanceAfterText
+        killvar '$FridayDanceAfterText'
+    else:
+        *p 'Праздник подходит к концу. Музыканты играют тише, люди расходятся по домам, а площадь постепенно пустеет.'
+    end
+
+    *pl ' '
+
+    time = 5
+    gs 'GetCitySchedulePhase'
+    gs 'UpdateGirlLocations'
+
+    gs 'ActUiPrepare', 'Вернуться в трактир', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+
+    gs 'ActUiPrepare', 'На ночную улицу Трипербан', 'street'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---
+

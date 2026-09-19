@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 455
-- Locations: 3284
+- Locations: 3286
 
 ## modules/actions
 
@@ -1003,7 +1003,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaCucumberBeckyShopEvent` | `modules/events/amanda/home/amanda_home_anal.qsps` | 82 |
 | `AmandaCucumberNightPeepEvent` | `modules/events/amanda/home/amanda_home_anal.qsps` | 124 |
 | `AmandaDance` | `modules/events/amanda/dance/amanda_dance.qsps` | 13 |
-| `AmandaDanceAction` | `modules/events/amanda/dance/amanda_dance.qsps` | 213 |
+| `AmandaDanceAction` | `modules/events/amanda/dance/amanda_dance.qsps` | 216 |
 | `AmandaDanceActionText` | `modules/events/amanda/dance/amanda_dance_text.qsps` | 72 |
 | `AmandaDanceAlleyAction` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 229 |
 | `AmandaDanceAlleyActionText` | `modules/events/amanda/dance/amanda_dark_alley_text.qsps` | 36 |
@@ -1022,7 +1022,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaDanceAlleyEndText` | `modules/events/amanda/dance/amanda_dark_alley_text.qsps` | 753 |
 | `AmandaDanceAlleyEvent` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 60 |
 | `AmandaDanceAlleyHomeGateText` | `modules/events/amanda/dance/amanda_dark_alley_text.qsps` | 106 |
-| `AmandaDanceAlleyIntro` | `modules/events/amanda/dance/amanda_dance.qsps` | 484 |
+| `AmandaDanceAlleyIntro` | `modules/events/amanda/dance/amanda_dance.qsps` | 487 |
 | `AmandaDanceAlleyMainText` | `modules/events/amanda/dance/amanda_dark_alley_text.qsps` | 10 |
 | `AmandaDanceAlleyReset` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 41 |
 | `AmandaDanceAlleyRiskCheck` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 307 |
@@ -1738,6 +1738,8 @@ Generated from active project files in `qsp-project.json`.
 | `FamilyFirstSexTalkIntroText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 77 |
 | `FamilyFirstSexTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 357 |
 | `FridayDanceAdvanceRound` | `modules/events/dance/friday_dance_core.qsps` | 819 |
+| `FridayDanceAfter` | `modules/events/dance/friday_dance_core.qsps` | 1276 |
+| `FridayDanceAfterText` | `modules/events/dance/friday_dance_text.qsps` | 289 |
 | `FridayDanceBeckyDanceText` | `modules/events/dance/friday_dance_text.qsps` | 220 |
 | `FridayDanceBeckyTalkText` | `modules/events/dance/friday_dance_text.qsps` | 212 |
 | `FridayDanceCardText` | `modules/events/dance/friday_dance_text.qsps` | 240 |
@@ -2454,7 +2456,7 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaAnalWithGgStart` | `modules/events/family/intimacy_kinks.qsps` | 591 |
 | `MelissaClarissaAnalTalkShopScene` | `modules/events/melissa/melissa_home_anal.qsps` | 272 |
 | `MelissaDance` | `modules/events/melissa/melissa_dance.qsps` | 9 |
-| `MelissaDanceAction` | `modules/events/melissa/melissa_dance.qsps` | 152 |
+| `MelissaDanceAction` | `modules/events/melissa/melissa_dance.qsps` | 155 |
 | `MelissaDanceActionText` | `modules/events/melissa/melissa_dance_text.qsps` | 24 |
 | `MelissaDanceAlleyAction` | `modules/events/melissa/melissa_dark_alley.qsps` | 96 |
 | `MelissaDanceAlleyActionText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 13 |
@@ -2464,13 +2466,13 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaDanceAlleyEndText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 35 |
 | `MelissaDanceAlleyEvent` | `modules/events/melissa/melissa_dark_alley.qsps` | 8 |
 | `MelissaDanceAlleyHomeGateText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 27 |
-| `MelissaDanceAlleyIntro` | `modules/events/melissa/melissa_dance.qsps` | 235 |
+| `MelissaDanceAlleyIntro` | `modules/events/melissa/melissa_dance.qsps` | 238 |
 | `MelissaDanceAlleyIntroText` | `modules/events/melissa/melissa_dance_text.qsps` | 42 |
 | `MelissaDanceAlleyMainText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 8 |
 | `MelissaDanceAlleyReset` | `modules/events/melissa/melissa_dark_alley.qsps` | 48 |
 | `MelissaDanceAlleyToSexScene` | `modules/events/melissa/melissa_dark_alley.qsps` | 120 |
 | `MelissaDanceBuildMenu` | `modules/events/melissa/melissa_dance.qsps` | 93 |
-| `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 271 |
+| `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 274 |
 | `MelissaDanceLeaveHome` | `modules/events/melissa/melissa_home_chain.qsps` | 297 |
 | `MelissaDanceLeaveHomeText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 263 |
 | `MelissaDanceMainText` | `modules/events/melissa/melissa_dance_text.qsps` | 8 |

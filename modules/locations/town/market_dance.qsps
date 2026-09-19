@@ -21,6 +21,10 @@
     gs 'UpdateGirlLocations'
 
     if $CitySchedulePhase <> 'friday_dance':
+        if time = 5:
+            gt 'Market'
+        end
+
         if LOC('ShowLocationTimeImage') = 1:
             gs 'ShowLocationTimeImage', 'images/locations/market/dance', 'jpg', 'jpg'
         elseif LOC('ShowLocationImage') = 1:
@@ -78,31 +82,7 @@
     end
 
     if FridayDancesCount >= 5:
-        if MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
-            MelissaMinstrelWagonStage += 1
-            MelissaMinstrelWagonToday = 1
-            MelissaMinstrelWagonLastDay = day
-            MelissaMusicianInterest += 1
-            MelissaNpcPath += 1
-            if MelissaMinstrelWagonStage >= 4:
-                MelissaMinstrelFirstSexDone = 1
-                Fact_MelissaMinstrelFridayAlley = 1
-                if virginity['melissa'] = 1:
-                    virginity['melissa'] = 0
-                end
-            end
-            gs 'ClampGirlSocialStats', 'melissa'
-        end
-
-        *p 'Праздник подходит к концу. Музыканты играют тише, люди расходятся по домам, а площадь постепенно пустеет.'
-        *pl ' '
-
-        gs 'ActUiPrepare', 'Вернуться на улицу Трипербан', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'Street'
-        end
-
-        exit
+        gt 'FridayDanceAfter'
     end
 
     *pl 'Осталось раундов праздника: ' + STR(5 - FridayDancesCount)
@@ -261,7 +241,13 @@
         end
     end
 
-    gs 'ActUiPrepare', 'Улица Трипербан', 'street'
+    gs 'ActUiPrepare', 'Выход с площади (завершить танцы)', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        FridayDancesCount = 5
+        gt 'FridayDanceAfter'
+    end
+
+    gs 'ActUiPrepare', 'Отойти на улицу Трипербан', 'street'
     act $ActUiLabel, $ActUiIconPath:
         gt 'Street'
     end
