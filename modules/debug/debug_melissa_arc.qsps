@@ -1,0 +1,752 @@
+! ================================================
+! FILE: modules/debug/debug_melissa_arc.qsps
+! MODULE: debug
+! [AI-WORKED] 20.09.2026
+! Отдельная debug-панель арки Мелиссы (акт 1)
+! Охватывает: домашнюю лестницу, танцы, менестреля
+! (встречи в повозке 1-4, закулисье, гонка 6-й пт),
+! домашний анал, кинки, групповые сцены, социальные статы
+! ================================================
+
+#DebugMelissaArcPanel
+    if debug = 0:
+        exit
+    end
+
+    gs 'PanelDebugToolsHeader'
+
+    pl '<b>DEBUG: МЕЛИССА — СЮЖЕТНАЯ И INTIMACY-АРКА</b>'
+    pl ' '
+
+    gs 'DebugMelissaPrintContext'
+    pl ' '
+
+    gs 'DebugMelissaPrintHomeArc'
+    pl ' '
+
+    gs 'DebugMelissaPrintDanceBlock'
+    pl ' '
+
+    gs 'DebugMelissaPrintMinstrelBlock'
+    pl ' '
+
+    gs 'DebugMelissaPrintMinstrelEncountersBlock'
+    pl ' '
+
+    gs 'DebugMelissaPrintAnalAndKinksBlock'
+    pl ' '
+
+    gs 'DebugMelissaPrintSocialBlock'
+    pl ' '
+
+    gs 'DebugMelissaPrintNextHint'
+    pl ' '
+
+    gs 'DebugMelissaPrintPresets'
+    pl ' '
+
+    pl '<a href="exec:gs ''DebugMelissaArcReset'' & gs ''DebugMelissaArcPanel''">🔄 Полный сброс всех флагов Мелиссы</a>'
+    pl ' '
+    pl '<a href="exec:gs ''DebugAmandaArcPanel''">→ Аманда (интим-панель)</a>'
+    pl '<a href="exec:gs ''DebugIntimacyArcPanel''">← Intimacy-арки (все персонажи)</a>'
+    pl '<a href="exec:gs ''PanelDebugToolsMain''">← Главная debug-панель</a>'
+    pl ' '
+---
+
+#DebugMelissaPrintContext
+    gs 'GetCitySchedulePhase'
+
+    pl '<b>Контекст</b>'
+    pl 'День: ' + STR(day) + ' | неделя: ' + STR(week) + ' | время: ' + STR(time) + ' (' + $CitySchedulePhase + ')'
+    pl 'Локация Мелиссы: ' + $GirlLocation['melissa']
+
+    gs 'MelissaHomeCanAdvance'
+    if MelissaHomeCanAdvance = 1:
+        pl 'Домашняя лестница сегодня: <font color="#008000"><b>можно</b></font>'
+    else:
+        pl 'Домашняя лестница сегодня: <font color="#888888">нельзя</font>'
+    end
+
+    if MelissaHomeUnlocked = 1 and MelissaHomeStage >= 6 and MelissaHomeSex = 0 and MelissaHomeStepToday = 0 and time >= 3:
+        pl 'Первая близость (дефлорация) сегодня: <font color="#008000"><b>можно</b></font>'
+    else:
+        pl 'Первая близость (дефлорация) сегодня: <font color="#888888">нельзя</font>'
+    end
+
+    if LOC('MelissaHomeAnalCanStart') = 1:
+        gs 'MelissaHomeAnalCanStart'
+        if MelissaHomeAnalStepAvailable = 1:
+            pl 'Домашний анал сегодня: <font color="#008000"><b>доступен</b></font> («' + $MelissaHomeAnalMenuLabel + '»)'
+        else:
+            pl 'Домашний анал сегодня: <font color="#888888">недоступен</font>'
+        end
+        killvar 'MelissaHomeAnalStepAvailable'
+        killvar '$MelissaHomeAnalMenuLabel'
+        killvar '$MelissaHomeAnalMenuTarget'
+    end
+
+    if LOC('MelissaMinstrelWagonCanStart') = 1:
+        gs 'MelissaMinstrelWagonCanStart'
+        if MelissaMinstrelWagonCanStart = 1:
+            pl 'Повозка менестреля: <font color="#008000"><b>можно зайти</b></font> (стадия ' + STR(MelissaMinstrelWagonStage) + ')'
+        else:
+            pl 'Повозка менестреля: <font color="#888888">закрыта / нельзя</font>'
+        end
+        killvar 'MelissaMinstrelWagonCanStart'
+    end
+
+    if LOC('MelissaMinstrelFridayRaceCanStart') = 1:
+        gs 'MelissaMinstrelFridayRaceCanStart'
+        if MelissaMinstrelFridayRaceCanStart = 1:
+            pl 'Гонка 6-й пятницы (подворотня): <font color="#008000"><b>доступна</b></font>'
+        else:
+            pl 'Гонка 6-й пятницы: <font color="#888888">нет</font>'
+        end
+        killvar 'MelissaMinstrelFridayRaceCanStart'
+    end
+
+    pl 'Время: <a href="exec:time = 1 & gs ''DebugMelissaArcPanel''">утро (1)</a> | <a href="exec:time = 2 & gs ''DebugMelissaArcPanel''">день (2)</a> | <a href="exec:time = 3 & gs ''DebugMelissaArcPanel''">вечер (3)</a> | <a href="exec:time = 4 & gs ''DebugMelissaArcPanel''">поздний вечер (4)</a> | <a href="exec:time = 5 & gs ''DebugMelissaArcPanel''">ночь (5)</a>'
+    pl 'Расписание: <a href="exec:week = 5 & time = 4 & gs ''DebugMelissaArcPanel''">пятница вечер (танцы)</a> | <a href="exec:week = 2 & time = 3 & gs ''DebugMelissaArcPanel''">вторник день (рынок)</a>'
+
+    killvar '$CitySchedulePhase'
+    killvar 'MelissaHomeCanAdvance'
+---
+
+#DebugMelissaHomeStageLabel
+    $DebugMelissaStageLabel = 'неизвестно'
+    DebugMelissaStageCode = MelissaHomeStage
+
+    if MelissaHomeUnlocked = 0:
+        $DebugMelissaStageLabel = 'дом закрыт'
+    elseif MelissaHomeSex = 1:
+        $DebugMelissaStageLabel = 'SexScene разблокирован (повторные вечера, ночей: ' + STR(MelissaHomeNightCount) + ')'
+    elseif DebugMelissaStageCode = 0:
+        $DebugMelissaStageLabel = '0 — счета и травяной чай (объятия)'
+    elseif DebugMelissaStageCode = 1:
+        $DebugMelissaStageLabel = '1 — роман «Королева Элеонора» и первый поцелуй'
+    elseif DebugMelissaStageCode = 2:
+        $DebugMelissaStageLabel = '2 — снятие доспехов у ночного окна'
+    elseif DebugMelissaStageCode = 3:
+        $DebugMelissaStageLabel = '3 — анатомический интерес и ласка рукой'
+    elseif DebugMelissaStageCode = 4:
+        $DebugMelissaStageLabel = '4 — власть Королевы: услада губ (минет)'
+    elseif DebugMelissaStageCode = 5:
+        $DebugMelissaStageLabel = '5 — падение крепости: ласка лона (куни)'
+    elseif DebugMelissaStageCode = 6:
+        $DebugMelissaStageLabel = '6 — решительный разговор перед дефлорацией'
+    elseif DebugMelissaStageCode >= 7:
+        $DebugMelissaStageLabel = STR(DebugMelissaStageCode) + ' — финал арки дефлорации'
+    end
+
+    killvar 'DebugMelissaStageCode'
+---
+
+#DebugMelissaPrintHomeArc
+    gs 'DebugMelissaHomeStageLabel'
+
+    pl '<b>Домашняя цепочка (Player-Path)</b>'
+    pl 'Стадия: <b>' + $DebugMelissaStageLabel + '</b>'
+    killvar '$DebugMelissaStageLabel'
+
+    gs 'DebugMelissaPrintBool', 'Дом открыт (MelissaHomeUnlocked)', MelissaHomeUnlocked
+    gs 'DebugMelissaPrintBool', 'Секс разблокирован (MelissaHomeSex)', MelissaHomeSex
+    gs 'DebugMelissaPrintBool', 'Шаг сделан сегодня (MelissaHomeStepToday)', MelissaHomeStepToday
+    gs 'DebugMelissaPrintBool', 'Первая ночь активна (MelissaHomeFirstSexActive)', MelissaHomeFirstSexActive
+    pl 'Проведено совместных ночей: ' + STR(MelissaHomeNightCount)
+    pl 'Шкала верности игроку (MelissaPlayerPath): ' + STR(MelissaPlayerPath)
+    gs 'DebugMelissaPrintBool', 'Девственность (virginity)', virginity['melissa']
+    gs 'DebugMelissaPrintBool', 'Вагинал с ГГ (HadVaginalWithPlayer)', HadVaginalWithPlayer['melissa']
+
+    pl 'Быстрый переход на стадию: '
+    pl '  <a href="exec:gs ''DebugMelissaJumpHome'', 0 & gt ''MelissaRoom''">stage 0 (чай)</a> | <a href="exec:gs ''DebugMelissaJumpHome'', 1 & gt ''MelissaRoom''">stage 1 (поцелуй)</a> | <a href="exec:gs ''DebugMelissaJumpHome'', 2 & gt ''MelissaRoom''">stage 2 (окно)</a> | <a href="exec:gs ''DebugMelissaJumpHome'', 3 & gt ''MelissaRoom''">stage 3 (рука)</a>'
+    pl '  <a href="exec:gs ''DebugMelissaJumpHome'', 4 & gt ''MelissaRoom''">stage 4 (минет)</a> | <a href="exec:gs ''DebugMelissaJumpHome'', 5 & gt ''MelissaRoom''">stage 5 (куни)</a> | <a href="exec:gs ''DebugMelissaJumpHome'', 6 & gt ''MelissaRoom''">stage 6 (разговор)</a>'
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaJumpHome'', 6 & gt ''MelissaHomeFirstSexLaunch''">Прямой запуск первой ночи (MelissaHomeFirstSexLaunch)</a>'
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaJumpHomeRepeat'' & gt ''MelissaRoom''">SexScene: повторный вечер в комнате (time=4)</a>'
+---
+
+#DebugMelissaPrintDanceBlock
+    pl '<b>Танцы и нарядное платье</b>'
+    gs 'DebugMelissaPrintBool', 'Платье готово (MelissaDanceDressReady)', MelissaDanceDressReady
+    gs 'DebugMelissaPrintBool', 'Купил игрок (MelissaDanceDressPlayerBought)', MelissaDanceDressPlayerBought
+    gs 'DebugMelissaPrintBool', 'Купила сама (MelissaDanceDressSelfBought)', MelissaDanceDressSelfBought
+    gs 'DebugMelissaPrintBool', 'Была на танцах (MelissaFridayDanceAttended)', MelissaFridayDanceAttended
+    pl 'Счётчик танцев Мелиссы: ' + STR(MelissaFridayDanceCount) + ' | общих танцев: ' + STR(FridayDancesCount)
+    gs 'DebugMelissaPrintBool', 'Парадный костюм Стефана', StefanRespectableSuit
+
+    pl 'Прогресс в танце: stage ' + STR(MelissaDanceStage) + ' | талия ' + STR(MelissaDanceWaist) + ' | поцелуй ' + STR(MelissaDanceKiss) + ' | шея ' + STR(MelissaDanceNeck) + ' | подворотня ' + STR(MelissaDanceAlley) + ' | танец окончен ' + STR(MelissaDanceEnded)
+    pl 'Подворотня у площади: stage ' + STR(MelissaAlleyStage) + ' | kiss ' + STR(MelissaAlleyKiss) + ' | close ' + STR(MelissaAlleyClose) + ' | риск ' + STR(MelissaAlleyRisk)
+
+    pl 'Действия:'
+    pl '  <a href="exec:MelissaDanceDressReady = 1 & MelissaDanceDressPlayerBought = 1 & gs ''DebugMelissaArcPanel''">Платье готово (купил Стефан)</a> | <a href="exec:MelissaDanceDressReady = 1 & MelissaDanceDressSelfBought = 1 & gs ''DebugMelissaArcPanel''">Платье готово (купила сама)</a>'
+    pl '  ⚡ <a href="exec:week = 5 & time = 4 & MelissaDanceDressReady = 1 & StefanRespectableSuit = 1 & gt ''MarketDance''">Перейти на танцы (пятница вечер, костюм, MarketDance)</a>'
+    pl '  ⚡ <a href="exec:week = 5 & time = 4 & MelissaDanceDressReady = 1 & gt ''MelissaDance''">Танец с Мелиссой (MelissaDance)</a>'
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaPresetDanceAlley'' & gt ''MelissaDanceAlleyEvent''">Подворотня с Мелиссой (MelissaDanceAlleyEvent)</a>'
+---
+
+#DebugMelissaPrintMinstrelBlock
+    pl '<b>Менестрель (' + $MelissaMinstrelName + ') — знакомство, роман и выбор пути</b>'
+    gs 'DebugMelissaPrintBool', 'Знакомство состоялось (MelissaMinstrelMet)', MelissaMinstrelMet
+    gs 'DebugMelissaPrintBool', 'Поцелуй готов (MelissaMinstrelKissReady)', MelissaMinstrelKissReady
+    gs 'DebugMelissaPrintBool', 'Поцелуй после танца был (MelissaMinstrelKissDone)', MelissaMinstrelKissDone
+    pl 'Стадия романа с менестрелем (MelissaMinstrelAffairStage): ' + STR(MelissaMinstrelAffairStage) + ' / 3'
+    pl 'Интерес к менестрелю (MelissaMusicianInterest): ' + STR(MelissaMusicianInterest)
+
+    pl 'Сцена в трактире: offer ' + STR(MelissaMusicStageOfferDone) + ' | Драупнир сцена ' + STR(TavernUpgradeStageDone)
+    pl 'Пропажа в зале (HallMissing): done ' + STR(MelissaMinstrelHallMissingDone) + ' | result ' + STR(MelissaMinstrelHallMissingResult) + ' (1=search, 2=spy, 3=wait)'
+    pl 'Выбор пути (PathChoice): ready ' + STR(MelissaFirstPathChoiceReady) + ' | done ' + STR(MelissaFirstPathChoiceDone) + ' | выбор ' + STR(MelissaFirstPathChoice) + ' (1=добиваться, 2=запретить, 3=следить)'
+    gs 'DebugMelissaPrintBool', 'Запрет встреч со стороны ГГ', MelissaProhibitMinstrel
+    pl 'Дней запрета: ' + STR(MelissaProhibitDays) + ' | Слежка Стефана: ' + STR(MelissaWatchMinstrel)
+
+    pl 'Действия:'
+    pl '  ⚡ <a href="exec:week = 5 & time = 4 & MelissaDanceDressReady = 1 & MelissaFridayDanceAttended = 1 & MelissaMinstrelMet = 0 & gt ''MelissaMinstrelMeetStart''">Знакомство на танцах (MelissaMinstrelMeetStart)</a>'
+    pl '  ⚡ <a href="exec:week = 5 & time = 4 & MelissaMinstrelMet = 1 & MelissaMinstrelKissReady = 1 & MelissaMusicianInterest = 20 & gt ''MelissaMinstrelKissStart''">Поцелуй после танца (MelissaMinstrelKissStart)</a>'
+    pl '  ⚡ <a href="exec:gt ''MelissaMusicStageTalk''">Разговор о сцене для музыкантов (MelissaMusicStageTalk)</a>'
+    pl '  ⚡ <a href="exec:week = 5 & time = 3 & TavernUpgradeStageDone = 1 & MelissaMusicStageOfferDone = 1 & MelissaMinstrelKissDone = 1 & gt ''MelissaMinstrelHallMissingStart'', ''TavernMain''">Пропажа в зале трактира</a>'
+    pl '  ⚡ <a href="exec:MelissaFirstPathChoiceReady = 1 & gt ''MelissaFirstPathChoiceStart'', ''TavernMain''">Выбор пути (MelissaFirstPathChoiceStart)</a>'
+    pl '  ⚡ <a href="exec:MelissaMinstrelMet = 1 & gt ''MelissaProhibitMinstrelTalk''">Разговор о запрете встреч с менестрелем</a>'
+---
+
+#DebugMelissaPrintMinstrelEncountersBlock
+    pl '<b>Встречи с менестрелем: повозка, закулисье и гонка 6-й пятницы</b>'
+    pl 'Стадия повозки (MelissaMinstrelWagonStage): <b>' + STR(MelissaMinstrelWagonStage) + '</b> / 4 | сегодня: ' + STR(MelissaMinstrelWagonToday)
+    gs 'DebugMelissaPrintBool', 'Первый секс с менестрелем (MelissaMinstrelFirstSexDone)', MelissaMinstrelFirstSexDone
+    gs 'DebugMelissaPrintBool', 'Факт секса в переулке в пятницу', Fact_MelissaMinstrelFridayAlley
+    gs 'DebugMelissaPrintBool', 'Факт секса в подсобке трактира', Fact_MelissaMinstrelBackroomSex
+
+    pl 'Сцены в повозке:'
+    pl '  ⚡ <a href="exec:gt ''MelissaMinstrelWagonScene1_1''">Повозка 1: стихи и упавшая лютня (срыв близости)</a>'
+    pl '  ⚡ <a href="exec:gt ''MelissaMinstrelWagonScene2_1''">Повозка 2: игра на лютне, ласки сзади, оргазм Мелиссы</a>'
+    pl '  ⚡ <a href="exec:gt ''MelissaMinstrelWagonScene3_1''">Повозка 3: флейта, урок дыхания (минет менестрелю)</a>'
+    pl '  ⚡ <a href="exec:gt ''MelissaMinstrelWagonScene4_1''">Повозка 4: книга о музе, постель и первый секс</a>'
+    pl '  ⚡ <a href="exec:MelissaMinstrelDanceTick = 0 & gt ''MelissaMinstrelDanceStageLook''">Помост менестрелей на танцах (наблюдение)</a>'
+    pl '  ⚡ <a href="exec:week = 2 & time = 3 & gt ''MelissaMinstrelTuesdaySpot''">Вторник: Мелисса у повозки на рынке</a>'
+
+    pl 'Закулисье у сцены (Backroom):'
+    pl '  done ' + STR(MelissaMinstrelBackroomDone) + ' | result ' + STR(MelissaMinstrelBackroomResult) + ' | spark ' + STR(MelissaMinstrelBackroomSparkPending)
+    pl '  ⚡ <a href="exec:gt ''MelissaMinstrelBackroomStart'', ''TavernMain''">Запустить закулисье у сцены (BackroomStart)</a>'
+
+    pl 'Гонка 6-й пятницы (Alley Race):'
+    pl '  window ' + STR(MelissaMinstrelRaceWindowOpen) + ' | done ' + STR(MelissaMinstrelFridayRaceDone) + ' | result ' + STR(MelissaMinstrelFridayRaceResult) + ' | spark ' + STR(MelissaMinstrelFridayRaceSparkPending)
+    pl '  ⚡ <a href="exec:MelissaDanceDressReady = 1 & MelissaFridayDanceCount = 6 & week = 5 & time = 4 & day = 40 & gt ''MelissaMinstrelFridayRaceStart''">Запустить гонку 6-й пятницы (AlleyRaceStart)</a>'
+
+    pl 'Флаги: <a href="exec:MelissaMinstrelWagonToday = 0 & gs ''DebugMelissaArcPanel''">сбросить WagonToday</a> | <a href="exec:MelissaMinstrelWagonStage = 0 & gs ''DebugMelissaArcPanel''">wagon=0</a> | <a href="exec:MelissaMinstrelWagonStage = 1 & gs ''DebugMelissaArcPanel''">wagon=1</a> | <a href="exec:MelissaMinstrelWagonStage = 2 & gs ''DebugMelissaArcPanel''">wagon=2</a> | <a href="exec:MelissaMinstrelWagonStage = 3 & gs ''DebugMelissaArcPanel''">wagon=3</a> | <a href="exec:MelissaMinstrelWagonStage = 4 & gs ''DebugMelissaArcPanel''">wagon=4</a>'
+---
+
+#DebugMelissaPrintAnalAndKinksBlock
+    pl '<b>Домашний анал, кинки и групповые сцены</b>'
+    pl 'Домашний анал — стадия: <b>' + STR(MelissaHomeAnalStage) + '</b> / 4 | сегодня: ' + STR(MelissaHomeAnalToday)
+    gs 'DebugMelissaPrintBool', 'Ждёт разговора с Клариссой', MelissaClarissaAnalTalkPending
+    gs 'DebugMelissaPrintBool', 'Разговор с Клариссой состоялся', MelissaClarissaAnalTalkDone
+    gs 'DebugMelissaPrintBool', 'Домашний анал пройден (MelissaHomeAnalDone)', MelissaHomeAnalDone
+    gs 'DebugMelissaPrintBool', 'Анал со Стефаном был (MelissaAnalWithGgDone)', MelissaAnalWithGgDone
+    gs 'DebugMelissaPrintBool', 'Анал разблокирован в SexScene', MelissaAnalUnlocked
+    gs 'DebugMelissaPrintBool', 'Анальная девственность', analvirgin['melissa']
+
+    pl 'Сцены домашнего анала:'
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaJumpHomeAnal'', 1 & gt ''MelissaHomeAnalStep1''">Шаг 1: объятия со спины, искра интереса (MelissaHomeAnalStep1)</a>'
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaJumpHomeAnal'', 2 & gt ''MelissaHomeAnalStep2''">Шаг 2: масло, пальцы, оргазм и благодарность (MelissaHomeAnalStep2)</a>'
+    pl '  ⚡ <a href="exec:gt ''MelissaClarissaAnalTalkShopScene''">Беседа с Клариссой в лавке вина (MelissaClarissaAnalTalkShopScene)</a>'
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaJumpHomeAnal'', 3 & gt ''MelissaHomeAnalStep3''">Шаг 3: полная близость со Стефаном (MelissaHomeAnalStep3)</a>'
+
+    pl 'Kink discovery стадия: ' + STR(MelissaAnalDiscoveryStage) + ' / 4 | сегодня: ' + STR(MelissaAnalDiscoveryToday)
+    pl '  ⚡ <a href="exec:gt ''MelissaAnalDiscoveryStep''">Kink discovery шаг (MelissaAnalDiscoveryStep)</a>'
+    pl '  ⚡ <a href="exec:gt ''MelissaAnalWithGgStart''">Анал через Kink-систему (MelissaAnalWithGgStart)</a>'
+
+    pl 'Групповые сцены и связи:'
+    pl '  ММЖ с менестрелем: ready ' + STR(MelissaMinstrelThreesomeReady) + ' | offer ' + STR(MelissaMinstrelThreesomeCanOffer) + ' | done ' + STR(MelissaMinstrelThreesomeDone)
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaPresetThreesomeMinstrel'' & gt ''GroupSexMelissaMinstrelStefanStart''">ММЖ (Элрик + Мелисса + Стефан)</a>'
+    pl '  ЖЖМ Аманда+Мелисса: ready ' + STR(AmandaMelissaThreesomeReady) + ' | done ' + STR(AmandaMelissaThreesomeDone)
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaPresetThreesomeAmanda'' & gt ''GroupSexAmandaMelissaStefanStart''">ЖЖМ (Аманда + Мелисса + Стефан)</a>'
+    pl '  Кларисса ММЖ done: ' + STR(ClarissaMmfMelissaDone) + ' | связь Кларисса-Мелисса: ' + STR(MelissaClarissaBond)
+    pl '  ⚡ <a href="exec:gt ''GroupSexClarissaMelissaMmfScene''">ММЖ (Кларисса + Мелисса + Стефан)</a>'
+    pl '  Ночные тренировки растяжки с Амандой: стадия ' + STR(AmandaMelissaTrainingStage) + ' / 6 | done ' + STR(AmandaMelissaTrainingDone)
+    pl '  ⚡ <a href="exec:gs ''DebugMelissaPresetStretchTraining'', 1 & gt ''AmandaMelissaNightTraining''">Тренировка с Амандой (AmandaMelissaNightTraining)</a>'
+---
+
+#DebugMelissaPrintSocialBlock
+    pl '<b>Социальные параметры и шкалы</b>'
+    pl 'Дружба: ' + STR(Friends['melissa']) + ' [<a href="exec:Friends[''melissa''] += 5 & gs ''DebugMelissaArcPanel''">+5</a> / <a href="exec:Friends[''melissa''] -= 5 & gs ''DebugMelissaArcPanel''">-5</a>] | Любовь: ' + STR(love['melissa']) + ' [<a href="exec:love[''melissa''] += 5 & gs ''DebugMelissaArcPanel''">+5</a> / <a href="exec:love[''melissa''] -= 5 & gs ''DebugMelissaArcPanel''">-5</a>]'
+    pl 'Откровенность: ' + STR(otkroven['melissa']) + ' [<a href="exec:otkroven[''melissa''] += 5 & gs ''DebugMelissaArcPanel''">+5</a> / <a href="exec:otkroven[''melissa''] -= 5 & gs ''DebugMelissaArcPanel''">-5</a>] | Развращённость: ' + STR(sluttiness['melissa']) + ' [<a href="exec:sluttiness[''melissa''] += 5 & gs ''DebugMelissaArcPanel''">+5</a> / <a href="exec:sluttiness[''melissa''] -= 5 & gs ''DebugMelissaArcPanel''">-5</a>]'
+    pl 'PlayerPath: ' + STR(MelissaPlayerPath) + ' [<a href="exec:MelissaPlayerPath += 1 & gs ''DebugMelissaArcPanel''">+1</a>] | NpcPath: ' + STR(MelissaNpcPath) + ' [<a href="exec:MelissaNpcPath += 1 & gs ''DebugMelissaArcPanel''">+1</a>]'
+    pl 'Интерес к менестрелю: ' + STR(MelissaMusicianInterest) + ' [<a href="exec:MelissaMusicianInterest += 5 & gs ''DebugMelissaArcPanel''">+5</a> / <a href="exec:MelissaMusicianInterest -= 5 & gs ''DebugMelissaArcPanel''">-5</a>]'
+    pl 'Потребность в контроле: ' + STR(MelissaControlNeed) + ' | Ревность: ' + STR(MelissaJealousy) + ' | Доверие: ' + STR(MelissaTrustStefan) + ' | Уважение: ' + STR(MelissaRespectStefan)
+    pl 'Скрытность: ' + STR(MelissaSecretiveness) + ' | Забота о семье: ' + STR(MelissaFamilyConcern) + ' | Обида (дней): ' + STR(GirlOffenseDays['melissa'])
+    pl 'Сексуальная статистика: intimStage ' + STR(IntimStage['melissa']) + ' | поцелуи ' + STR(KissCount['melissa']) + ' | ласки ' + STR(CaressCount['melissa']) + ' | минет ' + STR(BlowjobCount['melissa']) + ' | куни ' + STR(CuniCount['melissa'])
+    pl 'Секс: всего ' + STR(sexacts['melissa']) + ' | вагинал ' + STR(vaginalacts['melissa']) + ' | анал всего ' + STR(analacts['melissa']) + ' | анал от ГГ ' + STR(analfromyou['melissa']) + ' | внутрь ' + STR(cuminside['melissa'])
+---
+
+#DebugMelissaPrintNextHint
+    $DebugMelissaNextHint = '—'
+
+    if MelissaHomeUnlocked = 0:
+        $DebugMelissaNextHint = 'Дом заперт. Для открытия: станцуйте с Мелиссой в пятницу вечером до поцелуя и выберите «Уйти в трактир».'
+    elseif MelissaHomeSex = 0:
+        gs 'MelissaHomeCanAdvance'
+        if MelissaHomeCanAdvance = 1 and MelissaHomeStage < 6:
+            $DebugMelissaNextHint = 'Домашняя лестница доступна! Зайдите в комнату Мелиссы вечером (time 3-4) и выберите «Провести время наедине» (стадия ' + STR(MelissaHomeStage) + ').'
+        elseif MelissaHomeStage >= 6:
+            $DebugMelissaNextHint = 'Мелисса готова к первой ночи! Вечером в её комнате появится «Решительный выбор».'
+        elseif MelissaHomeStepToday = 1:
+            $DebugMelissaNextHint = 'Сегодня домашний шаг уже сделан. Переведите время на следующий день.'
+        else:
+            $DebugMelissaNextHint = 'Проверьте условия: время вечер (time 3-4), Мелисса в MelissaRoom, дружба >= ' + STR(7 + MelissaHomeStage) + ' (сейчас ' + STR(Friends['melissa']) + ').'
+        end
+        killvar 'MelissaHomeCanAdvance'
+    elseif MelissaHomeAnalDone = 0:
+        if MelissaHomeNightCount < 5:
+            $DebugMelissaNextHint = 'Секс разблокирован. Для начала анальной ветки нужно провести 5 ночей секса (сейчас ' + STR(MelissaHomeNightCount) + ').'
+        elseif MelissaHomeAnalStage = 0:
+            $DebugMelissaNextHint = 'Домашний анал: доступен шаг 1 («Прилечь вместе», объятия со спины) вечером в комнате.'
+        elseif MelissaHomeAnalStage = 1:
+            $DebugMelissaNextHint = 'Домашний анал: доступен шаг 2 («Особенная ласка (масло)») вечером в комнате.'
+        elseif MelissaHomeAnalStage = 2:
+            if MelissaClarissaAnalTalkDone = 0:
+                $DebugMelissaNextHint = 'Домашний анал: Мелисса раздумывает. Посетите винную лавку Легаре в будний день для откровенного разговора Мелиссы с Клариссой.'
+            else:
+                $DebugMelissaNextHint = 'Домашний анал: разговор с Клариссой состоялся! Вечером в комнате доступен шаг 3 («Особенная близость»).'
+            end
+        end
+    else:
+        $DebugMelissaNextHint = 'Все основные сюжетные этапы Мелиссы открыты! Доступны свободные ночи через SexScene, включая анал.'
+    end
+
+    pl '<b>Подсказка следующего шага:</b> ' + $DebugMelissaNextHint
+    killvar '$DebugMelissaNextHint'
+---
+
+#DebugMelissaPrintPresets
+    pl '<b>Пресеты быстрого тестирования (1 клик)</b>'
+    pl '  🎭 <a href="exec:gs ''DebugMelissaPresetDanceGate'' & gt ''MarketDance''">Пресет: Пятница вечер — готова к танцам (платье, костюм Стефана, MarketDance)</a>'
+    pl '  💃 <a href="exec:gs ''DebugMelissaPresetDanceAlley'' & gt ''MelissaDanceAlleyEvent''">Пресет: Танец пройден — вход в подворотню у площади</a>'
+    pl '  🎵 <a href="exec:gs ''DebugMelissaPresetMinstrelMeet'' & gt ''MelissaMinstrelMeetStart''">Пресет: Менестрель — знакомство на танцах (MelissaMinstrelMeetStart)</a>'
+    pl '  💋 <a href="exec:gs ''DebugMelissaPresetMinstrelKiss'' & gt ''MelissaMinstrelKissStart''">Пресет: Менестрель — поцелуй после танца (MelissaMinstrelKissStart)</a>'
+    pl '  ⚖ <a href="exec:gs ''DebugMelissaPresetPathChoice'' & gt ''MelissaFirstPathChoiceStart'', ''TavernMain''">Пресет: Менестрель — выбор пути (Player Path vs NPC Path)</a>'
+    pl '  📜 <a href="exec:gs ''DebugMelissaPresetMinstrelWagon'', 0 & gt ''MelissaMinstrelWagonScene1_1''">Пресет: Повозка сцена 1 — стихи и упавшая лютня</a>'
+    pl '  🎻 <a href="exec:gs ''DebugMelissaPresetMinstrelWagon'', 1 & gt ''MelissaMinstrelWagonScene2_1''">Пресет: Повозка сцена 2 — ласки со спины, оргазм Мелиссы</a>'
+    pl '  🎶 <a href="exec:gs ''DebugMelissaPresetMinstrelWagon'', 2 & gt ''MelissaMinstrelWagonScene3_1''">Пресет: Повозка сцена 3 — флейта и оральный урок (минет)</a>'
+    pl '  🛏 <a href="exec:gs ''DebugMelissaPresetMinstrelWagon'', 3 & gt ''MelissaMinstrelWagonScene4_1''">Пресет: Повозка сцена 4 — постель и первый секс с менестрелем</a>'
+    pl '  🏃 <a href="exec:gs ''DebugMelissaPresetMinstrelRace'' & gt ''MelissaMinstrelFridayRaceStart''">Пресет: 6-я пятница — гонка в подворотне (Alley Race)</a>'
+    pl '  🎪 <a href="exec:gs ''DebugMelissaPresetMinstrelBackroom'' & gt ''MelissaMinstrelBackroomStart'', ''TavernMain''">Пресет: Закулисье у сцены в трактире (Backroom)</a>'
+    pl '  🏠 <a href="exec:gs ''DebugMelissaPresetHomeFirstSex'' & gt ''MelissaHomeFirstSexLaunch''">Пресет: Домашняя дефлорация (стадия 6, MelissaHomeFirstSexLaunch)</a>'
+    pl '  🌙 <a href="exec:gs ''DebugMelissaPresetHomeRepeat'' & gt ''MelissaRoom''">Пресет: Домашний секс разблокирован (повторные вечера, MelissaRoom)</a>'
+    pl '  🧴 <a href="exec:gs ''DebugMelissaPresetHomeAnal'', 1 & gt ''MelissaHomeAnalStep1''">Пресет: Домашний анал шаг 1 — объятия со спины (Step 1)</a>'
+    pl '  ✨ <a href="exec:gs ''DebugMelissaPresetHomeAnal'', 2 & gt ''MelissaHomeAnalStep2''">Пресет: Домашний анал шаг 2 — масло и оргазм (Step 2)</a>'
+    pl '  🍷 <a href="exec:gs ''DebugMelissaPresetHomeAnal'', 2 & MelissaClarissaAnalTalkPending = 1 & gt ''MelissaClarissaAnalTalkShopScene''">Пресет: Домашний анал — разговор с Клариссой в лавке</a>'
+    pl '  🍑 <a href="exec:gs ''DebugMelissaPresetHomeAnal'', 3 & gt ''MelissaHomeAnalStep3''">Пресет: Домашний анал шаг 3 — полная близость со Стефаном (Step 3)</a>'
+    pl '  🔥 <a href="exec:gs ''DebugMelissaPresetThreesomeMinstrel'' & gt ''GroupSexMelissaMinstrelStefanStart''">Пресет: ММЖ (Элрик + Мелисса + Стефан)</a>'
+    pl '  👭 <a href="exec:gs ''DebugMelissaPresetThreesomeAmanda'' & gt ''GroupSexAmandaMelissaStefanStart''">Пресет: ЖЖМ (Аманда + Мелисса + Стефан)</a>'
+    pl '  🧘 <a href="exec:gs ''DebugMelissaPresetStretchTraining'', 1 & gt ''AmandaMelissaNightTraining''">Пресет: Ночная тренировка растяжки с Амандой (визит 1)</a>'
+---
+
+#DebugMelissaPrintBool
+    $DebugMelissaBoolLabel = $ARGS[0]
+    DebugMelissaBoolValue = ARGS[1]
+
+    if $DebugMelissaBoolLabel = '':
+        killvar '$DebugMelissaBoolLabel'
+        exit
+    end
+
+    if DebugMelissaBoolValue = 1:
+        pl $DebugMelissaBoolLabel + ': <b><font color="#008000">да</font></b>'
+    else:
+        pl $DebugMelissaBoolLabel + ': <font color="#888888">нет</font>'
+    end
+
+    killvar '$DebugMelissaBoolLabel'
+    killvar 'DebugMelissaBoolValue'
+---
+
+#DebugMelissaJumpHome
+    DebugMelissaHomeStage = ARGS[0]
+
+    if DebugMelissaHomeStage < 0:
+        DebugMelissaHomeStage = 0
+    end
+
+    if DebugMelissaHomeStage > 6:
+        DebugMelissaHomeStage = 6
+    end
+
+    MelissaDanceDressReady = 1
+    MelissaHomeUnlocked = 1
+    MelissaHomeStage = DebugMelissaHomeStage
+    MelissaHomeSex = 0
+    MelissaHomeFirstSexActive = 0
+    MelissaHomeStepToday = 0
+    MelissaHomeCanAdvance = 0
+    GirlOffenseDays['melissa'] = 0
+
+    Friends['melissa'] = 12 + DebugMelissaHomeStage
+    love['melissa'] = 8 + DebugMelissaHomeStage * 2
+    otkroven['melissa'] = 8 + DebugMelissaHomeStage * 2
+    sluttiness['melissa'] = 6 + DebugMelissaHomeStage
+    MelissaPlayerPath = 2 + DebugMelissaHomeStage
+
+    if DebugMelissaHomeStage >= 3:
+        IntimStage['melissa'] = 3
+    elseif DebugMelissaHomeStage >= 1:
+        IntimStage['melissa'] = 2
+    else:
+        IntimStage['melissa'] = 1
+    end
+
+    if DebugMelissaHomeStage >= 5:
+        IntimStage['melissa'] = 4
+    end
+
+    if DebugMelissaHomeStage >= 6:
+        IntimStage['melissa'] = 5
+        otkroven['melissa'] = 20
+    end
+
+    $GirlLocation['melissa'] = 'MelissaRoom'
+    time = 4
+
+    killvar 'DebugMelissaHomeStage'
+---
+
+#DebugMelissaJumpHomeRepeat
+    MelissaDanceDressReady = 1
+    MelissaHomeUnlocked = 1
+    MelissaHomeStage = 7
+    MelissaHomeSex = 1
+    MelissaHomeFirstSexActive = 0
+    MelissaHomeStepToday = 0
+    MelissaHomeNightCount = 3
+    GirlOffenseDays['melissa'] = 0
+
+    Friends['melissa'] = 18
+    love['melissa'] = 16
+    otkroven['melissa'] = 22
+    sluttiness['melissa'] = 14
+    MelissaPlayerPath = 8
+    IntimStage['melissa'] = 5
+    virginity['melissa'] = 0
+    HadVaginalWithPlayer['melissa'] = 1
+    sexacts['melissa'] = 2
+    vaginalacts['melissa'] = 2
+
+    $GirlLocation['melissa'] = 'MelissaRoom'
+    time = 4
+---
+
+#DebugMelissaJumpHomeAnal
+    DebugMelissaAnalStep = ARGS[0]
+
+    gs 'DebugMelissaJumpHomeRepeat'
+    MelissaHomeNightCount = 6
+    MelissaHomeAnalToday = 0
+
+    if DebugMelissaAnalStep <= 1:
+        MelissaHomeAnalStage = 0
+    elseif DebugMelissaAnalStep = 2:
+        MelissaHomeAnalStage = 1
+        sluttiness['melissa'] = 18
+        otkroven['melissa'] = 24
+    elseif DebugMelissaAnalStep = 3:
+        MelissaHomeAnalStage = 2
+        MelissaClarissaAnalTalkPending = 0
+        MelissaClarissaAnalTalkDone = 1
+        sluttiness['melissa'] = 22
+        otkroven['melissa'] = 26
+    else:
+        MelissaHomeAnalStage = 3
+        MelissaClarissaAnalTalkDone = 1
+        sluttiness['melissa'] = 25
+        otkroven['melissa'] = 28
+    end
+
+    killvar 'DebugMelissaAnalStep'
+---
+
+#DebugMelissaPresetDanceGate
+    MelissaDanceDressReady = 1
+    MelissaDanceDressPlayerBought = 1
+    StefanRespectableSuit = 1
+    week = 5
+    time = 4
+    FridayDanceDay = 0
+    FridayDancesCount = 0
+    $GirlLocation['melissa'] = 'MarketDance'
+---
+
+#DebugMelissaPresetDanceAlley
+    gs 'DebugMelissaPresetDanceGate'
+    MelissaHomeUnlocked = 1
+    MelissaHomeSex = 1
+    Friends['melissa'] = 14
+    love['melissa'] = 12
+    otkroven['melissa'] = 15
+    sluttiness['melissa'] = 12
+    MelissaDanceStage = 4
+    MelissaDanceWaist = 1
+    MelissaDanceKiss = 1
+    MelissaDanceNeck = 1
+    MelissaDanceAlley = 1
+---
+
+#DebugMelissaPresetMinstrelMeet
+    gs 'DebugMelissaPresetDanceGate'
+    MelissaFridayDanceAttended = 1
+    MelissaMinstrelMet = 0
+    MelissaMinstrelMeetStage = 0
+---
+
+#DebugMelissaPresetMinstrelKiss
+    gs 'DebugMelissaPresetDanceGate'
+    MelissaFridayDanceAttended = 1
+    MelissaMinstrelMet = 1
+    MelissaMinstrelKissReady = 1
+    MelissaMinstrelKissStage = 0
+    MelissaMinstrelKissDone = 0
+    MelissaMusicianInterest = 20
+---
+
+#DebugMelissaPresetMinstrelWagon
+    DebugWagonStageArg = ARGS[0]
+    MelissaMinstrelMet = 1
+    MelissaMinstrelWagonToday = 0
+    MelissaMinstrelWagonStage = DebugWagonStageArg
+    MelissaMusicianInterest = 20 + DebugWagonStageArg * 5
+    week = 5
+    time = 4
+    killvar 'DebugWagonStageArg'
+---
+
+#DebugMelissaPresetMinstrelRace
+    MelissaDanceDressReady = 1
+    MelissaMinstrelMet = 1
+    MelissaFridayDanceCount = 6
+    MelissaMinstrelRaceWindowOpen = 1
+    MelissaMinstrelFridayRaceDone = 0
+    MelissaMinstrelFridayRaceResult = 0
+    MelissaMinstrelFridayRaceSparkPending = 0
+    MelissaMinstrelFridayRaceSoftNearMiss = 0
+    MelissaMinstrelFridayRaceWatchRollHard = 0
+    MelissaMinstrelFirstSexDone = 0
+    week = 5
+    time = 4
+    day = 40
+---
+
+#DebugMelissaPresetMinstrelBackroom
+    TavernUpgradeStageDone = 1
+    MelissaMusicStageOfferDone = 1
+    MelissaMinstrelKissDone = 1
+    MelissaMinstrelAffairStage = 1
+    MelissaMinstrelBackroomDone = 0
+    MelissaMinstrelBackroomResult = 0
+    MelissaMinstrelBackroomSparkPending = 0
+    MelissaMinstrelBackroomSoftNearMiss = 0
+    MelissaMinstrelBackroomSpyRollHard = 0
+    MelissaMinstrelFirstSexDone = 0
+    week = 5
+    time = 4
+---
+
+#DebugMelissaPresetPathChoice
+    MelissaMinstrelMet = 1
+    MelissaMinstrelKissDone = 1
+    MelissaFirstPathChoiceReady = 1
+    MelissaFirstPathChoiceDone = 0
+    MelissaFirstPathChoice = 0
+---
+
+#DebugMelissaPresetHomeFirstSex
+    gs 'DebugMelissaJumpHome', 6
+---
+
+#DebugMelissaPresetHomeRepeat
+    gs 'DebugMelissaJumpHomeRepeat'
+---
+
+#DebugMelissaPresetHomeAnal
+    gs 'DebugMelissaJumpHomeAnal', ARGS[0]
+---
+
+#DebugMelissaPresetThreesomeMinstrel
+    gs 'DebugMelissaJumpHomeRepeat'
+    MelissaMinstrelFirstSexDone = 1
+    FamilyCorruptionStage = 3
+    TavernUpgradeStageDone = 1
+    MelissaMinstrelThreesomeReady = 1
+    MelissaMinstrelThreesomeCanOffer = 1
+    MelissaMinstrelThreesomeDone = 0
+    max_daily_cum = 5
+    daily_cum_count = 0
+---
+
+#DebugMelissaPresetThreesomeAmanda
+    AmandaHomeSex = 1
+    AmandaHomeUnlocked = 1
+    MelissaHomeSex = 1
+    MelissaHomeUnlocked = 1
+    FamilyCorruptionStage = 3
+    Friends['amanda'] = 14
+    Friends['melissa'] = 14
+    love['amanda'] = 12
+    love['melissa'] = 12
+    IntimStage['amanda'] = 3
+    IntimStage['melissa'] = 3
+    time = 4
+    $GirlLocation['amanda'] = 'AmandaRoom'
+    $GirlLocation['melissa'] = 'AmandaRoom'
+    AmandaMelissaThreesomeReady = 1
+    AmandaMelissaThreesomeDone = 0
+    AmandaMelissaThreesomeCanStart = 1
+    max_daily_cum = 5
+    daily_cum_count = 0
+---
+
+#DebugMelissaPresetStretchTraining
+    DebugStretchStageArg = ARGS[0]
+    if DebugStretchStageArg < 1:
+        DebugStretchStageArg = 1
+    end
+    AmandaMelissaTrainingStage = DebugStretchStageArg
+    AmandaMelissaTrainingDone = 0
+    AmandaWatchNpcPath = 1
+    FamilyCorruptionStage = 3
+    sluttiness['amanda'] = 20
+    sluttiness['melissa'] = 15
+    time = 5
+    $GirlLocation['amanda'] = 'MelissaRoom'
+    $GirlLocation['melissa'] = 'MelissaRoom'
+    killvar 'DebugStretchStageArg'
+---
+
+#DebugMelissaArcReset
+    MelissaDanceDressOrdered = 0
+    MelissaDanceDressReady = 0
+    MelissaDanceDressPlayerBought = 0
+    MelissaDanceDressSelfBought = 0
+    MelissaDanceDressSelfBuyDay = 0
+    MelissaFridayDanceAttended = 0
+    MelissaFridayDanceCount = 0
+    MelissaFridayDanceCountDay = 0
+    MelissaDanceDay = 0
+    MelissaDanceStage = 0
+    MelissaDanceStep = 0
+    MelissaDanceEnded = 0
+    MelissaDanceWaist = 0
+    MelissaDanceKiss = 0
+    MelissaDanceNeck = 0
+    MelissaDanceAlley = 0
+    MelissaDancePublicRisk = 0
+    MelissaAlleyDay = 0
+    MelissaAlleyStage = 0
+    MelissaAlleyRisk = 0
+    MelissaAlleyKiss = 0
+    MelissaAlleyClose = 0
+    MelissaAlleyAfterSex = 0
+    MelissaHomeUnlocked = 0
+    MelissaHomeStage = 0
+    MelissaHomeSex = 0
+    MelissaHomeFirstSexActive = 0
+    MelissaHomeStepToday = 0
+    MelissaHomeCanAdvance = 0
+    MelissaHomeNightCount = 0
+    MelissaHomeAnalStage = 0
+    MelissaHomeAnalToday = 0
+    MelissaHomeAnalStage2Day = 0
+    MelissaClarissaAnalTalkPending = 0
+    MelissaClarissaAnalTalkDone = 0
+    MelissaHomeAnalDone = 0
+    MelissaAnalWithGgDone = 0
+    MelissaAnalUnlocked = 0
+    MelissaAnalDiscoveryStage = 0
+    MelissaAnalDiscoveryToday = 0
+    MelissaMinstrelMet = 0
+    MelissaMinstrelMeetStage = 0
+    MelissaMinstrelMeetCanStart = 0
+    MelissaMinstrelKissReady = 0
+    MelissaMinstrelKissStage = 0
+    MelissaMinstrelKissCanStart = 0
+    MelissaMinstrelKissDone = 0
+    MelissaMusicStageCanOffer = 0
+    MelissaMusicStageOfferDone = 0
+    MelissaMinstrelBackstageReady = 0
+    MelissaMinstrelAffairStage = 0
+    MelissaMinstrelHallMissingCanStart = 0
+    MelissaMinstrelHallMissingDone = 0
+    MelissaMinstrelHallMissingLastWeek = 0
+    MelissaMinstrelHallMissingResult = 0
+    MelissaFirstPathChoiceCanStart = 0
+    MelissaFirstPathChoiceReady = 0
+    MelissaFirstPathChoiceDone = 0
+    MelissaFirstPathChoice = 0
+    MelissaProhibitMinstrel = 0
+    MelissaProhibitDays = 0
+    MelissaWatchMinstrel = 0
+    MelissaMinstrelWagonCanStart = 0
+    MelissaMinstrelWagonStage = 0
+    MelissaMinstrelWagonToday = 0
+    MelissaMinstrelWagonLastDay = 0
+    MelissaMinstrelFirstSexDone = 0
+    MelissaMinstrelDanceTick = 0
+    MelissaMinstrelWeekdayAllow = 0
+    MelissaMinstrelBackroomCanStart = 0
+    MelissaMinstrelBackroomDone = 0
+    MelissaMinstrelBackroomResult = 0
+    MelissaMinstrelBackroomSparkPending = 0
+    MelissaMinstrelBackroomSoftNearMiss = 0
+    MelissaMinstrelBackroomSpyRollHard = 0
+    MelissaMinstrelRaceWindowOpen = 0
+    MelissaMinstrelFridayRaceCanStart = 0
+    MelissaMinstrelFridayRaceDone = 0
+    MelissaMinstrelFridayRaceResult = 0
+    MelissaMinstrelFridayRaceSparkPending = 0
+    MelissaMinstrelFridayRaceSoftNearMiss = 0
+    MelissaMinstrelFridayRaceWatchRollHard = 0
+    MelissaMinstrelWatchReactionDone = 0
+    MelissaMinstrelWatchDefiant = 0
+    PlayerKnows_MelissaMinstrelFridayRace = 0
+    Fact_MelissaMinstrelFridayAlley = 0
+    Fact_MelissaMinstrelBackroomSex = 0
+    FactHappened['melissa_musiciannotice_1'] = 0
+    FactHappened['melissa_minstreldisappear_1'] = 0
+    GirlPersonalStoryUnlock['melissa_musician'] = 0
+    MelissaMinstrelThreesomeCanOffer = 0
+    MelissaMinstrelThreesomeReady = 0
+    MelissaMinstrelThreesomeDone = 0
+    AmandaMelissaThreesomeDone = 0
+    AmandaMelissaThreesomeReady = 0
+    ClarissaMmfMelissaDone = 0
+    MelissaDoubleAnalDone = 0
+    MelissaMinstrelAnalDone = 0
+    AmandaMelissaTrainingStage = 0
+    AmandaMelissaTrainingDone = 0
+    AmandaBrothersMelissaTalkStage = 0
+    AmandaBrothersMelissaTalkPending = 0
+    GirlOffenseDays['melissa'] = 0
+    MelissaPlayerPath = 0
+    MelissaNpcPath = 0
+    GirlNpcPath['melissa'] = 0
+    MelissaMusicianInterest = 0
+    MelissaControlNeed = 0
+    MelissaJealousy = 0
+    MelissaRespectStefan = 0
+    MelissaTrustStefan = 0
+    MelissaSecretiveness = 0
+    MelissaFamilyConcern = 0
+    Friends['melissa'] = 5
+    love['melissa'] = 0
+    otkroven['melissa'] = 2
+    sluttiness['melissa'] = 4
+    virginity['melissa'] = 1
+    analvirgin['melissa'] = 1
+    IntimStage['melissa'] = 0
+    HadVaginalWithPlayer['melissa'] = 0
+    HadSex['melissa'] = 0
+    sexacts['melissa'] = 0
+    vaginalacts['melissa'] = 0
+    analacts['melissa'] = 0
+    analfromyou['melissa'] = 0
+    cuminside['melissa'] = 0
+    KissCount['melissa'] = 0
+    CaressCount['melissa'] = 0
+    BlowjobCount['melissa'] = 0
+    OralCount['melissa'] = 0
+    CuniCount['melissa'] = 0
+---
