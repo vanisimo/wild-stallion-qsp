@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/events/melissa/melissa_dark_alley.qsps
 ! MODULE: events/family
-! [AI-WORKED] 18.09.2026
+! [AI-WORKED] 20.09.2026
 ! Подворотня с Мелиссой после домашнего первого
 ! ================================================
 
@@ -11,9 +11,7 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_event', 'ПОДВОРОТНЯ У ПЛОЩАДИ', 'large', 'webp'
     $MelissaAlleyGirl = 'melissa'
-
     gs 'EnsureGirlData', $MelissaAlleyGirl
 
     if MelissaAlleyDay <> day:
@@ -25,15 +23,28 @@
         MelissaAlleyRisk = 8 + MelissaDancePublicRisk
     end
 
+    if MelissaAlleyClose = 1:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_close', 'МЕЛИССА В ОБЪЯТИЯХ У СТЕНЫ', 'large', 'webp'
+    elseif MelissaAlleyKiss = 1:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_kiss', 'ПОЦЕЛУЙ В ТЁМНОЙ ПОДВОРОТНЕ', 'large', 'webp'
+    elseif $MelissaAlleyLastAction = 'look':
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_look', 'ТЁМНЫЙ ПРОХОД МЕЖДУ ДОМАМИ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_event', 'ПОДВОРОТНЯ У ПЛОЩАДИ', 'large', 'webp'
+    end
+
     *pl '══════════════════════════════════════════════'
     *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
+    if $MelissaAlleyLastText <> '':
+        *pl $MelissaAlleyLastText
+        *pl ' '
+    end
+
     if LOC('MelissaDanceAlleyMainText') = 1:
         gs 'MelissaDanceAlleyMainText'
-    elseif $MelissaAlleyLastText <> '':
-        *pl $MelissaAlleyLastText
     else:
         *pl 'Вы с Мелиссой отходите в тёмный проход. Она всё ещё оглядывается — но уже не отступает.'
     end
@@ -43,6 +54,37 @@
     gs 'MelissaDanceAlleyBuildMenu'
 
     *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaAlleyMenu''">делать</a>?'
+
+    gs 'ActUiPrepare', 'Оглядеться', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyAction', 'look'
+    end
+
+    if MelissaAlleyKiss = 0:
+        gs 'ActUiPrepare', 'Поцеловать', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MelissaDanceAlleyAction', 'kiss'
+        end
+    end
+
+    if MelissaAlleyKiss = 1 and MelissaAlleyClose = 0:
+        gs 'ActUiPrepare', 'Прижать ближе', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MelissaDanceAlleyAction', 'close'
+        end
+    end
+
+    if MelissaAlleyClose = 1:
+        gs 'ActUiPrepare', 'Продолжить близость', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MelissaDanceAlleyToSexScene'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyEnd'
+    end
 ---
 
 #MelissaDanceAlleyReset
@@ -54,6 +96,7 @@
     MelissaAlleyClose = 0
     MelissaAlleyAfterSex = 0
     $MelissaAlleyLastText = ''
+    $MelissaAlleyLastAction = ''
 ---
 
 #MelissaDanceAlleyBuildMenu
@@ -96,6 +139,7 @@
 #MelissaDanceAlleyAction
 
     $MelissaAlleyAction = LCASE($ARGS[0])
+    $MelissaAlleyLastAction = $MelissaAlleyAction
 
     if $MelissaAlleyAction = 'look':
         MelissaAlleyRisk += 2
@@ -103,10 +147,14 @@
         MelissaAlleyKiss = 1
         MelissaAlleyRisk += 4
         MelissaPlayerPath += 1
+        love['melissa'] += 1
+        otkroven['melissa'] += 1
+        gs 'ClampGirlSocialStats', 'melissa'
     elseif $MelissaAlleyAction = 'close':
         MelissaAlleyClose = 1
         MelissaAlleyRisk += 6
         sluttiness['melissa'] += 1
+        gs 'ClampGirlSocialStats', 'melissa'
     end
 
     if LOC('MelissaDanceAlleyActionText') = 1:
@@ -123,13 +171,21 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_to_sex_scene', 'Мелисса: тёмный переулок → sex scene', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_to_sex_scene', 'МЕЛИССА: ТЁМНЫЙ ПЕРЕУЛОК', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
     if MelissaHomeSex = 0:
         if LOC('MelissaDanceAlleyHomeGateText') = 1:
             gs 'MelissaDanceAlleyHomeGateText'
         else:
             *pl 'Мелисса отстраняется: «Сначала дома. Я же говорила».'
         end
+
+        *pl ' '
 
         gs 'ActUiPrepare', 'Вернуться в подворотню', 'return'
         act $ActUiLabel, $ActUiIconPath:
@@ -149,11 +205,15 @@
 
     if LOC('MelissaDanceAlleyBeforeSexText') = 1:
         gs 'MelissaDanceAlleyBeforeSexText'
+    else:
+        *pl 'Густая тень подворотни делает вас смелее. Мелисса больше не спорит — её губы приоткрыты, а руки сами обвивают вашу шею.'
     end
 
     *pl ' '
 
     MelissaAlleyAfterSex = 1
+    MelissaDanceEnded = 1
+    gs 'FridayDanceAdvanceRound'
 
     gs 'ActUiPrepare', 'Продолжить', 'intim'
     act $ActUiLabel, $ActUiIconPath:
@@ -168,15 +228,29 @@
 
 #MelissaDanceAlleyEnd
 
+    *clr
+    clr
+    cla
+
     MelissaDanceEnded = 1
+    gs 'FridayDanceAdvanceRound'
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_end', 'ВОЗВРАЩЕНИЕ НА ПЛОЩАДЬ', 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
 
     if LOC('MelissaDanceAlleyEndText') = 1:
         gs 'MelissaDanceAlleyEndText'
+    else:
+        *pl 'Вы выходите из темного прохода обратно к танцующей площади.'
     end
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'MarketDance'
     end
