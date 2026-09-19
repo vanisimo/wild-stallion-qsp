@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 455
-- Locations: 3286
-- Locations with direct incoming calls: 2828
-- Locations without direct incoming calls: 458
+- Source files: 456
+- Locations: 3316
+- Locations with direct incoming calls: 2843
+- Locations without direct incoming calls: 473
 - Review candidates without direct incoming calls: 168
-- Classified entry/helper locations without direct incoming calls: 290
+- Classified entry/helper locations without direct incoming calls: 305
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -53,8 +53,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `FormatTextThought` | `modules/core/text/text_format.qsps` | 331 | `modules/core` |
 | `FormatTextTitle` | `modules/core/text/text_format.qsps` | 335 | `modules/core` |
 | `FormatTextWarn` | `modules/core/text/text_format.qsps` | 343 | `modules/core` |
-| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 1128 | `modules/events` |
-| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 970 | `modules/events` |
+| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 943 | `modules/events` |
+| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 785 | `modules/events` |
 | `GeorgettePortAfterSex` | `modules/events/georgette/georgette_port_night.qsps` | 72 | `modules/events` |
 | `GeorgettePortNightMenu` | `modules/events/georgette/georgette_port_night.qsps` | 26 | `modules/events` |
 | `GirlDailyEvent` | `modules/core/system/compatibility_aliases.qsps` | 153 | `modules/core` |
@@ -154,8 +154,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `MelissaHomeAnalStep2` | `modules/events/melissa/melissa_home_anal.qsps` | 151 | `modules/events` |
 | `MelissaHomeAnalStep3` | `modules/events/melissa/melissa_home_anal.qsps` | 310 | `modules/events` |
 | `MelissaHomeAnalStepWaitingClarissa` | `modules/events/melissa/melissa_home_anal.qsps` | 247 | `modules/events` |
-| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 676 | `modules/events` |
-| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 627 | `modules/events` |
+| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 491 | `modules/events` |
+| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 442 | `modules/events` |
 | `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 299 | `modules/events` |
 | `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 997 | `modules/core` |
 | `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 991 | `modules/core` |
@@ -269,14 +269,29 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `DebugBirthCertificateArcPanel` | `modules/debug/debug_birth_certificate_arc.qsps` | 7 | `entry/helper` |
 | `DebugCheckLoc` | `modules/core/system/debug.qsps` | 12 | `entry/helper` |
 | `DebugGiftPanel` | `modules/debug/debug_gifts.qsps` | 7 | `entry/helper` |
-| `DebugIntimacyArcReset` | `modules/debug/debug_intimacy_arc.qsps` | 163 | `entry/helper` |
+| `DebugIntimacyArcReset` | `modules/debug/debug_intimacy_arc.qsps` | 172 | `entry/helper` |
 | `DebugIntimacyArcSmokeTest` | `modules/debug/debug_intimacy_arc_smoke.qsps` | 7 | `entry/helper` |
 | `DebugIntimacyJumpAmandaRepeat` | `modules/debug/debug_amanda_arc.qsps` | 661 | `entry/helper` |
-| `DebugIntimacyJumpGroups` | `modules/debug/debug_intimacy_arc.qsps` | 470 | `entry/helper` |
-| `DebugIntimacyJumpMelissaRepeat` | `modules/debug/debug_intimacy_arc.qsps` | 409 | `entry/helper` |
+| `DebugIntimacyJumpGroups` | `modules/debug/debug_intimacy_arc.qsps` | 479 | `entry/helper` |
+| `DebugIntimacyJumpMelissaRepeat` | `modules/debug/debug_intimacy_arc.qsps` | 418 | `entry/helper` |
 | `DebugKnowledgePanel` | `modules/debug/debug_knowledge_panel.qsps` | 11 | `entry/helper` |
 | `DebugKnowledgeSeedHall` | `modules/debug/debug_knowledge_panel.qsps` | 71 | `entry/helper` |
 | `DebugMayorArcPanel` | `modules/debug/debug_mayor_arc.qsps` | 7 | `entry/helper` |
+| `DebugMelissaArcPanel` | `modules/debug/debug_melissa_arc.qsps` | 11 | `entry/helper` |
+| `DebugMelissaArcReset` | `modules/debug/debug_melissa_arc.qsps` | 619 | `entry/helper` |
+| `DebugMelissaPresetDanceAlley` | `modules/debug/debug_melissa_arc.qsps` | 474 | `entry/helper` |
+| `DebugMelissaPresetHomeAnal` | `modules/debug/debug_melissa_arc.qsps` | 564 | `entry/helper` |
+| `DebugMelissaPresetHomeFirstSex` | `modules/debug/debug_melissa_arc.qsps` | 556 | `entry/helper` |
+| `DebugMelissaPresetHomeRepeat` | `modules/debug/debug_melissa_arc.qsps` | 560 | `entry/helper` |
+| `DebugMelissaPresetMinstrelBackroom` | `modules/debug/debug_melissa_arc.qsps` | 533 | `entry/helper` |
+| `DebugMelissaPresetMinstrelKiss` | `modules/debug/debug_melissa_arc.qsps` | 496 | `entry/helper` |
+| `DebugMelissaPresetMinstrelMeet` | `modules/debug/debug_melissa_arc.qsps` | 489 | `entry/helper` |
+| `DebugMelissaPresetMinstrelRace` | `modules/debug/debug_melissa_arc.qsps` | 517 | `entry/helper` |
+| `DebugMelissaPresetMinstrelWagon` | `modules/debug/debug_melissa_arc.qsps` | 506 | `entry/helper` |
+| `DebugMelissaPresetPathChoice` | `modules/debug/debug_melissa_arc.qsps` | 548 | `entry/helper` |
+| `DebugMelissaPresetStretchTraining` | `modules/debug/debug_melissa_arc.qsps` | 602 | `entry/helper` |
+| `DebugMelissaPresetThreesomeAmanda` | `modules/debug/debug_melissa_arc.qsps` | 580 | `entry/helper` |
+| `DebugMelissaPresetThreesomeMinstrel` | `modules/debug/debug_melissa_arc.qsps` | 568 | `entry/helper` |
 | `DebugPolicyFlowSmokeTest` | `modules/debug/debug_policy_flow_smoke.qsps` | 7 | `entry/helper` |
 | `DebugPortChurchArcGiveWindowHint` | `modules/debug/debug_port_church_arc.qsps` | 694 | `entry/helper` |
 | `DebugPortChurchArcGiveWindowMechanism` | `modules/debug/debug_port_church_arc.qsps` | 702 | `entry/helper` |
@@ -387,7 +402,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `LegareSupplyPressureDebugReset` | `modules/events/legare/legare_supply_pressure.qsps` | 382 | `entry/helper` |
 | `LOC` | `modules/core/system/loc.qsps` | 9 | `entry/helper` |
 | `MayorOfficeBirthCertificateClerkText` | `modules/events/family/birth_certificate_text.qsps` | 40 | `entry/helper` |
-| `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 274 | `entry/helper` |
+| `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 271 | `entry/helper` |
 | `MelissaFlirt` | `modules/actions/flirts/flirts.qsps` | 24 | `entry/helper` |
 | `MelissaMinstrelBackroomDebugReset` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 318 | `entry/helper` |
 | `MelissaMinstrelBackroomTryStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 63 | `entry/helper` |
@@ -415,15 +430,15 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `onstatusupdate` | `modules/menu/system/onstatusupdate.qsps` | 7 | `entry/helper` |
 | `otd_lib_menu` | `modules/menu/system/otd_lib_menu.qsps` | 10 | `entry/helper` |
 | `PanelClearGirlJobs` | `modules/menu/panels/panel_tavern_info.qsps` | 333 | `entry/helper` |
-| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 474 | `entry/helper` |
-| `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 172 | `entry/helper` |
-| `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 134 | `entry/helper` |
-| `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 225 | `entry/helper` |
-| `PanelDebugToolsMarket` | `modules/menu/panels/panel_debug_tools.qsps` | 200 | `entry/helper` |
-| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 373 | `entry/helper` |
+| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 478 | `entry/helper` |
+| `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 176 | `entry/helper` |
+| `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 138 | `entry/helper` |
+| `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 229 | `entry/helper` |
+| `PanelDebugToolsMarket` | `modules/menu/panels/panel_debug_tools.qsps` | 204 | `entry/helper` |
+| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 377 | `entry/helper` |
 | `PanelDebugToolsOpen` | `modules/menu/panels/panel_debug_tools.qsps` | 22 | `entry/helper` |
-| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 300 | `entry/helper` |
-| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 447 | `entry/helper` |
+| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 304 | `entry/helper` |
+| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 451 | `entry/helper` |
 | `PanelFamilyInfo` | `modules/menu/panels/panel_family_info.qsps` | 9 | `entry/helper` |
 | `PanelGirlClick` | `modules/menu/panels/panel_family_info.qsps` | 67 | `entry/helper` |
 | `PanelSetTime` | `modules/menu/panels/panel_time_info.qsps` | 155 | `entry/helper` |
@@ -486,13 +501,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1280 |
-| `Menu.AddModule` | 576 |
-| `MenuUiAdd` | 540 |
-| `SceneShowVisual` | 480 |
+| `ActUiPrepare` | 1305 |
+| `Menu.AddModule` | 569 |
+| `MenuUiAdd` | 533 |
+| `SceneShowVisual` | 484 |
 | `EnsureGirlData` | 210 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 178 |
+| `ClampGirlSocialStats` | 180 |
 | `TavernMain` | 150 |
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 96 |
@@ -501,8 +516,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `PrintTitleLine` | 89 |
 | `RegisterSex` | 88 |
 | `FormatSpintry` | 87 |
-| `PrintMainP` | 77 |
 | `UpdateGirlLocations` | 77 |
+| `PrintMainP` | 77 |
 | `MarketDance` | 71 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
