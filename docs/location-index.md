@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 455
-- Locations: 3280
+- Locations: 3285
 
 ## modules/actions
 
@@ -1742,20 +1742,25 @@ Generated from active project files in `qsp-project.json`.
 | `FridayDanceBeckyTalkText` | `modules/events/dance/friday_dance_text.qsps` | 212 |
 | `FridayDanceCardText` | `modules/events/dance/friday_dance_text.qsps` | 240 |
 | `FridayDanceDebugMenu` | `modules/events/dance/friday_dance_core.qsps` | 1029 |
+| `FridayDanceGirlRefuseNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 1208 |
 | `FridayDanceIngaBoyfriendRefusal` | `modules/events/dance/friday_dance_core.qsps` | 785 |
 | `FridayDanceIngaRefusalBoyfriendText` | `modules/events/dance/friday_dance_text.qsps` | 285 |
 | `FridayDanceInit` | `modules/events/dance/friday_dance_core.qsps` | 19 |
+| `FridayDanceInviteAction` | `modules/events/dance/friday_dance_core.qsps` | 1184 |
 | `FridayDanceMayorSpeech` | `modules/events/dance/friday_dance_core.qsps` | 190 |
 | `FridayDanceMayorSpeechText` | `modules/events/dance/friday_dance_text.qsps` | 16 |
 | `FridayDanceMelissaDanceText` | `modules/events/dance/friday_dance_text.qsps` | 236 |
 | `FridayDanceMelissaDressReadyText` | `modules/events/dance/friday_dance_text.qsps` | 228 |
 | `FridayDanceMelissaTalkText` | `modules/events/dance/friday_dance_text.qsps` | 232 |
 | `FridayDanceNoDressText` | `modules/events/dance/friday_dance_text.qsps` | 173 |
+| `FridayDanceNpcActionMenu` | `modules/events/dance/friday_dance_core.qsps` | 1170 |
 | `FridayDanceNpcCard` | `modules/events/dance/friday_dance_core.qsps` | 353 |
 | `FridayDanceNpcCardTalk` | `modules/events/dance/friday_dance_core.qsps` | 574 |
 | `FridayDanceNpcTalkText` | `modules/events/dance/friday_dance_text.qsps` | 119 |
 | `FridayDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 232 |
 | `FridayDanceObserveText` | `modules/events/dance/friday_dance_text.qsps` | 47 |
+| `FridayDancePeopleClick` | `modules/events/dance/friday_dance_core.qsps` | 1122 |
+| `FridayDancePeopleMenu` | `modules/events/dance/friday_dance_core.qsps` | 1091 |
 | `FridayDanceRumor` | `modules/events/dance/friday_dance_core.qsps` | 293 |
 | `FridayDanceRumorText` | `modules/events/dance/friday_dance_text.qsps` | 84 |
 | `FridayDanceSisterLimited` | `modules/events/dance/friday_dance_core.qsps` | 828 |

@@ -402,9 +402,9 @@
                 gt 'MelissaDance'
             end
         else:
-            gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+            gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
             act $ActUiLabel, $ActUiIconPath:
-                gt 'FridayDanceStefanNoSuit', 'melissa'
+                gt 'FridayDanceGirlRefuseNoSuit', 'melissa'
             end
         end
 
@@ -434,9 +434,9 @@
                     gt 'AmandaDance'
                 end
             else:
-                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
                 act $ActUiLabel, $ActUiIconPath:
-                    gt 'FridayDanceStefanNoSuit', 'amanda'
+                    gt 'FridayDanceGirlRefuseNoSuit', 'amanda'
                 end
             end
         end
@@ -462,9 +462,9 @@
                     gt 'BeckyDance'
                 end
             else:
-                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
                 act $ActUiLabel, $ActUiIconPath:
-                    gt 'FridayDanceStefanNoSuit', 'becky'
+                    gt 'FridayDanceGirlRefuseNoSuit', 'becky'
                 end
             end
         end
@@ -497,9 +497,9 @@
                     end
                 end
             else:
-                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
                 act $ActUiLabel, $ActUiIconPath:
-                    gt 'FridayDanceStefanNoSuit', 'inga'
+                    gt 'FridayDanceGirlRefuseNoSuit', 'inga'
                 end
             end
         end
@@ -525,9 +525,9 @@
                     gt 'ClarissaDance'
                 end
             else:
-                gs 'ActUiPrepare', 'Пригласить на танец (нужен костюм)', 'dance'
+                gs 'ActUiPrepare', 'Пригласить на танец', 'dance'
                 act $ActUiLabel, $ActUiIconPath:
-                    gt 'FridayDanceStefanNoSuit', 'clarissa'
+                    gt 'FridayDanceGirlRefuseNoSuit', 'clarissa'
                 end
             end
         else:
@@ -1084,3 +1084,195 @@
     end
 ---
 
+! ================================================
+! МЕНЮ ЛЮДЕЙ НА ТАНЦАХ
+! ================================================
+
+#FridayDancePeopleMenu
+    gs 'Menu.Create', 'DancePeopleMenu'
+
+    if AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
+        gs 'MenuUiAdd', 'DancePeopleMenu', 'Аманда', 'amanda'
+        gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'amanda'"
+    end
+
+    if MelissaDanceDressReady = 1:
+        gs 'MenuUiAdd', 'DancePeopleMenu', 'Мелисса', 'melissa'
+        gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'melissa'"
+    end
+
+    gs 'MenuUiAdd', 'DancePeopleMenu', 'Бекки Блэнкеншип', 'becky'
+    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'becky'"
+
+    gs 'MenuUiAdd', 'DancePeopleMenu', 'Кларисса Легаре', 'clarissa'
+    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'clarissa'"
+
+    gs 'MenuUiAdd', 'DancePeopleMenu', 'Инга', 'inga'
+    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'inga'"
+
+    gs 'MenuUiAdd', 'DancePeopleMenu', 'Эдди', 'eddie'
+    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'eddie'"
+
+    gs 'MenuUiAdd', 'DancePeopleMenu', 'Альбер Легаре', 'legare'
+    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'legare'"
+
+    gs 'Menu.Call', 'DancePeopleMenu'
+---
+
+#FridayDancePeopleClick
+    $DancePickNpc = LCASE($ARGS[0])
+
+    if $DancePickNpc = 'amanda':
+        if ClarissaLegareState = 2 and AmandaLegareBranchUnlocked = 1 and AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
+            gt 'AmandaLegareDanceFloorStart'
+        else:
+            gs 'FridayDanceNpcActionMenu', 'amanda'
+        end
+
+    elseif $DancePickNpc = 'melissa':
+        if MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
+            MelissaMinstrelMet = 1
+            if RAND(1, 100) <= 75:
+                gt 'MelissaMinstrelDanceStageLook'
+            end
+        end
+        gs 'FridayDanceNpcActionMenu', 'melissa'
+
+    elseif $DancePickNpc = 'becky':
+        if BeckyEddieState = 1 and BeckyEddieDone = 1:
+            gt 'BeckyEddieDanceObserve'
+        else:
+            gs 'FridayDanceNpcActionMenu', 'becky'
+        end
+
+    elseif $DancePickNpc = 'clarissa':
+        if ClarissaLegareState = 1:
+            gt 'ClarissaLegareDanceObserve'
+        else:
+            gs 'FridayDanceNpcActionMenu', 'clarissa'
+        end
+
+    elseif $DancePickNpc = 'inga':
+        if IngaLucasState = 1:
+            gt 'IngaLucasDanceObserve'
+        else:
+            gs 'FridayDanceNpcActionMenu', 'inga'
+        end
+
+    elseif $DancePickNpc = 'eddie':
+        gt 'TalkWithEddie', 'MarketDance'
+
+    elseif $DancePickNpc = 'legare':
+        gt 'FridayDanceNpcCardTalk', 'legare'
+    end
+---
+
+#FridayDanceNpcActionMenu
+    $DanceMenuGirl = $ARGS[0]
+
+    gs 'Menu.Create', 'DanceActionMenu'
+
+    gs 'MenuUiAdd', 'DanceActionMenu', 'Поболтать', 'talk'
+    gs 'Menu.AddModule', 'DanceActionMenu', "gt 'FridayDanceNpcCardTalk', '" + $DanceMenuGirl + "'"
+
+    gs 'MenuUiAdd', 'DanceActionMenu', 'Пригласить на танец', 'dance'
+    gs 'Menu.AddModule', 'DanceActionMenu', "gs 'FridayDanceInviteAction', '" + $DanceMenuGirl + "'"
+
+    gs 'Menu.Call', 'DanceActionMenu'
+---
+
+#FridayDanceInviteAction
+    $DanceTargetGirl = $ARGS[0]
+
+    if StefanRespectableSuit = 1:
+        if $DanceTargetGirl = 'melissa':
+            gt 'MelissaDance'
+        elseif $DanceTargetGirl = 'amanda':
+            gt 'AmandaDance'
+        elseif $DanceTargetGirl = 'becky':
+            gt 'BeckyDance'
+        elseif $DanceTargetGirl = 'clarissa':
+            gt 'ClarissaDance'
+        elseif $DanceTargetGirl = 'inga':
+            if IngaDanceUnlocked = 1:
+                gt 'IngaDance'
+            else:
+                gt 'FridayDanceIngaBoyfriendRefusal'
+            end
+        end
+    else:
+        gt 'FridayDanceGirlRefuseNoSuit', $DanceTargetGirl
+    end
+---
+
+#FridayDanceGirlRefuseNoSuit
+    *clr
+    clr
+    cla
+
+    $DanceRefuseTarget = LCASE($ARGS[0])
+
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_refuse_' + $DanceRefuseTarget, 'ОТКАЗ В ТАНЦЕ: ' + UCASE($RealName[$DanceRefuseTarget]), 'large', 'webp'
+
+    *pl '══════════════════════════════════════════════'
+    *pl ' ПЛОЩАДЬ: ОТКАЗ В ТАНЦЕ'
+    *pl '══════════════════════════════════════════════'
+    *pl ' '
+
+    if $DanceRefuseTarget = 'melissa':
+        *pl 'Вы с галантным видом подходите к Мелиссе и протягиваете руку, приглашая сестру в круг танцующих.'
+        *pl ' '
+        *pl 'Мелисса медленно опускает взгляд на ваши заношенные рукава, на пыльные сапоги и трактирные штаны. На её губах появляется язвительная усмешка, а бровь надменно взлетает:'
+        *pl ' '
+        *pl '— Стефан, ты в своём уме? Посмотри на себя! Я надела праздничное шёлковое платье от Ирмы, а ты выглядишь так, будто только что выкатывал бочки с кислым пивом на задний двор. Весь город будет пальцами тыкать в хозяина таверны, который не может справить себе приличный костюм! Сначала зайди к Ирме и оденься как подобает, а потом уже приглашай меня в центр площади.'
+
+    elseif $DanceRefuseTarget = 'amanda':
+        *pl 'Вы с улыбкой шагаете к Аманде и зовёте её в круг.'
+        *pl ' '
+        *pl 'Сестра радостно улыбается, но тут же испуганно спохватывается, оглядывая вашу заношенную рабочую куртку. Она делает шаг назад, нервно теребя кружево своего нового наряда, и смущённо шепчет:'
+        *pl ' '
+        *pl '— Стефан... ну ты чего? Я так старалась, так долго выбирала это платье у Ирмы! На меня же все городские парни смотрят, и подружки тут... А ты в этих старых штанах! Они же станут смеяться и дразнить меня, что у моего брата даже приличного дублета нет. Пожалуйста, купи себе нормальный костюм, тогда и потанцуем!'
+
+    elseif $DanceRefuseTarget = 'becky':
+        *pl 'Вы уверенно подходите к Бекки Блэнкеншип и с полупоклоном приглашаете её в танцевальный круг.'
+        *pl ' '
+        *pl 'Вдова окидывает вас лукавым оценивающим взглядом, прикрывает декольте веером и заливисто, звонко смеётся:'
+        *pl ' '
+        *pl '— Ох, Стефан, золотце моё! Парень-то ты видный и статью Ильматер не обидел, но в центр площади я с тобой в таком виде не выйду — кумушки на базаре меня насмерть засмеют! Скажут: «Глядите-ка, богатая вдова пошла отплясывать с оборванцем!» Ты уж не серчай, милок. Справь сначала у модистки Ирмы бархатный наряд с позументом, покажи, что ты настоящий хозяин таверны — вот тогда я с тобой хоть до утра кружиться буду!'
+
+    elseif $DanceRefuseTarget = 'clarissa':
+        *pl 'Вы подходите к госпоже Легаре и с вежливой светской улыбкой предлагаете ей танец.'
+        *pl ' '
+        *pl 'Кларисса одаривает вас долгим, прохладным взглядом. Её губы кривятся в тонкой, едва заметной насмешливой полуулыбке:'
+        *pl ' '
+        *pl '— Месье Стефан... Ваша смелость делает вам честь, но вкус явно подводит. Выходить в центр круга под руку с мужчиной, одетым как портовый грузчик или кабацкий служка — для дамы моего положения непозволительная роскошь. Если вы хотите кружить в танце благородных дам, вам стоит соответствовать правилам приличия хотя бы в одежде. Загляните к модистке Ирме, месье.'
+
+    elseif $DanceRefuseTarget = 'inga':
+        *pl 'Вы окликаете Ингу и приглашаете её станцевать.'
+        *pl ' '
+        *pl 'Девушка испуганно вздрагивает, бросает быстрый тревожный взгляд на стоящего неподалёку кузнечного подмастерья Лукаса и стражников, а затем опускает глаза в землю:'
+        *pl ' '
+        *pl '— Ой, господин Стефан... не надо, пожалуйста. Вы... вы в рабочей одежде. Лукас и ребята увидят — начнут надо мной потешаться и дразнить. Скажут, что со мной только нищие танцуют... Не сердитесь, господин Стефан, но я не пойду.'
+
+    else:
+        *pl 'Вы хотите пригласить девушку на танец, но она оглядывает вашу заношенную трактирную одежду и с насмешливой улыбкой качает головой: в таком виде на вас даже смотреть не станут.'
+    end
+
+    *pl ' '
+    *pl '<i>Чтобы дамы соглашались выходить с вами в центр площади, необходимо купить приличный костюм в лавке модистки Ирмы.</i>'
+    *pl ' '
+
+    if $DanceRefuseTarget = 'amanda' or $DanceRefuseTarget = 'melissa':
+        gs 'ActUiPrepare', 'Отойти к краю площади (' + $RealName[$DanceRefuseTarget] + ')', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FridayDanceSisterLimited', $DanceRefuseTarget
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+
+    killvar '$DanceRefuseTarget'
+---
