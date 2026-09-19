@@ -552,7 +552,7 @@
     elseif $DanceNpc = 'eddie':
         gs 'ActUiPrepare', 'Поговорить с Эдди', 'talk'
         act $ActUiLabel, $ActUiIconPath:
-            gt 'TalkWithEddie', 'MarketDance'
+            gt 'FridayDanceNpcCardTalk', 'eddie'
         end
 
     ! -----------------------------------------------
@@ -577,6 +577,8 @@
     *clr
     clr
     cla
+
+    gs 'EnsureGirlData', $TalkNpc
 
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_talk_' + $TalkNpc, 'БЕСЕДА: ' + UCASE($RealName[$TalkNpc]), 'large', 'webp'
 
@@ -603,6 +605,9 @@
     elseif $TalkNpc = 'irma':
         *pl 'Портниха Ирма с лукавым прищуром делится наблюдениями: какие дамы сэкономили на кружевах, а кто заказал шелка не по карману. Разговор получается живым и забавным.'
         Friends['irma'] += 1
+    elseif $TalkNpc = 'eddie':
+        *pl 'Эдди с кружкой ячменного пива охотно рассказывает о портовых новостях и хвастается своими проделками. Вы посмеиваетесь над его бахвальством и перебрасываетесь шутками о городских девицах.'
+        Friends['eddie'] += 1
     elseif $TalkNpc = 'legare':
         *pl 'Месье Легаре цедит вино и коротко бросает замечания о столичных налогах и поставках эля. Он держится высокомерно, но признаёт в вас хозяина доходного заведения.'
         LegareDanceSeen += 1
@@ -1160,13 +1165,8 @@
     gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Осмотреть', 'look'
     gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gt 'FridayDanceNpcCard', '" + $DanceMenuTarget + "'"
 
-    if $DanceMenuTarget = 'eddie':
-        gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Поболтать', 'talk'
-        gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gt 'TalkWithEddie', 'MarketDance'"
-    else:
-        gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Поболтать', 'talk'
-        gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gt 'FridayDanceNpcCardTalk', '" + $DanceMenuTarget + "'"
-    end
+    gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Поболтать', 'talk'
+    gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gt 'FridayDanceNpcCardTalk', '" + $DanceMenuTarget + "'"
 
     ! Девушек можно пригласить на танец:
     if $DanceMenuTarget <> 'eddie' and $DanceMenuTarget <> 'legare':

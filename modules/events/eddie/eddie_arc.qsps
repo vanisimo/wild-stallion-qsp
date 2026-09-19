@@ -29,21 +29,34 @@
 
     cls
 
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/events/eddie/eddie_arc/eddie_talk', 'РАЗГОВОР С ЭДДИ', 'large', 'webp'
+
     *pl '══════════════════════════════════════════════'
     *pl '       РАЗГОВОР С ЭДДИ'
     *pl '══════════════════════════════════════════════'
     *pl ' '
 
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        if $EddieTalkReturnLoc = '':
+            $EddieTalkReturnLoc = 'BeckyShop'
+        end
+        $TmpLoc = $EddieTalkReturnLoc
+        killvar '$EddieTalkReturnLoc'
+        gt $TmpLoc
+    end
+
     gs 'Menu.Create', 'MenuEddieTalk'
 
     gs 'MenuUiAdd', 'MenuEddieTalk', 'Поболтать о разной фигне', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
-        'Вы некоторое время болтаете с Эдди о несущественных вещах.'
+        *pl 'Вы некоторое время болтаете с Эдди о несущественных вещах.'
         dynamic 'if Talked[''eddie'']<=2 and Rand(1,2)=1 and Friends[''eddie'']<=5:
-            ''Вы немного сдружились с Эдди.''
+            *pl ''Вы немного сдружились с Эдди.''
             Friends[''eddie'']+=1
         end
-        if Talked[''eddie'']>2: ''Ничего нового из разговора вы не узнали.'''
+        if Talked[''eddie'']>2: *pl ''Ничего нового из разговора вы не узнали.'''
         Talked['eddie'] += 1
     }
 
@@ -80,7 +93,7 @@
 
     gs 'MenuUiAdd', 'MenuEddieTalk', 'Поговорить о том, как теперь бывает дома', ''
     gs 'Menu.AddModule', 'MenuEddieTalk', {
-        'Эдди смущённо улыбается: "Ну… теперь мама не так злится. Спасибо, что помог разобраться."'
+        *pl 'Эдди смущённо улыбается: "Ну… теперь мама не так злится. Спасибо, что помог разобраться."'
         Friends['eddie'] += 1
         Talked['eddie'] += 1
     }

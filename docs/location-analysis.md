@@ -53,8 +53,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `FormatTextThought` | `modules/core/text/text_format.qsps` | 331 | `modules/core` |
 | `FormatTextTitle` | `modules/core/text/text_format.qsps` | 335 | `modules/core` |
 | `FormatTextWarn` | `modules/core/text/text_format.qsps` | 343 | `modules/core` |
-| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 1123 | `modules/events` |
-| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 965 | `modules/events` |
+| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 1128 | `modules/events` |
+| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 970 | `modules/events` |
 | `GeorgettePortAfterSex` | `modules/events/georgette/georgette_port_night.qsps` | 72 | `modules/events` |
 | `GeorgettePortNightMenu` | `modules/events/georgette/georgette_port_night.qsps` | 26 | `modules/events` |
 | `GirlDailyEvent` | `modules/core/system/compatibility_aliases.qsps` | 153 | `modules/core` |
@@ -154,8 +154,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `MelissaHomeAnalStep2` | `modules/events/melissa/melissa_home_anal.qsps` | 151 | `modules/events` |
 | `MelissaHomeAnalStep3` | `modules/events/melissa/melissa_home_anal.qsps` | 310 | `modules/events` |
 | `MelissaHomeAnalStepWaitingClarissa` | `modules/events/melissa/melissa_home_anal.qsps` | 247 | `modules/events` |
-| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 671 | `modules/events` |
-| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 622 | `modules/events` |
+| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 676 | `modules/events` |
+| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 627 | `modules/events` |
 | `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 299 | `modules/events` |
 | `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 997 | `modules/core` |
 | `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 991 | `modules/core` |
@@ -486,11 +486,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1277 |
-| `Menu.AddModule` | 577 |
-| `MenuUiAdd` | 541 |
-| `SceneShowVisual` | 478 |
-| `EnsureGirlData` | 209 |
+| `ActUiPrepare` | 1278 |
+| `Menu.AddModule` | 576 |
+| `MenuUiAdd` | 540 |
+| `SceneShowVisual` | 479 |
+| `EnsureGirlData` | 210 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 178 |
 | `TavernMain` | 149 |
