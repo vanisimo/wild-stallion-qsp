@@ -17,6 +17,10 @@
         gs 'BeckyDanceReset'
     end
 
+    if BeckyDanceStage = 0 and BeckyDanceEnded = 0:
+        gt 'BeckyDanceAction', 'invite'
+    end
+
     if LOC('ShowImage') = 1:
         gs 'ShowImage', 'becky', 'dance', 'dance', 'normal'
     end
@@ -44,7 +48,7 @@
     end
 
     if BeckyDanceEnded = 1:
-        gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+        gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'MarketDance'
         end
@@ -87,62 +91,53 @@
     gs 'Menu.Create', 'BeckyDanceMenu'
 
     if BeckyDanceInviteHome = 1:
-        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Принять предложение вдовы', ''
+        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Принять предложение', 'home'
         gs 'Menu.AddModule', 'BeckyDanceMenu', {
             gt 'BeckyDanceInviteAccept'
         }
     end
 
-    if BeckyDanceStage = 0:
-        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Поболтать', ''
+    if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep:
+        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Кружиться в танце', 'dance'
         gs 'Menu.AddModule', 'BeckyDanceMenu', {
-            gt 'BeckyDanceAction', 'talk'
+            gt 'BeckyDanceAction', 'continue'
         }
-
-        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Пригласить потанцевать', ''
-        gs 'Menu.AddModule', 'BeckyDanceMenu', {
-            gt 'BeckyDanceAction', 'invite'
-        }
-    else:
-        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep:
-            gs 'MenuUiAdd', 'BeckyDanceMenu', 'Продолжить танцевать', ''
-            gs 'Menu.AddModule', 'BeckyDanceMenu', {
-                gt 'BeckyDanceAction', 'continue'
-            }
-        end
-
-        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands <> 'waist' and $BeckyDanceHands <> 'ass' and $BeckyDanceHands <> 'ass2':
-            gs 'MenuUiAdd', 'BeckyDanceMenu', 'Положить руки на талию', ''
-            gs 'Menu.AddModule', 'BeckyDanceMenu', {
-                gt 'BeckyDanceAction', 'waist'
-            }
-        end
-
-        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands <> 'ass' and $BeckyDanceHands <> 'ass2':
-            gs 'MenuUiAdd', 'BeckyDanceMenu', 'Положить руки на попу', ''
-            gs 'Menu.AddModule', 'BeckyDanceMenu', {
-                gt 'BeckyDanceAction', 'ass'
-            }
-        end
-
-        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands = 'ass':
-            gs 'MenuUiAdd', 'BeckyDanceMenu', 'Сжать попу вдовы', ''
-            gs 'Menu.AddModule', 'BeckyDanceMenu', {
-                gt 'BeckyDanceAction', 'squeeze'
-            }
-        end
-
-        if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and BeckyDanceKiss = 0:
-            gs 'MenuUiAdd', 'BeckyDanceMenu', 'Поцеловать Бекки', ''
-            gs 'Menu.AddModule', 'BeckyDanceMenu', {
-                gt 'BeckyDanceAction', 'kiss'
-            }
-        end
     end
 
-    gs 'MenuUiAdd', 'BeckyDanceMenu', 'Отойти', ''
+    if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands <> 'waist' and $BeckyDanceHands <> 'ass' and $BeckyDanceHands <> 'ass2':
+        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Обнять за талию', 'intim'
+        gs 'Menu.AddModule', 'BeckyDanceMenu', {
+            gt 'BeckyDanceAction', 'waist'
+        }
+    end
+
+    if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands <> 'ass' and $BeckyDanceHands <> 'ass2':
+        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Рука на попу', 'intim'
+        gs 'Menu.AddModule', 'BeckyDanceMenu', {
+            gt 'BeckyDanceAction', 'ass'
+        }
+    end
+
+    if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and $BeckyDanceHands = 'ass':
+        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Сжать попу', 'intim'
+        gs 'Menu.AddModule', 'BeckyDanceMenu', {
+            gt 'BeckyDanceAction', 'squeeze'
+        }
+    end
+
+    if BeckyDanceStep >= 2 and BeckyDanceStep < BeckyDanceMaxStep and BeckyDanceKiss = 0:
+        gs 'MenuUiAdd', 'BeckyDanceMenu', 'Поцеловать', 'intim'
+        gs 'Menu.AddModule', 'BeckyDanceMenu', {
+            gt 'BeckyDanceAction', 'kiss'
+        }
+    end
+
+    gs 'MenuUiAdd', 'BeckyDanceMenu', 'Закончить танец', 'return'
     gs 'Menu.AddModule', 'BeckyDanceMenu', {
         BeckyDanceEnded = 1
+        if BeckyDanceStep >= 2:
+            gs 'FridayDanceAdvanceRound'
+        end
         gt 'MarketDance'
     }
 ---
@@ -350,7 +345,7 @@
     gs 'SceneShowVisual', 'images/events/becky/becky_dance/becky_dance_invite_accept', 'ПРИГЛАШЕНИЕ БЕККИ', 'large', 'webp'
     BeckyDanceEnded = 1
     BeckyDanceInviteHome = 0
-    FridayDancesCount = 5
+    FridayDancesCount = 8
 
     if BeckyHomeStage < 1:
         BeckyHomeStage = 1

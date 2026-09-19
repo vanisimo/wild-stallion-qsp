@@ -35,6 +35,10 @@
         AmandaDanceEnded = 1
     end
 
+    if AmandaDanceStage = 0 and AmandaDanceEnded = 0:
+        gt 'AmandaDanceAction', 'dance'
+    end
+
     if $AmandaDanceArt = '':
         if AmandaDanceStage = 0:
             $AmandaDanceArt = 'wait' + STR(RAND(1, 2))
@@ -87,7 +91,7 @@
         *pl 'Танец с Амандой на сегодня уже закончен.'
         *pl ' '
 
-        gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+        gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'MarketDance'
         end
@@ -138,46 +142,34 @@
     gs 'Menu.Destroy', 'AmandaDanceMenu'
     gs 'Menu.Create', 'AmandaDanceMenu'
 
-    if AmandaDanceStage = 0:
-        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Танец', ''
-        gs 'Menu.AddModule', 'AmandaDanceMenu', {
-            gt 'AmandaDanceAction', 'dance'
-        }
-
-        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Поболтать', ''
-        gs 'Menu.AddModule', 'AmandaDanceMenu', {
-            gt 'AmandaDanceAction', 'talk'
-        }
-    else:
-        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Танец', ''
-        gs 'Menu.AddModule', 'AmandaDanceMenu', {
-            gt 'AmandaDanceAction', 'continue'
-        }
-    end
+    gs 'MenuUiAdd', 'AmandaDanceMenu', 'Кружиться в танце', 'dance'
+    gs 'Menu.AddModule', 'AmandaDanceMenu', {
+        gt 'AmandaDanceAction', 'continue'
+    }
 
     if AmandaDanceStage >= 1 and AmandaDanceWaist = 0:
-        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Талия', ''
+        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Обнять за талию', 'intim'
         gs 'Menu.AddModule', 'AmandaDanceMenu', {
             gt 'AmandaDanceAction', 'waist'
         }
     end
 
     if AmandaDanceWaist = 1 and AmandaDanceAss = 0:
-        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Попа', ''
+        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Рука на попу', 'intim'
         gs 'Menu.AddModule', 'AmandaDanceMenu', {
             gt 'AmandaDanceAction', 'ass'
         }
     end
 
     if AmandaDanceAss = 1 and AmandaDanceAssGrip = 0:
-        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Сжать попу', ''
+        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Сжать попу', 'intim'
         gs 'Menu.AddModule', 'AmandaDanceMenu', {
             gt 'AmandaDanceAction', 'grip'
         }
     end
 
     if AmandaDanceAssGrip = 1 and AmandaDanceKiss = 0:
-        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Поцелуй', ''
+        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Поцеловать', 'intim'
         gs 'Menu.AddModule', 'AmandaDanceMenu', {
             gt 'AmandaDanceAction', 'kiss'
         }
@@ -187,7 +179,7 @@
         gs 'AmandaDanceAlleyCanOffer'
 
         if AmandaDanceAlleyCanOffer = 1:
-            gs 'MenuUiAdd', 'AmandaDanceMenu', 'Подворотня', ''
+            gs 'MenuUiAdd', 'AmandaDanceMenu', 'Увлечь в подворотню', 'intim'
             gs 'Menu.AddModule', 'AmandaDanceMenu', {
                 gt 'AmandaDanceAction', 'alley'
             }
@@ -197,13 +189,13 @@
     end
 
     if AmandaDanceStage >= 1 and AmandaHomeStage >= 3:
-        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Увести с танцев домой (обнимашки)', ''
+        gs 'MenuUiAdd', 'AmandaDanceMenu', 'Увести домой', 'home'
         gs 'Menu.AddModule', 'AmandaDanceMenu', {
             gt 'AmandaDanceLeaveHome'
         }
     end
 
-    gs 'MenuUiAdd', 'AmandaDanceMenu', 'Закончить танец', ''
+    gs 'MenuUiAdd', 'AmandaDanceMenu', 'Закончить танец', 'return'
     gs 'Menu.AddModule', 'AmandaDanceMenu', {
         AmandaDanceEnded = 1
         if AmandaDanceStage >= 1:

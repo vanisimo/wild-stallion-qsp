@@ -79,6 +79,10 @@
         $IngaDanceLastText = ''
     end
 
+    if IngaDanceStage = 0 and IngaDanceEnded = 0:
+        gt 'IngaDanceAction', 'dance'
+    end
+
     gs 'EnsureGirlData', 'inga'
 
     *pl '══════════════════════════════════════════════'
@@ -96,8 +100,10 @@
 
     if IngaDanceEnded = 1:
         *p 'Танец с Ингой на сегодня закончен.'
-        gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
-        act $ActUiLabel, $ActUiIconPath: gt 'MarketDance'
+        gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MarketDance'
+        end
         exit
     end
 
@@ -111,42 +117,38 @@
     gs 'Menu.Destroy', 'IngaDanceMenu'
     gs 'Menu.Create', 'IngaDanceMenu'
 
-    if IngaDanceStage = 0:
-        gs 'MenuUiAdd', 'IngaDanceMenu', 'Танец', ''
-        gs 'Menu.AddModule', 'IngaDanceMenu', {
-            gt 'IngaDanceAction', 'dance'
-        }
-    else:
-        gs 'MenuUiAdd', 'IngaDanceMenu', 'Танец', ''
-        gs 'Menu.AddModule', 'IngaDanceMenu', {
-            gt 'IngaDanceAction', 'continue'
-        }
-    end
+    gs 'MenuUiAdd', 'IngaDanceMenu', 'Кружиться в танце', 'dance'
+    gs 'Menu.AddModule', 'IngaDanceMenu', {
+        gt 'IngaDanceAction', 'continue'
+    }
 
     if IngaDanceStage >= 1 and IngaDanceWaist = 0:
-        gs 'MenuUiAdd', 'IngaDanceMenu', 'Талия', ''
+        gs 'MenuUiAdd', 'IngaDanceMenu', 'Обнять за талию', 'intim'
         gs 'Menu.AddModule', 'IngaDanceMenu', {
             gt 'IngaDanceAction', 'waist'
         }
     end
 
     if IngaDanceWaist = 1 and IngaDanceKiss = 0:
-        gs 'MenuUiAdd', 'IngaDanceMenu', 'Поцелуй', ''
+        gs 'MenuUiAdd', 'IngaDanceMenu', 'Поцеловать', 'intim'
         gs 'Menu.AddModule', 'IngaDanceMenu', {
             gt 'IngaDanceAction', 'kiss'
         }
     end
 
     if IngaDanceKiss = 1:
-        gs 'MenuUiAdd', 'IngaDanceMenu', 'Уйти с площади в комнату', ''
+        gs 'MenuUiAdd', 'IngaDanceMenu', 'Уйти в комнату Инги', 'home'
         gs 'Menu.AddModule', 'IngaDanceMenu', {
             gt 'IngaDanceAction', 'leave'
         }
     end
 
-    gs 'MenuUiAdd', 'IngaDanceMenu', 'Закончить танец', ''
+    gs 'MenuUiAdd', 'IngaDanceMenu', 'Закончить танец', 'return'
     gs 'Menu.AddModule', 'IngaDanceMenu', {
         IngaDanceEnded = 1
+        if IngaDanceStage >= 1:
+            gs 'FridayDanceAdvanceRound'
+        end
         gt 'MarketDance'
     }
 ---

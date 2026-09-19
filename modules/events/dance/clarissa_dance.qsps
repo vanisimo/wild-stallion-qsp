@@ -20,6 +20,10 @@
         $ClarissaDanceLastText = ''
     end
 
+    if ClarissaDanceStep = 0 and ClarissaDanceEnded = 0:
+        gt 'ClarissaDanceAction', 'dance'
+    end
+
     gs 'SceneShowVisual', 'images/events/dance/clarissa_dance/clarissa_dance', 'ТАНЕЦ С КЛАРИССОЙ', 'large', 'webp'
 
     *pl '══════════════════════════════════════════════'
@@ -36,7 +40,7 @@
     *pl ' '
 
     if ClarissaDanceEnded = 1:
-        gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+        gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'MarketDance'
         end
@@ -46,37 +50,40 @@
     gs 'Menu.Destroy', 'ClarissaDanceMenu'
     gs 'Menu.Create', 'ClarissaDanceMenu'
 
-    if ClarissaDanceStep = 0:
-        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Кружиться в вальсе', ''
+    if ClarissaDanceStep >= 1:
+        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Кружиться в танце', 'dance'
         gs 'Menu.AddModule', 'ClarissaDanceMenu', {
-            gt 'ClarissaDanceAction', 'dance'
+            gt 'ClarissaDanceAction', 'continue'
         }
     end
 
     if ClarissaDanceStep >= 1 and ClarissaDanceWaist = 0:
-        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Положить руку на талию', ''
+        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Обнять за талию', 'intim'
         gs 'Menu.AddModule', 'ClarissaDanceMenu', {
             gt 'ClarissaDanceAction', 'waist'
         }
     end
 
     if ClarissaDanceStep >= 1 and ClarissaDanceAss = 0:
-        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Опустить руку на попу', ''
+        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Рука на попу', 'intim'
         gs 'Menu.AddModule', 'ClarissaDanceMenu', {
             gt 'ClarissaDanceAction', 'ass'
         }
     end
 
     if ClarissaDanceStep >= 1:
-        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Чинно завершить танец', ''
+        gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Чинно завершить танец', 'dance'
         gs 'Menu.AddModule', 'ClarissaDanceMenu', {
             gt 'ClarissaDanceAction', 'finish'
         }
     end
 
-    gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Отойти', ''
+    gs 'MenuUiAdd', 'ClarissaDanceMenu', 'Закончить танец', 'return'
     gs 'Menu.AddModule', 'ClarissaDanceMenu', {
         ClarissaDanceEnded = 1
+        if ClarissaDanceStep >= 1 and ClarissaDanceStep < 4:
+            gs 'FridayDanceAdvanceRound'
+        end
         gt 'MarketDance'
     }
 
@@ -92,6 +99,10 @@
         ClarissaDanceStep = 1
         Friends['clarissa'] += 1
         $ClarissaDanceLastText = 'Вы уверенно ведете Клариссу в круг танцующих. Она движется с безупречной осанкой благородной дамы, ловя на себе взгляды мужа и почтенных горожан. Напряжение в её плечах постепенно тает.'
+
+    elseif $ClarissaAction = 'continue':
+        Friends['clarissa'] += 1
+        $ClarissaDanceLastText = 'Вы продолжаете легко кружиться в танце с госпожой Легаре под взглядами почтенных горожан.'
 
     elseif $ClarissaAction = 'waist':
         if Friends['clarissa'] >= 6:
