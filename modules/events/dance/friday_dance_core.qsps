@@ -1103,100 +1103,78 @@
 ---
 
 ! ================================================
-! МЕНЮ ЛЮДЕЙ НА ТАНЦАХ
+! ЦЕРКОВНЫЙ СТИЛЬ: ВЫПАДАЮЩИЕ МЕНЮ NPC В ГЛАВНОМ ОКНЕ
 ! ================================================
 
-#FridayDancePeopleMenu
-    gs 'Menu.Create', 'DancePeopleMenu'
+#FridayDanceEmbedMenuLink
+    $DanceLinkLabel = $ARGS[0]
+    $DanceLinkId = LCASE($ARGS[1])
 
-    if AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
-        gs 'MenuUiAdd', 'DancePeopleMenu', 'Аманда', 'amanda'
-        gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'amanda'"
-    end
+    gs 'FormatTextByStyle', $DanceLinkLabel, 'npc_link'
+    gs 'NpcTalkIconInline'
+    $DanceMenuLink = '<a style="text-decoration:none; color:#C59B3F; font-weight:bold; border-bottom:1px dotted rgba(197,155,63,0.6);" href="exec:gs ''FridayDanceShowNpcMenu'', ''' + $DanceLinkId + '''">' + $NpcTalkIconInline + $FormattedText + '</a>'
 
-    if MelissaDanceDressReady = 1:
-        gs 'MenuUiAdd', 'DancePeopleMenu', 'Мелисса', 'melissa'
-        gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'melissa'"
-    end
-
-    gs 'MenuUiAdd', 'DancePeopleMenu', 'Бекки Блэнкеншип', 'becky'
-    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'becky'"
-
-    gs 'MenuUiAdd', 'DancePeopleMenu', 'Кларисса Легаре', 'clarissa'
-    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'clarissa'"
-
-    gs 'MenuUiAdd', 'DancePeopleMenu', 'Инга', 'inga'
-    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'inga'"
-
-    gs 'MenuUiAdd', 'DancePeopleMenu', 'Эдди', 'eddie'
-    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'eddie'"
-
-    gs 'MenuUiAdd', 'DancePeopleMenu', 'Альбер Легаре', 'legare'
-    gs 'Menu.AddModule', 'DancePeopleMenu', "gs 'FridayDancePeopleClick', 'legare'"
-
-    gs 'Menu.Call', 'DancePeopleMenu'
+    killvar '$FormattedText'
+    killvar '$NpcTalkIconInline'
+    killvar '$DanceLinkLabel'
+    killvar '$DanceLinkId'
 ---
 
-#FridayDancePeopleClick
-    $DancePickNpc = LCASE($ARGS[0])
+#FridayDanceShowNpcMenu
+    $DanceMenuTarget = LCASE($ARGS[0])
 
-    if $DancePickNpc = 'amanda':
-        if ClarissaLegareState = 2 and AmandaLegareBranchUnlocked = 1 and AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
-            gt 'AmandaLegareDanceFloorStart'
-        else:
-            gs 'FridayDanceNpcActionMenu', 'amanda'
-        end
+    if $DanceMenuTarget = '':
+        exit
+    end
 
-    elseif $DancePickNpc = 'melissa':
+    ! Проверка на активные сцены наблюдения (рандом):
+    if $DanceMenuTarget = 'melissa':
         if MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
             MelissaMinstrelMet = 1
             if RAND(1, 100) <= 75:
                 gt 'MelissaMinstrelDanceStageLook'
             end
         end
-        gs 'FridayDanceNpcActionMenu', 'melissa'
-
-    elseif $DancePickNpc = 'becky':
+    elseif $DanceMenuTarget = 'amanda':
+        if ClarissaLegareState = 2 and AmandaLegareBranchUnlocked = 1 and AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
+            gt 'AmandaLegareDanceFloorStart'
+        end
+    elseif $DanceMenuTarget = 'becky':
         if BeckyEddieState = 1 and BeckyEddieDone = 1:
             gt 'BeckyEddieDanceObserve'
-        else:
-            gs 'FridayDanceNpcActionMenu', 'becky'
         end
-
-    elseif $DancePickNpc = 'clarissa':
+    elseif $DanceMenuTarget = 'clarissa':
         if ClarissaLegareState = 1:
             gt 'ClarissaLegareDanceObserve'
-        else:
-            gs 'FridayDanceNpcActionMenu', 'clarissa'
         end
-
-    elseif $DancePickNpc = 'inga':
+    elseif $DanceMenuTarget = 'inga':
         if IngaLucasState = 1:
             gt 'IngaLucasDanceObserve'
-        else:
-            gs 'FridayDanceNpcActionMenu', 'inga'
         end
-
-    elseif $DancePickNpc = 'eddie':
-        gt 'TalkWithEddie', 'MarketDance'
-
-    elseif $DancePickNpc = 'legare':
-        gt 'FridayDanceNpcCardTalk', 'legare'
     end
----
 
-#FridayDanceNpcActionMenu
-    $DanceMenuGirl = $ARGS[0]
+    ! Если свободна — строим контекстное меню как в церкви:
+    gs 'Menu.Destroy', 'FridayDanceNpcMenu'
+    gs 'Menu.Create', 'FridayDanceNpcMenu'
 
-    gs 'Menu.Create', 'DanceActionMenu'
+    gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Осмотреть', 'look'
+    gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gt 'FridayDanceNpcCard', '" + $DanceMenuTarget + "'"
 
-    gs 'MenuUiAdd', 'DanceActionMenu', 'Поболтать', 'talk'
-    gs 'Menu.AddModule', 'DanceActionMenu', "gt 'FridayDanceNpcCardTalk', '" + $DanceMenuGirl + "'"
+    if $DanceMenuTarget = 'eddie':
+        gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Поболтать', 'talk'
+        gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gt 'TalkWithEddie', 'MarketDance'"
+    else:
+        gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Поболтать', 'talk'
+        gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gt 'FridayDanceNpcCardTalk', '" + $DanceMenuTarget + "'"
+    end
 
-    gs 'MenuUiAdd', 'DanceActionMenu', 'Пригласить на танец', 'dance'
-    gs 'Menu.AddModule', 'DanceActionMenu', "gs 'FridayDanceInviteAction', '" + $DanceMenuGirl + "'"
+    ! Девушек можно пригласить на танец:
+    if $DanceMenuTarget <> 'eddie' and $DanceMenuTarget <> 'legare':
+        gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Пригласить на танец', 'dance'
+        gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gs 'FridayDanceInviteAction', '" + $DanceMenuTarget + "'"
+    end
 
-    gs 'Menu.Call', 'DanceActionMenu'
+    gs 'Menu.Show', 'FridayDanceNpcMenu'
 ---
 
 #FridayDanceInviteAction

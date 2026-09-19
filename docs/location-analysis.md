@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 455
-- Locations: 3285
-- Locations with direct incoming calls: 2827
+- Locations: 3284
+- Locations with direct incoming calls: 2826
 - Locations without direct incoming calls: 458
 - Review candidates without direct incoming calls: 168
 - Classified entry/helper locations without direct incoming calls: 290
@@ -53,7 +53,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `FormatTextThought` | `modules/core/text/text_format.qsps` | 331 | `modules/core` |
 | `FormatTextTitle` | `modules/core/text/text_format.qsps` | 335 | `modules/core` |
 | `FormatTextWarn` | `modules/core/text/text_format.qsps` | 343 | `modules/core` |
-| `FridayDanceNpcCard` | `modules/events/dance/friday_dance_core.qsps` | 353 | `modules/events` |
+| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 1123 | `modules/events` |
 | `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 965 | `modules/events` |
 | `GeorgettePortAfterSex` | `modules/events/georgette/georgette_port_night.qsps` | 72 | `modules/events` |
 | `GeorgettePortNightMenu` | `modules/events/georgette/georgette_port_night.qsps` | 26 | `modules/events` |
@@ -486,18 +486,18 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1278 |
-| `Menu.AddModule` | 582 |
-| `MenuUiAdd` | 546 |
+| `ActUiPrepare` | 1277 |
+| `Menu.AddModule` | 577 |
+| `MenuUiAdd` | 541 |
 | `SceneShowVisual` | 478 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 178 |
 | `TavernMain` | 149 |
 | `ShowGirlSidebar` | 98 |
-| `Menu.Create` | 97 |
+| `Menu.Create` | 96 |
 | `ShowImage` | 91 |
-| `Menu.Destroy` | 89 |
+| `Menu.Destroy` | 90 |
 | `PrintTitleLine` | 89 |
 | `RegisterSex` | 88 |
 | `FormatSpintry` | 87 |

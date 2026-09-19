@@ -118,20 +118,57 @@
 
     *pl ' '
     *pl '<b>Знакомые на площади:</b>'
-    *pl 'У колоннад и торговых рядов прогуливаются дамы: <a href="exec:gs ''FridayDancePeopleClick'', ''becky''">Бекки Блэнкеншип</a>, <a href="exec:gs ''FridayDancePeopleClick'', ''clarissa''">госпожа Кларисса Легаре</a> и <a href="exec:gs ''FridayDancePeopleClick'', ''inga''">Инга</a>.'
+    gs 'FridayDanceEmbedMenuLink', 'Бекки Блэнкеншип', 'becky'
+    $DanceLinkBecky = $DanceMenuLink
+    killvar '$DanceMenuLink'
+
+    gs 'FridayDanceEmbedMenuLink', 'госпожа Кларисса Легаре', 'clarissa'
+    $DanceLinkClarissa = $DanceMenuLink
+    killvar '$DanceMenuLink'
+
+    gs 'FridayDanceEmbedMenuLink', 'Инга', 'inga'
+    $DanceLinkInga = $DanceMenuLink
+    killvar '$DanceMenuLink'
+
+    gs 'FridayDanceEmbedMenuLink', 'Альбер Легаре', 'legare'
+    $DanceLinkLegare = $DanceMenuLink
+    killvar '$DanceMenuLink'
+
+    gs 'FridayDanceEmbedMenuLink', 'Эдди', 'eddie'
+    $DanceLinkEddie = $DanceMenuLink
+    killvar '$DanceMenuLink'
+
+    *pl 'У колоннад и торговых рядов прогуливаются дамы: ' + $DanceLinkBecky + ', ' + $DanceLinkClarissa + ' и ' + $DanceLinkInga + '.'
+
     if AmandaDanceDressReady = 1 and AmandaDanceBlockedTonight = 0:
-        *pl 'Неподалёку сияет в праздничном платье <a href="exec:gs ''FridayDancePeopleClick'', ''amanda''">Аманда</a>.'
+        gs 'FridayDanceEmbedMenuLink', 'Аманда', 'amanda'
+        $DanceLinkAmanda = $DanceMenuLink
+        killvar '$DanceMenuLink'
+        *pl 'Неподалёку сияет в праздничном платье ' + $DanceLinkAmanda + '.'
+        killvar '$DanceLinkAmanda'
     end
+
     if MelissaDanceDressReady = 1:
+        gs 'FridayDanceEmbedMenuLink', 'Мелисса', 'melissa'
+        $DanceLinkMelissa = $DanceMenuLink
+        killvar '$DanceMenuLink'
         if MelissaMinstrelWagonToday = 1:
-            *pl '<a href="exec:gs ''FridayDancePeopleClick'', ''melissa''">Мелисса</a> задумчиво прогуливается у торговых рядов.'
+            *pl $DanceLinkMelissa + ' задумчиво прогуливается у торговых рядов.'
         elseif MelissaMinstrelDanceTick > 0:
-            *pl 'У помоста менестрелей <a href="exec:gs ''FridayDancePeopleClick'', ''melissa''">Мелисса</a> всё ещё заворожённо слушает Элрика.'
+            *pl 'У помоста менестрелей ' + $DanceLinkMelissa + ' всё ещё заворожённо слушает Элрика.'
         else:
-            *pl 'У помоста менестрелей с интересом слушает стихи <a href="exec:gs ''FridayDancePeopleClick'', ''melissa''">Мелисса</a>.'
+            *pl 'У помоста менестрелей с интересом слушает стихи ' + $DanceLinkMelissa + '.'
         end
+        killvar '$DanceLinkMelissa'
     end
-    *pl 'Среди мужчин выделяются богатый купец <a href="exec:gs ''FridayDancePeopleClick'', ''legare''">Альбер Легаре</a> и рыжий <a href="exec:gs ''FridayDancePeopleClick'', ''eddie''">Эдди</a> с кружкой пива в руке.'
+
+    *pl 'Среди мужчин выделяются богатый купец ' + $DanceLinkLegare + ' и ' + $DanceLinkEddie + ' с кружкой пива в руке.'
+
+    killvar '$DanceLinkBecky'
+    killvar '$DanceLinkClarissa'
+    killvar '$DanceLinkInga'
+    killvar '$DanceLinkLegare'
+    killvar '$DanceLinkEddie'
     *pl ' '
 
     !
@@ -215,12 +252,7 @@
         gt 'FridayDanceRumor', 'MarketDance'
     end
 
-    ! ====================== ПЕРСОНАЖИ НА ПЛОЩАДИ ======================
 
-    gs 'ActUiPrepare', 'Люди на площади', 'talk'
-    act $ActUiLabel, $ActUiIconPath:
-        gs 'FridayDancePeopleMenu'
-    end
 
     if debug = 1:
         gs 'ActUiPrepare', 'DEBUG: танцы', 'debug'
