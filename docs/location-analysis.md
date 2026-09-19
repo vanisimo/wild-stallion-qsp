@@ -415,15 +415,15 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `onstatusupdate` | `modules/menu/system/onstatusupdate.qsps` | 7 | `entry/helper` |
 | `otd_lib_menu` | `modules/menu/system/otd_lib_menu.qsps` | 10 | `entry/helper` |
 | `PanelClearGirlJobs` | `modules/menu/panels/panel_tavern_info.qsps` | 333 | `entry/helper` |
-| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 468 | `entry/helper` |
-| `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 168 | `entry/helper` |
-| `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 130 | `entry/helper` |
-| `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 219 | `entry/helper` |
-| `PanelDebugToolsMarket` | `modules/menu/panels/panel_debug_tools.qsps` | 196 | `entry/helper` |
-| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 367 | `entry/helper` |
+| `PanelDebugToolsDailyAftermath` | `modules/menu/panels/panel_debug_tools.qsps` | 474 | `entry/helper` |
+| `PanelDebugToolsFamily` | `modules/menu/panels/panel_debug_tools.qsps` | 172 | `entry/helper` |
+| `PanelDebugToolsGirls` | `modules/menu/panels/panel_debug_tools.qsps` | 134 | `entry/helper` |
+| `PanelDebugToolsHall` | `modules/menu/panels/panel_debug_tools.qsps` | 225 | `entry/helper` |
+| `PanelDebugToolsMarket` | `modules/menu/panels/panel_debug_tools.qsps` | 200 | `entry/helper` |
+| `PanelDebugToolsMemoryPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 373 | `entry/helper` |
 | `PanelDebugToolsOpen` | `modules/menu/panels/panel_debug_tools.qsps` | 22 | `entry/helper` |
-| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 294 | `entry/helper` |
-| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 441 | `entry/helper` |
+| `PanelDebugToolsPolicyPreset` | `modules/menu/panels/panel_debug_tools.qsps` | 300 | `entry/helper` |
+| `PanelDebugToolsStefan` | `modules/menu/panels/panel_debug_tools.qsps` | 447 | `entry/helper` |
 | `PanelFamilyInfo` | `modules/menu/panels/panel_family_info.qsps` | 9 | `entry/helper` |
 | `PanelGirlClick` | `modules/menu/panels/panel_family_info.qsps` | 67 | `entry/helper` |
 | `PanelSetTime` | `modules/menu/panels/panel_time_info.qsps` | 155 | `entry/helper` |
@@ -486,7 +486,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1274 |
+| `ActUiPrepare` | 1278 |
 | `Menu.AddModule` | 582 |
 | `MenuUiAdd` | 546 |
 | `SceneShowVisual` | 478 |
@@ -497,13 +497,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowGirlSidebar` | 98 |
 | `Menu.Create` | 97 |
 | `ShowImage` | 91 |
-| `PrintTitleLine` | 89 |
 | `Menu.Destroy` | 89 |
+| `PrintTitleLine` | 89 |
 | `RegisterSex` | 88 |
 | `FormatSpintry` | 87 |
 | `PrintMainP` | 77 |
 | `UpdateGirlLocations` | 76 |
-| `MarketDance` | 69 |
+| `MarketDance` | 71 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `Market` | 50 |
