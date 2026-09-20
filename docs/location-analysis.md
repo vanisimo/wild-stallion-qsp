@@ -171,8 +171,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 809 | `modules/events` |
 | `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 755 | `modules/events` |
 | `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 760 | `modules/events` |
-| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2257 | `modules/actions` |
-| `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1077 | `modules/actions` |
+| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2245 | `modules/actions` |
+| `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1079 | `modules/actions` |
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
 | `SparkQueueActKitchen` | `modules/core/tavern/spark_queue.qsps` | 237 | `modules/core` |
 | `SweetsShopBuyItem` | `modules/locations/shops/sweets_shop_buy.qsps` | 24 | `modules/locations` |
@@ -511,7 +511,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | Location | Incoming calls |
 | --- | --- |
 | `ActUiPrepare` | 1328 |
-| `Menu.AddModule` | 588 |
+| `Menu.AddModule` | 587 |
 | `MenuUiAdd` | 579 |
 | `ShowLocationScreenTitle` | 578 |
 | `SceneShowVisual` | 506 |
@@ -533,8 +533,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Market` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 49 |
-| `SexSceneMain` | 46 |
 | `SaveLastHallEvent` | 45 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 

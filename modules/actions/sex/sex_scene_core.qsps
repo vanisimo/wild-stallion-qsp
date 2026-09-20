@@ -555,17 +555,19 @@
     }
     gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=2 and SexSceneGropeCount<2,-1,0)"
 
-    gs 'Menu.Add', 'SexSceneMenu', 'Снять ночнушку'
+    if $SexGirl = 'becky':
+        $SexUndressMenuLabel = 'Снять платье'
+    elseif $SexGirl = 'amanda' or $SexGirl = 'melissa' or $SexGirl = 'sandra':
+        $SexUndressMenuLabel = 'Снять ночнушку'
+    else:
+        $SexUndressMenuLabel = 'Раздеться'
+    end
+
+    gs 'Menu.Add', 'SexSceneMenu', $SexUndressMenuLabel
     gs 'Menu.AddModule', 'SexSceneMenu', {
         gt 'SexSceneActionUndress', 'her'
     }
     gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneUndressReady=1 and SexClothesStage=0,-1,0)"
-
-    gs 'Menu.Add', 'SexSceneMenu', 'Раздеться'
-    gs 'Menu.AddModule', 'SexSceneMenu', {
-        gt 'SexSceneActionUndress', 'gg'
-    }
-    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneUndressReady=1 and SexClothesStage=1 and IntimStage[$SexGirl]>=5,-1,0)"
 
     gs 'Menu.Add', 'SexSceneMenu', 'Уйти'
     gs 'Menu.AddModule', 'SexSceneMenu', {
@@ -1092,26 +1094,12 @@
 
     gs 'SexSceneCalcMenuUnlocks'
 
-    if SexScenePhase >= 2 or SexSceneUndressReady = 0:
+    if SexScenePhase >= 2 or SexSceneUndressReady = 0 or SexClothesStage <> 0:
         killvar '$SexUndressMode'
         gt 'SexSceneMain'
     end
 
-    if $SexUndressMode = 'gg':
-        if IntimStage[$SexGirl] < 5 or SexClothesStage <> 1:
-            killvar '$SexUndressMode'
-            gt 'SexSceneMain'
-        end
-
-        $SexActType = 'undress_gg'
-    else
-        if SexClothesStage <> 0:
-            killvar '$SexUndressMode'
-            gt 'SexSceneMain'
-        end
-
-        $SexActType = 'undress_her'
-    end
+    $SexActType = 'undress_her'
 
     SexScenePhase = 2
     SexClothesStage = 2
