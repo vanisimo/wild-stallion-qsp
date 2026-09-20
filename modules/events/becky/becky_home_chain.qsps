@@ -60,10 +60,7 @@
 
     gs 'BeckyHomeFrontRollScene'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ДОМ БЕККИ — КРЫЛЬЦО'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ДОМ БЕККИ — КРЫЛЬЦО'
 
     if BeckyHomeFrontIngaScene = 1:
         gs 'BeckyHomeFrontIngaText'
@@ -144,10 +141,18 @@
 
     if $BeckyArriveMode = 'FromDances' and BeckyHomeStage < 5:
         gt 'BeckyHomeBedroom'
-    elseif $BeckyArriveMode = 'guest' and BeckyHomeSex = 0:
-        gt 'BeckyHomeGuestDinner'
     elseif BeckyHomeSex = 1 and BeckyHomeStage >= 4:
-        gt 'BeckyHomeBedroom'
+        *pl 'Из кухни доносятся сытные запахи — семья собирается за ужином. Но Бекки уже бросает на вас многозначительный взгляд.'
+        *pl ' '
+        gs 'ActUiPrepare', 'Пройти к столу на семейный ужин', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyHomeGuestDinner'
+        end
+
+        gs 'ActUiPrepare', 'Подняться с Бекки сразу в спальню', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyHomeBedroom'
+        end
     else:
         gt 'BeckyHomeGuestDinner'
     end
@@ -160,31 +165,145 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/becky/becky_home_chain/becky_home_guest_dinner', 'УЖИН У БЕККИ', 'large', 'webp'
-    gs 'BeckyHomeGuestDinnerText'
+    BeckyTimesVisited += 1
+    BeckyDinnerStep = 0
+    BeckyDinnerWineServed = 0
+    BeckyDinnerGropeStep = 0
+    BeckyDinnerOrgasm = 0
+    BeckyDinnerEddieSaw = 0
+    BeckyDinnerEatTurn = 0
+    $BeckyDinnerScene = 'intro'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' УЖИН У БЕККИ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gt 'BeckyHomeGuestDinnerLoop'
+---
+
+#BeckyHomeGuestDinnerLoop
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'УЖИН У БЕККИ'
+
+    if $BeckyDinnerScene = 'wine':
+        gs 'SceneShowVisual', 'images/events/becky/dinner/tabledrink', 'УЖИН У БЕККИ — ТРАКТИРНОЕ ВИНО', 'large', 'webp'
+        gs 'BeckyHomeGuestDinnerWineText'
+    elseif $BeckyDinnerScene = 'eat':
+        gs 'SceneShowVisual', 'images/events/becky/dinner/eat', 'УЖИН У БЕККИ — СЕМЕЙНАЯ ТРАПЕЗА', 'large', 'webp'
+        gs 'BeckyHomeGuestDinnerEatText'
+    elseif $BeckyDinnerScene = 'grope1':
+        gs 'SceneShowVisual', 'images/events/becky/dinner/Grope', 'УЖИН У БЕККИ — ПОД СКАТЕРТЬЮ', 'large', 'webp'
+        gs 'BeckyHomeGuestDinnerGrope1Text'
+    elseif $BeckyDinnerScene = 'grope2':
+        gs 'SceneShowVisual', 'images/events/becky/dinner/Grope', 'УЖИН У БЕККИ — ТАЙНЫЕ ЛАСКИ', 'large', 'webp'
+        gs 'BeckyHomeGuestDinnerGrope2Text'
+    elseif $BeckyDinnerScene = 'grope3':
+        if BeckyDinnerEddieSaw = 1:
+            gs 'SceneShowVisual', 'images/events/becky/dinner/GropeEddie', 'УЖИН У БЕККИ — ВЗГЛЯД ЭДДИ', 'large', 'webp'
+        else:
+            gs 'SceneShowVisual', 'images/events/becky/dinner/Grope', 'УЖИН У БЕККИ — СЛАДКАЯ ДРОЖЬ', 'large', 'webp'
+        end
+        gs 'BeckyHomeGuestDinnerGrope3Text'
+    else:
+        gs 'SceneShowVisual', 'images/events/becky/dinner/DinnerStart', 'УЖИН У БЕККИ', 'large', 'webp'
+        gs 'BeckyHomeGuestDinnerIntroText'
+    end
+
     *p $BeckyHomeText
     *pl ' '
 
-    BeckyTimesVisited += 1
-
-    if winenum >= 3:
-        winenum -= 3
-        Friends['becky'] += 1
-        otkroven['becky'] += 1
+    if BeckyDinnerWineServed = 0 and winenum >= 3:
+        gs 'ActUiPrepare', 'Поставить на стол трактирное вино (3 ед.)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            winenum -= 3
+            if productnum >= 2:
+                productnum -= 2
+            end
+            Friends['becky'] += 1
+            otkroven['becky'] += 1
+            Friends['eddie'] += 1
+            BeckyDinnerWineServed = 1
+            BeckyDinnerStep += 1
+            $BeckyDinnerScene = 'wine'
+            gt 'BeckyHomeGuestDinnerLoop'
+        end
     end
 
-    gs 'ActUiPrepare', 'Пойти с Бекки в спальню', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyHomeBedroom'
+    if BeckyDinnerStep < 5:
+        gs 'ActUiPrepare', 'Ужинать и беседовать с семьёй', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            BeckyDinnerStep += 1
+            BeckyDinnerEatTurn += 1
+            $BeckyDinnerScene = 'eat'
+            gt 'BeckyHomeGuestDinnerLoop'
+        end
+    end
+
+    if BeckyDinnerGropeStep = 0:
+        if BeckyDinnerWineServed = 1 or Friends['becky'] >= 10 or BeckyHomeSex = 1:
+            gs 'ActUiPrepare', 'Положить руку на колено Бекки под столом', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                BeckyDinnerGropeStep = 1
+                BeckyDinnerStep += 1
+                sluttiness['becky'] += 1
+                otkroven['becky'] += 1
+                $BeckyDinnerScene = 'grope1'
+                gt 'BeckyHomeGuestDinnerLoop'
+            end
+        end
+    elseif BeckyDinnerGropeStep = 1:
+        gs 'ActUiPrepare', 'Скользнуть ладонью выше под юбку', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            BeckyDinnerGropeStep = 2
+            BeckyDinnerStep += 1
+            sluttiness['becky'] += 1
+            $BeckyDinnerScene = 'grope2'
+            gt 'BeckyHomeGuestDinnerLoop'
+        end
+    elseif BeckyDinnerGropeStep = 2:
+        gs 'ActUiPrepare', 'Ласкать Бекки до дрожи под скатертью', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            BeckyDinnerGropeStep = 3
+            BeckyDinnerOrgasm = 1
+            BeckyDinnerStep += 1
+            GiveOrgasms['becky'] += 1
+            sluttiness['becky'] += 2
+            Friends['becky'] += 1
+
+            BeckyDinnerEddieSaw = 0
+            if RAND(1, 2) = 1 or EddieHelpPromised = 1:
+                BeckyDinnerEddieSaw = 1
+            end
+
+            $BeckyDinnerScene = 'grope3'
+            gt 'BeckyHomeGuestDinnerLoop'
+        end
+    end
+
+    if BeckyHomeSex = 1 or BeckyDinnerStep >= 2 or BeckyDinnerGropeStep >= 1 or BeckyDinnerWineServed = 1:
+        gs 'ActUiPrepare', 'Пойти с Бекки в спальню', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar '$BeckyDinnerScene'
+            killvar 'BeckyDinnerStep'
+            killvar 'BeckyDinnerWineServed'
+            killvar 'BeckyDinnerGropeStep'
+            killvar 'BeckyDinnerOrgasm'
+            killvar 'BeckyDinnerEddieSaw'
+            killvar 'BeckyDinnerEatTurn'
+            gt 'BeckyHomeBedroom'
+        end
     end
 
     gs 'ActUiPrepare', 'Попрощаться и уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
+        killvar '$BeckyDinnerScene'
+        killvar 'BeckyDinnerStep'
+        killvar 'BeckyDinnerWineServed'
+        killvar 'BeckyDinnerGropeStep'
+        killvar 'BeckyDinnerOrgasm'
+        killvar 'BeckyDinnerEddieSaw'
+        killvar 'BeckyDinnerEatTurn'
         gt 'Market'
     end
 ---
@@ -199,10 +318,7 @@
     gs 'SceneShowVisual', 'images/events/becky/becky_home_chain/becky_home_bedroom', 'СПАЛЬНЯ БЕККИ', 'large', 'webp'
     gs 'BeckyHomeBedroomIntroText'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' СПАЛЬНЯ БЕККИ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ БЕККИ'
     *p $BeckyHomeText
     *pl ' '
 
@@ -240,11 +356,8 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'ПЕРВАЯ БЛИЗОСТЬ'
     gs 'SceneShowVisual', 'images/events/becky/becky_home_chain/becky_home_first_sex_step1', 'ПЕРВАЯ БЛИЗОСТЬ', 'large', 'webp'
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПЕРВАЯ БЛИЗОСТЬ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
     *p $BeckyHomeText
     *pl ' '
 
@@ -314,10 +427,7 @@
     gs 'SceneShowVisual', 'images/events/becky/becky_home_chain/becky_home_after_sex', 'ПОСЛЕ', 'large', 'webp'
     gs 'BeckyHomeAfterSexText'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ПОСЛЕ'
     *p $BeckyHomeText
     *pl ' '
 

@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 458
-- Locations: 3352
-- Locations with direct incoming calls: 2871
-- Locations without direct incoming calls: 481
+- Source files: 459
+- Locations: 3359
+- Locations with direct incoming calls: 2877
+- Locations without direct incoming calls: 482
 - Review candidates without direct incoming calls: 169
-- Classified entry/helper locations without direct incoming calls: 312
+- Classified entry/helper locations without direct incoming calls: 313
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -25,7 +25,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 193 | `modules/events` |
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
-| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 295 | `modules/events` |
+| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 420 | `modules/events` |
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 7 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
@@ -239,6 +239,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ApplyTavernWorkDay` | `modules/core/tavern/tavern_income.qsps` | 526 | `entry/helper` |
 | `ArtLevelText` | `modules/core/init_npc/art_level_text.qsps` | 6 | `entry/helper` |
 | `BeckyHomeFrontBeckyHurryText` | `modules/events/becky/becky_home_chain_text.qsps` | 18 | `entry/helper` |
+| `BeckyHomeGuestDinnerText` | `modules/events/becky/becky_home_chain_text.qsps` | 34 | `entry/helper` |
 | `BeckyHomeGuestDressOkText` | `modules/events/becky/becky_home_chain_text.qsps` | 30 | `entry/helper` |
 | `BeckyOtkrovenNegativeLowFriend` | `modules/events/becky/becky_events.qsps` | 55 | `entry/helper` |
 | `BeckyTalkEddieSonText` | `modules/events/becky/becky_talk_text.qsps` | 117 | `entry/helper` |
@@ -509,11 +510,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1321 |
+| `ActUiPrepare` | 1328 |
 | `Menu.AddModule` | 588 |
 | `MenuUiAdd` | 579 |
 | `ShowLocationScreenTitle` | 578 |
-| `SceneShowVisual` | 499 |
+| `SceneShowVisual` | 505 |
 | `EnsureGirlData` | 210 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 178 |
@@ -523,8 +524,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 95 |
 | `RegisterSex` | 93 |
 | `ShowImage` | 91 |
-| `FormatSpintry` | 87 |
 | `PrintMainP` | 87 |
+| `FormatSpintry` | 87 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 72 |
 | `PrintTitleLine` | 54 |

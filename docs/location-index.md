@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 458
-- Locations: 3352
+- Source files: 459
+- Locations: 3359
 
 ## modules/actions
 
@@ -1497,16 +1497,16 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyEddieHomeStep3Text` | `modules/events/eddie/eddie_arc_text.qsps` | 54 |
 | `BeckyEddieNormalizeBeckyText` | `modules/events/eddie/eddie_arc_text.qsps` | 70 |
 | `BeckyFridayContactRegister` | `modules/events/becky/becky_dance.qsps` | 73 |
-| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 295 |
+| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 420 |
 | `BeckyHomeAfterSexText` | `modules/events/becky/becky_home_chain_text.qsps` | 60 |
-| `BeckyHomeBedroom` | `modules/events/becky/becky_home_chain.qsps` | 186 |
+| `BeckyHomeBedroom` | `modules/events/becky/becky_home_chain.qsps` | 311 |
 | `BeckyHomeBedroomIntroText` | `modules/events/becky/becky_home_chain_text.qsps` | 38 |
-| `BeckyHomeFirstSexLaunch` | `modules/events/becky/becky_home_chain.qsps` | 283 |
-| `BeckyHomeFirstSexStep1` | `modules/events/becky/becky_home_chain.qsps` | 225 |
+| `BeckyHomeFirstSexLaunch` | `modules/events/becky/becky_home_chain.qsps` | 408 |
+| `BeckyHomeFirstSexStep1` | `modules/events/becky/becky_home_chain.qsps` | 350 |
 | `BeckyHomeFirstSexStep1Text` | `modules/events/becky/becky_home_chain_text.qsps` | 48 |
-| `BeckyHomeFirstSexStep2` | `modules/events/becky/becky_home_chain.qsps` | 245 |
+| `BeckyHomeFirstSexStep2` | `modules/events/becky/becky_home_chain.qsps` | 370 |
 | `BeckyHomeFirstSexStep2Text` | `modules/events/becky/becky_home_chain_text.qsps` | 52 |
-| `BeckyHomeFirstSexStep3` | `modules/events/becky/becky_home_chain.qsps` | 264 |
+| `BeckyHomeFirstSexStep3` | `modules/events/becky/becky_home_chain.qsps` | 389 |
 | `BeckyHomeFirstSexStep3Text` | `modules/events/becky/becky_home_chain_text.qsps` | 56 |
 | `BeckyHomeFront` | `modules/events/becky/becky_home_chain.qsps` | 41 |
 | `BeckyHomeFrontAfterInga` | `modules/events/becky/becky_home_chain.qsps` | 119 |
@@ -1515,8 +1515,15 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyHomeFrontRollScene` | `modules/events/becky/becky_home_chain.qsps` | 105 |
 | `BeckyHomeFrontRouteInside` | `modules/events/becky/becky_home_chain.qsps` | 140 |
 | `BeckyHomeGuestArrival` | `modules/events/becky/becky_home_chain.qsps` | 7 |
-| `BeckyHomeGuestDinner` | `modules/events/becky/becky_home_chain.qsps` | 153 |
+| `BeckyHomeGuestDinner` | `modules/events/becky/becky_home_chain.qsps` | 161 |
+| `BeckyHomeGuestDinnerEatText` | `modules/events/becky/becky_dinner_text.qsps` | 16 |
+| `BeckyHomeGuestDinnerGrope1Text` | `modules/events/becky/becky_dinner_text.qsps` | 26 |
+| `BeckyHomeGuestDinnerGrope2Text` | `modules/events/becky/becky_dinner_text.qsps` | 30 |
+| `BeckyHomeGuestDinnerGrope3Text` | `modules/events/becky/becky_dinner_text.qsps` | 34 |
+| `BeckyHomeGuestDinnerIntroText` | `modules/events/becky/becky_dinner_text.qsps` | 8 |
+| `BeckyHomeGuestDinnerLoop` | `modules/events/becky/becky_home_chain.qsps` | 180 |
 | `BeckyHomeGuestDinnerText` | `modules/events/becky/becky_home_chain_text.qsps` | 34 |
+| `BeckyHomeGuestDinnerWineText` | `modules/events/becky/becky_dinner_text.qsps` | 12 |
 | `BeckyHomeGuestDressFailText` | `modules/events/becky/becky_home_chain_text.qsps` | 26 |
 | `BeckyHomeGuestDressOkText` | `modules/events/becky/becky_home_chain_text.qsps` | 30 |
 | `BeckyInviteHomeTry` | `modules/events/becky/becky_dance.qsps` | 300 |
