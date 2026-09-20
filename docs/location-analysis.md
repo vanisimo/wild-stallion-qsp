@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 459
-- Locations: 3359
-- Locations with direct incoming calls: 2877
+- Source files: 460
+- Locations: 3364
+- Locations with direct incoming calls: 2882
 - Locations without direct incoming calls: 482
 - Review candidates without direct incoming calls: 169
 - Classified entry/helper locations without direct incoming calls: 313
@@ -514,7 +514,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.AddModule` | 588 |
 | `MenuUiAdd` | 579 |
 | `ShowLocationScreenTitle` | 578 |
-| `SceneShowVisual` | 505 |
+| `SceneShowVisual` | 506 |
 | `EnsureGirlData` | 210 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 178 |
@@ -530,8 +530,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MarketDance` | 72 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `Market` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 49 |
 | `SexSceneMain` | 46 |
 | `SaveLastHallEvent` | 45 |
