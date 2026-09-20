@@ -184,7 +184,7 @@
 ---
 
 #DebugMelissaPrintMinstrelBlock
-    pl '<b>Менестрель (' + $MelissaMinstrelName + ') — знакомство, роман и выбор пути</b>'
+    pl '<b>Менестрель (' + $MelissaMinstrelName + ') — знакомство и роман</b>'
     gs 'DebugMelissaPrintBool', 'Знакомство состоялось (MelissaMinstrelMet)', MelissaMinstrelMet
     gs 'DebugMelissaPrintBool', 'Поцелуй готов (MelissaMinstrelKissReady)', MelissaMinstrelKissReady
     gs 'DebugMelissaPrintBool', 'Поцелуй после танца был (MelissaMinstrelKissDone)', MelissaMinstrelKissDone
@@ -192,18 +192,17 @@
     pl 'Интерес к менестрелю (MelissaMusicianInterest): ' + STR(MelissaMusicianInterest)
 
     pl 'Сцена в трактире: offer ' + STR(MelissaMusicStageOfferDone) + ' | Драупнир сцена ' + STR(TavernUpgradeStageDone)
-    pl 'Пропажа в зале (HallMissing): done ' + STR(MelissaMinstrelHallMissingDone) + ' | result ' + STR(MelissaMinstrelHallMissingResult) + ' (1=search, 2=spy, 3=wait)'
-    pl 'Выбор пути (PathChoice): ready ' + STR(MelissaFirstPathChoiceReady) + ' | done ' + STR(MelissaFirstPathChoiceDone) + ' | выбор ' + STR(MelissaFirstPathChoice) + ' (1=добиваться, 2=запретить, 3=следить)'
-    gs 'DebugMelissaPrintBool', 'Запрет встреч со стороны ГГ', MelissaProhibitMinstrel
+    pl 'Пропажа в зале (HallMissing): done ' + STR(MelissaMinstrelHallMissingDone) + ' | result ' + STR(MelissaMinstrelHallMissingResult) + ' | type: ' + $MelissaMinstrelMissingType
+    gs 'DebugMelissaPrintBool', 'Запрет встреч со стороны ГГ (MelissaProhibitMinstrel)', MelissaProhibitMinstrel
     pl 'Дней запрета: ' + STR(MelissaProhibitDays) + ' | Слежка Стефана: ' + STR(MelissaWatchMinstrel)
 
     pl 'Действия:'
     pl '  ⚡ <a href="exec:week = 5 & time = 4 & MelissaDanceDressReady = 1 & MelissaFridayDanceAttended = 1 & MelissaMinstrelMet = 0 & gt ''MelissaMinstrelMeetStart''">Знакомство на танцах (MelissaMinstrelMeetStart)</a>'
     pl '  ⚡ <a href="exec:week = 5 & time = 4 & MelissaMinstrelMet = 1 & MelissaMinstrelKissReady = 1 & MelissaMusicianInterest = 20 & gt ''MelissaMinstrelKissStart''">Поцелуй после танца (MelissaMinstrelKissStart)</a>'
     pl '  ⚡ <a href="exec:gt ''MelissaMusicStageTalk''">Разговор о сцене для музыкантов (MelissaMusicStageTalk)</a>'
-    pl '  ⚡ <a href="exec:week = 5 & time = 3 & TavernUpgradeStageDone = 1 & MelissaMusicStageOfferDone = 1 & MelissaMinstrelKissDone = 1 & gt ''MelissaMinstrelHallMissingStart'', ''TavernMain''">Пропажа в зале трактира</a>'
-    pl '  ⚡ <a href="exec:MelissaFirstPathChoiceReady = 1 & gt ''MelissaFirstPathChoiceStart'', ''TavernMain''">Выбор пути (MelissaFirstPathChoiceStart)</a>'
+    pl '  ⚡ <a href="exec:week = 4 & time = 3 & TavernUpgradeStageDone = 1 & MelissaMusicStageOfferDone = 1 & MelissaMinstrelKissDone = 1 & MelissaMinstrelWagonStage = 4 & gt ''MelissaMinstrelHallMissingStart'', ''TavernMain''">Пропажа в зале трактира (четверг)</a>'
     pl '  ⚡ <a href="exec:MelissaMinstrelMet = 1 & gt ''MelissaProhibitMinstrelTalk''">Разговор о запрете встреч с менестрелем</a>'
+    pl '  🔒 Запрет встреч: <a href="exec:MelissaMinstrelMet = 1 & MelissaProhibitMinstrel = 1 & MelissaProhibitDays = 7 & gs ''DebugMelissaArcPanel''">установить на 7 дней</a> | <a href="exec:MelissaProhibitMinstrel = 0 & MelissaProhibitDays = 0 & gs ''DebugMelissaArcPanel''">снять запрет</a>'
 ---
 
 #DebugMelissaPrintMinstrelEncountersBlock
@@ -320,7 +319,7 @@
     pl '  💃 <a href="exec:gs ''DebugMelissaPresetDanceAlley'' & gt ''MelissaDanceAlleyEvent''">Пресет: Танец пройден — вход в подворотню у площади</a>'
     pl '  🎵 <a href="exec:gs ''DebugMelissaPresetMinstrelMeet'' & gt ''MelissaMinstrelMeetStart''">Пресет: Менестрель — знакомство на танцах (MelissaMinstrelMeetStart)</a>'
     pl '  💋 <a href="exec:gs ''DebugMelissaPresetMinstrelKiss'' & gt ''MelissaMinstrelKissStart''">Пресет: Менестрель — поцелуй после танца (MelissaMinstrelKissStart)</a>'
-    pl '  ⚖ <a href="exec:gs ''DebugMelissaPresetPathChoice'' & gt ''MelissaFirstPathChoiceStart'', ''TavernMain''">Пресет: Менестрель — выбор пути (Player Path vs NPC Path)</a>'
+    pl '  🚫 <a href="exec:gs ''DebugMelissaPresetProhibitMinstrel'' & gt ''MelissaProhibitMinstrelTalk''">Пресет: Разговор о запрете встреч с менестрелем</a>'
     pl '  📜 <a href="exec:gs ''DebugMelissaPresetMinstrelWagon'', 0 & gt ''MelissaMinstrelWagonScene1_1''">Пресет: Повозка сцена 1 — стихи и упавшая лютня</a>'
     pl '  🎻 <a href="exec:gs ''DebugMelissaPresetMinstrelWagon'', 1 & gt ''MelissaMinstrelWagonScene2_1''">Пресет: Повозка сцена 2 — ласки со спины, оргазм Мелиссы</a>'
     pl '  🎶 <a href="exec:gs ''DebugMelissaPresetMinstrelWagon'', 2 & gt ''MelissaMinstrelWagonScene3_1''">Пресет: Повозка сцена 3 — флейта и оральный урок (минет)</a>'
@@ -545,12 +544,10 @@
     time = 4
 ---
 
-#DebugMelissaPresetPathChoice
+#DebugMelissaPresetProhibitMinstrel
     MelissaMinstrelMet = 1
     MelissaMinstrelKissDone = 1
-    MelissaFirstPathChoiceReady = 1
-    MelissaFirstPathChoiceDone = 0
-    MelissaFirstPathChoice = 0
+    MelissaProhibitMinstrel = 0
 ---
 
 #DebugMelissaPresetHomeFirstSex
@@ -670,8 +667,10 @@
     MelissaMinstrelAffairStage = 0
     MelissaMinstrelHallMissingCanStart = 0
     MelissaMinstrelHallMissingDone = 0
+    MelissaMinstrelHallMissingLastDay = 0
     MelissaMinstrelHallMissingLastWeek = 0
     MelissaMinstrelHallMissingResult = 0
+    $MelissaMinstrelMissingType = ''
     MelissaFirstPathChoiceCanStart = 0
     MelissaFirstPathChoiceReady = 0
     MelissaFirstPathChoiceDone = 0

@@ -1,9 +1,10 @@
 ! ================================================
 ! FILE: modules/events/melissa/melissa_music_stage.qsps
-! MODULE: events/family
-! [AI-WORKED] 18.09.2026
+! MODULE: events/melissa
+! [AI-WORKED] 20.09.2026
 ! Разговор Мелиссы о сцене — только после ветки с менестрелем
 ! Заказ у Драупнира — после MelissaMusicStageOfferDone
+! Сцена в зале трактира: работа, менестрель и публика
 ! ================================================
 
 #MelissaMusicStageCanOffer
@@ -65,4 +66,285 @@
     end
 
     killvar '$MelissaMusicianArcBlockReason'
+---
+
+! ================================================
+! ЛОКАЦИЯ СЦЕНЫ В ГЛАВНОМ ЗАЛЕ ТРАКТИРА
+! ================================================
+
+#TavernMusicStage
+    cls
+
+    gs 'TavernStageCheckState'
+
+    if TavernStageWorking = 1:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_performance', 'Выступление менестреля на сцене'
+        gs 'ShowLocationScreenTitle', 'СЦЕНА: ВЫСТУПЛЕНИЕ МЕНЕСТРЕЛЯ'
+    else:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_empty', 'Сцена для музыкантов в зале'
+        gs 'ShowLocationScreenTitle', 'СЦЕНА ТРАКТИРА'
+    end
+
+    gs 'TavernMusicStageIntroText'
+
+    *pl ' '
+
+    if TavernStageWorking = 1:
+        gs 'ActUiPrepare', 'Слушать балладу и наблюдать', 'dance'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernStageListenBallad'
+        end
+
+        if TavernStageOrderedToday = 0 and money >= 5:
+            gs 'ActUiPrepare', 'Заказать песню трактира (5 спинтарий)', 'work'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'TavernStageOrderSong'
+            end
+        end
+
+        gs 'ActUiPrepare', 'Поговорить с менестрелем в перерыве', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernStageTalkMinstrel'
+        end
+
+        if TavernStageTipsCollectedToday = 0:
+            gs 'ActUiPrepare', 'Кружка с подаяниями у сцены', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'TavernStageCollectTips'
+            end
+        end
+
+        if LOC('MelissaMinstrelHallMissingCanStart') = 1:
+            gs 'MelissaMinstrelHallMissingCanStart'
+            if MelissaMinstrelHallMissingCanStart = 1:
+                gs 'ActUiPrepare', 'Заглянуть за занавес (Мелисса за сценой)', 'look'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'MelissaMinstrelHallMissingStart', 'TavernMusicStage'
+                end
+            end
+        end
+
+        gs 'ActUiPrepare', 'Заглянуть за занавес закулисья', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernStageBackstage'
+        end
+    else:
+        gs 'ActUiPrepare', 'Осмотреть подмостки и занавес', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernStageBackstage'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#TavernStageListenBallad
+    cls
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_ballad', 'Менестрель поёт балладу со сцены'
+    gs 'ShowLocationScreenTitle', 'БАЛЛАДА НА СЦЕНЕ'
+
+    gs 'TavernStageListenBalladText'
+
+    if tavernvisitors < 80:
+        tavernvisitors += RAND(1, 2)
+        if tavernvisitors > 80:
+            tavernvisitors = 80
+        end
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Слушать ещё одну песню', 'dance'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernStageListenBallad'
+    end
+
+    gs 'ActUiPrepare', 'Остаться у сцены', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMusicStage'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#TavernStageOrderSong
+    cls
+
+    money -= 5
+    TavernStageOrderedToday = 1
+
+    tavern_reputation += 1
+    if tavern_reputation > 100:
+        tavern_reputation = 100
+    end
+
+    tavernvisitors += RAND(2, 4)
+    if tavernvisitors > 80:
+        tavernvisitors = 80
+    end
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_cheer', 'Стефан заказывает песню трактира'
+    gs 'ShowLocationScreenTitle', 'ПЕСНЯ В ЧЕСТЬ ТРАКТИРА'
+
+    gs 'TavernStageOrderSongText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Остаться у сцены', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMusicStage'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#TavernStageTalkMinstrel
+    cls
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_talk_elric', 'Разговор с менестрелем в перерыве'
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С МЕНЕСТРЕЛЕМ'
+
+    gs 'TavernStageTalkMinstrelText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Остаться у сцены', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMusicStage'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#TavernStageCollectTips
+    cls
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_tips', 'Кружка с подаяниями у сцены'
+    gs 'ShowLocationScreenTitle', 'ВЫРУЧКА У СЦЕНЫ'
+
+    gs 'TavernStageCollectTipsText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Взять долю заведения (20 спинтарий)', 'work'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernStageTakeTips'
+    end
+
+    gs 'ActUiPrepare', 'Оставить всё менестрелю', 'gift'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernStageLeaveTips'
+    end
+
+    gs 'ActUiPrepare', 'Не трогать шкатулку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMusicStage'
+    end
+---
+
+#TavernStageTakeTips
+    cls
+
+    money += 20
+    TavernStageTipsCollectedToday = 1
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_tips_take', 'Доля заведения за сцену'
+    gs 'ShowLocationScreenTitle', 'ДОЛЯ ТРАКТИРА'
+
+    gs 'TavernStageTakeTipsText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Остаться у сцены', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMusicStage'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#TavernStageLeaveTips
+    cls
+
+    tavern_reputation += 1
+    if tavern_reputation > 100:
+        tavern_reputation = 100
+    end
+
+    Friends['melissa'] += 1
+    TavernStageTipsCollectedToday = 1
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_tips_leave', 'Щедрость хозяина'
+    gs 'ShowLocationScreenTitle', 'БЛАГОДАРНОСТЬ МУЗЫКАНТА'
+
+    gs 'TavernStageLeaveTipsText'
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Остаться у сцены', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMusicStage'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#TavernStageBackstage
+    cls
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_music_stage/stage_backstage', 'Закулисье за занавесом сцены'
+    gs 'ShowLocationScreenTitle', 'ЗАКУЛИСЬЕ СЦЕНЫ'
+
+    gs 'TavernStageBackstageText'
+
+    *pl ' '
+
+    if LOC('MelissaMinstrelHallMissingCanStart') = 1:
+        gs 'MelissaMinstrelHallMissingCanStart'
+        if MelissaMinstrelHallMissingCanStart = 1:
+            gs 'ActUiPrepare', 'Заглянуть за перегородку (где Мелисса)', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'MelissaMinstrelHallMissingStart', 'TavernMusicStage'
+            end
+        end
+    end
+
+    if LOC('MelissaMinstrelBackroomCanStart') = 1:
+        gs 'MelissaMinstrelBackroomCanStart'
+        if MelissaMinstrelBackroomCanStart = 1:
+            gs 'ActUiPrepare', 'Подсмотреть за Мелиссой у занавеса', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'MelissaMinstrelBackroomStart', 'TavernMusicStage'
+            end
+        end
+    end
+
+    gs 'ActUiPrepare', 'Выйти к сцене', 'dance'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMusicStage'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
 ---

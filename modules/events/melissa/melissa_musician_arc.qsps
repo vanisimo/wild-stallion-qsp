@@ -123,10 +123,7 @@
 
     gs 'EnsureGirlData', 'melissa'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' МЕНЕСТРЕЛЬ И МЕЛИССА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'МЕНЕСТРЕЛЬ И МЕЛИССА'
 
     if LOC('MelissaMinstrelMeetIntroText') = 1:
         gs 'MelissaMinstrelMeetIntroText'
@@ -224,10 +221,7 @@
 
     gs 'ClampGirlSocialStats', 'melissa'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ ЗНАКОМСТВА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ПОСЛЕ ЗНАКОМСТВА'
 
     if LOC('MelissaMinstrelMeetActionText') = 1:
         gs 'MelissaMinstrelMeetActionText', $MinstrelMeetChoice
@@ -300,10 +294,7 @@
     gs 'SceneShowVisual', 'images/events/melissa/melissa_musician_arc/melissa_minstrel_kiss_start', 'ПОЦЕЛУЙ ПОСЛЕ ТАНЦА', 'large', 'webp'
     MelissaMinstrelKissStage = 1
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПОЦЕЛУЙ ПОСЛЕ ТАНЦА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ПОЦЕЛУЙ ПОСЛЕ ТАНЦА'
 
     if LOC('MelissaMinstrelKissIntroText') = 1:
         gs 'MelissaMinstrelKissIntroText'
@@ -372,19 +363,11 @@
 
     if MelissaMinstrelKissDone = 1:
         MelissaMinstrelKissReady = 0
-        MelissaFirstPathChoiceReady = 1
-
-        if LOC('MelissaFirstPathChoiceTryStart') = 1:
-            gs 'MelissaFirstPathChoiceTryStart', 'MarketDance'
-        end
     end
 
     gs 'ClampGirlSocialStats', 'melissa'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' МЕЛОДИЯ ОБОРВАЛАСЬ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'МЕЛОДИЯ ОБОРВАЛАСЬ'
 
     if LOC('MelissaMinstrelKissActionText') = 1:
         gs 'MelissaMinstrelKissActionText', $MinstrelKissChoice
@@ -417,27 +400,114 @@
     MelissaMinstrelAffairStage += 1
 ---
 
+#MelissaMinstrelCalcMissingType
+    ! Расчёт исхода пропажи за сценой: 'discussion' (разбор баллад/стихов) vs 'intimate' (романтика/ласки)
+    ! Базовый шанс интима 25% (гарантирует, что по умолчанию не менее 75% случаев — обсуждение)
+    MinstrelIntimateChance = 25
+
+    ! 1. Время суток: днём и в полдень — подготовка и разбор, вечером — романтическая атмосфера
+    if time = 2:
+        MinstrelIntimateChance -= 15
+    elseif time = 4:
+        MinstrelIntimateChance += 15
+    end
+
+    ! 2. Внимание Стефана сегодня (разговоры, заказы песен, чаевые, подарки)
+    if GirlTalkCountToday['melissa'] > 0 or TalkedWithGirlToday['melissa'] = 1:
+        MinstrelIntimateChance -= 20
+    end
+    if TavernStageOrderedToday = 1:
+        MinstrelIntimateChance -= 10
+    end
+    if TavernStageTipsCollectedToday = 1 or TavernStageTipsLeft = 1:
+        MinstrelIntimateChance -= 10
+    end
+    if GiftGivenToday['melissa'] = 1:
+        MinstrelIntimateChance -= 15
+    end
+
+    ! 3. Давность внимания Стефана (игнорирование)
+    MelissaDaysNoAtt = day - LastAttentionDay['melissa']
+    if MelissaDaysNoAtt <= 2:
+        MinstrelIntimateChance -= 10
+    elseif MelissaDaysNoAtt >= 5:
+        MinstrelIntimateChance += 15
+    elseif MelissaDaysNoAtt >= 8:
+        MinstrelIntimateChance += 25
+    end
+    killvar 'MelissaDaysNoAtt'
+
+    ! 4. Баланс путей Player vs NPC
+    if MelissaPlayerPath > MelissaNpcPath:
+        MinstrelIntimateChance -= 15
+    elseif MelissaNpcPath > MelissaPlayerPath:
+        MinstrelIntimateChance += 15
+    end
+
+    if MelissaMusicianInterest >= 3:
+        MinstrelIntimateChance += MelissaMusicianInterest * 2
+    end
+
+    if MelissaTrustStefan >= 60:
+        MinstrelIntimateChance -= 10
+    end
+
+    ! 5. Контроль Стефана (слежка / предупреждение)
+    if MelissaWatchMinstrel = 1:
+        MinstrelIntimateChance -= 15
+    end
+
+    ! 6. Раскрепощенность и политика работы
+    if GirlWorkPolicy['melissa'] >= 2:
+        MinstrelIntimateChance += 10
+    end
+    if sluttiness['melissa'] >= 35:
+        MinstrelIntimateChance += 10
+    end
+
+    ! Жёсткие границы: интим не может превышать 50%
+    ! (чтобы не менее половины случаев всегда оставалось невинным обсуждением выступления)
+    if MinstrelIntimateChance > 50:
+        MinstrelIntimateChance = 50
+    end
+    if MinstrelIntimateChance < 5:
+        MinstrelIntimateChance = 5
+    end
+
+    MinstrelRoll = RAND(1, 100)
+    if MinstrelRoll <= MinstrelIntimateChance:
+        $MelissaMinstrelMissingType = 'intimate'
+    else:
+        $MelissaMinstrelMissingType = 'discussion'
+    end
+
+    killvar 'MinstrelIntimateChance'
+    killvar 'MinstrelRoll'
+---
+
 #MelissaMinstrelHallMissingCanStart
 
     MelissaMinstrelHallMissingCanStart = 0
 
-    if MelissaMinstrelHallMissingDone = 1 and MelissaMinstrelHallMissingLastWeek = week:
+    ! Не чаще 1 раза в текущий четверг
+    if MelissaMinstrelHallMissingDone = 1 and MelissaMinstrelHallMissingLastDay = day:
         exit
     end
 
-    if week <> 5:
+    if week <> 4:
         exit
     end
 
-    if time < 3:
-        exit
-    end
-
-    if time >= 5:
+    if time < 2 or time > 4:
         exit
     end
 
     if MelissaMinstrelKissDone = 0:
+        exit
+    end
+
+    ! Линейка менестреля на площади (повозка / первый секс) должна быть завершена
+    if MelissaMinstrelWagonStage < 4 and MelissaMinstrelFirstSexDone = 0:
         exit
     end
 
@@ -450,6 +520,23 @@
     end
 
     if MelissaProhibitMinstrel = 1:
+        if GirlOffenseDays['melissa'] = 0 and (day - LastAttentionDay['melissa'] < 7):
+            exit
+        end
+    end
+
+    ! Мелисса на смене в трактире
+    if $GirlLocation['melissa'] <> 'TavernMain' and jobwaitress['melissa'] = 0:
+        exit
+    end
+
+    ! Высокая вероятность появления события в четверг (80%)
+    if MelissaMinstrelHallMissingRollDay <> day:
+        MelissaMinstrelHallMissingRollDay = day
+        MelissaMinstrelHallMissingDayRoll = RAND(1, 100)
+    end
+
+    if MelissaMinstrelHallMissingDayRoll > 80:
         exit
     end
 
@@ -492,13 +579,13 @@
 
     gs 'EnsureGirlData', 'melissa'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' МЕЛИССА ИСЧЕЗЛА ИЗ ЗАЛА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    ! Расчёт исхода (discussion или intimate)
+    gs 'MelissaMinstrelCalcMissingType'
+
+    gs 'ShowLocationScreenTitle', 'МЕЛИССА ИСЧЕЗЛА ИЗ ЗАЛА'
 
     if LOC('MelissaMinstrelHallMissingIntroText') = 1:
-        gs 'MelissaMinstrelHallMissingIntroText'
+        gs 'MelissaMinstrelHallMissingIntroText', $MelissaMinstrelMissingType
     end
 
     *pl ' '
@@ -535,7 +622,6 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_musician_arc/melissa_minstrel_hall_missing_action', 'ПОСЛЕ ПРОПАЖИ', 'large', 'webp'
     $MelissaHallChoice = LCASE($ARGS[0])
     $MelissaHallMissingReturnLoc = $ARGS[1]
 
@@ -543,63 +629,82 @@
         $MelissaHallMissingReturnLoc = 'TavernMain'
     end
 
+    gs 'EnsureGirlData', 'melissa'
+
+    if $MelissaMinstrelMissingType = 'discussion':
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_musician_arc/melissa_minstrel_backstage_talk', 'ОБСУЖДЕНИЕ БАЛЛАД ЗА СЦЕНОЙ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_musician_arc/melissa_minstrel_hall_missing_action', 'ПОСЛЕ ПРОПАЖИ', 'large', 'webp'
+    end
+
+    gs 'ShowLocationScreenTitle', 'ЗА ЗАНАВЕСОМ СЦЕНЫ'
+
     MelissaMinstrelHallMissingResult = 0
 
-    if $MelissaHallChoice = 'search':
-        MelissaTrustStefan += 1
-        MelissaRespectStefan += 1
-        MelissaPlayerPath += 1
-        MelissaMinstrelHallMissingResult = 1
-        MelissaMusicianInterest -= 1
+    if $MelissaMinstrelMissingType = 'discussion':
+        ! === ВЕТКА ОБСУЖДЕНИЯ ВЫСТУПЛЕНИЯ ===
+        if $MelissaHallChoice = 'search':
+            MelissaTrustStefan += 1
+            MelissaRespectStefan += 1
+            MelissaPlayerPath += 1
+            Friends['melissa'] += 1
+            MelissaMinstrelHallMissingResult = 1
 
-        if MelissaMusicianInterest < 0:
-            MelissaMusicianInterest = 0
+        elseif $MelissaHallChoice = 'spy':
+            MelissaRespectStefan += 1
+            MelissaMinstrelHallMissingResult = 2
+
+        elseif $MelissaHallChoice = 'wait':
+            Friends['melissa'] += 1
+            MelissaMinstrelHallMissingResult = 3
         end
 
-    elseif $MelissaHallChoice = 'spy':
-        MelissaMinstrelHallMissingResult = 2
-        MelissaNpcPath += 2
-        MelissaSecretiveness += 1
-        MelissaMusicianInterest += 2
-        TavernScandal += 1
-        gs 'MelissaMinstrelAffairAdvance'
+    else:
+        ! === ВЕТКА СВЯЗИ / РОМАНТИКИ ===
+        if $MelissaHallChoice = 'search':
+            MelissaTrustStefan += 1
+            MelissaPlayerPath += 1
+            MelissaMusicianInterest -= 1
+            if MelissaMusicianInterest < 0:
+                MelissaMusicianInterest = 0
+            end
+            MelissaMinstrelHallMissingResult = 4
 
-    elseif $MelissaHallChoice = 'wait':
-        MelissaMinstrelHallMissingResult = 3
-        MelissaNpcPath += 3
-        MelissaSecretiveness += 2
-        MelissaMusicianInterest += 3
-        MelissaFamilyConcern += 1
-        TavernScandal += 1
-        gs 'MelissaMinstrelAffairAdvance'
-    end
+        elseif $MelissaHallChoice = 'spy':
+            MelissaMinstrelHallMissingResult = 5
+            MelissaNpcPath += 2
+            GirlNpcPath['melissa'] += 2
+            MelissaSecretiveness += 1
+            MelissaMusicianInterest += 2
+            TavernScandal += 1
+            gs 'MelissaMinstrelAffairAdvance'
 
-    if MelissaMinstrelAffairStage >= 1:
-        FactHappened['melissa_minstreldisappear_1'] = 1
-    end
+        elseif $MelissaHallChoice = 'wait':
+            MelissaMinstrelHallMissingResult = 6
+            MelissaNpcPath += 3
+            GirlNpcPath['melissa'] += 3
+            MelissaSecretiveness += 2
+            MelissaMusicianInterest += 3
+            MelissaFamilyConcern += 1
+            TavernScandal += 1
+            gs 'MelissaMinstrelAffairAdvance'
+        end
 
-    if MelissaFirstPathChoiceDone = 0:
-        MelissaFirstPathChoiceReady = 1
-
-        if LOC('MelissaFirstPathChoiceTryStart') = 1:
-            gs 'MelissaFirstPathChoiceTryStart', $MelissaHallMissingReturnLoc
+        if MelissaMinstrelAffairStage >= 1:
+            FactHappened['melissa_minstreldisappear_1'] = 1
         end
     end
 
     gs 'ClampGirlSocialStats', 'melissa'
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ ПРОПАЖИ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
     if LOC('MelissaMinstrelHallMissingActionText') = 1:
-        gs 'MelissaMinstrelHallMissingActionText', $MelissaHallChoice
+        gs 'MelissaMinstrelHallMissingActionText', $MelissaHallChoice, $MelissaMinstrelMissingType
     end
 
     *pl ' '
 
     MelissaMinstrelHallMissingDone = 1
+    MelissaMinstrelHallMissingLastDay = day
     MelissaMinstrelHallMissingLastWeek = week
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
@@ -611,141 +716,32 @@
 ---
 
 #MelissaFirstPathChoiceCanStart
-
     MelissaFirstPathChoiceCanStart = 0
-
-    if MelissaFirstPathChoiceDone = 1:
-        exit
-    end
-
-    if MelissaFirstPathChoiceReady = 0:
-        if MelissaMinstrelKissDone = 0:
-            exit
-        end
-    end
-
-    MelissaFirstPathChoiceCanStart = 1
+    exit
 ---
 
 #MelissaFirstPathChoiceTryStart
-
-    $MelissaPathReturnLoc = $ARGS[0]
-
-    if $MelissaPathReturnLoc = '':
-        $MelissaPathReturnLoc = 'TavernMain'
-    end
-
-    if LOC('MelissaFirstPathChoiceCanStart') = 1:
-        gs 'MelissaFirstPathChoiceCanStart'
-
-        if MelissaFirstPathChoiceCanStart = 1:
-            gt 'MelissaFirstPathChoiceStart', $MelissaPathReturnLoc
-        end
-    end
+    exit
 ---
 
 #MelissaFirstPathChoiceStart
-
-    *clr
-    clr
-    cla
-
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_musician_arc/melissa_first_path_choice_start', 'МЕЛИССА И МЕНЕСТРЕЛЬ', 'large', 'webp'
     $MelissaPathReturnLoc = $ARGS[0]
-
-    *pl '══════════════════════════════════════════════'
-    *pl ' МЕЛИССА И МЕНЕСТРЕЛЬ'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
-
-    if LOC('MelissaFirstPathChoiceIntroText') = 1:
-        gs 'MelissaFirstPathChoiceIntroText'
+    if $MelissaPathReturnLoc = '':
+        $MelissaPathReturnLoc = 'TavernMain'
     end
-
-    *pl ' '
-
-    gs 'MelissaFirstPathChoiceBuildMenu'
-
-    *p 'Как вы <a href="exec:gs ''Menu.Show'', ''MelissaFirstPathChoiceMenu''">поступите</a>?'
+    gt $MelissaPathReturnLoc
 ---
 
 #MelissaFirstPathChoiceBuildMenu
-
-    gs 'Menu.Destroy', 'MelissaFirstPathChoiceMenu'
-    gs 'Menu.Create', 'MelissaFirstPathChoiceMenu'
-
-    gs 'MenuUiAdd', 'MelissaFirstPathChoiceMenu', 'Добиваться Мелиссы самому', 'intim'
-    gs 'Menu.AddModule', 'MelissaFirstPathChoiceMenu', {
-        gt 'MelissaFirstPathChoiceAction', 'pursue', $MelissaPathReturnLoc
-    }
-
-    gs 'MenuUiAdd', 'MelissaFirstPathChoiceMenu', 'Запретить встречи с менестрелем', 'talk'
-    gs 'Menu.AddModule', 'MelissaFirstPathChoiceMenu', {
-        gt 'MelissaFirstPathChoiceAction', 'prohibit', $MelissaPathReturnLoc
-    }
-
-    gs 'MenuUiAdd', 'MelissaFirstPathChoiceMenu', 'Не мешать, но следить', 'look'
-    gs 'Menu.AddModule', 'MelissaFirstPathChoiceMenu', {
-        gt 'MelissaFirstPathChoiceAction', 'watch', $MelissaPathReturnLoc
-    }
+    exit
 ---
 
 #MelissaFirstPathChoiceAction
-
-    *clr
-    clr
-    cla
-
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_musician_arc/melissa_first_path_choice_action', 'Мелисса: выбор пути — действие', 'large', 'webp'
-    $MelissaPathKey = LCASE($ARGS[0])
     $MelissaPathReturnLoc = $ARGS[1]
-
-    MelissaFirstPathChoiceDone = 1
-    MelissaFirstPathChoiceReady = 0
-
-    if $MelissaPathKey = 'pursue':
-        MelissaFirstPathChoice = 1
-        MelissaPlayerPath += 3
-        MelissaTrustStefan += 2
-        Friends['melissa'] += 2
-
-    elseif $MelissaPathKey = 'prohibit':
-        MelissaFirstPathChoice = 2
-        MelissaProhibitMinstrel = 1
-        if MelissaMinstrelFirstSexDone = 1:
-            MelissaProhibitDays = 3
-        else:
-            MelissaProhibitDays = 7
-        end
-        MelissaControlNeed += 2
-        MelissaTrustStefan += 1
-        MelissaNpcPath -= 1
-
-        if MelissaNpcPath < 0:
-            MelissaNpcPath = 0
-        end
-
-    elseif $MelissaPathKey = 'watch':
-        MelissaFirstPathChoice = 3
-        MelissaWatchMinstrel = 1
-        MelissaNpcPath += 1
-        MelissaSecretiveness += 1
+    if $MelissaPathReturnLoc = '':
+        $MelissaPathReturnLoc = 'TavernMain'
     end
-
-    gs 'ClampGirlSocialStats', 'melissa'
-
-    if LOC('MelissaFirstPathChoiceActionText') = 1:
-        gs 'MelissaFirstPathChoiceActionText', $MelissaPathKey
-    end
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Продолжить', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $MelissaPathReturnLoc
-    end
-
-    killvar '$MelissaPathKey'
+    gt $MelissaPathReturnLoc
 ---
 
 #MelissaMusicianArcDebugReset

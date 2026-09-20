@@ -45,6 +45,9 @@
     gs 'UpdateGirlLocations'
     gs 'AmandaLizaTalkPrepareHallVisit'
     gs 'GetCitySchedulePhase'
+    if LOC('TavernStageCheckState') = 1:
+        gs 'TavernStageCheckState'
+    end
 
     if time = 5 and LOC('FamilyCouncilCanStart') = 1:
         gs 'FamilyCouncilCanStart'
@@ -57,13 +60,8 @@
     TavernMainOpen = TavernOpen
     $TavernMainClosedReason = $TavernClosedReason
 
+    gs 'ShowLocationScreenTitle', 'ТРАКТИР "ДИКИЙ ЖЕРЕБЕЦ"'
     gs 'TavernMainShowLocationImage'
-
-    *pl ' '
-    *pl '══════════════════════════════════════════════'
-    gs 'PrintTitleLine', ' ТРАКТИР "ДИКИЙ ЖЕРЕБЕЦ"'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
 
     gs 'FamilyFirstSexMorningTryShow'
     gs 'AmandaLegareAfterDanceMorningTryShow'
@@ -134,6 +132,10 @@
             if LocationGirlShown = 0 and AmandaAtPortShip = 0:
                 gs 'PrintMainLine', 'Сейчас в зале нет никого из девушек.'
             end
+
+            if TavernStageWorking = 1 and $TavernStagePerformer <> '':
+                *pl 'На сцене: менестрель ' + $TavernStagePerformer + ' развлекает публику песнями и игрой на лютне.'
+            end
         else:
             if week = 7 and time = 1:
                 gs 'PrintMainLine', 'Воскресное утро: Сандра повязала праздничный платок и перед уходом напомнила, что вся семья идёт на утреннюю службу к отцу Герхарду в собор Ильматера.'
@@ -190,6 +192,20 @@
 
     gs 'TavernHallAddLookButton'
     gs 'TavernHallAddWaitButton'
+
+    if TavernUpgradeStageDone = 1 and TavernMainOpen = 1:
+        if TavernStageWorking = 1:
+            gs 'ActUiPrepare', 'Подойти к сцене', 'dance'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'TavernMusicStage'
+            end
+        else:
+            gs 'ActUiPrepare', 'Осмотреть сцену', 'look'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'TavernMusicStage'
+            end
+        end
+    end
 
     ! ====================== ПЕРЕХОДЫ ======================
 
@@ -386,19 +402,31 @@
     end
 
     if TavernDayEventHallDescPrinted = 0:
-        if time = 1:
-            gs 'PrintMainP', 'Утро в зале ещё нежное. Столы протёрты, очаг только разогрет, с кухни доносится запах свежего хлеба.'
-            gs 'PrintMainP', 'Первые посетители только подтягиваются — кто за кружкой эля с дороги, кто просто погреться у огня.'
-        elseif time = 2:
-            gs 'PrintMainP', 'К полудню зал оживает. За столами уже сидят торговцы и ремесленники, у стойки слышны заказы на еду и пиво.'
-            gs 'PrintMainP', 'Суета ровная, без вечернего шума — город ещё не успел напиться до крика.'
-        elseif time = 3:
-            gs 'PrintMainP', 'Днём зал работает в полную силу. За грубыми столами громко спорят, смеются и торгуются за последнюю кружку.'
-            gs 'PrintMainP', 'В воздухе — еда, дым и пролитое пиво; у стойки не смолкают голоса, с кухни идёт непрерывная смена блюд.'
-        else:
-            gs 'PrintMainP', 'Вечером зал теплеет от огня и разговоров. Лампы мягко светят на лица, посетители расслаблены, будто день наконец отпустил.'
-            gs 'PrintMainP', 'У стойки всё ещё шумно, но уже без дневной спешки — больше смеха, меньше торопливых криков с кухни.'
+        TavernStageDescPrinted = 0
+
+        if LOC('TavernStagePrintHallDescription') = 1:
+            gs 'TavernStagePrintHallDescription'
         end
+
+        if TavernStageDescPrinted = 0:
+            if time = 1:
+                gs 'PrintMainP', 'Утро в зале ещё нежное. Столы протёрты, очаг только разогрет, с кухни доносится запах свежего хлеба.'
+                gs 'PrintMainP', 'Первые посетители только подтягиваются — кто за кружкой эля с дороги, кто просто погреться у огня.'
+            elseif time = 2:
+                gs 'PrintMainP', 'К полудню зал оживает. За столами уже сидят торговцы и ремесленники, у стойки слышны заказы на еду и пиво.'
+                gs 'PrintMainP', 'Суета ровная, без вечернего шума — город ещё не успел напиться до крика.'
+            elseif time = 3:
+                gs 'PrintMainP', 'Днём зал работает в полную силу. За грубыми столами громко спорят, смеются и торгуются за последнюю кружку.'
+                gs 'PrintMainP', 'В воздухе — еда, дым и пролитое пиво; у стойки не смолкают голоса, с кухни идёт непрерывная смена блюд.'
+            else:
+                gs 'PrintMainP', 'Вечером зал теплеет от огня и разговоров. Лампы мягко светят на лица, посетители расслаблены, будто день наконец отпустил.'
+                gs 'PrintMainP', 'У стойки всё ещё шумно, но уже без дневной спешки — больше смеха, меньше торопливых криков с кухни.'
+            end
+        end
+    end
+
+    if LOC('TavernStagePrintHallNote') = 1:
+        gs 'TavernStagePrintHallNote'
     end
 
     if LOC('FridayStreetClashPrintHallRumor') = 1:
@@ -406,6 +434,7 @@
     end
 
     killvar 'TavernDayEventHallDescPrinted'
+    killvar 'TavernStageDescPrinted'
 ---
 
 ! ================================================
@@ -528,6 +557,8 @@
     gs 'IsTavernOpen'
     gs 'UpdateGirlLocations'
 
+    gs 'ShowLocationScreenTitle', 'ГЛАВНЫЙ ЗАЛ ТРАКТИРА'
+
     if LOC('ShowTavernHallImage') = 1:
         gs 'ShowTavernHallImage'
     elseif LOC('ShowLocationTimeImage') = 1:
@@ -535,11 +566,6 @@
     elseif LOC('ShowLocationImage') = 1:
         gs 'ShowLocationImage', 'tavern', 'full', 'png'
     end
-
-    *pl '══════════════════════════════════════════════'
-    gs 'PrintTitleLine', ' ГЛАВНЫЙ ЗАЛ ТРАКТИРА'
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
 
     if TavernOpen = 1:
         gs 'PrintMainP', 'Вы некоторое время наблюдаете за залом.'

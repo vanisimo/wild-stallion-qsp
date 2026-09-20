@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 456
-- Locations: 3316
-- Locations with direct incoming calls: 2843
-- Locations without direct incoming calls: 473
-- Review candidates without direct incoming calls: 168
-- Classified entry/helper locations without direct incoming calls: 305
+- Source files: 458
+- Locations: 3352
+- Locations with direct incoming calls: 2871
+- Locations without direct incoming calls: 481
+- Review candidates without direct incoming calls: 169
+- Classified entry/helper locations without direct incoming calls: 312
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -17,30 +17,30 @@ These locations have no direct literal incoming calls and are not classified as 
 | Location | File | Line | Group |
 | --- | --- | --- | --- |
 | `Act1IsHonestPhase` | `modules/events/family/act1_setup_core.qsps` | 7 | `modules/events` |
-| `AdvanceTimeWalk` | `modules/core/time/time_control.qsps` | 128 | `modules/core` |
-| `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 208 | `modules/events` |
-| `AmandaDanceAlleySexTransition` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 1032 | `modules/events` |
-| `AmandaFirstSexFamilyTalkFinish` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 635 | `modules/events` |
-| `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 151 | `modules/events` |
+| `AdvanceTimeWalk` | `modules/core/time/time_control.qsps` | 126 | `modules/core` |
+| `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 202 | `modules/events` |
+| `AmandaDanceAlleySexTransition` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 1006 | `modules/events` |
+| `AmandaFirstSexFamilyTalkFinish` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 626 | `modules/events` |
+| `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 148 | `modules/events` |
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 193 | `modules/events` |
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
-| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 307 | `modules/events` |
+| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 295 | `modules/events` |
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 7 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
-| `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 180 | `modules/events` |
-| `ChurchSundayServiceInspectIrma` | `modules/events/church/church_sunday_service.qsps` | 119 | `modules/events` |
-| `ChurchSundayServiceInspectMayor` | `modules/events/church/church_sunday_service.qsps` | 114 | `modules/events` |
+| `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 174 | `modules/events` |
+| `ChurchSundayServiceInspectIrma` | `modules/events/church/church_sunday_service.qsps` | 113 | `modules/events` |
+| `ChurchSundayServiceInspectMayor` | `modules/events/church/church_sunday_service.qsps` | 108 | `modules/events` |
 | `ChurchSundayServiceShowMenu` | `modules/events/church/church_sunday_service_menus.qsps` | 41 | `modules/events` |
-| `ChurchSundayServiceTalkBecky` | `modules/events/church/church_sunday_service.qsps` | 104 | `modules/events` |
-| `ChurchSundayServiceTalkFamily` | `modules/events/church/church_sunday_service.qsps` | 94 | `modules/events` |
-| `ChurchSundayServiceTalkGeorgette` | `modules/events/church/church_sunday_service.qsps` | 109 | `modules/events` |
-| `ChurchSundayServiceTalkLegare` | `modules/events/church/church_sunday_service.qsps` | 99 | `modules/events` |
+| `ChurchSundayServiceTalkBecky` | `modules/events/church/church_sunday_service.qsps` | 98 | `modules/events` |
+| `ChurchSundayServiceTalkFamily` | `modules/events/church/church_sunday_service.qsps` | 88 | `modules/events` |
+| `ChurchSundayServiceTalkGeorgette` | `modules/events/church/church_sunday_service.qsps` | 103 | `modules/events` |
+| `ChurchSundayServiceTalkLegare` | `modules/events/church/church_sunday_service.qsps` | 93 | `modules/events` |
 | `ChurchUiHolyCircleIcon` | `modules/events/church/church_core.qsps` | 7 | `modules/events` |
 | `ChurchWeekdayShowGerhardMenu` | `modules/events/church/church_weekday_menus.qsps` | 16 | `modules/events` |
 | `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 8 | `modules/core` |
-| `ClarissaIntimAfterSex` | `modules/events/legare/clarissa_intim_arc.qsps` | 201 | `modules/events` |
+| `ClarissaIntimAfterSex` | `modules/events/legare/clarissa_intim_arc.qsps` | 195 | `modules/events` |
 | `ClearGirlLocation` | `modules/core/girls/girl_location.qsps` | 61 | `modules/core` |
 | `FamilyCouncilTryAtNight` | `modules/events/family/family_council.qsps` | 26 | `modules/events` |
 | `FamilyCouncilTryBeforeNextDay` | `modules/events/family/family_council.qsps` | 40 | `modules/events` |
@@ -53,36 +53,36 @@ These locations have no direct literal incoming calls and are not classified as 
 | `FormatTextThought` | `modules/core/text/text_format.qsps` | 331 | `modules/core` |
 | `FormatTextTitle` | `modules/core/text/text_format.qsps` | 335 | `modules/core` |
 | `FormatTextWarn` | `modules/core/text/text_format.qsps` | 343 | `modules/core` |
-| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 943 | `modules/events` |
-| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 785 | `modules/events` |
+| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 892 | `modules/events` |
+| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 740 | `modules/events` |
 | `GeorgettePortAfterSex` | `modules/events/georgette/georgette_port_night.qsps` | 72 | `modules/events` |
 | `GeorgettePortNightMenu` | `modules/events/georgette/georgette_port_night.qsps` | 26 | `modules/events` |
 | `GirlDailyEvent` | `modules/core/system/compatibility_aliases.qsps` | 153 | `modules/core` |
-| `GirlIntimOpenNpcMenu` | `modules/core/girls/girl_intim_session.qsps` | 163 | `modules/core` |
-| `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 204 | `modules/core` |
+| `GirlIntimOpenNpcMenu` | `modules/core/girls/girl_intim_session.qsps` | 164 | `modules/core` |
+| `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 205 | `modules/core` |
 | `GirlNoPantiesWorkIsActive` | `modules/actions/tavern/girl_no_panties_work.qsps` | 14 | `modules/actions` |
 | `GirlPolicyResponseApplyStats` | `modules/events/hall/girl_policy_response.qsps` | 188 | `modules/events` |
-| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 476 | `modules/actions` |
-| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 451 | `modules/actions` |
-| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 416 | `modules/actions` |
-| `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 180 | `modules/actions` |
-| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 980 | `modules/actions` |
-| `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 240 | `modules/actions` |
-| `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 276 | `modules/actions` |
-| `GirlWorkPolicyTalkHallAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 107 | `modules/actions` |
-| `GirlWorkPolicyTalkKitchenAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 118 | `modules/actions` |
+| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 528 | `modules/actions` |
+| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 503 | `modules/actions` |
+| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 468 | `modules/actions` |
+| `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 186 | `modules/actions` |
+| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 961 | `modules/actions` |
+| `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 246 | `modules/actions` |
+| `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 289 | `modules/actions` |
+| `GirlWorkPolicyTalkHallAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 102 | `modules/actions` |
+| `GirlWorkPolicyTalkKitchenAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 113 | `modules/actions` |
 | `HallEventChoiceThoughtsBody` | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | 20 | `modules/events` |
-| `HallHarassmentAftermathFamily` | `modules/events/hall/hall_harassment.qsps` | 1422 | `modules/events` |
-| `HallHarassmentResolve` | `modules/events/hall/hall_harassment.qsps` | 1057 | `modules/events` |
-| `HallHarassmentResultProfit` | `modules/events/hall/hall_harassment.qsps` | 1355 | `modules/events` |
-| `HallHarassmentResultSelfHandle` | `modules/events/hall/hall_harassment.qsps` | 1302 | `modules/events` |
-| `HallHarassmentResultWarnClient` | `modules/events/hall/hall_harassment.qsps` | 1259 | `modules/events` |
+| `HallHarassmentAftermathFamily` | `modules/events/hall/hall_harassment.qsps` | 1401 | `modules/events` |
+| `HallHarassmentResolve` | `modules/events/hall/hall_harassment.qsps` | 1036 | `modules/events` |
+| `HallHarassmentResultProfit` | `modules/events/hall/hall_harassment.qsps` | 1334 | `modules/events` |
+| `HallHarassmentResultSelfHandle` | `modules/events/hall/hall_harassment.qsps` | 1281 | `modules/events` |
+| `HallHarassmentResultWarnClient` | `modules/events/hall/hall_harassment.qsps` | 1238 | `modules/events` |
 | `HallMissingBargainTryRumorHint` | `modules/events/hall/hall_missing_bargain_hooks.qsps` | 76 | `modules/events` |
 | `HallMissingMeet_touch_thigh_amanda` | `modules/events/hall/hall_missing_amanda_text.qsps` | 455 | `modules/events` |
 | `HallMissingMeet_touch_thigh_melissa` | `modules/events/hall/hall_missing_agent_melissa_text.qsps` | 457 | `modules/events` |
 | `HallMissingMeet_touch_thigh_sandra` | `modules/events/hall/hall_missing_agent_sandra_text.qsps` | 355 | `modules/events` |
-| `HallMissingRegisterAnil` | `modules/events/hall/hall_missing_girl.qsps` | 970 | `modules/events` |
-| `HallMissingRegisterTitjob` | `modules/events/hall/hall_missing_girl.qsps` | 1030 | `modules/events` |
+| `HallMissingRegisterAnil` | `modules/events/hall/hall_missing_girl.qsps` | 968 | `modules/events` |
+| `HallMissingRegisterTitjob` | `modules/events/hall/hall_missing_girl.qsps` | 1028 | `modules/events` |
 | `HallMissingScene_anilingus_amanda_2` | `modules/events/hall/hall_missing_amanda_text.qsps` | 1276 | `modules/events` |
 | `HallMissingScene_anilingus_amanda_3` | `modules/events/hall/hall_missing_amanda_text.qsps` | 1279 | `modules/events` |
 | `HallMissingScene_anilingus_melissa_2` | `modules/events/hall/hall_missing_agent_melissa_text.qsps` | 610 | `modules/events` |
@@ -141,43 +141,44 @@ These locations have no direct literal incoming calls and are not classified as 
 | `HallMissingScene_touch_thigh_sandra` | `modules/events/hall/hall_missing_agent_sandra_text.qsps` | 341 | `modules/events` |
 | `HallMissingScene_touch_thigh_sandra_2` | `modules/events/hall/hall_missing_agent_sandra_text.qsps` | 351 | `modules/events` |
 | `HallRecentMemorySave` | `modules/events/hall/hall_recent_memory.qsps` | 9 | `modules/events` |
-| `IngaBackroomAfterSex` | `modules/events/inga/inga_romance.qsps` | 154 | `modules/events` |
+| `IngaBackroomAfterSex` | `modules/events/inga/inga_romance.qsps` | 148 | `modules/events` |
 | `IngaDanceMeet` | `modules/events/inga/inga_dance.qsps` | 28 | `modules/events` |
-| `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 120 | `modules/events` |
-| `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 116 | `modules/locations` |
+| `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 115 | `modules/events` |
+| `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 112 | `modules/locations` |
 | `IntimScene` | `modules/core/girls/girl_intim_menu.qsps` | 146 | `modules/core` |
-| `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 553 | `modules/locations` |
-| `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 558 | `modules/locations` |
-| `LocationWalk` | `modules/core/time/time_control.qsps` | 150 | `modules/core` |
-| `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 251 | `modules/events` |
+| `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 539 | `modules/locations` |
+| `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 544 | `modules/locations` |
+| `LocationWalk` | `modules/core/time/time_control.qsps` | 148 | `modules/core` |
+| `MelissaFirstPathChoiceAction` | `modules/events/melissa/melissa_musician_arc.qsps` | 739 | `modules/events` |
+| `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 239 | `modules/events` |
 | `MelissaHomeAnalStep1` | `modules/events/melissa/melissa_home_anal.qsps` | 66 | `modules/events` |
-| `MelissaHomeAnalStep2` | `modules/events/melissa/melissa_home_anal.qsps` | 151 | `modules/events` |
-| `MelissaHomeAnalStep3` | `modules/events/melissa/melissa_home_anal.qsps` | 310 | `modules/events` |
-| `MelissaHomeAnalStepWaitingClarissa` | `modules/events/melissa/melissa_home_anal.qsps` | 247 | `modules/events` |
-| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 491 | `modules/events` |
-| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 442 | `modules/events` |
-| `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 299 | `modules/events` |
-| `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 997 | `modules/core` |
-| `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 991 | `modules/core` |
-| `PortAmandaLizetteMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 130 | `modules/events` |
+| `MelissaHomeAnalStep2` | `modules/events/melissa/melissa_home_anal.qsps` | 142 | `modules/events` |
+| `MelissaHomeAnalStep3` | `modules/events/melissa/melissa_home_anal.qsps` | 286 | `modules/events` |
+| `MelissaHomeAnalStepWaitingClarissa` | `modules/events/melissa/melissa_home_anal.qsps` | 229 | `modules/events` |
+| `MelissaMinstrelDistract` | `modules/events/dance/friday_dance_core.qsps` | 470 | `modules/events` |
+| `MelissaMinstrelEavesdrop` | `modules/events/dance/friday_dance_core.qsps` | 424 | `modules/events` |
+| `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 293 | `modules/events` |
+| `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 994 | `modules/core` |
+| `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 988 | `modules/core` |
+| `PortAmandaLizetteMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 127 | `modules/events` |
 | `PortAmandaLizetteShowAmandaMenu` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 41 | `modules/events` |
-| `PortAmandaLizetteTryMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 112 | `modules/events` |
+| `PortAmandaLizetteTryMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 109 | `modules/events` |
 | `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 74 | `modules/events` |
 | `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 104 | `modules/events` |
 | `PortProstNightMenu` | `modules/events/port/port_prost_night.qsps` | 30 | `modules/events` |
 | `PrepareSkipDays` | `modules/core/time/skip_days.qsps` | 7 | `modules/core` |
-| `SandraHomeAfterSex` | `modules/events/sandra/sandra_home_chain.qsps` | 208 | `modules/events` |
-| `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 827 | `modules/events` |
-| `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 770 | `modules/events` |
-| `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 775 | `modules/events` |
-| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2263 | `modules/actions` |
-| `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1083 | `modules/actions` |
+| `SandraHomeAfterSex` | `modules/events/sandra/sandra_home_chain.qsps` | 202 | `modules/events` |
+| `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 809 | `modules/events` |
+| `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 755 | `modules/events` |
+| `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 760 | `modules/events` |
+| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2257 | `modules/actions` |
+| `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1077 | `modules/actions` |
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
 | `SparkQueueActKitchen` | `modules/core/tavern/spark_queue.qsps` | 237 | `modules/core` |
 | `SweetsShopBuyItem` | `modules/locations/shops/sweets_shop_buy.qsps` | 24 | `modules/locations` |
-| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 129 | `modules/actions` |
-| `TavernHallActivityCalcChance` | `modules/locations/tavern/tavern_hall_activity.qsps` | 399 | `modules/locations` |
-| `TavernHallLookFinishOnMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 66 | `modules/locations` |
+| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 126 | `modules/actions` |
+| `TavernHallActivityCalcChance` | `modules/locations/tavern/tavern_hall_activity.qsps` | 401 | `modules/locations` |
+| `TavernHallLookFinishOnMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 68 | `modules/locations` |
 | `TextStyleSetColor` | `modules/core/text/text_format.qsps` | 136 | `modules/core` |
 | `TextStyleSetFace` | `modules/core/text/text_format.qsps` | 151 | `modules/core` |
 | `TextStyleSetSize` | `modules/core/text/text_format.qsps` | 144 | `modules/core` |
@@ -194,8 +195,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaBoyBrothersCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 13 | `entry/helper` |
 | `AmandaBoyCurvedCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_curved.qsps` | 16 | `entry/helper` |
 | `AmandaFirstSexAmandaWorryTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 199 | `entry/helper` |
-| `AmandaFirstSexFamilyTalkCanStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 585 | `entry/helper` |
-| `AmandaFirstSexFamilyTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 611 | `entry/helper` |
+| `AmandaFirstSexFamilyTalkCanStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 576 | `entry/helper` |
+| `AmandaFirstSexFamilyTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 602 | `entry/helper` |
 | `AmandaFirstSexMelissaUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 191 | `entry/helper` |
 | `AmandaFirstSexMorningCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 80 | `entry/helper` |
 | `AmandaFirstSexMorningText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 73 | `entry/helper` |
@@ -203,34 +204,34 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaFirstSexSandraSuspicionTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 179 | `entry/helper` |
 | `AmandaFirstSexSandraUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 195 | `entry/helper` |
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 | `entry/helper` |
-| `AmandaHomeAnalStart` | `modules/events/family/intimacy_kinks.qsps` | 432 | `entry/helper` |
-| `AmandaLegareAfterDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1166 | `entry/helper` |
-| `AmandaLegareAutoNoticeDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 177 | `entry/helper` |
+| `AmandaHomeAnalStart` | `modules/events/family/intimacy_kinks.qsps` | 423 | `entry/helper` |
+| `AmandaLegareAfterDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1133 | `entry/helper` |
+| `AmandaLegareAutoNoticeDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 174 | `entry/helper` |
 | `AmandaLegareBranchDebugUnlock` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 50 | `entry/helper` |
-| `AmandaLegareDanceCanStart` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 440 | `entry/helper` |
-| `AmandaLegareDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 728 | `entry/helper` |
-| `AmandaLegareDanceStart` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 471 | `entry/helper` |
-| `AmandaLegareFridayRaceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1525 | `entry/helper` |
-| `AmandaLegareInviteDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 423 | `entry/helper` |
-| `AmandaLegareMajorAftermathDebugReset` | `modules/events/amanda/legare/amanda_legare_major_aftermath.qsps` | 447 | `entry/helper` |
-| `AmandaLegareMajorRiskDebugReset` | `modules/events/amanda/legare/amanda_legare_major_risk.qsps` | 401 | `entry/helper` |
+| `AmandaLegareDanceCanStart` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 431 | `entry/helper` |
+| `AmandaLegareDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 707 | `entry/helper` |
+| `AmandaLegareDanceStart` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 462 | `entry/helper` |
+| `AmandaLegareFridayRaceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1486 | `entry/helper` |
+| `AmandaLegareInviteDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 414 | `entry/helper` |
+| `AmandaLegareMajorAftermathDebugReset` | `modules/events/amanda/legare/amanda_legare_major_aftermath.qsps` | 435 | `entry/helper` |
+| `AmandaLegareMajorRiskDebugReset` | `modules/events/amanda/legare/amanda_legare_major_risk.qsps` | 395 | `entry/helper` |
 | `AmandaLegareMajorRiskTryAutoStart` | `modules/events/amanda/legare/amanda_legare_major_risk.qsps` | 60 | `entry/helper` |
-| `AmandaLegareOutsideMeetDebugReset` | `modules/events/amanda/legare/amanda_legare_outside_meet.qsps` | 589 | `entry/helper` |
+| `AmandaLegareOutsideMeetDebugReset` | `modules/events/amanda/legare/amanda_legare_outside_meet.qsps` | 577 | `entry/helper` |
 | `AmandaLegareOutsideMeetTryAutoStart` | `modules/events/amanda/legare/amanda_legare_outside_meet.qsps` | 68 | `entry/helper` |
-| `AmandaLegareOutsideWallDebugReset` | `modules/events/amanda/legare/amanda_legare_outside_wall.qsps` | 379 | `entry/helper` |
+| `AmandaLegareOutsideWallDebugReset` | `modules/events/amanda/legare/amanda_legare_outside_wall.qsps` | 373 | `entry/helper` |
 | `AmandaLegareOutsideWallTryAutoStart` | `modules/events/amanda/legare/amanda_legare_outside_wall.qsps` | 59 | `entry/helper` |
-| `AmandaLegarePrivateAftermathDebugReset` | `modules/events/amanda/legare/amanda_legare_private_aftermath.qsps` | 383 | `entry/helper` |
-| `AmandaLegareSecondMeetDebugReset` | `modules/events/amanda/legare/amanda_legare_second_meet.qsps` | 402 | `entry/helper` |
+| `AmandaLegarePrivateAftermathDebugReset` | `modules/events/amanda/legare/amanda_legare_private_aftermath.qsps` | 371 | `entry/helper` |
+| `AmandaLegareSecondMeetDebugReset` | `modules/events/amanda/legare/amanda_legare_second_meet.qsps` | 396 | `entry/helper` |
 | `AmandaLegareSecondMeetTryAutoStart` | `modules/events/amanda/legare/amanda_legare_second_meet.qsps` | 68 | `entry/helper` |
 | `AmandaLegareSpyCanStart` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 31 | `entry/helper` |
-| `AmandaLegareSpyDebugReset` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 593 | `entry/helper` |
+| `AmandaLegareSpyDebugReset` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 569 | `entry/helper` |
 | `AmandaLegareSpyReset` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 59 | `entry/helper` |
 | `AmandaLegareSpyStart` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 121 | `entry/helper` |
-| `AmandaLegareTalkDebugReset` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 564 | `entry/helper` |
-| `AmandaLegareTavernVisitDebugReset` | `modules/events/amanda/legare/amanda_legare_tavern_visit.qsps` | 385 | `entry/helper` |
+| `AmandaLegareTalkDebugReset` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 546 | `entry/helper` |
+| `AmandaLegareTavernVisitDebugReset` | `modules/events/amanda/legare/amanda_legare_tavern_visit.qsps` | 379 | `entry/helper` |
 | `AmandaLegareTavernVisitTryAutoStart` | `modules/events/amanda/legare/amanda_legare_tavern_visit.qsps` | 68 | `entry/helper` |
 | `AmandaLizetteDebugMenu` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 183 | `entry/helper` |
-| `AmandaNeighborBoysDebugReset` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 688 | `entry/helper` |
+| `AmandaNeighborBoysDebugReset` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 670 | `entry/helper` |
 | `AmandaPathChoiceCanStart` | `modules/events/amanda/home/amanda_path_choice.qsps` | 7 | `entry/helper` |
 | `AmandaPathChoiceDebugReset` | `modules/events/amanda/home/amanda_path_choice.qsps` | 32 | `entry/helper` |
 | `AmandaPathChoiceStart` | `modules/events/amanda/home/amanda_path_choice.qsps` | 16 | `entry/helper` |
@@ -239,29 +240,29 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ArtLevelText` | `modules/core/init_npc/art_level_text.qsps` | 6 | `entry/helper` |
 | `BeckyHomeFrontBeckyHurryText` | `modules/events/becky/becky_home_chain_text.qsps` | 18 | `entry/helper` |
 | `BeckyHomeGuestDressOkText` | `modules/events/becky/becky_home_chain_text.qsps` | 30 | `entry/helper` |
-| `BeckyOtkrovenNegativeLowFriend` | `modules/events/becky/becky_events.qsps` | 63 | `entry/helper` |
+| `BeckyOtkrovenNegativeLowFriend` | `modules/events/becky/becky_events.qsps` | 55 | `entry/helper` |
 | `BeckyTalkEddieSonText` | `modules/events/becky/becky_talk_text.qsps` | 117 | `entry/helper` |
 | `CalculateDailyProfit` | `modules/core/tavern/tavern_income.qsps` | 515 | `entry/helper` |
 | `CalculateGirlAvailability` | `modules/core/tavern/tavern_reputation.qsps` | 18 | `entry/helper` |
 | `CheckAmandaEvents` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 13 | `entry/helper` |
 | `CityScheduleDebug` | `modules/core/time/city_schedule_debug.qsps` | 7 | `entry/helper` |
 | `Clamp` | `modules/core/system/functions.qsps` | 12 | `entry/helper` |
-| `ClarissaIntimDebugReset` | `modules/events/legare/clarissa_intim_arc.qsps` | 502 | `entry/helper` |
+| `ClarissaIntimDebugReset` | `modules/events/legare/clarissa_intim_arc.qsps` | 484 | `entry/helper` |
 | `DailyAftermathCanRun` | `modules/events/family/daily_aftermath.qsps` | 13 | `entry/helper` |
 | `DailyAftermathMarkFromChoice` | `modules/events/family/daily_aftermath.qsps` | 55 | `entry/helper` |
 | `DailyAftermathQueue` | `modules/events/family/daily_aftermath.qsps` | 8 | `entry/helper` |
 | `DebugAmandaArcPanel` | `modules/debug/debug_amanda_arc.qsps` | 7 | `entry/helper` |
 | `DebugAmandaArcReset` | `modules/debug/debug_amanda_arc.qsps` | 457 | `entry/helper` |
 | `DebugAmandaJumpFirstSex` | `modules/debug/debug_amanda_arc.qsps` | 512 | `entry/helper` |
-| `DebugAmandaLizaClearPreview` | `modules/debug/debug_amanda_liza.qsps` | 246 | `entry/helper` |
-| `DebugAmandaLizaForceHallTalk` | `modules/debug/debug_amanda_liza.qsps` | 411 | `entry/helper` |
-| `DebugAmandaLizaPresetAfterPort` | `modules/debug/debug_amanda_liza.qsps` | 298 | `entry/helper` |
-| `DebugAmandaLizaPresetAnalTalkPath` | `modules/debug/debug_amanda_liza.qsps` | 388 | `entry/helper` |
-| `DebugAmandaLizaPresetMarathon8AndGossip` | `modules/debug/debug_amanda_liza.qsps` | 363 | `entry/helper` |
-| `DebugAmandaLizaPresetRoomVisitStory` | `modules/debug/debug_amanda_liza.qsps` | 340 | `entry/helper` |
-| `DebugAmandaLizaPresetSecretVisit` | `modules/debug/debug_amanda_liza.qsps` | 396 | `entry/helper` |
-| `DebugAmandaLizaPreview` | `modules/debug/debug_amanda_liza.qsps` | 241 | `entry/helper` |
-| `DebugAmandaLizaReset` | `modules/debug/debug_amanda_liza.qsps` | 424 | `entry/helper` |
+| `DebugAmandaLizaClearPreview` | `modules/debug/debug_amanda_liza.qsps` | 236 | `entry/helper` |
+| `DebugAmandaLizaForceHallTalk` | `modules/debug/debug_amanda_liza.qsps` | 397 | `entry/helper` |
+| `DebugAmandaLizaPresetAfterPort` | `modules/debug/debug_amanda_liza.qsps` | 284 | `entry/helper` |
+| `DebugAmandaLizaPresetAnalTalkPath` | `modules/debug/debug_amanda_liza.qsps` | 374 | `entry/helper` |
+| `DebugAmandaLizaPresetMarathon8AndGossip` | `modules/debug/debug_amanda_liza.qsps` | 349 | `entry/helper` |
+| `DebugAmandaLizaPresetRoomVisitStory` | `modules/debug/debug_amanda_liza.qsps` | 326 | `entry/helper` |
+| `DebugAmandaLizaPresetSecretVisit` | `modules/debug/debug_amanda_liza.qsps` | 382 | `entry/helper` |
+| `DebugAmandaLizaPreview` | `modules/debug/debug_amanda_liza.qsps` | 231 | `entry/helper` |
+| `DebugAmandaLizaReset` | `modules/debug/debug_amanda_liza.qsps` | 410 | `entry/helper` |
 | `DebugAmandaPresetAlleyMmf` | `modules/debug/debug_amanda_arc.qsps` | 434 | `entry/helper` |
 | `DebugAmandaPresetLegareRaceWatch` | `modules/debug/debug_amanda_arc.qsps` | 384 | `entry/helper` |
 | `DebugAmandaPresetLegareRaceWatchHidden` | `modules/debug/debug_amanda_arc.qsps` | 399 | `entry/helper` |
@@ -269,49 +270,49 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `DebugBirthCertificateArcPanel` | `modules/debug/debug_birth_certificate_arc.qsps` | 7 | `entry/helper` |
 | `DebugCheckLoc` | `modules/core/system/debug.qsps` | 12 | `entry/helper` |
 | `DebugGiftPanel` | `modules/debug/debug_gifts.qsps` | 7 | `entry/helper` |
-| `DebugIntimacyArcReset` | `modules/debug/debug_intimacy_arc.qsps` | 172 | `entry/helper` |
+| `DebugIntimacyArcReset` | `modules/debug/debug_intimacy_arc.qsps` | 173 | `entry/helper` |
 | `DebugIntimacyArcSmokeTest` | `modules/debug/debug_intimacy_arc_smoke.qsps` | 7 | `entry/helper` |
 | `DebugIntimacyJumpAmandaRepeat` | `modules/debug/debug_amanda_arc.qsps` | 661 | `entry/helper` |
-| `DebugIntimacyJumpGroups` | `modules/debug/debug_intimacy_arc.qsps` | 479 | `entry/helper` |
-| `DebugIntimacyJumpMelissaRepeat` | `modules/debug/debug_intimacy_arc.qsps` | 418 | `entry/helper` |
+| `DebugIntimacyJumpGroups` | `modules/debug/debug_intimacy_arc.qsps` | 480 | `entry/helper` |
+| `DebugIntimacyJumpMelissaRepeat` | `modules/debug/debug_intimacy_arc.qsps` | 419 | `entry/helper` |
 | `DebugKnowledgePanel` | `modules/debug/debug_knowledge_panel.qsps` | 11 | `entry/helper` |
-| `DebugKnowledgeSeedHall` | `modules/debug/debug_knowledge_panel.qsps` | 71 | `entry/helper` |
+| `DebugKnowledgeSeedHall` | `modules/debug/debug_knowledge_panel.qsps` | 68 | `entry/helper` |
 | `DebugMayorArcPanel` | `modules/debug/debug_mayor_arc.qsps` | 7 | `entry/helper` |
 | `DebugMelissaArcPanel` | `modules/debug/debug_melissa_arc.qsps` | 11 | `entry/helper` |
-| `DebugMelissaArcReset` | `modules/debug/debug_melissa_arc.qsps` | 619 | `entry/helper` |
-| `DebugMelissaPresetDanceAlley` | `modules/debug/debug_melissa_arc.qsps` | 474 | `entry/helper` |
-| `DebugMelissaPresetHomeAnal` | `modules/debug/debug_melissa_arc.qsps` | 564 | `entry/helper` |
-| `DebugMelissaPresetHomeFirstSex` | `modules/debug/debug_melissa_arc.qsps` | 556 | `entry/helper` |
-| `DebugMelissaPresetHomeRepeat` | `modules/debug/debug_melissa_arc.qsps` | 560 | `entry/helper` |
-| `DebugMelissaPresetMinstrelBackroom` | `modules/debug/debug_melissa_arc.qsps` | 533 | `entry/helper` |
-| `DebugMelissaPresetMinstrelKiss` | `modules/debug/debug_melissa_arc.qsps` | 496 | `entry/helper` |
-| `DebugMelissaPresetMinstrelMeet` | `modules/debug/debug_melissa_arc.qsps` | 489 | `entry/helper` |
-| `DebugMelissaPresetMinstrelRace` | `modules/debug/debug_melissa_arc.qsps` | 517 | `entry/helper` |
-| `DebugMelissaPresetMinstrelWagon` | `modules/debug/debug_melissa_arc.qsps` | 506 | `entry/helper` |
-| `DebugMelissaPresetPathChoice` | `modules/debug/debug_melissa_arc.qsps` | 548 | `entry/helper` |
-| `DebugMelissaPresetStretchTraining` | `modules/debug/debug_melissa_arc.qsps` | 602 | `entry/helper` |
-| `DebugMelissaPresetThreesomeAmanda` | `modules/debug/debug_melissa_arc.qsps` | 580 | `entry/helper` |
-| `DebugMelissaPresetThreesomeMinstrel` | `modules/debug/debug_melissa_arc.qsps` | 568 | `entry/helper` |
+| `DebugMelissaArcReset` | `modules/debug/debug_melissa_arc.qsps` | 616 | `entry/helper` |
+| `DebugMelissaPresetDanceAlley` | `modules/debug/debug_melissa_arc.qsps` | 473 | `entry/helper` |
+| `DebugMelissaPresetHomeAnal` | `modules/debug/debug_melissa_arc.qsps` | 561 | `entry/helper` |
+| `DebugMelissaPresetHomeFirstSex` | `modules/debug/debug_melissa_arc.qsps` | 553 | `entry/helper` |
+| `DebugMelissaPresetHomeRepeat` | `modules/debug/debug_melissa_arc.qsps` | 557 | `entry/helper` |
+| `DebugMelissaPresetMinstrelBackroom` | `modules/debug/debug_melissa_arc.qsps` | 532 | `entry/helper` |
+| `DebugMelissaPresetMinstrelKiss` | `modules/debug/debug_melissa_arc.qsps` | 495 | `entry/helper` |
+| `DebugMelissaPresetMinstrelMeet` | `modules/debug/debug_melissa_arc.qsps` | 488 | `entry/helper` |
+| `DebugMelissaPresetMinstrelRace` | `modules/debug/debug_melissa_arc.qsps` | 516 | `entry/helper` |
+| `DebugMelissaPresetMinstrelWagon` | `modules/debug/debug_melissa_arc.qsps` | 505 | `entry/helper` |
+| `DebugMelissaPresetProhibitMinstrel` | `modules/debug/debug_melissa_arc.qsps` | 547 | `entry/helper` |
+| `DebugMelissaPresetStretchTraining` | `modules/debug/debug_melissa_arc.qsps` | 599 | `entry/helper` |
+| `DebugMelissaPresetThreesomeAmanda` | `modules/debug/debug_melissa_arc.qsps` | 577 | `entry/helper` |
+| `DebugMelissaPresetThreesomeMinstrel` | `modules/debug/debug_melissa_arc.qsps` | 565 | `entry/helper` |
 | `DebugPolicyFlowSmokeTest` | `modules/debug/debug_policy_flow_smoke.qsps` | 7 | `entry/helper` |
-| `DebugPortChurchArcGiveWindowHint` | `modules/debug/debug_port_church_arc.qsps` | 694 | `entry/helper` |
-| `DebugPortChurchArcGiveWindowMechanism` | `modules/debug/debug_port_church_arc.qsps` | 702 | `entry/helper` |
-| `DebugPortChurchArcPresetAfterB` | `modules/debug/debug_port_church_arc.qsps` | 385 | `entry/helper` |
-| `DebugPortChurchArcPresetAfterC` | `modules/debug/debug_port_church_arc.qsps` | 441 | `entry/helper` |
-| `DebugPortChurchArcPresetAfterE` | `modules/debug/debug_port_church_arc.qsps` | 559 | `entry/helper` |
-| `DebugPortChurchArcPresetAfterWitness` | `modules/debug/debug_port_church_arc.qsps` | 265 | `entry/helper` |
-| `DebugPortChurchArcPresetSeekToday` | `modules/debug/debug_port_church_arc.qsps` | 278 | `entry/helper` |
-| `DebugPortChurchArcPresetShipWednesday` | `modules/debug/debug_port_church_arc.qsps` | 244 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayD` | `modules/debug/debug_port_church_arc.qsps` | 534 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayE` | `modules/debug/debug_port_church_arc.qsps` | 555 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayF` | `modules/debug/debug_port_church_arc.qsps` | 579 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayF2` | `modules/debug/debug_port_church_arc.qsps` | 597 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayG1` | `modules/debug/debug_port_church_arc.qsps` | 630 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayG2` | `modules/debug/debug_port_church_arc.qsps` | 653 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayH` | `modules/debug/debug_port_church_arc.qsps` | 676 | `entry/helper` |
-| `DebugPortChurchArcReset` | `modules/debug/debug_port_church_arc.qsps` | 198 | `entry/helper` |
-| `DebugPortChurchArcResetDaily` | `modules/debug/debug_port_church_arc.qsps` | 186 | `entry/helper` |
-| `DebugPortChurchArcUnlockGeorgetteTalks` | `modules/debug/debug_port_church_arc.qsps` | 398 | `entry/helper` |
-| `DebugPortChurchArcUnlockLizetteTalks` | `modules/debug/debug_port_church_arc.qsps` | 415 | `entry/helper` |
+| `DebugPortChurchArcGiveWindowHint` | `modules/debug/debug_port_church_arc.qsps` | 674 | `entry/helper` |
+| `DebugPortChurchArcGiveWindowMechanism` | `modules/debug/debug_port_church_arc.qsps` | 682 | `entry/helper` |
+| `DebugPortChurchArcPresetAfterB` | `modules/debug/debug_port_church_arc.qsps` | 365 | `entry/helper` |
+| `DebugPortChurchArcPresetAfterC` | `modules/debug/debug_port_church_arc.qsps` | 421 | `entry/helper` |
+| `DebugPortChurchArcPresetAfterE` | `modules/debug/debug_port_church_arc.qsps` | 539 | `entry/helper` |
+| `DebugPortChurchArcPresetAfterWitness` | `modules/debug/debug_port_church_arc.qsps` | 245 | `entry/helper` |
+| `DebugPortChurchArcPresetSeekToday` | `modules/debug/debug_port_church_arc.qsps` | 258 | `entry/helper` |
+| `DebugPortChurchArcPresetShipWednesday` | `modules/debug/debug_port_church_arc.qsps` | 224 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayD` | `modules/debug/debug_port_church_arc.qsps` | 514 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayE` | `modules/debug/debug_port_church_arc.qsps` | 535 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayF` | `modules/debug/debug_port_church_arc.qsps` | 559 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayF2` | `modules/debug/debug_port_church_arc.qsps` | 577 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayG1` | `modules/debug/debug_port_church_arc.qsps` | 610 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayG2` | `modules/debug/debug_port_church_arc.qsps` | 633 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayH` | `modules/debug/debug_port_church_arc.qsps` | 656 | `entry/helper` |
+| `DebugPortChurchArcReset` | `modules/debug/debug_port_church_arc.qsps` | 178 | `entry/helper` |
+| `DebugPortChurchArcResetDaily` | `modules/debug/debug_port_church_arc.qsps` | 166 | `entry/helper` |
+| `DebugPortChurchArcUnlockGeorgetteTalks` | `modules/debug/debug_port_church_arc.qsps` | 378 | `entry/helper` |
+| `DebugPortChurchArcUnlockLizetteTalks` | `modules/debug/debug_port_church_arc.qsps` | 395 | `entry/helper` |
 | `DebugPrint` | `modules/core/system/debug.qsps` | 24 | `entry/helper` |
 | `DebugSandraStaffHirePanel` | `modules/debug/debug_sandra_staff_hire.qsps` | 7 | `entry/helper` |
 | `DebugTavernUpgradesPanel` | `modules/debug/debug_tavern_upgrades.qsps` | 7 | `entry/helper` |
@@ -335,31 +336,31 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GetTavernReputationName` | `modules/core/tavern/tavern_reputation.qsps` | 52 | `entry/helper` |
 | `GetWineShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 307 | `entry/helper` |
 | `GiftDebugAddAll` | `modules/core/gifts/gift_registry.qsps` | 228 | `entry/helper` |
-| `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 254 | `entry/helper` |
+| `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 251 | `entry/helper` |
 | `GirlMemoryOfStefanDebugPanel` | `modules/events/hall/girl_memory_of_stefan.qsps` | 195 | `entry/helper` |
 | `GirlTalkImageDebugPanel` | `modules/actions/dialogs/girl_talk_images.qsps` | 197 | `entry/helper` |
-| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1145 | `entry/helper` |
-| `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 458 | `entry/helper` |
-| `GirlWorkPolicyTalkAfterHarassStart` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 207 | `entry/helper` |
+| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1126 | `entry/helper` |
+| `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 446 | `entry/helper` |
+| `GirlWorkPolicyTalkAfterHarassStart` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 202 | `entry/helper` |
 | `GroupSexMenu` | `modules/actions/sex/group_sex.qsps` | 6 | `entry/helper` |
 | `HallChoiceConsequencePrint` | `modules/core/system/compatibility_aliases.qsps` | 47 | `entry/helper` |
 | `HallChoiceConsequencesText` | `modules/core/system/compatibility_aliases.qsps` | 43 | `entry/helper` |
 | `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 148 | `entry/helper` |
 | `HallFamilyStateDebugPanel` | `modules/events/hall/hall_family_state.qsps` | 260 | `entry/helper` |
-| `HallHarassmentDebugMenu` | `modules/events/hall/hall_harassment.qsps` | 2265 | `entry/helper` |
-| `HallHarassmentDebugPanel` | `modules/debug/debug_hall_harassment.qsps` | 530 | `entry/helper` |
-| `HallHarassmentPrintAftermathGirl` | `modules/events/hall/hall_harassment.qsps` | 1088 | `entry/helper` |
+| `HallHarassmentDebugMenu` | `modules/events/hall/hall_harassment.qsps` | 2244 | `entry/helper` |
+| `HallHarassmentDebugPanel` | `modules/debug/debug_hall_harassment.qsps` | 527 | `entry/helper` |
+| `HallHarassmentPrintAftermathGirl` | `modules/events/hall/hall_harassment.qsps` | 1067 | `entry/helper` |
 | `HallHarassmentPrintAfterTalkLine` | `modules/events/hall/hall_harassment_after_text.qsps` | 106 | `entry/helper` |
 | `HallHarassmentTalkPrintText` | `modules/events/hall/hall_harassment_text.qsps` | 326 | `entry/helper` |
-| `HallHarassmentTryFromBar` | `modules/events/hall/hall_harassment.qsps` | 884 | `entry/helper` |
+| `HallHarassmentTryFromBar` | `modules/events/hall/hall_harassment.qsps` | 863 | `entry/helper` |
 | `HallKnowledgePlayerLearns` | `modules/events/hall/hall_knowledge_hooks.qsps` | 112 | `entry/helper` |
 | `HallKnowledgeRegisterEvent` | `modules/events/hall/hall_knowledge_hooks.qsps` | 17 | `entry/helper` |
 | `HallLewdBehaviorTryAutoStart` | `modules/events/hall/hall_lewd_behavior.qsps` | 76 | `entry/helper` |
-| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 976 | `entry/helper` |
-| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 1604 | `entry/helper` |
+| `HallLewdDebugReset` | `modules/events/hall/hall_lewd_behavior.qsps` | 970 | `entry/helper` |
+| `HallMissingGirlDebugReset` | `modules/events/hall/hall_missing_girl.qsps` | 1602 | `entry/helper` |
 | `HallMissingGirlTryAutoStart` | `modules/events/hall/hall_missing_girl.qsps` | 87 | `entry/helper` |
-| `HallMissingPrintSelfFingers` | `modules/events/hall/hall_missing_girl.qsps` | 934 | `entry/helper` |
-| `HallMissingPrintSkirtAccess` | `modules/events/hall/hall_missing_girl.qsps` | 856 | `entry/helper` |
+| `HallMissingPrintSelfFingers` | `modules/events/hall/hall_missing_girl.qsps` | 932 | `entry/helper` |
+| `HallMissingPrintSkirtAccess` | `modules/events/hall/hall_missing_girl.qsps` | 854 | `entry/helper` |
 | `HallRecentMemoryClear` | `modules/events/hall/hall_recent_memory.qsps` | 16 | `entry/helper` |
 | `HallRecentTalkCanDiscuss` | `modules/core/system/compatibility_aliases.qsps` | 88 | `entry/helper` |
 | `HallRecentTalkCanShow` | `modules/events/hall/hall_recent_talk.qsps` | 11 | `entry/helper` |
@@ -371,8 +372,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ImageSettingsDebugPanel` | `modules/core/show_image/image_debug_random.qsps` | 621 | `entry/helper` |
 | `IngaBackroomInviteText` | `modules/events/inga/inga_romance_text.qsps` | 29 | `entry/helper` |
 | `IngaDanceMeetCanStart` | `modules/events/inga/inga_dance.qsps` | 7 | `entry/helper` |
-| `IngaGuardSaturdayDebugReset` | `modules/events/quests/inga_guard_quest.qsps` | 167 | `entry/helper` |
-| `IngaLucasThreesomeDpStart` | `modules/events/inga/inga_lucas_arc.qsps` | 322 | `entry/helper` |
+| `IngaGuardSaturdayDebugReset` | `modules/events/quests/inga_guard_quest.qsps` | 158 | `entry/helper` |
+| `IngaLucasThreesomeDpStart` | `modules/events/inga/inga_lucas_arc.qsps` | 310 | `entry/helper` |
 | `InitGeorgett` | `modules/npc/port/georgett.qsps` | 6 | `entry/helper` |
 | `InitGerhard` | `modules/npc/town/gerhard.qsps` | 6 | `entry/helper` |
 | `InitGreta` | `modules/npc/shops/greta.qsps` | 6 | `entry/helper` |
@@ -387,30 +388,36 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 | `entry/helper` |
 | `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 52 | `entry/helper` |
 | `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 48 | `entry/helper` |
-| `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 352 | `entry/helper` |
+| `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 340 | `entry/helper` |
 | `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 322 | `entry/helper` |
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 19 | `entry/helper` |
-| `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 972 | `entry/helper` |
+| `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 966 | `entry/helper` |
 | `KitchenCustomerEventTryAutoStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 9 | `entry/helper` |
-| `KitchenHarassmentPrintHallReaction` | `modules/events/kitchen/kitchen_harassment.qsps` | 325 | `entry/helper` |
+| `KitchenHarassmentPrintHallReaction` | `modules/events/kitchen/kitchen_harassment.qsps` | 316 | `entry/helper` |
 | `KitchenLookDebugReset` | `modules/locations/tavern/kitchen_activity.qsps` | 18 | `entry/helper` |
 | `KnowledgeEventIdByHallEvent` | `modules/core/knowledge/event_knowledge_ids.qsps` | 84 | `entry/helper` |
 | `KnowledgeEventIdsInit` | `modules/core/knowledge/event_knowledge_ids.qsps` | 11 | `entry/helper` |
-| `LegareClarissaSuspicionDebugReset` | `modules/events/legare/legare_clarissa_suspicion.qsps` | 440 | `entry/helper` |
-| `LegareFirstConflictDebugReset` | `modules/events/legare/legare_first_conflict.qsps` | 521 | `entry/helper` |
-| `LegareSupplyAftermathDebugReset` | `modules/events/legare/legare_supply_aftermath.qsps` | 388 | `entry/helper` |
-| `LegareSupplyPressureDebugReset` | `modules/events/legare/legare_supply_pressure.qsps` | 382 | `entry/helper` |
+| `LegareClarissaSuspicionDebugReset` | `modules/events/legare/legare_clarissa_suspicion.qsps` | 428 | `entry/helper` |
+| `LegareFirstConflictDebugReset` | `modules/events/legare/legare_first_conflict.qsps` | 497 | `entry/helper` |
+| `LegareSupplyAftermathDebugReset` | `modules/events/legare/legare_supply_aftermath.qsps` | 376 | `entry/helper` |
+| `LegareSupplyPressureDebugReset` | `modules/events/legare/legare_supply_pressure.qsps` | 373 | `entry/helper` |
 | `LOC` | `modules/core/system/loc.qsps` | 9 | `entry/helper` |
 | `MayorOfficeBirthCertificateClerkText` | `modules/events/family/birth_certificate_text.qsps` | 40 | `entry/helper` |
-| `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 271 | `entry/helper` |
+| `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 265 | `entry/helper` |
+| `MelissaFirstPathChoiceActionText` | `modules/events/melissa/melissa_musician_arc_text.qsps` | 174 | `entry/helper` |
+| `MelissaFirstPathChoiceBuildMenu` | `modules/events/melissa/melissa_musician_arc.qsps` | 735 | `entry/helper` |
+| `MelissaFirstPathChoiceCanStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 718 | `entry/helper` |
+| `MelissaFirstPathChoiceIntroText` | `modules/events/melissa/melissa_musician_arc_text.qsps` | 166 | `entry/helper` |
+| `MelissaFirstPathChoiceStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 727 | `entry/helper` |
+| `MelissaFirstPathChoiceTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 723 | `entry/helper` |
 | `MelissaFlirt` | `modules/actions/flirts/flirts.qsps` | 24 | `entry/helper` |
-| `MelissaMinstrelBackroomDebugReset` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 318 | `entry/helper` |
+| `MelissaMinstrelBackroomDebugReset` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 312 | `entry/helper` |
 | `MelissaMinstrelBackroomTryStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 63 | `entry/helper` |
-| `MelissaMinstrelFridayRaceDebugReset` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 318 | `entry/helper` |
-| `MelissaMinstrelHallMissingTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 459 | `entry/helper` |
-| `MelissaMinstrelThreesomeStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 313 | `entry/helper` |
+| `MelissaMinstrelFridayRaceDebugReset` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 312 | `entry/helper` |
+| `MelissaMinstrelHallMissingTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 546 | `entry/helper` |
+| `MelissaMinstrelThreesomeStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 307 | `entry/helper` |
 | `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 41 | `entry/helper` |
-| `MelissaMusicianArcDebugReset` | `modules/events/melissa/melissa_musician_arc.qsps` | 751 | `entry/helper` |
+| `MelissaMusicianArcDebugReset` | `modules/events/melissa/melissa_musician_arc.qsps` | 747 | `entry/helper` |
 | `Menu.Chosen` | `modules/menu/system/otd_lib_menu.qsps` | 150 | `entry/helper` |
 | `Menu.Info` | `modules/menu/system/otd_lib_menu.qsps` | 13 | `entry/helper` |
 | `Menu.Time` | `modules/menu/system/otd_lib_menu.qsps` | 156 | `entry/helper` |
@@ -418,12 +425,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 355 | `entry/helper` |
 | `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 365 | `entry/helper` |
 | `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 375 | `entry/helper` |
-| `MenuGirlGiftApplySpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 222 | `entry/helper` |
-| `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 374 | `entry/helper` |
+| `MenuGirlGiftApplySpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 216 | `entry/helper` |
+| `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 368 | `entry/helper` |
 | `MenuGirlOverview` | `modules/menu/girls/menu_girl_overview.qsps` | 10 | `entry/helper` |
-| `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 406 | `entry/helper` |
+| `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 400 | `entry/helper` |
 | `MenuGirlTalk` | `modules/menu/girls/menu_girl_actions.qsps` | 7 | `entry/helper` |
 | `NPC_Click` | `modules/menu/npc/npc_click.qsps` | 8 | `entry/helper` |
+| `NpcMenuIntimOpenIconLink` | `modules/menu/npc/npc_clickable_link.qsps` | 182 | `entry/helper` |
 | `NpcNavLink` | `modules/menu/npc/npc_clickable_link.qsps` | 291 | `entry/helper` |
 | `OffenseDaysTalkGiftCheapText` | `modules/core/family/offense_days_text.qsps` | 208 | `entry/helper` |
 | `OffenseDaysTalkGiftExpensiveText` | `modules/core/family/offense_days_text.qsps` | 218 | `entry/helper` |
@@ -464,8 +472,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `RegisterTittyFuck` | `modules/actions/sex/sex_register.qsps` | 162 | `entry/helper` |
 | `RegisterVaginal` | `modules/actions/sex/sex_register.qsps` | 142 | `entry/helper` |
 | `ResetHallRumorDaily` | `modules/events/hall/hall_rumors.qsps` | 133 | `entry/helper` |
-| `SandraBeckyReconcileDebugReset` | `modules/events/sandra/sandra_becky_reconcile.qsps` | 315 | `entry/helper` |
-| `SandraDraupnirFridayDebugReset` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 420 | `entry/helper` |
+| `SandraBeckyReconcileDebugReset` | `modules/events/sandra/sandra_becky_reconcile.qsps` | 309 | `entry/helper` |
+| `SandraDraupnirFridayDebugReset` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 405 | `entry/helper` |
 | `SandraDraupnirFridayTryStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 100 | `entry/helper` |
 | `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 40 | `entry/helper` |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 | `entry/helper` |
@@ -473,7 +481,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowDreamItemIfKnown` | `modules/core/gifts/gift_dream_images.qsps` | 32 | `entry/helper` |
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 511 | `entry/helper` |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 188 | `entry/helper` |
-| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 552 | `entry/helper` |
+| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 580 | `entry/helper` |
 | `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 184 | `entry/helper` |
 | `ShowPortrait` | `modules/core/show_image/show_image_helpers.qsps` | 179 | `entry/helper` |
 | `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 259 | `entry/helper` |
@@ -482,18 +490,18 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `SparkQueueDebugReset` | `modules/core/tavern/spark_queue.qsps` | 335 | `entry/helper` |
 | `TalkWithClarissa` | `modules/core/system/compatibility_aliases.qsps` | 251 | `entry/helper` |
 | `TalkWithGerhard` | `modules/core/system/compatibility_aliases.qsps` | 259 | `entry/helper` |
-| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 273 | `entry/helper` |
+| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 270 | `entry/helper` |
 | `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 70 | `entry/helper` |
-| `TavernHallActivityNoEventScreen` | `modules/locations/tavern/tavern_hall_activity.qsps` | 437 | `entry/helper` |
-| `TavernHallEventCleaningAttention` | `modules/events/hall/tavern_hall_events.qsps` | 1029 | `entry/helper` |
-| `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 880 | `entry/helper` |
-| `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 1025 | `entry/helper` |
+| `TavernHallActivityNoEventScreen` | `modules/locations/tavern/tavern_hall_activity.qsps` | 439 | `entry/helper` |
+| `TavernHallEventCleaningAttention` | `modules/events/hall/tavern_hall_events.qsps` | 978 | `entry/helper` |
+| `TavernHallEventHarassGirl` | `modules/events/hall/hall_harassment.qsps` | 859 | `entry/helper` |
+| `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 974 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
-| `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 876 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 592 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 416 | `entry/helper` |
+| `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 855 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 618 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 445 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
-| `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 310 | `entry/helper` |
+| `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 304 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
 | `Start` | `TraKtir.qsps` | 5 | `start` |
 
@@ -501,29 +509,29 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1305 |
-| `Menu.AddModule` | 569 |
-| `MenuUiAdd` | 533 |
-| `SceneShowVisual` | 484 |
+| `ActUiPrepare` | 1321 |
+| `Menu.AddModule` | 588 |
+| `MenuUiAdd` | 579 |
+| `ShowLocationScreenTitle` | 578 |
+| `SceneShowVisual` | 499 |
 | `EnsureGirlData` | 210 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 180 |
-| `TavernMain` | 150 |
+| `ClampGirlSocialStats` | 178 |
+| `TavernMain` | 160 |
+| `Menu.Create` | 101 |
 | `ShowGirlSidebar` | 98 |
-| `Menu.Create` | 96 |
+| `Menu.Destroy` | 95 |
+| `RegisterSex` | 93 |
 | `ShowImage` | 91 |
-| `Menu.Destroy` | 90 |
-| `PrintTitleLine` | 89 |
-| `RegisterSex` | 88 |
 | `FormatSpintry` | 87 |
-| `UpdateGirlLocations` | 77 |
-| `PrintMainP` | 77 |
-| `MarketDance` | 71 |
+| `PrintMainP` | 87 |
+| `UpdateGirlLocations` | 83 |
+| `MarketDance` | 72 |
+| `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `Market` | 51 |
 | `GirlTalkResult` | 49 |
-| `Menu.Add` | 47 |
 | `SexSceneMain` | 46 |
 | `SaveLastHallEvent` | 45 |
 

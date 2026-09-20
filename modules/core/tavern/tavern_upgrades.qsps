@@ -298,6 +298,9 @@
 ---
 
 #TavernUpgradeAdvanceDay
+    TavernStageOrderedToday = 0
+    TavernStageTipsCollectedToday = 0
+
     gs 'TavernUpgradeTickOne', 'sign'
     gs 'TavernUpgradeTickOne', 'exterior'
     gs 'TavernUpgradeTickOne', 'kitchen'
@@ -432,15 +435,49 @@
     if TavernUpgradeLampDone = 1 and time = 4:
         tavernvisitors += 1
     end
+
+    if TavernUpgradeStageDone = 1 and week = 4:
+        tavernvisitors += 3
+    end
 ---
 
 #ApplyTavernUpgradeIncomeBonuses
-    if TavernUpgradeStageDone = 1 and week = 5:
-        tavern_beer_income = (tavern_beer_income * 110) / 100
+    if TavernUpgradeStageDone = 1 and week = 4:
+        tavern_beer_income = (tavern_beer_income * 115) / 100
+        tavern_wine_income = (tavern_wine_income * 130) / 100
     end
 
     if TavernUpgradeBarDone = 1:
         tavern_wine_income = (tavern_wine_income * 105) / 100
         tavern_beer_income = (tavern_beer_income * 105) / 100
+    end
+---
+
+#TavernStageCheckState
+    TavernStageWorking = 0
+    $TavernStagePerformer = ''
+
+    if TavernUpgradeStageDone = 0:
+        exit
+    end
+
+    if TavernOpen = 0:
+        exit
+    end
+
+    ! Четверг: регулярные выступления менестреля (полдень, день, вечер)
+    if week = 4 and (time >= 2 and time <= 4):
+        TavernStageWorking = 1
+        if $MelissaMinstrelName <> '':
+            $TavernStagePerformer = $MelissaMinstrelName
+        else:
+            $TavernStagePerformer = 'Элрик'
+        end
+    end
+
+    ! Дневное случайное событие «Бродячие менестрели»
+    if TavernDayEventActive = 1 and $TavernDayEventId = 'minstrels' and time <> 5:
+        TavernStageWorking = 1
+        $TavernStagePerformer = 'Бродячие менестрели'
     end
 ---
