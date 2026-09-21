@@ -1,6 +1,6 @@
 ! ================================================
 ! FILE: modules/actions/girl_talk.qsps
-! [AI-WORKED] Текст переработан / дополнен ассистентом
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.09.2026
 ! Универсальный разговор с девушкой
 ! Версия с лимитом полезных разговоров
 ! Лимиты берутся из:
@@ -68,10 +68,7 @@
 
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР: ' + $RealName[$TalkGirl]
 
     if LOC('ShowGirlTalkContextImage') = 1:
         gs 'ShowGirlTalkContextImage', $TalkGirl, 'large'
@@ -154,10 +151,6 @@
         end
     end
 
-    if MenuCanTalk = 0:
-        exit
-    end
-
     if $TalkGirl = 'amanda' and $TalkReturnLoc = 'AmandaRoom':
         gs 'AmandaHomeIsRestingAfterIntim'
 
@@ -174,7 +167,20 @@
         exit
     end
 
-    GirlTalkMenuReady = 1
+    if MenuCanTalk = 1:
+        GirlTalkMenuReady = 1
+        exit
+    end
+
+    GirlTalkIntimAvail = 0
+    gs 'GirlIntimCheckNpcLinkAvailable', $TalkGirl, $TalkReturnLoc
+    GirlTalkIntimAvail = GirlIntimMenuReady
+    killvar 'GirlIntimMenuReady'
+
+    if GirlTalkIntimAvail = 1:
+        GirlTalkMenuReady = 1
+    end
+    killvar 'GirlTalkIntimAvail'
 ---
 
 #GirlTalkOpenNpcMenu
@@ -267,9 +273,16 @@
 #GirlTalkBuildTopicsMenu
     if GirlTalkPersonalMenuActive = 1:
         gs 'GirlTalkPersonalBuildMainMenu'
-    else
+    elseif MenuCanTalk = 1:
         gs 'GirlTalkPersonalCheckAvailable', $TalkGirl
         gs 'GirlTalkBuildMainMenu'
+    else:
+        gs 'Menu.Destroy', 'GirlTalkMainMenu'
+        gs 'Menu.Create', 'GirlTalkMainMenu'
+    end
+
+    if LOC('GirlTalkAppendIntimMenuItems') = 1:
+        gs 'GirlTalkAppendIntimMenuItems'
     end
 ---
 
@@ -406,6 +419,45 @@
 
     killvar 'GiftHasAny'
     killvar 'GiftGirlCanReceive'
+---
+
+#GirlTalkAppendIntimMenuItems
+    if $TalkGirl = '':
+        exit
+    end
+
+    $IntimAppendLoc = $TalkReturnLoc
+    if $IntimAppendLoc = '':
+        $IntimAppendLoc = $CURLOC
+    end
+
+    if LOC($IntimAppendLoc) = 0:
+        $IntimAppendLoc = 'TavernMain'
+    end
+
+    gs 'GirlIntimCheckNpcLinkAvailable', $TalkGirl, $IntimAppendLoc
+    if GirlIntimMenuReady = 0:
+        killvar 'GirlIntimMenuReady'
+        killvar '$IntimAppendLoc'
+        exit
+    end
+    killvar 'GirlIntimMenuReady'
+
+    $IntimGirl = $TalkGirl
+    $IntimSessionLoc = $IntimAppendLoc
+    $IntimReturnLoc = $IntimAppendLoc
+
+    if $IntimGirl = 'amanda' and $IntimSessionLoc = 'AmandaRoom':
+        gs 'GirlIntimAddAmandaHomeMenu', 'GirlTalkMainMenu'
+    elseif $IntimGirl = 'melissa' and $IntimSessionLoc = 'MelissaRoom':
+        gs 'GirlIntimAddMelissaHomeMenu', 'GirlTalkMainMenu'
+    elseif $IntimGirl = 'sandra' and $IntimSessionLoc = 'SandraRoom':
+        gs 'GirlIntimAddSandraHomeMenu', 'GirlTalkMainMenu'
+    else:
+        gs 'GirlIntimAddGenericSexMenu', 'GirlTalkMainMenu'
+    end
+
+    killvar '$IntimAppendLoc'
 ---
 
 ! ================================================
@@ -730,10 +782,7 @@
     cls
     gs 'GirlTalkShowSidebarWithAnchor', $TalkClosedGirl
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' РАЗГОВОР: ' + $RealName[$TalkClosedGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР: ' + $RealName[$TalkClosedGirl]
 
     if LOC('ShowGirlTalkContextImage') = 1:
         gs 'ShowGirlTalkContextImage', $TalkClosedGirl, 'large'
@@ -894,10 +943,7 @@
 
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' РАЗГОВОР: ' + $RealName[$TalkGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР: ' + $RealName[$TalkGirl]
 
     if LOC('ShowGirlTalkContextImage') = 1:
         gs 'ShowGirlTalkContextImage', $TalkGirl, 'large', $TalkTopic
@@ -1109,10 +1155,7 @@
 
     gs 'ShowGirlSidebar', $ConflictTalkGirl
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ ССОРЫ: ' + $RealName[$ConflictTalkGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ПОСЛЕ ССОРЫ: ' + $RealName[$ConflictTalkGirl]
 
     gs 'GirlConflictAfterTalkIntroText', $ConflictTalkGirl
 
@@ -1213,10 +1256,7 @@
     cls
     gs 'ShowGirlSidebar', $ConflictTalkGirl
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ПОСЛЕ ССОРЫ: ' + $RealName[$ConflictTalkGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ПОСЛЕ ССОРЫ: ' + $RealName[$ConflictTalkGirl]
 
     gs 'GirlConflictAfterTalkResultText', $ConflictTalkGirl, $ConflictTalkChoice
 

@@ -1,6 +1,7 @@
 ! ================================================
 ! FILE: modules/core/girls/girl_intim_session.qsps
 ! MODULE: core/girls
+! [AI-WORKED] 20.09.2026
 ! Сессия интима: якорь NPC в окне и в сайдбаре
 ! ================================================
 
@@ -257,14 +258,19 @@
 ---
 
 #GirlIntimAddAmandaHomeMenu
+    $TargetMenu = $ARGS[0]
+    if $TargetMenu = '':
+        $TargetMenu = 'GirlIntimMainMenu'
+    end
+
     AmandaHomeIntimMenuAdded = 0
 
     if AmandaHomeUnlocked = 1:
         gs 'AmandaHomeCanAdvance'
 
         if AmandaHomeCanAdvance = 1 and AmandaHomeStage < 6:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести время наедине', 'intim'
-            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gs 'MenuUiAdd', $TargetMenu, 'Провести время наедине', 'intim'
+            gs 'Menu.AddModule', $TargetMenu, {
                 gt 'AmandaHomeStep'
             }
             AmandaHomeIntimMenuAdded = 1
@@ -274,8 +280,8 @@
 
         if AmandaHomeFirstSexCanStart = 1:
             gs 'AmandaHomeFirstSexMenuLabel'
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', $AmandaFirstSexMenuLabel, 'intim'
-            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gs 'MenuUiAdd', $TargetMenu, $AmandaFirstSexMenuLabel, 'intim'
+            gs 'Menu.AddModule', $TargetMenu, {
                 gt 'AmandaHomeFirstSexLaunch'
             }
             killvar '$AmandaFirstSexMenuLabel'
@@ -286,8 +292,8 @@
             gs 'CanStartSexScene', 'amanda'
 
             if SexSceneAllowed = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести вечер', 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Провести вечер', 'intim'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'SexSceneStart', 'amanda', $IntimReturnLoc, 'amanda_repeat'
                 }
                 AmandaHomeIntimMenuAdded = 1
@@ -300,8 +306,8 @@
         if LOC('AmandaHomeAnalCanTalk') = 1:
             gs 'AmandaHomeAnalCanTalk'
             if AmandaHomeAnalCanTalk = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Поговорить об особенной близости', 'talk'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Поговорить об особенной близости', 'talk'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'AmandaHomeAnalTalk'
                 }
                 AmandaHomeIntimMenuAdded = 1
@@ -312,8 +318,8 @@
         if LOC('AmandaHomeAnalStefanCanStart') = 1:
             gs 'AmandaHomeAnalStefanCanStart'
             if AmandaHomeAnalStefanCanStart = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Особенная близость (после подготовки)', 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Особенная близость (после подготовки)', 'intim'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'AmandaHomeAnalStefanLaunch'
                 }
                 AmandaHomeIntimMenuAdded = 1
@@ -322,8 +328,8 @@
         end
 
         if AmandaHomeIntimMenuAdded = 0 and AmandaHomeSex = 0 and AmandaHomeStage >= 6 and AmandaHomeStage <= 11 and AmandaHomeStepToday = 1:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'На сегодня достаточно', 'talk'
-            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gs 'MenuUiAdd', $TargetMenu, 'На сегодня достаточно', 'talk'
+            gs 'Menu.AddModule', $TargetMenu, {
                 gs 'AmandaHomeAfterFirstSexTonightText'
                 *p $AmandaHomeText
             }
@@ -334,8 +340,8 @@
             gs 'AmandaMelissaThreesomeCanStart'
 
             if AmandaMelissaThreesomeCanStart = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Вечер с Мелиссой', 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Вечер с Мелиссой', 'intim'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'GroupSexAmandaMelissaStefanStart'
                 }
                 AmandaHomeIntimMenuAdded = 1
@@ -344,22 +350,28 @@
     end
 
     killvar 'AmandaHomeIntimMenuAdded'
+    killvar '$TargetMenu'
 ---
 
 #GirlIntimAddMelissaHomeMenu
+    $TargetMenu = $ARGS[0]
+    if $TargetMenu = '':
+        $TargetMenu = 'GirlIntimMainMenu'
+    end
+
     if MelissaHomeUnlocked = 1:
         gs 'MelissaHomeCanAdvance'
 
         if MelissaHomeCanAdvance = 1 and MelissaHomeStage < 6:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести время наедине', 'intim'
-            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gs 'MenuUiAdd', $TargetMenu, 'Провести время наедине', 'intim'
+            gs 'Menu.AddModule', $TargetMenu, {
                 gt 'MelissaHomeStep'
             }
         end
 
         if MelissaHomeStage >= 6 and MelissaHomeSex = 0 and MelissaHomeStepToday = 0 and time >= 3:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первая близость', 'intim'
-            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gs 'MenuUiAdd', $TargetMenu, 'Первая близость', 'intim'
+            gs 'Menu.AddModule', $TargetMenu, {
                 gt 'MelissaHomeFirstSexLaunch'
             }
         end
@@ -368,8 +380,8 @@
             gs 'CanStartSexScene', 'melissa'
 
             if SexSceneAllowed = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести вечер', 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Провести вечер', 'intim'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'SexSceneStart', 'melissa', $IntimReturnLoc, 'melissa_repeat'
                 }
             end
@@ -382,8 +394,8 @@
             gs 'MelissaHomeAnalCanStart'
 
             if MelissaHomeAnalStepAvailable = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', $MelissaHomeAnalMenuLabel, 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, $MelissaHomeAnalMenuLabel, 'intim'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt $MelissaHomeAnalMenuTarget
                 }
             end
@@ -396,8 +408,8 @@
             gs 'MelissaAnalDiscoveryCanAdvance'
 
             if MelissaAnalDiscoveryCanAdvance = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Поговорить о тайном', 'talk'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Поговорить о тайном', 'talk'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'MelissaAnalDiscoveryStep'
                 }
             end
@@ -407,8 +419,8 @@
             gs 'MelissaAnalWithGgCanStart'
 
             if MelissaAnalWithGgCanStart = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Близость — сзади', 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Близость — сзади', 'intim'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'MelissaAnalWithGgStart'
                 }
             end
@@ -418,29 +430,36 @@
             gs 'AmandaMelissaThreesomeCanStart'
 
             if AmandaMelissaThreesomeCanStart = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Вечер с Амандой', 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Вечер с Амандой', 'intim'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'GroupSexAmandaMelissaStefanStart'
                 }
             end
         end
     end
+
+    killvar '$TargetMenu'
 ---
 
 #GirlIntimAddSandraHomeMenu
+    $TargetMenu = $ARGS[0]
+    if $TargetMenu = '':
+        $TargetMenu = 'GirlIntimMainMenu'
+    end
+
     if SandraHomeUnlocked = 1:
         gs 'SandraHomeCanAdvance'
 
         if SandraHomeCanAdvance = 1 and SandraHomeStage < 12:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести время наедине', 'intim'
-            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gs 'MenuUiAdd', $TargetMenu, 'Провести время наедине', 'intim'
+            gs 'Menu.AddModule', $TargetMenu, {
                 gt 'SandraHomeStep'
             }
         end
 
         if SandraHomeStage >= 12 and SandraHomeSex = 0 and SandraHomeStepToday = 0 and time >= 4:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Первая близость', 'intim'
-            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gs 'MenuUiAdd', $TargetMenu, 'Первая близость', 'intim'
+            gs 'Menu.AddModule', $TargetMenu, {
                 gt 'SandraHomeFirstSexLaunch'
             }
         end
@@ -449,8 +468,8 @@
             gs 'CanStartSexScene', 'sandra'
 
             if SexSceneAllowed = 1:
-                gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Провести вечер', 'intim'
-                gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+                gs 'MenuUiAdd', $TargetMenu, 'Провести вечер', 'intim'
+                gs 'Menu.AddModule', $TargetMenu, {
                     gt 'SexSceneStart', 'sandra', $IntimReturnLoc, 'sandra_repeat'
                 }
             end
@@ -459,15 +478,22 @@
             killvar '$SexSceneDenyReason'
         end
     end
+
+    killvar '$TargetMenu'
 ---
 
 #GirlIntimAddGenericSexMenu
+    $TargetMenu = $ARGS[0]
+    if $TargetMenu = '':
+        $TargetMenu = 'GirlIntimMainMenu'
+    end
+
     if LOC('SexSceneStart') = 1:
         gs 'CanStartSexScene', $IntimGirl
 
         if SexSceneAllowed = 1:
-            gs 'MenuUiAdd', 'GirlIntimMainMenu', 'Полная сцена', 'intim'
-            gs 'Menu.AddModule', 'GirlIntimMainMenu', {
+            gs 'MenuUiAdd', $TargetMenu, 'Полная сцена', 'intim'
+            gs 'Menu.AddModule', $TargetMenu, {
                 gt 'SexSceneStart', $IntimGirl, $IntimReturnLoc
             }
         end
@@ -475,6 +501,8 @@
         killvar 'SexSceneAllowed'
         killvar '$SexSceneDenyReason'
     end
+
+    killvar '$TargetMenu'
 ---
 
 #GirlIntimRefreshMenuIfAllowed
@@ -670,10 +698,7 @@
 
     gs 'GirlIntimShowSidebarWithAnchor', $IntimGirl
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ИНТИМ: ' + $RealName[$IntimGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ИНТИМ: ' + $RealName[$IntimGirl]
 
     gs 'IntimLocationText', $IntimGirl, $IntimReturnLoc
 
@@ -714,10 +739,7 @@
 
     gs 'ShowGirlSidebar', $IntimClosedGirl
 
-    *pl '══════════════════════════════════════════════'
-    *pl ' ИНТИМ: ' + $RealName[$IntimClosedGirl]
-    *pl '══════════════════════════════════════════════'
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'ИНТИМ: ' + $RealName[$IntimClosedGirl]
 
     if MenuCanIntim = 0:
         *p 'Сейчас для этого неподходящее место или недостаточно близкие отношения.'

@@ -1,6 +1,7 @@
 ! ================================================
 ! FILE: modules/core/girls/girl_room_presence.qsps
 ! MODULE: core/girls
+! [AI-WORKED] 20.09.2026
 ! Подпись под картинкой комнаты: сцена + кликабельное имя в тексте
 ! ================================================
 
@@ -26,7 +27,9 @@
             $GirlRoomPresenceBefore = 'На кровати без одежды лежит '
         end
     elseif $PresenceCaptionGirl = 'melissa':
-        if time = 5:
+        if MelissaDanceSleep = 1 or (SexUsedToday['melissa'] = 1 and time = 5):
+            $GirlRoomPresenceBefore = 'На кровати под одеялом тихо спит '
+        elseif time = 5:
             $GirlRoomPresenceBefore = 'На кровати под светом лампы отдыхает '
         elseif time = 1:
             $GirlRoomPresenceBefore = 'У окна у столика сидит '
@@ -81,7 +84,7 @@
     GirlNpcLineIntimReady = GirlIntimMenuReady
     killvar 'GirlIntimMenuReady'
 
-    if GirlNpcLineTalkReady = 1:
+    if GirlNpcLineTalkReady = 1 or GirlNpcLineIntimReady = 1:
         gs 'NpcMenuTalkOpenLink', $RealName[$RoomPresenceGirl], $RoomPresenceGirl, $RoomPresenceLoc, 'main', $RoomPresenceLoc
         $RoomPresenceNameChunk = $NpcTalkOpenLine
         killvar '$NpcTalkOpenLine'
@@ -93,13 +96,7 @@
 
     $RoomPresenceLine = $RoomPresenceBefore + $RoomPresenceNameChunk + $RoomPresenceAfter
 
-    if GirlNpcLineIntimReady = 1:
-        gs 'NpcMenuIntimOpenIconLink', $RoomPresenceGirl, $RoomPresenceLoc, $RoomPresenceLoc
-        $RoomPresenceLine = $RoomPresenceLine + ' ' + $NpcIntimOpenIconLine
-        killvar '$NpcIntimOpenIconLine'
-    end
-
-    *p $RoomPresenceLine
+    *pl $RoomPresenceLine
 
     killvar '$RoomPresenceGirl'
     killvar '$RoomPresenceLoc'
