@@ -387,8 +387,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IntimSceneStart` | `modules/actions/sex/intim_scene.qsps` | 9 | `entry/helper` |
 | `IrmaAmandaDanceDressBoughtText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 204 | `entry/helper` |
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 | `entry/helper` |
-| `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 52 | `entry/helper` |
-| `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 48 | `entry/helper` |
+| `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 | `entry/helper` |
+| `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 | `entry/helper` |
 | `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 340 | `entry/helper` |
 | `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 322 | `entry/helper` |
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 19 | `entry/helper` |

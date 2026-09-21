@@ -2430,8 +2430,8 @@ Generated from active project files in `qsp-project.json`.
 | `IntimacyKinksText` | `modules/events/family/intimacy_kinks_text.qsps` | 6 |
 | `IrmaAmandaDanceDressBoughtText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 204 |
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 |
-| `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 52 |
-| `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 48 |
+| `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 |
+| `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 |
 | `KitchenCustomerApplyConsequences` | `modules/events/kitchen/kitchen_customer_event.qsps` | 717 |
 | `KitchenCustomerBuildMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 521 |
 | `KitchenCustomerCanUseClientChoice` | `modules/events/kitchen/kitchen_customer_event.qsps` | 569 |
@@ -2513,11 +2513,11 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaDanceActionText` | `modules/events/melissa/melissa_dance_text.qsps` | 24 |
 | `MelissaDanceAlleyAction` | `modules/events/melissa/melissa_dark_alley.qsps` | 389 |
 | `MelissaDanceAlleyAftermath` | `modules/events/melissa/melissa_dark_alley.qsps` | 298 |
-| `MelissaDanceAlleyAftermathText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 126 |
+| `MelissaDanceAlleyAftermathText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 143 |
 | `MelissaDanceAlleyEnd` | `modules/events/melissa/melissa_dark_alley.qsps` | 451 |
-| `MelissaDanceAlleyEndText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 170 |
+| `MelissaDanceAlleyEndText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 199 |
 | `MelissaDanceAlleyEvent` | `modules/events/melissa/melissa_dark_alley.qsps` | 26 |
-| `MelissaDanceAlleyHomeGateText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 60 |
+| `MelissaDanceAlleyHomeGateText` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 62 |
 | `MelissaDanceAlleyIntro` | `modules/events/melissa/melissa_dance.qsps` | 232 |
 | `MelissaDanceAlleyIntroText` | `modules/events/melissa/melissa_dance_text.qsps` | 42 |
 | `MelissaDanceAlleyReset` | `modules/events/melissa/melissa_dark_alley.qsps` | 15 |
@@ -2527,9 +2527,9 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaDanceAlleyStage3` | `modules/events/melissa/melissa_dark_alley.qsps` | 122 |
 | `MelissaDanceAlleyStage3Text` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 37 |
 | `MelissaDanceAlleyStage4` | `modules/events/melissa/melissa_dark_alley.qsps` | 162 |
-| `MelissaDanceAlleyStage4Text` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 67 |
+| `MelissaDanceAlleyStage4Text` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 69 |
 | `MelissaDanceAlleyStage5` | `modules/events/melissa/melissa_dark_alley.qsps` | 230 |
-| `MelissaDanceAlleyStage5Text` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 86 |
+| `MelissaDanceAlleyStage5Text` | `modules/events/melissa/melissa_dark_alley_text.qsps` | 88 |
 | `MelissaDanceBuildMenu` | `modules/events/melissa/melissa_dance.qsps` | 94 |
 | `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 265 |
 | `MelissaDanceLeaveHome` | `modules/events/melissa/melissa_home_chain.qsps` | 282 |
@@ -2562,7 +2562,7 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaHomeAnalStep3_After` | `modules/events/melissa/melissa_home_anal.qsps` | 326 |
 | `MelissaHomeAnalStep3_Talk` | `modules/events/melissa/melissa_home_anal.qsps` | 290 |
 | `MelissaHomeAnalStepWaitingClarissa` | `modules/events/melissa/melissa_home_anal.qsps` | 229 |
-| `MelissaHomeAnalText` | `modules/events/melissa/melissa_home_anal_text.qsps` | 9 |
+| `MelissaHomeAnalText` | `modules/events/melissa/melissa_home_anal_text.qsps` | 8 |
 | `MelissaHomeCanAdvance` | `modules/events/melissa/melissa_home_chain.qsps` | 15 |
 | `MelissaHomeFirstSexLaunch` | `modules/events/melissa/melissa_home_chain.qsps` | 196 |
 | `MelissaHomeStep` | `modules/events/melissa/melissa_home_chain.qsps` | 56 |
