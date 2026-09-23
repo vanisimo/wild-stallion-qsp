@@ -1,0 +1,326 @@
+! ================================================
+! FILE: modules/events/sandra/sandra_becky_conflict.qsps
+! MODULE: events/sandra
+! Логика конфликта и примирения Сандры и Бекки
+! ================================================
+
+#SandraBeckySundayEavesdropCheck
+
+    SandraBeckySundayEavesdropReady = 0
+
+    if BeckyHomeSex = 0:
+        exit
+    end
+
+    if SandraCarpenterSecret = 0 and PlayerKnows_SandraDraupnirFriday = 0:
+        exit
+    end
+
+    if week <> 7:
+        exit
+    end
+
+    if time < 2 or time > 3:
+        exit
+    end
+
+    if SandraBeckyEavesdropDone = 1:
+        exit
+    end
+
+    SandraBeckySundayEavesdropReady = 1
+---
+
+#SandraBeckySundayEavesdrop
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ССОРРА ПОДРУГ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/eavesdrop_quarrel', 'ССОРРА ПОДРУГ', 'large', 'webp'
+
+    gs 'SandraBeckySundayEavesdropText'
+    *p $SandraBeckyText
+    *pl ' '
+
+    SandraBeckyEavesdropDone = 1
+    SandraBeckyCrisisReady = 1
+    SandraBeckySundayScandalHeard = 1
+    SandraBeckySundayQuarrelDone = 1
+
+    gs 'ActUiPrepare', 'Отойти от окна', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#SandraBeckyCrisisStart
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С САНДРОЙ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/crisis_talk', 'РАЗГОВОР С САНДРОЙ', 'large', 'webp'
+
+    gs 'SandraBeckyCrisisIntroText'
+    *p $SandraBeckyText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Увильнуть от прямого ответа', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraBeckyCrisisChoice', 1
+    end
+
+    gs 'ActUiPrepare', 'Жёстко ответить («Я сам решаю!»)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraBeckyCrisisChoice', 2
+    end
+
+    gs 'ActUiPrepare', 'Ласково обнять и успокоить', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraBeckyCrisisChoice', 3
+    end
+---
+
+#SandraBeckyCrisisChoice
+
+    $SandraBeckyChoiceNum = $ARGS[0]
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С САНДРОЙ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/crisis_talk', 'РАЗГОВОР С САНДРОЙ', 'large', 'webp'
+
+    SandraBeckyCrisisDone = 1
+    SandraBeckyCrisisChoice = VAL($SandraBeckyChoiceNum)
+
+    if $SandraBeckyChoiceNum = '1':
+        SandraBeckyHardOffense = 1
+        SandraBeckyOffenseDays = 4
+        GirlOffenseDays['sandra'] = 4
+        gs 'SandraBeckyCrisisChoice1Text'
+    elseif $SandraBeckyChoiceNum = '2':
+        SandraBeckyHardOffense = 1
+        SandraBeckyOffenseDays = 7
+        GirlOffenseDays['sandra'] = 7
+        gs 'SandraBeckyCrisisChoice2Text'
+    else:
+        SandraBeckyHardOffense = 0
+        SandraBeckyOffenseDays = 0
+        GirlOffenseDays['sandra'] = 0
+        SandraBeckyCrisisResult = 1
+        gs 'SandraBeckyCrisisChoice3Text'
+    end
+
+    *p $SandraBeckyText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Продолжить', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+
+    killvar '$SandraBeckyChoiceNum'
+---
+
+#ProcessSandraBeckyOffense
+
+    if SandraBeckyHardOffense = 0:
+        exit
+    end
+
+    if SandraBeckyOffenseDays > 0:
+        SandraBeckyOffenseDays -= 1
+    end
+
+    if SandraBeckyOffenseDays <= 0:
+        SandraBeckyHardOffense = 0
+        SandraBeckyOffenseDays = 0
+    end
+---
+
+#SandraBeckyTalkBecky
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С БЕККИ В ЛАВКЕ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/talk_becky', 'РАЗГОВОР С БЕККИ В ЛАВКЕ', 'large', 'webp'
+
+    gs 'SandraBeckyTalkBeckyIntroText'
+    *p $SandraBeckyText
+    *pl ' '
+
+    SandraBeckyTalkBeckyDone = 1
+
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#SandraBeckyTalkSandra
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С САНДРОЙ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/talk_sandra', 'РАЗГОВОР С САНДРОЙ', 'large', 'webp'
+
+    gs 'SandraBeckyTalkSandraIntroText'
+    *p $SandraBeckyText
+    *pl ' '
+
+    SandraBeckyTalkSandraDone = 1
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#SandraBeckySundayReconcileCheck
+
+    SandraBeckySundayReconcileReady = 0
+
+    if SandraBeckyTalkBeckyDone = 0 or SandraBeckyTalkSandraDone = 0:
+        exit
+    end
+
+    if week <> 7:
+        exit
+    end
+
+    if time < 2 or time > 3:
+        exit
+    end
+
+    if SandraBeckyReconcileDone = 1:
+        exit
+    end
+
+    SandraBeckySundayReconcileReady = 1
+---
+
+#SandraBeckySundayReconcile
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПРИМИРЕНИЕ ПОДРУГ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/reconcile_wine', 'ПРИМИРЕНИЕ ПОДРУГ', 'large', 'webp'
+
+    SandraBeckyReconcileDone = 1
+    SandraBeckyCrisisResult = 1
+
+    if SandraHomeSex = 1:
+        SandraBeckyThreesomeReady = 1
+        gs 'SandraBeckySundayReconcileA_Text'
+    else:
+        gs 'SandraBeckySundayReconcileB_Text'
+    end
+
+    *p $SandraBeckyText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#SandraBeckyDelayedRevelationCheck
+
+    SandraBeckyDelayedRevelationReady = 0
+
+    if SandraBeckyReconcileDone = 0:
+        exit
+    end
+
+    if SandraBeckyThreesomeReady = 1:
+        exit
+    end
+
+    if SandraHomeSex = 0:
+        exit
+    end
+
+    if week <> 7:
+        exit
+    end
+
+    if time < 2 or time > 3:
+        exit
+    end
+
+    if SandraBeckyDelayedTalkDone = 1:
+        exit
+    end
+
+    SandraBeckyDelayedRevelationReady = 1
+---
+
+#SandraBeckyDelayedRevelation
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ОТКРОВЕНИЕ САНДРЫ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/reconcile_wine', 'ОТКРОВЕНИЕ САНДРЫ', 'large', 'webp'
+
+    SandraBeckyThreesomeReady = 1
+    SandraBeckyDelayedTalkDone = 1
+
+    gs 'SandraBeckyDelayedRevelationText'
+    *p $SandraBeckyText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#SandraBeckyCrisisCanTalk
+    SandraBeckyCrisisCanTalk = 0
+    if SandraBeckyCrisisReady = 1 and SandraBeckyCrisisDone = 0:
+        SandraBeckyCrisisCanTalk = 1
+    end
+---
+
+#SandraBeckyThreesomeCanStart
+    SandraBeckyThreesomeCanStart = 0
+    if SandraBeckyThreesomeReady = 1:
+        SandraBeckyThreesomeCanStart = 1
+    end
+---
+
+#SandraBeckySundayScandalCanHear
+    SandraBeckySundayScandalCanHear = 0
+    if SandraBeckySundayEavesdropReady = 1:
+        SandraBeckySundayScandalCanHear = 1
+    end
+---
+
+#SandraBeckyThreesomeApplyAftermath
+    sluttiness['sandra'] += 2
+    sluttiness['becky'] += 2
+    if SandraBeckyBond < 50:
+        SandraBeckyBond += 2
+    end
+---

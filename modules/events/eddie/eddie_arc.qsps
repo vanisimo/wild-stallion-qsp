@@ -220,11 +220,7 @@
         gt 'Church'
     end
 
-    if BeckyPriestHint = 0 and BeckyPriestRetry = 0:
-        gt 'Church'
-    end
-
-    gs 'BeckyEddieConfessionIntroText'
+    gs 'BeckyEddieConfessionDirectText'
 
     *clr
     clr
@@ -236,40 +232,18 @@
     *pl ' '
 
     BeckyPriestConfessionSeen = 1
+    BeckyPriestOk = 1
+    BeckyVar['PriestAdvice'] = 3
+    BeckyEddieDonationPaid = 1
 
-    gs 'ActUiPrepare', 'Пожертвовать 30 спинтарий священнику', 'church'
+    gs 'ActUiPrepare', 'Выйти из церкви', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        if money >= 30:
-            money -= 30
-            BeckyEddieDonationPaid = 1
-            BeckyPriestOk = 1
-            gs 'BeckyEddieConfessionPaidText'
-            *p $EddieArcText
-            *pl ' '
-            gs 'ActUiPrepare', 'Выйти из церкви', 'return'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'Church'
-            end
-        else:
-            *p 'У вас недостаточно денег для пожертвования.'
-            gs 'ActUiPrepare', 'Вернуться', 'return'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'BeckyEddieConfession'
-            end
-        end
+        gt 'Church'
     end
+---
 
-    gs 'ActUiPrepare', 'Уйти, не жертвуя', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        BeckyPriestOk = 0
-        gs 'BeckyEddieConfessionUnpaidText'
-        *p $EddieArcText
-        *pl ' '
-        gs 'ActUiPrepare', 'Выйти из церкви', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'Church'
-        end
-    end
+#BeckyEddieJoinFirst
+    gt 'BeckyEddieHomeLaunch'
 ---
 
 #BeckyEddieHomeLaunch
@@ -278,10 +252,66 @@
         gt 'BeckyHomeBedroom'
     end
 
-    if BeckyPriestOk = 0:
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ БЕККИ — ЗАСОВ'
+    gs 'SceneShowVisual', 'images/events/becky/home/doorclose', 'СПАЛЬНЯ БЕККИ — ЗАСОВ', 'large', 'webp'
+
+    *p 'Вдова, как обычно, закрыла дверь на засов и потянула вас к кровати. Вы вспомнили о разговоре с Эдди.'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поцеловать Бекки и незаметно открыть засов', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyEddieHomeOpenLatch'
+    end
+
+    gs 'ActUiPrepare', 'Идти за вдовой (не трогать засов)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyEddieHomeLockedLatch'
+    end
+---
+
+#BeckyEddieHomeLockedLatch
+
+    SceneArtUseReal = 1
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ЗАКРЫТАЯ ДВЕРЬ'
+    gs 'SceneShowVisual', 'images/events/becky/sexeddie/eddiespy', 'ЗАКРЫТАЯ ДВЕРЬ', 'large', 'webp'
+
+    *p 'Целуя вдовушку, вы краем уха услышали, как дёрнулась, но не поддалась дверь, а затем последовали тихие удаляющиеся шаги. Пожав плечами, вы вернулись к страстным губам Бекки.'
+    *pl ' '
+
+    BeckyVar['EddieTryToFuck'] = 3
+    if Friends['eddie'] > 0:
+        Friends['eddie'] -= 1
+    end
+
+    if LOC('SexSceneStart') = 1:
+        gs 'ActUiPrepare', 'Продолжить вечер с Бекки', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SexSceneStart', 'becky', 'BeckyHomeAfterSex', 'becky_repeat'
+        end
+    else:
+        gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Market'
+        end
+    end
+---
+
+#BeckyEddieHomeOpenLatch
+
+    if BeckyPriestOk = 0 and BeckyVar['PriestAdvice'] < 3:
         gt 'BeckyEddieHomeFail'
     end
 
+    BeckyVar['PriestAdvice'] = 3
     gt 'BeckyEddieHomeStep1'
 ---
 
@@ -300,6 +330,8 @@
     *pl ' '
 
     BeckyEddieHomeFailed = 1
+    BeckyVar['EddieTryToFuck'] = 2
+    BeckyVar['EddieFailures'] += 1
 
     if Friends['becky'] > 3:
         Friends['becky'] -= 3
@@ -307,6 +339,10 @@
 
     if Friends['eddie'] > 5:
         Friends['eddie'] -= 5
+    end
+
+    if sluttiness['becky'] > 25:
+        sluttiness['becky'] -= 3
     end
 
     gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
@@ -386,6 +422,8 @@
 
 #BeckyEddieHomeFinish
 
+    cuminside['becky'] += 1
+
     sluttiness['becky'] += 5
     otkroven['becky'] += 2
     Friends['becky'] += 1
@@ -396,10 +434,10 @@
     end
 
     BeckyEddieDone = 1
+    BeckyVar['EddieTryToFuck'] = 4
 
-    if BeckyPriestOk = 1:
+    if BeckyPriestOk = 1 or BeckyVar['PriestAdvice'] >= 3:
         BeckyPriestArcOpen = 1
-        gs 'ChurchSpyBeckyScheduleOpen'
     end
 ---
 

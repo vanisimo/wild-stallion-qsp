@@ -3,11 +3,11 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 460
-- Locations: 3364
-- Locations with direct incoming calls: 2882
-- Locations without direct incoming calls: 482
-- Review candidates without direct incoming calls: 169
-- Classified entry/helper locations without direct incoming calls: 313
+- Locations: 3379
+- Locations with direct incoming calls: 2885
+- Locations without direct incoming calls: 494
+- Review candidates without direct incoming calls: 178
+- Classified entry/helper locations without direct incoming calls: 316
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -25,11 +25,13 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 193 | `modules/events` |
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
+| `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 245 | `modules/events` |
 | `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 420 | `modules/events` |
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 7 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
 | `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 174 | `modules/events` |
+| `ChurchSpyBeckyScheduleOpen` | `modules/events/church/church_spy_becky.qsps` | 36 | `modules/events` |
 | `ChurchSundayServiceInspectIrma` | `modules/events/church/church_sunday_service.qsps` | 113 | `modules/events` |
 | `ChurchSundayServiceInspectMayor` | `modules/events/church/church_sunday_service.qsps` | 108 | `modules/events` |
 | `ChurchSundayServiceShowMenu` | `modules/events/church/church_sunday_service_menus.qsps` | 41 | `modules/events` |
@@ -167,6 +169,13 @@ These locations have no direct literal incoming calls and are not classified as 
 | `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 104 | `modules/events` |
 | `PortProstNightMenu` | `modules/events/port/port_prost_night.qsps` | 30 | `modules/events` |
 | `PrepareSkipDays` | `modules/core/time/skip_days.qsps` | 7 | `modules/core` |
+| `ProcessSandraBeckyOffense` | `modules/events/sandra/sandra_becky_conflict.qsps` | 133 | `modules/events` |
+| `SandraBeckyDelayedRevelation` | `modules/events/sandra/sandra_becky_conflict.qsps` | 276 | `modules/events` |
+| `SandraBeckyDelayedRevelationCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 245 | `modules/events` |
+| `SandraBeckySundayEavesdrop` | `modules/events/sandra/sandra_becky_conflict.qsps` | 34 | `modules/events` |
+| `SandraBeckySundayEavesdropCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 7 | `modules/events` |
+| `SandraBeckySundayReconcile` | `modules/events/sandra/sandra_becky_conflict.qsps` | 216 | `modules/events` |
+| `SandraBeckySundayReconcileCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 193 | `modules/events` |
 | `SandraHomeAfterSex` | `modules/events/sandra/sandra_home_chain.qsps` | 202 | `modules/events` |
 | `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 809 | `modules/events` |
 | `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 755 | `modules/events` |
@@ -238,6 +247,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaPathChoiceTryAutoStart` | `modules/events/amanda/home/amanda_path_choice.qsps` | 12 | `entry/helper` |
 | `ApplyTavernWorkDay` | `modules/core/tavern/tavern_income.qsps` | 526 | `entry/helper` |
 | `ArtLevelText` | `modules/core/init_npc/art_level_text.qsps` | 6 | `entry/helper` |
+| `BeckyEddieConfessionIntroText` | `modules/events/eddie/eddie_arc_text.qsps` | 34 | `entry/helper` |
+| `BeckyEddieConfessionPaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 42 | `entry/helper` |
+| `BeckyEddieConfessionUnpaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 46 | `entry/helper` |
 | `BeckyHomeFrontBeckyHurryText` | `modules/events/becky/becky_home_chain_text.qsps` | 18 | `entry/helper` |
 | `BeckyHomeGuestDinnerText` | `modules/events/becky/becky_home_chain_text.qsps` | 34 | `entry/helper` |
 | `BeckyHomeGuestDressOkText` | `modules/events/becky/becky_home_chain_text.qsps` | 30 | `entry/helper` |
@@ -344,6 +356,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 446 | `entry/helper` |
 | `GirlWorkPolicyTalkAfterHarassStart` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 202 | `entry/helper` |
 | `GroupSexMenu` | `modules/actions/sex/group_sex.qsps` | 6 | `entry/helper` |
+| `GroupSexSandraBeckyStefanStart` | `modules/actions/sex/group_sex.qsps` | 88 | `entry/helper` |
 | `HallChoiceConsequencePrint` | `modules/core/system/compatibility_aliases.qsps` | 47 | `entry/helper` |
 | `HallChoiceConsequencesText` | `modules/core/system/compatibility_aliases.qsps` | 43 | `entry/helper` |
 | `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 148 | `entry/helper` |
@@ -473,7 +486,6 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `RegisterTittyFuck` | `modules/actions/sex/sex_register.qsps` | 162 | `entry/helper` |
 | `RegisterVaginal` | `modules/actions/sex/sex_register.qsps` | 142 | `entry/helper` |
 | `ResetHallRumorDaily` | `modules/events/hall/hall_rumors.qsps` | 133 | `entry/helper` |
-| `SandraBeckyReconcileDebugReset` | `modules/events/sandra/sandra_becky_reconcile.qsps` | 309 | `entry/helper` |
 | `SandraDraupnirFridayDebugReset` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 405 | `entry/helper` |
 | `SandraDraupnirFridayTryStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 100 | `entry/helper` |
 | `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 40 | `entry/helper` |
@@ -510,27 +522,27 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1328 |
-| `Menu.AddModule` | 587 |
-| `MenuUiAdd` | 579 |
-| `ShowLocationScreenTitle` | 578 |
-| `SceneShowVisual` | 506 |
-| `EnsureGirlData` | 210 |
+| `ActUiPrepare` | 1335 |
+| `ShowLocationScreenTitle` | 585 |
+| `Menu.AddModule` | 584 |
+| `MenuUiAdd` | 576 |
+| `SceneShowVisual` | 512 |
+| `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 178 |
-| `TavernMain` | 160 |
-| `Menu.Create` | 101 |
+| `ClampGirlSocialStats` | 176 |
+| `TavernMain` | 162 |
+| `Menu.Create` | 99 |
 | `ShowGirlSidebar` | 98 |
-| `Menu.Destroy` | 95 |
-| `RegisterSex` | 93 |
+| `Menu.Destroy` | 93 |
 | `ShowImage` | 91 |
+| `RegisterSex` | 89 |
 | `PrintMainP` | 87 |
 | `FormatSpintry` | 87 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 72 |
+| `Market` | 56 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `Market` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 49 |
 | `SaveLastHallEvent` | 45 |
