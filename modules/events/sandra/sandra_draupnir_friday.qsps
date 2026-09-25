@@ -1,7 +1,8 @@
 ! ================================================
 ! FILE: modules/events/sandra/sandra_draupnir_friday.qsps
 ! MODULE: events/family
-! Пятничные визиты Сандры к Драупниру (NPC-path)
+! ! [AI-WORKED] Текст переработан / дополнен ассистентом 25.09.2026
+! Пятничные визиты Сандры к Драупниру (NPC-path & раскрытие тайны)
 ! ================================================
 
 #SandraFridayDraupnirAdvance
@@ -97,53 +98,6 @@
     SandraDraupnirFridayCanStart = 1
 ---
 
-#SandraDraupnirFridayTryStart
-
-    if LOC('SandraDraupnirFridayCanStart') = 1:
-        gs 'SandraDraupnirFridayCanStart'
-
-        if SandraDraupnirFridayCanStart = 1:
-            gt 'SandraDraupnirFridayStart'
-        end
-    end
----
-
-#SandraDraupnirFridayPeekCanOffer
-
-    SandraDraupnirFridayPeekOffer = 0
-
-    if week <> 5 or time <> 4:
-        exit
-    end
-
-    if $GirlLocation['sandra'] <> 'DraupnirShop':
-        exit
-    end
-
-    if SandraDraupnirFridayToday = 1:
-        exit
-    end
-
-    if SandraDraupnirFridayPeekSeen[day] = 1:
-        exit
-    end
-
-    if SandraDraupnirAffairStage < 2 and SandraFridayDraupnirCount < 1:
-        exit
-    end
-
-    SandraDraupnirFridayPeekRoll = RAND(1, 100)
-
-    if SandraDraupnirFridayPeekRoll > 18:
-        killvar 'SandraDraupnirFridayPeekRoll'
-        exit
-    end
-
-    killvar 'SandraDraupnirFridayPeekRoll'
-
-    SandraDraupnirFridayPeekOffer = 1
----
-
 #SandraDraupnirFridayPeek
 
     *clr
@@ -153,11 +107,11 @@
     gs 'InitDraupnir'
     gs 'EnsureGirlData', 'sandra'
 
-    gs 'ShowImage', 'draupnir', 'shop', 'closed', 'normal'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/sandra_draupnir_friday_peek', 'У ОКНА МАСТЕРСКОЙ', 'large', 'webp'
 
     gs 'PrintTitleLine', ' У ОКНА МАСТЕРСКОЙ'
 
-    gs 'PrintMainP', 'Вы обходите угол здания к боковому окну — оттуда доносятся голоса, слишком тихие для вечера пятницы.'
+    gs 'PrintMainP', 'Вы подкрадываетесь к боковому окну мастерской. Сквозь деревянные ставни пробивается тёплый свет свечей, а изнутри доносится стук верстака и тихие женские вздохи.'
 
     *pl ' '
 
@@ -169,6 +123,10 @@
 
     SandraDraupnirFridayPeekSeen[day] = 1
     SandraDraupnirFridayPeekOffer = 0
+    SandraCarpenterSecret = 1
+    PlayerKnows_SandraDraupnirFriday = 1
+    PlayerKnows_SandraDraupnirAffair = 1
+    SandraDraupnirEventDone = 1
 
     if LOC('KnowledgeRegisterFact') = 1:
         gs 'KnowledgeRegisterFact', 'sandra_draupnir_friday_peek'
@@ -178,11 +136,9 @@
         gs 'KnowledgeRegisterPlayerKnows', 'sandra_draupnir_friday_peek', 'peek'
     end
 
-    PlayerKnows_SandraDraupnirFriday = 1
-
-    gs 'ActUiPrepare', 'Назад', 'return'
+    gs 'ActUiPrepare', 'Назад в квартал', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'DraupnirShop'
+        gt 'CraftsmenQuarter'
     end
 ---
 
@@ -204,16 +160,22 @@
 
     *pl ' '
 
-    gs 'SandraDraupnirFridayPeekCanOffer'
-
-    if SandraDraupnirFridayPeekOffer = 1:
-        gs 'ActUiPrepare', 'Подслушать у окна', 'look'
+    if week = 5 and time = 4 and $GirlLocation['sandra'] = 'DraupnirShop' and SandraDraupnirFridayToday = 0:
+        gs 'ActUiPrepare', 'Подглядеть у окна', 'look'
         act $ActUiLabel, $ActUiIconPath:
             gt 'SandraDraupnirFridayPeek'
         end
-    end
 
-    killvar 'SandraDraupnirFridayPeekOffer'
+        gs 'ActUiPrepare', 'Толкнуть дверь и войти без стука', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraDraupnirFridayDoorBurst'
+        end
+
+        gs 'ActUiPrepare', 'Подождать у бочек снаружи', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraDraupnirFridayIntercept'
+        end
+    end
 
     *pl ' '
 
@@ -259,13 +221,6 @@
         gt 'DraupnirSmallTalk'
     }
 
-    if week = 5 and time = 4 and $GirlLocation['sandra'] = 'DraupnirShop' and SandraDraupnirFridayToday = 0:
-        gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Разговор в мастерской', 'look'
-        gs 'Menu.AddModule', 'DraupnirTalkMenu', {
-            gt 'SandraDraupnirFridayStart'
-        }
-    end
-
     gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Назад', 'return'
     gs 'Menu.AddModule', 'DraupnirTalkMenu', {
         gt 'DraupnirShop'
@@ -292,127 +247,103 @@
     end
 ---
 
-#SandraDraupnirFridayStart
+#SandraDraupnirFridayDoorBurst
 
     *clr
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/sandra_draupnir_friday_start', 'ПЯТНИЦА — САНДРА У ДРАУПНИРА', 'large', 'webp'
-    SandraDraupnirFridayToday = 1
-    SandraDraupnirFridayResolved = 1
-
-    gs 'InitDraupnir'
     gs 'EnsureGirlData', 'sandra'
+    gs 'InitDraupnir'
 
-    gs 'ShowLocationScreenTitle', 'ПЯТНИЦА — САНДРА У ДРАУПНИРА'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/sandra_draupnir_friday_action', 'ВНЕЗАПНЫЙ ВХОД В МАСТЕРСКУЮ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ВНЕЗАПНЫЙ ВХОД В МАСТЕРСКУЮ'
 
-    gs 'SandraDraupnirFridayIntroText'
+    SandraCarpenterSecret = 1
+    PlayerKnows_SandraDraupnirFriday = 1
+    PlayerKnows_SandraDraupnirAffair = 1
+    SandraDraupnirEventDone = 1
+    SandraDraupnirFridayToday = 1
 
+    gs 'SandraDraupnirFridayDoorBurstText'
     *p $SandraDraupnirFridayText
     *pl ' '
 
-    if debug = 1:
-        *pl '[DEBUG SANDRA DRAUPNIR] FridayCount: ' + STR(SandraFridayDraupnirCount)
-        *pl '[DEBUG SANDRA DRAUPNIR] AffairStage: ' + STR(SandraDraupnirAffairStage)
-        *pl '[DEBUG SANDRA DRAUPNIR] NpcPath: ' + STR(SandraNpcPath)
-        *pl ' '
+    gs 'ActUiPrepare', 'Подколоть с юмором (про идеальные доски)', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraDraupnirFridayDoorBurstResolve', 'humor'
     end
 
-    gs 'SandraDraupnirFridayBuildMenu'
+    gs 'ActUiPrepare', 'Спросить строго, как хозяин дома', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraDraupnirFridayDoorBurstResolve', 'strict'
+    end
 
-    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''SandraDraupnirFridayMenu''">делать</a>?'
+    gs 'ActUiPrepare', 'Смущённо извиниться и выйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraDraupnirFridayDoorBurstResolve', 'exit'
+    end
 ---
 
-#SandraDraupnirFridayBuildMenu
+#SandraDraupnirFridayDoorBurstResolve
 
-    gs 'Menu.Destroy', 'SandraDraupnirFridayMenu'
-    gs 'Menu.Create', 'SandraDraupnirFridayMenu'
-
-    gs 'MenuUiAdd', 'SandraDraupnirFridayMenu', 'Подойти к Сандре', ''
-    gs 'Menu.AddModule', 'SandraDraupnirFridayMenu', {
-        gt 'SandraDraupnirFridayAction', 'approach'
-    }
-
-    gs 'MenuUiAdd', 'SandraDraupnirFridayMenu', 'Подсмотреть из-за угла', ''
-    gs 'Menu.AddModule', 'SandraDraupnirFridayMenu', {
-        gt 'SandraDraupnirFridayAction', 'watch'
-    }
-
-    gs 'MenuUiAdd', 'SandraDraupnirFridayMenu', 'Отойти — пусть решает сама', ''
-    gs 'Menu.AddModule', 'SandraDraupnirFridayMenu', {
-        gt 'SandraDraupnirFridayAction', 'step_aside'
-    }
----
-
-#SandraDraupnirFridayAction
+    $SandraDraupnirChoice = LCASE($ARGS[0])
 
     *clr
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/sandra_draupnir_friday_action', 'МАСТЕРСКАЯ ДРАУПНИРА', 'large', 'webp'
-    $SandraDraupnirChoice = LCASE($ARGS[0])
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/sandra_draupnir_friday_action', 'РАЗГОВОР В МАСТЕРСКОЙ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР В МАСТЕРСКОЙ'
 
-    gs 'EnsureGirlData', 'sandra'
-
-    if $SandraDraupnirChoice = 'approach':
+    if $SandraDraupnirChoice = 'humor':
         SandraTrustStefan += 1
         GirlTrustStefan['sandra'] += 1
         Friends['sandra'] += 1
-        SandraPlayerPath += 1
-        SandraFamilyConcern += 1
-        PlayerKnows_SandraDraupnirFriday = 1
-
-        if SandraHomeUnlocked = 0 and Friends['sandra'] >= 10:
-            SandraHomeUnlocked = 1
-        end
-
-    elseif $SandraDraupnirChoice = 'watch':
-        PlayerKnows_SandraDraupnirFriday = 1
-        PlayerKnows_SandraDraupnirAffair = 1
-        SandraWatchNpcPath += 1
-        TavernScandal += 1
-        gs 'SandraDraupnirAffairAdvance', 'watch'
-
-    elseif $SandraDraupnirChoice = 'step_aside':
-        TavernScandal += 1
-        gs 'SandraDraupnirAffairAdvance', 'step_aside'
+        love['sandra'] += 1
+    elseif $SandraDraupnirChoice = 'strict':
+        SandraRespect += 1
+        otkroven['sandra'] += 1
+    else:
+        Friends['sandra'] += 1
     end
 
     gs 'ClampGirlSocialStats', 'sandra'
-
-    gs 'ShowLocationScreenTitle', 'МАСТЕРСКАЯ ДРАУПНИРА'
-
-    gs 'SandraDraupnirFridayActionText', $SandraDraupnirChoice
-
+    gs 'SandraDraupnirFridayDoorBurstResolveText', $SandraDraupnirChoice
     *p $SandraDraupnirFridayText
     *pl ' '
+
+    killvar '$SandraDraupnirChoice'
 
     gs 'ActUiPrepare', 'Вернуться в квартал', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'CraftsmenQuarter'
     end
-
-    gs 'ActUiPrepare', 'Остаться у мастерской', 'craftsmen'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'DraupnirShop'
-    end
-
-    killvar '$SandraDraupnirChoice'
 ---
 
-#SandraDraupnirFridayDebugReset
+#SandraDraupnirFridayIntercept
 
-    SandraFridayDraupnirCount = 0
-    SandraFridayDraupnirCountDay = 0
-    SandraDraupnirFridayToday = 0
-    SandraDraupnirFridayResolved = 0
-    SandraDraupnirAffairStage = 2
-    SandraDraupnirFridayCanStart = 0
-    SandraDraupnirFridayPeekSeen[day] = 0
-    SandraDraupnirFridayPeekOffer = 0
-    PlayerKnows_SandraDraupnirFriday = 0
-    PlayerKnows_SandraDraupnirAffair = 0
-    SandraWatchNpcPath = 0
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'sandra'
+
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/sandra_draupnir_friday_action', 'ЗАСАДА У БОЧЕК', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ЗАСАДА У БОЧЕК'
+
+    SandraCarpenterSecret = 1
+    PlayerKnows_SandraDraupnirFriday = 1
+    PlayerKnows_SandraDraupnirAffair = 1
+    SandraDraupnirEventDone = 1
+    SandraDraupnirFridayToday = 1
+
+    gs 'SandraDraupnirFridayInterceptText'
+    *p $SandraDraupnirFridayText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Пойти в сторону дома', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
 ---
