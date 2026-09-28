@@ -1,0 +1,139 @@
+! ================================================
+! FILE: modules/events/sandra/sandra_church_arc.qsps
+! MODULE: events/sandra
+! Линия давления Отца Герхарда на Сандру (Комната чистых сердец)
+! ================================================
+
+#SandraChurchArcCheckUnlocked
+    SandraChurchArcReady = 0
+
+    if (SandraConfessedDraupnir = 1 and SandraConfessedMayor = 1) or SandraChurchArcUnlocked = 1:
+        if SandraGerhardVisitsStopped = 0:
+            SandraChurchArcReady = 1
+        end
+    end
+---
+
+#SandraChurchSpyStart
+    *clr
+    clr
+    cla
+
+    gs 'SandraChurchArcCheckUnlocked'
+    SandraChurchSpyStep = 1
+
+    ! Проверка на бельё
+    if GirlNoPantiesWork['sandra'] = 1 or panties['sandra'] = 0:
+        SandraNoPantiesToday = 1
+    else:
+        SandraNoPantiesToday = 0
+    end
+
+    ! Проверка этапа: Первый визит (Рука под юбкой) или продолжение
+    if SandraChurchGerhardSeen = 0:
+        SandraChurchIsFirstVisit = 1
+        SandraChurchSpyMaxSteps = 1
+    else:
+        SandraChurchIsFirstVisit = 0
+
+        if FamilyCorruptionStage <= 1 or sluttiness['sandra'] < 25:
+            SandraCorruptionStage = 1
+            SandraChurchSpyMaxSteps = 2
+        elseif FamilyCorruptionStage <= 3 or sluttiness['sandra'] < 45:
+            SandraCorruptionStage = 2
+            SandraChurchSpyMaxSteps = 3
+        else:
+            SandraCorruptionStage = 3
+            SandraChurchSpyMaxSteps = 4
+        end
+    end
+
+    gt 'SandraChurchSpyScreen'
+---
+
+#SandraChurchSpyScreen
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'sandra'
+    end
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ЧИСТЫХ СЕРДЕЦ: ПОДГЛЯДЫВАНИЕ'
+
+    if SandraChurchIsFirstVisit = 1:
+        $ChurchImgKey = 'hand_under_skirt'
+        $ChurchImgCap = 'Комната чистых сердец: Рука под юбкой'
+    else:
+        $ChurchImgKey = 'step_' + STR(SandraChurchSpyStep) + '_stage_' + STR(SandraCorruptionStage)
+        $ChurchImgCap = 'Комната чистых сердец: ' + $ChurchImgKey
+    end
+
+    gs 'SceneShowVisual', 'images/events/sandra/church_arc/' + $ChurchImgKey, $ChurchImgCap, 'large', 'webp'
+
+    gs 'SandraChurchArcPrintText', 'church_spy_screen'
+    *pl ' '
+
+    if SandraChurchSpyStep < SandraChurchSpyMaxSteps:
+        gs 'ActUiPrepare', 'Смотреть дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            SandraChurchSpyStep += 1
+            gt 'SandraChurchSpyScreen'
+        end
+    else:
+        if SandraChurchIsFirstVisit = 1:
+            SandraChurchGerhardSeen = 1
+        end
+
+        PlayerKnows_SandraGerhardVisits = 1
+        sluttiness['sandra'] += 1
+        TavernScandal += 1
+
+        *pl 'Стефан отходит от витражного окна комнаты чистых сердец.'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Уйти из храма', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Church'
+        end
+    end
+---
+
+#SandraGerhardStopTalk
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'sandra'
+    end
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С САНДРОЙ: ОЦЕЦ ГЕРХАРД'
+
+    gs 'SceneShowVisual', 'images/locations/town/church/church', 'Разговор о храме', 'large', 'webp'
+
+    gs 'SandraChurchArcPrintText', 'talk_stop_intro'
+    *pl ' '
+
+    if SandraMayorVisitsStopped = 0:
+        ! Гейт: Визиты к мэру ещё НЕ прекращены -> Разговор не срабатывает!
+        gs 'SandraChurchArcPrintText', 'talk_stop_failed'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'sandra', $TalkReturnLoc, 'main'
+        end
+    else:
+        ! Гейт: Визиты к мэру прекращены -> Разговор срабатывает!
+        gs 'SandraChurchArcPrintText', 'talk_stop_success'
+        SandraGerhardVisitsStopped = 1
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'sandra', $TalkReturnLoc, 'main'
+        end
+    end
+---

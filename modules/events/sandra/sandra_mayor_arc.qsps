@@ -1,0 +1,151 @@
+! ================================================
+! FILE: modules/events/sandra/sandra_mayor_arc.qsps
+! MODULE: events/sandra
+! Линия давления мэра на Сандру (визиты каждый 2-й понедельник)
+! ================================================
+
+#SandraMayorCheckIsDay
+    SandraMayorVisitToday = 0
+
+    if week = 1 and time = 1 and SandraMayorVisitsStopped = 0:
+        if (((day - 1) / 7) mod 2 = 1):
+            SandraMayorVisitToday = 1
+        end
+    end
+---
+
+#SandraMayorSpyStart
+    *clr
+    clr
+    cla
+
+    gs 'SandraMayorCheckIsDay'
+    SandraMayorSpyStep = 1
+
+    ! Проверка на бельё
+    if GirlNoPantiesWork['sandra'] = 1 or panties['sandra'] = 0:
+        SandraNoPantiesToday = 1
+    else:
+        SandraNoPantiesToday = 0
+    end
+
+    ! Оценка уровня коррупции для количества экранов
+    ! Low (stage 1): 2 экрана (миньет -> миньет окончание)
+    ! Medium (stage 2): 3 экрана (миньет -> вагинальный -> окончание в рот/лицо)
+    ! High (stage 3): 4 экрана (миньет -> вагинальный -> анальный/глубокий -> окончание)
+    if FamilyCorruptionStage <= 1 or sluttiness['sandra'] < 25:
+        SandraCorruptionStage = 1
+        SandraMayorSpyMaxSteps = 2
+    elseif FamilyCorruptionStage <= 3 or sluttiness['sandra'] < 45:
+        SandraCorruptionStage = 2
+        SandraMayorSpyMaxSteps = 3
+    else:
+        SandraCorruptionStage = 3
+        SandraMayorSpyMaxSteps = 4
+    end
+
+    gt 'SandraMayorSpyScreen'
+---
+
+#SandraMayorSpyScreen
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'sandra'
+    end
+
+    gs 'ShowLocationScreenTitle', 'КАБИНЕТ МЭРА: ПОДГЛЯДЫВАНИЕ'
+
+    ! Картинка для каждого экрана (без пустых экранов)
+    $MayorImgKey = 'step_' + STR(SandraMayorSpyStep) + '_stage_' + STR(SandraCorruptionStage)
+    $MayorImgCap = 'Кабинет мэра: ' + $MayorImgKey
+    gs 'SceneShowVisual', 'images/events/sandra/mayor_arc/' + $MayorImgKey, $MayorImgCap, 'large', 'webp'
+
+    gs 'SandraMayorArcPrintText', 'mayor_spy_screen'
+    *pl ' '
+
+    if SandraMayorSpyStep < SandraMayorSpyMaxSteps:
+        gs 'ActUiPrepare', 'Смотреть дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            SandraMayorSpyStep += 1
+            gt 'SandraMayorSpyScreen'
+        end
+    else:
+        PlayerKnows_MayorUsesSandra = 1
+        sluttiness['sandra'] += 1
+        TavernScandal += 1
+
+        *pl 'Стефан осторожно отступает от щели в двери, пока его не заметила охрана мэрии.'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Уйти незамеченным', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Street'
+        end
+    end
+---
+
+#MayorOfficeConfrontSandraVisits
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КАБИНЕТ МЭРА: РАЗГОВОР О САНДРЕ'
+
+    gs 'SceneShowVisual', 'images/locations/mayor/office/mayor', 'Кабинет мэра', 'large', 'webp'
+
+    gs 'SandraMayorArcPrintText', 'confront_intro'
+    *pl ' '
+
+    if tavern_reputation >= 60:
+        gs 'SandraMayorArcPrintText', 'confront_high_rep'
+        SandraMayorVisitsStopped = 1
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOffice'
+        end
+    else:
+        gs 'SandraMayorArcPrintText', 'confront_low_rep'
+        MayorSandraBribeFee = 300
+        *pl ' '
+
+        if money >= MayorSandraBribeFee:
+            gs 'ActUiPrepare', 'Выплатить 300 монет отступных', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                money -= MayorSandraBribeFee
+                SandraMayorVisitsStopped = 1
+                gt 'MayorOfficeConfrontBribeSuccess'
+            end
+        else:
+            *pl '<i>У вас недостаточно денег для оплаты отступных мэру (' + STR(money) + ' / ' + STR(MayorSandraBribeFee) + ' монет).</i>'
+            *pl ' '
+        end
+
+        gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOffice'
+        end
+    end
+---
+
+#MayorOfficeConfrontBribeSuccess
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КАБИНЕТ МЭРА: ОТСТУПНЫЕ УПЛАЧЕНЫ'
+
+    gs 'SceneShowVisual', 'images/locations/mayor/office/clerk_money', 'Оплата отступных мэру', 'large', 'webp'
+
+    gs 'SandraMayorArcPrintText', 'confront_bribe_success'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---
