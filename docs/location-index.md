@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 465
-- Locations: 3393
+- Locations: 3395
 
 ## modules/actions
 
@@ -1584,7 +1584,7 @@ Generated from active project files in `qsp-project.json`.
 | `BirthCertificateReadText` | `modules/events/family/birth_certificate_text.qsps` | 17 |
 | `BirthCertificateSearchIntroText` | `modules/events/family/birth_certificate_text.qsps` | 11 |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 |
-| `BuildDraupnirTalkMenu` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 214 |
+| `BuildDraupnirTalkMenu` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 264 |
 | `CheckAmandaEvents` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 13 |
 | `ChurchConfessionApplySin` | `modules/events/church/church_confession_dynamic.qsps` | 196 |
 | `ChurchConfessionCanStart` | `modules/events/church/church_confession_dynamic.qsps` | 7 |
@@ -1752,8 +1752,8 @@ Generated from active project files in `qsp-project.json`.
 | `DailyAftermathResetDaily` | `modules/events/family/daily_aftermath.qsps` | 50 |
 | `DailyAftermathSelect` | `modules/events/family/daily_aftermath.qsps` | 67 |
 | `DailyAftermathShow` | `modules/events/family/daily_aftermath.qsps` | 185 |
-| `DraupnirShop` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 145 |
-| `DraupnirUpgradesLocked` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 230 |
+| `DraupnirShop` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 195 |
+| `DraupnirUpgradesLocked` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 280 |
 | `DraupnirUpgradesLockedText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 17 |
 | `EddieAlleySpy1` | `modules/events/eddie/eddie_arc.qsps` | 174 |
 | `EddieAlleySpy1Text` | `modules/events/eddie/eddie_arc_text.qsps` | 10 |
@@ -2796,15 +2796,17 @@ Generated from active project files in `qsp-project.json`.
 | `SandraDraupnirAffairAdvance` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 42 |
 | `SandraDraupnirFridayBackgroundResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 22 |
 | `SandraDraupnirFridayCanStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 78 |
-| `SandraDraupnirFridayDoorBurst` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 250 |
-| `SandraDraupnirFridayDoorBurstResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 288 |
-| `SandraDraupnirFridayDoorBurstResolveText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 30 |
-| `SandraDraupnirFridayDoorBurstText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 26 |
-| `SandraDraupnirFridayIntercept` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 324 |
-| `SandraDraupnirFridayInterceptText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 44 |
+| `SandraDraupnirFridayDoorBurst` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 300 |
+| `SandraDraupnirFridayDoorBurstResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 338 |
+| `SandraDraupnirFridayDoorBurstResolveText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 77 |
+| `SandraDraupnirFridayDoorBurstText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 73 |
+| `SandraDraupnirFridayIntercept` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 374 |
+| `SandraDraupnirFridayInterceptText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 91 |
 | `SandraDraupnirFridayPeek` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 101 |
 | `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 |
+| `SandraDraupnirFridayPrintText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 26 |
 | `SandraDraupnirFridayShopText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 9 |
+| `SandraDraupnirSpyScreen` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 134 |
 | `SandraFridayDraupnirAdvance` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 8 |
 | `SandraGerhardStopTalk` | `modules/events/sandra/sandra_church_arc.qsps` | 103 |
 | `SandraHomeAfterSex` | `modules/events/sandra/sandra_home_chain.qsps` | 209 |

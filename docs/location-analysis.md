@@ -3,11 +3,11 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 465
-- Locations: 3393
-- Locations with direct incoming calls: 2900
-- Locations without direct incoming calls: 493
+- Locations: 3395
+- Locations with direct incoming calls: 2901
+- Locations without direct incoming calls: 494
 - Review candidates without direct incoming calls: 178
-- Classified entry/helper locations without direct incoming calls: 315
+- Classified entry/helper locations without direct incoming calls: 316
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -487,6 +487,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `RegisterVaginal` | `modules/actions/sex/sex_register.qsps` | 142 | `entry/helper` |
 | `ResetHallRumorDaily` | `modules/events/hall/hall_rumors.qsps` | 133 | `entry/helper` |
 | `SandraDraupnirFridayCanStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 78 | `entry/helper` |
+| `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 | `entry/helper` |
 | `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 40 | `entry/helper` |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 | `entry/helper` |
 | `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 358 | `entry/helper` |
@@ -521,8 +522,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1360 |
-| `ShowLocationScreenTitle` | 595 |
+| `ActUiPrepare` | 1361 |
+| `ShowLocationScreenTitle` | 596 |
 | `Menu.AddModule` | 582 |
 | `MenuUiAdd` | 574 |
 | `SceneShowVisual` | 524 |
@@ -530,20 +531,20 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 176 |
 | `TavernMain` | 162 |
-| `ShowGirlSidebar` | 101 |
+| `ShowGirlSidebar` | 102 |
 | `Menu.Create` | 98 |
 | `Menu.Destroy` | 92 |
 | `ShowImage` | 90 |
 | `RegisterSex` | 89 |
 | `FormatSpintry` | 87 |
-| `PrintMainP` | 87 |
+| `PrintMainP` | 86 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 72 |
 | `Market` | 57 |
-| `PrintTitleLine` | 54 |
+| `PrintTitleLine` | 53 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
 | `SexSceneMain` | 44 |
 

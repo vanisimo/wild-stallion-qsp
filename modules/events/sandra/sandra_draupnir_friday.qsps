@@ -99,7 +99,6 @@
 ---
 
 #SandraDraupnirFridayPeek
-
     *clr
     clr
     cla
@@ -107,38 +106,89 @@
     gs 'InitDraupnir'
     gs 'EnsureGirlData', 'sandra'
 
-    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/sandra_draupnir_friday_peek', 'У ОКНА МАСТЕРСКОЙ', 'large', 'webp'
+    SandraDraupnirSpyStep = 1
 
-    gs 'PrintTitleLine', ' У ОКНА МАСТЕРСКОЙ'
-
-    gs 'PrintMainP', 'Вы подкрадываетесь к боковому окну мастерской. Сквозь деревянные ставни пробивается тёплый свет свечей, а изнутри доносится стук верстака и тихие женские вздохи.'
-
-    *pl ' '
-
-    gs 'SandraDraupnirFridayPeekText'
-    *p $SandraDraupnirFridayPeekText
-    killvar '$SandraDraupnirFridayPeekText'
-
-    *pl ' '
-
-    SandraDraupnirFridayPeekSeen[day] = 1
-    SandraDraupnirFridayPeekOffer = 0
-    SandraCarpenterSecret = 1
-    PlayerKnows_SandraDraupnirFriday = 1
-    PlayerKnows_SandraDraupnirAffair = 1
-    SandraDraupnirEventDone = 1
-
-    if LOC('KnowledgeRegisterFact') = 1:
-        gs 'KnowledgeRegisterFact', 'sandra_draupnir_friday_peek'
+    if GirlNoPantiesWork['sandra'] = 1 or panties['sandra'] = 0:
+        SandraNoPantiesToday = 1
+    else:
+        SandraNoPantiesToday = 0
     end
 
-    if LOC('KnowledgeRegisterPlayerKnows') = 1:
-        gs 'KnowledgeRegisterPlayerKnows', 'sandra_draupnir_friday_peek', 'peek'
+    if FamilyCorruptionStage <= 1 or sluttiness['sandra'] < 25:
+        SandraCorruptionStage = 1
+        SandraDraupnirSpyMaxSteps = 2
+    else:
+        SandraCorruptionStage = 2
+        SandraDraupnirSpyMaxSteps = 3
     end
 
-    gs 'ActUiPrepare', 'Назад в квартал', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'CraftsmenQuarter'
+    if SandraCorruptionStage >= 2:
+        SandraDraupnirRandomPose = RAND(1, 2)
+    else:
+        SandraDraupnirRandomPose = 1
+    end
+
+    gt 'SandraDraupnirSpyScreen'
+---
+
+#SandraDraupnirSpyScreen
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', 'sandra'
+    end
+
+    gs 'ShowLocationScreenTitle', 'У ОКНА МАСТЕРСКОЙ: ПОДГЛЯДЫВАНИЕ'
+
+    if SandraCorruptionStage = 1:
+        $DraupnirImgKey = 'step_' + STR(SandraDraupnirSpyStep) + '_stage_1'
+    else:
+        if SandraDraupnirSpyStep = 1:
+            $DraupnirImgKey = 'step_1_pose_' + STR(SandraDraupnirRandomPose)
+        else:
+            $DraupnirImgKey = 'step_' + STR(SandraDraupnirSpyStep) + '_stage_2'
+        end
+    end
+
+    $DraupnirImgCap = 'Мастерская Драупнира: ' + $DraupnirImgKey
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/' + $DraupnirImgKey, $DraupnirImgCap, 'large', 'webp'
+
+    gs 'SandraDraupnirFridayPrintText', 'draupnir_spy_screen'
+    *pl ' '
+
+    if SandraDraupnirSpyStep < SandraDraupnirSpyMaxSteps:
+        gs 'ActUiPrepare', 'Смотреть дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            SandraDraupnirSpyStep += 1
+            gt 'SandraDraupnirSpyScreen'
+        end
+    else:
+        SandraDraupnirFridayPeekSeen[day] = 1
+        SandraDraupnirFridayPeekOffer = 0
+        SandraCarpenterSecret = 1
+        PlayerKnows_SandraDraupnirFriday = 1
+        PlayerKnows_SandraDraupnirAffair = 1
+        SandraDraupnirEventDone = 1
+        sluttiness['sandra'] += 1
+        TavernScandal += 1
+
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'sandra_draupnir_friday_peek'
+        end
+
+        if LOC('KnowledgeRegisterPlayerKnows') = 1:
+            gs 'KnowledgeRegisterPlayerKnows', 'sandra_draupnir_friday_peek', 'peek'
+        end
+
+        *pl 'Стефан тихо переводит дыхание и отступает от окна мастерской.'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Назад в квартал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'CraftsmenQuarter'
+        end
     end
 ---
 
