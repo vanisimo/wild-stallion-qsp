@@ -89,7 +89,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'SandraBeckyThreesomeCanStart'
 
-    if SandraBeckyThreesomeCanStart = 0:
+    if SandraBeckyThreesomeCanStart = 0 and debug = 0:
         gt 'TavernMain'
     end
 
@@ -101,11 +101,11 @@ gs 'Menu.Show','GroupMenu'
         cla
 
         gs 'SceneShowVisual', 'images/actions/sex/group_sex/group_sex_sandra_becky_stefan_start', 'групповой секс: Сандра, Бекки и Стефан — старт', 'large', 'webp'
-        *p 'Сегодня вы слишком вымотаны для такой ночи. Сандра и Бекки перенесут разговор — или не перенесут.'
+        *p 'Сегодня вы слишком вымотаны для такой ночи. Сандра и Бекки перенесут ужин на следующее воскресенье.'
 
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
-            gt 'TavernMain'
+            gt 'Market'
         end
 
         exit
@@ -120,33 +120,90 @@ gs 'Menu.Show','GroupMenu'
     clr
     cla
 
-    gs 'ShowLocationScreenTitle', 'САНДРА, БЕККИ И ВЫ'
-    gs 'SceneShowVisual', 'images/actions/sex/group_sex/group_sex_sandra_becky_stefan_scene', 'САНДРА, БЕККИ И ВЫ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'САНДРА, БЕККИ И ВЫ — ВОСКРЕСНАЯ НОЧЬ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/threesome_intro', 'ВОСКРЕСНАЯ НОЧЬ У БЕККИ', 'large', 'webp'
 
     gs 'SandraBeckyThreesomeIntroText'
 
     *p $SandraBeckyThreesomeText
     *pl ' '
 
-    gs 'SandraBeckyThreesomeStepText', 'kiss'
+    gs 'ActUiPrepare', 'Выпить вина и ласкать подруг', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GroupSexSandraBeckyStefanTenderness'
+    end
+---
 
-    *p $SandraBeckyThreesomeText
-    *pl ' '
+#GroupSexSandraBeckyStefanTenderness
+
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'НЕЖНОСТЬ ПОДРУГ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/threesome_undress', 'НЕЖНОСТЬ ПОДРУГ', 'large', 'webp'
 
     gs 'SandraBeckyThreesomeStepText', 'undress'
 
     *p $SandraBeckyThreesomeText
     *pl ' '
 
-    gs 'SandraBeckyThreesomeStepText', 'together'
+    gs 'ActUiPrepare', 'Двойные оральные ласки', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GroupSexSandraBeckyStefanChoice', 'oral'
+    end
+
+    gs 'ActUiPrepare', 'Ласки Сандры и Бекки друг с другом', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GroupSexSandraBeckyStefanChoice', 'lesbo'
+    end
+
+    gs 'ActUiPrepare', 'Страстный диванный секс по очереди', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GroupSexSandraBeckyStefanChoice', 'sex'
+    end
+---
+
+#GroupSexSandraBeckyStefanChoice
+
+    $SandraBeckyChoiceMode = LCASE($ARGS[0])
+
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗВРАТ И СТРАСТЬ'
+
+    if $SandraBeckyChoiceMode = 'oral':
+        gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/threesome_oral', 'ДВОЙНЫЕ ЛАСКИ', 'large', 'webp'
+        gs 'SandraBeckyThreesomeStepText', 'oral'
+    elseif $SandraBeckyChoiceMode = 'lesbo':
+        gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/threesome_undress', 'ОТКРОВЕННОСТЬ ПОДРУГ', 'large', 'webp'
+        gs 'SandraBeckyThreesomeStepText', 'lesbo'
+    else:
+        gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/threesome_sex', 'ПРАЗДНИК СТРАСТИ', 'large', 'webp'
+        gs 'SandraBeckyThreesomeStepText', 'sex'
+    end
 
     *p $SandraBeckyThreesomeText
     *pl ' '
 
-    gs 'SandraBeckyThreesomeStepText', 'finish'
+    killvar '$SandraBeckyChoiceMode'
 
-    *p $SandraBeckyThreesomeText
-    *pl ' '
+    gs 'ActUiPrepare', 'Бурная финишная развязка', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GroupSexSandraBeckyStefanFinish'
+    end
+---
+
+#GroupSexSandraBeckyStefanFinish
+
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СЛАДОСТНЫЙ ФИНИШ'
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_becky/threesome_after', 'ТЕПЛЫЙ ПОКОЙ', 'large', 'webp'
 
     gs 'RegisterPlayerCum'
     gs 'SandraBeckyThreesomeApplyAftermath'
@@ -157,8 +214,8 @@ gs 'Menu.Show','GroupMenu'
     *pl ' '
 
     if debug = 1:
-        *pl '[DEBUG SANDRA+BECKY] ReconcileDone: ' + STR(SandraBeckyReconcileDone)
-        *pl '[DEBUG SANDRA+BECKY] FamilyCorruptionStage: ' + STR(FamilyCorruptionStage)
+        *pl '[DEBUG SANDRA+BECKY] ThreesomeCount: ' + STR(SandraBeckyThreesomeCount)
+        *pl '[DEBUG SANDRA+BECKY] ThreesomeStage: ' + STR(SandraBeckyThreesomeStage)
         *pl ' '
     end
 
