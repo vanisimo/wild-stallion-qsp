@@ -2483,7 +2483,7 @@ Generated from active project files in `qsp-project.json`.
 | `KitchenLewdApplyConsequences` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 421 |
 | `KitchenLewdBuildMenu` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 308 |
 | `KitchenLewdDebugStart` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 510 |
-| `KitchenLewdPrintText` | `modules/events/kitchen/kitchen_lewd_sandra_text.qsps` | 8 |
+| `KitchenLewdPrintText` | `modules/events/kitchen/kitchen_lewd_sandra_text.qsps` | 9 |
 | `KitchenLewdResolve` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 330 |
 | `KitchenLewdSandraCanStart` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 10 |
 | `KitchenLewdSandraCheck` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 71 |
