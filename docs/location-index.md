@@ -2475,9 +2475,9 @@ Generated from active project files in `qsp-project.json`.
 | `KitchenHarassmentPrintDecisionPrompt` | `modules/events/kitchen/kitchen_harassment.qsps` | 234 |
 | `KitchenHarassmentPrintFooter` | `modules/events/kitchen/kitchen_harassment.qsps` | 331 |
 | `KitchenHarassmentPrintHallReaction` | `modules/events/kitchen/kitchen_harassment.qsps` | 316 |
-| `KitchenHarassmentPrintText` | `modules/events/kitchen/kitchen_harassment_text.qsps` | 10 |
+| `KitchenHarassmentPrintText` | `modules/events/kitchen/kitchen_harassment_text.qsps` | 11 |
 | `KitchenHarassmentRenderScreen` | `modules/events/kitchen/kitchen_harassment.qsps` | 193 |
-| `KitchenHarassmentText` | `modules/events/kitchen/kitchen_harassment_text.qsps` | 18 |
+| `KitchenHarassmentText` | `modules/events/kitchen/kitchen_harassment_text.qsps` | 19 |
 | `KitchenHarassmentTry` | `modules/events/kitchen/kitchen_harassment.qsps` | 105 |
 | `KitchenHarassmentTryFromHall` | `modules/events/kitchen/kitchen_harassment.qsps` | 143 |
 | `KitchenLewdApplyConsequences` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 421 |
