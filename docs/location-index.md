@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 467
-- Locations: 3402
+- Source files: 469
+- Locations: 3418
 
 ## modules/actions
 
@@ -30,6 +30,7 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyIngaThreesomeCanStart` | `modules/actions/sex/group_sex_gates.qsps` | 177 |
 | `BeckyIngaThreesomeIntroText` | `modules/actions/sex/group_sex_text.qsps` | 87 |
 | `BeckyIngaThreesomeStepText` | `modules/actions/sex/group_sex_text.qsps` | 93 |
+| `BeckyTalkDexterityOil` | `modules/actions/dialogs/talk_with_becky.qsps` | 241 |
 | `BuildGirlLocationNpcLine` | `modules/actions/dialogs/girl_talk_session.qsps` | 187 |
 | `CanStartIntimScene` | `modules/actions/sex/intim_scene.qsps` | 93 |
 | `CanStartSexScene` | `modules/actions/sex/sex_scene_core.qsps` | 98 |
@@ -1559,6 +1560,7 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyShopBackroomPeekShowImage` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 532 |
 | `BeckyShopBackroomPeekText` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 499 |
 | `BeckyShopBackroomPeekTryOffer` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 43 |
+| `BeckyTalkDexterityOilText` | `modules/events/becky/becky_talk_text.qsps` | 132 |
 | `BeckyTalkEddieGeorgText` | `modules/events/becky/becky_talk_text.qsps` | 45 |
 | `BeckyTalkEddieOutragedText` | `modules/events/eddie/eddie_arc_text.qsps` | 22 |
 | `BeckyTalkEddieSonText` | `modules/events/becky/becky_talk_text.qsps` | 116 |
@@ -1584,7 +1586,7 @@ Generated from active project files in `qsp-project.json`.
 | `BirthCertificateReadText` | `modules/events/family/birth_certificate_text.qsps` | 17 |
 | `BirthCertificateSearchIntroText` | `modules/events/family/birth_certificate_text.qsps` | 11 |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 |
-| `BuildDraupnirTalkMenu` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 264 |
+| `BuildDraupnirTalkMenu` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 269 |
 | `CheckAmandaEvents` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 13 |
 | `ChurchConfessionApplySin` | `modules/events/church/church_confession_dynamic.qsps` | 196 |
 | `ChurchConfessionCanStart` | `modules/events/church/church_confession_dynamic.qsps` | 7 |
@@ -1692,6 +1694,7 @@ Generated from active project files in `qsp-project.json`.
 | `ChurchWeekdayPrintIntro` | `modules/events/church/church_weekday_menus.qsps` | 41 |
 | `ChurchWeekdayShowGerhardMenu` | `modules/events/church/church_weekday_menus.qsps` | 16 |
 | `ChurchWeekdayText` | `modules/events/church/church_weekday_text.qsps` | 8 |
+| `CityGatesWildLands` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 240 |
 | `ClarissaAnalCanStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 258 |
 | `ClarissaAnalSceneStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 291 |
 | `ClarissaAnalSceneText` | `modules/events/legare/clarissa_intim_arc_text.qsps` | 41 |
@@ -1752,8 +1755,9 @@ Generated from active project files in `qsp-project.json`.
 | `DailyAftermathResetDaily` | `modules/events/family/daily_aftermath.qsps` | 50 |
 | `DailyAftermathSelect` | `modules/events/family/daily_aftermath.qsps` | 67 |
 | `DailyAftermathShow` | `modules/events/family/daily_aftermath.qsps` | 185 |
+| `DraupnirBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 33 |
 | `DraupnirShop` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 195 |
-| `DraupnirUpgradesLocked` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 280 |
+| `DraupnirUpgradesLocked` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 285 |
 | `DraupnirUpgradesLockedText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 17 |
 | `EddieAlleySpy1` | `modules/events/eddie/eddie_arc.qsps` | 174 |
 | `EddieAlleySpy1Text` | `modules/events/eddie/eddie_arc_text.qsps` | 10 |
@@ -1868,6 +1872,7 @@ Generated from active project files in `qsp-project.json`.
 | `GeorgetteSeekLizetteFinish` | `modules/events/georgette/georgette_seek_lizette.qsps` | 91 |
 | `GeorgetteSeekLizetteText` | `modules/events/georgette/georgette_seek_lizette_text.qsps` | 8 |
 | `GeorgetteSeekScheduleNextDay` | `modules/events/georgette/georgette_seek_lizette.qsps` | 7 |
+| `GerhardBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 141 |
 | `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 251 |
 | `GirlMemoryOfStefanCheckConsistency` | `modules/events/hall/girl_memory_of_stefan.qsps` | 158 |
 | `GirlMemoryOfStefanClassifyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 93 |
@@ -1912,6 +1917,7 @@ Generated from active project files in `qsp-project.json`.
 | `GuardBribeResolve` | `modules/events/quests/guard_bribe_quest.qsps` | 233 |
 | `GuardBribeResolvedText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 34 |
 | `GuardBribeStart` | `modules/events/quests/guard_bribe_quest.qsps` | 119 |
+| `GuardPostBlackmailHint` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 220 |
 | `HallChoiceConsequencesApply` | `modules/events/hall/hall_choice_consequences.qsps` | 10 |
 | `HallChoiceConsequencesPrintText` | `modules/events/hall/hall_choice_consequences.qsps` | 81 |
 | `HallChoiceConsequenceText` | `modules/events/hall/hall_choice_consequences_text.qsps` | 10 |
@@ -2439,6 +2445,7 @@ Generated from active project files in `qsp-project.json`.
 | `IntimacyKinksText` | `modules/events/family/intimacy_kinks_text.qsps` | 6 |
 | `IrmaAmandaDanceDressBoughtText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 204 |
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 |
+| `IrmaBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 8 |
 | `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 |
 | `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 |
 | `KitchenCustomerApplyConsequences` | `modules/events/kitchen/kitchen_customer_event.qsps` | 717 |
@@ -2484,6 +2491,7 @@ Generated from active project files in `qsp-project.json`.
 | `KitchenLewdSandraStart` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 222 |
 | `KitchenLewdShowImage` | `modules/events/kitchen/kitchen_lewd_sandra.qsps` | 475 |
 | `KitchenPolicyReaction` | `modules/events/kitchen/kitchen_policy_reaction.qsps` | 15 |
+| `LegareBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 58 |
 | `LegareClarissaSuspicionAction` | `modules/events/legare/legare_clarissa_suspicion.qsps` | 141 |
 | `LegareClarissaSuspicionActionText` | `modules/events/legare/legare_clarissa_suspicion_text.qsps` | 18 |
 | `LegareClarissaSuspicionBuildMenu` | `modules/events/legare/legare_clarissa_suspicion.qsps` | 93 |
@@ -2510,9 +2518,12 @@ Generated from active project files in `qsp-project.json`.
 | `LizetteChurchWithGeorgetteTryActivate` | `modules/events/georgette/georgette_church_arc.qsps` | 79 |
 | `LizetteProstPortTryActivate` | `modules/events/georgette/georgette_church_arc.qsps` | 103 |
 | `MarkClarissaSupplyAftermathReady` | `modules/events/legare/legare_supply_aftermath.qsps` | 362 |
+| `MarketMongolHorseTrader` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 161 |
+| `MarketMongolHorseTraderSuccess` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 203 |
 | `MayorBlackmailPrintText` | `modules/events/mayor/mayor_blackmail_investigation_text.qsps` | 9 |
+| `MayorBlackmailTownPrintText` | `modules/events/mayor/mayor_blackmail_investigation_town_text.qsps` | 9 |
 | `MayorOfficeBirthCertificateClerkText` | `modules/events/family/birth_certificate_text.qsps` | 40 |
-| `MayorOfficeConfrontBlackmail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 149 |
+| `MayorOfficeConfrontBlackmail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 274 |
 | `MayorOfficeConfrontBribeSuccess` | `modules/events/sandra/sandra_mayor_arc.qsps` | 142 |
 | `MayorOfficeConfrontSandraVisits` | `modules/events/sandra/sandra_mayor_arc.qsps` | 90 |
 | `MeetGuard` | `modules/events/quests/guard_bribe_quest.qsps` | 151 |
@@ -2740,8 +2751,8 @@ Generated from active project files in `qsp-project.json`.
 | `PortCapitalShipCheck` | `modules/events/port/port_capital_ship.qsps` | 7 |
 | `PortCapitalShipMenu` | `modules/events/port/port_capital_ship.qsps` | 22 |
 | `PortCapitalShipText` | `modules/events/port/port_capital_ship_text.qsps` | 13 |
-| `PortClerkBribePaySuccess` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 112 |
-| `PortClerkTalk` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 68 |
+| `PortClerkBribePaySuccess` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 104 |
+| `PortClerkTalk` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 62 |
 | `PortNightAlleyApplySceneEffects` | `modules/events/port/port_night_alley_scenes.qsps` | 76 |
 | `PortNightAlleyCanShow` | `modules/events/port/port_night.qsps` | 203 |
 | `PortNightAlleyPeekScene` | `modules/events/port/port_night.qsps` | 261 |
@@ -2756,13 +2767,16 @@ Generated from active project files in `qsp-project.json`.
 | `PortNightRollBusy` | `modules/events/port/port_night.qsps` | 47 |
 | `PortNightText` | `modules/events/port/port_night_text.qsps` | 8 |
 | `PortNightTryShowGirlLink` | `modules/events/port/port_night.qsps` | 153 |
-| `PortNightWarehouseSneak` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 129 |
+| `PortNightWarehouseSneak` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 121 |
 | `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 74 |
 | `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 104 |
 | `PortProstNightCanEnter` | `modules/events/port/port_prost_night.qsps` | 7 |
 | `PortProstNightHire` | `modules/events/port/port_prost_night.qsps` | 35 |
 | `PortProstNightMenu` | `modules/events/port/port_prost_night.qsps` | 30 |
 | `PortProstNightText` | `modules/events/port/port_prost_night_text.qsps` | 8 |
+| `PortWarehouseAlarmEscape` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 211 |
+| `PortWarehouseLockpickTry` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 169 |
+| `PortWarehouseWakeupHome` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 253 |
 | `ProcessEddieMomBackground` | `modules/events/eddie/eddie_arc.qsps` | 471 |
 | `ProcessSandraBeckyOffense` | `modules/events/sandra/sandra_becky_conflict.qsps` | 133 |
 | `ProcessSandraStaffGirlsReaction` | `modules/events/sandra/sandra_staff_girls_reaction.qsps` | 21 |
@@ -2801,11 +2815,11 @@ Generated from active project files in `qsp-project.json`.
 | `SandraDraupnirAffairAdvance` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 42 |
 | `SandraDraupnirFridayBackgroundResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 22 |
 | `SandraDraupnirFridayCanStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 78 |
-| `SandraDraupnirFridayDoorBurst` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 300 |
-| `SandraDraupnirFridayDoorBurstResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 338 |
+| `SandraDraupnirFridayDoorBurst` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 305 |
+| `SandraDraupnirFridayDoorBurstResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 343 |
 | `SandraDraupnirFridayDoorBurstResolveText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 77 |
 | `SandraDraupnirFridayDoorBurstText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 73 |
-| `SandraDraupnirFridayIntercept` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 374 |
+| `SandraDraupnirFridayIntercept` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 379 |
 | `SandraDraupnirFridayInterceptText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 91 |
 | `SandraDraupnirFridayPeek` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 101 |
 | `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 |
@@ -2897,6 +2911,7 @@ Generated from active project files in `qsp-project.json`.
 | `SandraTalkAboutLegareStreetClashIntroText` | `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | 270 |
 | `SaveLastHallEvent` | `modules/events/hall/tavern_hall_events.qsps` | 143 |
 | `SexSceneCalcAmandaBlowjobCap` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 105 |
+| `ShipGearShop` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 83 |
 | `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 320 |
 | `SundayVisitBeckySandra` | `modules/events/visits/sunday_shop_visits.qsps` | 105 |
 | `SundayVisitBeckySandraApplyPhraseEffects` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 260 |
@@ -2933,7 +2948,7 @@ Generated from active project files in `qsp-project.json`.
 | `SundayVisitIrmaIngaTalkText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 312 |
 | `SundayVisitIrmaIngaText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 285 |
 | `TalkWithEddie` | `modules/events/eddie/eddie_arc.qsps` | 16 |
-| `TavernBarRumorDetail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 34 |
+| `TavernBarRumorDetail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 32 |
 | `TavernBarRumorRoll` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 8 |
 | `TavernDayEventApplyUnrepairedPenalty` | `modules/events/tavern/tavern_day_events.qsps` | 170 |
 | `TavernDayEventApplyWorkDaySummary` | `modules/events/tavern/tavern_day_events.qsps` | 487 |
@@ -3030,6 +3045,7 @@ Generated from active project files in `qsp-project.json`.
 | `TavernSupplyStatusText` | `modules/events/tavern/tavern_supply_status_text.qsps` | 8 |
 | `TavernWorkDayEvent` | `modules/events/tavern/tavern_events.qsps` | 10 |
 | `UpdateAmandaLegareBranchUnlock` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 18 |
+| `WildLandsGatesDepart` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 280 |
 
 ## modules/locations
 
@@ -3057,17 +3073,17 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyShopReturnAfterPurchase` | `modules/locations/shops/becky_shop_buy.qsps` | 10 |
 | `BuildAlberWineTalkMenu` | `modules/locations/shops/wine_shop.qsps` | 324 |
 | `BuildEddieShopTalkMenu` | `modules/locations/shops/becky_shop.qsps` | 403 |
-| `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 96 |
+| `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 103 |
 | `BuildMayorOfficeTalkMenu` | `modules/locations/town/mayor_office.qsps` | 939 |
 | `Church` | `modules/locations/town/church.qsps` | 7 |
-| `ChurchDonationInfo` | `modules/locations/town/church_weekday.qsps` | 87 |
-| `ChurchGerhardWeekdayTalk` | `modules/locations/town/church_weekday.qsps` | 69 |
+| `ChurchDonationInfo` | `modules/locations/town/church_weekday.qsps` | 94 |
+| `ChurchGerhardWeekdayTalk` | `modules/locations/town/church_weekday.qsps` | 76 |
 | `ChurchInterior` | `modules/locations/town/church.qsps` | 58 |
 | `ChurchSundayQuiet` | `modules/locations/town/church.qsps` | 119 |
-| `ChurchTaroUrns` | `modules/locations/town/church_weekday.qsps` | 105 |
+| `ChurchTaroUrns` | `modules/locations/town/church_weekday.qsps` | 112 |
 | `ChurchWalkAround` | `modules/locations/town/church.qsps` | 78 |
 | `ChurchWeekday` | `modules/locations/town/church_weekday.qsps` | 7 |
-| `ChurchWeekdayDonations` | `modules/locations/town/church_weekday.qsps` | 46 |
+| `ChurchWeekdayDonations` | `modules/locations/town/church_weekday.qsps` | 53 |
 | `CraftsmenQuarter` | `modules/locations/town/craftsmen_quarter.qsps` | 6 |
 | `DanceDressEnsureName` | `modules/locations/shops/irma_dance_dress.qsps` | 20 |
 | `DanceDressEscortCanStart` | `modules/locations/shops/irma_dance_dress.qsps` | 85 |
@@ -3091,7 +3107,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkDanceDressLater` | `modules/locations/shops/irma_dance_dress.qsps` | 236 |
 | `GirlTalkDanceDressStart` | `modules/locations/shops/irma_dance_dress.qsps` | 147 |
 | `GuardPost` | `modules/locations/town/guard_post.qsps` | 8 |
-| `GuardTalk` | `modules/locations/town/guard_post.qsps` | 70 |
+| `GuardTalk` | `modules/locations/town/guard_post.qsps` | 77 |
 | `IngaRoom` | `modules/locations/shops/becky_house.qsps` | 11 |
 | `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 112 |
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 539 |
@@ -3104,8 +3120,8 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 376 |
 | `IrmaFirstMeet` | `modules/locations/shops/irma_first_meet.qsps` | 7 |
 | `IrmaShop` | `modules/locations/shops/irma_shop.qsps` | 7 |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 284 |
-| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 314 |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 291 |
+| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 321 |
 | `IrmaShopRenderCommonHeader` | `modules/locations/shops/irma_shop.qsps` | 130 |
 | `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 173 |
 | `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 272 |
@@ -3153,7 +3169,7 @@ Generated from active project files in `qsp-project.json`.
 | `KitchenShowLocationImage` | `modules/locations/tavern/kitchen.qsps` | 188 |
 | `Market` | `modules/locations/town/market.qsps` | 7 |
 | `MarketDance` | `modules/locations/town/market_dance.qsps` | 14 |
-| `MarketRumors` | `modules/locations/town/market.qsps` | 123 |
+| `MarketRumors` | `modules/locations/town/market.qsps` | 130 |
 | `MayorClerkWorkoffEvaluate` | `modules/locations/town/mayor_office.qsps` | 481 |
 | `MayorOffice` | `modules/locations/town/mayor_office.qsps` | 39 |
 | `MayorOfficeAudienceAlreadyDoneText` | `modules/locations/town/mayor_office_text.qsps` | 97 |

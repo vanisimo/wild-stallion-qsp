@@ -2,11 +2,10 @@
 ! FILE: modules/events/mayor/mayor_blackmail_investigation.qsps
 ! MODULE: events/mayor
 ! [AI-WORKED] Текст переработан / дополнен ассистентом 29.09.2026
-! Расследование контрабанды Мэра (слухи у стойки -> портовый чиновник -> склад -> шантаж)
+! Расследование контрабанды Мэра (слухи у стойки -> портовый чиновник -> склад -> взлом -> накладная -> шантаж)
 ! ================================================
 
 #TavernBarRumorRoll
-    ! Вызывается при работе за стойкой или осмотре зала для вывода слухов посетителей
     *clr
     clr
     cla
@@ -14,7 +13,6 @@
     gs 'ShowLocationScreenTitle', 'РАЗГОВОРЫ У СТОЙКИ'
     gs 'SceneShowVisual', 'images/actions/tavern/tavern_bar_work/bar_talk', 'Разговоры посетителей у стойки', 'large', 'webp'
 
-    ! Выбор случайного посетителя (1=Моряк, 2=Наёмник, 3=Стражник, 4=Портовый чиновник)
     TavernBarRumorPick = RAND(1, 4)
 
     gs 'MayorBlackmailPrintText', 'rumor_intro_' + STR(TavernBarRumorPick)
@@ -42,16 +40,12 @@
     gs 'SceneShowVisual', 'images/actions/tavern/tavern_bar_work/bar_talk_detail', 'Разговор у стойки', 'large', 'webp'
 
     if MayorSecondTalkDone = 0:
-        ! До 2-го разговора с мэром: сплетники замолкают и отмахиваются
         gs 'MayorBlackmailPrintText', 'rumor_refuse_' + STR(TavernBarRumorPick)
     else:
-        ! После 2-го разговора с мэром:
         if TavernBarRumorPick = 4:
-            ! Портовый чиновник намекает на взятку
             gs 'MayorBlackmailPrintText', 'clerk_tavern_hint'
             PortClerkBribeHint = 1
         else:
-            ! Моряк, Наёмник, Стражник замолкают, но советуют поговорить с портовым чиновником
             gs 'MayorBlackmailPrintText', 'rumor_clerk_advise_' + STR(TavernBarRumorPick)
             PortClerkBribeHint = 1
         end
@@ -74,7 +68,6 @@
     gs 'SceneShowVisual', 'images/locations/port/clerk', 'Портовый чиновник у пакгаузов', 'large', 'webp'
 
     if time <> 4:
-        ! Не вечер (утро, полдень, день, ночь)
         gs 'MayorBlackmailPrintText', 'port_clerk_day_busy'
         *pl ' '
 
@@ -83,7 +76,6 @@
             gt 'Port'
         end
     else:
-        ! Вечер (time = 4)
         gs 'MayorBlackmailPrintText', 'port_clerk_evening_offer'
         *pl ' '
 
@@ -134,15 +126,148 @@
     gs 'ShowLocationScreenTitle', 'НОЧНОЙ СКЛАД ПАКГАУЗА'
     gs 'SceneShowVisual', 'images/locations/port/warehouse_night', 'Тайный склад в порту', 'large', 'webp'
 
-    gs 'MayorBlackmailPrintText', 'port_warehouse_sneak_success'
+    if PlayerHasWarehouseKeys = 0:
+        ! Первая ночь: нашли ключи, но первая попытка открыть ящик 100% срывает сигнализацию
+        PlayerHasWarehouseKeys = 1
+        PortWarehouseLockpickDeadline = day + 3
+        PortWarehouseLockpickTriesLeft = 3
 
-    PlayerHasMayorBlackmail = 1
+        gs 'MayorBlackmailPrintText', 'warehouse_night_first_try'
+        *pl ' '
 
+        gs 'ActUiPrepare', 'Пытаться спасаться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortWarehouseAlarmEscape'
+        end
+    else:
+        ! Повторные ночи: у игрока уже есть ключи
+        gs 'MayorBlackmailPrintText', 'warehouse_night_repeat_entry'
+        *pl ' '
+
+        if PortWarehouseLockpickTriesLeft <= 0 or day > PortWarehouseLockpickDeadline:
+            gs 'MayorBlackmailPrintText', 'warehouse_cargo_departed'
+            *pl ' '
+
+            gs 'ActUiPrepare', 'Покинуть склад', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'Port'
+            end
+        else:
+            gs 'ActUiPrepare', 'Пытаться вскрыть печать на ящике', 'work'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'PortWarehouseLockpickTry'
+            end
+
+            gs 'ActUiPrepare', 'Уйти со склада', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'Port'
+            end
+        end
+    end
+---
+
+#PortWarehouseLockpickTry
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ВЗЛОМ МАГИЧЕСКОЙ ПЕЧАТИ'
+    gs 'SceneShowVisual', 'images/locations/port/warehouse_seal', 'Магическая печать на ящике', 'large', 'webp'
+
+    LockpickChance = 30
+
+    if PlayerHasDexterityOil = 1:
+        LockpickChance += 40
+    end
+
+    LockpickRoll = RAND(1, 100)
+
+    if LockpickRoll <= LockpickChance:
+        ! Успех взлома! Печать снята без шума
+        PlayerHasWeaponShipmentInvoice = 1
+        PlayerKnows_MayorWeaponsToWildLands = 1
+
+        gs 'MayorBlackmailPrintText', 'warehouse_lockpick_success'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Забрать накладную и уйти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Port'
+        end
+    else:
+        ! Неудача: сработала сигнализация!
+        PortWarehouseLockpickTriesLeft -= 1
+
+        gs 'MayorBlackmailPrintText', 'warehouse_lockpick_failed_alarm'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Спасаться бегством!', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortWarehouseAlarmEscape'
+        end
+    end
+---
+
+#PortWarehouseAlarmEscape
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПОБЕГ ОТ СТРАЖИ'
+    gs 'SceneShowVisual', 'images/locations/port/alarm_escape', 'Побег из портового пакгауза', 'large', 'webp'
+
+    if GeorgetteKnown = 1 and Friends['georgette'] >= 10:
+        ! Жоржетта укрывает Стефана в переулке
+        gs 'MayorBlackmailPrintText', 'alarm_escape_georgette'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Поблагодарить Жоржетту и уйти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Street'
+        end
+    else:
+        EscapeRoll = RAND(1, 100)
+
+        if EscapeRoll <= 50:
+            ! Успешный побег
+            gs 'MayorBlackmailPrintText', 'alarm_escape_run_success'
+            *pl ' '
+
+            gs 'ActUiPrepare', 'Замести следы и уйти', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'Street'
+            end
+        else:
+            ! Неудача: стража догоняет и бьёт дубинкой по голове
+            gs 'MayorBlackmailPrintText', 'alarm_escape_caught_knockout'
+            *pl ' '
+
+            gs 'ActUiPrepare', 'Очнуться дома', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'PortWarehouseWakeupHome'
+            end
+        end
+    end
+---
+
+#PortWarehouseWakeupHome
+    *clr
+    clr
+    cla
+
+    ! Стефан очухался в комнате Сандры или Мелиссы с гудящей головой
+    time = 1
+    day += 1
+
+    gs 'ShowLocationScreenTitle', 'ПРОБУЖДЕНИЕ ДОМА'
+    gs 'SceneShowVisual', 'images/locations/tavern/second_floor', 'Пробуждение с гудящей головой', 'large', 'webp'
+
+    gs 'MayorBlackmailPrintText', 'wakeup_home_after_guards'
     *pl ' '
 
-    gs 'ActUiPrepare', 'Уйти незамеченным', 'return'
+    gs 'ActUiPrepare', 'Встать с кровати', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'Port'
+        gt 'TavernSecondFloor'
     end
 ---
 

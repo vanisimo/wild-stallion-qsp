@@ -224,10 +224,34 @@
     }
     gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(BeckyMayorClerkTalkDone=0 and (PlayerKnows['becky_backroom_clerk']=1 or EventWitnessed['becky_backroom_clerk']=1) and Friends[$GirlName]>=10 and Talked[$GirlName]<3,-1,0)"
 
+    gs 'MenuUiAdd', 'MenuBeckyTalk', 'Спросить про мазь «Ловкие пальцы»', ''
+    gs 'Menu.AddModule', 'MenuBeckyTalk', {
+        gt 'BeckyTalkDexterityOil'
+    }
+    gs 'Menu.AddCondition', 'MenuBeckyTalk', "Result=IIF(PlayerHasWarehouseKeys=1 and PlayerHasDexterityOil=0 and (sluttiness['becky']>=15 or SexSceneCount['becky']>0 or BeckySexUnlocked=1),-1,0)"
+
     gs 'MenuUiAdd', 'MenuBeckyTalk', 'Вернуться в лавку', ''
     gs 'Menu.AddModule', 'MenuBeckyTalk', {
         gt 'BeckyShop'
     }
 
     gs 'Menu.Show', 'MenuBeckyTalk'
+---
+
+#BeckyTalkDexterityOil
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'МАЗЬ «ЛОВКИЕ ПАЛЬЦЫ»'
+    gs 'SceneShowVisual', 'images/locations/shops/becky_shop/becky', 'Бекки в лавке', 'large', 'webp'
+
+    PlayerHasDexterityOil = 1
+    gs 'BeckyTalkDexterityOilText'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к разговору', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TalkWithBecky'
+    end
 ---

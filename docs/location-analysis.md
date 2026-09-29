@@ -2,11 +2,11 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 467
-- Locations: 3402
-- Locations with direct incoming calls: 2908
-- Locations without direct incoming calls: 494
-- Review candidates without direct incoming calls: 178
+- Source files: 469
+- Locations: 3418
+- Locations with direct incoming calls: 2923
+- Locations without direct incoming calls: 495
+- Review candidates without direct incoming calls: 179
 - Classified entry/helper locations without direct incoming calls: 316
 - Dynamic call sites: 2
 
@@ -150,6 +150,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IntimScene` | `modules/core/girls/girl_intim_menu.qsps` | 146 | `modules/core` |
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 539 | `modules/locations` |
 | `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 544 | `modules/locations` |
+| `LegareBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 58 | `modules/events` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 148 | `modules/core` |
 | `MelissaFirstPathChoiceAction` | `modules/events/melissa/melissa_musician_arc.qsps` | 739 | `modules/events` |
 | `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 239 | `modules/events` |
@@ -522,11 +523,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1376 |
-| `ShowLocationScreenTitle` | 602 |
-| `Menu.AddModule` | 582 |
-| `MenuUiAdd` | 574 |
-| `SceneShowVisual` | 530 |
+| `ActUiPrepare` | 1410 |
+| `ShowLocationScreenTitle` | 616 |
+| `Menu.AddModule` | 583 |
+| `MenuUiAdd` | 575 |
+| `SceneShowVisual` | 544 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 176 |
@@ -540,7 +541,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `PrintMainP` | 86 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 72 |
-| `Market` | 57 |
+| `Market` | 60 |
 | `PrintTitleLine` | 53 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `GirlTalkResult` | 51 |

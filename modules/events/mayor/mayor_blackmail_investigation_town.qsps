@@ -1,0 +1,295 @@
+! ================================================
+! FILE: modules/events/mayor/mayor_blackmail_investigation_town.qsps
+! MODULE: events/mayor
+! [AI-WORKED] Текст переработан / дополнен ассистентом 29.09.2026
+! Расследование контрабанды у горожан (Ирма, Драупнир, Легаре, Корабль, Священник, Монгол, Ворота)
+! ================================================
+
+#IrmaBlackmailTalk
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ИРМОЙ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma', 'Ирма в ателье', 'large', 'webp'
+
+    IrmaBlackmailTalkDone = 1
+
+    if Friends['irma'] >= 10:
+        PlayerArmorChest = 'leather_vest'
+        gs 'MayorBlackmailTownPrintText', 'irma_talk_success'
+    else:
+        gs 'MayorBlackmailTownPrintText', 'irma_talk_refused'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Назад в ателье', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaShop'
+    end
+---
+
+#DraupnirBlackmailTalk
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ДРАУПНИРОМ'
+    gs 'SceneShowVisual', 'images/locations/craftsmen/draupnir', 'Драупнир в мастерской', 'large', 'webp'
+
+    DraupnirBlackmailTalkDone = 1
+
+    if DraupnirOffended = 0:
+        PlayerWeapon = 'dwarven_shortsword'
+        gs 'MayorBlackmailTownPrintText', 'draupnir_talk_success'
+    else:
+        gs 'MayorBlackmailTownPrintText', 'draupnir_talk_refused'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Назад в мастерскую', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DraupnirShop'
+    end
+---
+
+#LegareBlackmailTalk
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ЛЕГАРЕ'
+    gs 'SceneShowVisual', 'images/locations/port/legare', 'Торговец Легаре', 'large', 'webp'
+
+    LegareBlackmailTalkDone = 1
+
+    if LegareConflict = 0:
+        PlayerArmorHead = 'leather_helmet'
+        gs 'MayorBlackmailTownPrintText', 'legare_talk_success'
+    else:
+        gs 'MayorBlackmailTownPrintText', 'legare_talk_refused'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Port'
+    end
+---
+
+#ShipGearShop
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ТОРГОВЕЦ НА КОРАБЛЕ'
+    gs 'SceneShowVisual', 'images/locations/port/capital_ship', 'Капитанский корабль из столицы', 'large', 'webp'
+
+    gs 'MayorBlackmailTownPrintText', 'ship_shop_intro'
+    *pl ' '
+
+    if PlayerArmorChest <> 'leather_vest':
+        if money >= 150:
+            gs 'ActUiPrepare', 'Купить кожаный нагрудник (150 монет)', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                money -= 150
+                PlayerArmorChest = 'leather_vest'
+                gt 'ShipGearShop'
+            end
+        else:
+            *pl '<i>Недостаточно денег для нагрудника (150 монет).</i>'
+        end
+    end
+
+    if PlayerWeapon <> 'dwarven_shortsword':
+        if money >= 200:
+            gs 'ActUiPrepare', 'Купить гномий меч (200 монет)', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                money -= 200
+                PlayerWeapon = 'dwarven_shortsword'
+                gt 'ShipGearShop'
+            end
+        else:
+            *pl '<i>Недостаточно денег для меча (200 монет).</i>'
+        end
+    end
+
+    if PlayerArmorHead <> 'leather_helmet':
+        if money >= 100:
+            gs 'ActUiPrepare', 'Купить кожаный шлем (100 монет)', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                money -= 100
+                PlayerArmorHead = 'leather_helmet'
+                gt 'ShipGearShop'
+            end
+        else:
+            *pl '<i>Недостаточно денег для шлема (100 монет).</i>'
+        end
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на палубу', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortCapitalShipMenu', 'Port'
+    end
+---
+
+#GerhardBlackmailTalk
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ОТЕЦ ГЕРХАРД В СОБОРЕ'
+    gs 'SceneShowVisual', 'images/locations/church/gerhard', 'Отец Герхард в соборе', 'large', 'webp'
+
+    GerhardBlackmailTalkDone = 1
+    PlayerHasPilgrimBulla = 1
+
+    gs 'MayorBlackmailTownPrintText', 'gerhard_talk_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поблагодарить и уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Church'
+    end
+---
+
+#MarketMongolHorseTrader
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ТОРГОВЕЦ ЛОШАДЬМИ (МОНГОЛ)'
+    gs 'SceneShowVisual', 'images/locations/market/horse_trader', 'Торговец лошадьми на рынке', 'large', 'webp'
+
+    if PlayerHasHorse = 1:
+        gs 'MayorBlackmailTownPrintText', 'mongol_already_bought'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Market'
+        end
+    else:
+        gs 'MayorBlackmailTownPrintText', 'mongol_offer_text'
+        *pl ' '
+
+        HorsePrice = 150
+
+        if money >= HorsePrice:
+            gs 'ActUiPrepare', 'Купить лошадь (150 спинтарий)', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                money -= HorsePrice
+                PlayerHasHorse = 1
+                TavernStableHasHorse = 1
+                gt 'MarketMongolHorseTraderSuccess'
+            end
+        else:
+            *pl '<i>У тебя недостаточно денег для покупки лошади (150 спинтарий).</i>'
+            *pl ' '
+        end
+
+        gs 'ActUiPrepare', 'Уйти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Market'
+        end
+    end
+---
+
+#MarketMongolHorseTraderSuccess
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПОКУПКА ЛОШАДИ'
+    gs 'SceneShowVisual', 'images/locations/market/horse_bought', 'Покупка верного коня', 'large', 'webp'
+
+    gs 'MayorBlackmailTownPrintText', 'mongol_bought_success'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#GuardPostBlackmailHint
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР СО СТРАЖНИКОМ'
+    gs 'SceneShowVisual', 'images/locations/town/guard_post', 'Стражник на городской площади', 'large', 'webp'
+
+    GuardPostHintDone = 1
+    WeaponCaravanDirection = 'north'
+
+    gs 'MayorBlackmailTownPrintText', 'guard_hint_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GuardPost'
+    end
+---
+
+#CityGatesWildLands
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ГОРОДСКИЕ ВОРОТА'
+    gs 'SceneShowVisual', 'images/locations/town/city_gates', 'Городские ворота к Диким Землям', 'large', 'webp'
+
+    if PlayerHasPilgrimBulla = 0:
+        gs 'MayorBlackmailTownPrintText', 'gates_no_bulla'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться на улицу', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Street'
+        end
+    elseif PlayerHasHorse = 0:
+        gs 'MayorBlackmailTownPrintText', 'gates_no_horse'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться на улицу', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Street'
+        end
+    else:
+        gs 'MayorBlackmailTownPrintText', 'gates_pass_ready'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Выехать за ворота в Дикие Земли', 'travel'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'WildLandsGatesDepart'
+        end
+
+        gs 'ActUiPrepare', 'Остаться в городе', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Street'
+        end
+    end
+---
+
+#WildLandsGatesDepart
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПУТЬ В ДИКИЕ ЗЕМЛИ'
+    gs 'SceneShowVisual', 'images/locations/town/wild_lands_road', 'Дорога в Дикие Земли', 'large', 'webp'
+
+    gs 'MayorBlackmailTownPrintText', 'wild_lands_depart_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на улицу', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---
