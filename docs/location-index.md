@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 465
-- Locations: 3395
+- Source files: 467
+- Locations: 3402
 
 ## modules/actions
 
@@ -289,7 +289,7 @@ Generated from active project files in `qsp-project.json`.
 | `RegisterTittyFuck` | `modules/actions/sex/sex_register.qsps` | 162 |
 | `RegisterVaginal` | `modules/actions/sex/sex_register.qsps` | 142 |
 | `ResetSexDailyFlags` | `modules/actions/sex/sex_daily_flags.qsps` | 7 |
-| `ResetTavernBarWorkDailyFlags` | `modules/actions/tavern/tavern_bar_work.qsps` | 288 |
+| `ResetTavernBarWorkDailyFlags` | `modules/actions/tavern/tavern_bar_work.qsps` | 295 |
 | `SandraBirthRevealCanTalk` | `modules/actions/dialogs/sandra_birth_reveal.qsps` | 7 |
 | `SandraBirthRevealClosingText` | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | 76 |
 | `SandraBirthRevealIntroText` | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | 25 |
@@ -422,12 +422,12 @@ Generated from active project files in `qsp-project.json`.
 | `ShowIntimSceneStatus` | `modules/actions/sex/intim_scene.qsps` | 200 |
 | `TalkWithAlber` | `modules/actions/dialogs/talk_with_alber.qsps` | 7 |
 | `TalkWithBecky` | `modules/actions/dialogs/talk_with_becky.qsps` | 7 |
-| `TavernBarWorkAdvanceTime` | `modules/actions/tavern/tavern_bar_work.qsps` | 216 |
-| `TavernBarWorkCalculateIncome` | `modules/actions/tavern/tavern_bar_work.qsps` | 138 |
-| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 270 |
-| `TavernBarWorkEndAndReturn` | `modules/actions/tavern/tavern_bar_work.qsps` | 107 |
-| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 126 |
-| `TavernBarWorkMaybeHallEvent` | `modules/actions/tavern/tavern_bar_work.qsps` | 176 |
+| `TavernBarWorkAdvanceTime` | `modules/actions/tavern/tavern_bar_work.qsps` | 223 |
+| `TavernBarWorkCalculateIncome` | `modules/actions/tavern/tavern_bar_work.qsps` | 145 |
+| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 277 |
+| `TavernBarWorkEndAndReturn` | `modules/actions/tavern/tavern_bar_work.qsps` | 114 |
+| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 133 |
+| `TavernBarWorkMaybeHallEvent` | `modules/actions/tavern/tavern_bar_work.qsps` | 183 |
 | `TavernBarWorkStart` | `modules/actions/tavern/tavern_bar_work.qsps` | 12 |
 
 ## modules/core
@@ -2510,8 +2510,10 @@ Generated from active project files in `qsp-project.json`.
 | `LizetteChurchWithGeorgetteTryActivate` | `modules/events/georgette/georgette_church_arc.qsps` | 79 |
 | `LizetteProstPortTryActivate` | `modules/events/georgette/georgette_church_arc.qsps` | 103 |
 | `MarkClarissaSupplyAftermathReady` | `modules/events/legare/legare_supply_aftermath.qsps` | 362 |
+| `MayorBlackmailPrintText` | `modules/events/mayor/mayor_blackmail_investigation_text.qsps` | 9 |
 | `MayorOfficeBirthCertificateClerkText` | `modules/events/family/birth_certificate_text.qsps` | 40 |
-| `MayorOfficeConfrontBribeSuccess` | `modules/events/sandra/sandra_mayor_arc.qsps` | 135 |
+| `MayorOfficeConfrontBlackmail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 149 |
+| `MayorOfficeConfrontBribeSuccess` | `modules/events/sandra/sandra_mayor_arc.qsps` | 142 |
 | `MayorOfficeConfrontSandraVisits` | `modules/events/sandra/sandra_mayor_arc.qsps` | 90 |
 | `MeetGuard` | `modules/events/quests/guard_bribe_quest.qsps` | 151 |
 | `MelissaAnalDiscoveryCanAdvance` | `modules/events/family/intimacy_kinks.qsps` | 464 |
@@ -2738,6 +2740,8 @@ Generated from active project files in `qsp-project.json`.
 | `PortCapitalShipCheck` | `modules/events/port/port_capital_ship.qsps` | 7 |
 | `PortCapitalShipMenu` | `modules/events/port/port_capital_ship.qsps` | 22 |
 | `PortCapitalShipText` | `modules/events/port/port_capital_ship_text.qsps` | 13 |
+| `PortClerkBribePaySuccess` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 112 |
+| `PortClerkTalk` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 68 |
 | `PortNightAlleyApplySceneEffects` | `modules/events/port/port_night_alley_scenes.qsps` | 76 |
 | `PortNightAlleyCanShow` | `modules/events/port/port_night.qsps` | 203 |
 | `PortNightAlleyPeekScene` | `modules/events/port/port_night.qsps` | 261 |
@@ -2752,6 +2756,7 @@ Generated from active project files in `qsp-project.json`.
 | `PortNightRollBusy` | `modules/events/port/port_night.qsps` | 47 |
 | `PortNightText` | `modules/events/port/port_night_text.qsps` | 8 |
 | `PortNightTryShowGirlLink` | `modules/events/port/port_night.qsps` | 153 |
+| `PortNightWarehouseSneak` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 129 |
 | `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 74 |
 | `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 104 |
 | `PortProstNightCanEnter` | `modules/events/port/port_prost_night.qsps` | 7 |
@@ -2928,6 +2933,8 @@ Generated from active project files in `qsp-project.json`.
 | `SundayVisitIrmaIngaTalkText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 312 |
 | `SundayVisitIrmaIngaText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 285 |
 | `TalkWithEddie` | `modules/events/eddie/eddie_arc.qsps` | 16 |
+| `TavernBarRumorDetail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 34 |
+| `TavernBarRumorRoll` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 8 |
 | `TavernDayEventApplyUnrepairedPenalty` | `modules/events/tavern/tavern_day_events.qsps` | 170 |
 | `TavernDayEventApplyWorkDaySummary` | `modules/events/tavern/tavern_day_events.qsps` | 487 |
 | `TavernDayEventCalcRepairCost` | `modules/events/tavern/tavern_day_events.qsps` | 699 |
@@ -3051,7 +3058,7 @@ Generated from active project files in `qsp-project.json`.
 | `BuildAlberWineTalkMenu` | `modules/locations/shops/wine_shop.qsps` | 324 |
 | `BuildEddieShopTalkMenu` | `modules/locations/shops/becky_shop.qsps` | 403 |
 | `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 96 |
-| `BuildMayorOfficeTalkMenu` | `modules/locations/town/mayor_office.qsps` | 932 |
+| `BuildMayorOfficeTalkMenu` | `modules/locations/town/mayor_office.qsps` | 939 |
 | `Church` | `modules/locations/town/church.qsps` | 7 |
 | `ChurchDonationInfo` | `modules/locations/town/church_weekday.qsps` | 87 |
 | `ChurchGerhardWeekdayTalk` | `modules/locations/town/church_weekday.qsps` | 69 |
@@ -3147,72 +3154,72 @@ Generated from active project files in `qsp-project.json`.
 | `Market` | `modules/locations/town/market.qsps` | 7 |
 | `MarketDance` | `modules/locations/town/market_dance.qsps` | 14 |
 | `MarketRumors` | `modules/locations/town/market.qsps` | 123 |
-| `MayorClerkWorkoffEvaluate` | `modules/locations/town/mayor_office.qsps` | 474 |
+| `MayorClerkWorkoffEvaluate` | `modules/locations/town/mayor_office.qsps` | 481 |
 | `MayorOffice` | `modules/locations/town/mayor_office.qsps` | 39 |
 | `MayorOfficeAudienceAlreadyDoneText` | `modules/locations/town/mayor_office_text.qsps` | 97 |
 | `MayorOfficeAudienceBribeOfferText` | `modules/locations/town/mayor_office_text.qsps` | 27 |
-| `MayorOfficeAudienceGate` | `modules/locations/town/mayor_office.qsps` | 199 |
+| `MayorOfficeAudienceGate` | `modules/locations/town/mayor_office.qsps` | 206 |
 | `MayorOfficeAudienceRefusedDoneText` | `modules/locations/town/mayor_office_text.qsps` | 103 |
-| `MayorOfficeBribeNoMoney` | `modules/locations/town/mayor_office.qsps` | 268 |
+| `MayorOfficeBribeNoMoney` | `modules/locations/town/mayor_office.qsps` | 275 |
 | `MayorOfficeBribeNoMoneyText` | `modules/locations/town/mayor_office_text.qsps` | 220 |
 | `MayorOfficeBribePaidText` | `modules/locations/town/mayor_office_text.qsps` | 42 |
-| `MayorOfficeBribePay` | `modules/locations/town/mayor_office.qsps` | 310 |
+| `MayorOfficeBribePay` | `modules/locations/town/mayor_office.qsps` | 317 |
 | `MayorOfficeCityTaxClerkPeekAddonText` | `modules/locations/town/mayor_office_text.qsps` | 152 |
-| `MayorOfficeCityTaxTalk` | `modules/locations/town/mayor_office.qsps` | 177 |
+| `MayorOfficeCityTaxTalk` | `modules/locations/town/mayor_office.qsps` | 184 |
 | `MayorOfficeCityTaxTalkText` | `modules/locations/town/mayor_office_text.qsps` | 70 |
 | `MayorOfficeClerkAdvicePeekAddonText` | `modules/locations/town/mayor_office_text.qsps` | 158 |
-| `MayorOfficeClerkAdviceReplay` | `modules/locations/town/mayor_office.qsps` | 459 |
+| `MayorOfficeClerkAdviceReplay` | `modules/locations/town/mayor_office.qsps` | 466 |
 | `MayorOfficeClerkAdviceReplayText` | `modules/locations/town/mayor_office_text.qsps` | 182 |
-| `MayorOfficeClerkAdviceTalk` | `modules/locations/town/mayor_office.qsps` | 429 |
+| `MayorOfficeClerkAdviceTalk` | `modules/locations/town/mayor_office.qsps` | 436 |
 | `MayorOfficeClerkAdviceText` | `modules/locations/town/mayor_office_text.qsps` | 170 |
-| `MayorOfficeClerkBackroomMention` | `modules/locations/town/mayor_office.qsps` | 407 |
+| `MayorOfficeClerkBackroomMention` | `modules/locations/town/mayor_office.qsps` | 414 |
 | `MayorOfficeClerkBackroomMentionText` | `modules/locations/town/mayor_office_text.qsps` | 140 |
-| `MayorOfficeClerkBackroomMenu` | `modules/locations/town/mayor_office.qsps` | 917 |
+| `MayorOfficeClerkBackroomMenu` | `modules/locations/town/mayor_office.qsps` | 924 |
 | `MayorOfficeClerkBackroomMenuText` | `modules/locations/town/mayor_office_text.qsps` | 162 |
-| `MayorOfficeClerkNoMoneyAlternative` | `modules/locations/town/mayor_office.qsps` | 289 |
+| `MayorOfficeClerkNoMoneyAlternative` | `modules/locations/town/mayor_office.qsps` | 296 |
 | `MayorOfficeClerkNoMoneyAlternativeText` | `modules/locations/town/mayor_office_text.qsps` | 226 |
 | `MayorOfficeClerkRefundOpenPeekText` | `modules/locations/town/mayor_office_text.qsps` | 126 |
 | `MayorOfficeClerkRefundOpenText` | `modules/locations/town/mayor_office_text.qsps` | 109 |
-| `MayorOfficeClerkRefundTalk` | `modules/locations/town/mayor_office.qsps` | 376 |
+| `MayorOfficeClerkRefundTalk` | `modules/locations/town/mayor_office.qsps` | 383 |
 | `MayorOfficeClosedText` | `modules/locations/town/mayor_office_text.qsps` | 64 |
-| `MayorOfficeFirstTalk` | `modules/locations/town/mayor_office.qsps` | 574 |
+| `MayorOfficeFirstTalk` | `modules/locations/town/mayor_office.qsps` | 581 |
 | `MayorOfficeFirstTalkText` | `modules/locations/town/mayor_office_text.qsps` | 234 |
 | `MayorOfficeInit` | `modules/locations/town/mayor_office.qsps` | 7 |
 | `MayorOfficeIntroText` | `modules/locations/town/mayor_office_text.qsps` | 9 |
-| `MayorOfficeMagistrateGate` | `modules/locations/town/mayor_office.qsps` | 758 |
+| `MayorOfficeMagistrateGate` | `modules/locations/town/mayor_office.qsps` | 765 |
 | `MayorOfficeMagistrateGateText` | `modules/locations/town/mayor_office_text.qsps` | 272 |
 | `MayorOfficeMagistrateNoMoneyText` | `modules/locations/town/mayor_office_text.qsps` | 294 |
-| `MayorOfficeMagistratePendingScreen` | `modules/locations/town/mayor_office.qsps` | 888 |
-| `MayorOfficeMagistrateResolve` | `modules/locations/town/mayor_office.qsps` | 865 |
-| `MayorOfficeMagistrateSubmit` | `modules/locations/town/mayor_office.qsps` | 773 |
+| `MayorOfficeMagistratePendingScreen` | `modules/locations/town/mayor_office.qsps` | 895 |
+| `MayorOfficeMagistrateResolve` | `modules/locations/town/mayor_office.qsps` | 872 |
+| `MayorOfficeMagistrateSubmit` | `modules/locations/town/mayor_office.qsps` | 780 |
 | `MayorOfficeMagistrateSubmitText` | `modules/locations/town/mayor_office_text.qsps` | 278 |
 | `MayorOfficeMagistrateSuccessText` | `modules/locations/town/mayor_office_text.qsps` | 286 |
 | `MayorOfficeMagistrateWeakCaseText` | `modules/locations/town/mayor_office_text.qsps` | 300 |
-| `MayorOfficeMayorCabinet` | `modules/locations/town/mayor_office.qsps` | 335 |
+| `MayorOfficeMayorCabinet` | `modules/locations/town/mayor_office.qsps` | 342 |
 | `MayorOfficeMayorCabinetRefusedText` | `modules/locations/town/mayor_office_text.qsps` | 50 |
-| `MayorOfficeMayorTalk` | `modules/locations/town/mayor_office.qsps` | 607 |
+| `MayorOfficeMayorTalk` | `modules/locations/town/mayor_office.qsps` | 614 |
 | `MayorOfficeMayorTalkText` | `modules/locations/town/mayor_office_text.qsps` | 260 |
-| `MayorOfficeReception` | `modules/locations/town/mayor_office.qsps` | 353 |
+| `MayorOfficeReception` | `modules/locations/town/mayor_office.qsps` | 360 |
 | `MayorOfficeReceptionText` | `modules/locations/town/mayor_office_text.qsps` | 58 |
-| `MayorOfficeSecondAudienceGate` | `modules/locations/town/mayor_office.qsps` | 622 |
+| `MayorOfficeSecondAudienceGate` | `modules/locations/town/mayor_office.qsps` | 629 |
 | `MayorOfficeSecondAudienceNotYetText` | `modules/locations/town/mayor_office_text.qsps` | 308 |
 | `MayorOfficeSecondAudienceReadyText` | `modules/locations/town/mayor_office_text.qsps` | 314 |
-| `MayorOfficeSecondTalk` | `modules/locations/town/mayor_office.qsps` | 670 |
-| `MayorOfficeSecondTalkMotherReveal` | `modules/locations/town/mayor_office.qsps` | 718 |
+| `MayorOfficeSecondTalk` | `modules/locations/town/mayor_office.qsps` | 677 |
+| `MayorOfficeSecondTalkMotherReveal` | `modules/locations/town/mayor_office.qsps` | 725 |
 | `MayorOfficeSecondTalkMotherRevealText` | `modules/locations/town/mayor_office_text.qsps` | 368 |
-| `MayorOfficeSecondTalkOffer` | `modules/locations/town/mayor_office.qsps` | 686 |
+| `MayorOfficeSecondTalkOffer` | `modules/locations/town/mayor_office.qsps` | 693 |
 | `MayorOfficeSecondTalkOfferText` | `modules/locations/town/mayor_office_text.qsps` | 334 |
 | `MayorOfficeSecondTalkOfficialText` | `modules/locations/town/mayor_office_text.qsps` | 320 |
-| `MayorOfficeSecondTalkRebuttal` | `modules/locations/town/mayor_office.qsps` | 702 |
+| `MayorOfficeSecondTalkRebuttal` | `modules/locations/town/mayor_office.qsps` | 709 |
 | `MayorOfficeSecondTalkRebuttalText` | `modules/locations/town/mayor_office_text.qsps` | 348 |
-| `MayorOfficeSecondTalkThoughts` | `modules/locations/town/mayor_office.qsps` | 734 |
+| `MayorOfficeSecondTalkThoughts` | `modules/locations/town/mayor_office.qsps` | 741 |
 | `MayorOfficeSecondTalkThoughtsText` | `modules/locations/town/mayor_office_text.qsps` | 394 |
 | `MayorOfficeShowClerkImage` | `modules/locations/town/mayor_office.qsps` | 24 |
 | `MayorOfficeShowClerkMoneyImage` | `modules/locations/town/mayor_office.qsps` | 29 |
 | `MayorOfficeShowMayorImage` | `modules/locations/town/mayor_office.qsps` | 34 |
-| `MayorOfficeSubmitCertificate` | `modules/locations/town/mayor_office.qsps` | 149 |
+| `MayorOfficeSubmitCertificate` | `modules/locations/town/mayor_office.qsps` | 156 |
 | `MayorOfficeSubmitCertificateText` | `modules/locations/town/mayor_office_text.qsps` | 17 |
-| `MayorOfficeWorkoffGate` | `modules/locations/town/mayor_office.qsps` | 505 |
+| `MayorOfficeWorkoffGate` | `modules/locations/town/mayor_office.qsps` | 512 |
 | `MayorOfficeWorkoffNeedProfitText` | `modules/locations/town/mayor_office_text.qsps` | 200 |
 | `MayorOfficeWorkoffNeedSignText` | `modules/locations/town/mayor_office_text.qsps` | 192 |
 | `MayorOfficeWorkoffNeedStaffText` | `modules/locations/town/mayor_office_text.qsps` | 196 |
@@ -3228,7 +3235,7 @@ Generated from active project files in `qsp-project.json`.
 | `PlayerRoomGroom` | `modules/locations/rooms/player_room.qsps` | 92 |
 | `PlayerRoomMasturbate` | `modules/locations/rooms/player_room.qsps` | 54 |
 | `Port` | `modules/locations/town/port.qsps` | 6 |
-| `PortRumors` | `modules/locations/town/port.qsps` | 146 |
+| `PortRumors` | `modules/locations/town/port.qsps` | 160 |
 | `ProcessDanceDressFittingDue` | `modules/locations/shops/irma_dance_dress.qsps` | 520 |
 | `SandraRoom` | `modules/locations/rooms/sandra_room.qsps` | 8 |
 | `SandraRoomInspect` | `modules/locations/rooms/sandra_room.qsps` | 76 |
@@ -3258,15 +3265,15 @@ Generated from active project files in `qsp-project.json`.
 | `TavernHallLookReturnToMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 86 |
 | `TavernHallLookTryRareBonusEvents` | `modules/locations/tavern/tavern_hall_activity.qsps` | 199 |
 | `TavernMain` | `modules/locations/tavern/tavern_main.qsps` | 11 |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 618 |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 445 |
-| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 550 |
-| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 384 |
-| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 374 |
-| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 350 |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 625 |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 452 |
+| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 557 |
+| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 391 |
+| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 381 |
+| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 357 |
 | `TavernManagement` | `modules/locations/tavern/tavern_management.qsps` | 7 |
 | `TavernPriceSettings` | `modules/locations/tavern/tavern_management.qsps` | 31 |
-| `TavernSecondFloor` | `modules/locations/tavern/tavern_main.qsps` | 238 |
+| `TavernSecondFloor` | `modules/locations/tavern/tavern_main.qsps` | 245 |
 | `TavernStaffManagement` | `modules/locations/tavern/tavern_management.qsps` | 87 |
 | `WineShop` | `modules/locations/shops/wine_shop.qsps` | 7 |
 | `WineShopBuyBeer` | `modules/locations/shops/wine_shop_buy.qsps` | 100 |

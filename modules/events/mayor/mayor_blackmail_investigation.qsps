@@ -1,0 +1,174 @@
+! ================================================
+! FILE: modules/events/mayor/mayor_blackmail_investigation.qsps
+! MODULE: events/mayor
+! [AI-WORKED] Текст переработан / дополнен ассистентом 29.09.2026
+! Расследование контрабанды Мэра (слухи у стойки -> портовый чиновник -> склад -> шантаж)
+! ================================================
+
+#TavernBarRumorRoll
+    ! Вызывается при работе за стойкой или осмотре зала для вывода слухов посетителей
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОРЫ У СТОЙКИ'
+    gs 'SceneShowVisual', 'images/actions/tavern/tavern_bar_work/bar_talk', 'Разговоры посетителей у стойки', 'large', 'webp'
+
+    ! Выбор случайного посетителя (1=Моряк, 2=Наёмник, 3=Стражник, 4=Портовый чиновник)
+    TavernBarRumorPick = RAND(1, 4)
+
+    gs 'MayorBlackmailPrintText', 'rumor_intro_' + STR(TavernBarRumorPick)
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Подробно расспросить', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernBarRumorDetail', TavernBarRumorPick
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к работе', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#TavernBarRumorDetail
+    *clr
+    clr
+    cla
+
+    TavernBarRumorPick = ARGS[0]
+
+    gs 'ShowLocationScreenTitle', 'ПОДРОБНОСТИ РАЗГОВОРА'
+    gs 'SceneShowVisual', 'images/actions/tavern/tavern_bar_work/bar_talk_detail', 'Разговор у стойки', 'large', 'webp'
+
+    if MayorSecondTalkDone = 0:
+        ! До 2-го разговора с мэром: сплетники замолкают и отмахиваются
+        gs 'MayorBlackmailPrintText', 'rumor_refuse_' + STR(TavernBarRumorPick)
+    else:
+        ! После 2-го разговора с мэром:
+        if TavernBarRumorPick = 4:
+            ! Портовый чиновник намекает на взятку
+            gs 'MayorBlackmailPrintText', 'clerk_tavern_hint'
+            PortClerkBribeHint = 1
+        else:
+            ! Моряк, Наёмник, Стражник замолкают, но советуют поговорить с портовым чиновником
+            gs 'MayorBlackmailPrintText', 'rumor_clerk_advise_' + STR(TavernBarRumorPick)
+            PortClerkBribeHint = 1
+        end
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#PortClerkTalk
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПОРТОВЫЙ ЧИНОВНИК'
+    gs 'SceneShowVisual', 'images/locations/port/clerk', 'Портовый чиновник у пакгаузов', 'large', 'webp'
+
+    if time <> 4:
+        ! Не вечер (утро, полдень, день, ночь)
+        gs 'MayorBlackmailPrintText', 'port_clerk_day_busy'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться к причалу', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Port'
+        end
+    else:
+        ! Вечер (time = 4)
+        gs 'MayorBlackmailPrintText', 'port_clerk_evening_offer'
+        *pl ' '
+
+        PortClerkBribeFee = 100
+
+        if money >= PortClerkBribeFee:
+            gs 'ActUiPrepare', 'Дать взятку (100 спинтарий)', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                money -= PortClerkBribeFee
+                PortWarehouseUnlocked = 1
+                PortWarehouseUnlockedDay = day
+                gt 'PortClerkBribePaySuccess'
+            end
+        else:
+            *pl '<i>У тебя недостаточно монет для взятки (' + STR(money) + ' / 100 спинтарий).</i>'
+            *pl ' '
+        end
+
+        gs 'ActUiPrepare', 'Уйти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Port'
+        end
+    end
+---
+
+#PortClerkBribePaySuccess
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ДОГОВОРЁННОСТЬ С ЧИНОВНИКОМ'
+    gs 'SceneShowVisual', 'images/locations/port/clerk_bribe', 'Взятка портовому чиновнику', 'large', 'webp'
+
+    gs 'MayorBlackmailPrintText', 'port_clerk_bribe_paid'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к причалу', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Port'
+    end
+---
+
+#PortNightWarehouseSneak
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'НОЧНОЙ СКЛАД ПАКГАУЗА'
+    gs 'SceneShowVisual', 'images/locations/port/warehouse_night', 'Тайный склад в порту', 'large', 'webp'
+
+    gs 'MayorBlackmailPrintText', 'port_warehouse_sneak_success'
+
+    PlayerHasMayorBlackmail = 1
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Уйти незамеченным', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Port'
+    end
+---
+
+#MayorOfficeConfrontBlackmail
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КАБИНЕТ МЭРА: ШАНТАЖ'
+    gs 'SceneShowVisual', 'images/locations/mayor/office/mayor_confront', 'Шантаж мэра в кабинете', 'large', 'webp'
+
+    gs 'MayorBlackmailPrintText', 'mayor_blackmail_confront_text'
+
+    SandraMayorVisitsStopped = 1
+    BirthCertificateMagistrateConfirmed = 1
+    BirthCertificateMagistratePending = 0
+    MayorBlackmailSuccess = 1
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_MayorBlackmailDone_1'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Покинуть кабинет мэра', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---

@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 465
-- Locations: 3395
-- Locations with direct incoming calls: 2901
+- Source files: 467
+- Locations: 3402
+- Locations with direct incoming calls: 2908
 - Locations without direct incoming calls: 494
 - Review candidates without direct incoming calls: 178
 - Classified entry/helper locations without direct incoming calls: 316
@@ -185,7 +185,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
 | `SparkQueueActKitchen` | `modules/core/tavern/spark_queue.qsps` | 237 | `modules/core` |
 | `SweetsShopBuyItem` | `modules/locations/shops/sweets_shop_buy.qsps` | 24 | `modules/locations` |
-| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 126 | `modules/actions` |
+| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 133 | `modules/actions` |
 | `TavernHallActivityCalcChance` | `modules/locations/tavern/tavern_hall_activity.qsps` | 401 | `modules/locations` |
 | `TavernHallLookFinishOnMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 68 | `modules/locations` |
 | `TextStyleSetColor` | `modules/core/text/text_format.qsps` | 136 | `modules/core` |
@@ -503,7 +503,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `SparkQueueDebugReset` | `modules/core/tavern/spark_queue.qsps` | 335 | `entry/helper` |
 | `TalkWithClarissa` | `modules/core/system/compatibility_aliases.qsps` | 251 | `entry/helper` |
 | `TalkWithGerhard` | `modules/core/system/compatibility_aliases.qsps` | 259 | `entry/helper` |
-| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 270 | `entry/helper` |
+| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 277 | `entry/helper` |
 | `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 70 | `entry/helper` |
 | `TavernHallActivityNoEventScreen` | `modules/locations/tavern/tavern_hall_activity.qsps` | 439 | `entry/helper` |
 | `TavernHallEventCleaningAttention` | `modules/events/hall/tavern_hall_events.qsps` | 978 | `entry/helper` |
@@ -511,8 +511,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 974 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 855 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 618 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 445 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 625 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 452 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 304 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -522,15 +522,15 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1361 |
-| `ShowLocationScreenTitle` | 596 |
+| `ActUiPrepare` | 1376 |
+| `ShowLocationScreenTitle` | 602 |
 | `Menu.AddModule` | 582 |
 | `MenuUiAdd` | 574 |
-| `SceneShowVisual` | 524 |
+| `SceneShowVisual` | 530 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 176 |
-| `TavernMain` | 162 |
+| `TavernMain` | 164 |
 | `ShowGirlSidebar` | 102 |
 | `Menu.Create` | 98 |
 | `Menu.Destroy` | 92 |
