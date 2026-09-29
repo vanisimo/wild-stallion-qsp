@@ -120,6 +120,9 @@ Follow the existing project style:
 - Avoid renaming existing variables, locations, or files unless the user explicitly asks for a refactor.
 - Always check that every `if` has its matching `end`.
 - Avoid duplicate location names.
+- **Обращение к ГГ (Стефану) в повествовании:**
+  - Описание действий и мысли главного героя всегда строятся на **«ты»** (*«Ты подходишь»*, *«Ты поправил»*, *«Ты видишь»*).
+  - Никакого «Вы / вы» при описании действий ГГ (*«Вы подошли»* $\rightarrow$ *«Ты подошёл»*).
 
 ### USER-OWNED TEXT (do not overwrite prose)
 
