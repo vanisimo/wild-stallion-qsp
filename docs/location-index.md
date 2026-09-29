@@ -56,11 +56,11 @@ Generated from active project files in `qsp-project.json`.
 | `GirlNoPantiesWorkClampGirl` | `modules/actions/tavern/girl_no_panties_work.qsps` | 143 |
 | `GirlNoPantiesWorkIsActive` | `modules/actions/tavern/girl_no_panties_work.qsps` | 14 |
 | `GirlNoPantiesWorkNormalizeKey` | `modules/actions/tavern/girl_no_panties_work.qsps` | 190 |
-| `GirlNoPantiesWorkPrintText` | `modules/actions/tavern/girl_no_panties_work_text.qsps` | 6 |
+| `GirlNoPantiesWorkPrintText` | `modules/actions/tavern/girl_no_panties_work_text.qsps` | 9 |
 | `GirlNoPantiesWorkRollAgreePutOn` | `modules/actions/tavern/girl_no_panties_work.qsps` | 103 |
 | `GirlNoPantiesWorkRollAgreeRemove` | `modules/actions/tavern/girl_no_panties_work.qsps` | 68 |
 | `GirlNoPantiesWorkTalkSet` | `modules/actions/tavern/girl_uniform_talk.qsps` | 355 |
-| `GirlNoPantiesWorkText` | `modules/actions/tavern/girl_no_panties_work_text.qsps` | 16 |
+| `GirlNoPantiesWorkText` | `modules/actions/tavern/girl_no_panties_work_text.qsps` | 19 |
 | `GirlTalk` | `modules/actions/dialogs/girl_talk.qsps` | 11 |
 | `GirlTalkAddReturnButton` | `modules/actions/dialogs/girl_talk_session.qsps` | 48 |
 | `GirlTalkAfterSmalltalk` | `modules/actions/dialogs/girl_talk_town.qsps` | 121 |
