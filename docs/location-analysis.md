@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 469
-- Locations: 3418
-- Locations with direct incoming calls: 2923
+- Locations: 3423
+- Locations with direct incoming calls: 2928
 - Locations without direct incoming calls: 495
 - Review candidates without direct incoming calls: 179
 - Classified entry/helper locations without direct incoming calls: 316
@@ -523,11 +523,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1410 |
-| `ShowLocationScreenTitle` | 616 |
+| `ActUiPrepare` | 1423 |
+| `ShowLocationScreenTitle` | 621 |
 | `Menu.AddModule` | 583 |
 | `MenuUiAdd` | 575 |
-| `SceneShowVisual` | 544 |
+| `SceneShowVisual` | 549 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 176 |
@@ -542,12 +542,12 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 72 |
 | `Market` | 60 |
-| `PrintTitleLine` | 53 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `GirlTalkResult` | 51 |
+| `PrintTitleLine` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `Menu.AddCondition` | 44 |
 
 ## Dynamic Call Sites
 

@@ -276,18 +276,42 @@
     clr
     cla
 
+    if EquippedChest = 1 or EquippedHead = 1 or EquippedWeapon = 1:
+        gs 'ShowLocationScreenTitle', 'ПРИЁМНАЯ МЭРИИ'
+        gs 'SceneShowVisual', 'images/locations/mayor/office/clerk', 'Клерк останавливает у дверей', 'large', 'webp'
+
+        *pl 'Клерк в приёмной с ужасом глядит на твоё снаряжение и выставляет руки вперёд:'
+        *pl ' '
+        *pl '— Помилуйте, молодой человек! В этих стенах хождение в боевых доспехах и с мечом наголо строжайше запрещено! Извольте немедленно сложить оружие и бронь в сундук у себя дома перед аудиенцией!'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться в приёмную', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MayorOffice'
+        end
+        exit
+    end
+
     gs 'ShowLocationScreenTitle', 'КАБИНЕТ МЭРА: ШАНТАЖ'
     gs 'SceneShowVisual', 'images/locations/mayor/office/mayor_confront', 'Шантаж мэра в кабинете', 'large', 'webp'
 
-    gs 'MayorBlackmailPrintText', 'mayor_blackmail_confront_text'
+    if MercenaryAlive = 0:
+        ! Наёмник убит: только накладные -> Провал шантажа
+        gs 'MayorBlackmailPrintText', 'mayor_blackmail_failed_no_witness'
+        BlackmailFailed = 1
+    else:
+        ! Наёмник спасён: есть свидетель у Отца Герхарда -> Успех шантажа!
+        gs 'MayorBlackmailPrintText', 'mayor_blackmail_success_witness'
 
-    SandraMayorVisitsStopped = 1
-    BirthCertificateMagistrateConfirmed = 1
-    BirthCertificateMagistratePending = 0
-    MayorBlackmailSuccess = 1
+        SandraMayorVisitsStopped = 1
+        MayorWroteCapitalLetter = 1
+        PlayerHasNobleSuit = 1
+        MayorTavernPublicPraise = 1
+        MayorBlackmailSuccess = 1
 
-    if LOC('KnowledgeRegisterFact') = 1:
-        gs 'KnowledgeRegisterFact', 'Stefan_MayorBlackmailDone_1'
+        if LOC('KnowledgeRegisterFact') = 1:
+            gs 'KnowledgeRegisterFact', 'Stefan_MayorBlackmailDone_1'
+        end
     end
 
     *pl ' '

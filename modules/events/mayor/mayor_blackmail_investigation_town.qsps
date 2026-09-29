@@ -2,7 +2,7 @@
 ! FILE: modules/events/mayor/mayor_blackmail_investigation_town.qsps
 ! MODULE: events/mayor
 ! [AI-WORKED] Текст переработан / дополнен ассистентом 29.09.2026
-! Расследование контрабанды у горожан (Ирма, Драупнир, Легаре, Корабль, Священник, Монгол, Ворота)
+! Расследование контрабанды у горожан, сундук экипировки, ворота, засада в Диких Землях и финал у Мэра
 ! ================================================
 
 #IrmaBlackmailTalk
@@ -237,6 +237,73 @@
     end
 ---
 
+#PlayerRoomEquipmentChest
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СУНДУК СО СНАРЯЖЕНИЕМ'
+    gs 'SceneShowVisual', 'images/locations/player_room/chest', 'Сундук Стефана', 'large', 'webp'
+
+    gs 'MayorBlackmailTownPrintText', 'chest_status_intro'
+    *pl ' '
+
+    if PlayerArmorChest = 'leather_vest':
+        if EquippedChest = 1:
+            gs 'ActUiPrepare', 'Снять кожаный нагрудник', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedChest = 0
+                gt 'PlayerRoomEquipmentChest'
+            end
+        else:
+            gs 'ActUiPrepare', 'Надеть кожаный нагрудник', 'policy'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedChest = 1
+                gt 'PlayerRoomEquipmentChest'
+            end
+        end
+    end
+
+    if PlayerArmorHead = 'leather_helmet':
+        if EquippedHead = 1:
+            gs 'ActUiPrepare', 'Снять кожаный шлем', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedHead = 0
+                gt 'PlayerRoomEquipmentChest'
+            end
+        else:
+            gs 'ActUiPrepare', 'Надеть кожаный шлем', 'policy'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedHead = 1
+                gt 'PlayerRoomEquipmentChest'
+            end
+        end
+    end
+
+    if PlayerWeapon = 'dwarven_shortsword':
+        if EquippedWeapon = 1:
+            gs 'ActUiPrepare', 'Снять гномий меч', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedWeapon = 0
+                gt 'PlayerRoomEquipmentChest'
+            end
+        else:
+            gs 'ActUiPrepare', 'Надеть гномий меч', 'policy'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedWeapon = 1
+                gt 'PlayerRoomEquipmentChest'
+            end
+        end
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Закрыть сундук', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PlayerRoom'
+    end
+---
+
 #CityGatesWildLands
     *clr
     clr
@@ -265,9 +332,14 @@
         gs 'MayorBlackmailTownPrintText', 'gates_pass_ready'
         *pl ' '
 
-        gs 'ActUiPrepare', 'Выехать за ворота в Дикие Земли', 'travel'
+        gs 'ActUiPrepare', 'Северная дорога (Эльфийский лес)', 'travel'
         act $ActUiLabel, $ActUiIconPath:
-            gt 'WildLandsGatesDepart'
+            gt 'WildLandsRoadChoose', 'north'
+        end
+
+        gs 'ActUiPrepare', 'Западная дорога (Горы гномов)', 'travel'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'WildLandsRoadChoose', 'west'
         end
 
         gs 'ActUiPrepare', 'Остаться в городе', 'return'
@@ -277,19 +349,102 @@
     end
 ---
 
-#WildLandsGatesDepart
+#WildLandsRoadChoose
     *clr
     clr
     cla
 
-    gs 'ShowLocationScreenTitle', 'ПУТЬ В ДИКИЕ ЗЕМЛИ'
-    gs 'SceneShowVisual', 'images/locations/town/wild_lands_road', 'Дорога в Дикие Земли', 'large', 'webp'
+    $ChosenRoad = $ARGS[0]
 
-    gs 'MayorBlackmailTownPrintText', 'wild_lands_depart_text'
+    if $ChosenRoad = 'north':
+        ! Северная дорога — ПРАВИЛЬНЫЙ ПУТЬ
+        gt 'WildLandsAmbushScene'
+    else:
+        ! Западная дорога — НЕПРАВИЛЬНЫЙ ПУТЬ (Засада и нокаут)
+        gt 'WildLandsWrongRoadAmbush'
+    end
+---
+
+#WildLandsWrongRoadAmbush
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ЗАСАДА НА ЗАПАДНОЙ ДОРОГЕ'
+    gs 'SceneShowVisual', 'images/locations/town/wild_lands_ambush', 'Засада в горах гномов', 'large', 'webp'
+
+    if money >= 50:
+        money -= 50
+    else:
+        money = 0
+    end
+
+    gs 'MayorBlackmailTownPrintText', 'wrong_road_ambush_text'
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться на улицу', 'return'
+    gs 'ActUiPrepare', 'Очнуться дома', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortWarehouseWakeupHome'
+    end
+---
+
+#WildLandsAmbushScene
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'МЕСТО БОЙНИ НА СЕВЕРНОЙ ДОРОГЕ'
+    gs 'SceneShowVisual', 'images/locations/town/caravan_battle', 'Разбитые телеги на дороге', 'large', 'webp'
+
+    gs 'MayorBlackmailTownPrintText', 'ambush_scene_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Убить наёмника и забрать настоящую накладную', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        MercenaryAlive = 0
+        PlayerHasTrueInvoice = 1
+        gt 'WildLandsMercenaryFinish'
+    end
+
+    gs 'ActUiPrepare', 'Спасти наёмника и отвезти к отцу Герхарду', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        MercenaryAlive = 1
+        PlayerHasTrueInvoice = 1
+        GerhardProtectingWitness = 1
+        gt 'WildLandsMercenarySave'
+    end
+---
+
+#WildLandsMercenaryFinish
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'МЕРТВЫЙ СВИДЕТЕЛЬ'
+    gs 'SceneShowVisual', 'images/locations/town/caravan_battle', 'Стефан забирает настоящую накладную', 'large', 'webp'
+
+    gs 'MayorBlackmailTownPrintText', 'mercenary_killed_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в город', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'Street'
+    end
+---
+
+#WildLandsMercenarySave
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СПАСЕНИЕ СВИДЕТЕЛЯ'
+    gs 'SceneShowVisual', 'images/locations/church/gerhard', 'Раненый наёмник в соборе', 'large', 'webp'
+
+    gs 'MayorBlackmailTownPrintText', 'mercenary_saved_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Покинуть собор и подготовиться к мэру', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Church'
     end
 ---

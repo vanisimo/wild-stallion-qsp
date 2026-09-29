@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 469
-- Locations: 3418
+- Locations: 3423
 
 ## modules/actions
 
@@ -1694,7 +1694,7 @@ Generated from active project files in `qsp-project.json`.
 | `ChurchWeekdayPrintIntro` | `modules/events/church/church_weekday_menus.qsps` | 41 |
 | `ChurchWeekdayShowGerhardMenu` | `modules/events/church/church_weekday_menus.qsps` | 16 |
 | `ChurchWeekdayText` | `modules/events/church/church_weekday_text.qsps` | 8 |
-| `CityGatesWildLands` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 240 |
+| `CityGatesWildLands` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 307 |
 | `ClarissaAnalCanStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 258 |
 | `ClarissaAnalSceneStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 291 |
 | `ClarissaAnalSceneText` | `modules/events/legare/clarissa_intim_arc_text.qsps` | 41 |
@@ -2728,6 +2728,7 @@ Generated from active project files in `qsp-project.json`.
 | `NobleAttackStart` | `modules/events/hall/noble_attack.qsps` | 59 |
 | `NobleAttackYieldAftermathText` | `modules/events/hall/noble_attack_text.qsps` | 62 |
 | `PlayerCheckAnalExperience` | `modules/events/legare/clarissa_intim_arc.qsps` | 7 |
+| `PlayerRoomEquipmentChest` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 240 |
 | `PolicyEventChoiceConsequencePrint` | `modules/events/hall/hall_choice_consequences.qsps` | 61 |
 | `PolicyEventContextPrint` | `modules/events/hall/policy_event_context.qsps` | 9 |
 | `PolicyEventContextPrintStart` | `modules/events/hall/policy_event_context.qsps` | 123 |
@@ -3045,7 +3046,11 @@ Generated from active project files in `qsp-project.json`.
 | `TavernSupplyStatusText` | `modules/events/tavern/tavern_supply_status_text.qsps` | 8 |
 | `TavernWorkDayEvent` | `modules/events/tavern/tavern_events.qsps` | 10 |
 | `UpdateAmandaLegareBranchUnlock` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 18 |
-| `WildLandsGatesDepart` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 280 |
+| `WildLandsAmbushScene` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 391 |
+| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 418 |
+| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 435 |
+| `WildLandsRoadChoose` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 352 |
+| `WildLandsWrongRoadAmbush` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 368 |
 
 ## modules/locations
 
