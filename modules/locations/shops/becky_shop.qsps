@@ -93,6 +93,10 @@
         *pl ' '
     end
 
+    if LOC('IngaGuardCheckVisitTick') = 1:
+        gs 'IngaGuardCheckVisitTick'
+    end
+
     gs 'BeckyShopBackroomPeekTryOffer', 'open'
 
     if LOC('AmandaCucumberBeckyShopCanStart') = 1:
@@ -376,6 +380,22 @@
     if IngaRoomUnlocked = 1 and time >= 3:
         act '<b>Подняться в комнату Инги</b>', 'images/common/ui/actions/floor.png':
             gt 'IngaRoom'
+        end
+    end
+
+    if $CurrentSeller = 'inga' and IngaGuardVisitPendingTalk = 1:
+        *pl ' '
+        gs 'ActUiPrepare', 'Поговорить с Ингой о стражнике', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardComplaintTalk'
+        end
+    end
+
+    if $CurrentSeller = 'inga' and IngaGuardResolved > 0 and IngaGuardThanksDone = 0:
+        *pl ' '
+        gs 'ActUiPrepare', 'Поговорить с Ингой (благодарность)', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardThanks'
         end
     end
 

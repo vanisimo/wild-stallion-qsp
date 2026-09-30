@@ -1,331 +1,302 @@
 ! ================================================
 ! FILE: modules/events/quests/guard_bribe_quest.qsps
 ! MODULE: events/quests
-! Квест стражника Грюна: жалобы в лавке, 180+180, ветки А/Б/В
+! Квест стражника Грюна и Инги
+! Сговор на рынке → проверки в Пн/Чт утро → 4 стадии жалоб → откуп 45 мараведи
 ! ================================================
 
-#IngaGuardHarassmentTryActivate
-    if IngaGuardProblem = 1:
+#IngaGuardCheckVisitTick
+    if IngaGuardSchemeActive <> 1:
         exit
     end
 
-    if GuardBribed = 1:
+    if IngaGuardResolved <> 0:
         exit
     end
 
-    if BeckyHomeSex = 0 and day < 29:
+    if IngaGuardVisitPendingTalk = 1:
         exit
     end
 
-    IngaGuardProblem = 1
-    IngaServingGuard = 1
-
-    if IngaGuardComplaintPending = 0:
-        IngaGuardComplaintPending = 1
-    end
----
-
-#IngaGuardComplaintCanStart
-    IngaGuardComplaintCanStart = 0
-
-    if GuardBribed = 1:
-        exit
-    end
-
-    if IngaGuardProblem = 0:
-        exit
-    end
-
-    if IngaGuardComplaintPending = 1 and IngaGuardFirstRefused = 0:
-        if BeckyHomeSex = 1 or day >= 29:
-            IngaGuardComplaintCanStart = 1
+    ! Визиты стражника происходят в понедельник утро (week=1, time=1) и четверг утро (week=4, time=1)
+    if (week = 1 or week = 4) and time = 1:
+        if IngaGuardLastVisitDay <> day:
+            IngaGuardLastVisitDay = day
+            IngaGuardVisitStage += 1
+            IngaGuardVisitPendingTalk = 1
         end
-    elseif IngaGuardComplaintPending = 2 and IngaGuardSecondRefused = 0:
-        IngaGuardComplaintCanStart = 1
     end
 ---
 
-#IngaGuardComplaintStart
-    cls
+#IngaGuardSchemeProposal
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/locations/market/market/cityguard', 'СЕРЖАНТ ГРЮН НА РЫНКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОСТ СТРАЖНИКОВ: СГОВОР С ГРЮНОМ'
+
+    if LOC('IngaGuardSchemeProposalText') = 1:
+        gs 'IngaGuardSchemeProposalText'
+    end
+
+    *pl ' '
+    *pl 'Ваши деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    if money >= 25:
+        gs 'ActUiPrepare', 'Заплатить 25 мараведи', 'money'
+        act $ActUiLabel, $ActUiIconPath:
+            money -= 25
+            IngaGuardSchemeActive = 1
+            IngaGuardVisitStage = 0
+            IngaGuardVisitPendingTalk = 0
+            IngaGuardProblem = 1
+
+            *clr
+            clr
+            cla
+            gs 'SceneShowVisual', 'images/locations/market/market/cityguard', 'СГОВОР С ГРЮНОМ', 'large', 'webp'
+            gs 'ShowLocationScreenTitle', 'СГОВОР СКРЕПЛЁН'
+
+            if LOC('IngaGuardSchemePaidText') = 1:
+                gs 'IngaGuardSchemePaidText'
+            end
+
+            *pl ' '
+            gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'Market'
+            end
+        end
+    else:
+        *pl '<i>У вас недостаточно денег, чтобы нанять стражника (нужно 25 мараведи).</i>'
+    end
+
+    gs 'ActUiPrepare', 'Отказаться и уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GuardPost'
+    end
+---
+
+#IngaGuardIntervene
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/locations/market/market/cityguard', 'РАЗГОВОР С СЕРЖАНТОМ ГРЮНОМ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОСТ СТРАЖНИКОВ: ТРЕБОВАНИЕ ПРЕКРАТИТЬ'
+
+    if LOC('IngaGuardInterveneText') = 1:
+        gs 'IngaGuardInterveneText'
+    end
+
+    *pl ' '
+    *pl 'Ваши деньги: ' + STR(money) + ' мараведи.'
+    *pl ' '
+
+    if money >= 45:
+        gs 'ActUiPrepare', 'Заплатить 45 мараведи', 'money'
+        act $ActUiLabel, $ActUiIconPath:
+            money -= 45
+            IngaGuardResolved = IngaGuardHelpPromise
+            IngaGuardSchemeActive = 2
+            IngaGuardVisitPendingTalk = 0
+            IngaServingGuard = 0
+            IngaGuardProblem = 0
+            GuardBribed = 1
+
+            if IngaGuardResolved = 1:
+                IngaGuardHelpStage = 1
+                IngaGuardWeeklyActive = 0
+            else:
+                IngaGuardHelpStage = 2
+                IngaGuardWeeklyActive = 0
+            end
+
+            *clr
+            clr
+            cla
+            gs 'SceneShowVisual', 'images/locations/market/market/cityguard', 'СДЕЛКА СО СТРАЖНИКОМ', 'large', 'webp'
+            gs 'ShowLocationScreenTitle', 'ВОПРОС УЛАЖЕН'
+
+            if LOC('IngaGuardIntervenePaidText') = 1:
+                gs 'IngaGuardIntervenePaidText'
+            end
+
+            *pl ' '
+            gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'Market'
+            end
+        end
+    else:
+        *pl '<i>У вас недостаточно денег для отступных (нужно 45 мараведи).</i>'
+    end
+
+    gs 'ActUiPrepare', 'Отказаться платить', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GuardPost'
+    end
+---
+
+#IngaGuardComplaintTalk
+    *clr
+    clr
+    cla
 
     gs 'EnsureGirlData', 'inga'
 
-    if IngaGuardComplaintPending = 2:
-        gs 'ShowLocationScreenTitle', 'ВТОРАЯ ПРОСЬБА — ИНГА'
-        IngaGuardComplaintStage = 2
-    else:
-        gs 'ShowLocationScreenTitle', 'ПРОБЛЕМА В ЛАВКЕ'
-        IngaGuardComplaintStage = 1
-    end
+    gs 'SceneShowVisual', 'images/locations/inga/shop/stress', 'ИНГА В ЛАВКЕ — ТРЕВОГА', 'large', 'png'
+    gs 'ShowLocationScreenTitle', 'ЛАВКА БЛЭНКЕНШИП: РАЗГОВОР С ИНГОЙ'
 
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'becky', 'shop', 'normal', 'normal'
-    end
-
-    if IngaGuardComplaintPending = 2:
-        if LOC('IngaGuardComplaintSecondIntroText') = 1:
-            gs 'IngaGuardComplaintSecondIntroText'
+    if IngaGuardVisitStage = 1:
+        if LOC('IngaGuardComplaintStage1Text') = 1:
+            gs 'IngaGuardComplaintStage1Text'
         end
-    else:
-        if LOC('IngaGuardComplaintIntroText') = 1:
-            gs 'IngaGuardComplaintIntroText'
-        end
-    end
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Предложить помочь', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        IngaGuardComplaintAccepted = 1
+        IngaGuardVisitPendingTalk = 0
         Friends['inga'] += 1
-
-        if IngaGuardComplaintPending = 1:
-            IngaGuardHelpIntent = 1
-        else:
-            IngaGuardHelpIntent = 2
-        end
-
-        *p 'Ты тихо говорите: "Я разберусь со стражником. Никому ни слова — даже Лукасу."'
-        gt 'GuardBribeStart'
-    end
-
-    gs 'ActUiPrepare', 'Сказать, что это не ваше дело', 'talk'
-    act $ActUiLabel, $ActUiIconPath:
-        if IngaGuardComplaintPending = 1:
-            IngaGuardFirstRefused = 1
-            IngaGuardComplaintPending = 2
-            IngaGuardComplaintStage = 1
-            Friends['inga'] -= 2
-            *p 'Инга грустно кивает и отводит взгляд.'
-        else:
-            IngaGuardSecondRefused = 1
-            IngaGuardHelpStage = -1
-            IngaPlayerRouteOpen = 0
-            IngaGuardWeeklyActive = 1
-            IngaServingGuard = 1
-            Friends['inga'] -= 3
-            *p 'Инга смотрит на вас холодно: "Понятно. Сама придумаю, без вас никчёмников."'
-        end
-
-        gs 'ActUiPrepare', 'Продолжить', 'generic'
-        act $ActUiLabel, $ActUiIconPath: gt 'BeckyShop'
-    end
----
-
-#IngaGuardProblem
-    gt 'IngaGuardComplaintStart'
----
-
-#GuardBribeStart
-    cls
-
-    gs 'ShowLocationScreenTitle', 'РЕШЕНИЕ ПРОБЛЕМЫ СО СТРАЖНИКОМ'
-
-    *p 'Нужно найти сержанта Грюна — на посту стражи или у рынка.'
-
-    gs 'ActUiPrepare', 'Пойти к посту стражников', 'guard'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MeetGuard'
-    end
-
-    gs 'ActUiPrepare', 'Отказаться от этой затеи', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        if IngaGuardHelpIntent = 1:
-            IngaGuardFirstRefused = 1
-            IngaGuardComplaintPending = 2
-            IngaGuardHelpIntent = 0
-        elseif IngaGuardHelpIntent = 2:
-            IngaGuardSecondRefused = 1
-            IngaGuardHelpStage = -1
-            IngaPlayerRouteOpen = 0
-            IngaGuardWeeklyActive = 1
-            IngaGuardHelpIntent = 0
-        end
-
-        *p 'Ты решаешь не вмешиваться.'
-        gs 'ActUiPrepare', 'Вернуться', 'return'
-        act $ActUiLabel, $ActUiIconPath: gt 'BeckyShop'
-    end
----
-
-#MeetGuard
-    cls
-
-    gs 'ShowLocationScreenTitle', 'ВСТРЕЧА СО СТРАЖНИКОМ ГРЮНОМ'
-
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'guard', 'street', 'normal'
-    end
-
-    if LOC('GuardBribeMeetIntroText') = 1:
-        gs 'GuardBribeMeetIntroText'
-    else:
-        *p 'Грюн узнаёт вас: "А, хозяин трактира… Что тебе нужно?"'
-    end
-
-    *pl ' '
-
-    if IngaGuardBribeStep = 0:
-        gs 'FormatSpintry', IngaGuardBribeCost
-        $FormatSpintry_IngaGuardBribeCost = $FormatSpintry
-        killvar '$FormatSpintry'
-        act 'Предложить взятку (' + $FormatSpintry_IngaGuardBribeCost + ')':
-            if money >= IngaGuardBribeCost:
-                money -= IngaGuardBribeCost
-                IngaGuardBribeStep = 1
-
-                if LOC('GuardBribeFirstPaidText') = 1:
-                    gs 'GuardBribeFirstPaidText'
-                else:
-                    *p 'Грюн пересчитывает монеты и требует ещё столько же.'
-                end
-
-                gs 'ActUiPrepare', 'Продолжить', 'generic'
-                act $ActUiLabel, $ActUiIconPath: gt 'MeetGuard'
-            else:
-                *p 'У вас недостаточно денег.'
-                gs 'ActUiPrepare', 'Продолжить', 'generic'
-                act $ActUiLabel, $ActUiIconPath: gt 'MeetGuard'
-            end
-        end
-
-        gs 'ActUiPrepare', 'Угрожать репутацией трактира', 'tavern'
+        *pl ' '
+        gs 'ActUiPrepare', 'Вернуться в лавку', 'shop'
         act $ActUiLabel, $ActUiIconPath:
-            if tavern_reputation >= 60:
-                gs 'GuardBribeResolve', 'reputation'
-            else:
-                *p 'Стражник смеётся вам в лицо и угрожает в ответ.'
-                Friends['inga'] -= 2
-                gs 'ActUiPrepare', 'Вернуться', 'return'
-                act $ActUiLabel, $ActUiIconPath: gt 'BeckyShop'
-            end
-        end
-    else:
-        gs 'FormatSpintry', IngaGuardBribeCost
-        $FormatSpintry_IngaGuardBribeCost = $FormatSpintry
-        killvar '$FormatSpintry'
-        act 'Заплатить ещё ' + $FormatSpintry_IngaGuardBribeCost:
-            if money >= IngaGuardBribeCost:
-                money -= IngaGuardBribeCost
-                gs 'GuardBribeResolve', 'bribe'
-            else:
-                *p 'У вас недостаточно денег для второго платежа.'
-                gs 'ActUiPrepare', 'Продолжить', 'generic'
-                act $ActUiLabel, $ActUiIconPath: gt 'MeetGuard'
-            end
+            gt 'BeckyShop'
         end
 
-        gs 'ActUiPrepare', 'Отказаться платить второй раз', 'return'
+    elseif IngaGuardVisitStage = 2:
+        if LOC('IngaGuardComplaintStage2Text') = 1:
+            gs 'IngaGuardComplaintStage2Text'
+        end
+        IngaGuardHelpPromise = 1
+        IngaGuardVisitPendingTalk = 0
+        Friends['inga'] += 2
+
+        *pl ' '
+        gs 'ActUiPrepare', 'Вернуться в лавку', 'shop'
         act $ActUiLabel, $ActUiIconPath:
-            IngaGuardBribeStep = 0
-            *p 'Грюн ухмыляется: "Жалко? Тогда увидимся в лавке."'
-            gs 'ActUiPrepare', 'Вернуться', 'return'
-            act $ActUiLabel, $ActUiIconPath: gt 'BeckyShop'
+            gt 'BeckyShop'
         end
-    end
 
-    gs 'ActUiPrepare', 'Уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyShop'
-    end
----
-
-#GuardBribeResolve
-    $GuardBribeResolveMode = LCASE($ARGS[0])
-    $GuardHelpFrom = IngaGuardHelpIntent
-
-    GuardBribed = 1
-    IngaServingGuard = 0
-    IngaGuardProblem = 0
-    IngaGuardComplaintPending = 0
-    IngaGuardBribeStep = 0
-    IngaGuardHelpIntent = 0
-
-    if $GuardHelpFrom = 2 or IngaGuardFirstRefused = 1:
-        IngaGuardHelpStage = 2
-
-        if FamilyCorruptionStage >= 3:
-            IngaGuardWeeklyActive = 1
+    elseif IngaGuardVisitStage = 3:
+        if LOC('IngaGuardComplaintStage3Text') = 1:
+            gs 'IngaGuardComplaintStage3Text'
         end
+        IngaGuardHelpPromise = 2
+        IngaGuardVisitPendingTalk = 0
+
+        *pl ' '
+        gs 'ActUiPrepare', 'Вернуться в лавку', 'shop'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyShop'
+        end
+
     else:
-        IngaGuardHelpStage = 1
-        IngaGuardWeeklyActive = 0
-    end
-
-    killvar '$GuardHelpFrom'
-
-    IngaPlayerRouteOpen = 1
-    IngaGuardThanksDay = day + 1
-
-    Friends['inga'] += 6
-
-    if $GuardBribeResolveMode = 'reputation':
-        if LOC('GuardBribeRepThreatText') = 1:
-            gs 'GuardBribeRepThreatText'
+        ! 4-й визит — окончательный отказ и закрытие любовного рута
+        if LOC('IngaGuardComplaintStage4Text') = 1:
+            gs 'IngaGuardComplaintStage4Text'
         end
-    else:
-        if LOC('GuardBribeResolvedText') = 1:
-            gs 'GuardBribeResolvedText'
+        IngaGuardResolved = -1
+        IngaRomanceBlocked = 1
+        IngaPlayerRouteOpen = 0
+        IngaGuardHelpStage = -1
+        IngaServingGuard = 1
+        IngaGuardWeeklyActive = 1
+        IngaGuardVisitPendingTalk = 0
+        Friends['inga'] -= 5
+
+        *pl ' '
+        gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Market'
         end
     end
 
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyShop'
-    end
-
-    killvar '$GuardBribeResolveMode'
----
-
-#IngaGuardThanksCanStart
-    IngaGuardThanksCanStart = 0
-
-    if IngaPlayerRouteOpen = 0:
-        exit
-    end
-
-    if IngaGuardThanksDone = 1:
-        exit
-    end
-
-    if IngaGuardThanksDay = 0:
-        exit
-    end
-
-    if day < IngaGuardThanksDay:
-        exit
-    end
-
-    IngaGuardThanksCanStart = 1
+    gs 'ClampGirlSocialStats', 'inga'
 ---
 
 #IngaGuardThanks
-    cls
-
-    IngaGuardThanksDone = 1
-    IngaGuardThanksDay = 0
+    *clr
+    clr
+    cla
 
     gs 'EnsureGirlData', 'inga'
 
-    gs 'ShowLocationScreenTitle', 'БЛАГОДАРНОСТЬ ИНГИ'
+    gs 'SceneShowVisual', 'images/locations/inga/shop/talk', 'ИНГА БЛАГОДАРИТ СТЕФАНА', 'large', 'png'
+    gs 'ShowLocationScreenTitle', 'ЛАВКА БЛЭНКЕНШИП: БЛАГОДАРНОСТЬ ИНГИ'
+
+    IngaGuardThanksDone = 1
+    IngaRomanceUnlocked = 1
+    IngaPlayerRouteOpen = 1
+    GuardBribed = 1
+    IngaGuardProblem = 0
+
+    love['inga'] += 3
+    Friends['inga'] += 5
+    otkroven['inga'] += 2
+    gs 'ClampGirlSocialStats', 'inga'
 
     if LOC('IngaGuardThanksText') = 1:
         gs 'IngaGuardThanksText'
     end
 
-    Friends['inga'] += 2
-    love['inga'] += 1
+    *pl ' '
 
     if LOC('IngaRomanceTryUnlock') = 1:
         gs 'IngaRomanceTryUnlock'
     end
 
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Вернуться', 'return'
+    gs 'ActUiPrepare', 'Вернуться к прилавку', 'shop'
     act $ActUiLabel, $ActUiIconPath:
         gt 'BeckyShop'
+    end
+---
+
+! ================================================
+! Сохранённые устаревшие локаторы для совместимости
+! ================================================
+
+#IngaGuardHarassmentTryActivate
+    if LOC('IngaGuardCheckVisitTick') = 1:
+        gs 'IngaGuardCheckVisitTick'
+    end
+---
+
+#IngaGuardComplaintCanStart
+    IngaGuardComplaintCanStart = 0
+    if IngaGuardVisitPendingTalk = 1:
+        IngaGuardComplaintCanStart = 1
+    end
+---
+
+#IngaGuardComplaintStart
+    gt 'IngaGuardComplaintTalk'
+---
+
+#IngaGuardProblem
+    gt 'IngaGuardComplaintTalk'
+---
+
+#GuardBribeStart
+    gt 'IngaGuardIntervene'
+---
+
+#MeetGuard
+    gt 'IngaGuardIntervene'
+---
+
+#GuardBribeResolve
+    $GuardBribeResolveMode = LCASE($ARGS[0])
+    GuardBribed = 1
+    IngaServingGuard = 0
+    IngaGuardProblem = 0
+    IngaGuardVisitPendingTalk = 0
+    IngaPlayerRouteOpen = 1
+    IngaGuardHelpStage = 1
+    killvar '$GuardBribeResolveMode'
+---
+
+#IngaGuardThanksCanStart
+    IngaGuardThanksCanStart = 0
+    if IngaGuardResolved > 0 and IngaGuardThanksDone = 0:
+        IngaGuardThanksCanStart = 1
     end
 ---

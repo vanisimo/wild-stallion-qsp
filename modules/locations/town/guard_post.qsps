@@ -61,6 +61,20 @@
         end
     end
 
+    if IngaDanceRefusedCount >= 2 and IngaGuardSchemeActive = 0 and IngaGuardResolved = 0:
+        gs 'ActUiPrepare', 'Договориться насчёт лавки Блэнкеншип', 'guard'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardSchemeProposal'
+        end
+    end
+
+    if IngaGuardHelpPromise > 0 and IngaGuardResolved = 0:
+        gs 'ActUiPrepare', 'Потребовать оставить Ингу в покое', 'guard'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardIntervene'
+        end
+    end
+
     if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
         gs 'ActUiPrepare', 'Лавка Бекки', 'shop'
         act $ActUiLabel, $ActUiIconPath:
@@ -83,8 +97,24 @@
     *p 'Грюн скрещивает руки на груди:'
     *p '"Ну что, хозяин трактира? Опять пришёл по делу?"'
 
-    if IngaGuardProblem = 1 and GuardBribed = 0:
+    if IngaGuardSchemeActive = 1 and IngaGuardResolved = 0:
+        *p 'Он многозначительно усмехается: "Лавка Блэнкеншип… справная там девчонка работает. Построжу её ещё немного."'
+    elseif IngaGuardProblem = 1 and GuardBribed = 0:
         *p 'Он многозначительно усмехается: "Лавка Блэнкеншип… симпатичная там девчонка работает."'
+    end
+
+    if IngaDanceRefusedCount >= 2 and IngaGuardSchemeActive = 0 and IngaGuardResolved = 0:
+        gs 'ActUiPrepare', 'Договориться насчёт лавки Блэнкеншип', 'guard'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardSchemeProposal'
+        end
+    end
+
+    if IngaGuardHelpPromise > 0 and IngaGuardResolved = 0:
+        gs 'ActUiPrepare', 'Потребовать оставить Ингу в покое', 'guard'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardIntervene'
+        end
     end
 
     if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
@@ -108,6 +138,20 @@
     gs 'Menu.AddModule', 'GuardPostMenu', {
         gt 'GuardTalk'
     }
+
+    if IngaDanceRefusedCount >= 2 and IngaGuardSchemeActive = 0 and IngaGuardResolved = 0:
+        gs 'MenuUiAdd', 'GuardPostMenu', 'Договориться насчёт лавки Блэнкеншип', 'guard'
+        gs 'Menu.AddModule', 'GuardPostMenu', {
+            gt 'IngaGuardSchemeProposal'
+        }
+    end
+
+    if IngaGuardHelpPromise > 0 and IngaGuardResolved = 0:
+        gs 'MenuUiAdd', 'GuardPostMenu', 'Потребовать оставить Ингу в покое', 'guard'
+        gs 'Menu.AddModule', 'GuardPostMenu', {
+            gt 'IngaGuardIntervene'
+        }
+    end
 
     if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
         gs 'MenuUiAdd', 'GuardPostMenu', 'Лавка Бекки', 'shop'

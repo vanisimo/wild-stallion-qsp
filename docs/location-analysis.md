@@ -3,11 +3,11 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 469
-- Locations: 3423
-- Locations with direct incoming calls: 2928
-- Locations without direct incoming calls: 495
-- Review candidates without direct incoming calls: 179
-- Classified entry/helper locations without direct incoming calls: 316
+- Locations: 3435
+- Locations with direct incoming calls: 2932
+- Locations without direct incoming calls: 503
+- Review candidates without direct incoming calls: 180
+- Classified entry/helper locations without direct incoming calls: 323
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -55,8 +55,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `FormatTextThought` | `modules/core/text/text_format.qsps` | 331 | `modules/core` |
 | `FormatTextTitle` | `modules/core/text/text_format.qsps` | 335 | `modules/core` |
 | `FormatTextWarn` | `modules/core/text/text_format.qsps` | 343 | `modules/core` |
-| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 892 | `modules/events` |
-| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 740 | `modules/events` |
+| `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 911 | `modules/events` |
+| `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 759 | `modules/events` |
 | `GeorgettePortAfterSex` | `modules/events/georgette/georgette_port_night.qsps` | 72 | `modules/events` |
 | `GeorgettePortNightMenu` | `modules/events/georgette/georgette_port_night.qsps` | 26 | `modules/events` |
 | `GirlDailyEvent` | `modules/core/system/compatibility_aliases.qsps` | 153 | `modules/core` |
@@ -73,6 +73,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 289 | `modules/actions` |
 | `GirlWorkPolicyTalkHallAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 102 | `modules/actions` |
 | `GirlWorkPolicyTalkKitchenAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 113 | `modules/actions` |
+| `GuardBribeResolve` | `modules/events/quests/guard_bribe_quest.qsps` | 286 | `modules/events` |
 | `HallEventChoiceThoughtsBody` | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | 20 | `modules/events` |
 | `HallHarassmentAftermathFamily` | `modules/events/hall/hall_harassment.qsps` | 1401 | `modules/events` |
 | `HallHarassmentResolve` | `modules/events/hall/hall_harassment.qsps` | 1036 | `modules/events` |
@@ -145,7 +146,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `HallRecentMemorySave` | `modules/events/hall/hall_recent_memory.qsps` | 9 | `modules/events` |
 | `IngaBackroomAfterSex` | `modules/events/inga/inga_romance.qsps` | 148 | `modules/events` |
 | `IngaDanceMeet` | `modules/events/inga/inga_dance.qsps` | 28 | `modules/events` |
-| `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 115 | `modules/events` |
+| `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 274 | `modules/events` |
 | `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 112 | `modules/locations` |
 | `IntimScene` | `modules/core/girls/girl_intim_menu.qsps` | 146 | `modules/core` |
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 539 | `modules/locations` |
@@ -358,6 +359,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 446 | `entry/helper` |
 | `GirlWorkPolicyTalkAfterHarassStart` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 202 | `entry/helper` |
 | `GroupSexMenu` | `modules/actions/sex/group_sex.qsps` | 6 | `entry/helper` |
+| `GuardBribeFirstPaidText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 182 | `entry/helper` |
+| `GuardBribeMeetIntroText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 178 | `entry/helper` |
+| `GuardBribeRepThreatText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 186 | `entry/helper` |
+| `GuardBribeResolvedText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 191 | `entry/helper` |
+| `GuardBribeStart` | `modules/events/quests/guard_bribe_quest.qsps` | 278 | `entry/helper` |
 | `HallChoiceConsequencePrint` | `modules/core/system/compatibility_aliases.qsps` | 47 | `entry/helper` |
 | `HallChoiceConsequencesText` | `modules/core/system/compatibility_aliases.qsps` | 43 | `entry/helper` |
 | `HallChoiceMemoryDebugPanel` | `modules/events/hall/hall_choice_memory.qsps` | 148 | `entry/helper` |
@@ -387,7 +393,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ImageSettingsDebugPanel` | `modules/core/show_image/image_debug_random.qsps` | 621 | `entry/helper` |
 | `IngaBackroomInviteText` | `modules/events/inga/inga_romance_text.qsps` | 29 | `entry/helper` |
 | `IngaDanceMeetCanStart` | `modules/events/inga/inga_dance.qsps` | 7 | `entry/helper` |
-| `IngaGuardSaturdayDebugReset` | `modules/events/quests/inga_guard_quest.qsps` | 158 | `entry/helper` |
+| `IngaGuardComplaintIntroText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 170 | `entry/helper` |
+| `IngaGuardComplaintSecondIntroText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 174 | `entry/helper` |
+| `IngaGuardSaturdayDebugReset` | `modules/events/quests/inga_guard_quest.qsps` | 162 | `entry/helper` |
 | `IngaLucasThreesomeDpStart` | `modules/events/inga/inga_lucas_arc.qsps` | 310 | `entry/helper` |
 | `InitGeorgett` | `modules/npc/port/georgett.qsps` | 6 | `entry/helper` |
 | `InitGerhard` | `modules/npc/town/gerhard.qsps` | 6 | `entry/helper` |
@@ -523,31 +531,31 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1423 |
-| `ShowLocationScreenTitle` | 621 |
-| `Menu.AddModule` | 583 |
-| `MenuUiAdd` | 575 |
-| `SceneShowVisual` | 549 |
+| `ActUiPrepare` | 1424 |
+| `ShowLocationScreenTitle` | 622 |
+| `Menu.AddModule` | 587 |
+| `MenuUiAdd` | 579 |
+| `SceneShowVisual` | 555 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 176 |
+| `ClampGirlSocialStats` | 178 |
 | `TavernMain` | 164 |
 | `ShowGirlSidebar` | 102 |
 | `Menu.Create` | 98 |
 | `Menu.Destroy` | 92 |
-| `ShowImage` | 90 |
 | `RegisterSex` | 89 |
-| `FormatSpintry` | 87 |
+| `ShowImage` | 88 |
 | `PrintMainP` | 86 |
+| `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 72 |
-| `Market` | 60 |
+| `Market` | 63 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `PrintTitleLine` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `Menu.AddCondition` | 44 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 
