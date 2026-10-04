@@ -345,20 +345,25 @@
         gs 'IngaBackroomCanOffer'
 
         if IngaBackroomCanOffer = 1:
-            if IngaBackroomSex = 0 and IngaRomanceStage < 3:
+            if IngaRoomFirstSexDone = 0 and IngaRomanceStage < 3:
                 gs 'ActUiPrepare', 'Зайти в подсобку с Ингой', 'intim'
                 act $ActUiLabel, $ActUiIconPath:
                     gt 'IngaRomanceStep'
                 end
-            elseif IngaBackroomSex = 0 and IngaRomanceStage >= 3:
-                gs 'ActUiPrepare', 'Продолжить в подсобке', 'intim'
+            elseif IngaRoomFirstSexDone = 0 and IngaRomanceStage >= 3:
+                gs 'ActUiPrepare', 'Уединиться в подсобке (ласки)', 'intim'
                 act $ActUiLabel, $ActUiIconPath:
-                    gt 'IngaBackroomFirstSexLaunch'
+                    gt 'IngaRomanceRepeatOral'
                 end
-            elseif IngaBackroomSex = 1:
+            elseif IngaRoomFirstSexDone = 1 or IngaBackroomSex = 1:
                 gs 'ActUiPrepare', 'Провести время в подсобке', 'intim'
                 act $ActUiLabel, $ActUiIconPath:
                     gt 'SexSceneStart', 'inga', 'IngaBackroomAfterSex', 'inga_repeat'
+                end
+
+                gs 'ActUiPrepare', 'Ласки в подсобке (минет)', 'intim'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'IngaRomanceRepeatOral'
                 end
             end
 
@@ -381,7 +386,7 @@
         end
     end
 
-    if IngaRoomUnlocked = 1 and time >= 3:
+    if (IngaRoomUnlocked = 1 or IngaRomanceStage >= 3) and time >= 3:
         act '<b>Подняться в комнату Инги</b>', 'images/common/ui/actions/floor.png':
             gt 'IngaRoom'
         end

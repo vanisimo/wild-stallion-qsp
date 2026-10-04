@@ -1,0 +1,189 @@
+! ================================================
+! FILE: modules/events/inga/inga_room_first_sex.qsps
+! MODULE: events/becky
+! Линейная первая близость с Ингой в её комнате (5 интерактивных экранов)
+! ================================================
+
+#IngaRoomFirstSexCanStart
+    IngaRoomFirstSexCanStart = 0
+
+    if IngaRoomFirstSexDone = 1:
+        exit
+    end
+
+    if IngaPlayerRouteOpen = 0:
+        exit
+    end
+
+    if IngaRomanceUnlocked = 0:
+        exit
+    end
+
+    if IngaRomanceStage < 3:
+        exit
+    end
+
+    IngaRoomFirstSexCanStart = 1
+---
+
+#IngaRoomFirstSex
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ — ПЕРВАЯ НОЧЬ'
+    gs 'SceneShowVisual', 'images/events/inga/room_first_sex/screen1', 'ИНГА — В КОМНАТЕ НАЕДИНЕ', 'large', 'webp'
+    gs 'IngaRoomFirstSexText', 'screen1'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Обнять Ингу и увлечь на постель', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaRoomFirstSexScreen2'
+    end
+---
+
+#IngaRoomFirstSexScreen2
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ — НЕЖНЫЕ ЛАСКИ'
+    gs 'SceneShowVisual', 'images/events/inga/room_first_sex/screen2', 'ИНГА — НЕЖНЫЕ ЛАСКИ НА ПОСТЕЛИ', 'large', 'webp'
+    gs 'IngaRoomFirstSexText', 'screen2'
+    *pl ' '
+
+    KissCount['inga'] += 1
+    CaressCount['inga'] += 1
+    love['inga'] += 1
+
+    gs 'ActUiPrepare', 'Перейти к близости', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaRoomFirstSexScreen3'
+    end
+---
+
+#IngaRoomFirstSexScreen3
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ — ПЕРВОЕ СОЕДИНЕНИЕ'
+    gs 'SceneShowVisual', 'images/events/inga/room_first_sex/screen3', 'ИНГА — ПЕРВОЕ СОЕДИНЕНИЕ', 'large', 'webp'
+    gs 'IngaRoomFirstSexText', 'screen3'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Двигаться плавно и нежно', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        $IngaFirstSexRhythm = 'tender'
+        love['inga'] += 2
+        gt 'IngaRoomFirstSexScreen4'
+    end
+
+    gs 'ActUiPrepare', 'Взять инициативу уверенно и страстно', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        $IngaFirstSexRhythm = 'passionate'
+        sluttiness['inga'] += 2
+        gt 'IngaRoomFirstSexScreen4'
+    end
+---
+
+#IngaRoomFirstSexScreen4
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ — СТРАСТЬ И ПРИБЛИЖЕНИЕ ФИНАЛА'
+    gs 'SceneShowVisual', 'images/events/inga/room_first_sex/screen4', 'ИНГА — КУЛЬМИНАЦИЯ', 'large', 'webp'
+    gs 'IngaRoomFirstSexText', 'screen4'
+    *pl ' '
+
+    GiveOrgasms['inga'] += 1
+    otkroven['inga'] += 2
+
+    gs 'ActUiPrepare', 'Завершить внутрь', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        $IngaFirstSexFinish = 'inside'
+        gt 'IngaRoomFirstSexScreen5'
+    end
+
+    gs 'ActUiPrepare', 'Завершить на тело', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        $IngaFirstSexFinish = 'body'
+        gt 'IngaRoomFirstSexScreen5'
+    end
+---
+
+#IngaRoomFirstSexScreen5
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ — ПОСЛЕ БЛИЗОСТИ'
+    gs 'SceneShowVisual', 'images/events/inga/room_first_sex/screen5', 'ИНГА — ПОСЛЕ БЛИЗОСТИ', 'large', 'webp'
+
+    IngaRoomFirstSexDone = 1
+    IngaBackroomSex = 1
+    IngaDanceUnlocked = 1
+    IngaRoomUnlocked = 1
+    IngaPlayerRouteOpen = 1
+
+    if virginity['inga'] = 1:
+        virginity['inga'] = 0
+    end
+
+    if PlayerVirgin = 1:
+        PlayerVirgin = 0
+    end
+    PlayerSexCount += 1
+    VaginalCount['inga'] += 1
+    LastSexDay['inga'] = day
+    SexUsedToday['inga'] = 1
+    IngaBackroomStepToday = 1
+
+    if IntimStage['inga'] < 5:
+        IntimStage['inga'] = 5
+    end
+
+    if otkroven['inga'] < 20:
+        otkroven['inga'] = 20
+    end
+
+    gs 'RegisterSex', 'inga', 'vaginal', 0, 1
+
+    gs 'CanCumToday'
+    if Result = 1 or debug = 1:
+        gs 'RegisterPlayerCum'
+    end
+
+    if $IngaFirstSexFinish = 'inside':
+        cuminside['inga'] += 1
+        love['inga'] += 2
+        Friends['inga'] += 2
+    else:
+        cumbelly['inga'] += 1
+        sluttiness['inga'] += 2
+        Friends['inga'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'inga'
+
+    IngaRumorDays_Stefan = 6
+    CityRumorReady['inga_stefan'] = 1
+    PlayerKnows_IngaStefanRomance = 1
+
+    gs 'IngaRoomFirstSexText', 'screen5'
+    *pl ' '
+
+    killvar '$IngaFirstSexRhythm'
+    killvar '$IngaFirstSexFinish'
+
+    gs 'ActUiPrepare', 'Остаться в комнате Инги', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaRoom'
+    end
+
+    gs 'ActUiPrepare', 'Выйти на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---

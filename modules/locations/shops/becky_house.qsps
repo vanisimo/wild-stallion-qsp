@@ -12,6 +12,11 @@
     cls
 
     gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ'
+
+    if time >= 3 or IngaDanceEnded = 1:
+        $GirlLocation['inga'] = 'IngaRoom'
+    end
+
     gs 'ShowGirlInLocation', 'inga', 'IngaRoom'
 
     if LOC('IngaRoomIntroText') = 1:
@@ -22,14 +27,16 @@
 
     *pl ' '
 
-    LocationGirlShown = 0
-    gs 'ShowGirlInLocation', 'inga', 'IngaRoom'
-
-    if LocationGirlShown = 0:
+    if $GirlLocation['inga'] <> 'IngaRoom':
         *p 'Инги сейчас нет в комнате.'
     else:
-        if (IngaBackroomSex = 1 or IngaRoomUnlocked = 1) and LOC('SexSceneStart') = 1 and time >= 3:
-            gs 'ActUiPrepare', 'Провести вечер с Ингой', 'guard'
+        if IngaRoomFirstSexDone = 0 and (IngaRomanceStage >= 3 or IngaRomanceUnlocked = 1):
+            gs 'ActUiPrepare', 'Остаться на ночь с Ингой', 'intim'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IngaRoomFirstSex'
+            end
+        elseif (IngaRoomFirstSexDone = 1 or IngaBackroomSex = 1) and LOC('SexSceneStart') = 1 and time >= 3:
+            gs 'ActUiPrepare', 'Провести вечер с Ингой', 'intim'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'SexSceneStart', 'inga', 'IngaRoomAfterSex', 'inga_repeat'
             end
@@ -113,9 +120,11 @@
     *p 'Инга поправляет одежду и смотрит на тебя с тихой улыбкой.'
     *pl ' '
 
-    if IngaBackroomSex = 0:
+    if IngaRoomFirstSexDone = 0 or IngaBackroomSex = 0:
+        IngaRoomFirstSexDone = 1
         IngaBackroomSex = 1
         IngaDanceUnlocked = 1
+        IngaRoomUnlocked = 1
         if virginity['inga'] = 1:
             virginity['inga'] = 0
         end
