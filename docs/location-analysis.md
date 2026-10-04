@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 476
-- Locations: 3459
-- Locations with direct incoming calls: 2953
+- Locations: 3467
+- Locations with direct incoming calls: 2961
 - Locations without direct incoming calls: 506
 - Review candidates without direct incoming calls: 182
 - Classified entry/helper locations without direct incoming calls: 324
@@ -555,8 +555,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Market` | 66 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
 | `SexSceneMain` | 44 |
 

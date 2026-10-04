@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 476
-- Locations: 3459
+- Locations: 3467
 
 ## modules/actions
 
@@ -337,10 +337,10 @@ Generated from active project files in `qsp-project.json`.
 | `SexSceneCalcMenuUnlocks` | `modules/actions/sex/sex_scene_core.qsps` | 958 |
 | `SexSceneCheckGirlOrgasm` | `modules/actions/sex/sex_scene_core.qsps` | 1872 |
 | `SexSceneClampValues` | `modules/actions/sex/sex_scene_core.qsps` | 2576 |
-| `SexSceneCleanupText` | `modules/actions/sex/sex_scene_text.qsps` | 642 |
+| `SexSceneCleanupText` | `modules/actions/sex/sex_scene_text.qsps` | 644 |
 | `SexSceneEnd` | `modules/actions/sex/sex_scene_core.qsps` | 2369 |
 | `SexSceneEnsureIntimStage` | `modules/actions/sex/sex_scene_core.qsps` | 204 |
-| `SexSceneGoodbyeText` | `modules/actions/sex/sex_scene_text.qsps` | 1038 |
+| `SexSceneGoodbyeText` | `modules/actions/sex/sex_scene_text.qsps` | 1044 |
 | `SexSceneInitState` | `modules/actions/sex/sex_scene_core.qsps` | 235 |
 | `SexSceneMain` | `modules/actions/sex/sex_scene_core.qsps` | 333 |
 | `SexSceneNormalizePoseForAct` | `modules/actions/sex/sex_scene_poses.qsps` | 184 |
@@ -361,7 +361,7 @@ Generated from active project files in `qsp-project.json`.
 | `SexSceneShowBeckyActionImage` | `modules/actions/sex/sex_scene_images.qsps` | 31 |
 | `SexSceneShowStatusPanel` | `modules/actions/sex/sex_scene_core.qsps` | 407 |
 | `SexSceneStart` | `modules/actions/sex/sex_scene_core.qsps` | 15 |
-| `SexSceneStatusText` | `modules/actions/sex/sex_scene_text.qsps` | 836 |
+| `SexSceneStatusText` | `modules/actions/sex/sex_scene_text.qsps` | 842 |
 | `SexSceneStatusTextGeorgette` | `modules/actions/sex/sex_scene_text_georgette.qsps` | 261 |
 | `SexSceneText` | `modules/actions/sex/sex_scene_text.qsps` | 23 |
 | `SexSceneTextAction` | `modules/actions/sex/sex_scene_core.qsps` | 2261 |
@@ -372,36 +372,44 @@ Generated from active project files in `qsp-project.json`.
 | `SexSceneTextAmandaRim` | `modules/actions/sex/sex_scene_text_amanda.qsps` | 183 |
 | `SexSceneTextAmandaRimjob` | `modules/actions/sex/sex_scene_text_amanda.qsps` | 201 |
 | `SexSceneTextAmandaVaginal` | `modules/actions/sex/sex_scene_text_amanda.qsps` | 219 |
-| `SexSceneTextAtmBlowjob` | `modules/actions/sex/sex_scene_text.qsps` | 147 |
-| `SexSceneTextAtmWashRefusal` | `modules/actions/sex/sex_scene_text.qsps` | 131 |
+| `SexSceneTextAtmBlowjob` | `modules/actions/sex/sex_scene_text.qsps` | 149 |
+| `SexSceneTextAtmWashRefusal` | `modules/actions/sex/sex_scene_text.qsps` | 133 |
 | `SexSceneTextBecky` | `modules/actions/sex/sex_scene_text_becky.qsps` | 11 |
 | `SexSceneTextBeckyFinish` | `modules/actions/sex/sex_scene_text_becky.qsps` | 129 |
 | `SexSceneTextBeckyGirlOrgasm` | `modules/actions/sex/sex_scene_text_becky.qsps` | 160 |
 | `SexSceneTextBeckyPoseChange` | `modules/actions/sex/sex_scene_text_becky.qsps` | 121 |
 | `SexSceneTextBeckySimultaneousOrgasm` | `modules/actions/sex/sex_scene_text_becky.qsps` | 174 |
 | `SexSceneTextClarissa` | `modules/actions/sex/sex_scene_text_clarissa.qsps` | 10 |
-| `SexSceneTextDefault` | `modules/actions/sex/sex_scene_text.qsps` | 80 |
-| `SexSceneTextDefaultPoseChange` | `modules/actions/sex/sex_scene_text.qsps` | 66 |
-| `SexSceneTextFinish` | `modules/actions/sex/sex_scene_text.qsps` | 495 |
-| `SexSceneTextFinishCleanup` | `modules/actions/sex/sex_scene_text.qsps` | 394 |
-| `SexSceneTextFinishReaction` | `modules/actions/sex/sex_scene_text.qsps` | 195 |
+| `SexSceneTextDefault` | `modules/actions/sex/sex_scene_text.qsps` | 82 |
+| `SexSceneTextDefaultPoseChange` | `modules/actions/sex/sex_scene_text.qsps` | 68 |
+| `SexSceneTextFinish` | `modules/actions/sex/sex_scene_text.qsps` | 497 |
+| `SexSceneTextFinishCleanup` | `modules/actions/sex/sex_scene_text.qsps` | 396 |
+| `SexSceneTextFinishReaction` | `modules/actions/sex/sex_scene_text.qsps` | 197 |
 | `SexSceneTextGeorgette` | `modules/actions/sex/sex_scene_text_georgette.qsps` | 10 |
 | `SexSceneTextGeorgetteFinish` | `modules/actions/sex/sex_scene_text_georgette.qsps` | 143 |
 | `SexSceneTextGeorgetteGirlOrgasm` | `modules/actions/sex/sex_scene_text_georgette.qsps` | 227 |
 | `SexSceneTextGeorgettePoseChange` | `modules/actions/sex/sex_scene_text_georgette.qsps` | 241 |
 | `SexSceneTextGeorgetteSimultaneousOrgasm` | `modules/actions/sex/sex_scene_text_georgette.qsps` | 189 |
 | `SexSceneTextGeorgetteTriggerPlayer` | `modules/actions/sex/sex_scene_text_georgette.qsps` | 211 |
-| `SexSceneTextGirlExhausted` | `modules/actions/sex/sex_scene_text.qsps` | 701 |
-| `SexSceneTextGirlOrgasm` | `modules/actions/sex/sex_scene_text.qsps` | 654 |
+| `SexSceneTextGirlExhausted` | `modules/actions/sex/sex_scene_text.qsps` | 707 |
+| `SexSceneTextGirlOrgasm` | `modules/actions/sex/sex_scene_text.qsps` | 656 |
 | `SexSceneTextGirlOrgasmAmanda` | `modules/actions/sex/sex_scene_text_amanda.qsps` | 327 |
 | `SexSceneTextGirlOrgasmAmandaRim` | `modules/actions/sex/sex_scene_text_amanda.qsps` | 317 |
+| `SexSceneTextGirlOrgasmInga` | `modules/actions/sex/sex_scene_text_inga.qsps` | 301 |
+| `SexSceneTextGirlOrgasmIngaRim` | `modules/actions/sex/sex_scene_text_inga.qsps` | 293 |
 | `SexSceneTextGirlOrgasmMelissa` | `modules/actions/sex/sex_scene_text_melissa.qsps` | 321 |
 | `SexSceneTextGirlOrgasmMelissaRim` | `modules/actions/sex/sex_scene_text_melissa.qsps` | 317 |
 | `SexSceneTextGirlOrgasmSister` | `modules/actions/sex/sex_scene_text_sister.qsps` | 202 |
 | `SexSceneTextGirlOrgasmSisterRim` | `modules/actions/sex/sex_scene_text_sister.qsps` | 198 |
-| `SexSceneTextGirlOrgasmTriggersPlayer` | `modules/actions/sex/sex_scene_text.qsps` | 768 |
-| `SexSceneTextHighArousalVaginal` | `modules/actions/sex/sex_scene_text.qsps` | 962 |
-| `SexSceneTextInga` | `modules/actions/sex/sex_scene_text_inga.qsps` | 10 |
+| `SexSceneTextGirlOrgasmTriggersPlayer` | `modules/actions/sex/sex_scene_text.qsps` | 774 |
+| `SexSceneTextHighArousalVaginal` | `modules/actions/sex/sex_scene_text.qsps` | 968 |
+| `SexSceneTextInga` | `modules/actions/sex/sex_scene_text_inga.qsps` | 11 |
+| `SexSceneTextIngaAnal` | `modules/actions/sex/sex_scene_text_inga.qsps` | 275 |
+| `SexSceneTextIngaBlowjob` | `modules/actions/sex/sex_scene_text_inga.qsps` | 199 |
+| `SexSceneTextIngaPoseChange` | `modules/actions/sex/sex_scene_text_inga.qsps` | 167 |
+| `SexSceneTextIngaRim` | `modules/actions/sex/sex_scene_text_inga.qsps` | 221 |
+| `SexSceneTextIngaRimjob` | `modules/actions/sex/sex_scene_text_inga.qsps` | 233 |
+| `SexSceneTextIngaVaginal` | `modules/actions/sex/sex_scene_text_inga.qsps` | 245 |
 | `SexSceneTextMelissa` | `modules/actions/sex/sex_scene_text_melissa.qsps` | 10 |
 | `SexSceneTextMelissaAnal` | `modules/actions/sex/sex_scene_text_melissa.qsps` | 266 |
 | `SexSceneTextMelissaBlowjob` | `modules/actions/sex/sex_scene_text_melissa.qsps` | 165 |
@@ -409,10 +417,10 @@ Generated from active project files in `qsp-project.json`.
 | `SexSceneTextMelissaRim` | `modules/actions/sex/sex_scene_text_melissa.qsps` | 182 |
 | `SexSceneTextMelissaRimjob` | `modules/actions/sex/sex_scene_text_melissa.qsps` | 199 |
 | `SexSceneTextMelissaVaginal` | `modules/actions/sex/sex_scene_text_melissa.qsps` | 215 |
-| `SexSceneTextMouthFinishOrgasm` | `modules/actions/sex/sex_scene_text.qsps` | 181 |
-| `SexSceneTextPlayerOutAtEdge` | `modules/actions/sex/sex_scene_text.qsps` | 713 |
-| `SexSceneTextRimjobHighArousal` | `modules/actions/sex/sex_scene_text.qsps` | 691 |
-| `SexSceneTextRimjobTriggersPlayer` | `modules/actions/sex/sex_scene_text.qsps` | 753 |
+| `SexSceneTextMouthFinishOrgasm` | `modules/actions/sex/sex_scene_text.qsps` | 183 |
+| `SexSceneTextPlayerOutAtEdge` | `modules/actions/sex/sex_scene_text.qsps` | 719 |
+| `SexSceneTextRimjobHighArousal` | `modules/actions/sex/sex_scene_text.qsps` | 697 |
+| `SexSceneTextRimjobTriggersPlayer` | `modules/actions/sex/sex_scene_text.qsps` | 759 |
 | `SexSceneTextSister` | `modules/actions/sex/sex_scene_text_sister.qsps` | 9 |
 | `SexSceneTextSisterPenetration` | `modules/actions/sex/sex_scene_text_sister.qsps` | 122 |
 | `SexSceneTextSisterPoseChange` | `modules/actions/sex/sex_scene_text_sister.qsps` | 89 |
