@@ -73,6 +73,83 @@
 
         killvar 'SundayVisitIrmaIngaOneShotOpen'
 
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_guard_resolved':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_guard_resolved'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if IngaGuardResolved > 0 or IngaGuardThanksDone = 1:
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_guard_failed':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_guard_failed'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if IngaGuardResolved = -1 or IngaGuardHelpStage = -1 or IngaServingGuard = 1:
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_lucas_coward':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_lucas_coward'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if (IngaGuardProblem >= 1 or IngaGuardResolved <> 0) and (IngaPlayerRouteOpen = 1 or love['inga'] >= 2 or Friends['inga'] >= 10):
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_lucas_rejected':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_lucas_rejected'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if (IngaBackroomSex = 1 or IngaDanceStreetAlleyDone = 1 or IngaDanceKiss = 1 or IngaPlayerPath >= 2) and IngaPlayerRouteOpen = 1:
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_stefan_backroom':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_stefan_backroom'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if IngaBackroomSex = 1 or IngaRomanceStage >= 2:
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_stefan_dance_room':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_stefan_dance_room'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if IngaDanceKiss = 1 or IngaRoomUnlocked = 1:
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
+    elseif $SundayVisitIrmaIngaPhraseId = 'inga_stefan_alley':
+        gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_stefan_alley'
+
+        if SundayVisitIrmaIngaOneShotOpen = 1:
+            if IngaDanceStreetAlleyDone = 1:
+                SundayVisitIrmaIngaPhraseOk = 1
+            end
+        end
+
+        killvar 'SundayVisitIrmaIngaOneShotOpen'
+
     elseif $SundayVisitIrmaIngaPhraseId = 'inga_lucas_corner':
         gs 'SundayVisitIrmaIngaPhraseOneShotOpen', 'inga_lucas_corner'
 
@@ -128,7 +205,16 @@
     SundayVisitIrmaIngaPoolMax = 0
     SundayVisitIrmaIngaPoolSize = 0
 
-    ! Сюжетные реакции (Грюн, Лукас) — уровень 4
+    ! Свежие ключевые события со Стефаном и стражником — уровень 5
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_guard_resolved', 5
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_guard_failed', 5
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_stefan_alley', 5
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_stefan_dance_room', 5
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_stefan_backroom', 5
+
+    ! Отношения с Лукасом и общие сюжетные реакции — уровень 4
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_lucas_coward', 4
+    gs 'SundayVisitIrmaIngaPoolTry', 'inga_lucas_rejected', 4
     gs 'SundayVisitIrmaIngaPoolTry', 'inga_guard_grun', 4
     gs 'SundayVisitIrmaIngaPoolTry', 'inga_lucas_corner', 4
 
@@ -190,6 +276,35 @@
     if $SundayVisitIrmaIngaEffectId = 'inga_guard_grun':
         IngaIrmaTalkPhraseHeard['inga_guard_grun'] = 1
 
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_guard_resolved':
+        IngaIrmaTalkPhraseHeard['inga_guard_resolved'] = 1
+        Friends['inga'] += 1
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_guard_failed':
+        IngaIrmaTalkPhraseHeard['inga_guard_failed'] = 1
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_lucas_coward':
+        IngaIrmaTalkPhraseHeard['inga_lucas_coward'] = 1
+        love['inga'] += 1
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_lucas_rejected':
+        IngaIrmaTalkPhraseHeard['inga_lucas_rejected'] = 1
+        Friends['inga'] += 1
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_stefan_backroom':
+        IngaIrmaTalkPhraseHeard['inga_stefan_backroom'] = 1
+        love['inga'] += 1
+        otkroven['inga'] += 1
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_stefan_dance_room':
+        IngaIrmaTalkPhraseHeard['inga_stefan_dance_room'] = 1
+        love['inga'] += 1
+
+    elseif $SundayVisitIrmaIngaEffectId = 'inga_stefan_alley':
+        IngaIrmaTalkPhraseHeard['inga_stefan_alley'] = 1
+        sluttiness['inga'] += 1
+        otkroven['inga'] += 1
+
     elseif $SundayVisitIrmaIngaEffectId = 'inga_lucas_corner':
         IngaIrmaTalkPhraseHeard['inga_lucas_corner'] = 1
 
@@ -224,5 +339,6 @@
 
     end
 
+    gs 'ClampGirlSocialStats', 'inga'
     killvar '$SundayVisitIrmaIngaEffectId'
 ---

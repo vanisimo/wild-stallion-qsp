@@ -12,6 +12,9 @@
 
     CityRumorsInitDone = 1
     CityRumorsSeed = 0
+    IngaRumorDays_Lucas = 0
+    IngaRumorDays_Stefan = 0
+    IngaRumorDays_Guard = 0
 ---
 
 #CityRumorsResetDaily
@@ -22,6 +25,27 @@
     CityRumorsLastDay = day
     CityRumorsDailyCount = 0
     killvar 'CityRumorsHeardToday'
+
+    if IngaRumorDays_Lucas > 0:
+        IngaRumorDays_Lucas -= 1
+        if IngaRumorDays_Lucas = 0:
+            CityRumorReady['inga_lucas'] = 0
+        end
+    end
+
+    if IngaRumorDays_Stefan > 0:
+        IngaRumorDays_Stefan -= 1
+        if IngaRumorDays_Stefan = 0:
+            CityRumorReady['inga_stefan'] = 0
+        end
+    end
+
+    if IngaRumorDays_Guard > 0:
+        IngaRumorDays_Guard -= 1
+        if IngaRumorDays_Guard = 0:
+            CityRumorReady['inga_guard'] = 0
+        end
+    end
 ---
 
 #CityRumorsRegisterEvent
@@ -102,6 +126,21 @@
     elseif CityRumorReady['stefan_donation'] = 1 and CityRumorsHeardToday['stefan_donation'] = 0:
         $CityRumorPickedKey = 'stefan_donation'
         CityRumorReady['stefan_donation'] = 0
+
+    ! 8. Инга и Лукас на улице (подворотни, слухи)
+    elseif (CityRumorReady['inga_lucas'] = 1 or IngaRumorDays_Lucas > 0) and CityRumorsHeardToday['inga_lucas'] = 0:
+        $CityRumorPickedKey = 'inga_lucas'
+        CityRumorReady['inga_lucas'] = 0
+
+    ! 9. Инга теперь со Стефаном (подсобка, танцы, переулок)
+    elseif (CityRumorReady['inga_stefan'] = 1 or IngaRumorDays_Stefan > 0) and CityRumorsHeardToday['inga_stefan'] = 0:
+        $CityRumorPickedKey = 'inga_stefan'
+        CityRumorReady['inga_stefan'] = 0
+
+    ! 10. Инга и стражник / Стефан и стражник
+    elseif (CityRumorReady['inga_guard'] = 1 or IngaRumorDays_Guard > 0) and CityRumorsHeardToday['inga_guard'] = 0:
+        $CityRumorPickedKey = 'inga_guard'
+        CityRumorReady['inga_guard'] = 0
     end
 
     ! -----------------------------------------------------------
@@ -156,6 +195,21 @@
             CityRumorAvailCount += 1
         end
 
+        if IngaRumorDays_Lucas > 0 and CityRumorsHeardToday['inga_lucas'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'inga_lucas'
+            CityRumorAvailCount += 1
+        end
+
+        if IngaRumorDays_Stefan > 0 and CityRumorsHeardToday['inga_stefan'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'inga_stefan'
+            CityRumorAvailCount += 1
+        end
+
+        if IngaRumorDays_Guard > 0 and CityRumorsHeardToday['inga_guard'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'inga_guard'
+            CityRumorAvailCount += 1
+        end
+
         if CityRumorAvailCount > 0:
             CityRumorPickIdx = RAND(0, CityRumorAvailCount - 1)
             $CityRumorPickedKey = $CityRumorAvailPool[CityRumorPickIdx]
@@ -174,7 +228,7 @@
     CityRumorTotal += 1
 
     ! Влияние сплетен на тревогу Сандры (меньше надлома, затухание при росте разврата)
-    if $CityRumorPickedKey = 'tavern_scandal' or $CityRumorPickedKey = 'kitchen_sandra' or $CityRumorPickedKey = 'girls_behavior' or $CityRumorPickedKey = 'legare_amanda':
+    if $CityRumorPickedKey = 'tavern_scandal' or $CityRumorPickedKey = 'kitchen_sandra' or $CityRumorPickedKey = 'girls_behavior' or $CityRumorPickedKey = 'legare_amanda' or $CityRumorPickedKey = 'inga_stefan':
         if CityRumorsDailyConcernGiven <> day:
             CityRumorsDailyConcernGiven = day
             if FamilyCorruptionStage < 4:
