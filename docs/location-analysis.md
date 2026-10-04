@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 471
-- Locations: 3445
-- Locations with direct incoming calls: 2942
-- Locations without direct incoming calls: 503
-- Review candidates without direct incoming calls: 180
+- Locations: 3450
+- Locations with direct incoming calls: 2946
+- Locations without direct incoming calls: 504
+- Review candidates without direct incoming calls: 181
 - Classified entry/helper locations without direct incoming calls: 323
 - Dynamic call sites: 2
 
@@ -23,6 +23,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AmandaFirstSexFamilyTalkFinish` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 626 | `modules/events` |
 | `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 148 | `modules/events` |
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 193 | `modules/events` |
+| `AmandaLizaRoomDoorPeek` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 79 | `modules/events` |
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
 | `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 254 | `modules/events` |
@@ -520,8 +521,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 974 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 855 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 625 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 452 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 635 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 462 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 304 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -531,12 +532,12 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1440 |
-| `ShowLocationScreenTitle` | 627 |
+| `ActUiPrepare` | 1446 |
+| `ShowLocationScreenTitle` | 626 |
 | `Menu.AddModule` | 588 |
 | `MenuUiAdd` | 580 |
-| `SceneShowVisual` | 560 |
-| `EnsureGirlData` | 209 |
+| `SceneShowVisual` | 561 |
+| `EnsureGirlData` | 208 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 185 |
 | `TavernMain` | 164 |
@@ -545,17 +546,17 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Destroy` | 92 |
 | `RegisterSex` | 91 |
 | `ShowImage` | 88 |
-| `PrintMainP` | 86 |
+| `PrintMainP` | 87 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 76 |
 | `Market` | 63 |
-| `PrintTitleLine` | 53 |
+| `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `Menu.AddCondition` | 44 |
 
 ## Dynamic Call Sites
 

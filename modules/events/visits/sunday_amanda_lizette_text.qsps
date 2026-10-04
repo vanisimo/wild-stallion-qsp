@@ -1,11 +1,11 @@
 ! ================================================
-! FILE: modules/events/amanda/lizette/amanda_liza_talk_text.qsps
-! MODULE: events/amanda
-! [AI-WORKED] Текст переработан / дополнен ассистентом
+! FILE: modules/events/visits/sunday_amanda_lizette_text.qsps
+! MODULE: events/visits
+! [AI-WORKED] Текст переработан / дополнен ассистентом 04.10.2026
 ! USER-OWNED TEXT — правки игрового текста: владелец-пользователь
 ! Агентам: НЕ переписывать prose без явного «можно править тексты».
 ! Перед любой переделкой файла — спросить пользователя; сохранять формулировки.
-! Тексты подслушанных разговоров Аманда + Лизетта
+! Тексты подслушанных разговоров Аманда + Лизетта (воскресные визиты и таверна)
 ! Портировано из InitAmandaLizaTalkItems (без glory hole и беременности)
 ! ================================================
 
@@ -223,4 +223,31 @@
     end
 
     killvar '$AmandaLizaTalkTextId'
+---
+
+#SundayVisitAmandaLizetteText
+    if SundayAmandaLizetteVisitSeen[day] = 1:
+        $SundayVisitText = 'Ты снова задерживаешься у двери комнаты Аманды, но за деревянной створкой уже тихо: подруги либо разошлись, либо закончили свои сокровенные беседы. На сегодня ты услышал всё, что мог.'
+        exit
+    end
+
+    ! Режиссура сцены тренировки в зале (Аманда)
+    if LOC('HallPlayCoachCanOffer') = 1:
+        gs 'HallPlayCoachCanOffer', 'amanda'
+        if HallPlayCoachCanOffer = 1:
+            $SundayVisitAmandaLizettePickedId = 'play_coach_amanda'
+            gs 'AmandaLizaTalkText', 'play_coach_amanda'
+            $SundayVisitText = $AmandaLizaTalkText
+            exit
+        end
+    end
+
+    gs 'SundayVisitAmandaLizettePickPhrase'
+
+    if AmandaLizaTalkPickOk = 0:
+        $SundayVisitText = 'Сегодня разговор так и не дошёл до сокровенных тем — девушки перешепнулись о пустяках и замолчали, услышав чьи-то шаги на лестнице.'
+    else:
+        gs 'AmandaLizaTalkText', $SundayVisitAmandaLizettePickedId
+        $SundayVisitText = $AmandaLizaTalkText
+    end
 ---

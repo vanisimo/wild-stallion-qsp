@@ -136,7 +136,7 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/events/becky/becky_dance_text.qsps` | Becky dances |
 | `modules/events/becky/becky_talk_text.qsps` | Becky talk |
 | `modules/events/eddie/eddie_arc_text.qsps` | Eddie arc |
-| `modules/events/amanda/lizette/amanda_liza_talk_text.qsps` | Amanda + Lizette overhear |
+| `modules/events/visits/sunday_amanda_lizette_text.qsps` | Amanda + Lizette overhear (moved to visits) |
 | `modules/events/church/church_spy_lizette_text.qsps` | church spy Lizette |
 | `modules/events/hall/hall_family_reactions_text.qsps` | family reactions to hall |
 | `modules/events/hall/hall_family_state_text.qsps` | family state after hall choice |

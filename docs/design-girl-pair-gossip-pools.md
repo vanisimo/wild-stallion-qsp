@@ -1,7 +1,7 @@
 # Girl-pair gossip pools (design)
 
 Дизайн болтовни пар NPC: пул фраз по флагам, подслушивание, лимиты визитов.
-Код-эталон: `AmandaLizaTalk` (`amanda_liza_talk_pick.qsps`, `amanda_liza_overhear.qsps`).
+Код-эталон: `AmandaLizaTalk` (`sunday_amanda_lizette_talk_pick.qsps`, `amanda_liza_overhear.qsps`).
 
 Статус: **дизайн** (реализация поэтапно). SexScene girl orgasm cap + marathon pending — отдельно.
 

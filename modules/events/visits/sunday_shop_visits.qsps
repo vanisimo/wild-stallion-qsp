@@ -1,16 +1,19 @@
 ! ================================================
 ! FILE: modules/events/visits/sunday_shop_visits.qsps
-! Воскресные визиты и подслушивания у закрытых лавок
-! Версия: v1
+! Воскресные визиты и подслушивания подруг (воскресенье, день/вечер: sunday_visits)
+! Версия: v2
 ! Назначение:
-! - воскресенье день/вечер (sunday_visits): у лавки Бекки подслушивание
+! - у закрытой продуктовой лавки Бекки: Бекки и Сандра
 ! - слух про шестерёнку — первый визит, до скандала и прочих тем
-! - у лавки Легаре можно подслушать Клариссу и Мелиссу
-! - у закрытой лавки Ирмы (воскресенье день/вечер): Инга и Ирма
+! - у закрытой винной лавки Легаре: Кларисса и Мелисса
+! - у закрытой мастерской Ирмы: Инга и Ирма
+! - у закрытой двери спальни Аманды в трактире: Аманда и Лизетта
+! 
 ! Большие тексты берутся из:
 ! - modules/events/visits/sunday_becky_sandra_text.qsps
 ! - modules/events/visits/sunday_clarissa_melissa_text.qsps
 ! - modules/events/visits/sunday_irma_inga_text.qsps
+! - modules/events/visits/sunday_amanda_lizette_text.qsps
 ! ================================================
 
 #SundayVisitBeckySandraCanEnter
@@ -102,6 +105,36 @@
     end
 
     SundayVisitIrmaIngaCanEavesdrop = 1
+---
+
+#SundayVisitAmandaLizetteCanEavesdrop
+
+    SundayVisitAmandaLizetteCanEavesdrop = 0
+
+    if week <> 7:
+        exit
+    end
+
+    gs 'GetCitySchedulePhase'
+
+    if $CitySchedulePhase <> 'sunday_visits':
+        exit
+    end
+
+    gs 'AmandaLizetteInAmandaRoomNow'
+
+    if AmandaLizetteInAmandaRoomNow = 0:
+        killvar 'AmandaLizetteInAmandaRoomNow'
+        exit
+    end
+
+    killvar 'AmandaLizetteInAmandaRoomNow'
+
+    if SundayAmandaLizetteVisitSeen[day] = 1 or AmandaLizaRoomTalksWeek >= 1:
+        exit
+    end
+
+    SundayVisitAmandaLizetteCanEavesdrop = 1
 ---
 
 #SundayVisitBeckySandra
@@ -311,6 +344,66 @@
 
     act '<b>Назад</b>', 'images/common/ui/actions/return.png':
         gt 'CraftsmenQuarter'
+    end
+---
+
+! ================================================
+! FILE: modules/events/visits/sunday_shop_visits.qsps
+! Воскресный разговор у двери комнаты Аманды в трактире
+! ================================================
+
+#SundayVisitAmandaLizette
+
+    *clr
+    clr
+    cla
+
+    gs 'SundayVisitAmandaLizetteCanEavesdrop'
+
+    if SundayVisitAmandaLizetteCanEavesdrop = 0:
+        killvar 'SundayVisitAmandaLizetteCanEavesdrop'
+        gt 'TavernSecondFloor'
+    end
+
+    killvar 'SundayVisitAmandaLizetteCanEavesdrop'
+
+    gs 'SundayVisitAmandaLizetteText'
+
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_lizette_bedroom_gossip', 'Аманда и Лизетта шепчутся в спальне', 'large', 'webp'
+
+    gs 'PrintTitleLine', ' У ДВЕРИ В СПАЛЬНЮ'
+
+    gs 'PrintMainP', 'Ты задерживаешься на цыпочках в коридоре у двери в спальню сестры — изнутри доносятся приглушённые девичьи голоса.'
+
+    *pl ' '
+
+    *p $SundayVisitText
+    *pl ' '
+
+    SundayAmandaLizetteVisitSeen[day] = 1
+    PlayerKnows_AmandaLizetteSundayTalk = 1
+    AmandaLizaTalkHeardCount += 1
+    AmandaLizaRoomTalksWeek += 1
+
+    if $SundayVisitAmandaLizettePickedId <> '':
+        gs 'SundayVisitAmandaLizetteApplyPhraseEffects', $SundayVisitAmandaLizettePickedId
+        if $SundayVisitAmandaLizettePickedId = 'lizette_anal_hint':
+            if LOC('AmandaLizetteAnalTalkBump') = 1:
+                gs 'AmandaLizetteAnalTalkBump'
+            end
+        end
+        gs 'AmandaLizetteAnalTalkTryUnlock'
+        killvar '$SundayVisitAmandaLizettePickedId'
+    end
+
+    if debug = 1:
+        *pl '[DEBUG VISIT] AmandaLizaInfluence: ' + STR(AmandaLizaInfluence)
+        *pl '[DEBUG VISIT] PlayerKnows_AmandaLizetteSundayTalk: ' + STR(PlayerKnows_AmandaLizetteSundayTalk)
+        *pl ' '
+    end
+
+    act '<b>Назад в коридор</b>', 'images/common/ui/actions/return.png':
+        gt 'TavernSecondFloor'
     end
 ---
 
@@ -592,6 +685,83 @@
         DreamItemGiven['ancestral_staff'] = 0
         SundayIrmaIngaVisitSeen[day] = 0
         gt 'SundayVisitIrmaInga'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Аманда и Лизетта', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        LizetteKnown = 1
+        LizetteVisitStage = 1
+        SundayAmandaLizetteVisitSeen[day] = 0
+        AmandaLizaRoomTalksWeek = 0
+        gt 'SundayVisitAmandaLizette'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Аманда (ростовое зеркало)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        LizetteKnown = 1
+        LizetteVisitStage = 1
+        SundayAmandaLizetteVisitSeen[day] = 0
+        AmandaLizaRoomTalksWeek = 0
+        $SundayVisitAmandaLizettePickedId = 'amanda_dream_full_mirror'
+        gt 'SundayVisitAmandaLizette'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Аманда (намёк на анал)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        LizetteKnown = 1
+        LizetteVisitStage = 1
+        SundayAmandaLizetteVisitSeen[day] = 0
+        AmandaLizaRoomTalksWeek = 0
+        $SundayVisitAmandaLizettePickedId = 'lizette_anal_hint'
+        gt 'SundayVisitAmandaLizette'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Аманда (кузнец Питер)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        LizetteKnown = 1
+        LizetteVisitStage = 1
+        SundayAmandaLizetteVisitSeen[day] = 0
+        AmandaLizaRoomTalksWeek = 0
+        $SundayVisitAmandaLizettePickedId = 'giant_full_sex'
+        gt 'SundayVisitAmandaLizette'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Аманда (братья Йенс и Бруно)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        LizetteKnown = 1
+        LizetteVisitStage = 1
+        SundayAmandaLizetteVisitSeen[day] = 0
+        AmandaLizaRoomTalksWeek = 0
+        $SundayVisitAmandaLizettePickedId = 'brothers_trio_full'
+        gt 'SundayVisitAmandaLizette'
+    end
+
+    gs 'ActUiPrepare', 'Тест: Аманда (отец Герхард)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        LizetteKnown = 1
+        LizetteVisitStage = 1
+        SundayAmandaLizetteVisitSeen[day] = 0
+        AmandaLizaRoomTalksWeek = 0
+        $SundayVisitAmandaLizettePickedId = 'priest_amanda_purify'
+        gt 'SundayVisitAmandaLizette'
     end
 
     gs 'ActUiPrepare', 'Вернуться', 'return'

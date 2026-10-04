@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 471
-- Locations: 3445
+- Locations: 3450
 
 ## modules/actions
 
@@ -1389,28 +1389,28 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaLegareWakeupSandraCareText` | `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | 127 |
 | `AmandaLegareWakeupSandraOralText` | `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | 138 |
 | `AmandaLegareWitnessRegister` | `modules/events/amanda/legare/amanda_legare_peek_reaction.qsps` | 7 |
-| `AmandaLizaRoomDoor` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 84 |
+| `AmandaLizaRoomDoor` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 55 |
 | `AmandaLizaRoomDoorCanShow` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 43 |
-| `AmandaLizaRoomDoorPeek` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 108 |
-| `AmandaLizaTalkApplyInfluence` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 599 |
-| `AmandaLizaTalkApplyPhraseEffects` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 643 |
-| `AmandaLizaTalkBuildPool` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 506 |
-| `AmandaLizaTalkCanTrigger` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 209 |
+| `AmandaLizaRoomDoorPeek` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 79 |
+| `AmandaLizaTalkApplyInfluence` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 601 |
+| `AmandaLizaTalkApplyPhraseEffects` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 645 |
+| `AmandaLizaTalkBuildPool` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 508 |
+| `AmandaLizaTalkCanTrigger` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 136 |
 | `AmandaLizaTalkGetPartKey` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 7 |
 | `AmandaLizaTalkGotoReturn` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 15 |
-| `AmandaLizaTalkListenScene` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 450 |
+| `AmandaLizaTalkListenScene` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 377 |
 | `AmandaLizaTalkOralSlutTier` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 37 |
-| `AmandaLizaTalkOverhearStart` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 344 |
-| `AmandaLizaTalkPhraseEligible` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 31 |
-| `AmandaLizaTalkPhraseFactWitness` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 18 |
-| `AmandaLizaTalkPhraseOneShotOpen` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 7 |
-| `AmandaLizaTalkPickPhrase` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 565 |
-| `AmandaLizaTalkPoolTry` | `modules/events/amanda/lizette/amanda_liza_talk_pick.qsps` | 476 |
-| `AmandaLizaTalkPrepareHallVisit` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 156 |
+| `AmandaLizaTalkOverhearStart` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 271 |
+| `AmandaLizaTalkPhraseEligible` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 33 |
+| `AmandaLizaTalkPhraseFactWitness` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 20 |
+| `AmandaLizaTalkPhraseOneShotOpen` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 9 |
+| `AmandaLizaTalkPickPhrase` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 567 |
+| `AmandaLizaTalkPoolTry` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 478 |
+| `AmandaLizaTalkPrepareHallVisit` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 83 |
 | `AmandaLizaTalkResetWeeklyCounters` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 32 |
 | `AmandaLizaTalkShowHallImage` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 11 |
-| `AmandaLizaTalkText` | `modules/events/amanda/lizette/amanda_liza_talk_text.qsps` | 12 |
-| `AmandaLizaTalkTryStart` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 291 |
+| `AmandaLizaTalkText` | `modules/events/visits/sunday_amanda_lizette_text.qsps` | 12 |
+| `AmandaLizaTalkTryStart` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 218 |
 | `AmandaLizetteAnalTalkBump` | `modules/events/family/intimacy_kinks.qsps` | 375 |
 | `AmandaLizetteAnalTalkTryUnlock` | `modules/events/family/intimacy_kinks.qsps` | 350 |
 | `AmandaLizetteBanChoice` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 490 |
@@ -1546,7 +1546,7 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyOtkroven35` | `modules/events/becky/becky_events.qsps` | 30 |
 | `BeckyOtkroven45` | `modules/events/becky/becky_events.qsps` | 42 |
 | `BeckyOtkrovenNegativeLowFriend` | `modules/events/becky/becky_events.qsps` | 55 |
-| `BeckySandraChurchGearGossipCanHear` | `modules/events/visits/sunday_shop_visits.qsps` | 186 |
+| `BeckySandraChurchGearGossipCanHear` | `modules/events/visits/sunday_shop_visits.qsps` | 219 |
 | `BeckyShopBackroomPeek` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 360 |
 | `BeckyShopBackroomPeekAnyClientAvailable` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 138 |
 | `BeckyShopBackroomPeekApplyEffects` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 426 |
@@ -2935,12 +2935,17 @@ Generated from active project files in `qsp-project.json`.
 | `SaveLastHallEvent` | `modules/events/hall/tavern_hall_events.qsps` | 143 |
 | `SexSceneCalcAmandaBlowjobCap` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 105 |
 | `ShipGearShop` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 83 |
-| `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 322 |
-| `SundayVisitBeckySandra` | `modules/events/visits/sunday_shop_visits.qsps` | 107 |
+| `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 415 |
+| `SundayVisitAmandaLizette` | `modules/events/visits/sunday_shop_visits.qsps` | 355 |
+| `SundayVisitAmandaLizetteApplyPhraseEffects` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 803 |
+| `SundayVisitAmandaLizetteCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 110 |
+| `SundayVisitAmandaLizettePickPhrase` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 798 |
+| `SundayVisitAmandaLizetteText` | `modules/events/visits/sunday_amanda_lizette_text.qsps` | 228 |
+| `SundayVisitBeckySandra` | `modules/events/visits/sunday_shop_visits.qsps` | 140 |
 | `SundayVisitBeckySandraApplyPhraseEffects` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 260 |
 | `SundayVisitBeckySandraBuildPool` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 205 |
-| `SundayVisitBeckySandraCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 31 |
-| `SundayVisitBeckySandraCanEnter` | `modules/events/visits/sunday_shop_visits.qsps` | 16 |
+| `SundayVisitBeckySandraCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 34 |
+| `SundayVisitBeckySandraCanEnter` | `modules/events/visits/sunday_shop_visits.qsps` | 19 |
 | `SundayVisitBeckySandraGearGossipText` | `modules/events/visits/sunday_becky_sandra_text.qsps` | 220 |
 | `SundayVisitBeckySandraPhraseEligible` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 36 |
 | `SundayVisitBeckySandraPhraseFactWitness` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 18 |
@@ -2950,20 +2955,20 @@ Generated from active project files in `qsp-project.json`.
 | `SundayVisitBeckySandraScandalText` | `modules/events/sandra/sandra_becky_conflict_text.qsps` | 59 |
 | `SundayVisitBeckySandraTalkText` | `modules/events/visits/sunday_becky_sandra_text.qsps` | 64 |
 | `SundayVisitBeckySandraText` | `modules/events/visits/sunday_becky_sandra_text.qsps` | 14 |
-| `SundayVisitClarissaMelissa` | `modules/events/visits/sunday_shop_visits.qsps` | 202 |
+| `SundayVisitClarissaMelissa` | `modules/events/visits/sunday_shop_visits.qsps` | 235 |
 | `SundayVisitClarissaMelissaApplyPhraseEffects` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 224 |
 | `SundayVisitClarissaMelissaBuildPool` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 172 |
-| `SundayVisitClarissaMelissaCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 61 |
+| `SundayVisitClarissaMelissaCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 64 |
 | `SundayVisitClarissaMelissaPhraseEligible` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 18 |
 | `SundayVisitClarissaMelissaPhraseOneShotOpen` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 7 |
 | `SundayVisitClarissaMelissaPickPhrase` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 197 |
 | `SundayVisitClarissaMelissaPoolTry` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 142 |
 | `SundayVisitClarissaMelissaTalkText` | `modules/events/visits/sunday_clarissa_melissa_text.qsps` | 51 |
 | `SundayVisitClarissaMelissaText` | `modules/events/visits/sunday_clarissa_melissa_text.qsps` | 16 |
-| `SundayVisitIrmaInga` | `modules/events/visits/sunday_shop_visits.qsps` | 260 |
+| `SundayVisitIrmaInga` | `modules/events/visits/sunday_shop_visits.qsps` | 293 |
 | `SundayVisitIrmaIngaApplyPhraseEffects` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 262 |
 | `SundayVisitIrmaIngaBuildPool` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 204 |
-| `SundayVisitIrmaIngaCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 82 |
+| `SundayVisitIrmaIngaCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 85 |
 | `SundayVisitIrmaIngaPhraseEligible` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 18 |
 | `SundayVisitIrmaIngaPhraseOneShotOpen` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 7 |
 | `SundayVisitIrmaIngaPickPhrase` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 245 |
@@ -3308,12 +3313,12 @@ Generated from active project files in `qsp-project.json`.
 | `TavernHallLookReturnToMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 86 |
 | `TavernHallLookTryRareBonusEvents` | `modules/locations/tavern/tavern_hall_activity.qsps` | 199 |
 | `TavernMain` | `modules/locations/tavern/tavern_main.qsps` | 11 |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 625 |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 452 |
-| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 557 |
-| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 391 |
-| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 381 |
-| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 357 |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 635 |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 462 |
+| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 567 |
+| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 401 |
+| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 391 |
+| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 367 |
 | `TavernManagement` | `modules/locations/tavern/tavern_management.qsps` | 7 |
 | `TavernPriceSettings` | `modules/locations/tavern/tavern_management.qsps` | 31 |
 | `TavernSecondFloor` | `modules/locations/tavern/tavern_main.qsps` | 245 |

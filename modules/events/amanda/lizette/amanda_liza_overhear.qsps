@@ -43,42 +43,13 @@
 #AmandaLizaRoomDoorCanShow
     AmandaLizaRoomDoorCanShow = 0
 
-    if week <> 7:
-        exit
+    gs 'SundayVisitAmandaLizetteCanEavesdrop'
+
+    if SundayVisitAmandaLizetteCanEavesdrop = 1:
+        AmandaLizaRoomDoorCanShow = 1
     end
 
-    gs 'GetCitySchedulePhase'
-
-    if $CitySchedulePhase <> 'sunday_visits':
-        killvar '$CitySchedulePhase'
-        exit
-    end
-
-    killvar '$CitySchedulePhase'
-
-    gs 'AmandaLizetteInAmandaRoomNow'
-
-    if AmandaLizetteInAmandaRoomNow = 0:
-        killvar 'AmandaLizetteInAmandaRoomNow'
-        exit
-    end
-
-    killvar 'AmandaLizetteInAmandaRoomNow'
-
-    if AmandaLizaRoomTalksWeek >= 1:
-        exit
-    end
-
-    gs 'AmandaLizaTalkGetPartKey'
-
-    if $AmandaLizaTalkPartKey = $AmandaLizaTalkUsedKey:
-        killvar '$AmandaLizaTalkPartKey'
-        exit
-    end
-
-    killvar '$AmandaLizaTalkPartKey'
-
-    AmandaLizaRoomDoorCanShow = 1
+    killvar 'SundayVisitAmandaLizetteCanEavesdrop'
 ---
 
 #AmandaLizaRoomDoor
@@ -91,12 +62,12 @@
 
     gs 'ShowLocationImage', 'amanda_room_door_closed', 'full', 'png'
 
-    *p 'Дверь в комнату Аманды закрыта. За деревянной створкой слышны приглушённые голоса — одна точно её, вторая звучит слишком бойко и уверенно, чтобы быть сестрой.<br><br>Лизетта, похоже, снова нашла способ затащить разговор туда, где вас не ждут.'
+    *p 'Дверь в комнату Аманды закрыта. За деревянной створкой слышны приглушённые голоса — одна точно её, вторая звучит слишком бойко и уверенно, чтобы быть сестрой.<br><br>Лизетта, похоже, снова нашла способ затащить разговор туда, где тебя не ждут.'
     *pl ' '
 
     gs 'ActUiPrepare', 'Подслушать', 'look'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'AmandaLizaRoomDoorPeek'
+        gt 'SundayVisitAmandaLizette'
     end
 
     gs 'ActUiPrepare', 'Назад', 'return'
@@ -106,51 +77,7 @@
 ---
 
 #AmandaLizaRoomDoorPeek
-    cls
-
-    gs 'AmandaLizetteEnsureVars'
-    gs 'EnsureGirlData', 'amanda'
-
-    gs 'ShowLocationScreenTitle', 'ПОДСЛУШИВАНИЕ'
-    gs 'ShowLocationImage', 'amanda_room_lizette_visit', 'full', 'png'
-
-    *p 'Ты прижимаешься к двери и различаете обрывки фраз. Внутри Аманда и Лизетта болтают так, будто весь остальной дом исчез.'
-    *pl ' '
-
-    gs 'AmandaLizaTalkGetPartKey'
-    $AmandaLizaTalkUsedKey = $AmandaLizaTalkPartKey
-    killvar '$AmandaLizaTalkPartKey'
-
-    gs 'AmandaLizaTalkPickPhrase'
-
-    if AmandaLizaTalkPickOk = 0:
-        *p 'Сегодня разговор так и не дошёл до откровенных тем — девушки перешепнулись и замолчали, услышав шаги в коридоре.'
-    else:
-        gs 'AmandaLizaTalkText', $AmandaLizaTalkPickedId
-        *p $AmandaLizaTalkText
-        killvar '$AmandaLizaTalkText'
-
-        gs 'AmandaLizaTalkApplyPhraseEffects', $AmandaLizaTalkPickedId
-        AmandaLizaTalkHeardCount += 1
-        AmandaLizaRoomTalksWeek += 1
-
-        if $AmandaLizaTalkPickedId = 'lizette_anal_hint':
-            if LOC('AmandaLizetteAnalTalkBump') = 1:
-                gs 'AmandaLizetteAnalTalkBump'
-            end
-        end
-
-        gs 'AmandaLizetteAnalTalkTryUnlock'
-    end
-
-    killvar '$AmandaLizaTalkPickedId'
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Назад в коридор', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'TavernSecondFloor'
-    end
+    gt 'SundayVisitAmandaLizette'
 ---
 
 #AmandaLizaTalkPrepareHallVisit
