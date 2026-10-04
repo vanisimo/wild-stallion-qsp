@@ -2,7 +2,7 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 469
+- Source files: 471
 - Locations: 3445
 
 ## modules/actions
@@ -1546,7 +1546,7 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyOtkroven35` | `modules/events/becky/becky_events.qsps` | 30 |
 | `BeckyOtkroven45` | `modules/events/becky/becky_events.qsps` | 42 |
 | `BeckyOtkrovenNegativeLowFriend` | `modules/events/becky/becky_events.qsps` | 55 |
-| `BeckySandraChurchGearGossipCanHear` | `modules/events/visits/sunday_shop_visits.qsps` | 184 |
+| `BeckySandraChurchGearGossipCanHear` | `modules/events/visits/sunday_shop_visits.qsps` | 186 |
 | `BeckyShopBackroomPeek` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 360 |
 | `BeckyShopBackroomPeekAnyClientAvailable` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 138 |
 | `BeckyShopBackroomPeekApplyEffects` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 426 |
@@ -2935,41 +2935,41 @@ Generated from active project files in `qsp-project.json`.
 | `SaveLastHallEvent` | `modules/events/hall/tavern_hall_events.qsps` | 143 |
 | `SexSceneCalcAmandaBlowjobCap` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 105 |
 | `ShipGearShop` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 83 |
-| `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 320 |
-| `SundayVisitBeckySandra` | `modules/events/visits/sunday_shop_visits.qsps` | 105 |
+| `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 322 |
+| `SundayVisitBeckySandra` | `modules/events/visits/sunday_shop_visits.qsps` | 107 |
 | `SundayVisitBeckySandraApplyPhraseEffects` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 260 |
 | `SundayVisitBeckySandraBuildPool` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 205 |
-| `SundayVisitBeckySandraCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 29 |
-| `SundayVisitBeckySandraCanEnter` | `modules/events/visits/sunday_shop_visits.qsps` | 14 |
-| `SundayVisitBeckySandraGearGossipText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 152 |
+| `SundayVisitBeckySandraCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 31 |
+| `SundayVisitBeckySandraCanEnter` | `modules/events/visits/sunday_shop_visits.qsps` | 16 |
+| `SundayVisitBeckySandraGearGossipText` | `modules/events/visits/sunday_becky_sandra_text.qsps` | 220 |
 | `SundayVisitBeckySandraPhraseEligible` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 36 |
 | `SundayVisitBeckySandraPhraseFactWitness` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 18 |
 | `SundayVisitBeckySandraPhraseOneShotOpen` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 7 |
 | `SundayVisitBeckySandraPickPhrase` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 233 |
 | `SundayVisitBeckySandraPoolTry` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 175 |
 | `SundayVisitBeckySandraScandalText` | `modules/events/sandra/sandra_becky_conflict_text.qsps` | 59 |
-| `SundayVisitBeckySandraTalkText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 59 |
-| `SundayVisitBeckySandraText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 11 |
-| `SundayVisitClarissaMelissa` | `modules/events/visits/sunday_shop_visits.qsps` | 200 |
+| `SundayVisitBeckySandraTalkText` | `modules/events/visits/sunday_becky_sandra_text.qsps` | 64 |
+| `SundayVisitBeckySandraText` | `modules/events/visits/sunday_becky_sandra_text.qsps` | 14 |
+| `SundayVisitClarissaMelissa` | `modules/events/visits/sunday_shop_visits.qsps` | 202 |
 | `SundayVisitClarissaMelissaApplyPhraseEffects` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 224 |
 | `SundayVisitClarissaMelissaBuildPool` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 172 |
-| `SundayVisitClarissaMelissaCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 59 |
+| `SundayVisitClarissaMelissaCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 61 |
 | `SundayVisitClarissaMelissaPhraseEligible` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 18 |
 | `SundayVisitClarissaMelissaPhraseOneShotOpen` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 7 |
 | `SundayVisitClarissaMelissaPickPhrase` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 197 |
 | `SundayVisitClarissaMelissaPoolTry` | `modules/events/visits/sunday_clarissa_melissa_talk_pick.qsps` | 142 |
-| `SundayVisitClarissaMelissaTalkText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 209 |
-| `SundayVisitClarissaMelissaText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 175 |
-| `SundayVisitIrmaInga` | `modules/events/visits/sunday_shop_visits.qsps` | 258 |
+| `SundayVisitClarissaMelissaTalkText` | `modules/events/visits/sunday_clarissa_melissa_text.qsps` | 51 |
+| `SundayVisitClarissaMelissaText` | `modules/events/visits/sunday_clarissa_melissa_text.qsps` | 16 |
+| `SundayVisitIrmaInga` | `modules/events/visits/sunday_shop_visits.qsps` | 260 |
 | `SundayVisitIrmaIngaApplyPhraseEffects` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 262 |
 | `SundayVisitIrmaIngaBuildPool` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 204 |
-| `SundayVisitIrmaIngaCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 80 |
+| `SundayVisitIrmaIngaCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 82 |
 | `SundayVisitIrmaIngaPhraseEligible` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 18 |
 | `SundayVisitIrmaIngaPhraseOneShotOpen` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 7 |
 | `SundayVisitIrmaIngaPickPhrase` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 245 |
 | `SundayVisitIrmaIngaPoolTry` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 174 |
-| `SundayVisitIrmaIngaTalkText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 312 |
-| `SundayVisitIrmaIngaText` | `modules/events/visits/sunday_shop_visits_text.qsps` | 285 |
+| `SundayVisitIrmaIngaTalkText` | `modules/events/visits/sunday_irma_inga_text.qsps` | 44 |
+| `SundayVisitIrmaIngaText` | `modules/events/visits/sunday_irma_inga_text.qsps` | 16 |
 | `TalkWithEddie` | `modules/events/eddie/eddie_arc.qsps` | 16 |
 | `TavernBarRumorDetail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 32 |
 | `TavernBarRumorRoll` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 8 |

@@ -2,7 +2,7 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 469
+- Source files: 471
 - Locations: 3445
 - Locations with direct incoming calls: 2942
 - Locations without direct incoming calls: 503
