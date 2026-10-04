@@ -184,8 +184,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 809 | `modules/events` |
 | `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 755 | `modules/events` |
 | `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 760 | `modules/events` |
-| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2245 | `modules/actions` |
-| `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1079 | `modules/actions` |
+| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2305 | `modules/actions` |
+| `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1139 | `modules/actions` |
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
 | `SparkQueueActKitchen` | `modules/core/tavern/spark_queue.qsps` | 237 | `modules/core` |
 | `SweetsShopBuyItem` | `modules/locations/shops/sweets_shop_buy.qsps` | 24 | `modules/locations` |
