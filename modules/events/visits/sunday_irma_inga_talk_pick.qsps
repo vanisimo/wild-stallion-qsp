@@ -249,13 +249,22 @@
     gs 'SundayVisitIrmaIngaBuildPool'
 
     if SundayVisitIrmaIngaPoolSize <= 0:
+        $SundayVisitIrmaIngaPickedId = 'irma_inga_fallback_stub'
+        SundayVisitIrmaIngaPickOk = 1
         exit
     end
 
     SundayVisitIrmaIngaPickRoll = RAND(1, SundayVisitIrmaIngaPoolSize)
     $SundayVisitIrmaIngaPickedId = $SundayVisitIrmaIngaPool[SundayVisitIrmaIngaPickRoll]
-    SundayVisitIrmaIngaPickOk = 1
 
+    if $SundayVisitIrmaIngaPickedId = $SundayVisitLastPickedId and SundayVisitIrmaIngaPoolSize > 1:
+        SundayVisitIrmaIngaPickRoll = (SundayVisitIrmaIngaPickRoll mod SundayVisitIrmaIngaPoolSize) + 1
+        $SundayVisitIrmaIngaPickedId = $SundayVisitIrmaIngaPool[SundayVisitIrmaIngaPickRoll]
+    elseif $SundayVisitIrmaIngaPickedId = $SundayVisitLastPickedId and SundayVisitIrmaIngaPoolSize <= 1:
+        $SundayVisitIrmaIngaPickedId = 'irma_inga_fallback_stub'
+    end
+
+    SundayVisitIrmaIngaPickOk = 1
     killvar 'SundayVisitIrmaIngaPickRoll'
 ---
 

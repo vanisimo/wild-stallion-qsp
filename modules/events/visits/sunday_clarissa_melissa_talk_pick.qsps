@@ -211,13 +211,22 @@
     gs 'SundayVisitClarissaMelissaBuildPool'
 
     if SundayVisitClarissaMelissaPoolSize <= 0:
+        $SundayVisitClarissaMelissaPickedId = 'clarissa_melissa_fallback_stub'
+        SundayVisitClarissaMelissaPickOk = 1
         exit
     end
 
     SundayVisitClarissaMelissaPickRoll = RAND(1, SundayVisitClarissaMelissaPoolSize)
     $SundayVisitClarissaMelissaPickedId = $SundayVisitClarissaMelissaPool[SundayVisitClarissaMelissaPickRoll]
-    SundayVisitClarissaMelissaPickOk = 1
 
+    if $SundayVisitClarissaMelissaPickedId = $SundayVisitLastPickedId and SundayVisitClarissaMelissaPoolSize > 1:
+        SundayVisitClarissaMelissaPickRoll = (SundayVisitClarissaMelissaPickRoll mod SundayVisitClarissaMelissaPoolSize) + 1
+        $SundayVisitClarissaMelissaPickedId = $SundayVisitClarissaMelissaPool[SundayVisitClarissaMelissaPickRoll]
+    elseif $SundayVisitClarissaMelissaPickedId = $SundayVisitLastPickedId and SundayVisitClarissaMelissaPoolSize <= 1:
+        $SundayVisitClarissaMelissaPickedId = 'clarissa_melissa_fallback_stub'
+    end
+
+    SundayVisitClarissaMelissaPickOk = 1
     killvar 'SundayVisitClarissaMelissaPickRoll'
 ---
 

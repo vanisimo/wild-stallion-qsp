@@ -54,9 +54,12 @@
 
     killvar 'BeckySandraChurchGearGossipCanHear'
 
-    if SundayBeckySandraVisitSeen[day] = 1:
+    SundayVisitSlotKey = day * 10 + time
+    if SundayBeckySandraVisitSlotSeen[SundayVisitSlotKey] = 1 and SundayVisitSessionListenCount = 0:
+        killvar 'SundayVisitSlotKey'
         exit
     end
+    killvar 'SundayVisitSlotKey'
 
     SundayVisitBeckySandraCanEavesdrop = 1
 ---
@@ -75,9 +78,12 @@
         exit
     end
 
-    if SundayClarissaMelissaVisitSeen[day] = 1:
+    SundayVisitSlotKey = day * 10 + time
+    if SundayClarissaMelissaVisitSlotSeen[SundayVisitSlotKey] = 1 and SundayVisitSessionListenCount = 0:
+        killvar 'SundayVisitSlotKey'
         exit
     end
+    killvar 'SundayVisitSlotKey'
 
     SundayVisitClarissaMelissaCanEavesdrop = 1
 ---
@@ -100,9 +106,12 @@
         exit
     end
 
-    if SundayIrmaIngaVisitSeen[day] = 1:
+    SundayVisitSlotKey = day * 10 + time
+    if SundayIrmaIngaVisitSlotSeen[SundayVisitSlotKey] = 1 and SundayVisitSessionListenCount = 0:
+        killvar 'SundayVisitSlotKey'
         exit
     end
+    killvar 'SundayVisitSlotKey'
 
     SundayVisitIrmaIngaCanEavesdrop = 1
 ---
@@ -130,9 +139,12 @@
 
     killvar 'AmandaLizetteInAmandaRoomNow'
 
-    if SundayAmandaLizetteVisitSeen[day] = 1 or AmandaLizaRoomTalksWeek >= 1:
+    SundayVisitSlotKey = day * 10 + time
+    if SundayAmandaLizetteVisitSlotSeen[SundayVisitSlotKey] = 1 and SundayVisitSessionListenCount = 0:
+        killvar 'SundayVisitSlotKey'
         exit
     end
+    killvar 'SundayVisitSlotKey'
 
     SundayVisitAmandaLizetteCanEavesdrop = 1
 ---
@@ -146,10 +158,19 @@
     gs 'SundayVisitBeckySandraCanEnter'
 
     if SundayVisitBeckySandraOpen = 0:
+        killvar 'SundayVisitBeckySandraOpen'
+        killvar 'SundayVisitSessionListenCount'
+        killvar '$SundayVisitLastPickedId'
+        killvar 'SundayVisitSlotKey'
         gt 'Market'
     end
 
     killvar 'SundayVisitBeckySandraOpen'
+
+    SundayVisitSessionListenCount += 1
+    SundayVisitSlotKey = day * 10 + time
+    SundayBeckySandraVisitSlotSeen[SundayVisitSlotKey] = 1
+    SundayBeckySandraVisitSeen[day] = 1
 
     gs 'BeckySandraChurchGearGossipCanHear'
     gs 'SandraBeckySundayScandalCanHear'
@@ -174,14 +195,15 @@
     if SundayVisitBeckyGearScene = 1 and ChurchSpyWindowGearGossipHeard = 0:
         ChurchSpyWindowGearGossipHeard = 1
         ChurchSpyWindowHint = 1
+        $SundayVisitLastPickedId = 'church_gear_gossip'
     end
 
     killvar 'SundayVisitBeckyGearScene'
 
-    SundayBeckySandraVisitSeen[day] = 1
     PlayerKnows_SandraBeckySundayTalk = 1
 
     if $SundayVisitBeckySandraPickedId <> '':
+        $SundayVisitLastPickedId = $SundayVisitBeckySandraPickedId
         gs 'SundayVisitBeckySandraApplyPhraseEffects', $SundayVisitBeckySandraPickedId
         killvar '$SundayVisitBeckySandraPickedId'
     else:
@@ -206,11 +228,34 @@
     if debug = 1:
         *pl '[DEBUG VISIT] SandraBeckyBond: ' + STR(SandraBeckyBond)
         *pl '[DEBUG VISIT] PlayerKnows_SandraBeckySundayTalk: ' + STR(PlayerKnows_SandraBeckySundayTalk)
+        *pl '[DEBUG VISIT] SessionListenCount: ' + STR(SundayVisitSessionListenCount)
         *pl ' '
     end
 
-    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
-        gt 'Market'
+    if SundayVisitSessionListenCount < 2:
+        gs 'ActUiPrepare', 'Слушать дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SundayVisitBeckySandra'
+        end
+
+        gs 'ActUiPrepare', 'Отойти от окна', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SundayVisitSessionListenCount'
+            killvar '$SundayVisitLastPickedId'
+            killvar 'SundayVisitSlotKey'
+            gt 'Market'
+        end
+    else:
+        *pl ' '
+        *pl 'Подруги на время переходят на неразборчивый бытовой шёпот... На этот час ты услышал всё, что мог.'
+
+        gs 'ActUiPrepare', 'Отойти от окна', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SundayVisitSessionListenCount'
+            killvar '$SundayVisitLastPickedId'
+            killvar 'SundayVisitSlotKey'
+            gt 'Market'
+        end
     end
 
     killvar 'BeckySandraChurchGearGossipCanHear'
@@ -242,10 +287,18 @@
 
     if SundayVisitClarissaMelissaCanEavesdrop = 0:
         killvar 'SundayVisitClarissaMelissaCanEavesdrop'
+        killvar 'SundayVisitSessionListenCount'
+        killvar '$SundayVisitLastPickedId'
+        killvar 'SundayVisitSlotKey'
         gt 'Market'
     end
 
     killvar 'SundayVisitClarissaMelissaCanEavesdrop'
+
+    SundayVisitSessionListenCount += 1
+    SundayVisitSlotKey = day * 10 + time
+    SundayClarissaMelissaVisitSlotSeen[SundayVisitSlotKey] = 1
+    SundayClarissaMelissaVisitSeen[day] = 1
 
     gs 'SundayVisitClarissaMelissaText'
 
@@ -260,10 +313,10 @@
     *p $SundayVisitText
     *pl ' '
 
-    SundayClarissaMelissaVisitSeen[day] = 1
     PlayerKnows_ClarissaMelissaSundayTalk = 1
 
     if $SundayVisitClarissaMelissaPickedId <> '':
+        $SundayVisitLastPickedId = $SundayVisitClarissaMelissaPickedId
         gs 'SundayVisitClarissaMelissaApplyPhraseEffects', $SundayVisitClarissaMelissaPickedId
         killvar '$SundayVisitClarissaMelissaPickedId'
     else:
@@ -282,11 +335,34 @@
         *pl '[DEBUG VISIT] MelissaClarissaBond: ' + STR(MelissaClarissaBond)
         *pl '[DEBUG VISIT] PlayerKnows_ClarissaMelissaSundayTalk: ' + STR(PlayerKnows_ClarissaMelissaSundayTalk)
         *pl '[DEBUG VISIT] PlayerKnows_MelissaClarissaBrotherGossip: ' + STR(PlayerKnows_MelissaClarissaBrotherGossip)
+        *pl '[DEBUG VISIT] SessionListenCount: ' + STR(SundayVisitSessionListenCount)
         *pl ' '
     end
 
-    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
-        gt 'Market'
+    if SundayVisitSessionListenCount < 2:
+        gs 'ActUiPrepare', 'Слушать дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SundayVisitClarissaMelissa'
+        end
+
+        gs 'ActUiPrepare', 'Отойти от окна', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SundayVisitSessionListenCount'
+            killvar '$SundayVisitLastPickedId'
+            killvar 'SundayVisitSlotKey'
+            gt 'Market'
+        end
+    else:
+        *pl ' '
+        *pl 'Подруги на время переходят на неразборчивый бытовой шёпот... На этот час ты услышал всё, что мог.'
+
+        gs 'ActUiPrepare', 'Отойти от окна', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SundayVisitSessionListenCount'
+            killvar '$SundayVisitLastPickedId'
+            killvar 'SundayVisitSlotKey'
+            gt 'Market'
+        end
     end
 ---
 
@@ -300,10 +376,18 @@
 
     if SundayVisitIrmaIngaCanEavesdrop = 0:
         killvar 'SundayVisitIrmaIngaCanEavesdrop'
+        killvar 'SundayVisitSessionListenCount'
+        killvar '$SundayVisitLastPickedId'
+        killvar 'SundayVisitSlotKey'
         gt 'CraftsmenQuarter'
     end
 
     killvar 'SundayVisitIrmaIngaCanEavesdrop'
+
+    SundayVisitSessionListenCount += 1
+    SundayVisitSlotKey = day * 10 + time
+    SundayIrmaIngaVisitSlotSeen[SundayVisitSlotKey] = 1
+    SundayIrmaIngaVisitSeen[day] = 1
 
     gs 'SundayVisitIrmaIngaText'
 
@@ -318,10 +402,10 @@
     *p $SundayVisitText
     *pl ' '
 
-    SundayIrmaIngaVisitSeen[day] = 1
     PlayerKnows_IrmaIngaSundayTalk = 1
 
     if $SundayVisitIrmaIngaPickedId <> '':
+        $SundayVisitLastPickedId = $SundayVisitIrmaIngaPickedId
         gs 'SundayVisitIrmaIngaApplyPhraseEffects', $SundayVisitIrmaIngaPickedId
         killvar '$SundayVisitIrmaIngaPickedId'
     else:
@@ -339,11 +423,34 @@
     if debug = 1:
         *pl '[DEBUG VISIT] IngaIrmaBond: ' + STR(IngaIrmaBond)
         *pl '[DEBUG VISIT] PlayerKnows_IrmaIngaSundayTalk: ' + STR(PlayerKnows_IrmaIngaSundayTalk)
+        *pl '[DEBUG VISIT] SessionListenCount: ' + STR(SundayVisitSessionListenCount)
         *pl ' '
     end
 
-    act '<b>Назад</b>', 'images/common/ui/actions/return.png':
-        gt 'CraftsmenQuarter'
+    if SundayVisitSessionListenCount < 2:
+        gs 'ActUiPrepare', 'Слушать дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SundayVisitIrmaInga'
+        end
+
+        gs 'ActUiPrepare', 'Отойти от двери', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SundayVisitSessionListenCount'
+            killvar '$SundayVisitLastPickedId'
+            killvar 'SundayVisitSlotKey'
+            gt 'CraftsmenQuarter'
+        end
+    else:
+        *pl ' '
+        *pl 'Швеи на время переходят на неразборчивый бытовой шёпот... На этот час ты услышал всё, что мог.'
+
+        gs 'ActUiPrepare', 'Отойти от двери', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SundayVisitSessionListenCount'
+            killvar '$SundayVisitLastPickedId'
+            killvar 'SundayVisitSlotKey'
+            gt 'CraftsmenQuarter'
+        end
     end
 ---
 
@@ -362,10 +469,18 @@
 
     if SundayVisitAmandaLizetteCanEavesdrop = 0:
         killvar 'SundayVisitAmandaLizetteCanEavesdrop'
+        killvar 'SundayVisitSessionListenCount'
+        killvar '$SundayVisitLastPickedId'
+        killvar 'SundayVisitSlotKey'
         gt 'TavernSecondFloor'
     end
 
     killvar 'SundayVisitAmandaLizetteCanEavesdrop'
+
+    SundayVisitSessionListenCount += 1
+    SundayVisitSlotKey = day * 10 + time
+    SundayAmandaLizetteVisitSlotSeen[SundayVisitSlotKey] = 1
+    SundayAmandaLizetteVisitSeen[day] = 1
 
     gs 'SundayVisitAmandaLizetteText'
 
@@ -380,12 +495,12 @@
     *p $SundayVisitText
     *pl ' '
 
-    SundayAmandaLizetteVisitSeen[day] = 1
     PlayerKnows_AmandaLizetteSundayTalk = 1
     AmandaLizaTalkHeardCount += 1
     AmandaLizaRoomTalksWeek += 1
 
     if $SundayVisitAmandaLizettePickedId <> '':
+        $SundayVisitLastPickedId = $SundayVisitAmandaLizettePickedId
         gs 'SundayVisitAmandaLizetteApplyPhraseEffects', $SundayVisitAmandaLizettePickedId
         if $SundayVisitAmandaLizettePickedId = 'lizette_anal_hint':
             if LOC('AmandaLizetteAnalTalkBump') = 1:
@@ -399,11 +514,34 @@
     if debug = 1:
         *pl '[DEBUG VISIT] AmandaLizaInfluence: ' + STR(AmandaLizaInfluence)
         *pl '[DEBUG VISIT] PlayerKnows_AmandaLizetteSundayTalk: ' + STR(PlayerKnows_AmandaLizetteSundayTalk)
+        *pl '[DEBUG VISIT] SessionListenCount: ' + STR(SundayVisitSessionListenCount)
         *pl ' '
     end
 
-    act '<b>Назад в коридор</b>', 'images/common/ui/actions/return.png':
-        gt 'TavernSecondFloor'
+    if SundayVisitSessionListenCount < 2:
+        gs 'ActUiPrepare', 'Слушать дальше', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SundayVisitAmandaLizette'
+        end
+
+        gs 'ActUiPrepare', 'Назад в коридор', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SundayVisitSessionListenCount'
+            killvar '$SundayVisitLastPickedId'
+            killvar 'SundayVisitSlotKey'
+            gt 'TavernSecondFloor'
+        end
+    else:
+        *pl ' '
+        *pl 'Подруги на время переходят на неразборчивый бытовой шёпот... На этот час ты услышал всё, что мог.'
+
+        gs 'ActUiPrepare', 'Назад в коридор', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SundayVisitSessionListenCount'
+            killvar '$SundayVisitLastPickedId'
+            killvar 'SundayVisitSlotKey'
+            gt 'TavernSecondFloor'
+        end
     end
 ---
 
@@ -447,8 +585,46 @@
         gt 'Market'
     end
 
+    gs 'ActUiPrepare', 'Сбросить лимиты визитов', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        SundayBeckySandraVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSeen[day] = 0
+        SundayIrmaIngaVisitSeen[day] = 0
+        SundayAmandaLizetteVisitSeen[day] = 0
+        SundayVisitSlotKey = day * 10 + time
+        SundayBeckySandraVisitSlotSeen[SundayVisitSlotKey] = 0
+        SundayClarissaMelissaVisitSlotSeen[SundayVisitSlotKey] = 0
+        SundayIrmaIngaVisitSlotSeen[SundayVisitSlotKey] = 0
+        SundayAmandaLizetteVisitSlotSeen[SundayVisitSlotKey] = 0
+        killvar 'SundayVisitSlotKey'
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        AmandaLizaRoomTalksWeek = 0
+        gt 'SundayShopVisitsDebugMenu', $SundayVisitReturnLoc
+    end
+
     gs 'ActUiPrepare', 'Тест: Бекки и Сандра', 'debug'
     act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        SundayBeckySandraVisitSeen[day] = 0
+        SundayBeckySandraVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        gt 'SundayVisitBeckySandra'
+    end
+
+    gs 'ActUiPrepare', 'Тест: заглушка (Бекки и Сандра)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        SundayBeckySandraVisitSeen[day] = 0
+        SundayBeckySandraVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        $SundayVisitBeckySandraPickedId = 'becky_sandra_fallback_stub'
         gt 'SundayVisitBeckySandra'
     end
 
@@ -457,6 +633,9 @@
         SandraHomeSex = 1
         SandraBeckyBond = 14
         SundayBeckySandraVisitSeen[day] = 0
+        SundayBeckySandraVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         ChurchSpyWindowGearGossipHeard = 1
         gt 'SundayVisitBeckySandra'
     end
@@ -467,6 +646,9 @@
         EventWitnessed['becky_two_men'] = 1
         SandraBeckyBond = 14
         SundayBeckySandraVisitSeen[day] = 0
+        SundayBeckySandraVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         ChurchSpyWindowGearGossipHeard = 1
         gt 'SundayVisitBeckySandra'
     end
@@ -477,6 +659,9 @@
         EventWitnessed['becky_backroom_guard'] = 1
         SandraBeckyBond = 14
         SundayBeckySandraVisitSeen[day] = 0
+        SundayBeckySandraVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         ChurchSpyWindowGearGossipHeard = 1
         gt 'SundayVisitBeckySandra'
     end
@@ -487,6 +672,9 @@
         PlayerKnows['becky_backroom_clerk'] = 1
         SandraBeckyBond = 14
         SundayBeckySandraVisitSeen[day] = 0
+        SundayBeckySandraVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         ChurchSpyWindowGearGossipHeard = 1
         gt 'SundayVisitBeckySandra'
     end
@@ -497,6 +685,9 @@
         PlayerKnows['becky_backroom_lucas'] = 1
         SandraBeckyBond = 14
         SundayBeckySandraVisitSeen[day] = 0
+        SundayBeckySandraVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         ChurchSpyWindowGearGossipHeard = 1
         gt 'SundayVisitBeckySandra'
     end
@@ -557,11 +748,34 @@
         PlayCoachTalkDone['sandra'] = 0
         ChurchSpyWindowGearGossipHeard = 1
         SundayBeckySandraVisitSeen[day] = 0
+        SundayBeckySandraVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitBeckySandra'
     end
 
     gs 'ActUiPrepare', 'Тест: Кларисса и Мелисса', 'debug'
     act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        SundayClarissaMelissaVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        gt 'SundayVisitClarissaMelissa'
+    end
+
+    gs 'ActUiPrepare', 'Тест: заглушка (Кларисса и Мелисса)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        SundayClarissaMelissaVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        $SundayVisitClarissaMelissaPickedId = 'clarissa_melissa_fallback_stub'
         gt 'SundayVisitClarissaMelissa'
     end
 
@@ -579,6 +793,9 @@
         PlayCoached['melissa'] = 0
         PlayCoachTalkDone['melissa'] = 0
         SundayClarissaMelissaVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitClarissaMelissa'
     end
 
@@ -587,6 +804,9 @@
         MelissaHomeSex = 1
         MelissaClarissaBond = 14
         SundayClarissaMelissaVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitClarissaMelissa'
     end
 
@@ -597,6 +817,9 @@
         SexMarathonGossipPending['melissa'] = 1
         SexMarathonGossipLastDay['melissa'] = 0
         SundayClarissaMelissaVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitClarissaMelissa'
     end
 
@@ -606,6 +829,9 @@
         MelissaJealousy = 5
         MelissaClarissaBond = 10
         SundayClarissaMelissaVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitClarissaMelissa'
     end
 
@@ -613,6 +839,9 @@
     act $ActUiLabel, $ActUiIconPath:
         MelissaClarissaBond = 14
         SundayClarissaMelissaVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         $SundayVisitClarissaMelissaPickedId = 'clarissa_legare_dark_backstory'
         gt 'SundayVisitClarissaMelissa'
     end
@@ -621,6 +850,9 @@
     act $ActUiLabel, $ActUiIconPath:
         MelissaClarissaBond = 14
         SundayClarissaMelissaVisitSeen[day] = 0
+        SundayClarissaMelissaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         $SundayVisitClarissaMelissaPickedId = 'clarissa_legare_poses_lust'
         gt 'SundayVisitClarissaMelissa'
     end
@@ -632,6 +864,23 @@
         gs 'GetDateTimeNames'
         IrmaMet = 1
         SundayIrmaIngaVisitSeen[day] = 0
+        SundayIrmaIngaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        gt 'SundayVisitIrmaInga'
+    end
+
+    gs 'ActUiPrepare', 'Тест: заглушка (Ирма и Инга)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        IrmaMet = 1
+        SundayIrmaIngaVisitSeen[day] = 0
+        SundayIrmaIngaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        $SundayVisitIrmaIngaPickedId = 'irma_inga_fallback_stub'
         gt 'SundayVisitIrmaInga'
     end
 
@@ -645,6 +894,9 @@
         IngaIrmaBond = 10
         Friends['inga'] = 14
         SundayIrmaIngaVisitSeen[day] = 0
+        SundayIrmaIngaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitIrmaInga'
     end
 
@@ -658,6 +910,9 @@
         IngaIrmaBond = 10
         Friends['inga'] = 14
         SundayIrmaIngaVisitSeen[day] = 0
+        SundayIrmaIngaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitIrmaInga'
     end
 
@@ -672,6 +927,9 @@
         PlayerKnows_Dream_SewingMachine = 0
         DreamItemGiven['sewing_machine'] = 0
         SundayIrmaIngaVisitSeen[day] = 0
+        SundayIrmaIngaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitIrmaInga'
     end
 
@@ -684,6 +942,9 @@
         PlayerKnows_Dream_AncestralStaff = 0
         DreamItemGiven['ancestral_staff'] = 0
         SundayIrmaIngaVisitSeen[day] = 0
+        SundayIrmaIngaVisitSlotSeen[day * 10 + time] = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         gt 'SundayVisitIrmaInga'
     end
 
@@ -695,7 +956,26 @@
         LizetteKnown = 1
         LizetteVisitStage = 1
         SundayAmandaLizetteVisitSeen[day] = 0
+        SundayAmandaLizetteVisitSlotSeen[day * 10 + time] = 0
         AmandaLizaRoomTalksWeek = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        gt 'SundayVisitAmandaLizette'
+    end
+
+    gs 'ActUiPrepare', 'Тест: заглушка (Аманда и Лизетта)', 'debug'
+    act $ActUiLabel, $ActUiIconPath:
+        week = 7
+        time = 3
+        gs 'GetDateTimeNames'
+        LizetteKnown = 1
+        LizetteVisitStage = 1
+        SundayAmandaLizetteVisitSeen[day] = 0
+        SundayAmandaLizetteVisitSlotSeen[day * 10 + time] = 0
+        AmandaLizaRoomTalksWeek = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
+        $SundayVisitAmandaLizettePickedId = 'amanda_lizette_fallback_stub'
         gt 'SundayVisitAmandaLizette'
     end
 
@@ -707,7 +987,10 @@
         LizetteKnown = 1
         LizetteVisitStage = 1
         SundayAmandaLizetteVisitSeen[day] = 0
+        SundayAmandaLizetteVisitSlotSeen[day * 10 + time] = 0
         AmandaLizaRoomTalksWeek = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         $SundayVisitAmandaLizettePickedId = 'amanda_dream_full_mirror'
         gt 'SundayVisitAmandaLizette'
     end
@@ -720,7 +1003,10 @@
         LizetteKnown = 1
         LizetteVisitStage = 1
         SundayAmandaLizetteVisitSeen[day] = 0
+        SundayAmandaLizetteVisitSlotSeen[day * 10 + time] = 0
         AmandaLizaRoomTalksWeek = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         $SundayVisitAmandaLizettePickedId = 'lizette_anal_hint'
         gt 'SundayVisitAmandaLizette'
     end
@@ -733,7 +1019,10 @@
         LizetteKnown = 1
         LizetteVisitStage = 1
         SundayAmandaLizetteVisitSeen[day] = 0
+        SundayAmandaLizetteVisitSlotSeen[day * 10 + time] = 0
         AmandaLizaRoomTalksWeek = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         $SundayVisitAmandaLizettePickedId = 'giant_full_sex'
         gt 'SundayVisitAmandaLizette'
     end
@@ -746,7 +1035,10 @@
         LizetteKnown = 1
         LizetteVisitStage = 1
         SundayAmandaLizetteVisitSeen[day] = 0
+        SundayAmandaLizetteVisitSlotSeen[day * 10 + time] = 0
         AmandaLizaRoomTalksWeek = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         $SundayVisitAmandaLizettePickedId = 'brothers_trio_full'
         gt 'SundayVisitAmandaLizette'
     end
@@ -759,7 +1051,10 @@
         LizetteKnown = 1
         LizetteVisitStage = 1
         SundayAmandaLizetteVisitSeen[day] = 0
+        SundayAmandaLizetteVisitSlotSeen[day * 10 + time] = 0
         AmandaLizaRoomTalksWeek = 0
+        SundayVisitSessionListenCount = 0
+        killvar '$SundayVisitLastPickedId'
         $SundayVisitAmandaLizettePickedId = 'priest_amanda_purify'
         gt 'SundayVisitAmandaLizette'
     end

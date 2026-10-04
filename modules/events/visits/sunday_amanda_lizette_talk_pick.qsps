@@ -588,13 +588,22 @@
     gs 'AmandaLizaTalkBuildPool'
 
     if AmandaLizaTalkPoolSize <= 0:
+        $AmandaLizaTalkPickedId = 'amanda_lizette_fallback_stub'
+        AmandaLizaTalkPickOk = 1
         exit
     end
 
     AmandaLizaTalkPickRoll = RAND(1, AmandaLizaTalkPoolSize)
     $AmandaLizaTalkPickedId = $AmandaLizaTalkPool[AmandaLizaTalkPickRoll]
-    AmandaLizaTalkPickOk = 1
 
+    if $AmandaLizaTalkPickedId = $SundayVisitLastPickedId and AmandaLizaTalkPoolSize > 1:
+        AmandaLizaTalkPickRoll = (AmandaLizaTalkPickRoll mod AmandaLizaTalkPoolSize) + 1
+        $AmandaLizaTalkPickedId = $AmandaLizaTalkPool[AmandaLizaTalkPickRoll]
+    elseif $AmandaLizaTalkPickedId = $SundayVisitLastPickedId and AmandaLizaTalkPoolSize <= 1:
+        $AmandaLizaTalkPickedId = 'amanda_lizette_fallback_stub'
+    end
+
+    AmandaLizaTalkPickOk = 1
     killvar 'AmandaLizaTalkPickRoll'
 ---
 
@@ -790,6 +799,16 @@
 
         SexMarathonGossipPending['amanda'] = 0
         SexMarathonGossipLastDay['amanda'] = day
+
+    elseif $AmandaLizaTalkEffectId = 'amanda_lizette_fallback_stub':
+        AmandaLizaInfluence += 1
+        if AmandaLizaInfluence > 100:
+            AmandaLizaInfluence = 100
+        end
+        Friends['lizette'] += 1
+        if Friends['lizette'] > 100:
+            Friends['lizette'] = 100
+        end
     end
 
     killvar '$AmandaLizaTalkEffectId'

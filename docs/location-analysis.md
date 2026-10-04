@@ -532,7 +532,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1446 |
+| `ActUiPrepare` | 1463 |
 | `ShowLocationScreenTitle` | 626 |
 | `Menu.AddModule` | 588 |
 | `MenuUiAdd` | 580 |
@@ -550,13 +550,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 76 |
-| `Market` | 63 |
+| `Market` | 65 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `Menu.AddCondition` | 44 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 
