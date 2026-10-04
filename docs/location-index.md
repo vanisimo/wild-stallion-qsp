@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 469
-- Locations: 3435
+- Locations: 3445
 
 ## modules/actions
 
@@ -2380,19 +2380,29 @@ Generated from active project files in `qsp-project.json`.
 | `HallSceneV2DebugProbe` | `modules/events/hall/hall_scene_v2_core.qsps` | 437 |
 | `HallSceneV2DebugProbePrintGirl` | `modules/events/hall/hall_scene_v2_core.qsps` | 609 |
 | `HallSceneV2EnsureFlags` | `modules/events/hall/hall_scene_v2_core.qsps` | 10 |
-| `IngaBackroomAfterSex` | `modules/events/inga/inga_romance.qsps` | 148 |
-| `IngaBackroomCanOffer` | `modules/events/inga/inga_romance.qsps` | 167 |
-| `IngaBackroomFirstSexLaunch` | `modules/events/inga/inga_romance.qsps` | 113 |
-| `IngaBackroomInviteText` | `modules/events/inga/inga_romance_text.qsps` | 29 |
+| `IngaBackroomAfterSex` | `modules/events/inga/inga_romance.qsps` | 152 |
+| `IngaBackroomCanOffer` | `modules/events/inga/inga_romance.qsps` | 184 |
+| `IngaBackroomFirstSexLaunch` | `modules/events/inga/inga_romance.qsps` | 116 |
+| `IngaBackroomInviteText` | `modules/events/inga/inga_romance_text.qsps` | 90 |
 | `IngaDance` | `modules/events/inga/inga_dance.qsps` | 63 |
-| `IngaDanceAction` | `modules/events/inga/inga_dance.qsps` | 150 |
-| `IngaDanceActionText` | `modules/events/inga/inga_dance_text.qsps` | 26 |
+| `IngaDanceAction` | `modules/events/inga/inga_dance.qsps` | 157 |
+| `IngaDanceActionText` | `modules/events/inga/inga_dance_text.qsps` | 36 |
 | `IngaDanceBuildMenu` | `modules/events/inga/inga_dance.qsps` | 109 |
-| `IngaDanceMainText` | `modules/events/inga/inga_dance_text.qsps` | 18 |
+| `IngaDanceMainText` | `modules/events/inga/inga_dance_text.qsps` | 28 |
 | `IngaDanceMeet` | `modules/events/inga/inga_dance.qsps` | 28 |
-| `IngaDanceMeetAfterGuardText` | `modules/events/inga/inga_dance_text.qsps` | 13 |
+| `IngaDanceMeetAfterGuardText` | `modules/events/inga/inga_dance_text.qsps` | 18 |
 | `IngaDanceMeetCanStart` | `modules/events/inga/inga_dance.qsps` | 7 |
-| `IngaDanceMeetMainText` | `modules/events/inga/inga_dance_text.qsps` | 7 |
+| `IngaDanceMeetMainText` | `modules/events/inga/inga_dance_text.qsps` | 8 |
+| `IngaDanceStreetAlley` | `modules/events/inga/inga_dance.qsps` | 210 |
+| `IngaDanceStreetAlleyIntroText` | `modules/events/inga/inga_dance_text.qsps` | 58 |
+| `IngaDanceStreetCumFace` | `modules/events/inga/inga_dance.qsps` | 280 |
+| `IngaDanceStreetCumFaceText` | `modules/events/inga/inga_dance_text.qsps` | 76 |
+| `IngaDanceStreetOral` | `modules/events/inga/inga_dance.qsps` | 241 |
+| `IngaDanceStreetOralText` | `modules/events/inga/inga_dance_text.qsps` | 68 |
+| `IngaDanceStreetSex` | `modules/events/inga/inga_dance.qsps` | 305 |
+| `IngaDanceStreetSexFinish` | `modules/events/inga/inga_dance.qsps` | 348 |
+| `IngaDanceStreetSexFinishText` | `modules/events/inga/inga_dance_text.qsps` | 92 |
+| `IngaDanceStreetSexText` | `modules/events/inga/inga_dance_text.qsps` | 84 |
 | `IngaGuardCheckVisitTick` | `modules/events/quests/guard_bribe_quest.qsps` | 8 |
 | `IngaGuardComplaintCanStart` | `modules/events/quests/guard_bribe_quest.qsps` | 263 |
 | `IngaGuardComplaintIntroText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 170 |
@@ -2420,7 +2430,7 @@ Generated from active project files in `qsp-project.json`.
 | `IngaGuardThanks` | `modules/events/quests/guard_bribe_quest.qsps` | 216 |
 | `IngaGuardThanksCanStart` | `modules/events/quests/guard_bribe_quest.qsps` | 297 |
 | `IngaGuardThanksText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 146 |
-| `IngaLucasAlleySpy` | `modules/events/inga/inga_dance.qsps` | 197 |
+| `IngaLucasAlleySpy` | `modules/events/inga/inga_dance.qsps` | 373 |
 | `IngaLucasAnalAction` | `modules/events/inga/inga_lucas_arc.qsps` | 236 |
 | `IngaLucasAnalActionText` | `modules/events/inga/inga_lucas_arc_text.qsps` | 46 |
 | `IngaLucasAnalBuildMenu` | `modules/events/inga/inga_lucas_arc.qsps` | 218 |
@@ -2444,12 +2454,12 @@ Generated from active project files in `qsp-project.json`.
 | `IngaLucasWindowText` | `modules/events/inga/inga_lucas_arc_text.qsps` | 7 |
 | `IngaOralCanAdvance` | `modules/events/family/intimacy_kinks.qsps` | 778 |
 | `IngaOralStep` | `modules/events/family/intimacy_kinks.qsps` | 827 |
-| `IngaRomanceAfterSexText` | `modules/events/inga/inga_romance_text.qsps` | 25 |
+| `IngaRomanceAfterSexText` | `modules/events/inga/inga_romance_text.qsps` | 70 |
 | `IngaRomanceCanAdvance` | `modules/events/inga/inga_romance.qsps` | 26 |
 | `IngaRomanceStep` | `modules/events/inga/inga_romance.qsps` | 57 |
-| `IngaRomanceStepText` | `modules/events/inga/inga_romance_text.qsps` | 7 |
+| `IngaRomanceStepText` | `modules/events/inga/inga_romance_text.qsps` | 8 |
 | `IngaRomanceTryUnlock` | `modules/events/inga/inga_romance.qsps` | 7 |
-| `IngaRoomIntroText` | `modules/events/inga/inga_dance_text.qsps` | 42 |
+| `IngaRoomIntroText` | `modules/events/inga/inga_dance_text.qsps` | 52 |
 | `InitBirthCertificateArc` | `modules/events/family/birth_certificate_core.qsps` | 8 |
 | `InitMelissaMusicianArc` | `modules/events/melissa/melissa_musician_arc.qsps` | 8 |
 | `InitSandraLermontLetter` | `modules/events/sandra/sandra_lermont_letter.qsps` | 7 |
@@ -3089,7 +3099,7 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyShopResolveSeller` | `modules/locations/shops/becky_shop.qsps` | 134 |
 | `BeckyShopReturnAfterPurchase` | `modules/locations/shops/becky_shop_buy.qsps` | 10 |
 | `BuildAlberWineTalkMenu` | `modules/locations/shops/wine_shop.qsps` | 324 |
-| `BuildEddieShopTalkMenu` | `modules/locations/shops/becky_shop.qsps` | 423 |
+| `BuildEddieShopTalkMenu` | `modules/locations/shops/becky_shop.qsps` | 427 |
 | `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 133 |
 | `BuildMayorOfficeTalkMenu` | `modules/locations/town/mayor_office.qsps` | 939 |
 | `Church` | `modules/locations/town/church.qsps` | 7 |

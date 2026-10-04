@@ -135,6 +135,13 @@
         gs 'Menu.AddModule', 'IngaDanceMenu', {
             gt 'IngaDanceAction', 'leave'
         }
+
+        if FamilyCorruptionStage >= 2 or sluttiness['inga'] >= 20:
+            gs 'MenuUiAdd', 'IngaDanceMenu', 'Увлечь в тёмный переулок', 'intim'
+            gs 'Menu.AddModule', 'IngaDanceMenu', {
+                gt 'IngaDanceAction', 'alley'
+            }
+        end
     end
 
     gs 'MenuUiAdd', 'IngaDanceMenu', 'Закончить танец', 'return'
@@ -169,6 +176,7 @@
     elseif $IngaDanceAction = 'leave':
         IngaDanceEnded = 1
         IngaRoomUnlocked = 1
+        gs 'FridayDanceAdvanceRound'
         gs 'ClampGirlSocialStats', 'inga'
 
         if LOC('IngaDanceActionText') = 1:
@@ -176,13 +184,18 @@
         end
 
         gt 'IngaRoom'
+    elseif $IngaDanceAction = 'alley':
+        IngaDanceEnded = 1
+        gs 'FridayDanceAdvanceRound'
+        gs 'ClampGirlSocialStats', 'inga'
+        gt 'IngaDanceStreetAlley'
     else:
         IngaDanceStage += 1
     end
 
     gs 'ClampGirlSocialStats', 'inga'
 
-    if $IngaDanceAction <> 'leave':
+    if $IngaDanceAction <> 'leave' and $IngaDanceAction <> 'alley':
         if LOC('IngaDanceActionText') = 1:
             gs 'IngaDanceActionText', $IngaDanceAction
         end
@@ -194,6 +207,169 @@
     killvar '$IngaDanceAction'
 ---
 
+#IngaDanceStreetAlley
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/street_sex/minet1', 'ИНГА В ПЕРЕУЛКЕ У ПЛОЩАДИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ТЁМНЫЙ ПЕРЕУЛОК У ПЛОЩАДИ'
+
+    if LOC('IngaDanceStreetAlleyIntroText') = 1:
+        gs 'IngaDanceStreetAlleyIntroText'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Опустить на колени (минет)', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaDanceStreetOral'
+    end
+
+    if IngaBackroomSex = 1 or sluttiness['inga'] >= 25:
+        gs 'ActUiPrepare', 'Прижать к стене', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaDanceStreetSex'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#IngaDanceStreetOral
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/street_sex/minet3', 'ИНГА — МИНЕТ В ПЕРЕУЛКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ИНГА — МИНЕТ В ПЕРЕУЛКЕ'
+
+    OralCount['inga'] += 1
+    BlowjobCount['inga'] += 1
+    sluttiness['inga'] += 2
+    otkroven['inga'] += 1
+    love['inga'] += 1
+    TavernScandal += 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    if LOC('IngaDanceStreetOralText') = 1:
+        gs 'IngaDanceStreetOralText'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Кончить на лицо', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaDanceStreetCumFace'
+    end
+
+    if IngaBackroomSex = 1 or sluttiness['inga'] >= 25:
+        gs 'ActUiPrepare', 'Поднять и прижать к стене', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaDanceStreetSex'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Закончить и уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#IngaDanceStreetCumFace
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/street_sex/cumface', 'ИНГА — ФИНАЛ В ПЕРЕУЛКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ИНГА — ФИНАЛ В ПЕРЕУЛКЕ'
+
+    gs 'RegisterSex', 'inga', 'facial', 0, 1
+    gs 'RegisterPlayerCum'
+    sluttiness['inga'] += 2
+    love['inga'] += 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    if LOC('IngaDanceStreetCumFaceText') = 1:
+        gs 'IngaDanceStreetCumFaceText'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#IngaDanceStreetSex
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/street_sex/fuckyou2', 'ИНГА — СЕКС В ПЕРЕУЛКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ИНГА — СЕКС В ПЕРЕУЛКЕ'
+
+    gs 'RegisterSex', 'inga', 'vaginal', 1, 1
+    VaginalCount['inga'] += 1
+    sluttiness['inga'] += 3
+    otkroven['inga'] += 1
+    love['inga'] += 2
+    TavernScandal += 1
+    if virginity['inga'] = 1:
+        virginity['inga'] = 0
+    end
+    IngaBackroomSex = 1
+    IngaDanceUnlocked = 1
+    IngaRoomUnlocked = 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    if LOC('IngaDanceStreetSexText') = 1:
+        gs 'IngaDanceStreetSexText'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Кончить внутрь', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaDanceStreetSexFinish', 'inside'
+    end
+
+    gs 'ActUiPrepare', 'Кончить на лицо', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaDanceStreetCumFace'
+    end
+
+    gs 'ActUiPrepare', 'Кончить наружу', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaDanceStreetSexFinish', 'outside'
+    end
+---
+
+#IngaDanceStreetSexFinish
+    *clr
+    clr
+    cla
+
+    $StreetSexFinishType = LCASE($ARGS[0])
+
+    gs 'SceneShowVisual', 'images/events/inga/street_sex/fuckyou5', 'ИНГА — ПОСЛЕ БЛИЗОСТИ В ПЕРЕУЛКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ИНГА — ПОСЛЕ БЛИЗОСТИ В ПЕРЕУЛКЕ'
+
+    gs 'RegisterPlayerCum'
+
+    if LOC('IngaDanceStreetSexFinishText') = 1:
+        gs 'IngaDanceStreetSexFinishText', $StreetSexFinishType
+    end
+    *pl ' '
+
+    killvar '$StreetSexFinishType'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
 #IngaLucasAlleySpy
     *clr
     clr
@@ -202,7 +378,7 @@
     gs 'SceneShowVisual', 'images/events/inga/inga_dance/inga_lucas_alley_spy', 'ИНГА И ЛУКАС В ПОДВОРОТНЕ', 'large', 'webp'
 
     gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У РЫНОЧНОЙ ПЛОЩАДИ'
-    *pl 'Вы неслышно скользите в тень за угол каменного склада. В полумраке переулка виднеются две фигуры: широкоплечий подмастерье кузнеца Лукас прислонился к стене и нетерпеливо расстёгивает штаны, выпуская на волю свой внушительный, налившийся член.'
+    *pl 'Ты неслышно скользишь в тень за угол каменного склада. В полумраке переулка виднеются две фигуры: широкоплечий подмастерье кузнеца Лукас прислонился к стене и нетерпеливо расстёгивает штаны, выпуская на волю свой внушительный, налившийся член.'
     *pl ' '
     *pl 'Инга послушно опускается перед ним на колени прямо в пыль. Она бросает опасливый взгляд в сторону шумящей площади, сглатывает и обеими руками берётся за член парня. Лукас грубовато кладёт ладонь ей на затылок, направляя её головку:'
     *pl ' '
@@ -210,7 +386,7 @@
     *pl ' '
     *pl 'Инга глубоко принимает головку в рот, её щёки втягиваются, раздаётся влажное чмоканье. Подмастерье довольно рычит, запрокидывая голову к ночному небу. Девушка усердно сосёт, её светлые волосы растрепались, а в глазах блестят слезинки от подступающего к горлу спазма.'
     *pl ' '
-    *pl 'Ты тихо отступаете назад к праздничным огням площади, пока Лукас не заметил чужого взгляда.'
+    *pl 'Ты тихо отступаешь назад к праздничным огням площади, пока Лукас не заметил чужого взгляда.'
     *pl ' '
 
     gs 'FridayDanceAdvanceRound'

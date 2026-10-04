@@ -39,7 +39,7 @@
         exit
     end
 
-    if time < 3:
+    if time <> 1:
         exit
     end
 
@@ -72,15 +72,13 @@
         gt 'BeckyShop'
     end
 
-    gs 'IngaRomanceStepText', $IngaRomanceStepKey
-
     *clr
     clr
     cla
 
     gs 'ShowLocationScreenTitle', 'ПОДСОБКА ЛАВКИ — ИНГА'
     gs 'SceneShowVisual', 'images/events/inga/inga_romance/inga_romance_step', 'ПОДСОБКА ЛАВКИ — ИНГА', 'large', 'webp'
-    *p $IngaRomanceText
+    gs 'IngaRomanceStepText', $IngaRomanceStepKey
     *pl ' '
 
     IngaRomanceStage += 1
@@ -90,15 +88,20 @@
     if $IngaRomanceStepKey = 'handjob':
         CaressCount['inga'] += 1
         sluttiness['inga'] += 1
-        otkroven['inga'] += 1
+        otkroven['inga'] += 2
+        love['inga'] += 1
+        Friends['inga'] += 1
     elseif $IngaRomanceStepKey = 'cuni':
         CuniCount['inga'] += 1
         OralCount['inga'] += 1
-        otkroven['inga'] += 1
+        otkroven['inga'] += 2
+        love['inga'] += 1
+        sluttiness['inga'] += 1
     elseif $IngaRomanceStepKey = 'blowjob':
         BlowjobCount['inga'] += 1
         OralCount['inga'] += 1
-        sluttiness['inga'] += 1
+        sluttiness['inga'] += 2
+        love['inga'] += 1
     end
 
     gs 'ClampGirlSocialStats', 'inga'
@@ -120,15 +123,13 @@
         gt 'BeckyShop'
     end
 
-    gs 'IngaRomanceStepText', 'presex'
-
     *clr
     clr
     cla
 
-    gs 'ShowLocationScreenTitle', 'ПЕРВАЯ БЛИЗОСТЬ'
-    gs 'SceneShowVisual', 'images/events/inga/inga_romance/inga_backroom_first_sex_launch', 'ПЕРВАЯ БЛИЗОСТЬ', 'large', 'webp'
-    *p $IngaRomanceText
+    gs 'ShowLocationScreenTitle', 'ПЕРВАЯ БЛИЗОСТЬ В ПОДСОБКЕ'
+    gs 'SceneShowVisual', 'images/events/inga/inga_romance/inga_backroom_first_sex_launch', 'ПЕРВАЯ БЛИЗОСТЬ В ПОДСОБКЕ', 'large', 'webp'
+    gs 'IngaRomanceStepText', 'presex'
     *pl ' '
 
     IngaBackroomFirstSexActive = 1
@@ -142,21 +143,37 @@
         otkroven['inga'] = 15
     end
 
-    gt 'SexSceneStart', 'inga', 'IngaBackroomAfterSex', 'inga_backroom_first'
+    gs 'ActUiPrepare', 'Прижать Ингу к себе', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SexSceneStart', 'inga', 'IngaBackroomAfterSex', 'inga_backroom_first'
+    end
 ---
 
 #IngaBackroomAfterSex
-
-    gs 'IngaRomanceAfterSexText'
 
     *clr
     clr
     cla
 
-    gs 'ShowLocationScreenTitle', 'ПОСЛЕ'
-    gs 'SceneShowVisual', 'images/events/inga/inga_romance/inga_backroom_after_sex', 'ПОСЛЕ', 'large', 'webp'
-    *p $IngaRomanceText
+    gs 'ShowLocationScreenTitle', 'ПОСЛЕ БЛИЗОСТИ'
+    gs 'SceneShowVisual', 'images/events/inga/inga_romance/inga_backroom_after_sex', 'ПОСЛЕ БЛИЗОСТИ', 'large', 'webp'
+    gs 'IngaRomanceAfterSexText'
     *pl ' '
+
+    if IngaBackroomSex = 0 or IngaBackroomFirstSexActive = 1:
+        IngaBackroomSex = 1
+        IngaDanceUnlocked = 1
+        IngaRoomUnlocked = 1
+        IngaPlayerRouteOpen = 1
+        if virginity['inga'] = 1:
+            virginity['inga'] = 0
+        end
+        IngaBackroomFirstSexActive = 0
+        love['inga'] += 2
+        Friends['inga'] += 2
+        sluttiness['inga'] += 2
+        gs 'ClampGirlSocialStats', 'inga'
+    end
 
     gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -172,7 +189,7 @@
         exit
     end
 
-    if time < 3:
+    if time <> 1:
         exit
     end
 

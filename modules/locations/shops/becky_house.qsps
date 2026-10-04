@@ -17,7 +17,7 @@
     if LOC('IngaRoomIntroText') = 1:
         gs 'IngaRoomIntroText'
     else:
-        *p 'Небольшая комната над лавкой. Здесь Инга прячется от матери и Лукаса — когда выбирает вас.'
+        *p 'Небольшая комната над лавкой. Здесь Инга прячется от матери и Лукаса — когда выбирает тебя.'
     end
 
     *pl ' '
@@ -28,7 +28,7 @@
     if LocationGirlShown = 0:
         *p 'Инги сейчас нет в комнате.'
     else:
-        if IngaBackroomSex = 1 and LOC('SexSceneStart') = 1 and time >= 3:
+        if (IngaBackroomSex = 1 or IngaRoomUnlocked = 1) and LOC('SexSceneStart') = 1 and time >= 3:
             gs 'ActUiPrepare', 'Провести вечер с Ингой', 'guard'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'SexSceneStart', 'inga', 'IngaRoomAfterSex', 'inga_repeat'
@@ -110,8 +110,20 @@
 ---
 
 #IngaRoomAfterSex
-    *p 'Инга поправляет одежду и смотрит на вас с тихой улыбкой.'
+    *p 'Инга поправляет одежду и смотрит на тебя с тихой улыбкой.'
     *pl ' '
+
+    if IngaBackroomSex = 0:
+        IngaBackroomSex = 1
+        IngaDanceUnlocked = 1
+        if virginity['inga'] = 1:
+            virginity['inga'] = 0
+        end
+        love['inga'] += 2
+        Friends['inga'] += 2
+        sluttiness['inga'] += 2
+        gs 'ClampGirlSocialStats', 'inga'
+    end
 
     if LOC('BeckyCatchIngaLucasCanStart') = 1:
         gs 'BeckyCatchIngaLucasCanStart'

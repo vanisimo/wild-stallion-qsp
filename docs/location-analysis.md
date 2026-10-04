@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 469
-- Locations: 3435
-- Locations with direct incoming calls: 2932
+- Locations: 3445
+- Locations with direct incoming calls: 2942
 - Locations without direct incoming calls: 503
 - Review candidates without direct incoming calls: 180
 - Classified entry/helper locations without direct incoming calls: 323
@@ -144,7 +144,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `HallMissingScene_touch_thigh_sandra` | `modules/events/hall/hall_missing_agent_sandra_text.qsps` | 341 | `modules/events` |
 | `HallMissingScene_touch_thigh_sandra_2` | `modules/events/hall/hall_missing_agent_sandra_text.qsps` | 351 | `modules/events` |
 | `HallRecentMemorySave` | `modules/events/hall/hall_recent_memory.qsps` | 9 | `modules/events` |
-| `IngaBackroomAfterSex` | `modules/events/inga/inga_romance.qsps` | 148 | `modules/events` |
+| `IngaBackroomAfterSex` | `modules/events/inga/inga_romance.qsps` | 152 | `modules/events` |
 | `IngaDanceMeet` | `modules/events/inga/inga_dance.qsps` | 28 | `modules/events` |
 | `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 274 | `modules/events` |
 | `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 112 | `modules/locations` |
@@ -391,7 +391,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `HallRumorPrintLast` | `modules/events/hall/hall_rumors.qsps` | 113 | `entry/helper` |
 | `HallSceneV2DebugCoach` | `modules/events/hall/hall_scene_v2_core.qsps` | 420 | `entry/helper` |
 | `ImageSettingsDebugPanel` | `modules/core/show_image/image_debug_random.qsps` | 621 | `entry/helper` |
-| `IngaBackroomInviteText` | `modules/events/inga/inga_romance_text.qsps` | 29 | `entry/helper` |
+| `IngaBackroomInviteText` | `modules/events/inga/inga_romance_text.qsps` | 90 | `entry/helper` |
 | `IngaDanceMeetCanStart` | `modules/events/inga/inga_dance.qsps` | 7 | `entry/helper` |
 | `IngaGuardComplaintIntroText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 170 | `entry/helper` |
 | `IngaGuardComplaintSecondIntroText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 174 | `entry/helper` |
@@ -531,31 +531,31 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1424 |
-| `ShowLocationScreenTitle` | 622 |
-| `Menu.AddModule` | 587 |
-| `MenuUiAdd` | 579 |
-| `SceneShowVisual` | 555 |
+| `ActUiPrepare` | 1440 |
+| `ShowLocationScreenTitle` | 627 |
+| `Menu.AddModule` | 588 |
+| `MenuUiAdd` | 580 |
+| `SceneShowVisual` | 560 |
 | `EnsureGirlData` | 209 |
 | `NormalizeGirlKey` | 201 |
-| `ClampGirlSocialStats` | 178 |
+| `ClampGirlSocialStats` | 184 |
 | `TavernMain` | 164 |
 | `ShowGirlSidebar` | 102 |
 | `Menu.Create` | 98 |
 | `Menu.Destroy` | 92 |
-| `RegisterSex` | 89 |
+| `RegisterSex` | 91 |
 | `ShowImage` | 88 |
 | `PrintMainP` | 86 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
-| `MarketDance` | 72 |
+| `MarketDance` | 76 |
 | `Market` | 63 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `PrintTitleLine` | 53 |
-| `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `Menu.AddCondition` | 44 |
 
 ## Dynamic Call Sites
 
