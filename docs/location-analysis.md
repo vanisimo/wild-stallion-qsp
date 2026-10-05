@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 476
-- Locations: 3467
-- Locations with direct incoming calls: 2961
+- Locations: 3511
+- Locations with direct incoming calls: 3005
 - Locations without direct incoming calls: 506
 - Review candidates without direct incoming calls: 182
 - Classified entry/helper locations without direct incoming calls: 324
@@ -27,7 +27,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
 | `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 254 | `modules/events` |
-| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 429 | `modules/events` |
+| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 921 | `modules/events` |
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 7 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
@@ -69,7 +69,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 503 | `modules/actions` |
 | `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 468 | `modules/actions` |
 | `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 186 | `modules/actions` |
-| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 961 | `modules/actions` |
+| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 983 | `modules/actions` |
 | `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 246 | `modules/actions` |
 | `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 289 | `modules/actions` |
 | `GirlWorkPolicyTalkHallAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 102 | `modules/actions` |
@@ -357,7 +357,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 251 | `entry/helper` |
 | `GirlMemoryOfStefanDebugPanel` | `modules/events/hall/girl_memory_of_stefan.qsps` | 195 | `entry/helper` |
 | `GirlTalkImageDebugPanel` | `modules/actions/dialogs/girl_talk_images.qsps` | 197 | `entry/helper` |
-| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1126 | `entry/helper` |
+| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1148 | `entry/helper` |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 446 | `entry/helper` |
 | `GirlWorkPolicyTalkAfterHarassStart` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 202 | `entry/helper` |
 | `GroupSexMenu` | `modules/actions/sex/group_sex.qsps` | 6 | `entry/helper` |
@@ -534,31 +534,31 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1473 |
-| `ShowLocationScreenTitle` | 631 |
-| `Menu.AddModule` | 588 |
-| `MenuUiAdd` | 580 |
-| `SceneShowVisual` | 566 |
+| `ActUiPrepare` | 1506 |
+| `ShowLocationScreenTitle` | 648 |
+| `Menu.AddModule` | 590 |
+| `SceneShowVisual` | 588 |
+| `MenuUiAdd` | 582 |
 | `EnsureGirlData` | 208 |
 | `NormalizeGirlKey` | 201 |
 | `ClampGirlSocialStats` | 187 |
 | `TavernMain` | 164 |
 | `ShowGirlSidebar` | 102 |
 | `Menu.Create` | 98 |
-| `RegisterSex` | 92 |
 | `Menu.Destroy` | 92 |
+| `RegisterSex` | 92 |
 | `ShowImage` | 88 |
 | `PrintMainP` | 87 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 76 |
-| `Market` | 66 |
+| `Market` | 69 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `Menu.AddCondition` | 44 |
 
 ## Dynamic Call Sites
 
