@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/events/becky/becky_home_chain.qsps
 ! MODULE: events/becky
 ! Дом Бекки: крыльцо, ужин, спальня, первый секс
@@ -445,7 +445,7 @@
     *pl $BeckyHomeText
     *pl ' '
 
-    if sluttiness['inga'] >= 30 or IntimStage['inga'] >= 2:
+    if sluttiness['inga'] >= 30:
         gs 'ActUiPrepare', 'Опустить Ингу на скамью для ласк', 'intim'
         act $ActUiLabel, $ActUiIconPath:
             gt 'BeckyDinnerWagonOral'
@@ -466,88 +466,93 @@
     gs 'SceneShowVisual', 'images/events/becky/dinner/inga_oral', 'ТАЙНЫЕ ЛАСКИ У ПЕЧИ', 'large', 'webp'
     sluttiness['inga'] += 1
     OralCount['inga'] += 1
-    gs 'RegisterPlayerCum'
     gs 'BeckyDinnerWagonOralText'
     *pl $BeckyHomeText
     *pl ' '
 
-    if sluttiness['inga'] >= 50 or IntimStage['inga'] >= 3 or HadSex['inga'] > 0:
-        gs 'ActUiPrepare', 'Овладеть Ингой прямо здесь', 'intim'
+    if sluttiness['inga'] >= 50 or HadSex['inga'] > 0:
+        gs 'ActUiPrepare', 'Перейти к полной близости', 'intim'
         act $ActUiLabel, $ActUiIconPath:
-            gt 'BeckyDinnerWagonSexChoice'
+            gt 'BeckyDinnerWagonSex'
         end
     end
 
-    gs 'ActUiPrepare', 'Завершить ласки и привести себя в порядок', 'return'
+    gs 'ActUiPrepare', 'Приблизиться к финалу ласк', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyDinnerWagonOralFinish'
+    end
+---
+
+#BeckyDinnerWagonOralFinish
+    *clr
+    clr
+    cla
+    gs 'ShowLocationScreenTitle', 'ФИНАЛ ЛАСК У ПЕЧИ'
+    gs 'SceneShowVisual', 'images/events/becky/dinner/inga_oral', 'ФИНАЛ ЛАСК У ПЕЧИ', 'large', 'webp'
+    sluttiness['inga'] += 1
+    gs 'RegisterPlayerCum'
+    gs 'BeckyDinnerWagonOralFinishText'
+    *pl $BeckyHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Привести себя в порядок — семья возвращается', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'BeckyDinnerWagonEnd'
     end
 ---
 
-#BeckyDinnerWagonSexChoice
+#BeckyDinnerWagonSex
     *clr
     clr
     cla
-    gs 'ShowLocationScreenTitle', 'ВЫБОР МЕСТА'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/inga_alone', 'ВЫБОР МЕСТА', 'large', 'webp'
-    *pl 'Инга тяжело дышит, глядя на тебя затуманенным взором. Где вы отдадитесь страсти?'
-    *pl ' '
 
-    gs 'ActUiPrepare', 'Отдаться страсти прямо здесь (рандом: стол или окно)', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        if RAND(1, 2) = 1:
-            gt 'BeckyDinnerWagonSexTable'
-        else:
-            gt 'BeckyDinnerWagonSexWindow'
-        end
+    ! Random choice between Table and Window
+    if RAND(1, 2) = 1:
+        $BeckyWagonSexPlace = 'table'
+        gs 'ShowLocationScreenTitle', 'СТРАСТЬ НА ОБЕДЕННОМ СТОЛЕ'
+        gs 'SceneShowVisual', 'images/events/becky/dinner/inga_table_sex', 'СТРАСТЬ НА ОБЕДЕННОМ СТОЛЕ', 'large', 'webp'
+    else:
+        $BeckyWagonSexPlace = 'window'
+        gs 'ShowLocationScreenTitle', 'БЛИЗОСТЬ У ОКНА'
+        gs 'SceneShowVisual', 'images/events/becky/dinner/inga_window_sex', 'БЛИЗОСТЬ У ОКНА', 'large', 'webp'
     end
 
-    gs 'ActUiPrepare', 'На широком дубовом столе', 'intim'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerWagonSexTable'
-    end
-
-    gs 'ActUiPrepare', 'У окна столовой (рискованно)', 'intim'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerWagonSexWindow'
-    end
----
-
-#BeckyDinnerWagonSexTable
-    *clr
-    clr
-    cla
-    gs 'ShowLocationScreenTitle', 'СТРАСТЬ НА ОБЕДЕННОМ СТОЛЕ'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/inga_table_sex', 'СТРАСТЬ НА ОБЕДЕННОМ СТОЛЕ', 'large', 'webp'
     sluttiness['inga'] += 2
     HadSex['inga'] += 1
     if IntimStage['inga'] < 4: IntimStage['inga'] = 4
-    gs 'RegisterPlayerCum'
-    gs 'BeckyDinnerWagonSexTableText'
+    if $BeckyWagonSexPlace = 'window':
+        TavernScandal += 2
+        CityRumorReady['inga_window'] = 1
+    end
+
+    gs 'BeckyDinnerWagonSexProcessText'
     *pl $BeckyHomeText
     *pl ' '
 
-    gs 'ActUiPrepare', 'Услышать шаги у ворот', 'generic'
+    gs 'ActUiPrepare', 'Достичь бурной развязки', 'intim'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerWagonEnd'
+        gt 'BeckyDinnerWagonSexFinish'
     end
 ---
 
-#BeckyDinnerWagonSexWindow
+#BeckyDinnerWagonSexFinish
     *clr
     clr
     cla
-    gs 'ShowLocationScreenTitle', 'БЛИЗОСТЬ У ОКНА'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/inga_window_sex', 'БЛИЗОСТЬ У ОКНА', 'large', 'webp'
-    sluttiness['inga'] += 3
-    HadSex['inga'] += 1
-    if IntimStage['inga'] < 4: IntimStage['inga'] = 4
-    TavernScandal += 2
-    CityRumorReady['inga_window'] = 1
+    gs 'ShowLocationScreenTitle', 'КУЛЬМИНАЦИЯ БЛИЗОСТИ'
+    if $BeckyWagonSexPlace = 'table':
+        gs 'SceneShowVisual', 'images/events/becky/dinner/inga_table_sex', 'КУЛЬМИНАЦИЯ НА СТОЛЕ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/becky/dinner/inga_window_sex', 'КУЛЬМИНАЦИЯ У ОКНА', 'large', 'webp'
+    end
+
     gs 'RegisterPlayerCum'
-    gs 'BeckyDinnerWagonSexWindowText'
+    sluttiness['inga'] += 1
+    gs 'BeckyDinnerWagonSexFinishText'
     *pl $BeckyHomeText
     *pl ' '
+
+    killvar '$BeckyWagonSexPlace'
 
     gs 'ActUiPrepare', 'Услышать шаги у ворот', 'generic'
     act $ActUiLabel, $ActUiIconPath:
@@ -613,197 +618,136 @@
     cla
     gs 'ShowLocationScreenTitle', 'ВОЗВРАЩЕНИЕ К СТОЛУ'
     gs 'SceneShowVisual', 'images/events/becky/dinner/eat', 'ВОЗВРАЩЕНИЕ К СТОЛУ', 'large', 'webp'
-    *pl 'Вы возвращаетесь в тёплую столовую. За длинным столом продолжается беседа под свисающей скатертью.'
-    *pl ' '
 
-    if sluttiness['becky'] >= 40 and (BeckyHomeSex = 1 or BeckyDinnerOrgasm = 1):
-        gs 'ActUiPrepare', 'Тайный знак Бекки (под скатерть)', 'intim'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'BeckyDinnerUnderTableBeckyGg'
+    ! Determine companion
+    if BeckyDinnerLucasState >= 1 and RAND(1, 2) = 1:
+        $BeckyPorchCompanion = 'lucas'
+    else:
+        $BeckyPorchCompanion = 'eddie'
+    end
+
+    ! Determine who is under table
+    ! Pool: 'becky', 'inga', 'both'
+    $BeckyUnderTableGirl = 'becky'
+    if sluttiness['becky'] >= 75 and sluttiness['inga'] >= 75 and (IngaBackroomSex = 1 or HadSex['inga'] > 0) and RAND(1, 3) = 1:
+        $BeckyUnderTableGirl = 'both'
+    elseif (IngaBackroomSex = 1 or HadSex['inga'] > 0 or sluttiness['inga'] >= 35) and RAND(1, 2) = 1:
+        $BeckyUnderTableGirl = 'inga'
+    end
+
+    ! Determine recipient
+    if $BeckyUnderTableGirl = 'both':
+        $BeckyUnderTableTarget = 'both'
+    elseif $BeckyUnderTableGirl = 'inga':
+        ! Inga NEVER touches Eddie!
+        if $BeckyPorchCompanion = 'lucas' and IngaLucasRelation >= 1 and RAND(1, 3) = 1:
+            $BeckyUnderTableTarget = 'lucas'
+        else:
+            $BeckyUnderTableTarget = 'stefan'
+        end
+    else:
+        ! Becky
+        if $BeckyPorchCompanion = 'eddie' and (EddieFamilyArcDone = 1 or (FamilyCorruptionStage >= 4 and sluttiness['becky'] >= 60)) and RAND(1, 3) = 1:
+            $BeckyUnderTableTarget = 'eddie'
+        elseif $BeckyPorchCompanion = 'lucas' and (BeckyLucasBackroomDone = 1 or sluttiness['becky'] >= 50) and RAND(1, 3) = 1:
+            $BeckyUnderTableTarget = 'lucas'
+        else:
+            $BeckyUnderTableTarget = 'stefan'
         end
     end
 
-    if sluttiness['inga'] >= 35 and (IngaBackroomSex = 1 or HadSex['inga'] > 0):
-        gs 'ActUiPrepare', 'Тайный знак Инге (под скатерть)', 'intim'
+    ! Determine tier
+    if $BeckyUnderTableGirl = 'both':
+        BeckyUnderTableTier = 3
+    else:
+        if $BeckyUnderTableGirl = 'becky':
+            _slut = sluttiness['becky']
+        else:
+            _slut = sluttiness['inga']
+        end
+        if _slut >= 65:
+            BeckyUnderTableTier = 3
+        elseif _slut >= 45:
+            BeckyUnderTableTier = 2
+        else:
+            BeckyUnderTableTier = 1
+        end
+        killvar '_slut'
+    end
+
+    gs 'BeckyDinnerPorchReturnSetupText'
+    *pl $BeckyHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Заглянуть под скатерть', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyDinnerUnderTableAction'
+    end
+---
+
+#BeckyDinnerUnderTableAction
+    *clr
+    clr
+    cla
+    gs 'ShowLocationScreenTitle', 'СЮРПРИЗ ПОД СТОЛОМ'
+
+    if $BeckyUnderTableGirl = 'both':
+        gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_both', 'МАТЬ И ДОЧЬ ПОД СТОЛОМ', 'large', 'webp'
+    elseif $BeckyUnderTableGirl = 'inga':
+        gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_inga', 'ИНГА ПОД СТОЛОМ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_becky', 'БЕККИ ПОД СТОЛОМ', 'large', 'webp'
+    end
+
+    if BeckyUnderTableTier < 3 and ($BeckyUnderTableTarget = 'stefan' or $BeckyUnderTableTarget = 'both'):
+        gs 'RegisterPlayerCum'
+    end
+
+    gs 'BeckyDinnerUnderTableActionText'
+    *pl $BeckyHomeText
+    *pl ' '
+
+    if BeckyUnderTableTier = 3:
+        gs 'ActUiPrepare', 'Наблюдать открытую кульминацию', 'intim'
         act $ActUiLabel, $ActUiIconPath:
-            gt 'BeckyDinnerUnderTableIngaGg'
+            gt 'BeckyDinnerUnderTableCulmination'
+        end
+    else:
+        gs 'ActUiPrepare', 'Допить вино и попрощаться', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyDinnerPorchEnd'
         end
     end
-
-    if EddieFamilyArcDone = 1 or (FamilyCorruptionStage >= 4 and sluttiness['becky'] >= 60):
-        gs 'ActUiPrepare', 'Бекки опускается к ногам Эдди', 'intim'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'BeckyDinnerUnderTableBeckyEddie'
-        end
-    end
-
-    if BeckyDinnerLucasState >= 2 and (IngaLucasThreesomeCount >= 1 or sluttiness['becky'] >= 50):
-        gs 'ActUiPrepare', 'Ласки под столом для Лукаса', 'intim'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'BeckyDinnerUnderTableLucas'
-        end
-    end
-
-    if sluttiness['becky'] >= 50 and (EddieFamilyArcDone = 1 or FamilyCorruptionStage >= 3):
-        gs 'ActUiPrepare', 'Бекки ласкает Стефана и Эдди по очереди', 'intim'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'BeckyDinnerUnderTableBeckySwitchEddie'
-        end
-    end
-
-    if BeckyDinnerLucasState >= 2 and (sluttiness['becky'] >= 45 or sluttiness['inga'] >= 45):
-        gs 'ActUiPrepare', 'Ласки Стефана и Лукаса по очереди', 'intim'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'BeckyDinnerUnderTableSwitchLucas'
-        end
-    end
-
-    if (sluttiness['becky'] >= 60 and sluttiness['inga'] >= 60) or (sluttiness['becky'] >= 50 and sluttiness['inga'] >= 50 and BeckyDinnerLucasState = 3):
-        gs 'ActUiPrepare', 'Бекки и Инга опускаются под стол вместе', 'intim'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'BeckyDinnerUnderTableBoth'
-        end
-    end
-
-    gs 'ActUiPrepare', 'Допить вино и попрощаться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerPorchEnd'
-    end
 ---
 
-#BeckyDinnerUnderTableBeckyGg
+#BeckyDinnerUnderTableCulmination
     *clr
     clr
     cla
-    gs 'ShowLocationScreenTitle', 'БЕККИ ПОД СТОЛОМ'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_becky', 'БЕККИ ПОД СТОЛОМ', 'large', 'webp'
-    sluttiness['becky'] += 1
-    BlowjobCount['becky'] += 1
-    gs 'RegisterPlayerCum'
-    gs 'BeckyDinnerUnderTableBeckyGgText'
-    *pl $BeckyHomeText
-    *pl ' '
+    gs 'ShowLocationScreenTitle', 'КУЛЬМИНАЦИЯ ПОД СТОЛОМ'
 
-    gs 'ActUiPrepare', 'Поблагодарить и откланяться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerPorchEnd'
-    end
----
-
-#BeckyDinnerUnderTableIngaGg
-    *clr
-    clr
-    cla
-    gs 'ShowLocationScreenTitle', 'ИНГА ПОД СТОЛОМ'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_inga', 'ИНГА ПОД СТОЛОМ', 'large', 'webp'
-    sluttiness['inga'] += 1
-    BlowjobCount['inga'] += 1
-    gs 'RegisterPlayerCum'
-    gs 'BeckyDinnerUnderTableIngaGgText'
-    *pl $BeckyHomeText
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Поблагодарить и откланяться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerPorchEnd'
-    end
----
-
-#BeckyDinnerUnderTableBeckyEddie
-    *clr
-    clr
-    cla
-    gs 'ShowLocationScreenTitle', 'ЗАГОВОР ПОД СТОЛОМ'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_becky', 'ЗАГОВОР ПОД СТОЛОМ', 'large', 'webp'
-    sluttiness['becky'] += 2
-    gs 'BeckyDinnerUnderTableBeckyEddieText'
-    *pl $BeckyHomeText
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Попрощаться и уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerPorchEnd'
-    end
----
-
-#BeckyDinnerUnderTableLucas
-    *clr
-    clr
-    cla
-    gs 'ShowLocationScreenTitle', 'ЛАСКИ ДЛЯ ЛУКАСА'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_inga', 'ЛАСКИ ДЛЯ ЛУКАСА', 'large', 'webp'
-    sluttiness['inga'] += 1
-    sluttiness['becky'] += 1
-    gs 'BeckyDinnerUnderTableLucasText'
-    *pl $BeckyHomeText
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Попрощаться и уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerPorchEnd'
-    end
----
-
-#BeckyDinnerUnderTableBeckySwitchEddie
-    *clr
-    clr
-    cla
-    gs 'ShowLocationScreenTitle', 'БЕККИ МЕЖДУ СТЕФАНОМ И СЫНОМ'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_becky', 'БЕККИ МЕЖДУ СТЕФАНОМ И СЫНОМ', 'large', 'webp'
-    sluttiness['becky'] += 2
-    gs 'RegisterPlayerCum'
-    gs 'BeckyDinnerUnderTableBeckySwitchEddieText'
-    *pl $BeckyHomeText
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Попрощаться и уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerPorchEnd'
-    end
----
-
-#BeckyDinnerUnderTableSwitchLucas
-    *clr
-    clr
-    cla
-    gs 'ShowLocationScreenTitle', 'ЛАСКИ ДЛЯ ДВОИХ'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_inga', 'ЛАСКИ ДЛЯ ДВОИХ', 'large', 'webp'
-    sluttiness['becky'] += 1
-    sluttiness['inga'] += 1
-    gs 'RegisterPlayerCum'
-    gs 'BeckyDinnerUnderTableSwitchLucasText'
-    *pl $BeckyHomeText
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Попрощаться и уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyDinnerPorchEnd'
-    end
----
-
-#BeckyDinnerUnderTableBoth
-    *clr
-    clr
-    cla
-    gs 'ShowLocationScreenTitle', 'МАТЬ И ДОЧЬ ПОД СТОЛОМ'
-    gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_both', 'МАТЬ И ДОЧЬ ПОД СТОЛОМ', 'large', 'webp'
-    sluttiness['becky'] += 3
-    sluttiness['inga'] += 3
-    FamilyCorruptionStage += 1
-    TavernScandal += 2
-    gs 'RegisterPlayerCum'
-    gs 'BeckyDinnerUnderTableBothText'
-    *pl $BeckyHomeText
-    *pl ' '
-
-    if sluttiness['inga'] >= 50 and sluttiness['becky'] >= 50:
+    if $BeckyUnderTableGirl = 'both':
         gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_kiss', 'ПОЦЕЛУЙ МАТЕРИ И ДОЧЕРИ', 'large', 'webp'
-        gs 'BeckyDinnerUnderTableCumKissText'
-        *pl $BeckyHomeText
-        *pl ' '
+        sluttiness['becky'] += 3
+        sluttiness['inga'] += 3
+        FamilyCorruptionStage += 1
+        TavernScandal += 2
+        gs 'RegisterPlayerCum'
+    elseif $BeckyUnderTableGirl = 'inga':
+        gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_inga', 'ОТКРЫТЫЙ ФИНАЛ ИНГИ', 'large', 'webp'
+        sluttiness['inga'] += 2
+        if $BeckyUnderTableTarget = 'stefan': gs 'RegisterPlayerCum'
+    else:
+        gs 'SceneShowVisual', 'images/events/becky/dinner/undertable_becky', 'ОТКРЫТЫЙ ФИНАЛ БЕККИ', 'large', 'webp'
+        sluttiness['becky'] += 2
+        if $BeckyUnderTableTarget = 'stefan': gs 'RegisterPlayerCum'
     end
 
-    gs 'ActUiPrepare', 'Попрощаться в ошеломлении', 'return'
+    gs 'BeckyDinnerUnderTableCulminationText'
+    *pl $BeckyHomeText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поблагодарить хозяев и выйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'BeckyDinnerPorchEnd'
     end
@@ -828,6 +772,10 @@
     killvar 'BeckyDinnerOrgasm'
     killvar 'BeckyDinnerEddieSaw'
     killvar 'BeckyDinnerEatTurn'
+    killvar '$BeckyPorchCompanion'
+    killvar '$BeckyUnderTableGirl'
+    killvar '$BeckyUnderTableTarget'
+    killvar 'BeckyUnderTableTier'
 
     gs 'BeckyDinnerPorchEndText'
     *pl $BeckyHomeText

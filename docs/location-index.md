@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 476
-- Locations: 3516
+- Locations: 3507
 
 ## modules/actions
 
@@ -1475,8 +1475,8 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaPathChoiceTryAutoStart` | `modules/events/amanda/home/amanda_path_choice.qsps` | 12 |
 | `AmandaPortShipHintText` | `modules/events/amanda/lizette/amanda_port_ship_hint_text.qsps` | 8 |
 | `AmandaPortShipIsAbsent` | `modules/events/amanda/lizette/amanda_port_ship_hint.qsps` | 7 |
-| `AmandaTalkAboutBeckyDinner` | `modules/events/becky/becky_home_chain.qsps` | 842 |
-| `AmandaTalkAboutBeckyDinnerText` | `modules/events/becky/becky_dinner_text.qsps` | 278 |
+| `AmandaTalkAboutBeckyDinner` | `modules/events/becky/becky_home_chain.qsps` | 790 |
+| `AmandaTalkAboutBeckyDinnerText` | `modules/events/becky/becky_dinner_text.qsps` | 300 |
 | `AmandaTalkAboutLegare` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 19 |
 | `AmandaTalkAboutLegareAction` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 108 |
 | `AmandaTalkAboutLegareActionText` | `modules/events/amanda/legare/amanda_legare_talk_text.qsps` | 23 |
@@ -1505,38 +1505,29 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyDanceInviteHomeText` | `modules/events/becky/becky_dance_text.qsps` | 85 |
 | `BeckyDanceMainText` | `modules/events/becky/becky_dance_text.qsps` | 9 |
 | `BeckyDanceReset` | `modules/events/becky/becky_dance.qsps` | 59 |
-| `BeckyDinnerPorchEnd` | `modules/events/becky/becky_home_chain.qsps` | 812 |
-| `BeckyDinnerPorchEndText` | `modules/events/becky/becky_dinner_text.qsps` | 270 |
-| `BeckyDinnerPorchIntroText` | `modules/events/becky/becky_dinner_text.qsps` | 196 |
-| `BeckyDinnerPorchReturn` | `modules/events/becky/becky_home_chain.qsps` | 610 |
-| `BeckyDinnerPorchStart` | `modules/events/becky/becky_home_chain.qsps` | 588 |
-| `BeckyDinnerUnderTableBeckyEddie` | `modules/events/becky/becky_home_chain.qsps` | 712 |
-| `BeckyDinnerUnderTableBeckyEddieText` | `modules/events/becky/becky_dinner_text.qsps` | 220 |
-| `BeckyDinnerUnderTableBeckyGg` | `modules/events/becky/becky_home_chain.qsps` | 674 |
-| `BeckyDinnerUnderTableBeckyGgText` | `modules/events/becky/becky_dinner_text.qsps` | 200 |
-| `BeckyDinnerUnderTableBeckySwitchEddie` | `modules/events/becky/becky_home_chain.qsps` | 747 |
-| `BeckyDinnerUnderTableBeckySwitchEddieText` | `modules/events/becky/becky_dinner_text.qsps` | 236 |
-| `BeckyDinnerUnderTableBoth` | `modules/events/becky/becky_home_chain.qsps` | 784 |
-| `BeckyDinnerUnderTableBothText` | `modules/events/becky/becky_dinner_text.qsps` | 252 |
-| `BeckyDinnerUnderTableCumKissText` | `modules/events/becky/becky_dinner_text.qsps` | 262 |
-| `BeckyDinnerUnderTableIngaGg` | `modules/events/becky/becky_home_chain.qsps` | 693 |
-| `BeckyDinnerUnderTableIngaGgText` | `modules/events/becky/becky_dinner_text.qsps` | 210 |
-| `BeckyDinnerUnderTableLucas` | `modules/events/becky/becky_home_chain.qsps` | 729 |
-| `BeckyDinnerUnderTableLucasText` | `modules/events/becky/becky_dinner_text.qsps` | 228 |
-| `BeckyDinnerUnderTableSwitchLucas` | `modules/events/becky/becky_home_chain.qsps` | 765 |
-| `BeckyDinnerUnderTableSwitchLucasText` | `modules/events/becky/becky_dinner_text.qsps` | 244 |
-| `BeckyDinnerWagonEnd` | `modules/events/becky/becky_home_chain.qsps` | 558 |
-| `BeckyDinnerWagonEndText` | `modules/events/becky/becky_dinner_text.qsps` | 180 |
+| `BeckyDinnerPorchEnd` | `modules/events/becky/becky_home_chain.qsps` | 756 |
+| `BeckyDinnerPorchEndText` | `modules/events/becky/becky_dinner_text.qsps` | 292 |
+| `BeckyDinnerPorchIntroText` | `modules/events/becky/becky_dinner_text.qsps` | 194 |
+| `BeckyDinnerPorchReturn` | `modules/events/becky/becky_home_chain.qsps` | 615 |
+| `BeckyDinnerPorchReturnSetupText` | `modules/events/becky/becky_dinner_text.qsps` | 198 |
+| `BeckyDinnerPorchStart` | `modules/events/becky/becky_home_chain.qsps` | 593 |
+| `BeckyDinnerUnderTableAction` | `modules/events/becky/becky_home_chain.qsps` | 688 |
+| `BeckyDinnerUnderTableActionText` | `modules/events/becky/becky_dinner_text.qsps` | 214 |
+| `BeckyDinnerUnderTableCulmination` | `modules/events/becky/becky_home_chain.qsps` | 723 |
+| `BeckyDinnerUnderTableCulminationText` | `modules/events/becky/becky_dinner_text.qsps` | 282 |
+| `BeckyDinnerWagonEnd` | `modules/events/becky/becky_home_chain.qsps` | 563 |
+| `BeckyDinnerWagonEndText` | `modules/events/becky/becky_dinner_text.qsps` | 181 |
 | `BeckyDinnerWagonHugs` | `modules/events/becky/becky_home_chain.qsps` | 436 |
-| `BeckyDinnerWagonHugsText` | `modules/events/becky/becky_dinner_text.qsps` | 140 |
-| `BeckyDinnerWagonIntroText` | `modules/events/becky/becky_dinner_text.qsps` | 136 |
+| `BeckyDinnerWagonHugsText` | `modules/events/becky/becky_dinner_text.qsps` | 139 |
+| `BeckyDinnerWagonIntroText` | `modules/events/becky/becky_dinner_text.qsps` | 135 |
 | `BeckyDinnerWagonOral` | `modules/events/becky/becky_home_chain.qsps` | 461 |
-| `BeckyDinnerWagonOralText` | `modules/events/becky/becky_dinner_text.qsps` | 150 |
-| `BeckyDinnerWagonSexChoice` | `modules/events/becky/becky_home_chain.qsps` | 487 |
-| `BeckyDinnerWagonSexTable` | `modules/events/becky/becky_home_chain.qsps` | 516 |
-| `BeckyDinnerWagonSexTableText` | `modules/events/becky/becky_dinner_text.qsps` | 160 |
-| `BeckyDinnerWagonSexWindow` | `modules/events/becky/becky_home_chain.qsps` | 536 |
-| `BeckyDinnerWagonSexWindowText` | `modules/events/becky/becky_dinner_text.qsps` | 170 |
+| `BeckyDinnerWagonOralFinish` | `modules/events/becky/becky_home_chain.qsps` | 486 |
+| `BeckyDinnerWagonOralFinishText` | `modules/events/becky/becky_dinner_text.qsps` | 157 |
+| `BeckyDinnerWagonOralText` | `modules/events/becky/becky_dinner_text.qsps` | 149 |
+| `BeckyDinnerWagonSex` | `modules/events/becky/becky_home_chain.qsps` | 504 |
+| `BeckyDinnerWagonSexFinish` | `modules/events/becky/becky_home_chain.qsps` | 538 |
+| `BeckyDinnerWagonSexFinishText` | `modules/events/becky/becky_dinner_text.qsps` | 173 |
+| `BeckyDinnerWagonSexProcessText` | `modules/events/becky/becky_dinner_text.qsps` | 165 |
 | `BeckyDinnerWagonStart` | `modules/events/becky/becky_home_chain.qsps` | 415 |
 | `BeckyEddieConfession` | `modules/events/eddie/eddie_arc.qsps` | 221 |
 | `BeckyEddieConfessionDirectText` | `modules/events/eddie/eddie_arc_text.qsps` | 38 |
@@ -1562,16 +1553,16 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 254 |
 | `BeckyEddieNormalizeBeckyText` | `modules/events/eddie/eddie_arc_text.qsps` | 74 |
 | `BeckyFridayContactRegister` | `modules/events/becky/becky_dance.qsps` | 73 |
-| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 990 |
+| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 938 |
 | `BeckyHomeAfterSexText` | `modules/events/becky/becky_home_chain_text.qsps` | 59 |
-| `BeckyHomeBedroom` | `modules/events/becky/becky_home_chain.qsps` | 881 |
+| `BeckyHomeBedroom` | `modules/events/becky/becky_home_chain.qsps` | 829 |
 | `BeckyHomeBedroomIntroText` | `modules/events/becky/becky_home_chain_text.qsps` | 37 |
-| `BeckyHomeFirstSexLaunch` | `modules/events/becky/becky_home_chain.qsps` | 978 |
-| `BeckyHomeFirstSexStep1` | `modules/events/becky/becky_home_chain.qsps` | 920 |
+| `BeckyHomeFirstSexLaunch` | `modules/events/becky/becky_home_chain.qsps` | 926 |
+| `BeckyHomeFirstSexStep1` | `modules/events/becky/becky_home_chain.qsps` | 868 |
 | `BeckyHomeFirstSexStep1Text` | `modules/events/becky/becky_home_chain_text.qsps` | 47 |
-| `BeckyHomeFirstSexStep2` | `modules/events/becky/becky_home_chain.qsps` | 940 |
+| `BeckyHomeFirstSexStep2` | `modules/events/becky/becky_home_chain.qsps` | 888 |
 | `BeckyHomeFirstSexStep2Text` | `modules/events/becky/becky_home_chain_text.qsps` | 51 |
-| `BeckyHomeFirstSexStep3` | `modules/events/becky/becky_home_chain.qsps` | 959 |
+| `BeckyHomeFirstSexStep3` | `modules/events/becky/becky_home_chain.qsps` | 907 |
 | `BeckyHomeFirstSexStep3Text` | `modules/events/becky/becky_home_chain_text.qsps` | 55 |
 | `BeckyHomeFront` | `modules/events/becky/becky_home_chain.qsps` | 41 |
 | `BeckyHomeFrontAfterInga` | `modules/events/becky/becky_home_chain.qsps` | 119 |
@@ -2776,8 +2767,8 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaTalkAboutAmandaLegareMajorText` | `modules/events/amanda/legare/amanda_legare_major_aftermath_text.qsps` | 94 |
 | `MelissaTalkAboutAmandaLegarePrivate` | `modules/events/amanda/legare/amanda_legare_private_aftermath.qsps` | 250 |
 | `MelissaTalkAboutAmandaLegarePrivateText` | `modules/events/amanda/legare/amanda_legare_private_aftermath_text.qsps` | 81 |
-| `MelissaTalkAboutBeckyDinner` | `modules/events/becky/becky_home_chain.qsps` | 862 |
-| `MelissaTalkAboutBeckyDinnerText` | `modules/events/becky/becky_dinner_text.qsps` | 282 |
+| `MelissaTalkAboutBeckyDinner` | `modules/events/becky/becky_home_chain.qsps` | 810 |
+| `MelissaTalkAboutBeckyDinnerText` | `modules/events/becky/becky_dinner_text.qsps` | 304 |
 | `MelissaTalkAboutLegare` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 222 |
 | `MelissaTalkAboutLegareAction` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 303 |
 | `MelissaTalkAboutLegareActionText` | `modules/events/amanda/legare/amanda_legare_talk_text.qsps` | 75 |

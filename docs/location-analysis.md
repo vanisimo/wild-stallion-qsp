@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 476
-- Locations: 3516
-- Locations with direct incoming calls: 3010
+- Locations: 3507
+- Locations with direct incoming calls: 3001
 - Locations without direct incoming calls: 506
 - Review candidates without direct incoming calls: 182
 - Classified entry/helper locations without direct incoming calls: 324
@@ -27,7 +27,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
 | `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 254 | `modules/events` |
-| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 990 | `modules/events` |
+| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 938 | `modules/events` |
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 7 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
@@ -534,10 +534,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1511 |
-| `ShowLocationScreenTitle` | 650 |
-| `SceneShowVisual` | 590 |
+| `ActUiPrepare` | 1498 |
+| `ShowLocationScreenTitle` | 646 |
 | `Menu.AddModule` | 590 |
+| `SceneShowVisual` | 590 |
 | `MenuUiAdd` | 582 |
 | `EnsureGirlData` | 208 |
 | `NormalizeGirlKey` | 201 |
@@ -555,10 +555,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Market` | 69 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `Menu.AddCondition` | 44 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 
