@@ -2,7 +2,7 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 476
+- Source files: 477
 - Locations: 3507
 - Locations with direct incoming calls: 3001
 - Locations without direct incoming calls: 506
@@ -534,10 +534,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1498 |
+| `ActUiPrepare` | 1500 |
 | `ShowLocationScreenTitle` | 646 |
+| `SceneShowVisual` | 591 |
 | `Menu.AddModule` | 590 |
-| `SceneShowVisual` | 590 |
 | `MenuUiAdd` | 582 |
 | `EnsureGirlData` | 208 |
 | `NormalizeGirlKey` | 201 |
@@ -545,18 +545,18 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernMain` | 164 |
 | `ShowGirlSidebar` | 102 |
 | `Menu.Create` | 98 |
-| `Menu.Destroy` | 92 |
 | `RegisterSex` | 92 |
-| `ShowImage` | 88 |
+| `Menu.Destroy` | 92 |
 | `PrintMainP` | 87 |
+| `ShowImage` | 87 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 76 |
 | `Market` | 69 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
 | `SexSceneMain` | 44 |
 

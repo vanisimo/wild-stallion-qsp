@@ -2,7 +2,7 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 476
+- Source files: 477
 - Locations: 3507
 
 ## modules/actions
@@ -1593,19 +1593,19 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyOtkroven45` | `modules/events/becky/becky_events.qsps` | 42 |
 | `BeckyOtkrovenNegativeLowFriend` | `modules/events/becky/becky_events.qsps` | 55 |
 | `BeckySandraChurchGearGossipCanHear` | `modules/events/visits/sunday_shop_visits.qsps` | 264 |
-| `BeckyShopBackroomPeek` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 360 |
-| `BeckyShopBackroomPeekAnyClientAvailable` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 138 |
-| `BeckyShopBackroomPeekApplyEffects` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 426 |
-| `BeckyShopBackroomPeekBaseEligible` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 7 |
-| `BeckyShopBackroomPeekClientEligible` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 229 |
-| `BeckyShopBackroomPeekClientSeenToday` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 126 |
-| `BeckyShopBackroomPeekDebugPanel` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 576 |
-| `BeckyShopBackroomPeekDebugSimulate` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 537 |
-| `BeckyShopBackroomPeekPickClient` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 273 |
-| `BeckyShopBackroomPeekPoolTry` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 326 |
-| `BeckyShopBackroomPeekShowImage` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 532 |
-| `BeckyShopBackroomPeekText` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 499 |
-| `BeckyShopBackroomPeekTryOffer` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 43 |
+| `BeckyShopBackroomPeek` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 304 |
+| `BeckyShopBackroomPeekAnyClientAvailable` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 139 |
+| `BeckyShopBackroomPeekApplyEffects` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 370 |
+| `BeckyShopBackroomPeekBaseEligible` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 8 |
+| `BeckyShopBackroomPeekClientEligible` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 194 |
+| `BeckyShopBackroomPeekClientSeenToday` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 127 |
+| `BeckyShopBackroomPeekDebugPanel` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 460 |
+| `BeckyShopBackroomPeekDebugSimulate` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 421 |
+| `BeckyShopBackroomPeekPickClient` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 224 |
+| `BeckyShopBackroomPeekPoolTry` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 270 |
+| `BeckyShopBackroomPeekShowImage` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 411 |
+| `BeckyShopBackroomPeekText` | `modules/events/becky/becky_shop_backroom_peek_text.qsps` | 8 |
+| `BeckyShopBackroomPeekTryOffer` | `modules/events/becky/becky_shop_backroom_peek.qsps` | 44 |
 | `BeckyTalkDexterityOilText` | `modules/events/becky/becky_talk_text.qsps` | 132 |
 | `BeckyTalkEddieGeorgText` | `modules/events/becky/becky_talk_text.qsps` | 45 |
 | `BeckyTalkEddieOutragedText` | `modules/events/eddie/eddie_arc_text.qsps` | 22 |
