@@ -1,7 +1,8 @@
 ! ================================================
 ! FILE: modules/locations/shops/becky_house.qsps
 ! MODULE: locations
-! Точки входа в дом Бекки (обёртки над becky_home_chain)
+! [AI-WORKED] Текст переработан / дополнен ассистентом 19.10.2026
+! Точки входа в дом Бекки (обёртки над becky_home_chain и спальня Инги)
 ! ================================================
 
 #BeckyHouse
@@ -9,8 +10,8 @@
 ---
 
 #IngaRoom
-    ! Встречи Инги и Лукаса наедине: Только четверг (week = 4) вечером (time >= 3)
-    if week = 4 and time >= 3 and day <> IngaLucasSoloDay:
+    ! Встречи Инги и Лукаса наедине: Только четверг (week = 4) ночью (time = 5)
+    if week = 4 and time = 5 and day <> IngaLucasSoloDay:
         if IngaLucasSoloAllowed = 1 or IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
             gt 'IngaLucasSoloEncounter'
         end
@@ -20,7 +21,7 @@
 
     gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ'
 
-    if time >= 3 or IngaDanceEnded = 1:
+    if time >= 3 or IngaDanceEnded = 1 or time = 5:
         $GirlLocation['inga'] = 'IngaRoom'
     end
 
@@ -29,7 +30,7 @@
     if LOC('IngaRoomIntroText') = 1:
         gs 'IngaRoomIntroText'
     else:
-        *p 'Небольшая комната над лавкой. Здесь Инга прячется от матери и Лукаса — когда выбирает тебя.'
+        *p 'Небольшая комната под самой крышей лавки. Здесь Инга прячется от матери и Лукаса — когда выбирает тебя.'
     end
 
     *pl ' '
@@ -42,8 +43,8 @@
             act $ActUiLabel, $ActUiIconPath:
                 gt 'IngaRoomFirstSex'
             end
-        elseif (IngaRoomFirstSexDone = 1 or IngaBackroomSex = 1) and LOC('SexSceneStart') = 1 and time >= 3:
-            gs 'ActUiPrepare', 'Провести вечер с Ингой', 'intim'
+        elseif (IngaRoomFirstSexDone = 1 or IngaBackroomSex = 1) and LOC('SexSceneStart') = 1:
+            gs 'ActUiPrepare', 'Провести ночь с Ингой', 'intim'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'SexSceneStart', 'inga', 'IngaRoomAfterSex', 'inga_repeat'
             end
@@ -114,6 +115,8 @@
                     end
                 end
             end
+        end
+
         if IngaLucasSoloAllowed = 1 and IngaGuardLadderDone = 0 and IngaNpcPath < 3:
             gs 'ActUiPrepare', 'Запретить встречи с Лукасом', 'talk'
             act $ActUiLabel, $ActUiIconPath:
@@ -127,14 +130,26 @@
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Спуститься в лавку', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'BeckyShop'
-    end
+    if time = 5:
+        gs 'ActUiPrepare', 'Переночевать с Ингой до утра', 'sleep'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaRoomSleepUntilMorning'
+        end
 
-    gs 'ActUiPrepare', 'Выйти на рынок', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'Market'
+        gs 'ActUiPrepare', 'Спуститься через окно на рынок', 'floor'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Market'
+        end
+    else:
+        gs 'ActUiPrepare', 'Спуститься в лавку', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyShop'
+        end
+
+        gs 'ActUiPrepare', 'Выйти на рынок', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Market'
+        end
     end
 ---
 
@@ -164,8 +179,60 @@
         end
     end
 
-    gs 'ActUiPrepare', 'Остаться', 'return'
+    gs 'ActUiPrepare', 'Остаться в комнате', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IngaRoom'
+    end
+---
+
+#IngaRoomNightClimb
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/room/night_window_climb', 'ОКНО В КОМНАТУ ИНГИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ОКНО В КОМНАТУ ИНГИ'
+
+    *pl 'Ты осторожно поднимаешься по скрипучим перекладинам приставной деревянной лестницы под самую крышу лавки Блэнкеншип.'
+    *pl 'Рыночная площадь внизу погружена в ночную тьму — город спит, лишь вдалеке мерцает факел ночного дозора.'
+    *pl ' '
+    *pl 'Ты тихонько постукиваешь костяшками пальцев по деревянной раме. Спустя мгновение занавеска отдёргивается: в проёме появляется Инга в тонкой льняной сорочке, с распущенными рыжими волосами, спадающими на обнажённые плечи.'
+    *pl ' '
+    *pl 'Девушка испуганно вздрагивает, но, узнав тебя, облегчённо выдыхает и торопливо отпирает тугую створку окна:'
+    *pl ' '
+    *pl '— Стефан!.. — горячим шёпотом произносит она, протягивая тебе тёплые руки и помогая перелезть через широкий подоконник. — Мама уехала с обозом на дальние мельницы за мукой и вернётся только к утру... Я так ждала тебя! Быстрее залезай внутрь!'
+    *pl ' '
+    *pl 'Ты перемахиваешь через раму, плотно притворяешь ставни и оказываешься в уютном полумраке девичьей спальни, пахнущей сушёными травами и девичьим теплом.'
+
+    IngaNightStefanDone = 1
+    CityRumorReady['inga_window_night'] = 1
+    IngaRumorDays_Window = 3
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Войти в комнату к Инге', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaRoom'
+    end
+---
+
+#IngaRoomSleepUntilMorning
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/room/morning_after', 'УТРО В ПОСТЕЛИ С ИНГОЙ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'УТРО В КОМНАТЕ ИНГИ'
+
+    *pl 'Ты просыпаешься от первых лучей солнца, пробивающихся сквозь щели в деревянных ставнях.'
+    *pl 'Рядом на мягкой перине мирно посапывает Инга, доверчиво прижавшись к твоему плечу. Её рыжие волосы разметались по подушке, а губы тронуты сонной, безмятежной улыбкой.'
+    *pl ' '
+    *pl 'Пора незаметно выбираться наружу, пока хозяйка Бекки не вернулась с ферм, а город не проснулся окончательно.'
+    *pl 'Ты тихо одеваешься, нежно целуешь сонную девушку в тёплую щёку и спускаешься через окно в предрассветную прохладу рынка.'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Начать новый день', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'NextDay'
     end
 ---

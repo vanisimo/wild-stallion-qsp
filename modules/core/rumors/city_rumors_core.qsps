@@ -15,6 +15,11 @@
     IngaRumorDays_Lucas = 0
     IngaRumorDays_Stefan = 0
     IngaRumorDays_Guard = 0
+    IngaRumorDays_Window = 0
+    IngaRumorDays_LucasRoom = 0
+    IngaRumorDays_GuardBackroom = 0
+    IngaRumorDays_GuardMmj = 0
+    IngaRumorDays_AnalPurity = 0
 ---
 
 #CityRumorsResetDaily
@@ -44,6 +49,41 @@
         IngaRumorDays_Guard -= 1
         if IngaRumorDays_Guard = 0:
             CityRumorReady['inga_guard'] = 0
+        end
+    end
+
+    if IngaRumorDays_Window > 0:
+        IngaRumorDays_Window -= 1
+        if IngaRumorDays_Window = 0:
+            CityRumorReady['inga_window_night'] = 0
+        end
+    end
+
+    if IngaRumorDays_LucasRoom > 0:
+        IngaRumorDays_LucasRoom -= 1
+        if IngaRumorDays_LucasRoom = 0:
+            CityRumorReady['inga_lucas_thursday'] = 0
+        end
+    end
+
+    if IngaRumorDays_GuardBackroom > 0:
+        IngaRumorDays_GuardBackroom -= 1
+        if IngaRumorDays_GuardBackroom = 0:
+            CityRumorReady['inga_guard_backroom'] = 0
+        end
+    end
+
+    if IngaRumorDays_GuardMmj > 0:
+        IngaRumorDays_GuardMmj -= 1
+        if IngaRumorDays_GuardMmj = 0:
+            CityRumorReady['inga_mmj_guard_stefan'] = 0
+        end
+    end
+
+    if IngaRumorDays_AnalPurity > 0:
+        IngaRumorDays_AnalPurity -= 1
+        if IngaRumorDays_AnalPurity = 0:
+            CityRumorReady['inga_temple_purity'] = 0
         end
     end
 ---
@@ -141,6 +181,31 @@
     elseif (CityRumorReady['inga_guard'] = 1 or IngaRumorDays_Guard > 0) and CityRumorsHeardToday['inga_guard'] = 0:
         $CityRumorPickedKey = 'inga_guard'
         CityRumorReady['inga_guard'] = 0
+
+    ! 11. Инга: ночной визит Стефана через окно (вторник)
+    elseif (CityRumorReady['inga_window_night'] = 1 or IngaRumorDays_Window > 0) and CityRumorsHeardToday['inga_window_night'] = 0:
+        $CityRumorPickedKey = 'inga_window_night'
+        CityRumorReady['inga_window_night'] = 0
+
+    ! 12. Инга: четверговые ночные визиты Лукаса в комнату
+    elseif (CityRumorReady['inga_lucas_thursday'] = 1 or IngaRumorDays_LucasRoom > 0) and CityRumorsHeardToday['inga_lucas_thursday'] = 0:
+        $CityRumorPickedKey = 'inga_lucas_thursday'
+        CityRumorReady['inga_lucas_thursday'] = 0
+
+    ! 13. Инга: субботние визиты сержанта Грюна в подсобку
+    elseif (CityRumorReady['inga_guard_backroom'] = 1 or IngaRumorDays_GuardBackroom > 0) and CityRumorsHeardToday['inga_guard_backroom'] = 0:
+        $CityRumorPickedKey = 'inga_guard_backroom'
+        CityRumorReady['inga_guard_backroom'] = 0
+
+    ! 14. Инга: совместная подсобка со Стефаном и Грюном (ММЖ)
+    elseif (CityRumorReady['inga_mmj_guard_stefan'] = 1 or IngaRumorDays_GuardMmj > 0) and CityRumorsHeardToday['inga_mmj_guard_stefan'] = 0:
+        $CityRumorPickedKey = 'inga_mmj_guard_stefan'
+        CityRumorReady['inga_mmj_guard_stefan'] = 0
+
+    ! 15. Инга: чистота Ильматера, порошок Таро и анальная уступка со Стефаном
+    elseif (CityRumorReady['inga_temple_purity'] = 1 or IngaRumorDays_AnalPurity > 0) and CityRumorsHeardToday['inga_temple_purity'] = 0:
+        $CityRumorPickedKey = 'inga_temple_purity'
+        CityRumorReady['inga_temple_purity'] = 0
     end
 
     ! -----------------------------------------------------------
@@ -195,18 +260,43 @@
             CityRumorAvailCount += 1
         end
 
-        if IngaRumorDays_Lucas > 0 and CityRumorsHeardToday['inga_lucas'] = 0:
+        if (IngaRumorDays_Lucas > 0 or IngaLucasRelation >= 1) and CityRumorsHeardToday['inga_lucas'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'inga_lucas'
             CityRumorAvailCount += 1
         end
 
-        if IngaRumorDays_Stefan > 0 and CityRumorsHeardToday['inga_stefan'] = 0:
+        if (IngaRumorDays_Stefan > 0 or IngaBackroomSex = 1) and CityRumorsHeardToday['inga_stefan'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'inga_stefan'
             CityRumorAvailCount += 1
         end
 
-        if IngaRumorDays_Guard > 0 and CityRumorsHeardToday['inga_guard'] = 0:
+        if (IngaRumorDays_Guard > 0 or IngaGuardResolved > 0) and CityRumorsHeardToday['inga_guard'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'inga_guard'
+            CityRumorAvailCount += 1
+        end
+
+        if (IngaRumorDays_Window > 0 or IngaNightStefanDone = 1) and CityRumorsHeardToday['inga_window_night'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'inga_window_night'
+            CityRumorAvailCount += 1
+        end
+
+        if (IngaRumorDays_LucasRoom > 0 or IngaLucasSoloCount >= 1) and CityRumorsHeardToday['inga_lucas_thursday'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'inga_lucas_thursday'
+            CityRumorAvailCount += 1
+        end
+
+        if (IngaRumorDays_GuardBackroom > 0 or (IngaGuardLadderStage >= 1 and IngaGuardBribedExit = 0)) and CityRumorsHeardToday['inga_guard_backroom'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'inga_guard_backroom'
+            CityRumorAvailCount += 1
+        end
+
+        if (IngaRumorDays_GuardMmj > 0 or IngaGuardMmjStage >= 1 or IngaGuardMmjDone = 1) and CityRumorsHeardToday['inga_mmj_guard_stefan'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'inga_mmj_guard_stefan'
+            CityRumorAvailCount += 1
+        end
+
+        if (IngaRumorDays_AnalPurity > 0 or IngaStefanAnalDone = 1) and CityRumorsHeardToday['inga_temple_purity'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'inga_temple_purity'
             CityRumorAvailCount += 1
         end
 
@@ -228,7 +318,7 @@
     CityRumorTotal += 1
 
     ! Влияние сплетен на тревогу Сандры (меньше надлома, затухание при росте разврата)
-    if $CityRumorPickedKey = 'tavern_scandal' or $CityRumorPickedKey = 'kitchen_sandra' or $CityRumorPickedKey = 'girls_behavior' or $CityRumorPickedKey = 'legare_amanda' or $CityRumorPickedKey = 'inga_stefan':
+    if $CityRumorPickedKey = 'tavern_scandal' or $CityRumorPickedKey = 'kitchen_sandra' or $CityRumorPickedKey = 'girls_behavior' or $CityRumorPickedKey = 'legare_amanda' or $CityRumorPickedKey = 'inga_stefan' or $CityRumorPickedKey = 'inga_window_night' or $CityRumorPickedKey = 'inga_mmj_guard_stefan':
         if CityRumorsDailyConcernGiven <> day:
             CityRumorsDailyConcernGiven = day
             if FamilyCorruptionStage < 4:

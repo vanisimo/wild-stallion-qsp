@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 480
-- Locations: 3601
-- Locations with direct incoming calls: 3090
+- Locations: 3603
+- Locations with direct incoming calls: 3092
 - Locations without direct incoming calls: 511
 - Review candidates without direct incoming calls: 185
 - Classified entry/helper locations without direct incoming calls: 326
@@ -28,7 +28,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
 | `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 254 | `modules/events` |
 | `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 938 | `modules/events` |
-| `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 7 | `modules/locations` |
+| `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 8 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
 | `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 174 | `modules/events` |
@@ -149,10 +149,10 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IngaBackroomFirstSexLaunch` | `modules/events/inga/inga_romance.qsps` | 162 | `modules/events` |
 | `IngaDanceMeet` | `modules/events/inga/inga_dance.qsps` | 28 | `modules/events` |
 | `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 282 | `modules/events` |
-| `IngaGuardSaturdayAfterInterrupt` | `modules/events/quests/inga_guard_quest.qsps` | 873 | `modules/events` |
-| `IngaGuardSaturdayInterrupt` | `modules/events/quests/inga_guard_quest.qsps` | 869 | `modules/events` |
+| `IngaGuardSaturdayAfterInterrupt` | `modules/events/quests/inga_guard_quest.qsps` | 879 | `modules/events` |
+| `IngaGuardSaturdayInterrupt` | `modules/events/quests/inga_guard_quest.qsps` | 875 | `modules/events` |
 | `IngaLucasCucumberShop` | `modules/events/inga/inga_lucas_arc.qsps` | 309 | `modules/events` |
-| `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 141 | `modules/locations` |
+| `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 156 | `modules/locations` |
 | `IntimScene` | `modules/core/girls/girl_intim_menu.qsps` | 146 | `modules/core` |
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 539 | `modules/locations` |
 | `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 544 | `modules/locations` |
@@ -290,11 +290,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `DebugBirthCertificateArcPanel` | `modules/debug/debug_birth_certificate_arc.qsps` | 7 | `entry/helper` |
 | `DebugCheckLoc` | `modules/core/system/debug.qsps` | 12 | `entry/helper` |
 | `DebugGiftPanel` | `modules/debug/debug_gifts.qsps` | 7 | `entry/helper` |
-| `DebugIntimacyArcReset` | `modules/debug/debug_intimacy_arc.qsps` | 176 | `entry/helper` |
+| `DebugIntimacyArcReset` | `modules/debug/debug_intimacy_arc.qsps` | 178 | `entry/helper` |
 | `DebugIntimacyArcSmokeTest` | `modules/debug/debug_intimacy_arc_smoke.qsps` | 7 | `entry/helper` |
 | `DebugIntimacyJumpAmandaRepeat` | `modules/debug/debug_amanda_arc.qsps` | 661 | `entry/helper` |
-| `DebugIntimacyJumpGroups` | `modules/debug/debug_intimacy_arc.qsps` | 485 | `entry/helper` |
-| `DebugIntimacyJumpMelissaRepeat` | `modules/debug/debug_intimacy_arc.qsps` | 423 | `entry/helper` |
+| `DebugIntimacyJumpGroups` | `modules/debug/debug_intimacy_arc.qsps` | 487 | `entry/helper` |
+| `DebugIntimacyJumpMelissaRepeat` | `modules/debug/debug_intimacy_arc.qsps` | 425 | `entry/helper` |
 | `DebugKnowledgePanel` | `modules/debug/debug_knowledge_panel.qsps` | 11 | `entry/helper` |
 | `DebugKnowledgeSeedHall` | `modules/debug/debug_knowledge_panel.qsps` | 68 | `entry/helper` |
 | `DebugMayorArcPanel` | `modules/debug/debug_mayor_arc.qsps` | 7 | `entry/helper` |
@@ -402,7 +402,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IngaGuardComplaintSecondIntroText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 174 | `entry/helper` |
 | `IngaGuardMmjVisit2_1Text` | `modules/events/quests/inga_guard_quest_text.qsps` | 281 | `entry/helper` |
 | `IngaGuardMmjVisit3_1Text` | `modules/events/quests/inga_guard_quest_text.qsps` | 305 | `entry/helper` |
-| `IngaGuardSaturdayDebugReset` | `modules/events/quests/inga_guard_quest.qsps` | 877 | `entry/helper` |
+| `IngaGuardSaturdayDebugReset` | `modules/events/quests/inga_guard_quest.qsps` | 883 | `entry/helper` |
 | `IngaLucasThreesomeDpStart` | `modules/events/inga/inga_lucas_arc.qsps` | 304 | `entry/helper` |
 | `IngaRoomFirstSexCanStart` | `modules/events/inga/inga_room_first_sex.qsps` | 7 | `entry/helper` |
 | `InitGeorgett` | `modules/npc/port/georgett.qsps` | 6 | `entry/helper` |
@@ -539,31 +539,31 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1559 |
-| `ShowLocationScreenTitle` | 689 |
-| `SceneShowVisual` | 640 |
+| `ActUiPrepare` | 1565 |
+| `ShowLocationScreenTitle` | 691 |
+| `SceneShowVisual` | 642 |
 | `Menu.AddModule` | 591 |
 | `MenuUiAdd` | 583 |
-| `EnsureGirlData` | 231 |
+| `EnsureGirlData` | 232 |
 | `ClampGirlSocialStats` | 203 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 164 |
 | `ShowGirlSidebar` | 102 |
-| `RegisterSex` | 98 |
 | `Menu.Create` | 98 |
+| `RegisterSex` | 98 |
 | `Menu.Destroy` | 92 |
+| `Market` | 87 |
 | `PrintMainP` | 87 |
 | `ShowImage` | 86 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 79 |
-| `Market` | 79 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
-| `BeckyShop` | 46 |
 | `SaveLastHallEvent` | 45 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 
