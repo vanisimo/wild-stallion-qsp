@@ -153,10 +153,6 @@
         exit
     end
 
-    if IngaLucasCucumberReady = 0:
-        exit
-    end
-
     if IngaLucasThreesomeCount < 2:
         exit
     end
@@ -286,15 +282,11 @@
         exit
     end
 
-    if IngaLucasCucumberReady = 0:
-        exit
-    end
-
     if IngaLucasThreesomeCount < 2:
         exit
     end
 
-    if IngaLucasAnalDone = 0:
+    if analvirgin['inga'] = 1:
         exit
     end
 
@@ -407,5 +399,350 @@
     gs 'ActUiPrepare', 'В комнату Инги', 'guard'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IngaRoom'
+    end
+---
+
+! ================================================
+! ВСТРЕЧИ ИНГИ И ЛУКАСА НАЕДИНЕ (БЕЗ ГГ / ПОДГЛЯДЫВАНИЕ)
+! ================================================
+
+#LucasDanceApproachStart
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/lucas_dance_approach', 'ЛУКАС НА ТАНЦАХ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ТАНЦЫ: РАЗГОВОР С ЛУКАСОМ'
+
+    if IngaLucasThreesomeCount >= 1:
+        $IngaLucasBranch = 'mixed'
+    else:
+        $IngaLucasBranch = 'romance'
+    end
+
+    if LOC('LucasDanceApproachStartText') = 1:
+        gs 'LucasDanceApproachStartText', $IngaLucasBranch
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Разрешить встречи наедине', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'LucasDanceApproachAgree'
+    end
+
+    gs 'ActUiPrepare', 'Отказать и прогнать', 'refuse'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'LucasDanceApproachRefuse'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к празднику', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#LucasDanceApproachAgree
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/lucas_dance_agree', 'СОГЛАСИЕ СТЕФАНА', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ТАНЦЫ: СОГЛАСИЕ СТЕФАНА'
+
+    if IngaLucasThreesomeCount >= 1:
+        $IngaLucasBranch = 'mixed'
+    else:
+        $IngaLucasBranch = 'romance'
+    end
+
+    if LOC('LucasDanceApproachAgreeText') = 1:
+        gs 'LucasDanceApproachAgreeText', $IngaLucasBranch
+    end
+
+    IngaLucasSoloAllowed = 1
+    IngaLucasDanceAskedDay = day
+    love['inga'] += 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#LucasDanceApproachRefuse
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/lucas_dance_refuse', 'ОТКАЗ СТЕФАНА', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ТАНЦЫ: ОТКАЗ СТЕФАНА'
+
+    if LOC('LucasDanceApproachRefuseText') = 1:
+        gs 'LucasDanceApproachRefuseText'
+    end
+
+    IngaLucasSoloAllowed = 0
+    IngaLucasSoloDenied = 1
+    IngaLucasDanceAskedDay = day
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Вернуться к танцам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
+    end
+---
+
+#IngaLucasSoloEncounter
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/inga_lucas_solo_door', 'ГОЛОСА ЗА ДВЕРЬЮ ИНГИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'КОРИДОР: ГОЛОСА ЗА ДВЕРЬЮ'
+
+    if LOC('IngaLucasSoloEncounterText') = 1:
+        gs 'IngaLucasSoloEncounterText'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Подглядывать в щёлку двери', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaLucasSoloPeepScene'
+    end
+
+    gs 'ActUiPrepare', 'Толкнуть дверь и войти', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaLucasSoloEnterScene'
+    end
+
+    gs 'ActUiPrepare', 'Не мешать им и уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        IngaLucasSoloDay = day
+        gt 'BeckyShop'
+    end
+---
+
+#IngaLucasSoloPeepScene
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/inga_lucas_solo_peep_1', 'ПОДГЛЯДЫВАНИЕ: ЛАСКИ И ВОСХИЩЕНИЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДГЛЯДЫВАНИЕ: ЛАСКИ И ВОСХИЩЕНИЕ'
+
+    if IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
+        $IngaLucasBranch = 'grun'
+    elseif IngaLucasThreesomeCount >= 1:
+        $IngaLucasBranch = 'mixed'
+    else:
+        $IngaLucasBranch = 'romance'
+    end
+
+    if LOC('IngaLucasSoloPeep1Text') = 1:
+        gs 'IngaLucasSoloPeep1Text', $IngaLucasBranch
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Смотреть дальше: нежные ласки', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaLucasSoloPeepOral'
+    end
+
+    gs 'ActUiPrepare', 'Толкнуть дверь и войти', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaLucasSoloEnterScene'
+    end
+
+    gs 'ActUiPrepare', 'Тихо уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        IngaLucasSoloDay = day
+        gt 'BeckyShop'
+    end
+---
+
+#IngaLucasSoloPeepOral
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/inga_lucas_solo_peep_oral', 'ПОДГЛЯДЫВАНИЕ: ОРАЛЬНЫЕ ЛАСКИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДГЛЯДЫВАНИЕ: ОРАЛЬНЫЕ ЛАСКИ'
+
+    if IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
+        $IngaLucasBranch = 'grun'
+    elseif IngaLucasThreesomeCount >= 1:
+        $IngaLucasBranch = 'mixed'
+    else:
+        $IngaLucasBranch = 'romance'
+    end
+
+    if LOC('IngaLucasSoloPeepOralText') = 1:
+        gs 'IngaLucasSoloPeepOralText', $IngaLucasBranch
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Смотреть дальше: близость на постели', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaLucasSoloPeepSex'
+    end
+
+    gs 'ActUiPrepare', 'Толкнуть дверь и войти', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaLucasSoloEnterScene'
+    end
+
+    gs 'ActUiPrepare', 'Тихо уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        IngaLucasSoloDay = day
+        gt 'BeckyShop'
+    end
+---
+
+#IngaLucasSoloPeepSex
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/inga_lucas_solo_peep_sex', 'ПОДГЛЯДЫВАНИЕ: СОИТИЕ НА ПРОСТЫНЯХ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДГЛЯДЫВАНИЕ: СОИТИЕ НА ПРОСТЫНЯХ'
+
+    if IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
+        $IngaLucasBranch = 'grun'
+    elseif IngaLucasThreesomeCount >= 1:
+        $IngaLucasBranch = 'mixed'
+    else:
+        $IngaLucasBranch = 'romance'
+    end
+
+    if LOC('IngaLucasSoloPeepSexText') = 1:
+        gs 'IngaLucasSoloPeepSexText', $IngaLucasBranch
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Смотреть кульминацию', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        if rand(0, 1) = 1:
+            gt 'IngaLucasSoloFinishInside'
+        else:
+            gt 'IngaLucasSoloFinishMouth'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Толкнуть дверь и войти', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaLucasSoloEnterScene'
+    end
+
+    gs 'ActUiPrepare', 'Тихо уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        IngaLucasSoloDay = day
+        gt 'BeckyShop'
+    end
+---
+
+#IngaLucasSoloFinishInside
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/inga_lucas_solo_finish_inside', 'КУЛЬМИНАЦИЯ В ОБЪЯТИЯХ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДГЛЯДЫВАНИЕ: КУЛЬМИНАЦИЯ В ОБЪЯТИЯХ'
+
+    if IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
+        $IngaLucasBranch = 'grun'
+    elseif IngaLucasThreesomeCount >= 1:
+        $IngaLucasBranch = 'mixed'
+    else:
+        $IngaLucasBranch = 'romance'
+    end
+
+    if LOC('IngaLucasSoloFinishInsideText') = 1:
+        gs 'IngaLucasSoloFinishInsideText', $IngaLucasBranch
+    end
+
+    sluttiness['inga'] += 1
+    IngaLucasSoloCount += 1
+    IngaLucasSoloDay = day
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дождаться конца и тихо уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
+---
+
+#IngaLucasSoloFinishMouth
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/inga_lucas_solo_finish_mouth', 'ОРАЛЬНЫЙ ФИНАЛ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДГЛЯДЫВАНИЕ: ОРАЛЬНЫЙ ФИНАЛ'
+
+    if IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
+        $IngaLucasBranch = 'grun'
+    elseif IngaLucasThreesomeCount >= 1:
+        $IngaLucasBranch = 'mixed'
+    else:
+        $IngaLucasBranch = 'romance'
+    end
+
+    if LOC('IngaLucasSoloFinishMouthText') = 1:
+        gs 'IngaLucasSoloFinishMouthText', $IngaLucasBranch
+    end
+
+    sluttiness['inga'] += 1
+    IngaLucasSoloCount += 1
+    IngaLucasSoloDay = day
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дождаться конца и тихо уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
+---
+
+#IngaLucasSoloEnterScene
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/inga_lucas_solo_enter', 'СТЕФАН ВХОДИТ В КОМНАТУ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ: ПОЯВЛЕНИЕ СТЕФАНА'
+
+    if IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
+        $IngaLucasBranch = 'grun'
+    elseif IngaLucasThreesomeCount >= 1:
+        $IngaLucasBranch = 'mixed'
+    else:
+        $IngaLucasBranch = 'romance'
+    end
+
+    if LOC('IngaLucasSoloEnterText') = 1:
+        gs 'IngaLucasSoloEnterText', $IngaLucasBranch
+    end
+
+    IngaLucasSoloDay = day
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Отпустить Лукаса и остаться с Ингой', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaRoom'
+    end
+
+    gs 'ActUiPrepare', 'Спуститься вниз в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
     end
 ---

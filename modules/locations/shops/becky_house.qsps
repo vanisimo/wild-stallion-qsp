@@ -9,6 +9,13 @@
 ---
 
 #IngaRoom
+    ! Встречи Инги и Лукаса наедине: Только четверг (week = 4) вечером (time >= 3)
+    if week = 4 and time >= 3 and day <> IngaLucasSoloDay:
+        if IngaLucasSoloAllowed = 1 or IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
+            gt 'IngaLucasSoloEncounter'
+        end
+    end
+
     cls
 
     gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ'
@@ -71,11 +78,20 @@
             end
         end
 
-        if LOC('IngaLucasAnalCanStart') = 1:
+        if analvirgin['inga'] = 1 and LOC('IngaStefanAnalCanStart') = 1:
+            gs 'IngaStefanAnalCanStart'
+
+            if IngaStefanAnalCanStart = 1:
+                gs 'ActUiPrepare', 'Предложить анальную близость', 'intim'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'IngaStefanAnalStart'
+                end
+            end
+        elseif analvirgin['inga'] = 1 and LOC('IngaLucasAnalCanStart') = 1:
             gs 'IngaLucasAnalCanStart'
 
             if IngaLucasAnalCanStart = 1:
-                gs 'ActUiPrepare', 'Предложить анальную близость', 'intim'
+                gs 'ActUiPrepare', 'Анальная близость (с Лукасом)', 'intim'
                 act $ActUiLabel, $ActUiIconPath:
                     gt 'IngaLucasAnalSceneStart'
                 end
@@ -97,6 +113,12 @@
                         gt 'GroupSexIngaLucasDpStart'
                     end
                 end
+            end
+        if IngaLucasSoloAllowed = 1 and IngaGuardLadderDone = 0 and IngaNpcPath < 3:
+            gs 'ActUiPrepare', 'Запретить встречи с Лукасом', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                IngaLucasSoloAllowed = 0
+                gt 'IngaRoom'
             end
         end
     end

@@ -338,7 +338,9 @@
 ! ================================================
 
 #IngaGuardRegularSolo
-    if analvirgin['inga'] = 0 and sluttiness['inga'] >= 50:
+    if analvirgin['inga'] = 1 and (IngaGuardLadderDone = 1 or sluttiness['inga'] >= 35):
+        gt 'IngaGuardFirstAnal_1'
+    elseif analvirgin['inga'] = 0 and sluttiness['inga'] >= 50:
         gt 'IngaGuardSoloAnal_1'
     else:
         gt 'IngaGuardSoloRegular_1'
@@ -398,6 +400,74 @@
 
     sluttiness['inga'] += 2
     IngaNpcPath += 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#IngaGuardFirstAnal_1
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_first_anal_intro', 'ГРЮН УГОВАРИВАЕТ ИНГУ НА АНАЛ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: НОВАЯ ПРОСЬБА СТРАЖНИКА'
+
+    if LOC('IngaGuardFirstAnal_1Text') = 1:
+        gs 'IngaGuardFirstAnal_1Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardFirstAnal_2'
+    end
+---
+
+#IngaGuardFirstAnal_2
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_first_anal_action', 'ПЕРВЫЙ АНАЛ НА МЕШКАХ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ПЕРВЫЙ АНАЛ'
+
+    if LOC('IngaGuardFirstAnal_2Text') = 1:
+        gs 'IngaGuardFirstAnal_2Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Финал', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardFirstAnal_3'
+    end
+---
+
+#IngaGuardFirstAnal_3
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_first_anal_finish', 'СЕРЖАНТ БЛАГОДАРИТ ИНГУ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ПОСЛЕ ПЕРВОГО АНАЛА'
+
+    if LOC('IngaGuardFirstAnal_3Text') = 1:
+        gs 'IngaGuardFirstAnal_3Text'
+    end
+
+    analvirgin['inga'] = 0
+    IngaGuardAnalDone = 1
+    sluttiness['inga'] += 5
+    IngaNpcPath += 2
+    TavernScandal += 1
+    gs 'RegisterSex', 'inga', 'anal', 0, 1
     gs 'ClampGirlSocialStats', 'inga'
 
     *pl ' '
