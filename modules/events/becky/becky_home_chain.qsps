@@ -1,6 +1,7 @@
-﻿! ================================================
+! ================================================
 ! FILE: modules/events/becky/becky_home_chain.qsps
 ! MODULE: events/becky
+! [AI-WORKED] Текст переработан / дополнен ассистентом 19.10.2026
 ! Дом Бекки: крыльцо, ужин, спальня, первый секс
 ! ================================================
 
@@ -138,6 +139,32 @@
 ---
 
 #BeckyHomeFrontRouteInside
+
+    if BeckyOffenseStefan = 1:
+        *pl 'Бекки стоит у входа, скрестив руки на пышной груди и недовольно поджав губы. Тётушка всё ещё дуется на тебя за то, что ты обольстил её дочку, пока сама она делила с тобой постель.'
+        *pl '— Я тебя в дом пустила, а ты не только ко мне под юбку залез, но и к дочке пристроился... Не подходи ко мне без подарка, Стефан!'
+        *pl ' '
+        if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0 or money >= 25:
+            gs 'ActUiPrepare', 'Подарить подарок и помириться с Бекки', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'BeckyGiftForgive'
+            end
+        end
+        gs 'ActUiPrepare', 'Уйти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'Market'
+        end
+        exit
+    end
+
+    if BeckyCatchChoice = 'backroom' and LucasBannedUntilDay <= day and IngaOffenseStefan = 0 and LucasPeaceDinnerDone = 0 and (time = 3 or time = 4):
+        *pl 'На кухне у очага хлопочет хозяйка Бекки. На лавке скромно сидит понурый Лукас, прижимая шапку к коленям, а рядом Инга накрывает стол на четверых.'
+        *pl ' '
+        gs 'ActUiPrepare', 'Примирительный ужин с Лукасом', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyIngaLucasPeaceDinner'
+        end
+    end
 
     if SandraBeckyThreesomeReady = 1 and (week = 7 and time = 5 or debug = 1):
         *pl 'Из окон доносится тёплый смех: Сандра и Бекки уже ждут вас внутри за вином в эту воскресную ночь.'

@@ -6,13 +6,32 @@
 ! ================================================
 
 #BeckyHouse
+    if BeckyCatchChoice = 'backroom' and LucasBannedUntilDay <= day and IngaOffenseStefan = 0 and LucasPeaceDinnerDone = 0 and (time = 3 or time = 4):
+        *clr
+        clr
+        cla
+        gs 'ShowLocationScreenTitle', 'ДОМ БЕККИ — КУХНЯ'
+        gs 'SceneShowVisual', 'images/events/becky/kitchen', 'КУХНЯ БЕККИ', 'large', 'webp'
+        *pl 'На кухне у очага хлопочет хозяйка Бекки. На лавке скромно сидит понурый Лукас, прижимая шапку к коленям, а рядом Инга накрывает стол на четверых.'
+        *pl ' '
+        gs 'ActUiPrepare', 'Примирительный ужин с Лукасом', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyIngaLucasPeaceDinner'
+        end
+        gs 'ActUiPrepare', 'Войти в дом', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyHomeFront', 'guest'
+        end
+        exit
+    end
+
     gt 'BeckyHomeFront', 'guest'
 ---
 
 #IngaRoom
     ! Встречи Инги и Лукаса наедине: Только четверг (week = 4) ночью (time = 5)
     if week = 4 and time = 5 and day <> IngaLucasSoloDay:
-        if IngaLucasSoloAllowed = 1 or IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3:
+        if (IngaLucasSoloAllowed = 1 or IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3) and (LucasBannedUntilDay = 0 or LucasBannedUntilDay < day):
             gt 'IngaLucasSoloEncounter'
         end
     end
@@ -38,90 +57,105 @@
     if $GirlLocation['inga'] <> 'IngaRoom':
         *p 'Инги сейчас нет в комнате.'
     else:
-        if IngaRoomFirstSexDone = 0 and (IngaRomanceStage >= 3 or IngaRomanceUnlocked = 1):
-            gs 'ActUiPrepare', 'Остаться на ночь с Ингой', 'intim'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'IngaRoomFirstSex'
-            end
-        elseif (IngaRoomFirstSexDone = 1 or IngaBackroomSex = 1) and LOC('SexSceneStart') = 1:
-            gs 'ActUiPrepare', 'Провести ночь с Ингой', 'intim'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'SexSceneStart', 'inga', 'IngaRoomAfterSex', 'inga_repeat'
-            end
-        end
-
-        if LOC('IngaLucasWindowCanOffer') = 1:
-            gs 'IngaLucasWindowCanOffer'
-
-            if IngaLucasWindowCanOffer = 1:
-                gs 'ActUiPrepare', 'Заглянуть в окно', 'look'
+        if IngaOffenseStefan = 1:
+            *pl '<i>Инга сидит на краю кровати, отвернувшись к стене и скрестив руки на груди. Девушка всё ещё дуется на тебя за то, что ты скрывал правду о её матери и Лукасе.</i>'
+            *pl ' '
+            if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0 or money >= 25:
+                gs 'ActUiPrepare', 'Подарить подарок и помириться с Ингой', 'gift'
                 act $ActUiLabel, $ActUiIconPath:
-                    gt 'IngaLucasWindowEvent'
+                    gt 'IngaGiftForgive'
                 end
             end
-        end
-
-        if LOC('IngaLucasThreesomeCanStart') = 1:
-            gs 'IngaLucasThreesomeCanStart'
-
-            if IngaLucasThreesomeCanStart = 1:
-                if IngaLucasThreesomeCount = 0:
-                    gs 'ActUiPrepare', 'Продолжить с Лукасом', 'generic'
-                    act $ActUiLabel, $ActUiIconPath:
-                        gt 'IngaLucasThreesome1Start'
-                    end
-                elseif IngaLucasThreesomeCount = 1:
-                    gs 'ActUiPrepare', 'Снова втроём', 'generic'
-                    act $ActUiLabel, $ActUiIconPath:
-                        gt 'IngaLucasThreesome2Start'
-                    end
-                end
-            end
-        end
-
-        if analvirgin['inga'] = 1 and LOC('IngaStefanAnalCanStart') = 1:
-            gs 'IngaStefanAnalCanStart'
-
-            if IngaStefanAnalCanStart = 1:
-                gs 'ActUiPrepare', 'Предложить анальную близость', 'intim'
+        else:
+            if IngaRoomFirstSexDone = 0 and (IngaRomanceStage >= 3 or IngaRomanceUnlocked = 1):
+                gs 'ActUiPrepare', 'Остаться на ночь с Ингой', 'intim'
                 act $ActUiLabel, $ActUiIconPath:
-                    gt 'IngaStefanAnalStart'
+                    gt 'IngaRoomFirstSex'
                 end
-            end
-        elseif analvirgin['inga'] = 1 and LOC('IngaLucasAnalCanStart') = 1:
-            gs 'IngaLucasAnalCanStart'
-
-            if IngaLucasAnalCanStart = 1:
-                gs 'ActUiPrepare', 'Анальная близость (с Лукасом)', 'intim'
+            elseif (IngaRoomFirstSexDone = 1 or IngaBackroomSex = 1) and LOC('SexSceneStart') = 1:
+                gs 'ActUiPrepare', 'Провести ночь с Ингой', 'intim'
                 act $ActUiLabel, $ActUiIconPath:
-                    gt 'IngaLucasAnalSceneStart'
+                    gt 'SexSceneStart', 'inga', 'IngaRoomAfterSex', 'inga_repeat'
                 end
             end
-        end
 
-        if LOC('IngaLucasThreesomeDpCanStart') = 1:
-            gs 'IngaLucasThreesomeDpCanStart'
+            if LucasBannedUntilDay = 0 or LucasBannedUntilDay < day:
+                if LOC('IngaLucasWindowCanOffer') = 1:
+                    gs 'IngaLucasWindowCanOffer'
 
-            if IngaLucasThreesomeDpCanStart = 1:
-                if IngaLucasDpDone = 0:
-                    gs 'ActUiPrepare', 'Предложить в два ствола', 'generic'
-                    act $ActUiLabel, $ActUiIconPath:
-                        gt 'GroupSexIngaLucasDpStart'
+                    if IngaLucasWindowCanOffer = 1:
+                        gs 'ActUiPrepare', 'Заглянуть в окно', 'look'
+                        act $ActUiLabel, $ActUiIconPath:
+                            gt 'IngaLucasWindowEvent'
+                        end
                     end
-                else:
-                    gs 'ActUiPrepare', 'Снова в два ствола', 'generic'
+                end
+
+                if LOC('IngaLucasThreesomeCanStart') = 1:
+                    gs 'IngaLucasThreesomeCanStart'
+
+                    if IngaLucasThreesomeCanStart = 1:
+                        if IngaLucasThreesomeCount = 0:
+                            gs 'ActUiPrepare', 'Продолжить с Лукасом', 'generic'
+                            act $ActUiLabel, $ActUiIconPath:
+                                gt 'IngaLucasThreesome1Start'
+                            end
+                        elseif IngaLucasThreesomeCount = 1:
+                            gs 'ActUiPrepare', 'Снова втроём', 'generic'
+                            act $ActUiLabel, $ActUiIconPath:
+                                gt 'IngaLucasThreesome2Start'
+                            end
+                        end
+                    end
+                end
+
+                if analvirgin['inga'] = 1 and LOC('IngaLucasAnalCanStart') = 1:
+                    gs 'IngaLucasAnalCanStart'
+
+                    if IngaLucasAnalCanStart = 1:
+                        gs 'ActUiPrepare', 'Анальная близость (с Лукасом)', 'intim'
+                        act $ActUiLabel, $ActUiIconPath:
+                            gt 'IngaLucasAnalSceneStart'
+                        end
+                    end
+                end
+
+                if LOC('IngaLucasThreesomeDpCanStart') = 1:
+                    gs 'IngaLucasThreesomeDpCanStart'
+
+                    if IngaLucasThreesomeDpCanStart = 1:
+                        if IngaLucasDpDone = 0:
+                            gs 'ActUiPrepare', 'Предложить в два ствола', 'generic'
+                            act $ActUiLabel, $ActUiIconPath:
+                                gt 'GroupSexIngaLucasDpStart'
+                            end
+                        else:
+                            gs 'ActUiPrepare', 'Снова в два ствола', 'generic'
+                            act $ActUiLabel, $ActUiIconPath:
+                                gt 'GroupSexIngaLucasDpStart'
+                            end
+                        end
+                    end
+                end
+
+                if IngaLucasSoloAllowed = 1 and IngaGuardLadderDone = 0 and IngaNpcPath < 3:
+                    gs 'ActUiPrepare', 'Запретить встречи с Лукасом', 'talk'
                     act $ActUiLabel, $ActUiIconPath:
-                        gt 'GroupSexIngaLucasDpStart'
+                        IngaLucasSoloAllowed = 0
+                        gt 'IngaRoom'
                     end
                 end
             end
-        end
 
-        if IngaLucasSoloAllowed = 1 and IngaGuardLadderDone = 0 and IngaNpcPath < 3:
-            gs 'ActUiPrepare', 'Запретить встречи с Лукасом', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                IngaLucasSoloAllowed = 0
-                gt 'IngaRoom'
+            if analvirgin['inga'] = 1 and LOC('IngaStefanAnalCanStart') = 1:
+                gs 'IngaStefanAnalCanStart'
+
+                if IngaStefanAnalCanStart = 1:
+                    gs 'ActUiPrepare', 'Предложить анальную близость', 'intim'
+                    act $ActUiLabel, $ActUiIconPath:
+                        gt 'IngaStefanAnalStart'
+                    end
+                end
             end
         end
     end

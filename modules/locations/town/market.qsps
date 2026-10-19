@@ -1,7 +1,8 @@
 ! ================================================
 ! FILE: modules/locations/town/market.qsps
+! MODULE: locations/town
+! [AI-WORKED] Текст переработан / дополнен ассистентом 19.10.2026
 ! Городской рынок
-! Версия: v3 / лавки, пост стражи, улица
 ! ================================================
 
 #Market
@@ -47,7 +48,7 @@
         end
 
         ! Четверг ночь: Лукас пробрался к Инге наедине
-        if week = 4 and (IngaLucasSoloAllowed = 1 or IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3) and day <> IngaLucasSoloDay:
+        if week = 4 and (IngaLucasSoloAllowed = 1 or IngaGuardLadderDone = 1 or IngaGuardAnalDone = 1 or IngaNpcPath >= 3) and day <> IngaLucasSoloDay and (LucasBannedUntilDay = 0 or LucasBannedUntilDay < day):
             *pl '<i>У глухой стены лавки Блэнкеншип стоит приставная деревянная лестница, ведущая прямо к окну второго этажа. Наверху, в комнате Инги, приглушённо слышны голоса...</i>'
             *pl ' '
             gs 'ActUiPrepare', 'Подняться по лестнице и заглянуть в окно', 'look'
@@ -74,8 +75,12 @@
         *p 'Вечер. Лавки ещё работают, но торговцы уже поглядывают на небо и начинают думать о закрытии.'
     end
 
-
     *pl ' '
+
+    if LucasBannedUntilDay >= day:
+        *pl '<i>Неподалёку у кузницы работает Лукас. Подмастерье ходит мрачнее тучи, остервенело раздувает угли и старается не смотреть в сторону лавки Блэнкеншип: после того как Бекки и Инга выставили его вон, парень боится даже нос показать у их дверей.</i>'
+        *pl ' '
+    end
 
     if week = 2 and (time >= 2 and time <= 4) and MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0 and TavernUpgradeStageDone = 0:
         MelissaMinstrelMet = 1

@@ -77,6 +77,14 @@
 
     IngaLucasThreesomeCanStart = 0
 
+    if LucasBannedUntilDay >= day:
+        exit
+    end
+
+    if IngaOffenseStefan = 1:
+        exit
+    end
+
     if IngaLucasInviteDone = 0:
         exit
     end
@@ -144,6 +152,14 @@
 #IngaLucasAnalCanStart
 
     IngaLucasAnalCanStart = 0
+
+    if LucasBannedUntilDay >= day:
+        exit
+    end
+
+    if IngaOffenseStefan = 1:
+        exit
+    end
 
     if IngaLucasInviteDone = 0:
         exit
@@ -278,6 +294,14 @@
 
     IngaLucasThreesomeDpCanStart = 0
 
+    if LucasBannedUntilDay >= day:
+        exit
+    end
+
+    if IngaOffenseStefan = 1:
+        exit
+    end
+
     if IngaLucasInviteDone = 0:
         exit
     end
@@ -357,39 +381,139 @@
 
     *pl ' '
 
-    gs 'BeckyCatchIngaLucasOfferText'
-
-    *p $GroupSexText
-    *pl ' '
-
-    gs 'BeckyCatchIngaLucasBuildMenu'
-
-    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''BeckyCatchIngaLucasMenu''">делать</a>?'
----
-
-#BeckyCatchIngaLucasBuildMenu
-
-    gs 'Menu.Destroy', 'BeckyCatchIngaLucasMenu'
-    gs 'Menu.Create', 'BeckyCatchIngaLucasMenu'
-
-    gs 'BeckyIngaThreesomeCanStart'
-
-    if BeckyIngaThreesomeCanStart = 1:
-        gs 'MenuUiAdd', 'BeckyCatchIngaLucasMenu', 'Согласиться — встретиться втроём', ''
-        gs 'Menu.AddModule', 'BeckyCatchIngaLucasMenu', {
-            gt 'GroupSexBeckyIngaStefanStart'
-        }
+    gs 'ActUiPrepare', 'Встать на защиту Инги', 'guard'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyCatchProtectInga'
     end
 
-    gs 'MenuUiAdd', 'BeckyCatchIngaLucasMenu', 'Отложить разговор', ''
-    gs 'Menu.AddModule', 'BeckyCatchIngaLucasMenu', {
+    if PlayerKnows['becky_backroom_lucas'] = 1 or EventWitnessed['becky_backroom_lucas'] = 1 or SandraBeckyTalkPhraseHeard['becky_backroom_lucas'] = 1 or FactHappened['becky_backroom_lucas'] = 1:
+        gs 'ActUiPrepare', 'Напомнить о подсобке (козырь)', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyCatchRevealBackroom'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Отложить разговор и уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'BeckyCatchIngaLucasDecline'
-    }
+    end
+---
+
+#BeckyCatchProtectInga
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'EnsureGirlData', 'becky'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/becky_catch_protect', 'СТЕФАН ЗАЩИЩАЕТ ИНГУ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ: ЗАЩИТА'
+
+    if LOC('BeckyCatchProtectIngaText') = 1:
+        gs 'BeckyCatchProtectIngaText'
+    end
+
+    BeckyCatchChoice = 'protect'
+    BeckyCatchIngaLucasDone = 1
+    BeckyOffenseStefan = 1
+    BeckyOffenseStefanDay = day
+    love['inga'] += 3
+    otkroven['inga'] += 2
+    Friends['inga'] += 2
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Спуститься в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
+
+    gs 'ActUiPrepare', 'Выйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#BeckyCatchRevealBackroom
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'EnsureGirlData', 'becky'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/becky_catch_reveal', 'ПРАВДА О ПОДСОБКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ИНГИ: ВСЕ КАРТЫ НА СТОЛ'
+
+    if LOC('BeckyCatchRevealBackroomText') = 1:
+        gs 'BeckyCatchRevealBackroomText'
+    end
+
+    BeckyCatchChoice = 'backroom'
+    BeckyCatchIngaLucasDone = 1
+    IngaOffenseStefan = 1
+    IngaOffenseStefanDay = day
+    LucasBannedUntilDay = day + 14
+    LucasBanned = 1
+    BeckyIngaBond += 10
+    sluttiness['becky'] += 2
+    sluttiness['inga'] += 2
+    otkroven['inga'] += 2
+    otkroven['becky'] += 2
+    gs 'ClampGirlSocialStats', 'inga'
+    gs 'ClampGirlSocialStats', 'becky'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Спуститься в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
+
+    gs 'ActUiPrepare', 'Выйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#BeckyIngaLucasPeaceDinner
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'EnsureGirlData', 'becky'
+    gs 'SceneShowVisual', 'images/events/inga/inga_lucas_arc/peace_dinner', 'ПРИМИРИТЕЛЬНЫЙ УЖИН НА КУХНЕ БЕККИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'КУХНЯ БЕККИ: ПРИМИРИТЕЛЬНЫЙ УЖИН'
+
+    if LOC('BeckyIngaLucasPeaceDinnerText') = 1:
+        gs 'BeckyIngaLucasPeaceDinnerText'
+    end
+
+    LucasPeaceDinnerDone = 1
+    LucasBanned = 0
+    LucasBannedUntilDay = 0
+    BeckyIngaThreesomeCanStart = 1
+    Friends['becky'] += 3
+    Friends['inga'] += 3
+    sluttiness['becky'] += 1
+    sluttiness['inga'] += 1
+    gs 'ClampGirlSocialStats', 'inga'
+    gs 'ClampGirlSocialStats', 'becky'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Выйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+
+    gs 'ActUiPrepare', 'Остаться в доме', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyHomeFront', 'guest'
+    end
 ---
 
 #BeckyCatchIngaLucasDecline
 
-    *p 'Бекки кивает сухо: "Тогда делай вид, что я ничего не видела. Пока."'
+    *p 'Бекки вздыхает, качая головой: "Ладно, остынем пока... потом поговорим."'
 
     gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
     act $ActUiLabel, $ActUiIconPath:

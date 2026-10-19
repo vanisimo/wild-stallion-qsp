@@ -329,7 +329,18 @@
         gs 'BeckyShopRenderChildrenFoodBuy'
     end
 
-    if $CurrentSeller = 'inga' and IngaRomanceUnlocked = 1 and Friends['inga'] >= 18:
+    if $CurrentSeller = 'inga' and IngaOffenseStefan = 1:
+        *pl '<i>Инга стоит за прилавком, опустив ресницы и теребя фартук. Девушка обижена на тебя за то, что ты скрывал от неё правду о Лукасе и её матери. Она ждёт красивого знака внимания и искренних слов.</i>'
+        *pl ' '
+        if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0 or money >= 25:
+            gs 'ActUiPrepare', 'Подарить подарок и помириться с Ингой', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IngaGiftForgive'
+            end
+        end
+    end
+
+    if $CurrentSeller = 'inga' and IngaOffenseStefan = 0 and IngaRomanceUnlocked = 1 and Friends['inga'] >= 18:
         *pl ' '
 
         act '<b>Флиртовать с Ингой</b>', 'images/common/ui/actions/flirt.png':
@@ -337,11 +348,11 @@
         end
     end
 
-    if $CurrentSeller = 'inga' and LOC('IngaRomanceTryUnlock') = 1:
+    if $CurrentSeller = 'inga' and IngaOffenseStefan = 0 and LOC('IngaRomanceTryUnlock') = 1:
         gs 'IngaRomanceTryUnlock'
     end
 
-    if $CurrentSeller = 'inga' and LOC('IngaBackroomCanOffer') = 1:
+    if $CurrentSeller = 'inga' and IngaOffenseStefan = 0 and LOC('IngaBackroomCanOffer') = 1:
         gs 'IngaBackroomCanOffer'
 
         if IngaBackroomCanOffer = 1:
@@ -404,7 +415,18 @@
         gs 'IngaGuardHarassmentTryActivate'
     end
 
-    if $CurrentSeller = 'becky' and LOC('BeckyIngaThreesomeCanStart') = 1:
+    if $CurrentSeller = 'becky' and BeckyOffenseStefan = 1:
+        *pl '<i>Бекки демонстративно перекладывает мешочки с крупой, поджав губы и не глядя в твою сторону. Тётушка всё ещё дуется на тебя за то, что ты обольстил её дочку, пока сама она делила с тобой постель. Без хорошего подарка к ней не подступиться.</i>'
+        *pl ' '
+        if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0 or money >= 25:
+            gs 'ActUiPrepare', 'Подарить подарок и помириться с Бекки', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'BeckyGiftForgive'
+            end
+        end
+    end
+
+    if $CurrentSeller = 'becky' and BeckyOffenseStefan = 0 and LOC('BeckyIngaThreesomeCanStart') = 1:
         gs 'BeckyIngaThreesomeCanStart'
 
         if BeckyIngaThreesomeCanStart = 1:
@@ -413,12 +435,107 @@
             end
         end
     end
+
+    if BeckyCatchChoice = 'backroom' and LucasBannedUntilDay <= day and IngaOffenseStefan = 0 and LucasPeaceDinnerDone = 0 and (time = 3 or time = 4):
+        *pl ' '
+        gs 'ActUiPrepare', 'Примирительный ужин с Лукасом', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyIngaLucasPeaceDinner'
+        end
+    end
+
     if $CurrentSeller = 'becky' and LOC('SandraBeckyTalkBecky') = 1 and SandraBeckyCrisisDone = 1 and SandraBeckyTalkBeckyDone = 0 and SandraBeckyHardOffense = 0:
         gs 'ActUiPrepare', 'Поговорить о Сандре', 'talk'
         act $ActUiLabel, $ActUiIconPath:
             gt 'SandraBeckyTalkBecky'
         end
     end
+---
+
+#BeckyGiftForgive
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'becky'
+    gs 'SceneShowVisual', 'images/events/becky/becky_gift_forgive', 'ПРИМИРЕНИЕ С БЕККИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ЛАВКА БЛЭНКЕНШИП: ПРИМИРЕНИЕ С БЕККИ'
+
+    if GiftInventory['gift_expensive'] > 0:
+        GiftInventory['gift_expensive'] -= 1
+        $GiftGivenName = 'роскошный шёлковый платок с золотой нитью'
+    elseif GiftInventory['gift_cheap'] > 0:
+        GiftInventory['gift_cheap'] -= 1
+        $GiftGivenName = 'изящную гребёнку из полированного рога'
+    else:
+        money -= 25
+        $GiftGivenName = 'коробочку заморских пряностей и сладких цукатов'
+    end
+
+    *pl 'Ты достаёшь ' + $GiftGivenName + ' и с тёплой улыбкой преподносишь его тётушке Бекки.'
+    *pl ' '
+    *pl 'Вдова замирает, окинув подарок жадным, восторженным взглядом. Её обиженная мина мгновенно сменяется привычной, лукавой и чувственной улыбкой:'
+    *pl ' '
+    *pl '— Ох, Стефан... Ну вот как на тебя сердиться, окаянный? — со вздохом смеётся вдова, прижимая подарок к пышной груди и звонко целуя тебя в щёку. — Ладно уж, мир! Кровь у нас у всех горячая, чего там скрывать. Только Ингушу мою не обижай, слышишь? А к тётушке на огонёк дорожку не забывай...'
+    *pl ' '
+    *pl 'Обида развеялась без следа. Бекки снова смотрит на тебя с привычной томной теплотой.'
+
+    BeckyOffenseStefan = 0
+    Friends['becky'] += 3
+    love['becky'] += 2
+    BeckyIngaThreesomeCanStart = 1
+    gs 'ClampGirlSocialStats', 'becky'
+    killvar '$GiftGivenName'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
+---
+
+#IngaGiftForgive
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/inga_gift_forgive', 'ПРИМИРЕНИЕ С ИНГОЙ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ЛАВКА БЛЭНКЕНШИП: ПРИМИРЕНИЕ С ИНГОЙ'
+
+    if GiftInventory['gift_expensive'] > 0:
+        GiftInventory['gift_expensive'] -= 1
+        $GiftGivenName = 'тонкую серебряную брошь тонкой работы'
+    elseif GiftInventory['gift_cheap'] > 0:
+        GiftInventory['gift_cheap'] -= 1
+        $GiftGivenName = 'шёлковые ленты для кос редкого василькового оттенка'
+    else:
+        money -= 25
+        $GiftGivenName = 'набор тончайших портновских игл и флакон цветочной воды'
+    end
+
+    *pl 'Ты подходишь к Инге, берёшь её за тонкие пальцы и протягиваешь ' + $GiftGivenName + '.'
+    *pl ' '
+    *pl 'Ты искренне извиняешься за молчание и объясняешь, что не хотел причинить ей боль или посеять раздор между ней и матерью.'
+    *pl ' '
+    *pl 'Инга бережно принимает подарок, щёки её вспыхивают румянцем, а обида в глазах тает:'
+    *pl ' '
+    *pl '— Я... я понимаю, Стефан, — тихо шепчет девушка, робко прижимаясь к твоему плечу. — Ты просто берёг наш покой. Спасибо тебе за заботу. Я больше не сержусь на тебя!'
+    *pl ' '
+    *pl 'Девушка ласково обнимает тебя, полностью забывая былые обиды.'
+
+    IngaOffenseStefan = 0
+    Friends['inga'] += 3
+    love['inga'] += 3
+    gs 'ClampGirlSocialStats', 'inga'
+    killvar '$GiftGivenName'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
+---
 ---
 
 #BuildEddieShopTalkMenu

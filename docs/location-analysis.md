@@ -3,11 +3,11 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 480
-- Locations: 3603
-- Locations with direct incoming calls: 3092
-- Locations without direct incoming calls: 511
+- Locations: 3610
+- Locations with direct incoming calls: 3098
+- Locations without direct incoming calls: 512
 - Review candidates without direct incoming calls: 185
-- Classified entry/helper locations without direct incoming calls: 326
+- Classified entry/helper locations without direct incoming calls: 327
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -27,7 +27,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
 | `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 254 | `modules/events` |
-| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 938 | `modules/events` |
+| `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 965 | `modules/events` |
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 8 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
@@ -151,8 +151,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IngaGuardProblem` | `modules/events/quests/guard_bribe_quest.qsps` | 282 | `modules/events` |
 | `IngaGuardSaturdayAfterInterrupt` | `modules/events/quests/inga_guard_quest.qsps` | 879 | `modules/events` |
 | `IngaGuardSaturdayInterrupt` | `modules/events/quests/inga_guard_quest.qsps` | 875 | `modules/events` |
-| `IngaLucasCucumberShop` | `modules/events/inga/inga_lucas_arc.qsps` | 309 | `modules/events` |
-| `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 156 | `modules/locations` |
+| `IngaLucasCucumberShop` | `modules/events/inga/inga_lucas_arc.qsps` | 333 | `modules/events` |
+| `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 190 | `modules/locations` |
 | `IntimScene` | `modules/core/girls/girl_intim_menu.qsps` | 146 | `modules/core` |
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 539 | `modules/locations` |
 | `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 544 | `modules/locations` |
@@ -254,6 +254,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaPathChoiceTryAutoStart` | `modules/events/amanda/home/amanda_path_choice.qsps` | 12 | `entry/helper` |
 | `ApplyTavernWorkDay` | `modules/core/tavern/tavern_income.qsps` | 526 | `entry/helper` |
 | `ArtLevelText` | `modules/core/init_npc/art_level_text.qsps` | 6 | `entry/helper` |
+| `BeckyCatchIngaLucasOfferText` | `modules/actions/sex/group_sex_text.qsps` | 140 | `entry/helper` |
 | `BeckyEddieConfessionIntroText` | `modules/events/eddie/eddie_arc_text.qsps` | 34 | `entry/helper` |
 | `BeckyEddieConfessionPaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 42 | `entry/helper` |
 | `BeckyEddieConfessionUnpaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 46 | `entry/helper` |
@@ -403,7 +404,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IngaGuardMmjVisit2_1Text` | `modules/events/quests/inga_guard_quest_text.qsps` | 281 | `entry/helper` |
 | `IngaGuardMmjVisit3_1Text` | `modules/events/quests/inga_guard_quest_text.qsps` | 305 | `entry/helper` |
 | `IngaGuardSaturdayDebugReset` | `modules/events/quests/inga_guard_quest.qsps` | 883 | `entry/helper` |
-| `IngaLucasThreesomeDpStart` | `modules/events/inga/inga_lucas_arc.qsps` | 304 | `entry/helper` |
+| `IngaLucasThreesomeDpStart` | `modules/events/inga/inga_lucas_arc.qsps` | 328 | `entry/helper` |
 | `IngaRoomFirstSexCanStart` | `modules/events/inga/inga_room_first_sex.qsps` | 7 | `entry/helper` |
 | `InitGeorgett` | `modules/npc/port/georgett.qsps` | 6 | `entry/helper` |
 | `InitGerhard` | `modules/npc/town/gerhard.qsps` | 6 | `entry/helper` |
@@ -539,20 +540,20 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1565 |
-| `ShowLocationScreenTitle` | 691 |
-| `SceneShowVisual` | 642 |
-| `Menu.AddModule` | 591 |
-| `MenuUiAdd` | 583 |
-| `EnsureGirlData` | 232 |
-| `ClampGirlSocialStats` | 203 |
+| `ActUiPrepare` | 1585 |
+| `ShowLocationScreenTitle` | 697 |
+| `SceneShowVisual` | 648 |
+| `Menu.AddModule` | 589 |
+| `MenuUiAdd` | 581 |
+| `EnsureGirlData` | 240 |
+| `ClampGirlSocialStats` | 210 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 164 |
 | `ShowGirlSidebar` | 102 |
-| `Menu.Create` | 98 |
 | `RegisterSex` | 98 |
-| `Menu.Destroy` | 92 |
-| `Market` | 87 |
+| `Menu.Create` | 97 |
+| `Market` | 91 |
+| `Menu.Destroy` | 91 |
 | `PrintMainP` | 87 |
 | `ShowImage` | 86 |
 | `FormatSpintry` | 85 |
@@ -563,7 +564,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `Menu.AddCondition` | 44 |
 
 ## Dynamic Call Sites
 
