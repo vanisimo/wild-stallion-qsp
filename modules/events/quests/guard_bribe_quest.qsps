@@ -1,4 +1,4 @@
-﻿! ================================================
+! ================================================
 ! FILE: modules/events/quests/guard_bribe_quest.qsps
 ! MODULE: events/quests
 ! Квест стражника Грюна и Инги
@@ -309,5 +309,57 @@
     IngaGuardThanksCanStart = 0
     if IngaGuardResolved > 0 and IngaGuardThanksDone = 0:
         IngaGuardThanksCanStart = 1
+    end
+---
+
+#IngaGuardBribeExit
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/locations/market/market/cityguard', 'РАЗГОВОР С СЕРЖАНТОМ ГРЮНОМ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОСТ СТРАЖНИКОВ: ОТКУП ИНГИ'
+
+    if LOC('IngaGuardBribeExitText') = 1:
+        gs 'IngaGuardBribeExitText'
+    end
+
+    *pl ' '
+    *pl 'Твои деньги: ' + STR(money) + ' спинтарий.'
+    *pl ' '
+
+    if money >= 45:
+        gs 'ActUiPrepare', 'Заплатить 45 спинтарий отступных', 'money'
+        act $ActUiLabel, $ActUiIconPath:
+            money -= 45
+            IngaGuardWeeklyActive = 0
+            IngaGuardBribedExit = 1
+            GuardBribed = 1
+            IngaGuardResolved = 1
+            IngaGuardHelpStage = 1
+
+            *clr
+            clr
+            cla
+            gs 'SceneShowVisual', 'images/locations/market/market/cityguard', 'СДЕЛКА СО СТРАЖНИКОМ', 'large', 'webp'
+            gs 'ShowLocationScreenTitle', 'ИНГА ОТКУПЛЕНА'
+
+            if LOC('IngaGuardBribeExitPaidText') = 1:
+                gs 'IngaGuardBribeExitPaidText'
+            end
+
+            *pl ' '
+            gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'Market'
+            end
+        end
+    else:
+        *pl '<i>У тебя недостаточно денег для отступных (нужно 45 спинтарий).</i>'
+    end
+
+    gs 'ActUiPrepare', 'Отказаться платить', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GuardPost'
     end
 ---

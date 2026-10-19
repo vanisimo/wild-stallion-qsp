@@ -1,7 +1,8 @@
 ! ================================================
 ! FILE: modules/events/quests/inga_guard_quest.qsps
 ! MODULE: events/quests
-! Еженедельная подсобка: ветка Б (высокая коррупция) и ветка В
+! [AI-WORKED] Текст переработан / дополнен ассистентом 17.10.2026
+! Еженедельная подсобка: Лестница Грюна, соло-циклы и ММЖ
 ! ================================================
 
 #IngaGuardSaturdayCanStart
@@ -15,27 +16,25 @@
         exit
     end
 
-    if IngaGuardHelpStage = 2 and FamilyCorruptionStage >= 3:
-        IngaGuardWeeklyActive = 1
-    end
-
-    if IngaGuardWeeklyActive = 0:
+    if IngaGuardSaturdayLastDay = day:
         exit
     end
 
-    if IngaGuardHelpStage = 1:
+    if IngaGuardBribedExit = 1:
         exit
     end
 
-    if IngaGuardHelpStage = -1 and IngaServingGuard = 0:
+    ! Ветка Б (совместное использование)
+    if IngaGuardHelpStage = 2 and FamilyCorruptionStage >= 3 and IngaGuardWeeklyActive = 1:
+        IngaGuardSaturdayCanStart = 1
         exit
     end
 
-    if IngaGuardSaturdayLastWeek = week and IngaGuardSaturdayDone = 1:
+    ! Ветка В (где Грюн один)
+    if IngaGuardHelpStage = -1 and IngaServingGuard = 1 and IngaGuardWeeklyActive = 1:
+        IngaGuardSaturdayCanStart = 1
         exit
     end
-
-    IngaGuardSaturdayCanStart = 1
 ---
 
 #IngaGuardSaturday
@@ -47,14 +46,18 @@
         exit
     end
 
+    IngaGuardSaturdayLastDay = day
     IngaGuardSaturdayDone = 1
-    IngaGuardSaturdayLastWeek = week
 
-    cls
+    *clr
+    clr
+    cla
 
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/backroom_door', 'ПОДСОБКА ЛАВКИ — СУББОТА ВЕЧЕРОМ', 'large', 'webp'
     gs 'ShowLocationScreenTitle', 'ПОДСОБКА ЛАВКИ — СУББОТА ВЕЧЕРОМ'
 
-    *p 'Ты проходишь мимо лавки и слышите знакомые звуки из подсобки. Дверь слегка приоткрыта.'
+    *pl 'Ты проходишь мимо лавки Блэнкеншип и слышишь знакомые звуки из приоткрытой двери подсобки.'
+    *pl 'Голос сержанта Грюна и приглушённые шорохи не оставляют сомнений в том, что происходит внутри.'
 
     gs 'ActUiPrepare', 'Подойти и подсмотреть', 'look'
     act $ActUiLabel, $ActUiIconPath:
@@ -69,98 +72,745 @@
 
 #IngaGuardSaturdaySpy
     *clr
+    clr
+    cla
 
-    if LOC('ShowImage') = 1:
-        gs 'ShowImage', 'inga', 'backroom', 'guard', 'normal'
+    ! Если лестница соло Грюна ещё не закончена (продвижение только при подглядывании)
+    if IngaGuardLadderDone = 0:
+        if IngaGuardLadderStage = 0:
+            gt 'IngaGuardLadderVisit1'
+        elseif IngaGuardLadderStage = 1:
+            gt 'IngaGuardLadderVisit2'
+        elseif IngaGuardLadderStage = 2:
+            gt 'IngaGuardLadderVisit3_1'
+        elseif IngaGuardLadderStage = 3:
+            gt 'IngaGuardLadderVisit4_1'
+        else:
+            gt 'IngaGuardLadderVisit5_1'
+        end
     end
 
-    gs 'ShowLocationScreenTitle', 'ПОДСОБКА'
+    ! Лестница Грюна завершена: проверка доступности ММЖ
+    IngaGuardMmjAllowed = 0
+    if IngaGuardHelpStage = 2 and (FamilyCouncilDone = 1 or FamilyCorruptionStage >= 3) and IngaGuardBribedExit = 0:
+        IngaGuardMmjAllowed = 1
+    end
 
-    *p 'Инга стоит на коленях перед сержантом Грюном. На её лице — слёзы и глубокий стыд.'
-    *p 'Грюн довольно урчит: "Хорошая девочка… продолжай, и я не буду больше портить вашу лавку."'
+    if IngaGuardMmjAllowed = 1:
+        gt 'IngaGuardMmjEntryChoice'
+    else:
+        gt 'IngaGuardRegularSolo'
+    end
+---
+
+! ================================================
+! ЛЕСТНИЦА ГРЮНА — 5 ВИЗИТОВ
+! ================================================
+
+! --- ВИЗИТ 1 (1 экран) ---
+#IngaGuardLadderVisit1
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit1', 'ГРЮН ПРИСТАЕТ К ИНГЕ В ПОДСОБКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ПЕРВЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit1Text') = 1:
+        gs 'IngaGuardLadderVisit1Text'
+    end
+
+    IngaGuardLadderStage = 1
+    sluttiness['inga'] += 1
+    IngaNpcPath += 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Тихо уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! --- ВИЗИТ 2 (1 экран) ---
+#IngaGuardLadderVisit2
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit2', 'РАЗВЯЗАННЫЙ КОРСАЖ И ЛАСКИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ВТОРОЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit2Text') = 1:
+        gs 'IngaGuardLadderVisit2Text'
+    end
+
+    IngaGuardLadderStage = 2
+    sluttiness['inga'] += 2
+    IngaNpcPath += 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Тихо уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! --- ВИЗИТ 3 (2 экрана) ---
+#IngaGuardLadderVisit3_1
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit3_hand', 'РУЧНЫЕ ЛАСКИ В ПОДСОБКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ТРЕТИЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit3_1Text') = 1:
+        gs 'IngaGuardLadderVisit3_1Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardLadderVisit3_2'
+    end
+---
+
+#IngaGuardLadderVisit3_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit3_cum', 'ФИНАЛ РУЧНЫХ ЛАСК', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ТРЕТИЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit3_2Text') = 1:
+        gs 'IngaGuardLadderVisit3_2Text'
+    end
+
+    IngaGuardLadderStage = 3
+    sluttiness['inga'] += 2
+    IngaNpcPath += 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! --- ВИЗИТ 4 (3 экрана) ---
+#IngaGuardLadderVisit4_1
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit4_hand', 'ПОПЫТКА РУКАМИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ЧЕТВЁРТЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit4_1Text') = 1:
+        gs 'IngaGuardLadderVisit4_1Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardLadderVisit4_2'
+    end
+---
+
+#IngaGuardLadderVisit4_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit4_oral', 'ОРАЛЬНЫЙ АКТ НА КОЛЕНЯХ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ЧЕТВЁРТЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit4_2Text') = 1:
+        gs 'IngaGuardLadderVisit4_2Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardLadderVisit4_3'
+    end
+---
+
+#IngaGuardLadderVisit4_3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit4_cum', 'ОКОНЧАНИЕ В РОТ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ЧЕТВЁРТЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit4_3Text') = 1:
+        gs 'IngaGuardLadderVisit4_3Text'
+    end
+
+    IngaGuardLadderStage = 4
+    sluttiness['inga'] += 3
+    IngaNpcPath += 2
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! --- ВИЗИТ 5 (3 экрана — КУЛЬМИНАЦИЯ ЛЕСТНИЦЫ) ---
+#IngaGuardLadderVisit5_1
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit5_oral', 'ОРАЛЬНАЯ ПРЕЛЮДИЯ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ПЯТЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit5_1Text') = 1:
+        gs 'IngaGuardLadderVisit5_1Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardLadderVisit5_2'
+    end
+---
+
+#IngaGuardLadderVisit5_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit5_sex', 'ПОЛНЫЙ КОНТАКТ У ПРИЛАВКА', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ПЯТЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit5_2Text') = 1:
+        gs 'IngaGuardLadderVisit5_2Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardLadderVisit5_3'
+    end
+---
+
+#IngaGuardLadderVisit5_3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_visit5_cum', 'ЗАВЕРШЕНИЕ ВНУТРЬ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ПЯТЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardLadderVisit5_3Text') = 1:
+        gs 'IngaGuardLadderVisit5_3Text'
+    end
+
+    IngaGuardLadderStage = 5
+    IngaGuardLadderDone = 1
+    sluttiness['inga'] += 4
+    IngaNpcPath += 3
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! ================================================
+! РЕГУЛЯРНЫЕ СОЛО-СЦЕНЫ ГРЮНА
+! ================================================
+
+#IngaGuardRegularSolo
+    if analvirgin['inga'] = 0 and sluttiness['inga'] >= 50:
+        gt 'IngaGuardSoloAnal_1'
+    else:
+        gt 'IngaGuardSoloRegular_1'
+    end
+---
+
+#IngaGuardSoloRegular_1
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_solo_oral', 'ИНГА НА КОЛЕНЯХ ПЕРЕД ГРЮНОМ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: СУББОТНИЙ ВИЗИТ'
+
+    if LOC('IngaGuardSoloRegular_1Text') = 1:
+        gs 'IngaGuardSoloRegular_1Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardSoloRegular_2'
+    end
+---
+
+#IngaGuardSoloRegular_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_solo_sex', 'СЕКС СЗАДИ ЗАДРАВ ЮБКУ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: СУББОТНИЙ ВИЗИТ'
+
+    if LOC('IngaGuardSoloRegular_2Text') = 1:
+        gs 'IngaGuardSoloRegular_2Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardSoloRegular_3'
+    end
+---
+
+#IngaGuardSoloRegular_3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_solo_cum', 'ОКОНЧАНИЕ ВНУТРЬ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: СУББОТНИЙ ВИЗИТ'
+
+    if LOC('IngaGuardSoloRegular_3Text') = 1:
+        gs 'IngaGuardSoloRegular_3Text'
+    end
 
     sluttiness['inga'] += 2
     IngaNpcPath += 1
+    gs 'ClampGirlSocialStats', 'inga'
 
-    if IngaGuardHelpStage = -1:
-        gs 'ActUiPrepare', 'Продолжить наблюдать', 'look'
-        act $ActUiLabel, $ActUiIconPath:
-            *p 'Ты стоишь в тени. Инга замечает вас и замирает от ужаса — но Грюн не отпускает.'
-            Friends['inga'] -= 1
-            gs 'ActUiPrepare', 'Уйти тихо', 'return'
-            act $ActUiLabel, $ActUiIconPath: gt 'Market'
-        end
-
-        gs 'ActUiPrepare', 'Уйти тихо', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'Market'
-        end
-
-        exit
-    end
-
-    if IngaGuardHelpStage = 2 and FamilyCorruptionStage >= 3 and IngaPlayerRouteOpen = 1:
-        gs 'ActUiPrepare', 'Вмешаться и прогнать стражника', 'guard'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IngaGuardSaturdayInterrupt'
-        end
-
-        gs 'ActUiPrepare', 'Присоединиться (ММЖ)', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            *p 'Высокая коррупция открыла дверь, о которой вы ещё не говорили вслух. Полная ММЖ-сцена — в PR-I11.'
-            gs 'ActUiPrepare', 'Вернуться', 'return'
-            act $ActUiLabel, $ActUiIconPath: gt 'Market'
-        end
-    end
-
-    gs 'ActUiPrepare', 'Продолжить наблюдать', 'look'
-    act $ActUiLabel, $ActUiIconPath:
-        *p 'Ты смотришь из тени. Инга краснеет, заметив вас, но не может остановиться.'
-        gs 'ActUiPrepare', 'Уйти', 'return'
-        act $ActUiLabel, $ActUiIconPath: gt 'Market'
-    end
-
-    gs 'ActUiPrepare', 'Уйти тихо', 'return'
+    *pl ' '
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
     act $ActUiLabel, $ActUiIconPath:
         gt 'Market'
     end
 ---
 
-#IngaGuardSaturdayInterrupt
-    *p 'Вы резко входите. Грюн оборачивается, Инга отстраняется и плачет.'
-    *p 'Стражник сплёвывает и уходит — пока без драки.'
+#IngaGuardSoloAnal_1
+    *clr
+    clr
+    cla
 
-    Friends['inga'] += 4
-    IngaPlayerPath += 1
-    TavernScandal += 1
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_anal_vaginal', 'ИНГА СКАЧЕТ НА КОЛЕНЯХ ГРЮНА', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: РАСКРЕПОЩЁННЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardSoloAnal_1Text') = 1:
+        gs 'IngaGuardSoloAnal_1Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Дальше', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardSoloAnal_2'
+    end
+---
+
+#IngaGuardSoloAnal_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_anal_pose', 'АНАЛЬНЫЙ СЕКС СПИНОЙ К ГРЮНУ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: РАСКРЕПОЩЁННЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardSoloAnal_2Text') = 1:
+        gs 'IngaGuardSoloAnal_2Text'
+    end
+
+    sluttiness['inga'] += 2
+    IngaNpcPath += 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! ================================================
+! ВЕТКА ММЖ (СТЕФАН + ГРЮН + ИНГА)
+! ================================================
+
+#IngaGuardMmjEntryChoice
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/inga_guard_solo_entry', 'ГРЮН И ИНГА В ПОДСОБКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ВЫБОР ДЕЙСТВИЯ'
+
+    if LOC('IngaGuardMmjVisit1_1Text') = 1:
+        gs 'IngaGuardMmjVisit1_1Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Войти в подсобку (ММЖ)', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardMmjRouter'
+    end
+
+    gs 'ActUiPrepare', 'Остаться наблюдать из укрытия', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardRegularSolo'
+    end
+
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#IngaGuardMmjRouter
+    if IngaGuardMmjLadderDone = 0:
+        if IngaGuardMmjStage = 0:
+            gt 'IngaGuardMmjVisit1_2'
+        elseif IngaGuardMmjStage = 1:
+            gt 'IngaGuardMmjVisit2_2'
+        else:
+            gt 'IngaGuardMmjVisit3_2'
+        end
+    else:
+        gt 'IngaGuardMmjLoopInit'
+    end
+---
+
+! --- ММЖ ВИЗИТ 1 (по очереди) ---
+#IngaGuardMmjVisit1_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_visit1_grun', 'ГРЮН И ИНГА: СТЕФАН ЗАШЁЛ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ММЖ — ПЕРВЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardMmjVisit1_2Text') = 1:
+        gs 'IngaGuardMmjVisit1_2Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Принять очередь', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardMmjVisit1_3'
+    end
+---
+
+#IngaGuardMmjVisit1_3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_visit1_stefan', 'ИНГА ЛАСКАЕТ СТЕФАНА', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ММЖ — ПЕРВЫЙ ВИЗИТ'
+
+    if LOC('IngaGuardMmjVisit1_3Text') = 1:
+        gs 'IngaGuardMmjVisit1_3Text'
+    end
+
+    IngaGuardMmjStage = 1
+    sluttiness['inga'] += 3
+    otkroven['inga'] += 1
+    gs 'RegisterPlayerCum'
+    gs 'RegisterSex', 'inga', 'oral', 1, 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! --- ММЖ ВИЗИТ 2 (одновременно двум) ---
+#IngaGuardMmjVisit2_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_visit2_double', 'ОДНОВРЕМЕННЫЙ МИНЬЕТ ДВУМ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ММЖ — ВТОРОЙ ВИЗИТ'
+
+    if LOC('IngaGuardMmjVisit2_2Text') = 1:
+        gs 'IngaGuardMmjVisit2_2Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Кончить', 'cum'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardMmjVisit2_3'
+    end
+---
+
+#IngaGuardMmjVisit2_3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_visit2_cum', 'ОКОНЧАНИЕ НА ЛИЦО', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ММЖ — ВТОРОЙ ВИЗИТ'
+
+    if LOC('IngaGuardMmjVisit2_3Text') = 1:
+        gs 'IngaGuardMmjVisit2_3Text'
+    end
+
+    IngaGuardMmjStage = 2
+    sluttiness['inga'] += 4
+    gs 'RegisterPlayerCum'
+    gs 'RegisterSex', 'inga', 'oral', 1, 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Уйти на рынок', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! --- ММЖ ВИЗИТ 3 (рот + вагина со сменой мест) ---
+#IngaGuardMmjVisit3_2
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_visit3_stefan_back', 'СТЕФАН ВАГИНАЛЬНО, ГРЮН В РОТ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ММЖ — ТРЕТИЙ ВИЗИТ'
+
+    if LOC('IngaGuardMmjVisit3_2Text') = 1:
+        gs 'IngaGuardMmjVisit3_2Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Поменяться местами с Грюном', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardMmjVisit3_3'
+    end
+---
+
+#IngaGuardMmjVisit3_3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_visit3_grun_back', 'ГРЮН СЗАДИ, СТЕФАН В РОТ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ММЖ — ТРЕТИЙ ВИЗИТ'
+
+    if LOC('IngaGuardMmjVisit3_3Text') = 1:
+        gs 'IngaGuardMmjVisit3_3Text'
+    end
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Финал', 'cum'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IngaGuardMmjVisit3_4'
+    end
+---
+
+#IngaGuardMmjVisit3_4
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_visit3_cum', 'ОБЩИЙ ФИНАЛ ММЖ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ММЖ — ТРЕТИЙ ВИЗИТ'
+
+    if LOC('IngaGuardMmjVisit3_4Text') = 1:
+        gs 'IngaGuardMmjVisit3_4Text'
+    end
+
+    IngaGuardMmjStage = 3
+    IngaGuardMmjLadderDone = 1
+    sluttiness['inga'] += 5
+    gs 'RegisterPlayerCum'
+    gs 'RegisterSex', 'inga', 'vaginal', 1, 1
+    gs 'ClampGirlSocialStats', 'inga'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Завершить и уйти', 'market'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+! ================================================
+! ПОВТОРЯЮЩАЯСЯ ММЖ СЦЕНА
+! ================================================
+
+#IngaGuardMmjLoopInit
+    MmjSwapCount = 0
+    MmjIsDp = 0
+    $MmjPose = 'stefan_back'
+    gt 'IngaGuardMmjLoop'
+---
+
+#IngaGuardMmjLoop
+    *clr
+    clr
+    cla
+
+    gs 'EnsureGirlData', 'inga'
+
+    if $MmjPose = 'stefan_back':
+        gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_loop_stefan_back', 'СТЕФАН СЗАДИ, ГРЮН ОРАЛЬНО', 'large', 'webp'
+    elseif $MmjPose = 'stefan_front':
+        gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_loop_stefan_front', 'СТЕФАН ОРАЛЬНО, ГРЮН СЗАДИ', 'large', 'webp'
+    elseif $MmjPose = 'dp_stefan_vag':
+        gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_loop_dp_vag', 'ДВОЙНОЕ ПРОНИКНОВЕНИЕ: СТЕФАН ВАГИНАЛЬНО', 'large', 'webp'
+    elseif $MmjPose = 'dp_stefan_anal':
+        gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_loop_dp_anal', 'ДВОЙНОЕ ПРОНИКНОВЕНИЕ: СТЕФАН АНАЛЬНО', 'large', 'webp'
+    end
+
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: СОВМЕСТНАЯ СЦЕНА'
+
+    if LOC('IngaGuardMmjLoopText') = 1:
+        gs 'IngaGuardMmjLoopText', $MmjPose
+    end
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Успокоить Ингу', 'guard'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'IngaGuardSaturdayAfterInterrupt'
+    ! Возможность поменяться местами (до 2 раз)
+    if MmjSwapCount < 2:
+        gs 'ActUiPrepare', 'Поменяться местами с Грюном', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            MmjSwapCount += 1
+            if $MmjPose = 'stefan_back':
+                $MmjPose = 'stefan_front'
+            elseif $MmjPose = 'stefan_front':
+                $MmjPose = 'stefan_back'
+            elseif $MmjPose = 'dp_stefan_vag':
+                $MmjPose = 'dp_stefan_anal'
+            elseif $MmjPose = 'dp_stefan_anal':
+                $MmjPose = 'dp_stefan_vag'
+            end
+            gt 'IngaGuardMmjLoop'
+        end
+    end
+
+    ! Переход к двойному проникновению (если анал открыт и ещё не в DP)
+    if analvirgin['inga'] = 0 and MmjIsDp = 0:
+        gs 'ActUiPrepare', 'Предложить двойное проникновение (DP)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardMmjDpSelect'
+        end
+    end
+
+    ! Варианты финала
+    if MmjIsDp = 0:
+        gs 'ActUiPrepare', 'Кончить в рот', 'cum'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardMmjFinish', 'mouth'
+        end
+
+        gs 'ActUiPrepare', 'Кончить в вагину', 'cum'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardMmjFinish', 'inside'
+        end
+    else:
+        gs 'ActUiPrepare', 'Синхронно кончить вместе с Грюном', 'cum'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IngaGuardMmjFinish', 'dp'
+        end
     end
 ---
 
-#IngaGuardSaturdayAfterInterrupt
-    gs 'ShowLocationScreenTitle', 'ПОСЛЕ ПОДСОБКИ'
+#IngaGuardMmjDpSelect
+    *clr
+    clr
+    cla
 
-    *p 'Инга вытирает слёзы: "Ты… ты всё видел? Пожалуйста… никому не говори…"'
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_dp_proposal', 'ПРЕДЛОЖЕНИЕ ДВОЙНОГО ПРОНИКНОВЕНИЯ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ММЖ: ВЫБОР ПОЗИЦИИ ДЛЯ DP'
 
-    Friends['inga'] += 2
+    *pl 'Ты предлагаешь взять Ингу в два смычка. Грюн довольно гогочет и хлопает тебя по плечу:'
+    *pl '"Вот это по-нашему! Девка уже спелая, выдержит обоих. Выбирай, Стефан, какую дырочку берёшь себе?"'
 
-    if IngaPlayerRouteOpen = 1 and LOC('IngaRomanceTryUnlock') = 1:
-        gs 'IngaRomanceTryUnlock'
+    *pl ' '
+    gs 'ActUiPrepare', 'Войти спереди (вагина), Грюн сзади', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $MmjPose = 'dp_stefan_vag'
+        MmjIsDp = 1
+        gt 'IngaGuardMmjLoop'
     end
 
-    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    gs 'ActUiPrepare', 'Войти сзади (анал), Грюн спереди', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        $MmjPose = 'dp_stefan_anal'
+        MmjIsDp = 1
+        gt 'IngaGuardMmjLoop'
+    end
+---
+
+#IngaGuardMmjFinish
+    $MmjFinishChoice = $ARGS[0]
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/inga/guard_quest/mmj_loop_finish', 'ФИНАЛ СОВМЕСТНОЙ СЦЕНЫ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДСОБКА: ФИНАЛ'
+
+    if LOC('IngaGuardMmjFinishText') = 1:
+        gs 'IngaGuardMmjFinishText', $MmjFinishChoice
+    end
+
+    gs 'RegisterPlayerCum'
+    sluttiness['inga'] += 2
+    gs 'ClampGirlSocialStats', 'inga'
+
+    killvar '$MmjPose'
+    killvar 'MmjSwapCount'
+    killvar 'MmjIsDp'
+    killvar '$MmjFinishChoice'
+
+    *pl ' '
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'market'
     act $ActUiLabel, $ActUiIconPath:
         gt 'Market'
     end
+---
+
+! ================================================
+! ОБРАТНАЯ СОВМЕСТИМОСТЬ
+! ================================================
+
+#IngaGuardSaturdayInterrupt
+    gt 'Market'
+---
+
+#IngaGuardSaturdayAfterInterrupt
+    gt 'Market'
 ---
 
 #IngaGuardSaturdayDebugReset
     IngaGuardSaturdayDone = 0
-    IngaGuardSaturdayLastWeek = 0
+    IngaGuardSaturdayLastDay = 0
     IngaGuardSaturdayCanStart = 0
+    IngaGuardLadderStage = 0
+    IngaGuardLadderDone = 0
+    IngaGuardMmjStage = 0
+    IngaGuardMmjLadderDone = 0
+    IngaGuardBribedExit = 0
 ---
