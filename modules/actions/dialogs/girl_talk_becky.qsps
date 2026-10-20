@@ -1,7 +1,8 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_becky.qsps
 ! MODULE: actions/dialogs
-! Меню разговоров с Бекки в лавке
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Меню и разговоры с Бекки Блэнкеншип в лавке
 ! ================================================
 
 #GirlTalkBuildBeckyMainMenu
@@ -10,9 +11,350 @@
 
     gs 'GirlTalkRootAppendPersonalMenu'
 
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и покупателях', ''
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'TalkWithBecky'
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_shop'
     }
 
+    if Friends['becky'] >= 6:
+        if IngaStory = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О дочке Инге', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_inga'
+            }
+        elseif IngaStory = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Расспросить ещё об Инге', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_inga'
+            }
+        elseif IngaStory = 2:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О женихе Лукасе', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_inga'
+            }
+        end
+    end
+
+    if Friends['becky'] >= 8:
+        if HusbandStory = 0:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О покойном муже Эрике', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_husband'
+            }
+        elseif HusbandStory = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Ещё об озорствах Эрика', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_husband'
+            }
+        elseif HusbandStory = 2:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подружках Эрика', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_husband'
+            }
+        elseif HusbandStory = 3:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Об остальных подругах Эрика', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_husband'
+            }
+        elseif HusbandStory = 4:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Воспоминания об Эрике', ''
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_husband'
+            }
+        end
+    end
+
+    if Friends['becky'] >= 6 and EddieStory = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О сыне Эдди', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_eddie'
+        }
+    end
+
+    if EddieSawGeorg >= 2 and HusbandStory > 0 and EddieStory > 0 and Friends['becky'] >= 10 and GeorgMention = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О забавах Эдди и Жоржетты', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_eddie_georgette'
+        }
+    end
+
+    if BeckyHomeSex = 1 and EddieHelpPromised = 1 and BeckyEddieOutraged = 0 and BeckyEddieDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О тайных взглядах Эдди', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_eddie_outraged'
+        }
+    end
+
+    if BeckyEddieOutraged = 1 and BeckyPriestHint = 0 and BeckyEddieDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Посоветовать сходить к священнику', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_priest_hint'
+        }
+    end
+
+    if BeckyPriestConfessionSeen = 1 and BeckyPriestOk = 0 and BeckyPriestRetry = 0 and BeckyEddieDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Утешить после исповеди', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_priest_retry'
+        }
+    end
+
+    if BeckyEddieDone = 1 and BeckyEddieNormalizeTalkDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О новых порядках дома', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_eddie_normalize'
+        }
+    end
+
+    if BeckyMayorClerkTalkDone = 0 and (PlayerKnows['becky_backroom_clerk'] = 1 or EventWitnessed['becky_backroom_clerk'] = 1) and Friends['becky'] >= 10:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О клерке из мэрии', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_clerk'
+        }
+    end
+
+    if BeckyFridayContacts >= 4 and BeckyHomeStage >= 2 and Friends['becky'] >= 12 and HusbandStory > 0 and BeckyHomeStage < 3:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Напроситься в гости', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_home_invite'
+        }
+    end
+
+    if BeckyTimesVisited > 0 and BeckyPastVisitTalkToday <> day:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О прошлом визите в гости', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_past_visit'
+        }
+    end
+
+    if PlayerHasWarehouseKeys = 1 and PlayerHasDexterityOil = 0 and (sluttiness['becky'] >= 15 or SexSceneCount['becky'] > 0 or BeckySexUnlocked = 1):
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О мази «Ловкие пальцы»', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'BeckyTalkDexterityOil'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+    }
+
+    if Friends['becky'] >= 10 or love['becky'] >= 5 or otkroven['becky'] >= 8:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+        }
+    end
+
+    if SandraBeckyCrisisDone = 1 and SandraBeckyTalkBeckyDone = 0 and SandraBeckyHardOffense = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить о Сандре', ''
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'SandraBeckyTalkBecky'
+        }
+    end
+
+    if LOC('GirlTalkAppendGiftMenuItems') = 1:
+        gs 'GirlTalkAppendGiftMenuItems'
+    end
+---
+
+#GirlTalkBeckyShopRun
+    *pl 'Ты интересуешься у Бекки, как идут дела в лавке и не подводят ли поставщики.'
+    *pl ' '
+    *pl 'Вдова охотно отзывается, оглаживая цветастый фартук на пышных бёдрах:'
+    *pl ' '
+    *pl '— Ох, Стефанчик, грех жаловаться! Мешки с мукой да крупой разлетаются быстро — город-то растёт, кушать все хотят. А трактир твой для меня и вовсе первейший заказчик! Ты заходи почаще, для доброго соседа у меня всегда и товар посвежее припасён, и мера полная.'
+    *pl ' '
+    *pl 'Бекки лукаво подмигивает, окинув тебя тёплым взглядом хозяйки, знающей толк в торговле.'
+
+    $BeckyShopDailyKey = 'becky_shop_' + STR(day)
+    if BeckyShopTalkDay[$BeckyShopDailyKey] = 0:
+        BeckyShopTalkDay[$BeckyShopDailyKey] = 1
+        if Friends['becky'] < 12:
+            Friends['becky'] += 1
+        end
+        if trading < 30:
+            trading += 1
+        end
+    end
+    killvar '$BeckyShopDailyKey'
+---
+
+#GirlTalkBeckyIngaRun
+    if IngaStory = 0:
+        gs 'BeckyTalkIngaStory1Text'
+        IngaStory = 1
+        if Friends['becky'] < 15:
+            Friends['becky'] += 1
+        end
+    elseif IngaStory = 1:
+        gs 'BeckyTalkIngaStory2Text'
+        IngaStory = 2
+        otkroven['becky'] += 1
+    elseif IngaStory = 2:
+        gs 'BeckyTalkIngaStory3Text'
+        IngaStory = 3
+        sluttiness['becky'] += 1
+    end
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'flirt'
+---
+
+#GirlTalkBeckyHusbandRun
+    if HusbandStory = 0:
+        gs 'BeckyTalkHusbandStory1Text'
+        HusbandStory = 1
+        if Friends['becky'] < 15:
+            Friends['becky'] += 1
+        end
+    elseif HusbandStory = 1:
+        gs 'BeckyTalkHusbandStory2Text'
+        HusbandStory = 2
+        sluttiness['becky'] += 1
+    elseif HusbandStory = 2:
+        gs 'BeckyTalkHusbandStory3Text'
+        HusbandStory = 3
+        sluttiness['becky'] += 1
+    elseif HusbandStory = 3:
+        gs 'BeckyTalkHusbandStory4Text'
+        HusbandStory = 4
+        otkroven['becky'] += 1
+    elseif HusbandStory = 4:
+        gs 'BeckyTalkHusbandStory5Text'
+        HusbandStory = 5
+        sluttiness['becky'] += 1
+        otkroven['becky'] += 1
+    end
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'flirt'
+---
+
+#GirlTalkBeckyEddieRun
+    EddieStory = 1
+    gs 'BeckyTalkEddieStory1Text'
+    if Friends['becky'] < 15:
+        Friends['becky'] += 1
+    end
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'talk'
+---
+
+#GirlTalkBeckyEddieGeorgetteRun
+    GeorgMention = 1
+    if EddieStory < 2:
+        EddieStory = 2
+    end
+    gs 'BeckyTalkEddieGeorgText'
+    otkroven['becky'] += 2
+    sluttiness['becky'] += 1
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'flirt'
+---
+
+#GirlTalkBeckyEddieOutragedRun
+    BeckyEddieOutraged = 1
+    gs 'BeckyTalkEddieOutragedText'
+    otkroven['becky'] += 1
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'flirt'
+---
+
+#GirlTalkBeckyPriestHintRun
+    BeckyPriestHint = 1
+    gs 'BeckyTalkPriestHintText'
+    Friends['becky'] += 1
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'talk'
+---
+
+#GirlTalkBeckyPriestRetryRun
+    BeckyPriestRetry = 1
+    gs 'BeckyTalkPriestRetryText'
+    Friends['becky'] += 2
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'talk'
+---
+
+#GirlTalkBeckyEddieNormalizeRun
+    BeckyEddieNormalizeTalkDone = 1
+    gs 'BeckyEddieNormalizeBeckyText'
+    Friends['becky'] += 2
+    otkroven['becky'] += 1
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'talk'
+---
+
+#GirlTalkBeckyClerkRun
+    BeckyMayorClerkTalkDone = 1
+    gs 'BeckyTalkMayorClerkText'
+    Friends['becky'] += 1
+    trading += 1
+
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'talk'
+---
+
+#GirlTalkBeckyHomeInviteRunTopic
+    gs 'BeckyTalkHomeInviteRun'
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'flirt'
+---
+
+#GirlTalkBeckyPastVisitRun
+    BeckyPastVisitTalkToday = day
+    gs 'BeckyTalkPastVisitText'
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        killvar '$BeckyTalkBlock'
+    end
+
+    gs 'CorruptionProgress', 'becky', 'talk'
 ---

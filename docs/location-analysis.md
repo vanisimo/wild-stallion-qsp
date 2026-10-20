@@ -3,11 +3,11 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 498
-- Locations: 3684
-- Locations with direct incoming calls: 3171
-- Locations without direct incoming calls: 513
-- Review candidates without direct incoming calls: 186
-- Classified entry/helper locations without direct incoming calls: 327
+- Locations: 3696
+- Locations with direct incoming calls: 3175
+- Locations without direct incoming calls: 521
+- Review candidates without direct incoming calls: 189
+- Classified entry/helper locations without direct incoming calls: 332
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -65,15 +65,18 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 205 | `modules/core` |
 | `GirlNoPantiesWorkIsActive` | `modules/actions/tavern/girl_no_panties_work.qsps` | 14 | `modules/actions` |
 | `GirlPolicyResponseApplyStats` | `modules/events/hall/girl_policy_response.qsps` | 188 | `modules/events` |
-| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 528 | `modules/actions` |
-| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 503 | `modules/actions` |
-| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 468 | `modules/actions` |
-| `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 186 | `modules/actions` |
-| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1051 | `modules/actions` |
-| `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 246 | `modules/actions` |
-| `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 289 | `modules/actions` |
-| `GirlWorkPolicyTalkHallAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 102 | `modules/actions` |
-| `GirlWorkPolicyTalkKitchenAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 113 | `modules/actions` |
+| `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 24 | `modules/core` |
+| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 511 | `modules/actions` |
+| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 491 | `modules/actions` |
+| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 456 | `modules/actions` |
+| `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 177 | `modules/actions` |
+| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1144 | `modules/actions` |
+| `GirlTalkPersonalBuildMainMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1203 | `modules/actions` |
+| `GirlTalkPersonalOpenSubmenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 8 | `modules/actions` |
+| `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 237 | `modules/actions` |
+| `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 278 | `modules/actions` |
+| `GirlWorkPolicyTalkHallAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 120 | `modules/actions` |
+| `GirlWorkPolicyTalkKitchenAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 131 | `modules/actions` |
 | `GuardBribeResolve` | `modules/events/quests/guard_bribe_quest.qsps` | 294 | `modules/events` |
 | `HallEventChoiceThoughtsBody` | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | 20 | `modules/events` |
 | `HallHarassmentAftermathFamily` | `modules/events/hall/hall_harassment.qsps` | 1401 | `modules/events` |
@@ -264,6 +267,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `BeckyHomeGuestDressOkText` | `modules/events/becky/becky_home_chain_text.qsps` | 29 | `entry/helper` |
 | `BeckyOtkrovenNegativeLowFriend` | `modules/events/becky/becky_events.qsps` | 55 | `entry/helper` |
 | `BeckyTalkEddieSonText` | `modules/events/becky/becky_talk_text.qsps` | 116 | `entry/helper` |
+| `BeckyTalkGeorgMentionText` | `modules/events/becky/becky_talk_text.qsps` | 124 | `entry/helper` |
 | `CalculateDailyProfit` | `modules/core/tavern/tavern_income.qsps` | 515 | `entry/helper` |
 | `CalculateGirlAvailability` | `modules/core/tavern/tavern_reputation.qsps` | 18 | `entry/helper` |
 | `CheckAmandaEvents` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 13 | `entry/helper` |
@@ -362,9 +366,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 251 | `entry/helper` |
 | `GirlMemoryOfStefanDebugPanel` | `modules/events/hall/girl_memory_of_stefan.qsps` | 195 | `entry/helper` |
 | `GirlTalkImageDebugPanel` | `modules/actions/dialogs/girl_talk_images.qsps` | 197 | `entry/helper` |
-| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1216 | `entry/helper` |
+| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1207 | `entry/helper` |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 446 | `entry/helper` |
-| `GirlWorkPolicyTalkAfterHarassStart` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 202 | `entry/helper` |
+| `GirlWorkPolicyTalkAfterHarassBuildMenu` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 287 | `entry/helper` |
+| `GirlWorkPolicyTalkAfterHarassStart` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 220 | `entry/helper` |
+| `GirlWorkPolicyTalkBuildMenu` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 339 | `entry/helper` |
 | `GroupSexMenu` | `modules/actions/sex/group_sex.qsps` | 6 | `entry/helper` |
 | `GuardBribeFirstPaidText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 182 | `entry/helper` |
 | `GuardBribeMeetIntroText` | `modules/events/quests/guard_bribe_quest_text.qsps` | 178 | `entry/helper` |
@@ -495,6 +501,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `PrintMainFmtP` | `modules/core/text/text_format.qsps` | 402 | `entry/helper` |
 | `PrintPanelFmt` | `modules/core/text/text_format.qsps` | 406 | `entry/helper` |
 | `PrintStyledP` | `modules/core/text/text_format.qsps` | 476 | `entry/helper` |
+| `PrintThoughtMenuPromptP` | `modules/menu/npc/npc_clickable_link.qsps` | 381 | `entry/helper` |
 | `PrintThoughtP` | `modules/core/text/text_format.qsps` | 445 | `entry/helper` |
 | `RandomBool` | `modules/core/system/functions.qsps` | 7 | `entry/helper` |
 | `RegisterAirtight` | `modules/actions/sex/sex_register.qsps` | 190 | `entry/helper` |
@@ -509,17 +516,18 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 | `entry/helper` |
 | `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 40 | `entry/helper` |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 | `entry/helper` |
-| `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 358 | `entry/helper` |
+| `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 360 | `entry/helper` |
 | `ShowDreamItemIfKnown` | `modules/core/gifts/gift_dream_images.qsps` | 32 | `entry/helper` |
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 511 | `entry/helper` |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 188 | `entry/helper` |
 | `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 580 | `entry/helper` |
 | `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 184 | `entry/helper` |
 | `ShowPortrait` | `modules/core/show_image/show_image_helpers.qsps` | 179 | `entry/helper` |
-| `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 259 | `entry/helper` |
+| `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 261 | `entry/helper` |
 | `ShowSexImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 577 | `entry/helper` |
 | `ShowSizedImage` | `modules/core/show_image/image_debug_random.qsps` | 186 | `entry/helper` |
 | `SparkQueueDebugReset` | `modules/core/tavern/spark_queue.qsps` | 335 | `entry/helper` |
+| `TalkWithBecky` | `modules/actions/dialogs/talk_with_becky.qsps` | 8 | `entry/helper` |
 | `TalkWithClarissa` | `modules/core/system/compatibility_aliases.qsps` | 251 | `entry/helper` |
 | `TalkWithGerhard` | `modules/core/system/compatibility_aliases.qsps` | 259 | `entry/helper` |
 | `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 300 | `entry/helper` |
@@ -541,31 +549,31 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1711 |
-| `ShowLocationScreenTitle` | 756 |
+| `ActUiPrepare` | 1718 |
+| `ShowLocationScreenTitle` | 755 |
 | `SceneShowVisual` | 707 |
-| `Menu.AddModule` | 600 |
-| `MenuUiAdd` | 592 |
+| `Menu.AddModule` | 597 |
+| `MenuUiAdd` | 589 |
 | `EnsureGirlData` | 244 |
 | `ClampGirlSocialStats` | 214 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 165 |
 | `ShowGirlSidebar` | 106 |
 | `RegisterSex` | 98 |
-| `Menu.Create` | 97 |
 | `Market` | 97 |
-| `Menu.Destroy` | 91 |
+| `Menu.Create` | 95 |
+| `Menu.Destroy` | 90 |
 | `PrintMainP` | 87 |
-| `ShowImage` | 86 |
+| `ShowImage` | 87 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
-| `MarketDance` | 79 |
+| `MarketDance` | 78 |
+| `GirlTalkResult` | 71 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
-| `GirlTalkResult` | 51 |
-| `Menu.AddCondition` | 46 |
 | `SaveLastHallEvent` | 45 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 

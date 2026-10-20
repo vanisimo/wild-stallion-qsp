@@ -79,9 +79,27 @@
 
     *pl ' '
 
-    gs 'GirlWorkPolicyTalkBuildMenu'
+    gs 'ActUiPrepare', 'Вести себя сдержанно', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 1, $PolicyTalkReturnLoc
+    end
 
-    *p 'Что сказать <a href="exec:gs ''Menu.Show'', ''GirlWorkPolicyTalkMenu''">ей теперь</a>?'
+    if FamilyLiberationGateOpen = 1:
+        gs 'ActUiPrepare', 'Решать самой', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 2, $PolicyTalkReturnLoc
+        end
+
+        gs 'ActUiPrepare', 'Вести себя раскованно', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlWorkPolicyTalkSet', $PolicyTalkGirl, $PolicyTalkArea, 3, $PolicyTalkReturnLoc
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться без разговора', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $PolicyTalkReturnLoc
+    end
 ---
 
 ! ================================================
@@ -243,14 +261,25 @@
 
     *pl ' '
 
-    gs 'GirlWorkPolicyTalkAfterHarassBuildMenu'
-    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_prompt_body'
-    gs 'PrintThoughtMenuPromptP', 'GirlWorkPolicyAfterHarassMenu', 'ей', $PolicyTalkText, 'что сказать ', ': '
-    killvar '$PolicyTalkText'
+    gs 'ActUiPrepare', 'Вести себя сдержанно', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 1, $PolicyTalkReturnLoc
+    end
 
-    *pl ' '
+    if FamilyLiberationGateOpen = 1:
+        gs 'ActUiPrepare', 'Решать самой', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 2, $PolicyTalkReturnLoc
+        end
 
-    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
+        gs 'ActUiPrepare', 'Вести себя раскованно', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlWorkPolicyTalkAfterHarassSet', $PolicyTalkGirl, $PolicyTalkArea, 3, $PolicyTalkReturnLoc
+        end
+    end
+
+    gs 'ActUiPrepare', 'В главный зал', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
         gt $PolicyTalkReturnLoc
     end
 ---
@@ -453,7 +482,8 @@
         *pl ' '
     end
 
-    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
         gt $PolicyTalkReturnLoc
     end
 

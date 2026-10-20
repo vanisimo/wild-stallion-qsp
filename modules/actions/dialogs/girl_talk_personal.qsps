@@ -6,17 +6,110 @@
 ! ================================================
 
 #GirlTalkPersonalOpenSubmenu
-    GirlTalkPersonalMenuActive = 1
     GirlTalkAutoOpenTalkMenu = 1
     gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
 ---
 
 #GirlTalkRootAppendPersonalMenu
-    if GirlTalkPersonalAvailable = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', '★ Важный разговор', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gs 'GirlTalkPersonalOpenSubmenu'
-        }
+    gs 'GirlTalkPersonalAddArcTopicsToMenu'
+    gs 'GirlTalkPersonalAddHallTopicsToMenu'
+
+    if $TalkGirl = 'amanda':
+        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Легаре', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'amanda_legare'
+            }
+        end
+
+        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_boys'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О парнях в городе', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'amanda_boys'
+            }
+        end
+
+        if AmandaMetLizette = 1 or LizetteKnown = 1:
+            if LizetteBanned = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить болтать с Лизеттой', 'talk'
+            else
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить болтать с Лизеттой', 'talk'
+            end
+
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'lizette'
+            }
+        end
+
+        if AmandaLegareInterest >= 1 or AmandaLegareTalkDone = 1 or Fact_AmandaLegareOutsideMeet = 1 or FactHappened['amanda_dancewithlegare_1'] = 1 or AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1:
+            gs 'GirlTalkPersonalLegareBanned'
+
+            if GirlTalkPersonalLegareBanned = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить общение с Легаре', 'talk'
+            else
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить общение с Легаре', 'talk'
+            end
+
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'legare'
+            }
+
+            killvar 'GirlTalkPersonalLegareBanned'
+        end
+
+        gs 'GirlTalkPersonalGuysBanCanShow', 'amanda'
+        if GirlTalkPersonalGuysBanCanShow = 1:
+            if AmandaProhibitGuys = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить встречаться с парнями', 'talk'
+            else
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить встречаться с парнями', 'talk'
+            end
+
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'guys'
+            }
+        end
+        killvar 'GirlTalkPersonalGuysBanCanShow'
+
+    elseif $TalkGirl = 'melissa':
+        if MelissaMinstrelMet = 1:
+            if MelissaProhibitMinstrel = 1:
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить общение с менестрелем', 'talk'
+            else
+                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить общение с менестрелем', 'talk'
+            end
+
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'minstrel'
+            }
+        end
+
+        gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О музыканте', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'melissa_musician'
+            }
+        end
+
+    elseif $TalkGirl = 'sandra':
+        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_carpenter'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О столяре', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'sandra_carpenter'
+            }
+        end
+
+        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_priest'
+        if GirlTalkPersonalStoryReady = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О священнике', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'sandra_priest'
+            }
+        end
     end
 ---
 
@@ -59,7 +152,7 @@
     if LOC('GirlPolicyResponseTalkCanDiscuss') = 1:
         gs 'GirlPolicyResponseTalkCanDiscuss', $TalkGirl
         if GirlPolicyResponseTalkAvailable = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Как она выполнила правило', ''
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Как она выполнила правило', 'talk'
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
                 gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_policy'
             }
@@ -69,7 +162,7 @@
     if LOC('HallFamilyReactionCanDiscuss') = 1:
         gs 'HallFamilyReactionCanDiscuss', $TalkGirl
         if HallFamilyReactionAvailable = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Реакция семьи', ''
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Реакция семьи', 'family'
             gs 'Menu.AddModule', 'GirlTalkMainMenu', {
                 gt 'GirlTalkHallTopicStart', $TalkGirl, $TalkReturnLoc, 'hall_family'
             }
@@ -1108,113 +1201,11 @@
 ---
 
 #GirlTalkPersonalBuildMainMenu
-    gs 'Menu.Destroy', 'GirlTalkMainMenu'
-    gs 'Menu.Create', 'GirlTalkMainMenu'
-
-    gs 'GirlTalkPersonalAddArcTopicsToMenu'
-    gs 'GirlTalkPersonalAddHallTopicsToMenu'
-
-    if $TalkGirl = 'amanda':
-        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_legare'
-        if GirlTalkPersonalStoryReady = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Легаре', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'amanda_legare'
-            }
-        end
-
-        gs 'GirlTalkPersonalStoryAvailable', 'amanda', 'amanda_boys'
-        if GirlTalkPersonalStoryReady = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О парнях в городе', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'amanda_boys'
-            }
-        end
-
-        if AmandaMetLizette = 1 or LizetteKnown = 1:
-            if LizetteBanned = 1:
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить болтать с Лизеттой', ''
-            else
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить болтать с Лизеттой', ''
-            end
-
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'lizette'
-            }
-        end
-
-        if AmandaLegareInterest >= 1 or AmandaLegareTalkDone = 1 or Fact_AmandaLegareOutsideMeet = 1 or FactHappened['amanda_dancewithlegare_1'] = 1 or AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1:
-            gs 'GirlTalkPersonalLegareBanned'
-
-            if GirlTalkPersonalLegareBanned = 1:
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить общение с Легаре', ''
-            else
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить общение с Легаре', ''
-            end
-
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'legare'
-            }
-
-            killvar 'GirlTalkPersonalLegareBanned'
-        end
-
-        gs 'GirlTalkPersonalGuysBanCanShow', 'amanda'
-        if GirlTalkPersonalGuysBanCanShow = 1:
-            if AmandaProhibitGuys = 1:
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить встречаться с парнями', ''
-            else
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить встречаться с парнями', ''
-            end
-
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'guys'
-            }
-        end
-        killvar 'GirlTalkPersonalGuysBanCanShow'
-
-    elseif $TalkGirl = 'melissa':
-        if MelissaMinstrelMet = 1:
-            if MelissaProhibitMinstrel = 1:
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Разрешить общение с менестрелем', ''
-            else
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Запретить общение с менестрелем', ''
-            end
-
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalBanToggle', $TalkGirl, $TalkReturnLoc, 'minstrel'
-            }
-        end
-
-        gs 'GirlTalkPersonalStoryAvailable', 'melissa', 'melissa_musician'
-        if GirlTalkPersonalStoryReady = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О музыканте', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'melissa_musician'
-            }
-        end
-
-    elseif $TalkGirl = 'sandra':
-        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_carpenter'
-        if GirlTalkPersonalStoryReady = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О столяре', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'sandra_carpenter'
-            }
-        end
-
-        gs 'GirlTalkPersonalStoryAvailable', 'sandra', 'sandra_priest'
-        if GirlTalkPersonalStoryReady = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О священнике', ''
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GirlTalkPersonalStoryStart', $TalkGirl, $TalkReturnLoc, 'sandra_priest'
-            }
-        end
-    end
+    gs 'GirlTalkRootAppendPersonalMenu'
 ---
 
 #GirlTalkPersonalBuildMenu
-    gs 'GirlTalkPersonalBuildMainMenu'
+    gs 'GirlTalkRootAppendPersonalMenu'
 ---
 
 #GirlTalkPersonalBanToggle
@@ -1244,7 +1235,6 @@
     gs 'GirlTalkSessionBegin'
     gs 'GirlTalkPersonalApplyBan', $GirlTalkPersonalBanKind
 
-    GirlTalkPersonalMenuActive = 1
     GirlTalkAutoOpenTalkMenu = 1
     gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
 
