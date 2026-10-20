@@ -184,9 +184,9 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SandraBeckySundayReconcile` | `modules/events/sandra/sandra_becky_conflict.qsps` | 216 | `modules/events` |
 | `SandraBeckySundayReconcileCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 193 | `modules/events` |
 | `SandraHomeAfterSex` | `modules/events/sandra/sandra_home_chain.qsps` | 209 | `modules/events` |
-| `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 809 | `modules/events` |
-| `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 755 | `modules/events` |
-| `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 760 | `modules/events` |
+| `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 815 | `modules/events` |
+| `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 761 | `modules/events` |
+| `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 766 | `modules/events` |
 | `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_core.qsps` | 2305 | `modules/actions` |
 | `SexSceneActionLook` | `modules/actions/sex/sex_scene_core.qsps` | 1139 | `modules/actions` |
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
@@ -425,7 +425,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 19 | `entry/helper` |
 | `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 966 | `entry/helper` |
 | `KitchenCustomerEventTryAutoStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 9 | `entry/helper` |
-| `KitchenHarassmentPrintHallReaction` | `modules/events/kitchen/kitchen_harassment.qsps` | 316 | `entry/helper` |
+| `KitchenHarassmentPrintHallReaction` | `modules/events/kitchen/kitchen_harassment.qsps` | 320 | `entry/helper` |
 | `KitchenLookDebugReset` | `modules/locations/tavern/kitchen_activity.qsps` | 18 | `entry/helper` |
 | `KnowledgeEventIdByHallEvent` | `modules/core/knowledge/event_knowledge_ids.qsps` | 84 | `entry/helper` |
 | `KnowledgeEventIdsInit` | `modules/core/knowledge/event_knowledge_ids.qsps` | 11 | `entry/helper` |
