@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 490
-- Locations: 3645
-- Locations with direct incoming calls: 3133
+- Source files: 492
+- Locations: 3651
+- Locations with direct incoming calls: 3139
 - Locations without direct incoming calls: 512
 - Review candidates without direct incoming calls: 185
 - Classified entry/helper locations without direct incoming calls: 327
@@ -540,9 +540,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1650 |
-| `ShowLocationScreenTitle` | 726 |
-| `SceneShowVisual` | 677 |
+| `ActUiPrepare` | 1658 |
+| `ShowLocationScreenTitle` | 730 |
+| `SceneShowVisual` | 681 |
 | `Menu.AddModule` | 590 |
 | `MenuUiAdd` | 582 |
 | `EnsureGirlData` | 240 |
@@ -552,8 +552,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowGirlSidebar` | 102 |
 | `RegisterSex` | 98 |
 | `Menu.Create` | 97 |
-| `Market` | 91 |
 | `Menu.Destroy` | 91 |
+| `Market` | 91 |
 | `PrintMainP` | 87 |
 | `ShowImage` | 86 |
 | `FormatSpintry` | 85 |
@@ -561,10 +561,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MarketDance` | 79 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `RegisterPlayerCum` | 44 |
+| `Menu.AddCondition` | 44 |
 
 ## Dynamic Call Sites
 

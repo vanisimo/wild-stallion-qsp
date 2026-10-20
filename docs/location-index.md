@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 490
-- Locations: 3645
+- Source files: 492
+- Locations: 3651
 
 ## modules/actions
 
@@ -2621,6 +2621,12 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 |
 | `IrmaBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 8 |
 | `IrmaGetBalmForMercenary` | `modules/events/mayor/mayor_honorable_path.qsps` | 55 |
+| `IrmaIngaApprenticeTalk` | `modules/events/irma/irma_inga_workshop.qsps` | 17 |
+| `IrmaIngaDressTryOn` | `modules/events/irma/irma_inga_workshop.qsps` | 78 |
+| `IrmaIngaFittingStefan` | `modules/events/irma/irma_inga_workshop.qsps` | 50 |
+| `IrmaIngaTreeVisit` | `modules/events/irma/irma_inga_workshop.qsps` | 106 |
+| `IrmaIngaWorkshopCheck` | `modules/events/irma/irma_inga_workshop.qsps` | 8 |
+| `IrmaIngaWorkshopPrintText` | `modules/events/irma/irma_inga_workshop_text.qsps` | 8 |
 | `IrmaLoreMenu` | `modules/events/irma/irma_lore_talk.qsps` | 8 |
 | `IrmaLorePrintText` | `modules/events/irma/irma_lore_talk_text.qsps` | 8 |
 | `IrmaLoreScene` | `modules/events/irma/irma_lore_talk.qsps` | 81 |
@@ -3347,13 +3353,13 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 376 |
 | `IrmaFirstMeet` | `modules/locations/shops/irma_first_meet.qsps` | 7 |
 | `IrmaShop` | `modules/locations/shops/irma_shop.qsps` | 7 |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 310 |
-| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 340 |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 325 |
+| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 355 |
 | `IrmaShopRenderCommonHeader` | `modules/locations/shops/irma_shop.qsps` | 137 |
-| `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 180 |
-| `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 279 |
-| `IrmaShopRenderMainTab` | `modules/locations/shops/irma_shop.qsps` | 167 |
-| `IrmaShopRenderUniformsTab` | `modules/locations/shops/irma_shop.qsps` | 245 |
+| `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 189 |
+| `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 288 |
+| `IrmaShopRenderMainTab` | `modules/locations/shops/irma_shop.qsps` | 176 |
+| `IrmaShopRenderUniformsTab` | `modules/locations/shops/irma_shop.qsps` | 254 |
 | `IrmaUniformBuildMenu` | `modules/locations/shops/irma_uniform_orders.qsps` | 96 |
 | `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 521 |
 | `IrmaUniformEnsureName` | `modules/locations/shops/irma_uniform_orders.qsps` | 554 |

@@ -1,0 +1,130 @@
+! ================================================
+! FILE: modules/events/irma/irma_inga_workshop.qsps
+! MODULE: events/irma
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Взаимодействие Ирмы и Инги в мастерской: обучение швейному делу, снятие мерок со Стефана, примерка платьев и таинство у Древа
+! ================================================
+
+#IrmaIngaWorkshopCheck
+    IngaAtIrmaShop = 0
+    if (week = 2 or week = 4) and (time = 2 or time = 3):
+        if IrmaMet = 1 and IngaMet = 1:
+            IngaAtIrmaShop = 1
+        end
+    end
+---
+
+#IrmaIngaApprenticeTalk
+    *clr
+    clr
+    cla
+
+    IngaIrmaBond += 1
+    Friends['inga'] += 1
+    Friends['irma'] += 1
+
+    gs 'ShowLocationScreenTitle', 'У РАСКРОЙНОГО СТОЛА'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_inga_work', 'Инга и Ирма за раскройным столом', 'large', 'webp'
+
+    gs 'IrmaIngaWorkshopPrintText', 'apprentice_talk_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Позволить Инге потренироваться снимать мерки', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaIngaFittingStefan'
+    end
+
+    if IngaIrmaBond >= 5 or Friends['inga'] >= 10:
+        gs 'ActUiPrepare', 'Оценить примерку нового платья на Инге', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaIngaDressTryOn'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к лавке', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaShop'
+    end
+---
+
+#IrmaIngaFittingStefan
+    *clr
+    clr
+    cla
+
+    otkroven['inga'] += 2
+    love['inga'] += 2
+    Friends['irma'] += 1
+
+    gs 'ShowLocationScreenTitle', 'УРОК СНЯТИЯ МЕРОК'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/inga_fitting_stefan', 'Инга смущённо снимает мерки со Стефана под присмотром Ирмы', 'large', 'webp'
+
+    gs 'IrmaIngaWorkshopPrintText', 'fitting_stefan_text'
+    *pl ' '
+
+    if IngaIrmaBond >= 5 or Friends['inga'] >= 10:
+        gs 'ActUiPrepare', 'Попросить Ингу примерить новое платье', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaIngaDressTryOn'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Поблагодарить милых портних', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaShop'
+    end
+---
+
+#IrmaIngaDressTryOn
+    *clr
+    clr
+    cla
+
+    otkroven['inga'] += 2
+    love['inga'] += 3
+    beauty['inga'] += 1
+
+    gs 'ShowLocationScreenTitle', 'ПРИМЕРКА ПЛАТЬЯ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/inga_dress_tryon', 'Инга в новом облегающем платье у зеркала', 'large', 'webp'
+
+    gs 'IrmaIngaWorkshopPrintText', 'dress_tryon_text'
+    *pl ' '
+
+    if IrmaTreeGardenUnlocked = 1 and love['inga'] >= 10 and IrmaTreeRitualDone = 1:
+        gs 'ActUiPrepare', 'Предложить пройти в тайный сад Древа Жизни', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaIngaTreeVisit'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Похвалить наряд и вернуться в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaShop'
+    end
+---
+
+#IrmaIngaTreeVisit
+    *clr
+    clr
+    cla
+
+    love['inga'] += 10
+    love['irma'] += 5
+    otkroven['inga'] += 10
+    IrmaIngaTreeSeen = 1
+
+    if FamilyTension > 0:
+        FamilyTension -= 1
+    end
+
+    gs 'ShowLocationScreenTitle', 'ТАИНСТВО У ДРЕВА ЖИЗНИ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_inga_bath', 'Ирма и Инга в купели у Древа Жизни со Стефаном', 'large', 'webp'
+
+    gs 'IrmaIngaWorkshopPrintText', 'tree_visit_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Ощутить благословение Древа и вернуться', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGarden'
+    end
+---
