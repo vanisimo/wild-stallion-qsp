@@ -1,8 +1,9 @@
 ! ================================================
 ! FILE: modules/core/rumors/city_rumors_core.qsps
 ! MODULE: core/rumors
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
 ! Единый пул городских слухов (City Rumors Engine)
-! Версия: v1
+! Версия: v2 / слухи Ирмы, Древа Жизни, орков и дворянства
 ! ================================================
 
 #CityRumorsEnsureVars
@@ -206,6 +207,36 @@
     elseif (CityRumorReady['inga_temple_purity'] = 1 or IngaRumorDays_AnalPurity > 0) and CityRumorsHeardToday['inga_temple_purity'] = 0:
         $CityRumorPickedKey = 'inga_temple_purity'
         CityRumorReady['inga_temple_purity'] = 0
+
+    ! 16. Триумф Стефана: получение дворянства и признание рода Лермонтов
+    elseif (CityRumorReady['stefan_noble_triumph'] = 1 or (PlayerIsNoble = 1 and CityRumorHeardOnce['stefan_noble_triumph'] = 0)) and CityRumorsHeardToday['stefan_noble_triumph'] = 0:
+        $CityRumorPickedKey = 'stefan_noble_triumph'
+        CityRumorReady['stefan_noble_triumph'] = 0
+        CityRumorHeardOnce['stefan_noble_triumph'] = 1
+
+    ! 17. Победа над кланами орков в ущелье и освобождение трактов в Казад-Хер
+    elseif (CityRumorReady['orc_battle_triumph'] = 1 or (SecondCaravanResolved = 1 and CityRumorHeardOnce['orc_battle_triumph'] = 0)) and CityRumorsHeardToday['orc_battle_triumph'] = 0:
+        $CityRumorPickedKey = 'orc_battle_triumph'
+        CityRumorReady['orc_battle_triumph'] = 0
+        CityRumorHeardOnce['orc_battle_triumph'] = 1
+
+    ! 18. Тайна древнего Древа Жизни в ремесленном квартале
+    elseif (CityRumorReady['tree_of_life_rumor'] = 1 or (IrmaTreeRitualDone = 1 and CityRumorHeardOnce['tree_of_life_rumor'] = 0)) and CityRumorsHeardToday['tree_of_life_rumor'] = 0:
+        $CityRumorPickedKey = 'tree_of_life_rumor'
+        CityRumorReady['tree_of_life_rumor'] = 0
+        CityRumorHeardOnce['tree_of_life_rumor'] = 1
+
+    ! 19. Ночные примерки Стефана у модистки Ирмы
+    elseif (CityRumorReady['irma_stefan_night'] = 1 or (IrmaNightFittingDone = 1 and CityRumorHeardOnce['irma_stefan_night'] = 0)) and CityRumorsHeardToday['irma_stefan_night'] = 0:
+        $CityRumorPickedKey = 'irma_stefan_night'
+        CityRumorReady['irma_stefan_night'] = 0
+        CityRumorHeardOnce['irma_stefan_night'] = 1
+
+    ! 20. Инга в ученицах у Ирмы и визиты Стефана в мастерскую
+    elseif (CityRumorReady['irma_inga_apprentice'] = 1 or ((IngaAtIrmaShop = 1 or IngaIrmaBond >= 5) and CityRumorHeardOnce['irma_inga_apprentice'] = 0)) and CityRumorsHeardToday['irma_inga_apprentice'] = 0:
+        $CityRumorPickedKey = 'irma_inga_apprentice'
+        CityRumorReady['irma_inga_apprentice'] = 0
+        CityRumorHeardOnce['irma_inga_apprentice'] = 1
     end
 
     ! -----------------------------------------------------------
@@ -297,6 +328,31 @@
 
         if (IngaRumorDays_AnalPurity > 0 or IngaStefanAnalDone = 1) and CityRumorsHeardToday['inga_temple_purity'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'inga_temple_purity'
+            CityRumorAvailCount += 1
+        end
+
+        if PlayerIsNoble = 1 and CityRumorsHeardToday['stefan_noble_triumph'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'stefan_noble_triumph'
+            CityRumorAvailCount += 1
+        end
+
+        if SecondCaravanResolved = 1 and CityRumorsHeardToday['orc_battle_triumph'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'orc_battle_triumph'
+            CityRumorAvailCount += 1
+        end
+
+        if IrmaTreeRitualDone = 1 and CityRumorsHeardToday['tree_of_life_rumor'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'tree_of_life_rumor'
+            CityRumorAvailCount += 1
+        end
+
+        if IrmaNightFittingDone = 1 and CityRumorsHeardToday['irma_stefan_night'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'irma_stefan_night'
+            CityRumorAvailCount += 1
+        end
+
+        if (IngaAtIrmaShop = 1 or IngaIrmaBond >= 5) and CityRumorsHeardToday['irma_inga_apprentice'] = 0:
+            $CityRumorAvailPool[CityRumorAvailCount] = 'irma_inga_apprentice'
             CityRumorAvailCount += 1
         end
 

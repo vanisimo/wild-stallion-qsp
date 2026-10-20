@@ -42,7 +42,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `ChurchSundayServiceTalkLegare` | `modules/events/church/church_sunday_service.qsps` | 93 | `modules/events` |
 | `ChurchUiHolyCircleIcon` | `modules/events/church/church_core.qsps` | 7 | `modules/events` |
 | `ChurchWeekdayShowGerhardMenu` | `modules/events/church/church_weekday_menus.qsps` | 16 | `modules/events` |
-| `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 8 | `modules/core` |
+| `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 9 | `modules/core` |
 | `ClarissaIntimAfterSex` | `modules/events/legare/clarissa_intim_arc.qsps` | 195 | `modules/events` |
 | `ClearGirlLocation` | `modules/core/girls/girl_location.qsps` | 61 | `modules/core` |
 | `FamilyCouncilTryAtNight` | `modules/events/family/family_council.qsps` | 26 | `modules/events` |
