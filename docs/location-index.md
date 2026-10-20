@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 492
-- Locations: 3651
+- Source files: 494
+- Locations: 3661
 
 ## modules/actions
 
@@ -140,21 +140,21 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 186 |
 | `GirlTalkPersonalAddArcTopicsToMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 80 |
 | `GirlTalkPersonalAddHallTopicsToMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 54 |
-| `GirlTalkPersonalApplyBan` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1186 |
-| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 983 |
-| `GirlTalkPersonalBanToggle` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1152 |
-| `GirlTalkPersonalBuildMainMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1042 |
-| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1148 |
-| `GirlTalkPersonalCheckAvailable` | `modules/actions/dialogs/girl_talk_personal.qsps` | 510 |
+| `GirlTalkPersonalApplyBan` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1254 |
+| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1051 |
+| `GirlTalkPersonalBanToggle` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1220 |
+| `GirlTalkPersonalBuildMainMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1110 |
+| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1216 |
+| `GirlTalkPersonalCheckAvailable` | `modules/actions/dialogs/girl_talk_personal.qsps` | 550 |
 | `GirlTalkPersonalCountHallTopics` | `modules/actions/dialogs/girl_talk_personal.qsps` | 23 |
-| `GirlTalkPersonalGuysBanCanShow` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1008 |
-| `GirlTalkPersonalLegareBanned` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1034 |
+| `GirlTalkPersonalGuysBanCanShow` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1076 |
+| `GirlTalkPersonalLegareBanned` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1102 |
 | `GirlTalkPersonalOpenSubmenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 8 |
-| `GirlTalkPersonalPrintText` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1386 |
-| `GirlTalkPersonalStoryAvailable` | `modules/actions/dialogs/girl_talk_personal.qsps` | 943 |
-| `GirlTalkPersonalStoryMinOtkroven` | `modules/actions/dialogs/girl_talk_personal.qsps` | 924 |
-| `GirlTalkPersonalStoryStart` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1284 |
-| `GirlTalkPersonalStoryUnlocked` | `modules/actions/dialogs/girl_talk_personal.qsps` | 865 |
+| `GirlTalkPersonalPrintText` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1454 |
+| `GirlTalkPersonalStoryAvailable` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1011 |
+| `GirlTalkPersonalStoryMinOtkroven` | `modules/actions/dialogs/girl_talk_personal.qsps` | 992 |
+| `GirlTalkPersonalStoryStart` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1352 |
+| `GirlTalkPersonalStoryUnlocked` | `modules/actions/dialogs/girl_talk_personal.qsps` | 933 |
 | `GirlTalkPersonalText` | `modules/actions/dialogs/girl_talk_personal_text.qsps` | 10 |
 | `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 246 |
 | `GirlTalkRefreshTopicsMenuIfAllowed` | `modules/actions/dialogs/girl_talk_session.qsps` | 70 |
@@ -1138,6 +1138,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaFirstSexSandraSuspicionTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 179 |
 | `AmandaFirstSexSandraUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 195 |
 | `AmandaFridayDanceAdvance` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 57 |
+| `AmandaGiveNobleDress` | `modules/events/family/family_noble_reaction.qsps` | 238 |
 | `AmandaHomeAfterFirstSexTonightText` | `modules/events/amanda/home/amanda_home_first_sex_text.qsps` | 318 |
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 193 |
 | `AmandaHomeAfterSexText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 189 |
@@ -1464,6 +1465,8 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaNeighborBoysEventText` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys_text.qsps` | 29 |
 | `AmandaNeighborBoysSetBoyData` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 145 |
 | `AmandaNeighborBoysTryStart` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 125 |
+| `AmandaNobleDressGiftCanTalk` | `modules/events/family/family_noble_reaction.qsps` | 231 |
+| `AmandaNobleReactionCanTalk` | `modules/events/family/family_noble_reaction.qsps` | 139 |
 | `AmandaOralBumpTo` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 17 |
 | `AmandaOralEnsureVars` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 7 |
 | `AmandaOralOnOverhearPhrase` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 74 |
@@ -1491,6 +1494,7 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaTalkAboutLegareStreetClashActionText` | `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | 242 |
 | `AmandaTalkAboutLegareStreetClashBuildMenu` | `modules/events/amanda/legare/amanda_legare_street_intercept.qsps` | 600 |
 | `AmandaTalkAboutLegareStreetClashIntroText` | `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | 214 |
+| `AmandaTalkAboutNobility` | `modules/events/family/family_noble_reaction.qsps` | 146 |
 | `BeckyCatchIngaLucasCanStart` | `modules/events/inga/inga_lucas_arc.qsps` | 350 |
 | `BeckyCatchIngaLucasDecline` | `modules/events/inga/inga_lucas_arc.qsps` | 514 |
 | `BeckyCatchIngaLucasStart` | `modules/events/inga/inga_lucas_arc.qsps` | 365 |
@@ -1858,6 +1862,7 @@ Generated from active project files in `qsp-project.json`.
 | `FamilyFirstSexTalkCount` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 182 |
 | `FamilyFirstSexTalkIntroText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 77 |
 | `FamilyFirstSexTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 354 |
+| `FamilyNobleReactionPrintText` | `modules/events/family/family_noble_reaction_text.qsps` | 8 |
 | `FridayDanceAdvanceRound` | `modules/events/dance/friday_dance_core.qsps` | 624 |
 | `FridayDanceAfter` | `modules/events/dance/friday_dance_core.qsps` | 1063 |
 | `FridayDanceAfterText` | `modules/events/dance/friday_dance_text.qsps` | 289 |
@@ -2638,6 +2643,7 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaNightFittingScene` | `modules/events/irma/irma_tree_arc.qsps` | 98 |
 | `IrmaNightMayorTruth` | `modules/events/irma/irma_tree_arc.qsps` | 76 |
 | `IrmaNightVisit` | `modules/events/irma/irma_tree_arc.qsps` | 8 |
+| `IrmaOrderAmandaNobleDress` | `modules/events/family/family_noble_reaction.qsps` | 201 |
 | `IrmaSecondCaravanPlan` | `modules/events/irma/second_caravan_arc.qsps` | 17 |
 | `IrmaTreeBathRitual` | `modules/events/irma/irma_tree_arc.qsps` | 236 |
 | `IrmaTreeElixirBrew` | `modules/events/irma/irma_tree_arc.qsps` | 322 |
@@ -2891,6 +2897,7 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaMusicStageCanOffer` | `modules/events/melissa/melissa_music_stage.qsps` | 10 |
 | `MelissaMusicStageTalk` | `modules/events/melissa/melissa_music_stage.qsps` | 14 |
 | `MelissaMusicStageTalkText` | `modules/events/melissa/melissa_musician_arc_text.qsps` | 8 |
+| `MelissaNobleReactionCanTalk` | `modules/events/family/family_noble_reaction.qsps` | 78 |
 | `MelissaProhibitMinstrelDoneText` | `modules/events/melissa/melissa_home_chain_text.qsps` | 271 |
 | `MelissaProhibitMinstrelTalk` | `modules/events/melissa/melissa_home_chain.qsps` | 318 |
 | `MelissaProhibitMinstrelTalkCanOffer` | `modules/events/melissa/melissa_home_chain.qsps` | 379 |
@@ -2922,6 +2929,7 @@ Generated from active project files in `qsp-project.json`.
 | `MelissaTalkAboutLegareSupplyIntroText` | `modules/events/legare/legare_supply_aftermath_text.qsps` | 9 |
 | `MelissaTalkAboutLegareSuspicion` | `modules/events/legare/legare_clarissa_suspicion.qsps` | 367 |
 | `MelissaTalkAboutLegareSuspicionText` | `modules/events/legare/legare_clarissa_suspicion_text.qsps` | 77 |
+| `MelissaTalkAboutNobility` | `modules/events/family/family_noble_reaction.qsps` | 85 |
 | `NobleAttackAction` | `modules/events/hall/noble_attack.qsps` | 130 |
 | `NobleAttackAftermathText` | `modules/events/hall/noble_attack_text.qsps` | 49 |
 | `NobleAttackApplyFine` | `modules/events/hall/noble_attack.qsps` | 231 |
@@ -3095,6 +3103,7 @@ Generated from active project files in `qsp-project.json`.
 | `SandraMayorCheckIsDay` | `modules/events/sandra/sandra_mayor_arc.qsps` | 7 |
 | `SandraMayorSpyScreen` | `modules/events/sandra/sandra_mayor_arc.qsps` | 50 |
 | `SandraMayorSpyStart` | `modules/events/sandra/sandra_mayor_arc.qsps` | 17 |
+| `SandraNobleReactionCanTalk` | `modules/events/family/family_noble_reaction.qsps` | 8 |
 | `SandraRoomInspectLetterHintText` | `modules/events/sandra/sandra_lermont_letter_text.qsps` | 9 |
 | `SandraStaffGirlsMorningSummaryText` | `modules/events/sandra/sandra_staff_girls_reaction_text.qsps` | 11 |
 | `SandraStaffGirlsNoticeAmanda` | `modules/events/sandra/sandra_staff_girls_reaction_text.qsps` | 15 |
@@ -3121,6 +3130,7 @@ Generated from active project files in `qsp-project.json`.
 | `SandraTalkAboutLegareStreetClashActionText` | `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | 298 |
 | `SandraTalkAboutLegareStreetClashBuildMenu` | `modules/events/amanda/legare/amanda_legare_street_intercept.qsps` | 721 |
 | `SandraTalkAboutLegareStreetClashIntroText` | `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | 270 |
+| `SandraTalkAboutNobility` | `modules/events/family/family_noble_reaction.qsps` | 15 |
 | `SaveLastHallEvent` | `modules/events/hall/tavern_hall_events.qsps` | 143 |
 | `SecondCaravanAftermathTriumph` | `modules/events/irma/second_caravan_arc.qsps` | 116 |
 | `SecondCaravanBattleClimax` | `modules/events/irma/second_caravan_arc.qsps` | 91 |
@@ -3353,8 +3363,8 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 376 |
 | `IrmaFirstMeet` | `modules/locations/shops/irma_first_meet.qsps` | 7 |
 | `IrmaShop` | `modules/locations/shops/irma_shop.qsps` | 7 |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 325 |
-| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 355 |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 331 |
+| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 361 |
 | `IrmaShopRenderCommonHeader` | `modules/locations/shops/irma_shop.qsps` | 137 |
 | `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 189 |
 | `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 288 |
@@ -3587,8 +3597,8 @@ Generated from active project files in `qsp-project.json`.
 | `MenuGirlOverview` | `modules/menu/girls/menu_girl_overview.qsps` | 10 |
 | `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 400 |
 | `MenuGirlSpecialAmanda` | `modules/menu/girls/menu_girl_actions.qsps` | 444 |
-| `MenuGirlSpecialMelissa` | `modules/menu/girls/menu_girl_actions.qsps` | 491 |
-| `MenuGirlSpecialSandra` | `modules/menu/girls/menu_girl_actions.qsps` | 551 |
+| `MenuGirlSpecialMelissa` | `modules/menu/girls/menu_girl_actions.qsps` | 511 |
+| `MenuGirlSpecialSandra` | `modules/menu/girls/menu_girl_actions.qsps` | 581 |
 | `MenuGirlTalk` | `modules/menu/girls/menu_girl_actions.qsps` | 7 |
 | `MenuUiAdd` | `modules/menu/system/panel_ui.qsps` | 260 |
 | `NPC_Click` | `modules/menu/npc/npc_click.qsps` | 8 |

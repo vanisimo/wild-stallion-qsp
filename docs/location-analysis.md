@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 492
-- Locations: 3651
-- Locations with direct incoming calls: 3139
+- Source files: 494
+- Locations: 3661
+- Locations with direct incoming calls: 3149
 - Locations without direct incoming calls: 512
 - Review candidates without direct incoming calls: 185
 - Classified entry/helper locations without direct incoming calls: 327
@@ -69,7 +69,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 503 | `modules/actions` |
 | `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 468 | `modules/actions` |
 | `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 186 | `modules/actions` |
-| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 983 | `modules/actions` |
+| `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1051 | `modules/actions` |
 | `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 246 | `modules/actions` |
 | `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 289 | `modules/actions` |
 | `GirlWorkPolicyTalkHallAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 102 | `modules/actions` |
@@ -361,7 +361,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 251 | `entry/helper` |
 | `GirlMemoryOfStefanDebugPanel` | `modules/events/hall/girl_memory_of_stefan.qsps` | 195 | `entry/helper` |
 | `GirlTalkImageDebugPanel` | `modules/actions/dialogs/girl_talk_images.qsps` | 197 | `entry/helper` |
-| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1148 | `entry/helper` |
+| `GirlTalkPersonalBuildMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1216 | `entry/helper` |
 | `GirlUniformTalkDebugStart` | `modules/actions/tavern/girl_uniform_talk.qsps` | 446 | `entry/helper` |
 | `GirlWorkPolicyTalkAfterHarassStart` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 202 | `entry/helper` |
 | `GroupSexMenu` | `modules/actions/sex/group_sex.qsps` | 6 | `entry/helper` |
@@ -540,16 +540,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1658 |
-| `ShowLocationScreenTitle` | 730 |
-| `SceneShowVisual` | 681 |
-| `Menu.AddModule` | 590 |
-| `MenuUiAdd` | 582 |
-| `EnsureGirlData` | 240 |
-| `ClampGirlSocialStats` | 210 |
+| `ActUiPrepare` | 1672 |
+| `ShowLocationScreenTitle` | 735 |
+| `SceneShowVisual` | 686 |
+| `Menu.AddModule` | 594 |
+| `MenuUiAdd` | 586 |
+| `EnsureGirlData` | 244 |
+| `ClampGirlSocialStats` | 214 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 165 |
-| `ShowGirlSidebar` | 102 |
+| `ShowGirlSidebar` | 106 |
 | `RegisterSex` | 98 |
 | `Menu.Create` | 97 |
 | `Menu.Destroy` | 91 |

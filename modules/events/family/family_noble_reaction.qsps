@@ -1,0 +1,277 @@
+! ================================================
+! FILE: modules/events/family/family_noble_reaction.qsps
+! MODULE: events/family
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Реакция семьи (Сандра, Мелисса, Аманда) на получение Стефаном дворянства
+! ================================================
+
+#SandraNobleReactionCanTalk
+    SandraNobleReactionCanTalk = 0
+    if PlayerIsNoble = 1 and SandraNobleReactionDone = 0:
+        SandraNobleReactionCanTalk = 1
+    end
+---
+
+#SandraTalkAboutNobility
+    *clr
+    clr
+    cla
+
+    $SandraNobleReturnLoc = $ARGS[0]
+    if $SandraNobleReturnLoc = '':
+        $SandraNobleReturnLoc = 'TavernMain'
+    end
+    if LOC($SandraNobleReturnLoc) = 0:
+        $SandraNobleReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'sandra'
+    gs 'MenuGirlCalcConditions', 'sandra', $SandraNobleReturnLoc
+
+    if MenuCanTalk = 0:
+        gs 'GirlTalkClosedScreen', 'sandra', $SandraNobleReturnLoc
+        exit
+    end
+
+    gs 'SandraNobleReactionCanTalk'
+    if SandraNobleReactionCanTalk = 0:
+        gt 'GirlTalk', 'sandra', $SandraNobleReturnLoc
+        exit
+    end
+
+    gs 'ShowGirlSidebar', 'sandra'
+    gs 'ShowLocationScreenTitle', 'САНДРА: ПРИЗНАНИЕ РОДА ЛЕРМОНТОВ'
+    gs 'SceneShowVisual', 'images/events/family/noble_reaction_sandra', 'Сандра со слезами радости прижимает к груди дворянский патент', 'large', 'webp'
+
+    gs 'FamilyNobleReactionPrintText', 'sandra_noble_text'
+    *pl ' '
+
+    SandraNobleReactionDone = 1
+    love['sandra'] += 5
+    Friends['sandra'] += 5
+    otkroven['sandra'] += 5
+    FamilyTrust += 3
+    if FamilyTension >= 2:
+        FamilyTension -= 2
+    else:
+        FamilyTension = 0
+    end
+    if SandraFamilyConcern >= 2:
+        SandraFamilyConcern -= 2
+    else:
+        SandraFamilyConcern = 0
+    end
+
+    gs 'ClampGirlSocialStats', 'sandra'
+
+    gs 'ActUiPrepare', 'Обнять мать и поговорить ещё', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlTalk', 'sandra', $SandraNobleReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к делам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $SandraNobleReturnLoc
+    end
+---
+
+#MelissaNobleReactionCanTalk
+    MelissaNobleReactionCanTalk = 0
+    if PlayerIsNoble = 1 and MelissaNobleReactionDone = 0:
+        MelissaNobleReactionCanTalk = 1
+    end
+---
+
+#MelissaTalkAboutNobility
+    *clr
+    clr
+    cla
+
+    $MelissaNobleReturnLoc = $ARGS[0]
+    if $MelissaNobleReturnLoc = '':
+        $MelissaNobleReturnLoc = 'TavernMain'
+    end
+    if LOC($MelissaNobleReturnLoc) = 0:
+        $MelissaNobleReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'melissa'
+    gs 'MenuGirlCalcConditions', 'melissa', $MelissaNobleReturnLoc
+
+    if MenuCanTalk = 0:
+        gs 'GirlTalkClosedScreen', 'melissa', $MelissaNobleReturnLoc
+        exit
+    end
+
+    gs 'MelissaNobleReactionCanTalk'
+    if MelissaNobleReactionCanTalk = 0:
+        gt 'GirlTalk', 'melissa', $MelissaNobleReturnLoc
+        exit
+    end
+
+    gs 'ShowGirlSidebar', 'melissa'
+    gs 'ShowLocationScreenTitle', 'МЕЛИССА: ПЕЧАТЬ ГЕРЦОГИНИ'
+    gs 'SceneShowVisual', 'images/events/family/noble_reaction_melissa', 'Мелисса с ироничной улыбкой и тайной гордостью изучает грамоту', 'large', 'webp'
+
+    gs 'FamilyNobleReactionPrintText', 'melissa_noble_text'
+    *pl ' '
+
+    MelissaNobleReactionDone = 1
+    love['melissa'] += 5
+    Friends['melissa'] += 5
+    otkroven['melissa'] += 5
+    MelissaTrustStefan += 3
+    MelissaRespectStefan += 5
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    gs 'ActUiPrepare', 'Улыбнуться сестре и поговорить ещё', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlTalk', 'melissa', $MelissaNobleReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к залу', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $MelissaNobleReturnLoc
+    end
+---
+
+#AmandaNobleReactionCanTalk
+    AmandaNobleReactionCanTalk = 0
+    if PlayerIsNoble = 1 and AmandaNobleReactionDone = 0:
+        AmandaNobleReactionCanTalk = 1
+    end
+---
+
+#AmandaTalkAboutNobility
+    *clr
+    clr
+    cla
+
+    $AmandaNobleReturnLoc = $ARGS[0]
+    if $AmandaNobleReturnLoc = '':
+        $AmandaNobleReturnLoc = 'TavernMain'
+    end
+    if LOC($AmandaNobleReturnLoc) = 0:
+        $AmandaNobleReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'MenuGirlCalcConditions', 'amanda', $AmandaNobleReturnLoc
+
+    if MenuCanTalk = 0:
+        gs 'GirlTalkClosedScreen', 'amanda', $AmandaNobleReturnLoc
+        exit
+    end
+
+    gs 'AmandaNobleReactionCanTalk'
+    if AmandaNobleReactionCanTalk = 0:
+        gt 'GirlTalk', 'amanda', $AmandaNobleReturnLoc
+        exit
+    end
+
+    gs 'ShowGirlSidebar', 'amanda'
+    gs 'ShowLocationScreenTitle', 'АМАНДА: ДВОРЯНСКИЙ ТРИУМФ'
+    gs 'SceneShowVisual', 'images/events/family/noble_reaction_amanda', 'Аманда с восторгом виснет на шее Стефана', 'large', 'webp'
+
+    gs 'FamilyNobleReactionPrintText', 'amanda_noble_text'
+    *pl ' '
+
+    AmandaNobleReactionDone = 1
+    AmandaWantsNobleDress = 1
+    love['amanda'] += 5
+    Friends['amanda'] += 5
+    otkroven['amanda'] += 5
+    AmandaTrustStefan += 3
+    AmandaPublicAttention += 5
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    gs 'ActUiPrepare', 'Пообещать первый танец и поговорить ещё', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlTalk', 'amanda', $AmandaNobleReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к работе', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AmandaNobleReturnLoc
+    end
+---
+
+#IrmaOrderAmandaNobleDress
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ЗАКАЗ ШЁЛКОВОГО ПЛАТЬЯ ДЛЯ АМАНДЫ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/dress_order', 'Ирма показывает Стефану эскиз изумрудного шёлкового платья', 'large', 'webp'
+
+    if money < 80:
+        gs 'FamilyNobleReactionPrintText', 'irma_dress_no_money'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться к лавке', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaShop'
+        end
+    else:
+        money -= 80
+        AmandaHasNobleDress = 1
+
+        gs 'FamilyNobleReactionPrintText', 'irma_dress_order_success'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Забрать упакованный наряд', 'policy'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaShop'
+        end
+    end
+---
+
+#AmandaNobleDressGiftCanTalk
+    AmandaNobleDressGiftCanTalk = 0
+    if AmandaHasNobleDress = 1 and AmandaNobleDressGiven = 0:
+        AmandaNobleDressGiftCanTalk = 1
+    end
+---
+
+#AmandaGiveNobleDress
+    *clr
+    clr
+    cla
+
+    $AmandaGiftReturnLoc = $ARGS[0]
+    if $AmandaGiftReturnLoc = '':
+        $AmandaGiftReturnLoc = 'TavernMain'
+    end
+    if LOC($AmandaGiftReturnLoc) = 0:
+        $AmandaGiftReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'amanda'
+    gs 'ShowGirlSidebar', 'amanda'
+    gs 'ShowLocationScreenTitle', 'ПОДАРОК ДЛЯ АМАНДЫ'
+    gs 'SceneShowVisual', 'images/events/family/amanda_dress_gift', 'Аманда с восторгом прижимает к себе шёлковое платье от Ирмы', 'large', 'webp'
+
+    gs 'FamilyNobleReactionPrintText', 'amanda_dress_gift_text'
+    *pl ' '
+
+    AmandaNobleDressGiven = 1
+    AmandaDanceDressReady = 1
+    love['amanda'] += 10
+    Friends['amanda'] += 5
+    otkroven['amanda'] += 5
+    AmandaPublicAttention += 5
+
+    gs 'ClampGirlSocialStats', 'amanda'
+
+    gs 'ActUiPrepare', 'Полюбоваться сияющей сестрой', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlTalk', 'amanda', $AmandaGiftReturnLoc
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AmandaGiftReturnLoc
+    end
+---
