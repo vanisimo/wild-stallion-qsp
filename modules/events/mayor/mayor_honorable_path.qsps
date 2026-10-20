@@ -1,0 +1,125 @@
+! ================================================
+! FILE: modules/events/mayor/mayor_honorable_path.qsps
+! MODULE: events/mayor
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Честный путь расследования: раненый наёмник у собора -> бальзам Древа Ирмы -> благословение Герхарда -> дворянство от Герцогини
+! ================================================
+
+#ChurchGerhardMercenaryEvent
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ТАЙНА В СОБОРЕ ИЛЬМАТЕРА'
+    gs 'SceneShowVisual', 'images/locations/church/gerhard_secret', 'Отец Герхард уводит Стефана в боковой придел храма', 'large', 'webp'
+
+    gs 'MayorHonorablePrintText', 'mercenary_church_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Осмотреть раненого наёмника', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchGerhardMercenaryExamine'
+    end
+
+    gs 'ActUiPrepare', 'Отказаться и вернуться в неф', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchWeekday'
+    end
+---
+
+#ChurchGerhardMercenaryExamine
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАНЕНЫЙ НАЁМНИК'
+    gs 'SceneShowVisual', 'images/locations/church/gerhard_wounded', 'Умирающий наёмник на соломенном тюфяке', 'large', 'webp'
+
+    gs 'MayorHonorablePrintText', 'mercenary_examine_text'
+    *pl ' '
+
+    if PlayerHasTreeElixir = 1 or IrmaTreeRitualDone = 1:
+        gs 'ActUiPrepare', 'Напоить воина целебным Эликсиром Древа Жизни', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchGerhardMercenaryHeal'
+        end
+    else:
+        gs 'ActUiPrepare', 'Пообещать отцу Герхарду найти лекарство у Ирмы', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            MercenaryNeedsBalm = 1
+            gt 'ChurchWeekday'
+        end
+    end
+---
+
+#IrmaGetBalmForMercenary
+    *clr
+    clr
+    cla
+
+    MercenaryNeedsBalm = 0
+    PlayerHasTreeBalm = 1
+    Friends['irma'] += 3
+
+    gs 'ShowLocationScreenTitle', 'БАЛЬЗАМ ДРЕВА ЖИЗНИ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_elixir', 'Ирма передаёт Стефану целебный бальзам корней', 'large', 'webp'
+
+    gs 'MayorHonorablePrintText', 'irma_balm_given_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поспешить обратно в собор', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchWeekday'
+    end
+---
+
+#ChurchGerhardMercenaryHeal
+    *clr
+    clr
+    cla
+
+    killvar 'PlayerHasTreeBalm'
+    GerhardHonorablePath = 1
+    PlayerHasPilgrimBulla = 1
+    PlayerHasTrueInvoice = 1
+    PlayerKnows_MayorWeaponsToWildLands = 1
+
+    gs 'ShowLocationScreenTitle', 'ИСЦЕЛЕНИЕ И ПОКАЗАНИЯ СВИДЕТЕЛЯ'
+    gs 'SceneShowVisual', 'images/locations/church/gerhard_witness', 'Отец Герхард благословляет Стефана и вручает буллу пилигрима', 'large', 'webp'
+
+    gs 'MayorHonorablePrintText', 'mercenary_heal_success_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Принять благословение и готовиться в поход за стену', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchWeekday'
+    end
+---
+
+#ChurchHonorablePetitionTriumph
+    *clr
+    clr
+    cla
+
+    HonorableTriumphDone = 1
+    StefanNobleLineUnlocked = 1
+    PlayerHasNobleSuit = 1
+    PlayerIsNoble = 1
+    SandraMayorVisitsStopped = 1
+    MayorTavernPublicPraise = 1
+
+    gs 'ShowLocationScreenTitle', 'ТРИУМФ ПРАВЕДНИКА: ДВОРЯНСКИЙ ПАТЕНТ'
+    gs 'SceneShowVisual', 'images/locations/mayor/office/noble_grant', 'Отец Герхард и Мэр Борджиа вручают Стефану патент герцогини', 'large', 'webp'
+
+    gs 'MayorHonorablePrintText', 'honorable_petition_triumph_text'
+    *pl ' '
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_HonorableNobleDone_1'
+    end
+
+    gs 'ActUiPrepare', 'С гордостью принять дворянский наряд и патент', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---

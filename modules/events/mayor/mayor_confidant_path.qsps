@@ -1,0 +1,85 @@
+! ================================================
+! FILE: modules/events/mayor/mayor_confidant_path.qsps
+! MODULE: events/mayor
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Грязный путь расследования: союз с мэром Борджиа -> статус «Доверенное лицо» -> официальный пропуск за стену -> дворянский патент
+! ================================================
+
+#MayorOfficeConfidantOffer
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ТАЙНОЕ СОТРУДНИЧЕСТВО С МЭРОМ'
+    gs 'SceneShowVisual', 'images/locations/mayor/office/mayor', 'Мэр Борджиа в своём кабинете', 'large', 'webp'
+
+    gs 'MayorConfidantPrintText', 'confidant_offer_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Ударить по рукам и принять поручение', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOfficeConfidantAccept'
+    end
+
+    gs 'ActUiPrepare', 'Пока отказаться и выйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeConfidantAccept
+    *clr
+    clr
+    cla
+
+    MayorConfidantPath = 1
+    MayorGatePass = 1
+    PlayerKnows_MayorWeaponsToWildLands = 1
+
+    if PlayerHasHorse = 0:
+        PlayerHasHorse = 1
+        TavernStableHasHorse = 1
+    end
+
+    money += 150
+
+    gs 'ShowLocationScreenTitle', 'ДОГОВОР СКРЕПЛЁН'
+    gs 'SceneShowVisual', 'images/locations/mayor/office/clerk_money', 'Мэр вручает пропуск и кошель на снаряжение', 'large', 'webp'
+
+    gs 'MayorConfidantPrintText', 'confidant_accept_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Покинуть мэрию и направиться к воротам', 'travel'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---
+
+#MayorOfficeConfidantReport
+    *clr
+    clr
+    cla
+
+    MayorConfidantTriumph = 1
+    StefanNobleLineUnlocked = 1
+    PlayerHasNobleSuit = 1
+    PlayerIsNoble = 1
+    SandraMayorVisitsStopped = 1
+    MayorTavernPublicPraise = 1
+    MayorWroteCapitalLetter = 1
+
+    gs 'ShowLocationScreenTitle', 'ДОКЛАД МЭРУ: ПОБЕДА НАД ДИКАРЯМИ'
+    gs 'SceneShowVisual', 'images/locations/mayor/office/noble_grant', 'Мэр Борджиа вручает Стефану дворянский наряд и патент', 'large', 'webp'
+
+    gs 'MayorConfidantPrintText', 'confidant_report_text'
+    *pl ' '
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'Stefan_ConfidantNobleDone_1'
+    end
+
+    gs 'ActUiPrepare', 'С почётом покинуть кабинет мэра', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---

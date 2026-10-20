@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 484
-- Locations: 3626
-- Locations with direct incoming calls: 3114
+- Source files: 488
+- Locations: 3636
+- Locations with direct incoming calls: 3124
 - Locations without direct incoming calls: 512
 - Review candidates without direct incoming calls: 185
 - Classified entry/helper locations without direct incoming calls: 327
@@ -540,9 +540,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1621 |
-| `ShowLocationScreenTitle` | 711 |
-| `SceneShowVisual` | 662 |
+| `ActUiPrepare` | 1637 |
+| `ShowLocationScreenTitle` | 719 |
+| `SceneShowVisual` | 670 |
 | `Menu.AddModule` | 590 |
 | `MenuUiAdd` | 582 |
 | `EnsureGirlData` | 240 |
@@ -564,7 +564,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `Menu.AddCondition` | 44 |
 
 ## Dynamic Call Sites
 
