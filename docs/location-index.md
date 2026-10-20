@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 498
-- Locations: 3685
+- Locations: 3684
 
 ## modules/actions
 
@@ -290,7 +290,7 @@ Generated from active project files in `qsp-project.json`.
 | `RegisterTittyFuck` | `modules/actions/sex/sex_register.qsps` | 162 |
 | `RegisterVaginal` | `modules/actions/sex/sex_register.qsps` | 142 |
 | `ResetSexDailyFlags` | `modules/actions/sex/sex_daily_flags.qsps` | 7 |
-| `ResetTavernBarWorkDailyFlags` | `modules/actions/tavern/tavern_bar_work.qsps` | 340 |
+| `ResetTavernBarWorkDailyFlags` | `modules/actions/tavern/tavern_bar_work.qsps` | 318 |
 | `SandraBirthRevealCanTalk` | `modules/actions/dialogs/sandra_birth_reveal.qsps` | 7 |
 | `SandraBirthRevealClosingText` | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | 76 |
 | `SandraBirthRevealIntroText` | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | 25 |
@@ -439,13 +439,12 @@ Generated from active project files in `qsp-project.json`.
 | `ShowIntimSceneStatus` | `modules/actions/sex/intim_scene.qsps` | 200 |
 | `TalkWithAlber` | `modules/actions/dialogs/talk_with_alber.qsps` | 7 |
 | `TalkWithBecky` | `modules/actions/dialogs/talk_with_becky.qsps` | 7 |
-| `TavernBarListenRumors` | `modules/actions/tavern/tavern_bar_work.qsps` | 117 |
-| `TavernBarWorkAdvanceTime` | `modules/actions/tavern/tavern_bar_work.qsps` | 268 |
-| `TavernBarWorkCalculateIncome` | `modules/actions/tavern/tavern_bar_work.qsps` | 190 |
-| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 322 |
-| `TavernBarWorkEndAndReturn` | `modules/actions/tavern/tavern_bar_work.qsps` | 159 |
-| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 178 |
-| `TavernBarWorkMaybeHallEvent` | `modules/actions/tavern/tavern_bar_work.qsps` | 228 |
+| `TavernBarWorkAdvanceTime` | `modules/actions/tavern/tavern_bar_work.qsps` | 246 |
+| `TavernBarWorkCalculateIncome` | `modules/actions/tavern/tavern_bar_work.qsps` | 168 |
+| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 300 |
+| `TavernBarWorkEndAndReturn` | `modules/actions/tavern/tavern_bar_work.qsps` | 137 |
+| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 156 |
+| `TavernBarWorkMaybeHallEvent` | `modules/actions/tavern/tavern_bar_work.qsps` | 206 |
 | `TavernBarWorkStart` | `modules/actions/tavern/tavern_bar_work.qsps` | 12 |
 
 ## modules/core
@@ -3548,15 +3547,15 @@ Generated from active project files in `qsp-project.json`.
 | `TavernHallLookReturnToMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 86 |
 | `TavernHallLookTryRareBonusEvents` | `modules/locations/tavern/tavern_hall_activity.qsps` | 199 |
 | `TavernMain` | `modules/locations/tavern/tavern_main.qsps` | 11 |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 642 |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 469 |
-| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 574 |
-| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 408 |
-| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 398 |
-| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 374 |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 643 |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 470 |
+| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 575 |
+| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 409 |
+| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 399 |
+| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 375 |
 | `TavernManagement` | `modules/locations/tavern/tavern_management.qsps` | 7 |
 | `TavernPriceSettings` | `modules/locations/tavern/tavern_management.qsps` | 31 |
-| `TavernSecondFloor` | `modules/locations/tavern/tavern_main.qsps` | 252 |
+| `TavernSecondFloor` | `modules/locations/tavern/tavern_main.qsps` | 253 |
 | `TavernStaffManagement` | `modules/locations/tavern/tavern_management.qsps` | 87 |
 | `WineShop` | `modules/locations/shops/wine_shop.qsps` | 7 |
 | `WineShopBuyBeer` | `modules/locations/shops/wine_shop_buy.qsps` | 100 |

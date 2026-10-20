@@ -48,7 +48,7 @@
     end
 
     if BarWorkedToday[time] = 1:
-        *p 'В эту часть дня вы уже работали за стойкой. Сейчас лучше заняться чем-нибудь другим.'
+        *p 'В эту часть дня ты уже работал за стойкой. Сейчас лучше заняться чем-нибудь другим.'
         *pl ' '
 
         act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
@@ -69,68 +69,30 @@
     TavernBarBeerIncomeToday += BarWorkBeerIncome
     TavernBarTipsToday += BarWorkTips
 
-    *p 'Вы становитесь за стойку и берёте часть работы на себя. Приходится наливать пиво, следить за кружками, отвечать на грубоватые шутки гостей и не выпускать из виду зал.'
+    *p 'Ты становишься за стойку и берёшь часть работы на себя. Приходится наливать пиво, следить за кружками, отвечать на грубоватые шутки гостей и не выпускать из виду зал.'
     *pl ' '
-    *p 'Пока вы работаете за стойкой, обслуживание идёт быстрее, а гости охотнее делают новые заказы.'
+    *p 'Пока ты работаешь за стойкой, обслуживание идёт быстрее, а гости охотнее делают новые заказы.'
 
     *pl ' '
     gs 'FormatSpintry', BarWorkIncome
     $FormatSpintry_BarWorkIncome = $FormatSpintry
     killvar '$FormatSpintry'
-    *pl 'Дополнительный доход за смену: ' + $FormatSpintry_BarWorkIncome + '.'
-    *pl 'Вино: +' + STR(BarWorkWineIncome)
-    *pl 'Пиво: +' + STR(BarWorkBeerIncome)
-    *pl 'Чаевые: +' + STR(BarWorkTips)
-
-    if debug = 1:
-        *pl ' '
-        *pl '[DEBUG BAR] Посетители: ' + STR(tavernvisitors)
-        *pl '[DEBUG BAR] Сила зала: ' + STR(tavern_waitress_power)
-        *pl '[DEBUG BAR] Доход стойки: ' + STR(BarWorkIncome)
-        *pl '[DEBUG BAR] Смен за стойкой сегодня: ' + STR(BarWorkCountToday)
-        *pl '[DEBUG BAR] time: ' + STR(time)
-        *pl '[DEBUG BAR] BarWorkedToday[time]: ' + STR(BarWorkedToday[time])
-    end
-
+    *pl '<b>Дополнительный доход за смену:</b> ' + $FormatSpintry_BarWorkIncome + ' (вино: +' + STR(BarWorkWineIncome) + ', пиво: +' + STR(BarWorkBeerIncome) + ', чаевые: +' + STR(BarWorkTips) + ').'
     *pl ' '
 
-    gs 'ActUiPrepare', 'Прислушаться к разговорам у стойки', 'talk'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'TavernBarListenRumors'
-    end
-
-    act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
-        gt 'TavernBarWorkEndAndReturn'
-    end
----
-
-! ================================================
-! FILE: modules/actions/tavern/tavern_bar_work.qsps
-! Завершение смены: событие, сдвиг времени, возврат в зал
-! ================================================
-
-! ================================================
-! FILE: modules/actions/tavern/tavern_bar_work.qsps
-! Разговоры и слухи у стойки во время смены
-! ================================================
-
-#TavernBarListenRumors
-
-    *clr
-    clr
-    cla
-
-    gs 'ShowLocationScreenTitle', 'РАЗГОВОРЫ У СТОЙКИ'
-    gs 'SceneShowVisual', 'images/actions/tavern/tavern_bar_work/bar_talk', 'Разговоры посетителей у стойки', 'large', 'webp'
+    ! ====================== СЛУХИ И РАЗГОВОРЫ ВО ВРЕМЯ РАБОТЫ ======================
+    TavernBarMayorRumorActive = 0
 
     ! 1. Приоритет: квест расследования Мэра (контрабанда и наёмники в Дикие Земли)
     if MayorSecondTalkDone = 1 and PlayerHasMayorBlackmail = 0 and PlayerHasWeaponShipmentInvoice = 0 and MayorBlackmailSuccess = 0 and PortClerkBribeHint = 0:
-        gt 'TavernBarRumorRoll'
-    end
-
-    ! 2. Проверка дневного лимита городских слухов у стойки (максимум 2 раза в день)
-    if BarRumorsHeardCountToday >= 2:
-        *pl 'Ты протираешь кружки и прислушиваешься к гостям, но ничего интересного не слышно: обычная болтовня о ценах, видах на урожай и Диких Землях.'
+        TavernBarMayorRumorActive = 1
+        TavernBarRumorPick = RAND(1, 4)
+        *pl '<b>Разговоры у стойки:</b>'
+        gs 'MayorBlackmailPrintText', 'rumor_intro_' + STR(TavernBarRumorPick)
+        *pl ' '
+    ! 2. Дневной лимит городских слухов у стойки (максимум 2 раза в день)
+    elseif BarRumorsHeardCountToday >= 2:
+        *pl '<i>Пока ты разливаешь пиво и считаешь медяки, вокруг звучит лишь обычная трактирная болтовня о ценах, видах на урожай и Диких Землях.</i>'
         *pl ' '
     else:
         $CityRumorText = ''
@@ -140,14 +102,25 @@
 
         if $CityRumorText <> '':
             BarRumorsHeardCountToday += 1
-            *pl 'Ты наливаешь выпивку гостям у стойки и ненароком ловишь их беседу:'
-            *pl ' '
+            *pl '<b>Слухи среди гостей:</b>'
             *pl $CityRumorText
             *pl ' '
             killvar '$CityRumorText'
         else:
-            *pl 'Ты прислушиваешься к разговорам у стойки, но ничего интересного не слышно: обычная болтовня о ценах, видах на урожай и Диких Землях.'
+            *pl '<i>Пока ты наливаешь кружки, ничего примечательного не слышно — обычная болтовня о ценах, видах на урожай и Диких Землях.</i>'
             *pl ' '
+        end
+    end
+
+    if debug = 1:
+        *pl ' '
+        *pl '[DEBUG BAR] Посетители: ' + STR(tavernvisitors) + ' | Доход стойки: ' + STR(BarWorkIncome) + ' | Смен сегодня: ' + STR(BarWorkCountToday)
+    end
+
+    if TavernBarMayorRumorActive = 1:
+        gs 'ActUiPrepare', 'Подробно расспросить о грузе', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernBarRumorDetail', TavernBarRumorPick
         end
     end
 
@@ -155,6 +128,11 @@
         gt 'TavernBarWorkEndAndReturn'
     end
 ---
+
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Завершение смены: событие, сдвиг времени, возврат в зал
+! ================================================
 
 #TavernBarWorkEndAndReturn
 
