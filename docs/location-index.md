@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 488
-- Locations: 3636
+- Source files: 490
+- Locations: 3645
 
 ## modules/actions
 
@@ -2623,7 +2623,7 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaGetBalmForMercenary` | `modules/events/mayor/mayor_honorable_path.qsps` | 55 |
 | `IrmaLoreMenu` | `modules/events/irma/irma_lore_talk.qsps` | 8 |
 | `IrmaLorePrintText` | `modules/events/irma/irma_lore_talk_text.qsps` | 8 |
-| `IrmaLoreScene` | `modules/events/irma/irma_lore_talk.qsps` | 74 |
+| `IrmaLoreScene` | `modules/events/irma/irma_lore_talk.qsps` | 81 |
 | `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 |
 | `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 |
 | `IrmaNightFirstVisit` | `modules/events/irma/irma_tree_arc.qsps` | 56 |
@@ -2632,12 +2632,13 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaNightFittingScene` | `modules/events/irma/irma_tree_arc.qsps` | 98 |
 | `IrmaNightMayorTruth` | `modules/events/irma/irma_tree_arc.qsps` | 76 |
 | `IrmaNightVisit` | `modules/events/irma/irma_tree_arc.qsps` | 8 |
-| `IrmaTreeBathRitual` | `modules/events/irma/irma_tree_arc.qsps` | 228 |
-| `IrmaTreeElixirBrew` | `modules/events/irma/irma_tree_arc.qsps` | 313 |
-| `IrmaTreeFertilityRitual` | `modules/events/irma/irma_tree_arc.qsps` | 261 |
+| `IrmaSecondCaravanPlan` | `modules/events/irma/second_caravan_arc.qsps` | 17 |
+| `IrmaTreeBathRitual` | `modules/events/irma/irma_tree_arc.qsps` | 235 |
+| `IrmaTreeElixirBrew` | `modules/events/irma/irma_tree_arc.qsps` | 320 |
+| `IrmaTreeFertilityRitual` | `modules/events/irma/irma_tree_arc.qsps` | 268 |
 | `IrmaTreeGarden` | `modules/events/irma/irma_tree_arc.qsps` | 187 |
 | `IrmaTreeGardenEnter` | `modules/events/irma/irma_tree_arc.qsps` | 168 |
-| `IrmaTreePostRitual` | `modules/events/irma/irma_tree_arc.qsps` | 291 |
+| `IrmaTreePostRitual` | `modules/events/irma/irma_tree_arc.qsps` | 298 |
 | `IrmaTreePrintText` | `modules/events/irma/irma_tree_arc_text.qsps` | 8 |
 | `KitchenCustomerApplyConsequences` | `modules/events/kitchen/kitchen_customer_event.qsps` | 717 |
 | `KitchenCustomerBuildMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 521 |
@@ -3115,6 +3116,11 @@ Generated from active project files in `qsp-project.json`.
 | `SandraTalkAboutLegareStreetClashBuildMenu` | `modules/events/amanda/legare/amanda_legare_street_intercept.qsps` | 721 |
 | `SandraTalkAboutLegareStreetClashIntroText` | `modules/events/amanda/legare/amanda_legare_street_intercept_text.qsps` | 270 |
 | `SaveLastHallEvent` | `modules/events/hall/tavern_hall_events.qsps` | 143 |
+| `SecondCaravanAftermathTriumph` | `modules/events/irma/second_caravan_arc.qsps` | 115 |
+| `SecondCaravanBattleClimax` | `modules/events/irma/second_caravan_arc.qsps` | 91 |
+| `SecondCaravanInitCheck` | `modules/events/irma/second_caravan_arc.qsps` | 8 |
+| `SecondCaravanIrmaReward` | `modules/events/irma/second_caravan_arc.qsps` | 132 |
+| `SecondCaravanPrintText` | `modules/events/irma/second_caravan_arc_text.qsps` | 8 |
 | `SexSceneCalcAmandaBlowjobCap` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 105 |
 | `ShipGearShop` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 83 |
 | `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 553 |
@@ -3255,11 +3261,14 @@ Generated from active project files in `qsp-project.json`.
 | `TavernSupplyStatusText` | `modules/events/tavern/tavern_supply_status_text.qsps` | 8 |
 | `TavernWorkDayEvent` | `modules/events/tavern/tavern_events.qsps` | 10 |
 | `UpdateAmandaLegareBranchUnlock` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 18 |
-| `WildLandsAmbushScene` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 391 |
-| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 420 |
-| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 437 |
-| `WildLandsRoadChoose` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 352 |
-| `WildLandsWrongRoadAmbush` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 368 |
+| `WildLandsAmbushScene` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 409 |
+| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 438 |
+| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 455 |
+| `WildLandsRoadChoose` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 370 |
+| `WildLandsShamanNegotiation` | `modules/events/irma/second_caravan_arc.qsps` | 71 |
+| `WildLandsShamanTent` | `modules/events/irma/second_caravan_arc.qsps` | 54 |
+| `WildLandsSteppeWolvesEncounter` | `modules/events/irma/second_caravan_arc.qsps` | 37 |
+| `WildLandsWrongRoadAmbush` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 386 |
 
 ## modules/locations
 
@@ -3469,7 +3478,7 @@ Generated from active project files in `qsp-project.json`.
 | `PlayerRoomGroom` | `modules/locations/rooms/player_room.qsps` | 92 |
 | `PlayerRoomMasturbate` | `modules/locations/rooms/player_room.qsps` | 54 |
 | `Port` | `modules/locations/town/port.qsps` | 6 |
-| `PortRumors` | `modules/locations/town/port.qsps` | 160 |
+| `PortRumors` | `modules/locations/town/port.qsps` | 167 |
 | `ProcessDanceDressFittingDue` | `modules/locations/shops/irma_dance_dress.qsps` | 520 |
 | `SandraRoom` | `modules/locations/rooms/sandra_room.qsps` | 8 |
 | `SandraRoomInspect` | `modules/locations/rooms/sandra_room.qsps` | 76 |

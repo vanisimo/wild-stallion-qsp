@@ -1,0 +1,156 @@
+! ================================================
+! FILE: modules/events/irma/second_caravan_arc.qsps
+! MODULE: events/irma
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Ветка второго каравана: план Ирмы -> вылазка к Степным Волкам -> договор с шаманом -> столкновение кланов орков -> триумф
+! ================================================
+
+#SecondCaravanInitCheck
+    if SecondCaravanActive = 0:
+        if MayorBlackmailSuccess = 1 or MayorConfidantTriumph = 1 or HonorableTriumphDone = 1:
+            SecondCaravanActive = 1
+            SecondCaravanDay = day + 28
+        end
+    end
+---
+
+#IrmaSecondCaravanPlan
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СТРАТЕГИЯ ИРМЫ: ВТОРОЙ КАРАВАН'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_garden_reveal', 'Ирма раскрывает карту Диких Земель', 'large', 'webp'
+
+    PlayerHasElfTalisman = 1
+    Friends['irma'] += 5
+
+    gs 'SecondCaravanPrintText', 'irma_plan_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Взять оберег Древа и готовиться к вылазке', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGarden'
+    end
+---
+
+#WildLandsSteppeWolvesEncounter
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ДОЗОР СТЕПНЫХ ВОЛКОВ'
+    gs 'SceneShowVisual', 'images/locations/town/wild_lands_ambush', 'Орочий дозор окружает Стефана в ущелье', 'large', 'webp'
+
+    gs 'SecondCaravanPrintText', 'wolves_patrol_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поднять эльфийский оберег и потребовать встречи с шаманом', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'WildLandsShamanTent'
+    end
+---
+
+#WildLandsShamanTent
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ШАТЁР ШАМАНА ГРОК-ТАША'
+    gs 'SceneShowVisual', 'images/locations/town/caravan_battle', 'Шаман Грок-Таш у ритуального костра', 'large', 'webp'
+
+    gs 'SecondCaravanPrintText', 'shaman_tent_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Раскрыть правду: оружие украл Красный Топор', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'WildLandsShamanNegotiation'
+    end
+---
+
+#WildLandsShamanNegotiation
+    *clr
+    clr
+    cla
+
+    SteppeWolvesAllianceDone = 1
+    SteppeWolvesPactSigned = 1
+
+    gs 'ShowLocationScreenTitle', 'КРОВНЫЙ ДОГОВОР'
+    gs 'SceneShowVisual', 'images/locations/town/caravan_battle', 'Шаман Грок-Таш скрепляет договор кровью', 'large', 'webp'
+
+    gs 'SecondCaravanPrintText', 'shaman_pact_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в город с миром', 'travel'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CityGatesWildLands'
+    end
+---
+
+#SecondCaravanBattleClimax
+    *clr
+    clr
+    cla
+
+    SecondCaravanResolved = 1
+    CaravanTradeRoutesFreed = 1
+    money += 400
+    TavernSupplyFood += 20
+    TavernSupplyBeer += 20
+    tavern_reputation += 10
+
+    gs 'ShowLocationScreenTitle', 'БИТВА В КРОВАВОМ УЩЕЛЬЕ'
+    gs 'SceneShowVisual', 'images/locations/town/caravan_battle', 'Столкновение кланов Степных Волков и Красного Топора', 'large', 'webp'
+
+    gs 'SecondCaravanPrintText', 'battle_climax_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Торжественно вернуться в город к Драупниру и Ирме', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SecondCaravanAftermathTriumph'
+    end
+---
+
+#SecondCaravanAftermathTriumph
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ТРИУМФ НА РУБЕЖАХ ФРОНТИРА'
+    gs 'SceneShowVisual', 'images/locations/craftsmen/draupnir', 'Драупнир и мастера празднуют открытие трактов', 'large', 'webp'
+
+    gs 'SecondCaravanPrintText', 'triumph_aftermath_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Пойти к Ирме в святилище Древа Жизни', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SecondCaravanIrmaReward'
+    end
+---
+
+#SecondCaravanIrmaReward
+    *clr
+    clr
+    cla
+
+    love['irma'] += 10
+    otkroven['irma'] += 10
+    sexual_endurance += 1
+
+    gs 'ShowLocationScreenTitle', 'БЛАГОДАРНОСТЬ ХРАНИТЕЛЬНИЦЫ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_afterglow', 'Ирма обнимает Стефана под сияющей кроной Древа Жизни', 'large', 'webp'
+
+    gs 'SecondCaravanPrintText', 'irma_reward_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Остаться в объятиях Ирмы', 'kiss'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGarden'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к делам трактира', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
