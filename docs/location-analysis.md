@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 496
-- Locations: 3672
-- Locations with direct incoming calls: 3160
+- Source files: 498
+- Locations: 3684
+- Locations with direct incoming calls: 3172
 - Locations without direct incoming calls: 512
 - Review candidates without direct incoming calls: 185
 - Classified entry/helper locations without direct incoming calls: 327
@@ -529,8 +529,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 974 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 855 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 635 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 462 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 649 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 476 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 304 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -540,19 +540,19 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1688 |
-| `ShowLocationScreenTitle` | 745 |
-| `SceneShowVisual` | 696 |
+| `ActUiPrepare` | 1711 |
+| `ShowLocationScreenTitle` | 756 |
+| `SceneShowVisual` | 707 |
 | `Menu.AddModule` | 600 |
 | `MenuUiAdd` | 592 |
 | `EnsureGirlData` | 244 |
 | `ClampGirlSocialStats` | 214 |
 | `NormalizeGirlKey` | 201 |
-| `TavernMain` | 165 |
+| `TavernMain` | 167 |
 | `ShowGirlSidebar` | 106 |
 | `RegisterSex` | 98 |
+| `Market` | 97 |
 | `Menu.Create` | 97 |
-| `Market` | 95 |
 | `Menu.Destroy` | 91 |
 | `PrintMainP` | 87 |
 | `ShowImage` | 86 |

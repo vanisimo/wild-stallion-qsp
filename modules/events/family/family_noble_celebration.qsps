@@ -1,0 +1,254 @@
+! ================================================
+! FILE: modules/events/family/family_noble_celebration.qsps
+! MODULE: events/family
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Семейное торжество: дворянский патент -> примерка наряда -> тост семьи -> триумфальный тур по городу -> возвращение к делам
+! ================================================
+
+#FamilyNobleDinnerCelebration
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СЕМЕЙНОЕ ТОРЖЕСТВО: ДВОРЯНСКАЯ ГРАМОТА'
+    gs 'SceneShowVisual', 'images/events/family/dinner/family_dinner', 'Семья Лонгкоков за праздничным столом при свечах', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'dinner_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Показать дворянский патент и гербовую печать', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FamilyNobleDinnerDressUp'
+    end
+---
+
+#FamilyNobleDinnerDressUp
+    *clr
+    clr
+    cla
+
+    StefanWearingNobleSuit = 1
+    StefanRespectableSuit = 1
+    PlayerHasNobleSuit = 1
+
+    gs 'ShowLocationScreenTitle', 'ПРИМЕРКА ПАРАДНОГО ДУБЛЕТА'
+    gs 'SceneShowVisual', 'images/events/family/noble_reaction_stefan_suit', 'Стефан примеряет парадный костюм дворянина перед зеркалом', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'suit_fitting'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Повернуться к семье в парадном облачении', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'FamilyNobleDinnerReactions'
+    end
+---
+
+#FamilyNobleDinnerReactions
+    *clr
+    clr
+    cla
+
+    FamilyNobleCelebrationDone = 1
+    StefanNobleTourActive = 1
+    love['sandra'] += 5
+    Friends['sandra'] += 5
+    otkroven['sandra'] += 5
+    love['melissa'] += 5
+    Friends['melissa'] += 5
+    otkroven['melissa'] += 5
+    love['amanda'] += 5
+    Friends['amanda'] += 5
+    otkroven['amanda'] += 5
+    FamilyTrust += 5
+    tavern_reputation += 5
+
+    gs 'ShowLocationScreenTitle', 'ТОСТ СЕМЬИ ЗА МЕССИРА СТЕФАНА'
+    gs 'SceneShowVisual', 'images/events/family/dinner/family_dinner_toast', 'Сандра, Мелисса и Аманда поднимают кубки за мессира Стефана', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'family_toast'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отправиться в город в парадном облачении', 'travel'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+
+    gs 'ActUiPrepare', 'Остаться в трактире', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
+
+#StefanNobleTourIrma
+    *clr
+    clr
+    cla
+
+    StefanNobleTourIrmaDone = 1
+    Friends['irma'] += 5
+    love['irma'] += 3
+    otkroven['irma'] += 3
+
+    gs 'ShowLocationScreenTitle', 'АТЕЛЬЕ ИРМЫ: ВЗГЛЯД МАСТЕРА'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/dress_fitting', 'Ирма оценивающе осматривает Стефана в дворянском наряде', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'tour_irma'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поблагодарить Ирму и выйти в квартал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#StefanNobleTourGerhard
+    *clr
+    clr
+    cla
+
+    StefanNobleTourGerhardDone = 1
+    if ChurchDonatedToday = 0:
+        ChurchDonatedToday = 1
+    end
+
+    gs 'ShowLocationScreenTitle', 'ХРАМ ИЛЬМАТЕРА: БЛАГОСЛОВЕНИЕ ДВОРЯНИНУ'
+    gs 'SceneShowVisual', 'images/locations/town/church/gerhard_blessing', 'Отец Герхард благословляет Стефана знаком Святого Круга', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'tour_gerhard'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поклониться отцу Герхарду и выйти на площадь', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchWeekday'
+    end
+---
+
+#StefanNobleTourLegare
+    *clr
+    clr
+    cla
+
+    StefanNobleTourLegareDone = 1
+    Friends['alber'] += 5
+    Friends['clarissa'] += 3
+    if AlberRespectStefan < 100:
+        AlberRespectStefan += 5
+    end
+
+    gs 'ShowLocationScreenTitle', 'ЛАВКА ЛЕГАРЕ: КУПЕЧЕСКИЙ ТОСТ'
+    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/alber_toast', 'Альбер Легаре и Кларисса поднимают бокалы за мессира Стефана', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'tour_legare'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Осушить кубок и выйти на рынок', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#StefanNobleTourDraupnir
+    *clr
+    clr
+    cla
+
+    StefanNobleTourDraupnirDone = 1
+    Friends['draupnir'] += 5
+
+    gs 'ShowLocationScreenTitle', 'КУЗНИЦА ДРАУПНИРА: ГНОМИЙ САЛЮТ'
+    gs 'SceneShowVisual', 'images/locations/craftsmen/draupnir', 'Драупнир добродушно салютует Стефану молотом', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'tour_draupnir'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Пожать крепкую ладонь кузнеца', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#StefanNobleTourBecky
+    *clr
+    clr
+    cla
+
+    StefanNobleTourBeckyDone = 1
+    Friends['becky'] += 5
+    Friends['inga'] += 5
+    love['inga'] += 3
+
+    gs 'ShowLocationScreenTitle', 'ЛАВКА БЛЭНКЕНШИП: РЕВЕРАНСЫ И ВОСТОРГ'
+    gs 'SceneShowVisual', 'images/locations/market/becky_shop', 'Бекки шутливо делает реверанс перед Стефаном, Инга смущена', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'tour_becky'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Улыбнуться хозяйкам и вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#StefanNobleTourMayor
+    *clr
+    clr
+    cla
+
+    StefanNobleTourMayorDone = 1
+    tavern_reputation += 5
+
+    gs 'ShowLocationScreenTitle', 'РАТУША: ПОЧТЕНИЕ ЧИНОВНИКОВ'
+    gs 'SceneShowVisual', 'images/locations/mayor/office/mayor', 'Мэр Борджиа и клерк с почтением приветствуют нового дворянина', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'tour_mayor'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'С достоинством покинуть ратушу', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MayorOffice'
+    end
+---
+
+#StefanNobleTourGuards
+    *clr
+    clr
+    cla
+
+    StefanNobleTourGuardsDone = 1
+
+    gs 'ShowLocationScreenTitle', 'ГОРОДСКОЙ ДОЗОР: ЧЕСТЬ ДВОРЯНИНУ'
+    gs 'SceneShowVisual', 'images/locations/town/guard_salute', 'Городская стража берёт алебарды на караул перед мессиром Стефаном', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'tour_guards'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Кивнуть дозорным и продолжить путь', 'travel'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---
+
+#StefanNobleTourFinish
+    *clr
+    clr
+    cla
+
+    StefanWearingNobleSuit = 0
+    StefanNobleTourActive = 0
+    StefanNobleTourCompleted = 1
+    tavern_reputation += 10
+    management += 5
+    trading += 5
+    charisma += 5
+
+    gs 'ShowLocationScreenTitle', 'ХОЗЯИН «ДИКОГО ЖЕРЕБЦА»'
+    gs 'SceneShowVisual', 'images/locations/tavern/steve_room/closet_suit', 'Стефан бережно убирает парадный наряд в шкаф и возвращается к делам', 'large', 'webp'
+
+    gs 'FamilyNobleCelebrationPrintText', 'tour_finish'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Спуститься в зал трактира к делам', 'tavern'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
+---
