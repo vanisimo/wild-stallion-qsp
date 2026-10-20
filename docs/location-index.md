@@ -497,7 +497,7 @@ Generated from active project files in `qsp-project.json`.
 | `CheckGirlInLocation` | `modules/core/girls/girl_location.qsps` | 79 |
 | `CheckTavernHiredStaffUnlocked` | `modules/core/tavern/tavern_hired_staff.qsps` | 67 |
 | `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 9 |
-| `CityRumorsGetText` | `modules/core/rumors/city_rumors_core.qsps` | 391 |
+| `CityRumorsGetText` | `modules/core/rumors/city_rumors_core.qsps` | 413 |
 | `CityRumorsPickKey` | `modules/core/rumors/city_rumors_core.qsps` | 128 |
 | `CityRumorsRegisterEvent` | `modules/core/rumors/city_rumors_core.qsps` | 92 |
 | `CityRumorsResetDaily` | `modules/core/rumors/city_rumors_core.qsps` | 26 |
@@ -1649,7 +1649,7 @@ Generated from active project files in `qsp-project.json`.
 | `ChurchGerhardMercenaryEvent` | `modules/events/mayor/mayor_honorable_path.qsps` | 8 |
 | `ChurchGerhardMercenaryExamine` | `modules/events/mayor/mayor_honorable_path.qsps` | 30 |
 | `ChurchGerhardMercenaryHeal` | `modules/events/mayor/mayor_honorable_path.qsps` | 76 |
-| `ChurchHonorablePetitionTriumph` | `modules/events/mayor/mayor_honorable_path.qsps` | 99 |
+| `ChurchHonorablePetitionTriumph` | `modules/events/mayor/mayor_honorable_path.qsps` | 100 |
 | `ChurchPureHeartsConfession` | `modules/events/church/church_confession_dynamic.qsps` | 68 |
 | `ChurchRenderStreetExit` | `modules/events/church/church_core.qsps` | 11 |
 | `ChurchServiceRumorCanStart` | `modules/events/church/church_sunday_rumors.qsps` | 7 |
@@ -2732,7 +2732,7 @@ Generated from active project files in `qsp-project.json`.
 | `MayorOfficeConfidantAccept` | `modules/events/mayor/mayor_confidant_path.qsps` | 30 |
 | `MayorOfficeConfidantOffer` | `modules/events/mayor/mayor_confidant_path.qsps` | 8 |
 | `MayorOfficeConfidantReport` | `modules/events/mayor/mayor_confidant_path.qsps` | 58 |
-| `MayorOfficeConfrontBlackmail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 274 |
+| `MayorOfficeConfrontBlackmail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 277 |
 | `MayorOfficeConfrontBribeSuccess` | `modules/events/sandra/sandra_mayor_arc.qsps` | 142 |
 | `MayorOfficeConfrontSandraVisits` | `modules/events/sandra/sandra_mayor_arc.qsps` | 90 |
 | `MeetGuard` | `modules/events/quests/guard_bribe_quest.qsps` | 290 |
@@ -2986,9 +2986,9 @@ Generated from active project files in `qsp-project.json`.
 | `PortProstNightHire` | `modules/events/port/port_prost_night.qsps` | 35 |
 | `PortProstNightMenu` | `modules/events/port/port_prost_night.qsps` | 30 |
 | `PortProstNightText` | `modules/events/port/port_prost_night_text.qsps` | 8 |
-| `PortWarehouseAlarmEscape` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 211 |
-| `PortWarehouseLockpickTry` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 169 |
-| `PortWarehouseWakeupHome` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 253 |
+| `PortWarehouseAlarmEscape` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 214 |
+| `PortWarehouseLockpickTry` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 170 |
+| `PortWarehouseWakeupHome` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 256 |
 | `ProcessEddieMomBackground` | `modules/events/eddie/eddie_arc.qsps` | 471 |
 | `ProcessSandraBeckyOffense` | `modules/events/sandra/sandra_becky_conflict.qsps` | 133 |
 | `ProcessSandraStaffGirlsReaction` | `modules/events/sandra/sandra_staff_girls_reaction.qsps` | 21 |
@@ -3268,8 +3268,8 @@ Generated from active project files in `qsp-project.json`.
 | `TavernWorkDayEvent` | `modules/events/tavern/tavern_events.qsps` | 10 |
 | `UpdateAmandaLegareBranchUnlock` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 18 |
 | `WildLandsAmbushScene` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 409 |
-| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 438 |
-| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 455 |
+| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 439 |
+| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 456 |
 | `WildLandsRoadChoose` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 370 |
 | `WildLandsShamanNegotiation` | `modules/events/irma/second_caravan_arc.qsps` | 71 |
 | `WildLandsShamanTent` | `modules/events/irma/second_caravan_arc.qsps` | 54 |
