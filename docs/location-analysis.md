@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 498
-- Locations: 3684
-- Locations with direct incoming calls: 3172
+- Locations: 3685
+- Locations with direct incoming calls: 3173
 - Locations without direct incoming calls: 512
 - Review candidates without direct incoming calls: 185
 - Classified entry/helper locations without direct incoming calls: 327
@@ -192,7 +192,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
 | `SparkQueueActKitchen` | `modules/core/tavern/spark_queue.qsps` | 237 | `modules/core` |
 | `SweetsShopBuyItem` | `modules/locations/shops/sweets_shop_buy.qsps` | 24 | `modules/locations` |
-| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 133 | `modules/actions` |
+| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 178 | `modules/actions` |
 | `TavernHallActivityCalcChance` | `modules/locations/tavern/tavern_hall_activity.qsps` | 401 | `modules/locations` |
 | `TavernHallLookFinishOnMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 68 | `modules/locations` |
 | `TextStyleSetColor` | `modules/core/text/text_format.qsps` | 136 | `modules/core` |
@@ -521,7 +521,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `SparkQueueDebugReset` | `modules/core/tavern/spark_queue.qsps` | 335 | `entry/helper` |
 | `TalkWithClarissa` | `modules/core/system/compatibility_aliases.qsps` | 251 | `entry/helper` |
 | `TalkWithGerhard` | `modules/core/system/compatibility_aliases.qsps` | 259 | `entry/helper` |
-| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 277 | `entry/helper` |
+| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 322 | `entry/helper` |
 | `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 70 | `entry/helper` |
 | `TavernHallActivityNoEventScreen` | `modules/locations/tavern/tavern_hall_activity.qsps` | 439 | `entry/helper` |
 | `TavernHallEventCleaningAttention` | `modules/events/hall/tavern_hall_events.qsps` | 978 | `entry/helper` |
@@ -541,14 +541,14 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | Location | Incoming calls |
 | --- | --- |
 | `ActUiPrepare` | 1710 |
-| `ShowLocationScreenTitle` | 756 |
-| `SceneShowVisual` | 707 |
+| `ShowLocationScreenTitle` | 757 |
+| `SceneShowVisual` | 708 |
 | `Menu.AddModule` | 600 |
 | `MenuUiAdd` | 592 |
 | `EnsureGirlData` | 244 |
 | `ClampGirlSocialStats` | 214 |
 | `NormalizeGirlKey` | 201 |
-| `TavernMain` | 167 |
+| `TavernMain` | 165 |
 | `ShowGirlSidebar` | 106 |
 | `RegisterSex` | 98 |
 | `Market` | 97 |
@@ -561,8 +561,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MarketDance` | 79 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `Menu.AddCondition` | 46 |
 | `SaveLastHallEvent` | 45 |
 

@@ -94,11 +94,9 @@
 
     *pl ' '
 
-    if MayorSecondTalkDone = 1 and PlayerHasMayorBlackmail = 0 and PlayerHasWeaponShipmentInvoice = 0 and MayorBlackmailSuccess = 0:
-        gs 'ActUiPrepare', 'Прислушаться к разговорам у стойки', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'TavernBarRumorRoll'
-        end
+    gs 'ActUiPrepare', 'Прислушаться к разговорам у стойки', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernBarListenRumors'
     end
 
     act '<b>Главный зал</b>', 'images/common/ui/tavern.png':
@@ -110,6 +108,53 @@
 ! FILE: modules/actions/tavern/tavern_bar_work.qsps
 ! Завершение смены: событие, сдвиг времени, возврат в зал
 ! ================================================
+
+! ================================================
+! FILE: modules/actions/tavern/tavern_bar_work.qsps
+! Разговоры и слухи у стойки во время смены
+! ================================================
+
+#TavernBarListenRumors
+
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОРЫ У СТОЙКИ'
+    gs 'SceneShowVisual', 'images/actions/tavern/tavern_bar_work/bar_talk', 'Разговоры посетителей у стойки', 'large', 'webp'
+
+    ! 1. Приоритет: квест расследования Мэра (контрабанда и наёмники в Дикие Земли)
+    if MayorSecondTalkDone = 1 and PlayerHasMayorBlackmail = 0 and PlayerHasWeaponShipmentInvoice = 0 and MayorBlackmailSuccess = 0 and PortClerkBribeHint = 0:
+        gt 'TavernBarRumorRoll'
+    end
+
+    ! 2. Проверка дневного лимита городских слухов у стойки (максимум 2 раза в день)
+    if BarRumorsHeardCountToday >= 2:
+        *pl 'Ты протираешь кружки и прислушиваешься к гостям, но ничего интересного не слышно: обычная болтовня о ценах, видах на урожай и Диких Землях.'
+        *pl ' '
+    else:
+        $CityRumorText = ''
+        if LOC('CityRumorsGetText') = 1:
+            gs 'CityRumorsGetText', 'bar'
+        end
+
+        if $CityRumorText <> '':
+            BarRumorsHeardCountToday += 1
+            *pl 'Ты наливаешь выпивку гостям у стойки и ненароком ловишь их беседу:'
+            *pl ' '
+            *pl $CityRumorText
+            *pl ' '
+            killvar '$CityRumorText'
+        else:
+            *pl 'Ты прислушиваешься к разговорам у стойки, но ничего интересного не слышно: обычная болтовня о ценах, видах на урожай и Диких Землях.'
+            *pl ' '
+        end
+    end
+
+    act '<b>Закончить смену</b>', 'images/common/ui/tavern.png':
+        gt 'TavernBarWorkEndAndReturn'
+    end
+---
 
 #TavernBarWorkEndAndReturn
 
@@ -304,4 +349,5 @@
     TavernBarWineIncomeToday = 0
     TavernBarBeerIncomeToday = 0
     TavernBarTipsToday = 0
+    BarRumorsHeardCountToday = 0
 ---

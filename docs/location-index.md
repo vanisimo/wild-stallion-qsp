@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 498
-- Locations: 3684
+- Locations: 3685
 
 ## modules/actions
 
@@ -290,7 +290,7 @@ Generated from active project files in `qsp-project.json`.
 | `RegisterTittyFuck` | `modules/actions/sex/sex_register.qsps` | 162 |
 | `RegisterVaginal` | `modules/actions/sex/sex_register.qsps` | 142 |
 | `ResetSexDailyFlags` | `modules/actions/sex/sex_daily_flags.qsps` | 7 |
-| `ResetTavernBarWorkDailyFlags` | `modules/actions/tavern/tavern_bar_work.qsps` | 295 |
+| `ResetTavernBarWorkDailyFlags` | `modules/actions/tavern/tavern_bar_work.qsps` | 340 |
 | `SandraBirthRevealCanTalk` | `modules/actions/dialogs/sandra_birth_reveal.qsps` | 7 |
 | `SandraBirthRevealClosingText` | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | 76 |
 | `SandraBirthRevealIntroText` | `modules/actions/dialogs/sandra_birth_reveal_text.qsps` | 25 |
@@ -439,12 +439,13 @@ Generated from active project files in `qsp-project.json`.
 | `ShowIntimSceneStatus` | `modules/actions/sex/intim_scene.qsps` | 200 |
 | `TalkWithAlber` | `modules/actions/dialogs/talk_with_alber.qsps` | 7 |
 | `TalkWithBecky` | `modules/actions/dialogs/talk_with_becky.qsps` | 7 |
-| `TavernBarWorkAdvanceTime` | `modules/actions/tavern/tavern_bar_work.qsps` | 223 |
-| `TavernBarWorkCalculateIncome` | `modules/actions/tavern/tavern_bar_work.qsps` | 145 |
-| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 277 |
-| `TavernBarWorkEndAndReturn` | `modules/actions/tavern/tavern_bar_work.qsps` | 114 |
-| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 133 |
-| `TavernBarWorkMaybeHallEvent` | `modules/actions/tavern/tavern_bar_work.qsps` | 183 |
+| `TavernBarListenRumors` | `modules/actions/tavern/tavern_bar_work.qsps` | 117 |
+| `TavernBarWorkAdvanceTime` | `modules/actions/tavern/tavern_bar_work.qsps` | 268 |
+| `TavernBarWorkCalculateIncome` | `modules/actions/tavern/tavern_bar_work.qsps` | 190 |
+| `TavernBarWorkDebugPanel` | `modules/actions/tavern/tavern_bar_work.qsps` | 322 |
+| `TavernBarWorkEndAndReturn` | `modules/actions/tavern/tavern_bar_work.qsps` | 159 |
+| `TavernBarWorkFinish` | `modules/actions/tavern/tavern_bar_work.qsps` | 178 |
+| `TavernBarWorkMaybeHallEvent` | `modules/actions/tavern/tavern_bar_work.qsps` | 228 |
 | `TavernBarWorkStart` | `modules/actions/tavern/tavern_bar_work.qsps` | 12 |
 
 ## modules/core
