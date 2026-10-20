@@ -529,8 +529,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 974 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 855 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 649 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 476 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 642 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 469 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 304 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -540,7 +540,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1711 |
+| `ActUiPrepare` | 1710 |
 | `ShowLocationScreenTitle` | 756 |
 | `SceneShowVisual` | 707 |
 | `Menu.AddModule` | 600 |
