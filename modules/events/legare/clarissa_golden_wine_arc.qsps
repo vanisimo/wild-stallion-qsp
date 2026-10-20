@@ -1,0 +1,255 @@
+! ================================================
+! FILE: modules/events/legare/clarissa_golden_wine_arc.qsps
+! MODULE: events/legare
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Ветка «Золотое вино» Клариссы: мечта о купаже -> монастырский свиток -> горная лоза -> закладка террас и виноградника
+! ================================================
+
+#ClarissaGoldenWineDreamTalk
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'МЕЧТА КЛАРИССЫ: ЗОЛОТОЕ ВИНО'
+    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/clarissa_wine_dream', 'Кларисса увлечённо рассказывает Стефану о купаже и Золотом вине', 'large', 'webp'
+
+    gs 'ClarissaGoldenWinePrintText', 'dream_talk'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Пообещать помочь найти рецепт и лозу', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        ClarissaGoldenWineActive = 1
+        ClarissaGoldenWineStage = 1
+        PlayerKnows_Dream_GoldenWine = 1
+        PlayerKnows_Dream_GoldenWineRecipe = 1
+        DreamItemKnown['golden_wine'] = 1
+        DreamItemKnown['golden_wine_recipe'] = 1
+        Friends['clarissa'] += 2
+        otkroven['clarissa'] += 2
+        *pl ' '
+        *pl '<i>Кларисса с благодарностью сжимает твою руку. Теперь тебе нужно разузнать о старинном монастырском свитке в храме Ильматера и раздобыть саженцы горной лозы на рынке.</i>'
+        *pl ' '
+        gs 'ActUiPrepare', 'Вернуться к лавке', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'WineShop', 'main'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Пока повременить', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'WineShop', 'main'
+    end
+---
+
+#ClarissaGoldenWineProgressHint
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПОИСКИ ДЛЯ «ЗОЛОТОГО ВИНА»'
+    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/clarissa_wine_dream', 'Кларисса обсуждает со Стефаном поиски редких компонентов', 'large', 'webp'
+
+    *pl 'Кларисса с нетерпением встречает тебя у винных стеллажей:'
+    *pl ' '
+    *pl '— Стефан! Удалось что-нибудь разузнать о монастырском рецепте или северной лозе?'
+    *pl ' '
+
+    if PlayerHasGoldenWineRecipe = 1:
+        *pl '— <span style="color:#2e7d32"><b>Старинный свиток монастырского купажа:</b> получен у отца Герхарда в архиве храма Ильматера.</span>'
+    else:
+        *pl '— <span style="color:#d32f2f"><b>Старинный свиток монастырского купажа:</b> нужно расспросить отца Герхарда в храме Ильматера в будний день.</span>'
+    end
+
+    if PlayerHasGoldenGrapeVines = 1:
+        *pl '— <span style="color:#2e7d32"><b>Саженцы редкой горной лозы:</b> выкуплены у купца северного каравана на рынке.</span>'
+    else:
+        if SecondCaravanResolved = 1:
+            *pl '— <span style="color:#d32f2f"><b>Саженцы редкой горной лозы:</b> северный тракт свободен, саженцы можно приобрести у купца из Казад-Хера на городском рынке (60 монет).</span>'
+        else:
+            *pl '— <span style="color:#d32f2f"><b>Саженцы редкой горной лозы:</b> северный тракт блокирован орками. Караваны с горными товарами прибудут на рынок только после снятия блокады.</span>'
+        end
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к лавке', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'WineShop', 'main'
+    end
+---
+
+#ClarissaGoldenWineGerhardTalk
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'АРХИВ ХРАМА: СТАРИННЫЙ СВИТОК'
+    gs 'SceneShowVisual', 'images/locations/town/church/gerhard_archive_scroll', 'Отец Герхард достаёт древний свиток монастырского купажа', 'large', 'webp'
+
+    PlayerHasGoldenWineRecipe = 1
+
+    gs 'ClarissaGoldenWinePrintText', 'gerhard_recipe_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поблагодарить отца Герхарда и бережно убрать свиток', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchWeekday'
+    end
+---
+
+#ClarissaGoldenWineMarketTraderBlocked
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СЕВЕРНЫЙ ОБОЗ: ТРАКТ БЛОКИРОВАН'
+    gs 'SceneShowVisual', 'images/locations/market/northern_caravan_trader', 'Купцы у повозок обсуждают блокаду северного тракта', 'large', 'webp'
+
+    gs 'ClarissaGoldenWinePrintText', 'market_vines_blocked'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#ClarissaGoldenWineMarketTrader
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СЕВЕРНЫЙ КАРАВАН: ГОРНАЯ ЛОЗА'
+    gs 'SceneShowVisual', 'images/locations/market/northern_caravan_trader', 'Купец из Казад-Хера показывает спящие саженцы горного винограда', 'large', 'webp'
+
+    gs 'ClarissaGoldenWinePrintText', 'market_vines_intro'
+    *pl ' '
+
+    if money >= 60:
+        gs 'ActUiPrepare', 'Купить саженцы горной лозы (60 монет)', 'shop'
+        act $ActUiLabel, $ActUiIconPath:
+            money -= 60
+            PlayerHasGoldenGrapeVines = 1
+            gt 'ClarissaGoldenWineBuySuccess'
+        end
+    else:
+        *pl '<span style="color:#888"><i>У тебя недостаточно денег (нужно 60 монет).</i></span>'
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Отойти от обоза', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#ClarissaGoldenWineBuySuccess
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СЕВЕРНЫЙ КАРАВАН: САЖЕНЦЫ ПРИОБРЕТЕНЫ'
+    gs 'SceneShowVisual', 'images/locations/market/northern_caravan_trader', 'Стефан принимает связку саженцев в сыром мху и бересте', 'large', 'webp'
+
+    gs 'ClarissaGoldenWinePrintText', 'market_vines_bought'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#ClarissaGoldenWineDeliver
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПОДНОШЕНИЕ ДЛЯ МЕЧТЫ'
+    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/clarissa_vineyard_plan', 'Кларисса и Стефан с пергаментом свитка и связками горной лозы', 'large', 'webp'
+
+    gs 'ClarissaGoldenWinePrintText', 'deliver_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Осмотреть террасы на южном холме', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaGoldenWineVineyardScene'
+    end
+---
+
+#ClarissaGoldenWineVineyardScene
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'НОВЫЙ ВИНОГРАДНИК НА ЮЖНОМ СКЛОНЕ'
+    gs 'SceneShowVisual', 'images/locations/town/clarissa_hill_vineyard', 'Каменные террасы и высадка горной лозы на южном холме', 'large', 'webp'
+
+    ClarissaGoldenWineStage = 2
+    ClarissaGoldenWineDelivered = 1
+    ClarissaGoldenVineyardPlanted = 1
+    PlayerHasGoldenWineRecipe = 0
+    PlayerHasGoldenGrapeVines = 0
+    DreamItemGiven['golden_wine'] = 1
+    DreamItemGiven['golden_wine_recipe'] = 1
+    Friends['clarissa'] += 8
+    otkroven['clarissa'] += 6
+    love['clarissa'] += 4
+    ClarissaTrustStefan += 5
+    CityRumorReady['clarissa_golden_vineyard'] = 1
+
+    gs 'ClarissaGoldenWinePrintText', 'vineyard_terrace_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в город с лёгким сердцем', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Market'
+    end
+---
+
+#ClarissaGoldenWineVineyardTalk
+    *clr
+    clr
+    cla
+
+    ClarissaVineyardStatusTalkToday = day
+
+    gs 'ShowLocationScreenTitle', 'О НОВОМ ВИНОГРАДНИКЕ'
+    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/clarissa_wine_dream', 'Кларисса с сияющей улыбкой рассказывает о всходах на террасах', 'large', 'webp'
+
+    gs 'ClarissaGoldenWinePrintText', 'vineyard_status_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к лавке', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'WineShop', 'main'
+    end
+---
+
+#AlberClarissaVineyardReaction
+    *clr
+    clr
+    cla
+
+    $AlberReturnLoc = $ARGS[0]
+    if $AlberReturnLoc = '' or LOC($AlberReturnLoc) = 0:
+        $AlberReturnLoc = 'WineShop'
+    end
+
+    gs 'ShowLocationScreenTitle', 'МЕССИР АЛЬБЕР О ВИНОГРАДНИКЕ КЛАРИССЫ'
+    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/alber_vineyard_talk', 'Альбер Легаре с достоинством смотрит на холмы с новым виноградником', 'large', 'webp'
+
+    AlberClarissaVineyardTalkDone = 1
+    Friends['alber'] += 5
+    if AlberRespectStefan < 100:
+        AlberRespectStefan += 5
+    end
+
+    gs 'ClarissaGoldenWinePrintText', 'alber_reaction_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться к разговору', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TalkWithAlber', $AlberReturnLoc
+    end
+---

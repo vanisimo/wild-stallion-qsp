@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 494
-- Locations: 3661
+- Source files: 496
+- Locations: 3672
 
 ## modules/actions
 
@@ -83,11 +83,11 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkBuildTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 273 |
 | `GirlTalkBuildTownMainMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 64 |
 | `GirlTalkCheckNpcLinkAvailable` | `modules/actions/dialogs/girl_talk.qsps` | 115 |
-| `GirlTalkClarissaHomePrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 184 |
-| `GirlTalkClarissaHomeRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 151 |
+| `GirlTalkClarissaHomePrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 210 |
+| `GirlTalkClarissaHomeRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 177 |
 | `GirlTalkClarissaHomeText` | `modules/actions/dialogs/girl_talk_clarissa_text.qsps` | 29 |
-| `GirlTalkClarissaPaternityPrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 205 |
-| `GirlTalkClarissaPaternityRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 194 |
+| `GirlTalkClarissaPaternityPrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 231 |
+| `GirlTalkClarissaPaternityRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 220 |
 | `GirlTalkClarissaPaternityText` | `modules/actions/dialogs/girl_talk_clarissa_text.qsps` | 51 |
 | `GirlTalkClosedScreen` | `modules/actions/dialogs/girl_talk.qsps` | 759 |
 | `GirlTalkDaughtersPrintText` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 86 |
@@ -183,8 +183,8 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkTownLifePrintText` | `modules/actions/dialogs/girl_talk_town.qsps` | 175 |
 | `GirlTalkTownLifeRun` | `modules/actions/dialogs/girl_talk_town.qsps` | 139 |
 | `GirlTalkTownLifeText` | `modules/actions/dialogs/girl_talk_town_text.qsps` | 27 |
-| `GirlTalkWineShopPrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 174 |
-| `GirlTalkWineShopRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 136 |
+| `GirlTalkWineShopPrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 200 |
+| `GirlTalkWineShopRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 162 |
 | `GirlTalkWineShopText` | `modules/actions/dialogs/girl_talk_clarissa_text.qsps` | 7 |
 | `GirlUniformTalkBlocked` | `modules/actions/tavern/girl_uniform_talk.qsps` | 286 |
 | `GirlUniformTalkBuildMenu` | `modules/actions/tavern/girl_uniform_talk.qsps` | 81 |
@@ -497,7 +497,7 @@ Generated from active project files in `qsp-project.json`.
 | `CheckGirlInLocation` | `modules/core/girls/girl_location.qsps` | 79 |
 | `CheckTavernHiredStaffUnlocked` | `modules/core/tavern/tavern_hired_staff.qsps` | 67 |
 | `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 9 |
-| `CityRumorsGetText` | `modules/core/rumors/city_rumors_core.qsps` | 413 |
+| `CityRumorsGetText` | `modules/core/rumors/city_rumors_core.qsps` | 419 |
 | `CityRumorsPickKey` | `modules/core/rumors/city_rumors_core.qsps` | 128 |
 | `CityRumorsRegisterEvent` | `modules/core/rumors/city_rumors_core.qsps` | 92 |
 | `CityRumorsResetDaily` | `modules/core/rumors/city_rumors_core.qsps` | 26 |
@@ -1033,6 +1033,7 @@ Generated from active project files in `qsp-project.json`.
 | `Act1MoralUnlockShowPortrait` | `modules/events/family/act1_moral_unlock.qsps` | 18 |
 | `Act1MoralUnlockTryAfterSummary` | `modules/events/family/act1_moral_unlock.qsps` | 7 |
 | `Act1SurveyMarkIncome` | `modules/events/family/act1_setup_core.qsps` | 70 |
+| `AlberClarissaVineyardReaction` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 229 |
 | `AlberReconcileCanOffer` | `modules/events/legare/alber_reconcile_stefan.qsps` | 7 |
 | `AlberReconcileStefanText` | `modules/events/legare/alber_reconcile_stefan_text.qsps` | 7 |
 | `AlberReconcileWithStefan` | `modules/events/legare/alber_reconcile_stefan.qsps` | 33 |
@@ -1761,6 +1762,16 @@ Generated from active project files in `qsp-project.json`.
 | `ClarissaDanceAction` | `modules/events/dance/clarissa_dance.qsps` | 90 |
 | `ClarissaDoubleVaginalCanStart` | `modules/events/family/intimacy_kinks.qsps` | 724 |
 | `ClarissaDoubleVaginalStart` | `modules/events/family/intimacy_kinks.qsps` | 759 |
+| `ClarissaGoldenWineBuySuccess` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 146 |
+| `ClarissaGoldenWineDeliver` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 163 |
+| `ClarissaGoldenWineDreamTalk` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 8 |
+| `ClarissaGoldenWineGerhardTalk` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 81 |
+| `ClarissaGoldenWineMarketTrader` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 117 |
+| `ClarissaGoldenWineMarketTraderBlocked` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 100 |
+| `ClarissaGoldenWinePrintText` | `modules/events/legare/clarissa_golden_wine_arc_text.qsps` | 8 |
+| `ClarissaGoldenWineProgressHint` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 44 |
+| `ClarissaGoldenWineVineyardScene` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 180 |
+| `ClarissaGoldenWineVineyardTalk` | `modules/events/legare/clarissa_golden_wine_arc.qsps` | 210 |
 | `ClarissaGroupFfmAmandaCanStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 457 |
 | `ClarissaGroupFfmAmandaIntroText` | `modules/events/legare/clarissa_intim_arc_text.qsps` | 57 |
 | `ClarissaGroupMmfLegareCanStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 407 |
@@ -3316,14 +3327,14 @@ Generated from active project files in `qsp-project.json`.
 | `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 147 |
 | `BuildMayorOfficeTalkMenu` | `modules/locations/town/mayor_office.qsps` | 953 |
 | `Church` | `modules/locations/town/church.qsps` | 7 |
-| `ChurchDonationInfo` | `modules/locations/town/church_weekday.qsps` | 115 |
-| `ChurchGerhardWeekdayTalk` | `modules/locations/town/church_weekday.qsps` | 97 |
+| `ChurchDonationInfo` | `modules/locations/town/church_weekday.qsps` | 122 |
+| `ChurchGerhardWeekdayTalk` | `modules/locations/town/church_weekday.qsps` | 104 |
 | `ChurchInterior` | `modules/locations/town/church.qsps` | 58 |
 | `ChurchSundayQuiet` | `modules/locations/town/church.qsps` | 119 |
-| `ChurchTaroUrns` | `modules/locations/town/church_weekday.qsps` | 133 |
+| `ChurchTaroUrns` | `modules/locations/town/church_weekday.qsps` | 140 |
 | `ChurchWalkAround` | `modules/locations/town/church.qsps` | 78 |
 | `ChurchWeekday` | `modules/locations/town/church_weekday.qsps` | 7 |
-| `ChurchWeekdayDonations` | `modules/locations/town/church_weekday.qsps` | 74 |
+| `ChurchWeekdayDonations` | `modules/locations/town/church_weekday.qsps` | 81 |
 | `CraftsmenQuarter` | `modules/locations/town/craftsmen_quarter.qsps` | 6 |
 | `DanceDressEnsureName` | `modules/locations/shops/irma_dance_dress.qsps` | 20 |
 | `DanceDressEscortCanStart` | `modules/locations/shops/irma_dance_dress.qsps` | 85 |
@@ -3412,7 +3423,7 @@ Generated from active project files in `qsp-project.json`.
 | `KitchenShowLocationImage` | `modules/locations/tavern/kitchen.qsps` | 188 |
 | `Market` | `modules/locations/town/market.qsps` | 8 |
 | `MarketDance` | `modules/locations/town/market_dance.qsps` | 14 |
-| `MarketRumors` | `modules/locations/town/market.qsps` | 155 |
+| `MarketRumors` | `modules/locations/town/market.qsps` | 169 |
 | `MayorClerkWorkoffEvaluate` | `modules/locations/town/mayor_office.qsps` | 495 |
 | `MayorOffice` | `modules/locations/town/mayor_office.qsps` | 39 |
 | `MayorOfficeAudienceAlreadyDoneText` | `modules/locations/town/mayor_office_text.qsps` | 97 |
