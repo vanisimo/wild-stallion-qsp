@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 480
-- Locations: 3610
-- Locations with direct incoming calls: 3098
+- Source files: 484
+- Locations: 3626
+- Locations with direct incoming calls: 3114
 - Locations without direct incoming calls: 512
 - Review candidates without direct incoming calls: 185
 - Classified entry/helper locations without direct incoming calls: 327
@@ -540,11 +540,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1585 |
-| `ShowLocationScreenTitle` | 697 |
-| `SceneShowVisual` | 648 |
-| `Menu.AddModule` | 589 |
-| `MenuUiAdd` | 581 |
+| `ActUiPrepare` | 1621 |
+| `ShowLocationScreenTitle` | 711 |
+| `SceneShowVisual` | 662 |
+| `Menu.AddModule` | 590 |
+| `MenuUiAdd` | 582 |
 | `EnsureGirlData` | 240 |
 | `ClampGirlSocialStats` | 210 |
 | `NormalizeGirlKey` | 201 |
@@ -552,8 +552,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowGirlSidebar` | 102 |
 | `RegisterSex` | 98 |
 | `Menu.Create` | 97 |
-| `Market` | 91 |
 | `Menu.Destroy` | 91 |
+| `Market` | 91 |
 | `PrintMainP` | 87 |
 | `ShowImage` | 86 |
 | `FormatSpintry` | 85 |
@@ -564,7 +564,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `Menu.AddCondition` | 44 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 

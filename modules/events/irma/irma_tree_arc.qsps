@@ -1,0 +1,335 @@
+! ================================================
+! FILE: modules/events/irma/irma_tree_arc.qsps
+! MODULE: events/irma
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Ночные визиты к Ирме, потайной сад, Древо Жизни, обряды омовения и ритуалы плодородия
+! ================================================
+
+#IrmaNightVisit
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'НОЧНАЯ МАСТЕРСКАЯ ИРМЫ'
+
+    if IrmaNightIntroDone = 0:
+        gt 'IrmaNightFirstVisit'
+    end
+
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_night_hub', 'Ирма в ночной мастерской при свечах', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'night_hub_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Побеседовать о мире за чаем', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLoreMenu'
+    end
+
+    if IrmaNightFittingDone = 1 and IrmaTreeGardenUnlocked = 0:
+        gs 'ActUiPrepare', 'Спросить о потайном саде', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeGardenEnter'
+        end
+    end
+
+    if IrmaTreeGardenUnlocked = 1:
+        gs 'ActUiPrepare', 'Пройти в сад к Древу Жизни', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeGarden'
+        end
+    end
+
+    if IrmaNightFittingDone = 1:
+        gs 'ActUiPrepare', 'Приватная примерка без одежды', 'policy'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaNightFittingRepeat'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Покинуть мастерскую', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#IrmaNightFirstVisit
+    *clr
+    clr
+    cla
+
+    IrmaNightIntroDone = 1
+    Friends['irma'] += 3
+
+    gs 'ShowLocationScreenTitle', 'ТАЙНЫЙ ВИЗИТ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_night_door', 'Ирма открывает дверь в шелковом пеньюаре', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'first_visit_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Спросить про слухи о мэре и ночных мерках', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaNightMayorTruth'
+    end
+---
+
+#IrmaNightMayorTruth
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПРАВДА О «НОЧНЫХ МЕРКАХ»'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_tea_talk', 'Ирма смеется над слухами о мэре', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'mayor_truth_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Согласиться на примерку без одежды', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaNightFittingScene'
+    end
+
+    gs 'ActUiPrepare', 'Смутиться и откланяться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#IrmaNightFittingScene
+    *clr
+    clr
+    cla
+
+    IrmaNightFittingDone = 1
+    Friends['irma'] += 5
+    otkroven['irma'] += 5
+
+    gs 'ShowLocationScreenTitle', 'НОЧНАЯ ПРИМЕРКА'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_fitting_nude', 'Ирма снимает мерки с обнаженного Стефана', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'fitting_scene_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Одеться и поговорить о Древе', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGardenEnter'
+    end
+
+    gs 'ActUiPrepare', 'Поцеловать Ирму в шею', 'kiss'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaNightFittingKiss'
+    end
+---
+
+#IrmaNightFittingKiss
+    *clr
+    clr
+    cla
+
+    love['irma'] += 5
+    otkroven['irma'] += 5
+
+    gs 'ShowLocationScreenTitle', 'НЕЖНЫЙ ПОРЫВ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_kiss', 'Ирма отвечает на страстный поцелуй', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'fitting_kiss_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Следовать за Ирмой в сад', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGardenEnter'
+    end
+---
+
+#IrmaNightFittingRepeat
+    *clr
+    clr
+    cla
+
+    otkroven['irma'] += 2
+
+    gs 'ShowLocationScreenTitle', 'ПРИВАТНЫЙ МАССАЖ И МЕРКИ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_fitting_nude', 'Ирма ласкает обнаженное тело Стефана лентой', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'fitting_repeat_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Пройти в сад к Древу', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGarden'
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к прилавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaNightVisit'
+    end
+---
+
+#IrmaTreeGardenEnter
+    *clr
+    clr
+    cla
+
+    IrmaTreeGardenUnlocked = 1
+
+    gs 'ShowLocationScreenTitle', 'ТАЙНЫЙ САД ДРЕВА ЖИЗНИ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_garden_reveal', 'Ирма открывает дверь в залитый лунным светом сад', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'garden_enter_intro'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Подойти ближе к священному Древу', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGarden'
+    end
+---
+
+#IrmaTreeGarden
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ДРЕВО ЖИЗНИ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_of_life', 'Древнее Древо Жизни с мерцающей серебром листвой', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'tree_garden_hub'
+    *pl ' '
+
+    if IrmaTreeBathDone = 0:
+        gs 'ActUiPrepare', 'Ритуальное омовение в купели у корней', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeBathRitual'
+        end
+    else:
+        gs 'ActUiPrepare', 'Омовение в священной купели', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeBathRitual'
+        end
+
+        gs 'ActUiPrepare', 'Священный ритуал плодородия у корней', 'kiss'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeFertilityRitual'
+        end
+    end
+
+    if IrmaTreeRitualDone = 1 and IrmaTreeElixirDay <> day:
+        gs 'ActUiPrepare', 'Испить Эликсир Жизненной Силы Древа', 'drink'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeElixirBrew'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в мастерскую', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaNightVisit'
+    end
+---
+
+#IrmaTreeBathRitual
+    *clr
+    clr
+    cla
+
+    IrmaTreeBathDone = 1
+    Friends['irma'] += 5
+    otkroven['irma'] += 5
+
+    gs 'ShowLocationScreenTitle', 'РИТУАЛЬНОЕ ОМОВЕНИЕ В КУПЕЛИ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_bath', 'Ирма омывает обнажённого Стефана в целебной воде', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'bath_ritual_text'
+    *pl ' '
+
+    if IrmaTreeRitualDone = 0:
+        gs 'ActUiPrepare', 'Выйти на мох и возлечь у корней Древа', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeFertilityRitual'
+        end
+    else:
+        gs 'ActUiPrepare', 'Перейти к ритуалу плодородия', 'kiss'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeFertilityRitual'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Одеться и выйти из сада', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGarden'
+    end
+---
+
+#IrmaTreeFertilityRitual
+    *clr
+    clr
+    cla
+
+    IrmaTreeRitualDone = 1
+    love['irma'] += 15
+    Friends['irma'] += 10
+    otkroven['irma'] += 15
+
+    if PlayerHasTreeBlessing = 0:
+        PlayerHasTreeBlessing = 1
+        sexual_endurance += 1
+        max_daily_cum += 1
+    end
+
+    daily_cum_count += 1
+
+    gs 'ShowLocationScreenTitle', 'СВЯЩЕННЫЙ РИТУАЛ ПЛОДОРОДИЯ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_sex', 'Единение Стефана и Ирмы у священных корней', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'fertility_ritual_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Нежиться в объятиях Ирмы под сенью Древа', 'kiss'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreePostRitual'
+    end
+---
+
+#IrmaTreePostRitual
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'БЛАГОДАТЬ ДРЕВА'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_afterglow', 'Ирма прижимается к груди Стефана у светящихся корней', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'post_ritual_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в сад', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGarden'
+    end
+
+    gs 'ActUiPrepare', 'Покинуть мастерскую до рассвета', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#IrmaTreeElixirBrew
+    *clr
+    clr
+    cla
+
+    IrmaTreeElixirDay = day
+    PlayerHasTreeElixir = 1
+
+    ! Восстановление сил и повышение тонуса
+    daily_cum_count = 0
+    tired = 0
+
+    gs 'ShowLocationScreenTitle', 'ЭЛИКСИР ЖИЗНЕННОЙ СИЛЫ ДРЕВА'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/tree_elixir', 'Ирма подносит кубок с изумрудным эликсиром Древа', 'large', 'webp'
+
+    gs 'IrmaTreePrintText', 'elixir_brew_text'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Поблагодарить Ирму', 'holy_circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaTreeGarden'
+    end
+---

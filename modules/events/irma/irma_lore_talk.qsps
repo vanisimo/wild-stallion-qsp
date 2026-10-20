@@ -1,0 +1,104 @@
+! ================================================
+! FILE: modules/events/irma/irma_lore_talk.qsps
+! MODULE: events/irma
+! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! Меню и логика бесед с Ирмой о мире, религии, герцогстве и народах (наследие Франчески)
+! ================================================
+
+#IrmaLoreMenu
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'БЕСЕДЫ С ИРМОЙ О МИРЕ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_tea_talk', 'Ирма наливает травяной настой за прилавком', 'large', 'webp'
+
+    *pl 'Ирма отставляет серебряные ножницы, снимает напёрсток и жестом приглашает тебя присесть на мягкое кресло для знатных заказчиц.'
+    *pl ' '
+    *pl '— В этом городе люди слишком заняты подсчётом медяков и сплетнями о соседях, — спокойно улыбается полуэльфийка, разливая ароматный травяной чай по глиняным чашкам. — Но если ты хочешь знать, как на самом деле устроен этот мир за пределами твоей пивной стойки... спрашивай. Я отвечу.'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'О богине плодородия Эллоне и вере', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLoreScene', 'ellona'
+    end
+
+    if IrmaLoreSeen['ellona'] = 1:
+        gs 'ActUiPrepare', 'О Пяти Грациях и женских тайнах', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaLoreScene', 'graces'
+        end
+    end
+
+    gs 'ActUiPrepare', 'О герцогине Кончите дель Семени', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLoreScene', 'conchita'
+    end
+
+    if IrmaLoreSeen['conchita'] = 1:
+        gs 'ActUiPrepare', 'О короле Хулио и столичной метрополии', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaLoreScene', 'king'
+        end
+    end
+
+    gs 'ActUiPrepare', 'О народах фронтира: эльфах, гномах и орках', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLoreScene', 'races'
+    end
+
+    if IrmaLoreSeen['races'] = 1 or Friends['irma'] >= 10:
+        gs 'ActUiPrepare', 'О тайне Древа Жизни в черте города', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaLoreScene', 'tree_secret'
+        end
+    end
+
+    if (PlayerHasWeaponShipmentInvoice = 1 or PlayerKnows_MayorWeaponsToWildLands = 1 or MayorSecondTalkDone = 1) and IrmaLoreSeen['caravan'] = 0:
+        gs 'ActUiPrepare', 'О тайных грузах оружия и двух племенах орков', 'policy'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaLoreScene', 'caravan'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться к делам', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        if time = 5:
+            gt 'IrmaNightVisit'
+        else:
+            gt 'IrmaShop'
+        end
+    end
+---
+
+#IrmaLoreScene
+    *clr
+    clr
+    cla
+
+    $IrmaLoreTopic = $ARGS[0]
+
+    gs 'ShowLocationScreenTitle', 'РАССКАЗ ИРМЫ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/irma_story_' + $IrmaLoreTopic, 'Ирма рассказывает о мире за чашкой чая', 'large', 'webp'
+
+    gs 'IrmaLorePrintText', $IrmaLoreTopic
+    *pl ' '
+
+    IrmaLoreSeen[$IrmaLoreTopic] = 1
+    Friends['irma'] += 1
+    otkroven['irma'] += 1
+
+    gs 'ActUiPrepare', 'Расспросить о другом', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLoreMenu'
+    end
+
+    gs 'ActUiPrepare', 'Закончить разговор', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        if time = 5:
+            gt 'IrmaNightVisit'
+        else:
+            gt 'IrmaShop'
+        end
+    end
+---

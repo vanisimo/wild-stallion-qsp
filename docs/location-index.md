@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 480
-- Locations: 3610
+- Source files: 484
+- Locations: 3626
 
 ## modules/actions
 
@@ -63,7 +63,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlNoPantiesWorkText` | `modules/actions/tavern/girl_no_panties_work_text.qsps` | 19 |
 | `GirlTalk` | `modules/actions/dialogs/girl_talk.qsps` | 11 |
 | `GirlTalkAddReturnButton` | `modules/actions/dialogs/girl_talk_session.qsps` | 48 |
-| `GirlTalkAfterSmalltalk` | `modules/actions/dialogs/girl_talk_town.qsps` | 121 |
+| `GirlTalkAfterSmalltalk` | `modules/actions/dialogs/girl_talk_town.qsps` | 126 |
 | `GirlTalkAppendGiftMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 400 |
 | `GirlTalkAppendIntimMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 424 |
 | `GirlTalkBeckyFamilyPrintText` | `modules/actions/dialogs/girl_talk_inga.qsps` | 100 |
@@ -73,7 +73,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkBuildBeckyMainMenu` | `modules/actions/dialogs/girl_talk_becky.qsps` | 7 |
 | `GirlTalkBuildClarissaMainMenu` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 7 |
 | `GirlTalkBuildGeorgetteMainMenu` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 105 |
-| `GirlTalkBuildGretaStubMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 48 |
+| `GirlTalkBuildGretaStubMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 53 |
 | `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 528 |
 | `GirlTalkBuildIngaMainMenu` | `modules/actions/dialogs/girl_talk_inga.qsps` | 7 |
 | `GirlTalkBuildIrmaMainMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 9 |
@@ -81,7 +81,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkBuildMainMenu` | `modules/actions/dialogs/girl_talk.qsps` | 320 |
 | `GirlTalkBuildSandraMainMenu` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 7 |
 | `GirlTalkBuildTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 273 |
-| `GirlTalkBuildTownMainMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 59 |
+| `GirlTalkBuildTownMainMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 64 |
 | `GirlTalkCheckNpcLinkAvailable` | `modules/actions/dialogs/girl_talk.qsps` | 115 |
 | `GirlTalkClarissaHomePrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 184 |
 | `GirlTalkClarissaHomeRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 151 |
@@ -123,8 +123,8 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkImageDebugBrief` | `modules/actions/dialogs/girl_talk_images.qsps` | 163 |
 | `GirlTalkImageDebugPanel` | `modules/actions/dialogs/girl_talk_images.qsps` | 197 |
 | `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 585 |
-| `GirlTalkIrmaShopPrintText` | `modules/actions/dialogs/girl_talk_town.qsps` | 160 |
-| `GirlTalkIrmaShopRun` | `modules/actions/dialogs/girl_talk_town.qsps` | 105 |
+| `GirlTalkIrmaShopPrintText` | `modules/actions/dialogs/girl_talk_town.qsps` | 165 |
+| `GirlTalkIrmaShopRun` | `modules/actions/dialogs/girl_talk_town.qsps` | 110 |
 | `GirlTalkIrmaShopText` | `modules/actions/dialogs/girl_talk_town_text.qsps` | 9 |
 | `GirlTalkLizetteAmandaRun` | `modules/actions/dialogs/girl_talk_lizette.qsps` | 159 |
 | `GirlTalkLizetteBioRun` | `modules/actions/dialogs/girl_talk_lizette.qsps` | 137 |
@@ -180,8 +180,8 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkTavernPrintText` | `modules/actions/dialogs/girl_talk_tavern.qsps` | 202 |
 | `GirlTalkTavernRun` | `modules/actions/dialogs/girl_talk_tavern.qsps` | 7 |
 | `GirlTalkTavernText` | `modules/actions/dialogs/girl_talk_tavern_text.qsps` | 10 |
-| `GirlTalkTownLifePrintText` | `modules/actions/dialogs/girl_talk_town.qsps` | 170 |
-| `GirlTalkTownLifeRun` | `modules/actions/dialogs/girl_talk_town.qsps` | 134 |
+| `GirlTalkTownLifePrintText` | `modules/actions/dialogs/girl_talk_town.qsps` | 175 |
+| `GirlTalkTownLifeRun` | `modules/actions/dialogs/girl_talk_town.qsps` | 139 |
 | `GirlTalkTownLifeText` | `modules/actions/dialogs/girl_talk_town_text.qsps` | 27 |
 | `GirlTalkWineShopPrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 174 |
 | `GirlTalkWineShopRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 136 |
@@ -2616,8 +2616,24 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaAmandaDanceDressBoughtText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 204 |
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 |
 | `IrmaBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 8 |
+| `IrmaLoreMenu` | `modules/events/irma/irma_lore_talk.qsps` | 8 |
+| `IrmaLorePrintText` | `modules/events/irma/irma_lore_talk_text.qsps` | 8 |
+| `IrmaLoreScene` | `modules/events/irma/irma_lore_talk.qsps` | 74 |
 | `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 |
 | `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 |
+| `IrmaNightFirstVisit` | `modules/events/irma/irma_tree_arc.qsps` | 56 |
+| `IrmaNightFittingKiss` | `modules/events/irma/irma_tree_arc.qsps` | 124 |
+| `IrmaNightFittingRepeat` | `modules/events/irma/irma_tree_arc.qsps` | 144 |
+| `IrmaNightFittingScene` | `modules/events/irma/irma_tree_arc.qsps` | 98 |
+| `IrmaNightMayorTruth` | `modules/events/irma/irma_tree_arc.qsps` | 76 |
+| `IrmaNightVisit` | `modules/events/irma/irma_tree_arc.qsps` | 8 |
+| `IrmaTreeBathRitual` | `modules/events/irma/irma_tree_arc.qsps` | 228 |
+| `IrmaTreeElixirBrew` | `modules/events/irma/irma_tree_arc.qsps` | 313 |
+| `IrmaTreeFertilityRitual` | `modules/events/irma/irma_tree_arc.qsps` | 261 |
+| `IrmaTreeGarden` | `modules/events/irma/irma_tree_arc.qsps` | 187 |
+| `IrmaTreeGardenEnter` | `modules/events/irma/irma_tree_arc.qsps` | 168 |
+| `IrmaTreePostRitual` | `modules/events/irma/irma_tree_arc.qsps` | 291 |
+| `IrmaTreePrintText` | `modules/events/irma/irma_tree_arc_text.qsps` | 8 |
 | `KitchenCustomerApplyConsequences` | `modules/events/kitchen/kitchen_customer_event.qsps` | 717 |
 | `KitchenCustomerBuildMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 521 |
 | `KitchenCustomerCanUseClientChoice` | `modules/events/kitchen/kitchen_customer_event.qsps` | 569 |
@@ -3230,8 +3246,8 @@ Generated from active project files in `qsp-project.json`.
 | `TavernWorkDayEvent` | `modules/events/tavern/tavern_events.qsps` | 10 |
 | `UpdateAmandaLegareBranchUnlock` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 18 |
 | `WildLandsAmbushScene` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 391 |
-| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 418 |
-| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 435 |
+| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 420 |
+| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 437 |
 | `WildLandsRoadChoose` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 352 |
 | `WildLandsWrongRoadAmbush` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 368 |
 
@@ -3312,13 +3328,13 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 376 |
 | `IrmaFirstMeet` | `modules/locations/shops/irma_first_meet.qsps` | 7 |
 | `IrmaShop` | `modules/locations/shops/irma_shop.qsps` | 7 |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 291 |
-| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 321 |
-| `IrmaShopRenderCommonHeader` | `modules/locations/shops/irma_shop.qsps` | 130 |
-| `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 173 |
-| `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 272 |
-| `IrmaShopRenderMainTab` | `modules/locations/shops/irma_shop.qsps` | 160 |
-| `IrmaShopRenderUniformsTab` | `modules/locations/shops/irma_shop.qsps` | 238 |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 304 |
+| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 334 |
+| `IrmaShopRenderCommonHeader` | `modules/locations/shops/irma_shop.qsps` | 137 |
+| `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 180 |
+| `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 279 |
+| `IrmaShopRenderMainTab` | `modules/locations/shops/irma_shop.qsps` | 167 |
+| `IrmaShopRenderUniformsTab` | `modules/locations/shops/irma_shop.qsps` | 245 |
 | `IrmaUniformBuildMenu` | `modules/locations/shops/irma_uniform_orders.qsps` | 96 |
 | `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 521 |
 | `IrmaUniformEnsureName` | `modules/locations/shops/irma_uniform_orders.qsps` | 554 |
