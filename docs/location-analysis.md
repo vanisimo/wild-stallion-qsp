@@ -552,7 +552,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1776 |
+| `ActUiPrepare` | 1775 |
 | `ShowLocationScreenTitle` | 758 |
 | `SceneShowVisual` | 711 |
 | `Menu.AddModule` | 592 |
@@ -570,7 +570,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `FormatSpintry` | 85 |
 | `PrintMainP` | 85 |
 | `UpdateGirlLocations` | 83 |
-| `MarketDance` | 78 |
+| `MarketDance` | 77 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `PrintTitleLine` | 53 |
 | `GirlTalkResult` | 51 |
