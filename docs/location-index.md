@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 498
-- Locations: 3719
+- Locations: 3720
 
 ## modules/actions
 
@@ -34,14 +34,14 @@ Generated from active project files in `qsp-project.json`.
 | `BuildGirlLocationNpcLine` | `modules/actions/dialogs/girl_talk_session.qsps` | 187 |
 | `CanStartIntimScene` | `modules/actions/sex/intim_scene.qsps` | 93 |
 | `CanStartSexScene` | `modules/actions/sex/sex_scene_core.qsps` | 98 |
-| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 1406 |
+| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 1409 |
 | `ClampIntimSceneValues` | `modules/actions/sex/intim_scene.qsps` | 517 |
 | `ClarissaDoubleVaginalApplyAftermath` | `modules/actions/sex/group_sex_gates.qsps` | 167 |
-| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 1172 |
-| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 1226 |
-| `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 1248 |
-| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 1282 |
-| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 1356 |
+| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 1175 |
+| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 1229 |
+| `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 1251 |
+| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 1285 |
+| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 1359 |
 | `GirlFirstAnal` | `modules/actions/sex/first_sex.qsps` | 142 |
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 197 |
 | `GirlFirstSex` | `modules/actions/sex/first_sex.qsps` | 8 |
@@ -66,21 +66,22 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkAfterSmalltalk` | `modules/actions/dialogs/girl_talk_town.qsps` | 126 |
 | `GirlTalkAppendGiftMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 388 |
 | `GirlTalkAppendIntimMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 412 |
-| `GirlTalkBeckyClerkRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 327 |
-| `GirlTalkBeckyEddieGeorgetteRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 257 |
-| `GirlTalkBeckyEddieNormalizeRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 313 |
-| `GirlTalkBeckyEddieOutragedRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 274 |
-| `GirlTalkBeckyEddieRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 242 |
+| `GirlTalkBeckyClerkRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 274 |
+| `GirlTalkBeckyEddieGeorgetteRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 204 |
+| `GirlTalkBeckyEddieNormalizeRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 260 |
+| `GirlTalkBeckyEddieOutragedRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 221 |
+| `GirlTalkBeckyEddieRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 189 |
 | `GirlTalkBeckyFamilyPrintText` | `modules/actions/dialogs/girl_talk_inga.qsps` | 329 |
 | `GirlTalkBeckyFamilyRun` | `modules/actions/dialogs/girl_talk_inga.qsps` | 208 |
 | `GirlTalkBeckyFamilyText` | `modules/actions/dialogs/girl_talk_inga_text.qsps` | 50 |
-| `GirlTalkBeckyHomeInviteRunTopic` | `modules/actions/dialogs/girl_talk_becky.qsps` | 341 |
-| `GirlTalkBeckyHusbandRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 208 |
-| `GirlTalkBeckyIngaRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 183 |
-| `GirlTalkBeckyPastVisitRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 351 |
-| `GirlTalkBeckyPriestHintRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 287 |
-| `GirlTalkBeckyPriestRetryRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 300 |
-| `GirlTalkBeckyShopRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 161 |
+| `GirlTalkBeckyHomeInviteRunTopic` | `modules/actions/dialogs/girl_talk_becky.qsps` | 288 |
+| `GirlTalkBeckyHusbandRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 155 |
+| `GirlTalkBeckyIngaRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 130 |
+| `GirlTalkBeckyPastVisitRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 298 |
+| `GirlTalkBeckyPriestHintRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 234 |
+| `GirlTalkBeckyPriestRetryRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 247 |
+| `GirlTalkBeckyShopRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 108 |
+| `GirlTalkBeckyUnifiedRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 67 |
 | `GirlTalkBlockedUsefulTopic` | `modules/actions/dialogs/girl_talk.qsps` | 673 |
 | `GirlTalkBuildBeckyMainMenu` | `modules/actions/dialogs/girl_talk_becky.qsps` | 8 |
 | `GirlTalkBuildClarissaMainMenu` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 7 |

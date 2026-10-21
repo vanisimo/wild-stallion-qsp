@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 498
-- Locations: 3719
-- Locations with direct incoming calls: 3198
+- Locations: 3720
+- Locations with direct incoming calls: 3199
 - Locations without direct incoming calls: 521
 - Review candidates without direct incoming calls: 189
 - Classified entry/helper locations without direct incoming calls: 332
@@ -552,10 +552,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ActUiPrepare` | 1720 |
 | `ShowLocationScreenTitle` | 755 |
 | `SceneShowVisual` | 707 |
-| `Menu.AddModule` | 594 |
-| `MenuUiAdd` | 586 |
+| `Menu.AddModule` | 581 |
+| `MenuUiAdd` | 573 |
 | `EnsureGirlData` | 244 |
-| `ClampGirlSocialStats` | 223 |
+| `ClampGirlSocialStats` | 225 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 165 |
 | `ShowGirlSidebar` | 106 |
@@ -568,12 +568,12 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 78 |
-| `GirlTalkResult` | 68 |
+| `GirlTalkResult` | 55 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `RegisterPlayerCum` | 44 |
+| `BeckyShop` | 44 |
 
 ## Dynamic Call Sites
 
