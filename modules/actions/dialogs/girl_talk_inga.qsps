@@ -1,38 +1,18 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_inga.qsps
 ! MODULE: actions/dialogs
-! Меню и разговоры Инги в лавке Бекки
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и расширенные разговоры Инги в лавке Бекки
 ! ================================================
 
 #GirlTalkBuildIngaMainMenu
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    gs 'GirlTalkRootAppendPersonalMenu'
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и торговле', ''
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'shop'
+        gt 'GirlTalkResult', 'inga', $TalkReturnLoc, 'inga_unified'
     }
-
-    if Friends['inga'] >= 3 or love['inga'] >= 2 or otkroven['inga'] >= 6:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О матери и доме', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'becky_family'
-        }
-    end
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
-    }
-
-    if Friends['inga'] >= 12 or love['inga'] >= 10 or otkroven['inga'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
-        }
-    end
 
     if IngaGuardVisitPendingTalk = 1:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О стражнике Грюне', 'talk'
@@ -53,9 +33,166 @@
     end
 ---
 
+#GirlTalkIngaUnifiedRun
+    ! 1. Приоритетные сюжетные квесты:
+    if IngaGuardVisitPendingTalk = 1:
+        gt 'IngaGuardComplaintTalk'
+    end
+
+    if IngaGuardResolved > 0 and IngaGuardThanksDone = 0:
+        gt 'IngaGuardThanks'
+    end
+
+    if IngaBeckyLucasGossipCanStart = 1 and IngaBeckyLucasGossipTalkDone = 0:
+        gt 'IngaBeckyLucasGossipStart'
+    end
+
+    ! 2. Проверка лимита полезных разговоров:
+    gs 'UsefulTalkCheck', 'inga', 'inga_unified'
+    if UsefulTalkResult = 0:
+        gs 'GirlTalkIngaLimitReachedText'
+        gs 'ClampGirlSocialStats', 'inga'
+        exit
+    end
+
+    ! 3. Регистрация полезного разговора:
+    gs 'UsefulTalkRegister', 'inga', 'inga_unified'
+
+    ! 4. Иерархия тем:
+    ! --- Пик откровения (предел) ---
+    if otkroven['inga'] >= 25 and (HadSex['inga'] > 0 or IngaBackroomSex = 1 or IngaRoomFirstSexDone = 1):
+        gs 'GirlTalkIngaMemoryLimitText'
+        if IngaMemoryLimitDone = 0:
+            IngaMemoryLimitDone = 1
+            sluttiness['inga'] += 2
+            otkroven['inga'] += 2
+            love['inga'] += 1
+        else:
+            sluttiness['inga'] += 1
+        end
+
+    ! --- Воспоминание о первом разе ---
+    elseif (IngaRoomFirstSexDone = 1 or IngaBackroomSex = 1) and otkroven['inga'] >= 22 and IngaMemoryFirstSexDone = 0:
+        gs 'GirlTalkIngaMemoryFirstSexText'
+        IngaMemoryFirstSexDone = 1
+        love['inga'] += 2
+        otkroven['inga'] += 1
+
+    ! --- Воспоминание о забавах втроём с Лукасом ---
+    elseif IngaLucasThreesomeCount >= 1 and IngaLucasThreesomeTalkDone = 0 and otkroven['inga'] >= 18:
+        gs 'GirlTalkIngaLucasText'
+        IngaLucasThreesomeTalkDone = 1
+        otkroven['inga'] += 2
+        sluttiness['inga'] += 2
+
+    ! --- Воспоминание об ужине у Бекки и ласках под столом ---
+    elseif (BeckyDinnerIngaGropeStep >= 1 or BeckyDinnerBothGropeDone = 1 or HadSex['inga'] > 0) and otkroven['inga'] >= 16 and IngaMemoryDinnerDone = 0:
+        gs 'GirlTalkIngaMemoryDinnerText'
+        IngaMemoryDinnerDone = 1
+        sluttiness['inga'] += 2
+        otkroven['inga'] += 1
+
+    ! --- Воспоминание о танце на площади ---
+    elseif (IngaFridayMet = 1 or IngaDanceDay > 0) and otkroven['inga'] >= 10 and IngaMemoryDanceDone = 0:
+        gs 'GirlTalkIngaMemoryDanceText'
+        IngaMemoryDanceDone = 1
+        love['inga'] += 1
+        otkroven['inga'] += 1
+
+    ! --- О защите лавки от стражника ---
+    elseif IngaGuardThanksDone = 1 and IngaGuardReflectionDone = 0 and Friends['inga'] >= 10:
+        gs 'GirlTalkIngaGuardText'
+        IngaGuardReflectionDone = 1
+        otkroven['inga'] += 2
+        love['inga'] += 2
+
+    ! --- Развитие семьи (последовательные шаги) ---
+    elseif IngaFamilyStory = 0 and Friends['inga'] >= 3:
+        gs 'GirlTalkBeckyFamilyText'
+        IngaFamilyStory = 1
+        Friends['inga'] += 1
+        otkroven['inga'] += 1
+
+    elseif IngaFamilyStory = 1 and Friends['inga'] >= 6:
+        gs 'GirlTalkBeckyFamilyText'
+        IngaFamilyStory = 2
+        Friends['inga'] += 1
+        otkroven['inga'] += 1
+
+    elseif IngaFamilyStory = 2 and (otkroven['inga'] >= 8 or Friends['inga'] >= 9):
+        gs 'GirlTalkBeckyFamilyText'
+        IngaFamilyStory = 3
+        otkroven['inga'] += 1
+        love['inga'] += 1
+
+    elseif IngaFamilyStory = 3 and otkroven['inga'] >= 14:
+        gs 'GirlTalkBeckyFamilyText'
+        IngaFamilyStory = 4
+        otkroven['inga'] += 2
+        sluttiness['inga'] += 1
+        love['inga'] += 1
+
+    ! --- Развитие шитья (последовательные шаги) ---
+    elseif IngaSewingStory = 0 and (IrmaMet = 1 or IngaIrmaBond >= 1 or Friends['inga'] >= 6):
+        gs 'GirlTalkIngaSewingText'
+        IngaSewingStory = 1
+        Friends['inga'] += 1
+
+    elseif IngaSewingStory = 1 and (Friends['inga'] >= 8 or IngaIrmaBond >= 2):
+        gs 'GirlTalkIngaSewingText'
+        IngaSewingStory = 2
+        otkroven['inga'] += 1
+
+    elseif IngaSewingStory = 2 and (otkroven['inga'] >= 10 or IngaAtIrmaShop = 1 or love['inga'] >= 2):
+        gs 'GirlTalkIngaSewingText'
+        IngaSewingStory = 3
+        otkroven['inga'] += 1
+        sluttiness['inga'] += 1
+
+    ! --- Повседневный пласт лавки (ротация) ---
+    else:
+        IngaTalkShopStory += 1
+        if IngaTalkShopStory >= 4:
+            IngaTalkShopStory = 0
+        end
+        gs 'GirlTalkShopText'
+
+        $ShopTalkKey = 'inga_' + STR(day)
+        if IngaShopTalkDoneToday[$ShopTalkKey] = 0:
+            IngaShopTalkDoneToday[$ShopTalkKey] = 1
+            trading += 1
+            if Friends['inga'] < 12:
+                Friends['inga'] += 1
+            end
+        end
+        killvar '$ShopTalkKey'
+    end
+
+    ! Дополнительные действия, доступные прямо с экрана разговора:
+    if LOC('IngaRomanceCanAdvance') = 1:
+        gs 'IngaRomanceCanAdvance'
+        if IngaRomanceCanAdvance = 1:
+            gs 'ActUiPrepare', 'Увлечь Ингу в подсобку', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'IngaRomanceStep'
+        end
+    end
+
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
+        act $ActUiLabel, $ActUiIconPath: gt 'IngaGiftForgive'
+    end
+
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+
 #GirlTalkShopRun
-    gs 'GirlTalkShopPrintText', 'intro'
-    gs 'GirlTalkShopPrintText', 'context'
+    IngaTalkShopStory += 1
+    if IngaTalkShopStory >= 4:
+        IngaTalkShopStory = 0
+    end
+
+    gs 'GirlTalkShopPrintText'
 
     $ShopTalkKey = 'inga_' + STR(day)
     if IngaShopTalkDoneToday[$ShopTalkKey] = 0:
@@ -69,16 +206,25 @@
 ---
 
 #GirlTalkBeckyFamilyRun
-    gs 'GirlTalkBeckyFamilyPrintText', 'intro'
-    gs 'GirlTalkBeckyFamilyPrintText', 'context'
+    gs 'GirlTalkBeckyFamilyPrintText'
+
+    if IngaFamilyStory = 0:
+        IngaFamilyStory = 1
+    elseif IngaFamilyStory = 1 and Friends['inga'] >= 6:
+        IngaFamilyStory = 2
+    elseif IngaFamilyStory = 2 and (otkroven['inga'] >= 8 or Friends['inga'] >= 9):
+        IngaFamilyStory = 3
+    elseif IngaFamilyStory = 3 and otkroven['inga'] >= 14:
+        IngaFamilyStory = 4
+    end
 
     $BeckyFamilyKey = 'inga_family_' + STR(day)
     if IngaFamilyTalkDoneToday[$BeckyFamilyKey] = 0:
         IngaFamilyTalkDoneToday[$BeckyFamilyKey] = 1
-        if Friends['inga'] < 12:
+        if Friends['inga'] < 15:
             Friends['inga'] += 1
         end
-        if love['inga'] > 0 and love['inga'] < 10:
+        if love['inga'] > 0 and love['inga'] < 12:
             love['inga'] += 1
         end
     end
@@ -87,24 +233,129 @@
     gs 'ClampGirlSocialStats', 'inga'
 ---
 
-#GirlTalkShopPrintText
-    gs 'GirlTalkShopText', $ARGS[0]
+#GirlTalkIngaSewingRun
+    gs 'GirlTalkIngaSewingPrintText'
 
-    if $GirlTalkShopText <> '':
-        *p $GirlTalkShopText
+    if IngaSewingStory = 0:
+        IngaSewingStory = 1
+    elseif IngaSewingStory = 1 and (Friends['inga'] >= 8 or IngaIrmaBond >= 2):
+        IngaSewingStory = 2
+    elseif IngaSewingStory = 2 and (otkroven['inga'] >= 10 or IngaAtIrmaShop = 1 or love['inga'] >= 2):
+        IngaSewingStory = 3
     end
 
-    killvar '$GirlTalkShopText'
+    $IngaSewingKey = 'inga_sewing_' + STR(day)
+    if IngaSewingTalkDoneToday[$IngaSewingKey] = 0:
+        IngaSewingTalkDoneToday[$IngaSewingKey] = 1
+        if Friends['inga'] < 15:
+            Friends['inga'] += 1
+        end
+        if IngaIrmaBond < 10:
+            IngaIrmaBond += 1
+        end
+    end
+    killvar '$IngaSewingKey'
+
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GirlTalkIngaGuardRun
+    gs 'GirlTalkIngaGuardPrintText'
+    IngaGuardReflectionDone = 1
+    otkroven['inga'] += 2
+    love['inga'] += 2
+    if Friends['inga'] < 18:
+        Friends['inga'] += 2
+    end
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GirlTalkIngaLucasRun
+    gs 'GirlTalkIngaLucasPrintText'
+    IngaLucasThreesomeTalkDone = 1
+    otkroven['inga'] += 2
+    sluttiness['inga'] += 2
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GirlTalkIngaMemoryDanceRun
+    gs 'GirlTalkIngaMemoryDancePrintText'
+    if IngaMemoryDanceDone = 0:
+        IngaMemoryDanceDone = 1
+        love['inga'] += 1
+        otkroven['inga'] += 1
+        if Friends['inga'] < 20:
+            Friends['inga'] += 1
+        end
+    end
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GirlTalkIngaMemoryDinnerRun
+    gs 'GirlTalkIngaMemoryDinnerPrintText'
+    if IngaMemoryDinnerDone = 0:
+        IngaMemoryDinnerDone = 1
+        sluttiness['inga'] += 2
+        otkroven['inga'] += 1
+    end
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GirlTalkIngaMemoryFirstSexRun
+    gs 'GirlTalkIngaMemoryFirstSexPrintText'
+    if IngaMemoryFirstSexDone = 0:
+        IngaMemoryFirstSexDone = 1
+        love['inga'] += 2
+        otkroven['inga'] += 1
+    end
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GirlTalkIngaMemoryLimitRun
+    gs 'GirlTalkIngaMemoryLimitPrintText'
+    if IngaMemoryLimitDone = 0:
+        IngaMemoryLimitDone = 1
+        sluttiness['inga'] += 2
+        otkroven['inga'] += 2
+        love['inga'] += 1
+    end
+    gs 'ClampGirlSocialStats', 'inga'
+---
+
+#GirlTalkShopPrintText
+    gs 'GirlTalkShopText'
 ---
 
 #GirlTalkBeckyFamilyPrintText
-    gs 'GirlTalkBeckyFamilyText', $ARGS[0]
+    gs 'GirlTalkBeckyFamilyText'
+---
 
-    if $GirlTalkBeckyFamilyText <> '':
-        *p $GirlTalkBeckyFamilyText
-    end
+#GirlTalkIngaSewingPrintText
+    gs 'GirlTalkIngaSewingText'
+---
 
-    killvar '$GirlTalkBeckyFamilyText'
+#GirlTalkIngaGuardPrintText
+    gs 'GirlTalkIngaGuardText'
+---
+
+#GirlTalkIngaLucasPrintText
+    gs 'GirlTalkIngaLucasText'
+---
+
+#GirlTalkIngaMemoryDancePrintText
+    gs 'GirlTalkIngaMemoryDanceText'
+---
+
+#GirlTalkIngaMemoryDinnerPrintText
+    gs 'GirlTalkIngaMemoryDinnerText'
+---
+
+#GirlTalkIngaMemoryFirstSexPrintText
+    gs 'GirlTalkIngaMemoryFirstSexText'
+---
+
+#GirlTalkIngaMemoryLimitPrintText
+    gs 'GirlTalkIngaMemoryLimitText'
 ---
 
 #IngaBeckyLucasGossipResolveSource
@@ -181,7 +432,7 @@
     gs 'IngaBeckyLucasGossipText', $ARGS[0]
 
     if $IngaBeckyLucasGossipText <> '':
-        *p $IngaBeckyLucasGossipText
+        *pl $IngaBeckyLucasGossipText
     end
 
     killvar '$IngaBeckyLucasGossipText'

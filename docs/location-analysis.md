@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 498
-- Locations: 3696
-- Locations with direct incoming calls: 3175
+- Locations: 3719
+- Locations with direct incoming calls: 3198
 - Locations without direct incoming calls: 521
 - Review candidates without direct incoming calls: 189
 - Classified entry/helper locations without direct incoming calls: 332
@@ -549,13 +549,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1718 |
+| `ActUiPrepare` | 1720 |
 | `ShowLocationScreenTitle` | 755 |
 | `SceneShowVisual` | 707 |
-| `Menu.AddModule` | 597 |
-| `MenuUiAdd` | 589 |
+| `Menu.AddModule` | 594 |
+| `MenuUiAdd` | 586 |
 | `EnsureGirlData` | 244 |
-| `ClampGirlSocialStats` | 214 |
+| `ClampGirlSocialStats` | 223 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 165 |
 | `ShowGirlSidebar` | 106 |
@@ -563,17 +563,17 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Market` | 97 |
 | `Menu.Create` | 95 |
 | `Menu.Destroy` | 90 |
-| `PrintMainP` | 87 |
 | `ShowImage` | 87 |
+| `PrintMainP` | 87 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 78 |
-| `GirlTalkResult` | 71 |
+| `GirlTalkResult` | 68 |
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `RegisterPlayerCum` | 44 |
 
 ## Dynamic Call Sites
 
