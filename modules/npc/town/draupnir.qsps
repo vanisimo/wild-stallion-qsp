@@ -1,5 +1,6 @@
 
 
+
 #InitDraupnir
 
     $GuyName = 'draupnir'
@@ -38,28 +39,187 @@
     end
 ---
 
-#DraupnirSmallTalk
+#DraupnirImportantCheck
+    DraupnirImportantReady = 0
+    $DraupnirImportantAction = ''
 
-    *clr
-    clr
-    cla
-
-    gs 'SceneShowVisual', 'images/npc/town/draupnir/draupnir_small_talk', 'Драупнир: small talk', 'large', 'webp'
-    gs 'InitDraupnir'
-
-    gs 'PrintTitleLine', ' ДРАУПНИР'
-
-    gs 'PrintMainP', 'Гном откладывает рубанок и хмуро кивает.'
-    gs 'PrintMainP', '"Трактир держится на петлях и здравом смысле. Если нужен столяр — говори по делу. Если болтовня — у меня на это одна минута."'
-
-    if Friends['draupnir'] < 40:
-        Friends['draupnir'] += 1
+    ! 1. Накладная на партию оружия
+    if PlayerHasWeaponShipmentInvoice = 1 and DraupnirBlackmailTalkDone = 0 and LOC('DraupnirBlackmailTalk') = 1:
+        DraupnirImportantReady = 1
+        $DraupnirImportantAction = 'blackmail'
+        exit
     end
 
-    *pl ' '
+    ! 2. Визит в парадном облачении
+    if StefanWearingNobleSuit = 1 and StefanNobleTourDraupnirDone = 0 and LOC('StefanNobleTourDraupnir') = 1:
+        DraupnirImportantReady = 1
+        $DraupnirImportantAction = 'noble_tour'
+        exit
+    end
+---
 
-    act '<b>Назад в мастерскую</b>', 'images/common/ui/actions/return.png':
+#DraupnirRunImportantAction
+    $DraupnirActionType = $ARGS[0]
+
+    if $DraupnirActionType = 'blackmail':
+        gt 'DraupnirBlackmailTalk'
+    elseif $DraupnirActionType = 'noble_tour':
+        gt 'StefanNobleTourDraupnir'
+    else:
         gt 'DraupnirShop'
     end
 ---
 
+#DraupnirSmallTalk
+    gt 'DraupnirTalk', 'DraupnirShop'
+---
+
+#DraupnirTalk
+    $GuyName = 'draupnir'
+    $DraupnirReturnLoc = $ARGS[0]
+
+    if $DraupnirReturnLoc = '' or LOC($DraupnirReturnLoc) = 0:
+        $DraupnirReturnLoc = 'DraupnirShop'
+    end
+
+    if LOC('InitDraupnir') = 1:
+        gs 'InitDraupnir'
+    end
+
+    cls
+
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/npc/town/draupnir/draupnir_talk', 'Драупнир: разговор', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ДРАУПНИРОМ'
+
+    gs 'DraupnirUnifiedTalkRun'
+
+    *pl ' '
+
+    ! Контекстные действия на экране беседы
+    if PlayerHasWeaponShipmentInvoice = 1 and DraupnirBlackmailTalkDone = 0 and LOC('DraupnirBlackmailTalk') = 1:
+        gs 'ActUiPrepare', 'Поговорить о накладной на оружие', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'DraupnirBlackmailTalk'
+        end
+    end
+
+    if StefanWearingNobleSuit = 1 and StefanNobleTourDraupnirDone = 0 and LOC('StefanNobleTourDraupnir') = 1:
+        gs 'ActUiPrepare', 'Визит в парадном облачении', 'craftsmen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'StefanNobleTourDraupnir'
+        end
+    end
+
+    if TavernCarpenterUpgradesUnlocked = 1:
+        act '<b>Улучшения трактира</b>', 'images/common/ui/actions/work.png':
+            gt 'DraupnirUpgradesShop'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Назад в мастерскую', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        $TmpLoc = $DraupnirReturnLoc
+        killvar '$DraupnirReturnLoc'
+        gt $TmpLoc
+    end
+---
+
+#DraupnirUnifiedTalkRun
+    ! 1. Проверка лимита полезных разговоров
+    gs 'UsefulTalkCheck', 'draupnir', 'draupnir_unified'
+    if UsefulTalkResult = 0:
+        gs 'DraupnirTalkLimitReachedText'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора
+    gs 'UsefulTalkRegister', 'draupnir', 'draupnir_unified'
+
+    ! 3. Прогрессивная иерархия тем:
+    ! --- О соплеменниках и ремесле (высокое доверие) ---
+    if Friends['draupnir'] >= 30 and DraupnirClanStoryDone = 0:
+        DraupnirClanStoryDone = 1
+        gs 'DraupnirTalkClanRun'
+
+    ! --- О Сандре и трактире (после раскрытия секрета или дружбы) ---
+    elseif (PlayerKnows_SandraDraupnirFriday = 1 or Friends['draupnir'] >= 25) and DraupnirSandraTalkFirstDone = 0:
+        DraupnirSandraTalkFirstDone = 1
+        gs 'DraupnirTalkSandraRun'
+
+    ! --- Об улучшениях трактира ---
+    elseif TavernCarpenterUpgradesUnlocked = 1 and DraupnirUpgradeTalkFirstDone = 0:
+        DraupnirUpgradeTalkFirstDone = 1
+        gs 'DraupnirTalkUpgradesRun'
+
+    ! --- О городе и купцах ---
+    elseif DraupnirTownTalkFirstDone = 0:
+        DraupnirTownTalkFirstDone = 1
+        gs 'DraupnirTalkTownRun'
+
+    ! --- Циклическая ротация лор-пулов ---
+    else:
+        DraupnirLorePoolCycle += 1
+        if DraupnirLorePoolCycle > 3:
+            DraupnirLorePoolCycle = 0
+        end
+
+        if DraupnirLorePoolCycle = 0:
+            gs 'DraupnirTalkUpgradesRun'
+        elseif DraupnirLorePoolCycle = 1:
+            gs 'DraupnirTalkTownRun'
+        elseif DraupnirLorePoolCycle = 2 and (PlayerKnows_SandraDraupnirFriday = 1 or Friends['draupnir'] >= 25):
+            gs 'DraupnirTalkSandraRun'
+        elseif DraupnirLorePoolCycle = 3 and Friends['draupnir'] >= 30:
+            gs 'DraupnirTalkClanRun'
+        else:
+            gs 'DraupnirTalkSmalltalkRun'
+        end
+    end
+---
+
+#DraupnirTalkLimitReachedText
+    *pl 'Драупнир сдувает стружку с верстака, берет в руки напильник и хрипло бурчит:'
+    *pl '— Я мастер, Стефан, а не базарная торговка. Мой лимит на пустую болтовню на сегодня исчерпан. Руки должны быть при деле, иначе железо стынет, а дерево ведёт. Хочешь заказать работу — говори, нет — не стой над душой.'
+---
+
+#DraupnirTalkClanRun
+    *pl 'Драупнир долго разглядывает дубовую заготовку, проводя мозолистым пальцем по годовым кольцам:'
+    *pl '— Гномы Подгорья считают работу с деревом позором для мастера, — негромко произносит он. — Камень, сталь, руда... Вот их святыни. А я вижу в дереве живую плоть. Дерево дышит, гнётся, помнит солнце и дожди. Они выгнали меня из клана, назвав чудаком, а я построил в этом городе всё — от причальных свай до лучших дверей. И ни о чём не жалею.'
+    Friends['draupnir'] += 2
+    Talked['draupnir'] += 1
+---
+
+#DraupnirTalkSandraRun
+    *pl 'Гном бросает на тебя внимательный, оценивающий взгляд из-под кустистых седых бровей:'
+    *pl '— Сандра — редкая женщина, Стефан. В ней столько скрытого жара и упрямства, сколько я не видел даже у наших горных дев. Твой отец не умел её ценить, держал при трактире как тягловую лошадь. Смотри, парень... если обидишь её — я лично подберу для тебя сосновый ящик без единого железного гвоздя.'
+    Friends['draupnir'] += 1
+    Talked['draupnir'] += 1
+---
+
+#DraupnirTalkUpgradesRun
+    *pl 'Драупнир постукивает костяшками пальцев по массивной дубовой балке:'
+    *pl '— В хорошем трактире дерево должно быть выдержанным, а петли — коваными вручную. Пьяные драки, пролитое вино, сырость из погреба... Если экономить на столяре, через три года потолок ляжет тебе на голову. Держи стойку крепкой, и гости будут уважать заведение.'
+    if Friends['draupnir'] < 35:
+        Friends['draupnir'] += 1
+    end
+    Talked['draupnir'] += 1
+---
+
+#DraupnirTalkTownRun
+    *pl 'Драупнир сплёвывает на стружки:'
+    *pl '— Город полон трепачей в шёлковых камзолах. Мэр считает подати, купцы вроде Легаре взвешивают каждый медяк, а стража у ворот только и ждёт, кому подставить ладонь. Но когда у них скрипят ворота или протекает крыша — все на цыпочках бегут к старому гному. Вот она, настоящая цена труда.'
+    if Friends['draupnir'] < 30:
+        Friends['draupnir'] += 1
+    end
+    Talked['draupnir'] += 1
+---
+
+#DraupnirTalkSmalltalkRun
+    *pl 'Гном откладывает рубанок и хмуро кивает:'
+    *pl '— Трактир держится на петлях и здравом смысле. Если нужен столяр — говори по делу. Если болтовня — у меня на это одна минута.'
+    if Friends['draupnir'] < 40:
+        Friends['draupnir'] += 1
+    end
+    Talked['draupnir'] += 1
+---

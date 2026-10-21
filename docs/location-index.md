@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3818
+- Locations: 3828
 
 ## modules/actions
 
@@ -1767,7 +1767,7 @@ Generated from active project files in `qsp-project.json`.
 | `BirthCertificateReadText` | `modules/events/family/birth_certificate_text.qsps` | 17 |
 | `BirthCertificateSearchIntroText` | `modules/events/family/birth_certificate_text.qsps` | 11 |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 |
-| `BuildDraupnirTalkMenu` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 276 |
+| `BuildDraupnirTalkMenu` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 271 |
 | `CheckAmandaEvents` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 13 |
 | `ChurchConfessionApplySin` | `modules/events/church/church_confession_dynamic.qsps` | 196 |
 | `ChurchConfessionCanStart` | `modules/events/church/church_confession_dynamic.qsps` | 7 |
@@ -1952,7 +1952,7 @@ Generated from active project files in `qsp-project.json`.
 | `DailyAftermathShow` | `modules/events/family/daily_aftermath.qsps` | 185 |
 | `DraupnirBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 33 |
 | `DraupnirShop` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 195 |
-| `DraupnirUpgradesLocked` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 292 |
+| `DraupnirUpgradesLocked` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 303 |
 | `DraupnirUpgradesLockedText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 17 |
 | `EddieAlleySpy1` | `modules/events/eddie/eddie_arc.qsps` | 301 |
 | `EddieAlleySpy1Text` | `modules/events/eddie/eddie_arc_text.qsps` | 10 |
@@ -3184,11 +3184,11 @@ Generated from active project files in `qsp-project.json`.
 | `SandraDraupnirAffairAdvance` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 42 |
 | `SandraDraupnirFridayBackgroundResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 22 |
 | `SandraDraupnirFridayCanStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 78 |
-| `SandraDraupnirFridayDoorBurst` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 312 |
-| `SandraDraupnirFridayDoorBurstResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 350 |
+| `SandraDraupnirFridayDoorBurst` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 323 |
+| `SandraDraupnirFridayDoorBurstResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 361 |
 | `SandraDraupnirFridayDoorBurstResolveText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 77 |
 | `SandraDraupnirFridayDoorBurstText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 73 |
-| `SandraDraupnirFridayIntercept` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 386 |
+| `SandraDraupnirFridayIntercept` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 397 |
 | `SandraDraupnirFridayInterceptText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 91 |
 | `SandraDraupnirFridayPeek` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 101 |
 | `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 |
@@ -3838,12 +3838,22 @@ Generated from active project files in `qsp-project.json`.
 
 | Location | File | Line |
 | --- | --- | --- |
-| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 41 |
+| `DraupnirImportantCheck` | `modules/npc/town/draupnir.qsps` | 42 |
+| `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 61 |
+| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 73 |
+| `DraupnirTalk` | `modules/npc/town/draupnir.qsps` | 77 |
+| `DraupnirTalkClanRun` | `modules/npc/town/draupnir.qsps` | 186 |
+| `DraupnirTalkLimitReachedText` | `modules/npc/town/draupnir.qsps` | 181 |
+| `DraupnirTalkSandraRun` | `modules/npc/town/draupnir.qsps` | 193 |
+| `DraupnirTalkSmalltalkRun` | `modules/npc/town/draupnir.qsps` | 218 |
+| `DraupnirTalkTownRun` | `modules/npc/town/draupnir.qsps` | 209 |
+| `DraupnirTalkUpgradesRun` | `modules/npc/town/draupnir.qsps` | 200 |
+| `DraupnirUnifiedTalkRun` | `modules/npc/town/draupnir.qsps` | 128 |
 | `InitAlber` | `modules/npc/legare/alber.qsps` | 6 |
 | `InitAmanda` | `modules/npc/family/amanda.qsps` | 7 |
 | `InitBecky` | `modules/npc/shops/becky.qsps` | 6 |
 | `InitClarissa` | `modules/npc/legare/clarissa.qsps` | 6 |
-| `InitDraupnir` | `modules/npc/town/draupnir.qsps` | 3 |
+| `InitDraupnir` | `modules/npc/town/draupnir.qsps` | 4 |
 | `InitEddie` | `modules/npc/town/eddie.qsps` | 6 |
 | `InitGeorgett` | `modules/npc/port/georgett.qsps` | 6 |
 | `InitGerhard` | `modules/npc/town/gerhard.qsps` | 6 |

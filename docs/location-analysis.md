@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3818
-- Locations with direct incoming calls: 3297
-- Locations without direct incoming calls: 521
-- Review candidates without direct incoming calls: 189
+- Locations: 3828
+- Locations with direct incoming calls: 3305
+- Locations without direct incoming calls: 523
+- Review candidates without direct incoming calls: 191
 - Classified entry/helper locations without direct incoming calls: 332
 - Dynamic call sites: 2
 
@@ -45,6 +45,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 9 | `modules/core` |
 | `ClarissaIntimAfterSex` | `modules/events/legare/clarissa_intim_arc.qsps` | 195 | `modules/events` |
 | `ClearGirlLocation` | `modules/core/girls/girl_location.qsps` | 61 | `modules/core` |
+| `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 61 | `modules/npc` |
+| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 73 | `modules/npc` |
 | `FamilyCouncilTryAtNight` | `modules/events/family/family_council.qsps` | 26 | `modules/events` |
 | `FamilyCouncilTryBeforeNextDay` | `modules/events/family/family_council.qsps` | 40 | `modules/events` |
 | `FormatTextBad` | `modules/core/text/text_format.qsps` | 347 | `modules/core` |
@@ -549,10 +551,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1763 |
-| `ShowLocationScreenTitle` | 756 |
+| `ActUiPrepare` | 1765 |
+| `ShowLocationScreenTitle` | 757 |
 | `SceneShowVisual` | 709 |
-| `Menu.AddModule` | 590 |
+| `Menu.AddModule` | 591 |
 | `MenuUiAdd` | 537 |
 | `EnsureGirlData` | 244 |
 | `ClampGirlSocialStats` | 243 |
@@ -564,16 +566,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Create` | 95 |
 | `Menu.Destroy` | 92 |
 | `ShowImage` | 91 |
-| `PrintMainP` | 87 |
 | `FormatSpintry` | 85 |
+| `PrintMainP` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 78 |
-| `PrintTitleLine` | 54 |
+| `PrintTitleLine` | 53 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `RegisterPlayerCum` | 44 |
 
 ## Dynamic Call Sites
 

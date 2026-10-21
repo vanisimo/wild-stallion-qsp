@@ -211,24 +211,19 @@
     *pl ' '
 
     if week = 5 and time = 4 and $GirlLocation['sandra'] = 'DraupnirShop' and SandraDraupnirFridayToday = 0:
-        gs 'ActUiPrepare', 'Подглядеть у окна', 'look'
+        gs 'ActUiPrepare', 'Заглянуть в окно', 'look'
         act $ActUiLabel, $ActUiIconPath:
             gt 'SandraDraupnirFridayPeek'
         end
 
-        gs 'ActUiPrepare', 'Толкнуть дверь и войти без стука', 'generic'
+        gs 'ActUiPrepare', 'Вломиться через дверь мастерской', 'generic'
         act $ActUiLabel, $ActUiIconPath:
             gt 'SandraDraupnirFridayDoorBurst'
         end
 
-        gs 'ActUiPrepare', 'Подождать у бочек снаружи', 'look'
+        gs 'ActUiPrepare', 'Подкараулить у выхода', 'look'
         act $ActUiLabel, $ActUiIconPath:
             gt 'SandraDraupnirFridayIntercept'
-        end
-    if PlayerHasWeaponShipmentInvoice = 1 and DraupnirBlackmailTalkDone = 0:
-        gs 'ActUiPrepare', 'Рассказать Драупниру про склад оружия', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'DraupnirBlackmailTalk'
         end
     end
 
@@ -240,7 +235,7 @@
     *pl ' '
 
     if StefanWearingNobleSuit = 1 and StefanNobleTourDraupnirDone = 0:
-        gs 'ActUiPrepare', 'Драупнир: показать дворянский патент', 'craftsmen'
+        gs 'ActUiPrepare', 'Драупнир: визит в парадном облачении', 'craftsmen'
         act $ActUiLabel, $ActUiIconPath:
             gt 'StefanNobleTourDraupnir'
         end
@@ -251,17 +246,17 @@
             gt 'DraupnirUpgradesShop'
         end
     else:
-        act '<b>Заказ для трактира</b>', 'images/common/ui/actions/work.png':
+        act '<b>Улучшения трактира (закрыто)</b>', 'images/common/ui/actions/work.png':
             gt 'DraupnirUpgradesLocked'
         end
     end
 
     if TavernRepairNeeded = 1 and TavernRepairOrdered = 0:
-        act '<b>Срочный ремонт</b>', 'images/common/ui/actions/work.png':
+        act '<b>Заказать ремонт</b>', 'images/common/ui/actions/work.png':
             gt 'TavernDayEventCarpenterRepair'
         end
     elseif TavernRepairNeeded = 1 and TavernRepairOrdered = 1:
-        act '<b>Ремонт заказан</b>', 'images/common/ui/actions/work.png':
+        act '<b>Ремонт уже заказан</b>', 'images/common/ui/actions/work.png':
             gt 'TavernDayEventCarpenterRepairAlreadyOrdered'
         end
     end
@@ -278,15 +273,31 @@
     gs 'Menu.Destroy', 'DraupnirTalkMenu'
     gs 'Menu.Create', 'DraupnirTalkMenu'
 
-    gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Поболтать', 'talk'
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    if LOC('DraupnirImportantCheck') = 1:
+        gs 'DraupnirImportantCheck'
+        if DraupnirImportantReady = 1:
+            gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Важный разговор', 'important'
+            if $DraupnirImportantAction = 'blackmail':
+                gs 'Menu.AddModule', 'DraupnirTalkMenu', { gt 'DraupnirBlackmailTalk' }
+            elseif $DraupnirImportantAction = 'noble_tour':
+                gs 'Menu.AddModule', 'DraupnirTalkMenu', { gt 'StefanNobleTourDraupnir' }
+            end
+        end
+        killvar 'DraupnirImportantReady'
+        killvar '$DraupnirImportantAction'
+    end
+
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Поговорить', 'talk'
     gs 'Menu.AddModule', 'DraupnirTalkMenu', {
-        gt 'DraupnirSmallTalk'
+        gt 'DraupnirTalk', 'DraupnirShop'
     }
 
-    gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Назад', 'return'
-    gs 'Menu.AddModule', 'DraupnirTalkMenu', {
-        gt 'DraupnirShop'
-    }
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GuyTalkAppendGiftMenuItems') = 1:
+        gs 'GuyTalkAppendGiftMenuItems', 'draupnir', 'DraupnirShop', 'DraupnirTalkMenu'
+    end
 ---
 
 #DraupnirUpgradesLocked
