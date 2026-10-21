@@ -1,162 +1,285 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_clarissa.qsps
 ! MODULE: actions/dialogs
-! Меню разговора Клариссы вне сюжетных act-кнопок
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и расширенные разговоры Клариссы в винной лавке
 ! ================================================
 
 #GirlTalkBuildClarissaMainMenu
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    gs 'GirlTalkRootAppendPersonalMenu'
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке вина', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'wine_shop'
-    }
-
-    if Friends['clarissa'] >= 3 or love['clarissa'] >= 2 or otkroven['clarissa'] >= 6:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Легаре и её доме', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'clarissa_home'
-        }
-    end
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
-    }
-
-    if ClarissaGoldenWineStage = 0 and (PlayerKnows_Dream_GoldenWine = 1 or Friends['clarissa'] >= 5 or love['clarissa'] >= 3 or otkroven['clarissa'] >= 8):
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Мечта о «Золотом вине»', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'ClarissaGoldenWineDreamTalk'
-        }
-    end
-
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    ! Квесты «Золотого вина»
     if ClarissaGoldenWineStage = 1 and PlayerHasGoldenWineRecipe = 1 and PlayerHasGoldenGrapeVines = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Принести свиток и саженцы лозы', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'ClarissaGoldenWineDeliver'
         }
+    elseif ClarissaGoldenWineStage = 0 and (PlayerKnows_Dream_GoldenWine = 1 or Friends['clarissa'] >= 5 or love['clarissa'] >= 3 or otkroven['clarissa'] >= 8):
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaGoldenWineDreamTalk'
+        }
     elseif ClarissaGoldenWineStage = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О поисках для «Золотого вина»', ''
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'ClarissaGoldenWineProgressHint'
         }
-    end
-
-    if ClarissaGoldenVineyardPlanted = 1 and ClarissaVineyardStatusTalkToday <> day:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О новом винограднике на холме', ''
+    elseif ClarissaGoldenVineyardPlanted = 1 and ClarissaVineyardStatusTalkToday <> day:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'ClarissaGoldenWineVineyardTalk'
         }
-    end
-
-    ! play coach Мелиссы: только подслушивание Мелисса↔Кларисса в воскресенье у лавки Легаре
-
-    if Friends['clarissa'] >= 12 or love['clarissa'] >= 10 or otkroven['clarissa'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
+    ! Сюжетные события вокруг Аманды и Легаре
+    elseif ClarissaAmandaLegareMajorRiskTalkReady = 1 and ClarissaAmandaLegareMajorRiskDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareMajor') = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
+            gt 'ClarissaTalkAboutAmandaLegareMajor', $TalkReturnLoc
         }
+    elseif ClarissaAmandaLegareOutsideTalkReady = 1 and ClarissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareOutside') = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaTalkAboutAmandaLegareOutside', $TalkReturnLoc
+        }
+    elseif Fact_AmandaLegarePrivateTalk = 1 and ClarissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegarePrivate') = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc
+        }
+    elseif ClarissaTalkAboutAmandaReady = 1 and ClarissaTalkAboutAmandaDone = 0 and LOC('ClarissaTalkAboutLegareAmanda') = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaTalkAboutLegareAmanda', $TalkReturnLoc
+        }
+    elseif ClarissaLegareConflictTalkReady = 1 and ClarissaLegareConflictTalkDone = 0 and LOC('ClarissaTalkAboutLegareFirstConflict') = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaTalkAboutLegareFirstConflict', $TalkReturnLoc
+        }
+    elseif ClarissaLegareSuspicionTalkReady = 1 and ClarissaLegareSuspicionTalkDone = 0 and LOC('ClarissaTalkAboutLegareSuspicion') = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaTalkAboutLegareSuspicion', $TalkReturnLoc
+        }
+    elseif LOC('ClarissaLegareReconcileCanStart') = 1:
+        gs 'ClarissaLegareReconcileCanStart'
+        if ClarissaLegareReconcileCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaLegareReconcileStart'
+            }
+        end
+    elseif ClarissaSupplyTalkReady = 1 and LOC('ClarissaTalkAboutSupplyRoute') = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaTalkAboutSupplyRoute', $TalkReturnLoc
+        }
+    elseif LOC('MarkClarissaSupplyAftermathReady') = 1:
+        gs 'MarkClarissaSupplyAftermathReady'
+        if ClarissaSupplyAftermathReady = 1 and LOC('ClarissaTalkAboutSupplyAftermath') = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'ClarissaTalkAboutSupplyAftermath', $TalkReturnLoc
+            }
+        end
+        killvar 'ClarissaSupplyAftermathReady'
     end
 
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', 'clarissa', $TalkReturnLoc, 'clarissa_unified'
+    }
+
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
     if LOC('GirlTalkAppendGiftMenuItems') = 1:
         gs 'GirlTalkAppendGiftMenuItems'
     end
+---
 
+#GirlTalkClarissaUnifiedRun
+    ! 1. Проверка лимита полезных разговоров:
+    gs 'UsefulTalkCheck', 'clarissa', 'clarissa_unified'
+    if UsefulTalkResult = 0:
+        gs 'GirlTalkClarissaLimitReachedText'
+        gs 'ClampGirlSocialStats', 'clarissa'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора:
+    gs 'UsefulTalkRegister', 'clarissa', 'clarissa_unified'
+
+    ! 3. Иерархия тем разговора:
+    ! --- Пик откровения (предел) ---
+    if otkroven['clarissa'] >= 25 and (ClarissaIntimSex = 1 or HadSex['clarissa'] > 0 or ClarissaAnalDone = 1):
+        gs 'GirlTalkClarissaMemoryLimitText'
+        if ClarissaMemoryLimitDone = 0:
+            ClarissaMemoryLimitDone = 1
+            sluttiness['clarissa'] += 2
+            otkroven['clarissa'] += 2
+            love['clarissa'] += 2
+            ClarissaTrustStefan += 2
+        else:
+            sluttiness['clarissa'] += 1
+            love['clarissa'] += 1
+        end
+
+    ! --- Воспоминание об особой близости (анал) ---
+    elseif (ClarissaAnalDone = 1 or hadanal['clarissa'] = 1 or analacts['clarissa'] >= 1) and otkroven['clarissa'] >= 22 and ClarissaMemoryAnalDone = 0:
+        gs 'GirlTalkClarissaMemoryAnalText'
+        ClarissaMemoryAnalDone = 1
+        sluttiness['clarissa'] += 2
+        otkroven['clarissa'] += 2
+        ClarissaTrustStefan += 1
+
+    ! --- Воспоминание о первой близости в подсобке ---
+    elseif (ClarissaIntimSex = 1 or HadSex['clarissa'] > 0) and otkroven['clarissa'] >= 18 and ClarissaMemoryFirstSexDone = 0:
+        gs 'GirlTalkClarissaMemoryFirstSexText'
+        ClarissaMemoryFirstSexDone = 1
+        love['clarissa'] += 2
+        otkroven['clarissa'] += 1
+        ClarissaTrustStefan += 1
+
+    ! --- Воспоминание о танце на площади ---
+    elseif ClarissaDanceDay > 0 and otkroven['clarissa'] >= 12 and ClarissaMemoryDanceDone = 0:
+        gs 'GirlTalkClarissaMemoryDanceText'
+        ClarissaMemoryDanceDone = 1
+        love['clarissa'] += 1
+        otkroven['clarissa'] += 1
+        Friends['clarissa'] += 1
+
+    ! --- Тайна происхождения и брака с Альбером (если игрок узнал слухи) ---
+    elseif ClarissaPaternityTalkDone = 0 and (PlayerKnows_ClarissaNotLegareDaughter = 1 or PlayerKnows_ClarissaLegareDarkBackstory = 1 or AlberVar['hearabouthiswife'] = 1 or MelissaClarissaTalkPhraseHeard['clarissa_legare_dark_backstory'] = 1) and (Friends['clarissa'] >= 8 or otkroven['clarissa'] >= 10 or love['clarissa'] >= 4):
+        gs 'GirlTalkClarissaPaternityRun'
+
+    ! --- Разговор/воспоминание о новом винограднике на холме ---
+    elseif ClarissaGoldenVineyardPlanted = 1 and ClarissaVineyardUnifiedMemoryDone = 0 and Friends['clarissa'] >= 10:
+        gs 'GirlTalkClarissaVineyardMemoryText'
+        ClarissaVineyardUnifiedMemoryDone = 1
+        ClarissaTrustStefan += 2
+        love['clarissa'] += 1
+        otkroven['clarissa'] += 1
+
+    ! --- Развитие историй о доме и семье Легаре (шаги 0-3) ---
+    elseif ClarissaHomeStory = 0 and Friends['clarissa'] >= 4:
+        gs 'GirlTalkClarissaHomeProgressText', 0
+        ClarissaHomeStory = 1
+        Friends['clarissa'] += 1
+        otkroven['clarissa'] += 1
+
+    elseif ClarissaHomeStory = 1 and (Friends['clarissa'] >= 7 or PlayerKnows_MelissaClarissaBrotherGossip = 1):
+        gs 'GirlTalkClarissaHomeProgressText', 1
+        ClarissaHomeStory = 2
+        Friends['clarissa'] += 1
+        otkroven['clarissa'] += 1
+
+    elseif ClarissaHomeStory = 2 and (otkroven['clarissa'] >= 8 or ClarissaLegareSuspicionTalkReady = 1):
+        gs 'GirlTalkClarissaHomeProgressText', 2
+        ClarissaHomeStory = 3
+        ClarissaTrustStefan += 1
+        otkroven['clarissa'] += 1
+
+    elseif ClarissaHomeStory = 3 and (otkroven['clarissa'] >= 12 or ClarissaJealousy >= 2 or AmandaLegareFirstSexDone = 1):
+        gs 'GirlTalkClarissaHomeProgressText', 3
+        ClarissaHomeStory = 4
+        otkroven['clarissa'] += 2
+        love['clarissa'] += 1
+
+    ! --- Повседневный пласт лавки и торговли (ротация) ---
+    else:
+        ClarissaWineShopStory += 1
+        if ClarissaWineShopStory >= 4:
+            ClarissaWineShopStory = 0
+        end
+        gs 'GirlTalkClarissaWineShopPoolText', ClarissaWineShopStory
+
+        $WineShopDailyKey = 'clarissa_' + STR(day)
+        if ClarissaWineShopDoneToday[$WineShopDailyKey] = 0:
+            ClarissaWineShopDoneToday[$WineShopDailyKey] = 1
+            trading += 1
+            if Friends['clarissa'] < 15:
+                Friends['clarissa'] += 1
+            end
+        end
+        killvar '$WineShopDailyKey'
+    end
+
+    ! --- Дополнительные действия на экране разговора ---
     if ClarissaIntimUnlocked = 1 and LOC('ClarissaIntimStep') = 1:
         gs 'ClarissaIntimCanAdvance'
-
         if ClarissaIntimCanAdvance = 1 and ClarissaIntimStage < 3:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Провести время в подсобке', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'ClarissaIntimStep'
-            }
+            gs 'ActUiPrepare', 'Провести время в подсобке', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'ClarissaIntimStep'
         end
 
         if ClarissaIntimStage >= 3 and ClarissaIntimSex = 0 and ClarissaIntimStepToday = 0:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Продолжить близость', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'ClarissaIntimFirstSexLaunch'
-            }
+            gs 'ActUiPrepare', 'Продолжить близость', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'ClarissaIntimFirstSexLaunch'
         end
 
         if ClarissaIntimSex = 1 and LOC('SexSceneStart') = 1 and ClarissaIntimStepToday = 0:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Встретиться снова', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'SexSceneStart', 'clarissa', 'ClarissaIntimAfterSex', 'clarissa_repeat'
-            }
+            gs 'ActUiPrepare', 'Встретиться снова в подсобке', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'SexSceneStart', 'clarissa', 'ClarissaIntimAfterSex', 'clarissa_repeat'
         end
     end
 
     if LOC('ClarissaAnalCanStart') = 1:
         gs 'ClarissaAnalCanStart'
-
         if ClarissaAnalCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Особая близость', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'ClarissaAnalSceneStart'
-            }
+            gs 'ActUiPrepare', 'Особая близость в подсобке', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'ClarissaAnalSceneStart'
         end
     end
 
     if LOC('ClarissaDoubleVaginalCanStart') = 1:
         gs 'ClarissaDoubleVaginalCanStart'
-
         if ClarissaDoubleVaginalCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вдвоём с Альбером', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'ClarissaDoubleVaginalStart'
-            }
+            gs 'ActUiPrepare', 'Вдвоём с Альбером', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'ClarissaDoubleVaginalStart'
         end
     end
 
     if LOC('ClarissaGroupMmfLegareCanStart') = 1:
         gs 'ClarissaGroupMmfLegareCanStart'
-
         if ClarissaGroupMmfLegareCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Втроём с Альбером', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GroupSexClarissaLegareMmfStart'
-            }
+            gs 'ActUiPrepare', 'Втроём с Альбером', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'GroupSexClarissaLegareMmfStart'
         end
     end
 
     if LOC('ClarissaGroupMmfMelissaCanStart') = 1:
         gs 'ClarissaGroupMmfMelissaCanStart'
-
         if ClarissaGroupMmfMelissaCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'С Мелиссой', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GroupSexClarissaMelissaMmfStart'
-            }
+            gs 'ActUiPrepare', 'С Мелиссой', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'GroupSexClarissaMelissaMmfStart'
         end
     end
 
     if LOC('ClarissaGroupFfmAmandaCanStart') = 1:
         gs 'ClarissaGroupFfmAmandaCanStart'
-
         if ClarissaGroupFfmAmandaCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Вечер с Амандой и Альбером', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GroupSexClarissaAmandaLegareFfmStart'
-            }
+            gs 'ActUiPrepare', 'Вечер с Амандой и Альбером', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'GroupSexClarissaAmandaLegareFfmStart'
         end
     end
 
     if LOC('AmandaLegareMmfCanStart') = 1:
         gs 'AmandaLegareMmfCanStart'
-
         if AmandaLegareMmfCanStart = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Аманда и Альбер в подсобке', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-                gt 'GroupSexAmandaLegareStefanStart'
-            }
+            gs 'ActUiPrepare', 'Аманда и Альбер в подсобке', 'intim'
+            act $ActUiLabel, $ActUiIconPath: gt 'GroupSexAmandaLegareStefanStart'
         end
     end
 
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'clarissa', $TalkReturnLoc, 'gift'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'clarissa'
 ---
 
 #GirlTalkWineShopRun
@@ -201,7 +324,7 @@
     gs 'GirlTalkWineShopText', $ARGS[0]
 
     if $GirlTalkWineShopText <> '':
-        *p $GirlTalkWineShopText
+        *pl $GirlTalkWineShopText
     end
 
     killvar '$GirlTalkWineShopText'
@@ -211,7 +334,7 @@
     gs 'GirlTalkClarissaHomeText', $ARGS[0]
 
     if $GirlTalkClarissaHomeText <> '':
-        *p $GirlTalkClarissaHomeText
+        *pl $GirlTalkClarissaHomeText
     end
 
     killvar '$GirlTalkClarissaHomeText'
@@ -232,7 +355,7 @@
     gs 'GirlTalkClarissaPaternityText', $ARGS[0]
 
     if $GirlTalkClarissaPaternityText <> '':
-        *p $GirlTalkClarissaPaternityText
+        *pl $GirlTalkClarissaPaternityText
     end
 
     killvar '$GirlTalkClarissaPaternityText'
