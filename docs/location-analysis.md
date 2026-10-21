@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3809
-- Locations with direct incoming calls: 3288
+- Locations: 3818
+- Locations with direct incoming calls: 3297
 - Locations without direct incoming calls: 521
 - Review candidates without direct incoming calls: 189
 - Classified entry/helper locations without direct incoming calls: 332
@@ -26,7 +26,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AmandaLizaRoomDoorPeek` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 79 | `modules/events` |
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
 | `AmandaPathChoiceAction` | `modules/events/amanda/home/amanda_path_choice.qsps` | 24 | `modules/events` |
-| `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 254 | `modules/events` |
+| `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 381 | `modules/events` |
 | `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 965 | `modules/events` |
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 8 | `modules/locations` |
 | `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
@@ -549,11 +549,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1759 |
-| `ShowLocationScreenTitle` | 755 |
-| `SceneShowVisual` | 708 |
-| `Menu.AddModule` | 595 |
-| `MenuUiAdd` | 545 |
+| `ActUiPrepare` | 1763 |
+| `ShowLocationScreenTitle` | 756 |
+| `SceneShowVisual` | 709 |
+| `Menu.AddModule` | 590 |
+| `MenuUiAdd` | 537 |
 | `EnsureGirlData` | 244 |
 | `ClampGirlSocialStats` | 243 |
 | `NormalizeGirlKey` | 201 |
@@ -561,7 +561,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowGirlSidebar` | 106 |
 | `RegisterSex` | 98 |
 | `Market` | 97 |
-| `Menu.Create` | 96 |
+| `Menu.Create` | 95 |
 | `Menu.Destroy` | 92 |
 | `ShowImage` | 91 |
 | `PrintMainP` | 87 |
@@ -573,7 +573,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `RegisterPlayerCum` | 44 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 

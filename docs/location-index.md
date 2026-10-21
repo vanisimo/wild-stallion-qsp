@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3809
+- Locations: 3818
 
 ## modules/actions
 
@@ -1662,28 +1662,28 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyDinnerWagonSexFinishText` | `modules/events/becky/becky_dinner_text.qsps` | 173 |
 | `BeckyDinnerWagonSexProcessText` | `modules/events/becky/becky_dinner_text.qsps` | 165 |
 | `BeckyDinnerWagonStart` | `modules/events/becky/becky_home_chain.qsps` | 442 |
-| `BeckyEddieConfession` | `modules/events/eddie/eddie_arc.qsps` | 221 |
+| `BeckyEddieConfession` | `modules/events/eddie/eddie_arc.qsps` | 348 |
 | `BeckyEddieConfessionDirectText` | `modules/events/eddie/eddie_arc_text.qsps` | 38 |
 | `BeckyEddieConfessionIntroText` | `modules/events/eddie/eddie_arc_text.qsps` | 34 |
 | `BeckyEddieConfessionPaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 42 |
 | `BeckyEddieConfessionUnpaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 46 |
 | `BeckyEddieDanceObserve` | `modules/events/dance/friday_dance_core.qsps` | 502 |
-| `BeckyEddieHomeAfter` | `modules/events/eddie/eddie_arc.qsps` | 453 |
-| `BeckyEddieHomeFail` | `modules/events/eddie/eddie_arc.qsps` | 327 |
+| `BeckyEddieHomeAfter` | `modules/events/eddie/eddie_arc.qsps` | 580 |
+| `BeckyEddieHomeFail` | `modules/events/eddie/eddie_arc.qsps` | 454 |
 | `BeckyEddieHomeFailText` | `modules/events/eddie/eddie_arc_text.qsps` | 70 |
-| `BeckyEddieHomeFinish` | `modules/events/eddie/eddie_arc.qsps` | 432 |
+| `BeckyEddieHomeFinish` | `modules/events/eddie/eddie_arc.qsps` | 559 |
 | `BeckyEddieHomeFinishInsideText` | `modules/events/eddie/eddie_arc_text.qsps` | 62 |
 | `BeckyEddieHomeFinishOutsideText` | `modules/events/eddie/eddie_arc_text.qsps` | 66 |
-| `BeckyEddieHomeLaunch` | `modules/events/eddie/eddie_arc.qsps` | 258 |
-| `BeckyEddieHomeLockedLatch` | `modules/events/eddie/eddie_arc.qsps` | 286 |
-| `BeckyEddieHomeOpenLatch` | `modules/events/eddie/eddie_arc.qsps` | 317 |
-| `BeckyEddieHomeStep1` | `modules/events/eddie/eddie_arc.qsps` | 363 |
+| `BeckyEddieHomeLaunch` | `modules/events/eddie/eddie_arc.qsps` | 385 |
+| `BeckyEddieHomeLockedLatch` | `modules/events/eddie/eddie_arc.qsps` | 413 |
+| `BeckyEddieHomeOpenLatch` | `modules/events/eddie/eddie_arc.qsps` | 444 |
+| `BeckyEddieHomeStep1` | `modules/events/eddie/eddie_arc.qsps` | 490 |
 | `BeckyEddieHomeStep1Text` | `modules/events/eddie/eddie_arc_text.qsps` | 50 |
-| `BeckyEddieHomeStep2` | `modules/events/eddie/eddie_arc.qsps` | 383 |
+| `BeckyEddieHomeStep2` | `modules/events/eddie/eddie_arc.qsps` | 510 |
 | `BeckyEddieHomeStep2Text` | `modules/events/eddie/eddie_arc_text.qsps` | 54 |
-| `BeckyEddieHomeStep3` | `modules/events/eddie/eddie_arc.qsps` | 402 |
+| `BeckyEddieHomeStep3` | `modules/events/eddie/eddie_arc.qsps` | 529 |
 | `BeckyEddieHomeStep3Text` | `modules/events/eddie/eddie_arc_text.qsps` | 58 |
-| `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 254 |
+| `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 381 |
 | `BeckyEddieNormalizeBeckyText` | `modules/events/eddie/eddie_arc_text.qsps` | 74 |
 | `BeckyFridayContactRegister` | `modules/events/becky/becky_dance.qsps` | 73 |
 | `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 965 |
@@ -1954,17 +1954,26 @@ Generated from active project files in `qsp-project.json`.
 | `DraupnirShop` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 195 |
 | `DraupnirUpgradesLocked` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 292 |
 | `DraupnirUpgradesLockedText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 17 |
-| `EddieAlleySpy1` | `modules/events/eddie/eddie_arc.qsps` | 174 |
+| `EddieAlleySpy1` | `modules/events/eddie/eddie_arc.qsps` | 301 |
 | `EddieAlleySpy1Text` | `modules/events/eddie/eddie_arc_text.qsps` | 10 |
-| `EddieAlleySpy2` | `modules/events/eddie/eddie_arc.qsps` | 198 |
+| `EddieAlleySpy2` | `modules/events/eddie/eddie_arc.qsps` | 325 |
 | `EddieAlleySpy2Text` | `modules/events/eddie/eddie_arc_text.qsps` | 14 |
 | `EddieBestFriendText` | `modules/events/eddie/eddie_arc_text.qsps` | 78 |
 | `EddieGeorgAlleyUnlocked` | `modules/events/eddie/eddie_arc.qsps` | 7 |
 | `EddieHelpPromiseText` | `modules/events/eddie/eddie_arc_text.qsps` | 18 |
+| `EddieImportantCheck` | `modules/events/eddie/eddie_arc.qsps` | 16 |
 | `EddieMomBackgroundText` | `modules/events/eddie/eddie_arc_text.qsps` | 82 |
+| `EddieRunImportantAction` | `modules/events/eddie/eddie_arc.qsps` | 49 |
+| `EddieTalkBestFriendRun` | `modules/events/eddie/eddie_arc.qsps` | 215 |
+| `EddieTalkGirlsBoastRun` | `modules/events/eddie/eddie_arc.qsps` | 231 |
 | `EddieTalkGirlsBoastText` | `modules/events/eddie/eddie_arc_text.qsps` | 86 |
+| `EddieTalkLimitReachedText` | `modules/events/eddie/eddie_arc.qsps` | 210 |
 | `EddieTalkSandraFridayText` | `modules/events/eddie/eddie_arc_text.qsps` | 94 |
+| `EddieTalkShopRun` | `modules/events/eddie/eddie_arc.qsps` | 241 |
+| `EddieTalkSmalltalkRun` | `modules/events/eddie/eddie_arc.qsps` | 250 |
+| `EddieTalkTavernGirlsRun` | `modules/events/eddie/eddie_arc.qsps` | 223 |
 | `EddieTalkTavernGirlsText` | `modules/events/eddie/eddie_arc_text.qsps` | 90 |
+| `EddieUnifiedTalkRun` | `modules/events/eddie/eddie_arc.qsps` | 157 |
 | `Event_AmandaSpecial` | `modules/events/engine/events_engine.qsps` | 124 |
 | `Event_Brawl` | `modules/events/engine/events_engine.qsps` | 40 |
 | `Event_GuardCheck` | `modules/events/engine/events_engine.qsps` | 54 |
@@ -3097,7 +3106,7 @@ Generated from active project files in `qsp-project.json`.
 | `PolicyEventDebugPrintStart` | `modules/events/hall/policy_event_debug.qsps` | 6 |
 | `PolicyEventReactionPrint` | `modules/events/hall/hall_policy_reaction.qsps` | 85 |
 | `PolicyEventSceneVariationPrint` | `modules/events/hall/girl_policy_scene_variations.qsps` | 64 |
-| `PortAlley` | `modules/events/eddie/eddie_arc.qsps` | 132 |
+| `PortAlley` | `modules/events/eddie/eddie_arc.qsps` | 259 |
 | `PortAmandaLizetteBuildAmandaMenu` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 46 |
 | `PortAmandaLizetteEmbedAmandaLink` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 32 |
 | `PortAmandaLizetteInspect` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 87 |
@@ -3137,7 +3146,7 @@ Generated from active project files in `qsp-project.json`.
 | `PortWarehouseAlarmEscape` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 214 |
 | `PortWarehouseLockpickTry` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 170 |
 | `PortWarehouseWakeupHome` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 256 |
-| `ProcessEddieMomBackground` | `modules/events/eddie/eddie_arc.qsps` | 471 |
+| `ProcessEddieMomBackground` | `modules/events/eddie/eddie_arc.qsps` | 598 |
 | `ProcessSandraBeckyOffense` | `modules/events/sandra/sandra_becky_conflict.qsps` | 133 |
 | `ProcessSandraStaffGirlsReaction` | `modules/events/sandra/sandra_staff_girls_reaction.qsps` | 21 |
 | `ResetHallRumorDaily` | `modules/events/hall/hall_rumors.qsps` | 133 |
@@ -3327,7 +3336,7 @@ Generated from active project files in `qsp-project.json`.
 | `SundayVisitIrmaIngaPoolTry` | `modules/events/visits/sunday_irma_inga_talk_pick.qsps` | 229 |
 | `SundayVisitIrmaIngaTalkText` | `modules/events/visits/sunday_irma_inga_text.qsps` | 52 |
 | `SundayVisitIrmaIngaText` | `modules/events/visits/sunday_irma_inga_text.qsps` | 16 |
-| `TalkWithEddie` | `modules/events/eddie/eddie_arc.qsps` | 16 |
+| `TalkWithEddie` | `modules/events/eddie/eddie_arc.qsps` | 103 |
 | `TavernBarRumorDetail` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 32 |
 | `TavernBarRumorRoll` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 8 |
 | `TavernDayEventApplyUnrepairedPenalty` | `modules/events/tavern/tavern_day_events.qsps` | 170 |

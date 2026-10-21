@@ -13,6 +13,93 @@
     end
 ---
 
+#EddieImportantCheck
+    EddieImportantReady = 0
+    $EddieImportantAction = ''
+
+    ! 1. О пятницах Сандры (подсказка о кузнице Драупнира)
+    if PlayerKnows_SandraDraupnirFriday = 0 and SandraDraupnirHintEddie = 0:
+        EddieImportantReady = 1
+        $EddieImportantAction = 'sandra_friday'
+        exit
+    end
+
+    ! 2. Пообещать помощь (с Бекки и Жоржеттой)
+    if BeckyHomeSex = 1 and EddieSawGeorg = 2 and EddieHelpPromised = 0 and Friends['eddie'] >= 10 and BeckyEddieDone = 0:
+        EddieImportantReady = 1
+        $EddieImportantAction = 'help_promise'
+        exit
+    end
+
+    ! 3. Лучшие друзья (предложение о жене)
+    if BeckyEddieDone = 1 and EddieBestFriend = 0 and Friends['eddie'] >= 18:
+        EddieImportantReady = 1
+        $EddieImportantAction = 'best_friend'
+        exit
+    end
+
+    ! 4. Сказать, что всё в порядке (после сцены с Бекки)
+    if BeckyEddieDone = 1 and EddieBeckyPostTalkDone = 0:
+        EddieImportantReady = 1
+        $EddieImportantAction = 'becky_post'
+        exit
+    end
+---
+
+#EddieRunImportantAction
+    $EddieActionType = $ARGS[0]
+    $EddieTalkReturnLoc = 'BeckyShop'
+
+    if LOC('InitEddie') = 1:
+        gs 'InitEddie'
+    end
+
+    cls
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/events/eddie/eddie_arc/eddie_talk', 'Разговор с Эдди', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ВАЖНЫЙ РАЗГОВОР: ЭДДИ'
+
+    if $EddieActionType = 'sandra_friday':
+        gs 'EddieTalkSandraFridayText'
+        *pl $EddieArcText
+        killvar '$EddieArcText'
+        SandraDraupnirHintEddie = 1
+        Talked['eddie'] += 1
+
+    elseif $EddieActionType = 'help_promise':
+        gs 'EddieHelpPromiseText'
+        *pl $EddieArcText
+        killvar '$EddieArcText'
+        EddieHelpPromised = 1
+        Friends['eddie'] += 1
+        Talked['eddie'] += 1
+
+    elseif $EddieActionType = 'best_friend':
+        gs 'EddieBestFriendText'
+        *pl $EddieArcText
+        killvar '$EddieArcText'
+        EddieBestFriend = 1
+        EddieWifeOffer = 1
+        Friends['eddie'] += 1
+        Talked['eddie'] += 1
+
+    elseif $EddieActionType = 'becky_post':
+        *pl 'Ты подмигиваешь Эдди, давая понять, что всё под контролем.'
+        *pl '— Слушай, Стефан... Я правда благодарен, — тихо говорит он, глядя в пол. — Думал, после того случая всё пойдёт кувырком. Хорошо, что ты всё разрулил.'
+        EddieBeckyPostTalkDone = 1
+        Friends['eddie'] += 1
+        Talked['eddie'] += 1
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar '$EddieActionType'
+        gt $EddieTalkReturnLoc
+    end
+---
+
 #TalkWithEddie
 
     $GuyName = 'eddie'
@@ -30,103 +117,143 @@
     cls
 
     SceneArtUseReal = 1
-    gs 'SceneShowVisual', 'images/events/eddie/eddie_arc/eddie_talk', 'РАЗГОВОР С ЭДДИ', 'large', 'webp'
-
+    gs 'SceneShowVisual', 'images/events/eddie/eddie_arc/eddie_talk', 'Разговор с Эдди', 'large', 'webp'
     gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ЭДДИ'
 
-    gs 'ActUiPrepare', 'Вернуться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        if $EddieTalkReturnLoc = '':
-            $EddieTalkReturnLoc = 'BeckyShop'
+    gs 'EddieUnifiedTalkRun'
+
+    *pl ' '
+
+    ! Контекстные действия на экране разговора (если доступны важные темы)
+    if PlayerKnows_SandraDraupnirFriday = 0 and SandraDraupnirHintEddie = 0:
+        gs 'ActUiPrepare', 'Спросить о пятницах Сандры', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'EddieRunImportantAction', 'sandra_friday'
         end
+    end
+
+    if BeckyHomeSex = 1 and EddieSawGeorg = 2 and EddieHelpPromised = 0 and Friends['eddie'] >= 10 and BeckyEddieDone = 0:
+        gs 'ActUiPrepare', 'Пообещать помощь', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'EddieRunImportantAction', 'help_promise'
+        end
+    end
+
+    if BeckyEddieDone = 1 and EddieBestFriend = 0 and Friends['eddie'] >= 18:
+        gs 'ActUiPrepare', 'Поговорить по душам', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'EddieRunImportantAction', 'best_friend'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
         $TmpLoc = $EddieTalkReturnLoc
         killvar '$EddieTalkReturnLoc'
         gt $TmpLoc
     end
+---
 
-    gs 'Menu.Create', 'MenuEddieTalk'
+#EddieUnifiedTalkRun
+    ! 1. Проверка лимита полезных разговоров
+    gs 'UsefulTalkCheck', 'eddie', 'eddie_unified'
+    if UsefulTalkResult = 0:
+        gs 'EddieTalkLimitReachedText'
+        exit
+    end
 
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Поболтать о разной фигне', ''
-    gs 'Menu.AddModule', 'MenuEddieTalk', {
-        *pl 'Вы некоторое время болтаете с Эдди о несущественных вещах.'
-        dynamic 'if Talked[''eddie'']<=2 and Rand(1,2)=1 and Friends[''eddie'']<=5:
-            *pl ''Вы немного сдружились с Эдди.''
-            Friends[''eddie'']+=1
-        end
-        if Talked[''eddie'']>2: *pl ''Ничего нового из разговора вы не узнали.'''
-        Talked['eddie'] += 1
-    }
+    ! 2. Регистрация полезного разговора
+    gs 'UsefulTalkRegister', 'eddie', 'eddie_unified'
 
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Спросить про маму по пятницам', ''
-    gs 'Menu.AddModule', 'MenuEddieTalk', {
-        gs 'EddieTalkSandraFridayText'
-        *pl $EddieArcText
-        SandraDraupnirHintEddie = 1
-        Talked['eddie'] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(PlayerKnows_SandraDraupnirFriday=0 and SandraDraupnirHintEddie=0,-1,0)"
+    ! 3. Прогрессивная иерархия тем:
+    ! --- Лучший друг (после сближения и признания) ---
+    if EddieBestFriend = 1 and EddieFriendMemoryDone = 0:
+        EddieFriendMemoryDone = 1
+        gs 'EddieTalkBestFriendRun'
 
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Поболтать о девушках', ''
-    gs 'Menu.AddModule', 'MenuEddieTalk', {
-        gs 'EddieTalkGirlsBoastText'
-        *pl $EddieArcText
-        if Friends['eddie'] < 10:
-            Friends['eddie'] += 1
-        end
-        Talked['eddie'] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(Friends['eddie']>=5,-1,0)"
-
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Рассказать о девушках в трактире', ''
-    gs 'Menu.AddModule', 'MenuEddieTalk', {
-        gs 'EddieTalkTavernGirlsText'
-        *pl $EddieArcText
+    ! --- О девушках в трактире ---
+    elseif Friends['eddie'] >= 5 and EddieTalkedTavernGirls = 0:
         EddieTalkedTavernGirls = 1
-        Friends['eddie'] += 1
-        Talked['eddie'] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(Friends['eddie']>=5 and EddieTalkedTavernGirls=0,-1,0)"
+        gs 'EddieTalkTavernGirlsRun'
 
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Предложить помочь с мамой', ''
-    gs 'Menu.AddModule', 'MenuEddieTalk', {
-        gs 'EddieHelpPromiseText'
-        *p $EddieArcText
-        EddieHelpPromised = 1
-        Friends['eddie'] += 1
-        Talked['eddie'] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyHomeSex=1 and EddieSawGeorg=2 and EddieHelpPromised=0 and Friends['eddie']>=10 and BeckyEddieDone=0 and Talked['eddie']<2,-1,0)"
+    ! --- О девушках в городе / хвастовство ---
+    elseif Friends['eddie'] >= 5 and EddieTalkGirlsBoastFirstDone = 0:
+        EddieTalkGirlsBoastFirstDone = 1
+        gs 'EddieTalkGirlsBoastRun'
 
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Поговорить о том, как теперь бывает дома', ''
-    gs 'Menu.AddModule', 'MenuEddieTalk', {
-        *pl 'Эдди смущённо улыбается: "Ну… теперь мама не так злится. Спасибо, что помог разобраться."'
-        Friends['eddie'] += 1
-        Talked['eddie'] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyEddieDone=1 and Talked['eddie']<2,-1,0)"
+    ! --- О матери и лавке ---
+    elseif EddieTalkShopFirstDone = 0:
+        EddieTalkShopFirstDone = 1
+        gs 'EddieTalkShopRun'
 
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Выслушать благодарность лучшего друга', ''
-    gs 'Menu.AddModule', 'MenuEddieTalk', {
-        gs 'EddieBestFriendText'
-        *p $EddieArcText
-        EddieBestFriend = 1
-        EddieWifeOffer = 1
-        Friends['eddie'] += 1
-        Talked['eddie'] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuEddieTalk', "Result=IIF(BeckyEddieDone=1 and EddieBestFriend=0 and Friends['eddie']>=18 and Talked['eddie']<2,-1,0)"
-
-    gs 'MenuUiAdd', 'MenuEddieTalk', 'Вернуться', ''
-    gs 'Menu.AddModule', 'MenuEddieTalk', {
-        if $EddieTalkReturnLoc = '':
-            $EddieTalkReturnLoc = 'BeckyShop'
+    ! --- Циклическая ротация лор-пулов ---
+    else:
+        EddieLorePoolCycle += 1
+        if EddieLorePoolCycle > 3:
+            EddieLorePoolCycle = 0
         end
-        $TmpLoc = $EddieTalkReturnLoc
-        killvar '$EddieTalkReturnLoc'
-        gt $TmpLoc
-    }
 
-    gs 'Menu.Show', 'MenuEddieTalk'
+        if EddieLorePoolCycle = 0:
+            gs 'EddieTalkShopRun'
+        elseif EddieLorePoolCycle = 1 and Friends['eddie'] >= 5:
+            gs 'EddieTalkGirlsBoastRun'
+        elseif EddieLorePoolCycle = 2 and Friends['eddie'] >= 5:
+            gs 'EddieTalkTavernGirlsRun'
+        elseif EddieLorePoolCycle = 3 and EddieBestFriend = 1:
+            gs 'EddieTalkBestFriendRun'
+        else:
+            gs 'EddieTalkSmalltalkRun'
+        end
+    end
+---
+
+#EddieTalkLimitReachedText
+    *pl 'Эдди весело почесывает затылок и разводит руками:'
+    *pl '— Стефан, матушка уже косится на нас из-за полок. Если я сейчас продолжу лясы точить, она заставит меня мешки с крупой до вечера таскать. Давай позже перетрём, когда лавка опустеет!'
+---
+
+#EddieTalkBestFriendRun
+    gs 'EddieBestFriendText'
+    *pl $EddieArcText
+    killvar '$EddieArcText'
+    Friends['eddie'] += 1
+    Talked['eddie'] += 1
+---
+
+#EddieTalkTavernGirlsRun
+    gs 'EddieTalkTavernGirlsText'
+    *pl $EddieArcText
+    killvar '$EddieArcText'
+    Friends['eddie'] += 1
+    Talked['eddie'] += 1
+---
+
+#EddieTalkGirlsBoastRun
+    gs 'EddieTalkGirlsBoastText'
+    *pl $EddieArcText
+    killvar '$EddieArcText'
+    if Friends['eddie'] < 15:
+        Friends['eddie'] += 1
+    end
+    Talked['eddie'] += 1
+---
+
+#EddieTalkShopRun
+    *pl 'Ты расспрашиваешь Эдди о делах в лавке и о том, как справляется Бекки.'
+    *pl '— Мама держит всё железной хваткой, — улыбается Эдди. — Иногда ворчит, что я считаю медленно, но без меня бы с ума сошла с этими поставщиками и телегами. Ты, главное, муку для трактира вовремя забирай, а то она место на складе занимает.'
+    if Friends['eddie'] < 10:
+        Friends['eddie'] += 1
+    end
+    Talked['eddie'] += 1
+---
+
+#EddieTalkSmalltalkRun
+    *pl 'Ты перебрасываешься с Эдди парой шуток о городских новостях, девчонках и ценах на зерно.'
+    *pl 'Эдди заразительно смеётся, явно радуясь возможности ненадолго отвлечься от нудной возни с ящиками.'
+    if Friends['eddie'] < 8:
+        Friends['eddie'] += 1
+    end
+    Talked['eddie'] += 1
 ---
 
 #PortAlley
