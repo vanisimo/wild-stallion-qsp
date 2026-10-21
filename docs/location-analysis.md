@@ -555,8 +555,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ActUiPrepare` | 1769 |
 | `ShowLocationScreenTitle` | 757 |
 | `SceneShowVisual` | 710 |
-| `Menu.AddModule` | 593 |
-| `MenuUiAdd` | 534 |
+| `Menu.AddModule` | 592 |
+| `MenuUiAdd` | 533 |
 | `EnsureGirlData` | 244 |
 | `ClampGirlSocialStats` | 243 |
 | `NormalizeGirlKey` | 201 |
