@@ -1,7 +1,8 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_georgette.qsps
 ! MODULE: actions/dialogs
-! Отдельное меню разговоров Жоржетты (не generic town)
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и расширенные разговоры Жоржетты в порту
 ! ================================================
 
 #GirlTalkGeorgetteChurchMenuReady
@@ -106,133 +107,183 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
+    ! Если ещё не знакомы — первое знакомство
     if GeorgetteKnown < 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поздороваться', 'talk'
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GeorgetteFirstMeet', $TalkReturnLoc
         }
         exit
     end
 
-    gs 'GirlTalkRootAppendPersonalMenu'
-
-    if GeorgetteKnown = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О её жизни', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_bio'
-        }
-    end
-
-    if GeorgetteTalkBioDone = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О порте и кораблях', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_port'
-        }
-    end
-
-    if GeorgetteTalkPortDone = 1 and (LizetteMentionedByGeorgette = 1 or PortMeetWitnessed = 1) and GeorgetteTalkLizetteDone = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О дочери Лизетте', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_lizette'
-        }
-    end
-
-    if GeorgetteTalkClientsDone = 1 or (GeorgettePortSexDone = 1 and GeorgetteTalkPortDone = 1 and Friends['georgett'] >= 12):
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О клиентах и городе', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_clients'
-        }
-    end
-
-    if GeorgetteTalkSexDone = 1 or (GeorgetteTalkClientsDone = 1 and GeorgettePortSexDone = 1):
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О сексе', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_sex'
-        }
-    end
-
-    if GeorgetteTalkFamilyDone = 1 or GeorgetteTalkSexDone = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О семье', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_family'
-        }
-    end
-
-    if GeorgetteTalkChildrenDone = 1 or GeorgetteTalkFamilyDone = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О детях', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_children'
-        }
-    end
-
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    ! 1.1. Церковь и отец Герхард (ввод, после spy E или еженедельный рекап воскресного шпионажа)
     gs 'GirlTalkGeorgetteChurchMenuReady'
-
     if GeorgetteChurchMenuReady = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О церкви и отце Герхарде', 'talk'
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_church'
+            gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'georgette_church'
+        }
+    ! 1.2. Об уроке для Лизетты в соборе
+    elseif LizaSawSexInChurch = 1 and GeorgetteTalkLizetteChurchDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'georgette_lizette_church'
+        }
+    ! 1.3. О Лизетке у отца Герхарда (шпионаж 1)
+    elseif LizettePriestSpyStage >= 1 and GeorgetteTalkLizetteSpy1Done = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'georgette_lizette_spy1'
+        }
+    ! 1.4. О Лизетте и отце Герхарде (шпионаж 2)
+    elseif LizettePriestSpySeen = 1 and GeorgetteTalkLizetteSpy2Done = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'georgette_lizette_spy2'
+        }
+    ! 1.5. Об Эдди из лавки Бекки
+    elseif GeorgetteTalkChildrenDone = 1 and Friends['georgett'] >= 16 and EddieSawGeorg >= 1 and GeorgetteTalkEddieDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'georgette_eddie'
+        }
+    ! 1.6. О дочери Лизетте (первое сюжетное открытие)
+    elseif GeorgetteTalkPortDone = 1 and (LizetteMentionedByGeorgette = 1 or PortMeetWitnessed = 1) and GeorgetteTalkLizetteDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'georgette_lizette'
         }
     end
-
     killvar 'GeorgetteChurchMenuReady'
 
-    if LizaSawSexInChurch = 1 and GeorgetteTalkLizetteChurchDone = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Об уроке для Лизетты в соборе', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_lizette_church'
-        }
-    end
-
-    if LizettePriestSpyStage >= 1 and GeorgetteTalkLizetteSpy1Done = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Лизетке у отца Герхарда', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_lizette_spy1'
-        }
-    end
-
-    if LizettePriestSpySeen = 1 and GeorgetteTalkLizetteSpy2Done = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О Лизетте и отце Герхарде', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_lizette_spy2'
-        }
-    end
-
-    if GeorgetteTalkChildrenDone = 1 and Friends['georgett'] >= 16 and EddieSawGeorg >= 1 and GeorgetteTalkEddieDone = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Об Эдди из лавки Бекки', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'georgette_eddie'
-        }
-    end
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', 'talk'
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+        gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'georgette_unified'
     }
 
-    if Friends['georgett'] >= 12 or love['georgett'] >= 10 or otkroven['georgett'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
-        }
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GirlTalkAppendGiftMenuItems') = 1:
+        gs 'GirlTalkAppendGiftMenuItems'
+    end
+---
+
+#GirlTalkGeorgetteUnifiedRun
+    ! 1. Проверка лимита полезных разговоров:
+    gs 'UsefulTalkCheck', 'georgett', 'georgette_unified'
+    if UsefulTalkResult = 0:
+        gs 'GirlTalkGeorgetteLimitReachedText'
+        gs 'ClampGirlSocialStats', 'georgett'
+        exit
     end
 
+    ! 2. Регистрация полезного разговора:
+    gs 'UsefulTalkRegister', 'georgett', 'georgette_unified'
+
+    ! 3. Иерархия тем разговора:
+    ! --- Пик откровения (предел) ---
+    if otkroven['georgett'] >= 25 and (GeorgettePortSexDone = 1 or HadSex['georgett'] > 0):
+        gs 'GirlTalkGeorgetteMemoryLimitText'
+        if GeorgetteMemoryLimitDone = 0:
+            GeorgetteMemoryLimitDone = 1
+            love['georgett'] += 2
+            otkroven['georgett'] += 2
+            Friends['georgett'] += 1
+        else:
+            love['georgett'] += 1
+            otkroven['georgett'] += 1
+        end
+
+    ! --- Воспоминание о ночи в порту ---
+    elseif GeorgettePortSexDone = 1 and otkroven['georgett'] >= 18 and GeorgetteMemoryPortSexDone = 0:
+        gs 'GirlTalkGeorgetteMemoryPortSexText'
+        GeorgetteMemoryPortSexDone = 1
+        love['georgett'] += 2
+        otkroven['georgett'] += 1
+
+    ! --- Воспоминание о шалостях в церкви на службе ---
+    elseif (GeorgetteConfessBasic = 1 or HadSex['georgett'] > 0 or LizaSawSexInChurch = 1) and GeorgetteMemoryChurchSexDone = 0 and otkroven['georgett'] >= 14:
+        gs 'GirlTalkGeorgetteMemoryChurchSexText'
+        GeorgetteMemoryChurchSexDone = 1
+        otkroven['georgett'] += 2
+        love['georgett'] += 1
+
+    ! --- Первые последовательные открытия лора ---
+    elseif GeorgetteTalkBioDone = 0:
+        gs 'GirlTalkGeorgetteBioRun'
+
+    elseif GeorgetteTalkPortDone = 0:
+        gs 'GirlTalkGeorgettePortRun'
+
+    elseif GeorgetteTalkClientsDone = 0 and Friends['georgett'] >= 8:
+        gs 'GirlTalkGeorgetteClientsRun'
+
+    elseif GeorgetteTalkSexDone = 0 and Friends['georgett'] >= 10:
+        gs 'GirlTalkGeorgetteSexRun'
+
+    elseif GeorgetteTalkFamilyDone = 0 and Friends['georgett'] >= 12:
+        gs 'GirlTalkGeorgetteFamilyRun'
+
+    elseif GeorgetteTalkChildrenDone = 0 and Friends['georgett'] >= 14:
+        gs 'GirlTalkGeorgetteChildrenRun'
+
+    ! --- Повторяющаяся ротация богатых лор-пулов (все реплики Жоржетты сохраняются) ---
+    else:
+        GeorgetteLorePoolCycle += 1
+        if GeorgetteLorePoolCycle > 5:
+            GeorgetteLorePoolCycle = 0
+        end
+
+        if GeorgetteLorePoolCycle = 0:
+            gs 'GirlTalkGeorgetteBioRun'
+        elseif GeorgetteLorePoolCycle = 1:
+            gs 'GirlTalkGeorgettePortRun'
+        elseif GeorgetteLorePoolCycle = 2:
+            gs 'GirlTalkGeorgetteClientsRun'
+        elseif GeorgetteLorePoolCycle = 3:
+            gs 'GirlTalkGeorgetteSexRun'
+        elseif GeorgetteLorePoolCycle = 4:
+            gs 'GirlTalkGeorgetteFamilyRun'
+        else:
+            gs 'GirlTalkGeorgetteChildrenRun'
+        end
+    end
+
+    ! --- Дополнительные действия на экране разговора ---
     if $TalkReturnLoc = 'Port' and time = 5 and GeorgettePortNightGone = 0:
         gs 'PortNightGirlVisible', 'georgett'
 
         if PortNightGirlVisible = 1:
             if GeorgettePortSexDone = 0:
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Снять Жоржетту (10 спинтарий)', 'intim'
+                gs 'ActUiPrepare', 'Снять Жоржетту (10 спинтарий)', 'intim'
             else:
-                gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Провести ночь с Жоржеттой (10 спинтарий)', 'intim'
+                gs 'ActUiPrepare', 'Провести ночь с Жоржеттой (10 спинтарий)', 'intim'
             end
 
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            act $ActUiLabel, $ActUiIconPath:
                 gt 'GeorgettePortNightPaySex', 'Port'
-            }
+            end
         end
 
         killvar 'PortNightGirlVisible'
     end
+
+    if Friends['georgett'] >= 12 or love['georgett'] >= 10 or otkroven['georgett'] >= 12:
+        gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'compliment'
+        end
+    end
+
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'gift'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'georgett'
 ---
 
 #GirlTalkGeorgettePortRun

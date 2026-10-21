@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 500
-- Locations: 3739
+- Locations: 3744
 
 ## modules/actions
 
@@ -34,14 +34,14 @@ Generated from active project files in `qsp-project.json`.
 | `BuildGirlLocationNpcLine` | `modules/actions/dialogs/girl_talk_session.qsps` | 187 |
 | `CanStartIntimScene` | `modules/actions/sex/intim_scene.qsps` | 93 |
 | `CanStartSexScene` | `modules/actions/sex/sex_scene_core.qsps` | 98 |
-| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 1415 |
+| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 1418 |
 | `ClampIntimSceneValues` | `modules/actions/sex/intim_scene.qsps` | 517 |
 | `ClarissaDoubleVaginalApplyAftermath` | `modules/actions/sex/group_sex_gates.qsps` | 167 |
-| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 1181 |
-| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 1235 |
-| `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 1257 |
-| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 1291 |
-| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 1365 |
+| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 1184 |
+| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 1238 |
+| `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 1260 |
+| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 1294 |
+| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 1368 |
 | `GirlFirstAnal` | `modules/actions/sex/first_sex.qsps` | 142 |
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 197 |
 | `GirlFirstSex` | `modules/actions/sex/first_sex.qsps` | 8 |
@@ -85,7 +85,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkBlockedUsefulTopic` | `modules/actions/dialogs/girl_talk.qsps` | 673 |
 | `GirlTalkBuildBeckyMainMenu` | `modules/actions/dialogs/girl_talk_becky.qsps` | 8 |
 | `GirlTalkBuildClarissaMainMenu` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 8 |
-| `GirlTalkBuildGeorgetteMainMenu` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 105 |
+| `GirlTalkBuildGeorgetteMainMenu` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 106 |
 | `GirlTalkBuildGretaStubMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 7 |
 | `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 511 |
 | `GirlTalkBuildIngaMainMenu` | `modules/actions/dialogs/girl_talk_inga.qsps` | 8 |
@@ -119,25 +119,30 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkFamilyPrintText` | `modules/actions/dialogs/girl_talk_family.qsps` | 109 |
 | `GirlTalkFamilyRun` | `modules/actions/dialogs/girl_talk_family.qsps` | 7 |
 | `GirlTalkFamilyText` | `modules/actions/dialogs/girl_talk_family_text.qsps` | 10 |
-| `GirlTalkGeorgetteBioRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 248 |
-| `GirlTalkGeorgetteChildrenRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 320 |
-| `GirlTalkGeorgetteChurchMenuReady` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 7 |
-| `GirlTalkGeorgetteChurchResolvePhase` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 29 |
-| `GirlTalkGeorgetteChurchRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 335 |
-| `GirlTalkGeorgetteClientsRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 275 |
-| `GirlTalkGeorgetteComplimentRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 425 |
-| `GirlTalkGeorgetteEddieRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 411 |
-| `GirlTalkGeorgetteFamilyRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 305 |
-| `GirlTalkGeorgetteLizetteChurchRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 400 |
-| `GirlTalkGeorgetteLizettePriestReportRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 373 |
-| `GirlTalkGeorgetteLizetteRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 260 |
-| `GirlTalkGeorgetteLizetteSpy1Run` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 362 |
-| `GirlTalkGeorgetteLizetteSpy2Run` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 384 |
-| `GirlTalkGeorgetteLoreBump` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 59 |
-| `GirlTalkGeorgettePortRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 238 |
-| `GirlTalkGeorgettePrintText` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 457 |
-| `GirlTalkGeorgetteSexRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 290 |
-| `GirlTalkGeorgetteText` | `modules/actions/dialogs/girl_talk_georgette_text.qsps` | 10 |
+| `GirlTalkGeorgetteBioRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 299 |
+| `GirlTalkGeorgetteChildrenRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 371 |
+| `GirlTalkGeorgetteChurchMenuReady` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 8 |
+| `GirlTalkGeorgetteChurchResolvePhase` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 30 |
+| `GirlTalkGeorgetteChurchRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 386 |
+| `GirlTalkGeorgetteClientsRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 326 |
+| `GirlTalkGeorgetteComplimentRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 476 |
+| `GirlTalkGeorgetteEddieRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 462 |
+| `GirlTalkGeorgetteFamilyRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 356 |
+| `GirlTalkGeorgetteLimitReachedText` | `modules/actions/dialogs/girl_talk_georgette_text.qsps` | 10 |
+| `GirlTalkGeorgetteLizetteChurchRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 451 |
+| `GirlTalkGeorgetteLizettePriestReportRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 424 |
+| `GirlTalkGeorgetteLizetteRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 311 |
+| `GirlTalkGeorgetteLizetteSpy1Run` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 413 |
+| `GirlTalkGeorgetteLizetteSpy2Run` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 435 |
+| `GirlTalkGeorgetteLoreBump` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 60 |
+| `GirlTalkGeorgetteMemoryChurchSexText` | `modules/actions/dialogs/girl_talk_georgette_text.qsps` | 34 |
+| `GirlTalkGeorgetteMemoryLimitText` | `modules/actions/dialogs/girl_talk_georgette_text.qsps` | 14 |
+| `GirlTalkGeorgetteMemoryPortSexText` | `modules/actions/dialogs/girl_talk_georgette_text.qsps` | 24 |
+| `GirlTalkGeorgettePortRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 289 |
+| `GirlTalkGeorgettePrintText` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 508 |
+| `GirlTalkGeorgetteSexRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 341 |
+| `GirlTalkGeorgetteText` | `modules/actions/dialogs/girl_talk_georgette_text.qsps` | 44 |
+| `GirlTalkGeorgetteUnifiedRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 172 |
 | `GirlTalkHallEventReaction` | `modules/actions/tavern/girl_talk_hall_event_reaction_compat.qsps` | 7 |
 | `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 491 |
 | `GirlTalkHallTopicStart` | `modules/actions/dialogs/girl_talk.qsps` | 520 |
@@ -808,7 +813,7 @@ Generated from active project files in `qsp-project.json`.
 | `SandraOtkroven25` | `modules/core/system/compatibility_aliases.qsps` | 215 |
 | `SandraOtkroven35` | `modules/core/system/compatibility_aliases.qsps` | 211 |
 | `SandraOtkroven45` | `modules/core/system/compatibility_aliases.qsps` | 207 |
-| `SceneShowVisual` | `modules/core/show_image/show_image_helpers.qsps` | 327 |
+| `SceneShowVisual` | `modules/core/show_image/show_image_helpers.qsps` | 329 |
 | `SetFamilyTavernJobs` | `modules/core/girls/girl_job.qsps` | 183 |
 | `SetGirlHomeLocation` | `modules/core/girls/girl_location.qsps` | 11 |
 | `SetGirlJob` | `modules/core/girls/girl_job.qsps` | 8 |
@@ -816,7 +821,7 @@ Generated from active project files in `qsp-project.json`.
 | `SetGirlWorkLocation` | `modules/core/girls/girl_location.qsps` | 35 |
 | `SetTimeFromPanel` | `modules/core/system/refresh_location.qsps` | 115 |
 | `SetWeekFromPanel` | `modules/core/system/refresh_location.qsps` | 151 |
-| `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 364 |
+| `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 366 |
 | `ShowAncestralTreeImage` | `modules/core/gifts/gift_dream_images.qsps` | 26 |
 | `ShowDreamItemIfKnown` | `modules/core/gifts/gift_dream_images.qsps` | 32 |
 | `ShowDreamItemImage` | `modules/core/gifts/gift_dream_images.qsps` | 8 |
@@ -841,9 +846,9 @@ Generated from active project files in `qsp-project.json`.
 | `ShowPortrait` | `modules/core/show_image/show_image_helpers.qsps` | 179 |
 | `ShowPortraitToPanel` | `modules/core/show_image/show_portrait_to_panel.qsps` | 22 |
 | `ShowRandomImagePath` | `modules/core/show_image/image_debug_random.qsps` | 324 |
-| `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 265 |
+| `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 267 |
 | `ShowSecondFloorRoomStatus` | `modules/core/girls/girl_location.qsps` | 202 |
-| `ShowSex` | `modules/core/show_image/show_image_helpers.qsps` | 276 |
+| `ShowSex` | `modules/core/show_image/show_image_helpers.qsps` | 278 |
 | `ShowSexImage` | `modules/core/show_image/image_debug_random.qsps` | 535 |
 | `ShowSexImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 577 |
 | `ShowSizedImage` | `modules/core/show_image/image_debug_random.qsps` | 186 |
@@ -914,7 +919,7 @@ Generated from active project files in `qsp-project.json`.
 | `UsefulTalkCheck` | `modules/core/time/npc_talk_limits.qsps` | 34 |
 | `UsefulTalkDebugPanel` | `modules/core/time/npc_talk_limits.qsps` | 547 |
 | `UsefulTalkRegister` | `modules/core/time/npc_talk_limits.qsps` | 96 |
-| `VisPrintCaption` | `modules/core/show_image/show_image_helpers.qsps` | 290 |
+| `VisPrintCaption` | `modules/core/show_image/show_image_helpers.qsps` | 292 |
 
 ## modules/debug
 
