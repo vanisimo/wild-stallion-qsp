@@ -97,12 +97,19 @@
     gs 'ShowImage', 'church', 'general', 'normal'
 
     gs 'ChurchWeekdayText', 'donations'
-    *p $ChurchWeekdayText
+    *pl $ChurchWeekdayText
     killvar '$ChurchWeekdayText'
 
     *pl ' '
+    *pl 'У тебя в кошельке: <b>' + STR(money) + '</b> спинтарий.'
+    *pl ' '
 
-    gs 'ChurchWeekdayDonationAct'
+    if ChurchDonatedToday = 1:
+        *pl '<span style="color:#888"><i>Сегодня ты уже совершил пожертвование храму Ильматера. Твоя лепта принята, приходи снова в следующий будний день.</i></span>'
+        *pl ' '
+    else:
+        gs 'ChurchWeekdayDonationAct'
+    end
 
     gs 'ActUiPrepare', 'Назад в церковь', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -240,14 +247,21 @@
     gs 'ShowImage', 'church', 'general', 'normal'
 
     gs 'ChurchWeekdayText', 'donation_info'
-    *p $ChurchWeekdayText
+    *pl $ChurchWeekdayText
     killvar '$ChurchWeekdayText'
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Назад в зал', 'return'
+    if week <> 7 and ChurchDonatedToday <> 1:
+        gs 'ActUiPrepare', 'Сделать пожертвование', 'circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchWeekdayDonations'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Назад к отцу Герхарду', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'ChurchInterior'
+        gt 'ChurchGerhardWeekdayTalk'
     end
 ---
 
