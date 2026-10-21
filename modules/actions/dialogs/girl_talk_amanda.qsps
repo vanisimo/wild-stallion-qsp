@@ -1,0 +1,368 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_amanda.qsps
+! MODULE: actions/dialogs
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и расширенные разговоры Аманды
+! ================================================
+
+#GirlTalkAmandaImportantCheck
+    AmandaImportantReady = 0
+    $AmandaImportantAction = ''
+
+    ! 1.1. Дворянство
+    if LOC('AmandaNobleReactionCanTalk') = 1:
+        gs 'AmandaNobleReactionCanTalk'
+        if AmandaNobleReactionCanTalk = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'nobility'
+            exit
+        end
+    end
+
+    ! 1.2. Вручить шёлковое платье от Ирмы
+    if LOC('AmandaNobleDressGiftCanTalk') = 1:
+        gs 'AmandaNobleDressGiftCanTalk'
+        if AmandaNobleDressGiftCanTalk = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'noble_dress'
+            exit
+        end
+    end
+
+    ! 1.3. О ночи с Легаре (суббота)
+    if AmandaSaturdayTalkReady = 1 and AmandaSaturdayTalkDone = 0 and LOC('AmandaTalkAboutLegareStreetClash') = 1:
+        AmandaImportantReady = 1
+        $AmandaImportantAction = 'legare_clash'
+        exit
+    end
+
+    ! 1.4. О визите купца Легаре
+    if AmandaLegareTalkReady = 1 and LOC('AmandaTalkAboutLegare') = 1:
+        AmandaImportantReady = 1
+        $AmandaImportantAction = 'legare_visit'
+        exit
+    end
+
+    ! 1.5. Ночной разговор с Легаре
+    if LOC('AmandaLegarePrivateAftermathCanTalk') = 1:
+        gs 'AmandaLegarePrivateAftermathCanTalk'
+        if AmandaLegarePrivateAftermathCanTalk = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'legare_private'
+            exit
+        end
+    end
+
+    ! 1.6. Встреча с Легаре у трактира
+    if LOC('AmandaLegareOutsideAftermathCanTalk') = 1:
+        gs 'AmandaLegareOutsideAftermathCanTalk'
+        if AmandaLegareOutsideAftermathCanTalk = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'legare_outside'
+            exit
+        end
+    end
+
+    ! 1.7. Финал с Легаре
+    if LOC('AmandaLegareMajorAftermathCanTalk') = 1:
+        gs 'AmandaLegareMajorAftermathCanTalk'
+        if AmandaLegareMajorAftermathCanTalk = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'legare_major'
+            exit
+        end
+    end
+
+    ! 1.8. Ссора с Легаре в зале
+    if LegareFirstConflictAfterTalkReady = 1 and LegareFirstConflictAfterTalkDone = 0 and LOC('AmandaTalkAboutLegareFirstConflict') = 1:
+        AmandaImportantReady = 1
+        $AmandaImportantAction = 'legare_hall_conflict'
+        exit
+    end
+
+    ! 1.9. Ужин у Блэнкеншипов
+    if AmandaBeckyDinnerGossipPending = 1 and LOC('AmandaTalkAboutBeckyDinner') = 1:
+        AmandaImportantReady = 1
+        $AmandaImportantAction = 'becky_dinner'
+        exit
+    end
+
+    ! 1.10. Идти к Ирме за платьем
+    if LOC('DanceDressEscortCanStart') = 1:
+        gs 'DanceDressEscortCanStart', 'amanda'
+        if DanceDressEscortCanStart = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'dress_escort'
+            exit
+        end
+    end
+
+    ! 1.11. Примерка платья у Ирмы
+    if LOC('DanceDressFittingEscortCanStart') = 1:
+        gs 'DanceDressFittingEscortCanStart', 'amanda'
+        if DanceDressFittingEscortCanStart = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'dress_fitting'
+            exit
+        end
+    end
+
+    ! 1.12. Платье для танцев
+    if LOC('DanceDressTalkCanStart') = 1:
+        gs 'DanceDressTalkCanStart', 'amanda'
+        if DanceDressTalkCanStart = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'dress_talk'
+            exit
+        end
+    end
+
+    ! 1.13. Реакция на помощниц
+    if LOC('SandraStaffGirlsReactionCanTalk') = 1:
+        gs 'SandraStaffGirlsReactionCanTalk', 'amanda'
+        if SandraStaffGirlsReactionCanTalk = 1:
+            AmandaImportantReady = 1
+            $AmandaImportantAction = 'staff_reaction'
+            exit
+        end
+    end
+
+    ! 1.14. Личная история: о Легаре
+    if GirlPersonalStoryUnlock['amanda_amanda_legare'] = 1 and GirlPersonalStoryDone['amanda_amanda_legare'] = 0:
+        AmandaImportantReady = 1
+        $AmandaImportantAction = 'story_legare'
+        exit
+    end
+
+    ! 1.15. Личная история: о парнях в городе
+    if GirlPersonalStoryUnlock['amanda_amanda_boys'] = 1 and GirlPersonalStoryDone['amanda_amanda_boys'] = 0:
+        AmandaImportantReady = 1
+        $AmandaImportantAction = 'story_boys'
+        exit
+    end
+---
+
+#GirlTalkBuildAmandaMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    gs 'GirlTalkAmandaImportantCheck'
+    if AmandaImportantReady = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        if $AmandaImportantAction = 'nobility':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutNobility', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'noble_dress':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaGiveNobleDress', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'legare_clash':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutLegareStreetClash', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'legare_visit':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutLegare', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'legare_private':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaLegarePrivateAftermath', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'legare_outside':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaLegareOutsideAftermath', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'legare_major':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaLegareMajorAftermath', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'legare_hall_conflict':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutLegareFirstConflict', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'becky_dinner':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutBeckyDinner', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'dress_escort':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'IrmaDanceDressEscortStart', 'amanda', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'dress_fitting':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'IrmaDanceDressEscortStart', 'amanda', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'dress_talk':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkResult', 'amanda', $TalkReturnLoc, 'dance_dress' }
+        elseif $AmandaImportantAction = 'staff_reaction':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffGirlsReactionTalk', 'amanda', $TalkReturnLoc }
+        elseif $AmandaImportantAction = 'story_legare':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'amanda', $TalkReturnLoc, 'amanda_legare' }
+        elseif $AmandaImportantAction = 'story_boys':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'amanda', $TalkReturnLoc, 'amanda_boys' }
+        end
+    end
+    killvar 'AmandaImportantReady'
+    killvar '$AmandaImportantAction'
+
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', 'amanda', $TalkReturnLoc, 'amanda_unified'
+    }
+
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GirlTalkAppendGiftMenuItems') = 1:
+        gs 'GirlTalkAppendGiftMenuItems'
+    end
+---
+
+#GirlTalkAmandaUnifiedRun
+    ! 1. Проверка лимита полезных разговоров:
+    gs 'UsefulTalkCheck', 'amanda', 'amanda_unified'
+    if UsefulTalkResult = 0:
+        gs 'GirlTalkAmandaLimitReachedText'
+        gs 'ClampGirlSocialStats', 'amanda'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора:
+    gs 'UsefulTalkRegister', 'amanda', 'amanda_unified'
+
+    ! 3. Иерархия тем разговора:
+    ! --- Пик откровения (предел) ---
+    if otkroven['amanda'] >= 25 and (AmandaHomeSex = 1 or HadSex['amanda'] >= 1):
+        gs 'GirlTalkAmandaMemoryLimitRun'
+
+    ! --- Воспоминание об анале ---
+    elseif analfromyou['amanda'] >= 1 and otkroven['amanda'] >= 22 and AmandaMemoryAnalDone = 0:
+        gs 'GirlTalkAmandaMemoryAnalRun'
+
+    ! --- Воспоминание о первой близости в комнате ---
+    elseif (AmandaHomeSex = 1 or HadSex['amanda'] >= 1) and otkroven['amanda'] >= 20 and AmandaMemoryFirstSexDone = 0:
+        gs 'GirlTalkAmandaMemoryFirstSexRun'
+
+    ! --- Воспоминание о пятничных танцах ---
+    elseif (FactHappened['amanda_dancewithlegare_1'] = 1 or AmandaDanceWithStefanDone = 1 or FridayDanceDoneCount >= 1) and otkroven['amanda'] >= 14 and AmandaMemoryDanceDone = 0:
+        gs 'GirlTalkAmandaMemoryDanceRun'
+
+    ! --- Воспоминание о детстве и проделках ---
+    elseif otkroven['amanda'] >= 10 and AmandaMemoryChildhoodDone = 0:
+        gs 'GirlTalkAmandaMemoryChildhoodRun'
+
+    ! --- Первые последовательные открытия тем ---
+    elseif AmandaTalkTavernDone = 0:
+        AmandaTalkTavernDone = 1
+        gs 'GirlTalkTavernRun', 'amanda'
+
+    elseif AmandaTalkFamilyDone = 0:
+        AmandaTalkFamilyDone = 1
+        gs 'GirlTalkFamilyRun', 'amanda'
+
+    elseif AmandaTalkDreamsDone = 0:
+        AmandaTalkDreamsDone = 1
+        gs 'GirlTalkAmandaDreamsRun'
+
+    ! --- Повторяющаяся ротация богатых лор-пулов (все 3 темы с сохранением всех авторских текстов) ---
+    else:
+        AmandaLorePoolCycle += 1
+        if AmandaLorePoolCycle > 2:
+            AmandaLorePoolCycle = 0
+        end
+
+        if AmandaLorePoolCycle = 0:
+            gs 'GirlTalkTavernRun', 'amanda'
+        elseif AmandaLorePoolCycle = 1:
+            gs 'GirlTalkFamilyRun', 'amanda'
+        else:
+            gs 'GirlTalkAmandaDreamsRun'
+        end
+    end
+
+    ! --- Дополнительные действия на экране разговора ---
+    if AmandaMetLizette = 1 or LizetteKnown = 1:
+        if LizetteBanned = 1:
+            gs 'ActUiPrepare', 'Разрешить болтать с Лизеттой', 'talk'
+        else
+            gs 'ActUiPrepare', 'Запретить болтать с Лизеттой', 'talk'
+        end
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkPersonalBanToggle', 'amanda', $TalkReturnLoc, 'lizette'
+        end
+    end
+
+    if AmandaLegareInterest >= 1 or AmandaLegareTalkDone = 1 or Fact_AmandaLegareOutsideMeet = 1 or FactHappened['amanda_dancewithlegare_1'] = 1 or AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1:
+        gs 'GirlTalkPersonalLegareBanned'
+        if GirlTalkPersonalLegareBanned = 1:
+            gs 'ActUiPrepare', 'Разрешить общение с Легаре', 'talk'
+        else
+            gs 'ActUiPrepare', 'Запретить общение с Легаре', 'talk'
+        end
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkPersonalBanToggle', 'amanda', $TalkReturnLoc, 'legare'
+        end
+        killvar 'GirlTalkPersonalLegareBanned'
+    end
+
+    gs 'GirlTalkPersonalGuysBanCanShow', 'amanda'
+    if GirlTalkPersonalGuysBanCanShow = 1:
+        if AmandaProhibitGuys = 1:
+            gs 'ActUiPrepare', 'Разрешить встречаться с парнями', 'talk'
+        else
+            gs 'ActUiPrepare', 'Запретить встречаться с парнями', 'talk'
+        end
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkPersonalBanToggle', 'amanda', $TalkReturnLoc, 'guys'
+        end
+    end
+    killvar 'GirlTalkPersonalGuysBanCanShow'
+
+    if Friends['amanda'] >= 12 or love['amanda'] >= 10 or otkroven['amanda'] >= 12:
+        gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'amanda', $TalkReturnLoc, 'compliment'
+        end
+    end
+
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'amanda', $TalkReturnLoc, 'gift'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'amanda'
+---
+
+#GirlTalkAmandaMemoryLimitRun
+    gs 'GirlTalkAmandaMemoryLimitText'
+
+    if AmandaMemoryLimitDone = 0:
+        AmandaMemoryLimitDone = 1
+        love['amanda'] += 2
+        otkroven['amanda'] += 2
+        Friends['amanda'] += 1
+        GirlTrustStefan['amanda'] += 2
+    else:
+        love['amanda'] += 1
+        otkroven['amanda'] += 1
+    end
+---
+
+#GirlTalkAmandaMemoryAnalRun
+    gs 'GirlTalkAmandaMemoryAnalText'
+    AmandaMemoryAnalDone = 1
+    love['amanda'] += 2
+    otkroven['amanda'] += 2
+    sluttiness['amanda'] += 1
+---
+
+#GirlTalkAmandaMemoryFirstSexRun
+    gs 'GirlTalkAmandaMemoryFirstSexText'
+    AmandaMemoryFirstSexDone = 1
+    love['amanda'] += 2
+    otkroven['amanda'] += 1
+    GirlTrustStefan['amanda'] += 1
+---
+
+#GirlTalkAmandaMemoryDanceRun
+    gs 'GirlTalkAmandaMemoryDanceText'
+    AmandaMemoryDanceDone = 1
+    love['amanda'] += 1
+    Friends['amanda'] += 1
+    otkroven['amanda'] += 1
+---
+
+#GirlTalkAmandaMemoryChildhoodRun
+    gs 'GirlTalkAmandaMemoryChildhoodText'
+    AmandaMemoryChildhoodDone = 1
+    Friends['amanda'] += 1
+    otkroven['amanda'] += 1
+---
+
+#GirlTalkAmandaDreamsRun
+    gs 'GirlTalkAmandaDreamsText'
+    Friends['amanda'] += 1
+    otkroven['amanda'] += 1
+    gs 'ClampGirlSocialStats', 'amanda'
+---
