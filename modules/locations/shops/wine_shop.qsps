@@ -332,13 +332,31 @@
     gs 'Menu.Destroy', 'AlberWineTalkMenu'
     gs 'Menu.Create', 'AlberWineTalkMenu'
 
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    if LOC('AlberImportantCheck') = 1:
+        gs 'AlberImportantCheck'
+        if AlberImportantReady = 1:
+            gs 'MenuUiAdd', 'AlberWineTalkMenu', 'Важный разговор', 'important'
+            if $AlberImportantAction = 'reconcile':
+                gs 'Menu.AddModule', 'AlberWineTalkMenu', { gt 'AlberReconcileWithStefan', 'WineShop' }
+            elseif $AlberImportantAction = 'clarissa_vineyard':
+                gs 'Menu.AddModule', 'AlberWineTalkMenu', { gt 'AlberClarissaVineyardReaction', 'WineShop' }
+            elseif $AlberImportantAction = 'noble_tour':
+                gs 'Menu.AddModule', 'AlberWineTalkMenu', { gt 'StefanNobleTourLegare' }
+            end
+        end
+        killvar 'AlberImportantReady'
+        killvar '$AlberImportantAction'
+    end
+
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
     gs 'MenuUiAdd', 'AlberWineTalkMenu', 'Поговорить', 'talk'
     gs 'Menu.AddModule', 'AlberWineTalkMenu', {
-        gt 'TalkWithAlber'
+        gt 'TalkWithAlber', 'WineShop'
     }
 
-    gs 'MenuUiAdd', 'AlberWineTalkMenu', 'Закрыть', 'return'
-    gs 'Menu.AddModule', 'AlberWineTalkMenu', {
-        gt 'WineShop', 'main'
-    }
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GuyTalkAppendGiftMenuItems') = 1:
+        gs 'GuyTalkAppendGiftMenuItems', 'alber', 'WineShop'
+    end
 ---

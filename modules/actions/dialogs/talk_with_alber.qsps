@@ -1,8 +1,38 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/talk_with_alber.qsps
 ! MODULE: actions/dialogs
-! Разговор с Альбером Легаре (фаза 1: усталый отец; фаза 3: наставник)
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и единый движок разговора с Альбером Легаре
 ! ================================================
+
+#AlberImportantCheck
+    AlberImportantReady = 0
+    $AlberImportantAction = ''
+
+    ! 1. Примирение со Стефаном
+    if LOC('AlberReconcileCanOffer') = 1:
+        gs 'AlberReconcileCanOffer'
+        if AlberReconcileCanOffer = 1:
+            AlberImportantReady = 1
+            $AlberImportantAction = 'reconcile'
+            exit
+        end
+    end
+
+    ! 2. О новом винограднике Клариссы
+    if ClarissaGoldenVineyardPlanted = 1 and AlberClarissaVineyardTalkDone = 0 and LOC('AlberClarissaVineyardReaction') = 1:
+        AlberImportantReady = 1
+        $AlberImportantAction = 'clarissa_vineyard'
+        exit
+    end
+
+    ! 3. Визит в парадном облачении
+    if StefanWearingNobleSuit = 1 and StefanNobleTourLegareDone = 0 and LOC('StefanNobleTourLegare') = 1:
+        AlberImportantReady = 1
+        $AlberImportantAction = 'noble_tour'
+        exit
+    end
+---
 
 #TalkWithAlber
     $GuyName = 'alber'
@@ -12,103 +42,163 @@
         $AlberReturnLoc = 'WineShop'
     end
 
-    gs 'InitAlber'
+    if LOC('InitAlber') = 1:
+        gs 'InitAlber'
+    end
+
     cls
 
+    gs 'SceneShowVisual', 'images/npc/legare/alber_talk', 'Мессир Альбер Легаре: разговор', 'large', 'webp'
     gs 'ShowLocationScreenTitle', 'РАЗГОВОР С МЕССИРОМ ЛЕГАРЕ'
 
-    if $guytextdesc[$GuyName] <> '':
-        *p $guytextdesc[$GuyName]
-    end
+    gs 'AlberUnifiedTalkRun'
 
     *pl ' '
 
-    gs 'Menu.Create', 'MenuAlberTalk'
-
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'Поболтать о всякой ерунде', ''
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        'Вы перебрасываетесь с Альбером парой фраз о погоде, ценах и чужих телегах на рынке.'
-        if Talked[$GuyName] <= 2 and Rand(1, 2) = 1 and Friends[$GuyName] < 8:
-            'Мессир отвечает без холодности — усталая вежливость человека, которому приятно, что с ним говорят не только о долгах.'
-            Friends[$GuyName] += 1
+    ! Контекстные действия на экране беседы
+    if LOC('AlberReconcileCanOffer') = 1:
+        gs 'AlberReconcileCanOffer'
+        if AlberReconcileCanOffer = 1 and LegareReconciledWithStefan = 0:
+            gs 'ActUiPrepare', 'Предложить помириться', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AlberReconcileWithStefan', $AlberReturnLoc
+            end
         end
-        if Talked[$GuyName] > 2:
-            'Ничего нового из разговора вы не узнали.'
+    end
+
+    if ClarissaGoldenVineyardPlanted = 1 and AlberClarissaVineyardTalkDone = 0 and LOC('AlberClarissaVineyardReaction') = 1:
+        gs 'ActUiPrepare', 'Спросить о винограднике Клариссы', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'AlberClarissaVineyardReaction', $AlberReturnLoc
         end
-        Talked[$GuyName] += 1
-    }
+    end
 
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'О детях и лавке', ''
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        gs 'AlberTalkShopText'
-        *p $AlberTalkBlock
-        killvar '$AlberTalkBlock'
-        if Talked[$GuyName] <= 3 and Friends[$GuyName] <= 22:
-            Friends[$GuyName] += 1
+    if StefanWearingNobleSuit = 1 and StefanNobleTourLegareDone = 0 and LOC('StefanNobleTourLegare') = 1:
+        gs 'ActUiPrepare', 'Визит в парадном облачении', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'StefanNobleTourLegare'
         end
-        Talked[$GuyName] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(LegareConflictStage<4,-1,0)"
+    end
 
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'О доме и Клариссе', ''
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        gs 'AlberTalkHomeText'
-        *p $AlberTalkBlock
-        killvar '$AlberTalkBlock'
-        if Talked[$GuyName] <= 3 and Friends[$GuyName] <= 24:
-            Friends[$GuyName] += 1
+    gs 'ActUiPrepare', 'Вернуться к прилавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        $TmpLoc = $AlberReturnLoc
+        killvar '$AlberReturnLoc'
+        gt $TmpLoc
+    end
+---
+
+#AlberUnifiedTalkRun
+    ! 1. Проверка лимита полезных разговоров
+    gs 'UsefulTalkCheck', 'alber', 'alber_unified'
+    if UsefulTalkResult = 0:
+        gs 'AlberTalkLimitReachedText'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора
+    gs 'UsefulTalkRegister', 'alber', 'alber_unified'
+
+    ! 3. Прогрессивная иерархия тем:
+    ! --- Совет наставника (после примирения или высокого доверия) ---
+    if (LegareReconciledWithStefan = 1 or Friends['alber'] >= 20) and AlberMentorTalkFirstDone = 0:
+        AlberMentorTalkFirstDone = 1
+        gs 'AlberTalkMentorRun'
+
+    ! --- О лозе на холме (виноградник Клариссы уже высажен) ---
+    elseif ClarissaGoldenVineyardPlanted = 1 and AlberClarissaVineyardTalkDone = 1 and AlberHillVineTalkDone = 0:
+        AlberHillVineTalkDone = 1
+        gs 'AlberTalkHillVineRun'
+
+    ! --- О Лизетте (если связь раскрыта) ---
+    elseif Friends['alber'] >= 8 and (LizetteKnown = 1 or PortMeetWitnessed = 1) and LegareConflictStage < 4 and AlberTalkLizetteFirstDone = 0:
+        AlberTalkLizetteFirstDone = 1
+        gs 'AlberTalkLizetteRun'
+
+    ! --- О доме и Клариссе ---
+    elseif Friends['alber'] >= 6 and LegareConflictStage < 4 and AlberTalkHomeFirstDone = 0:
+        AlberTalkHomeFirstDone = 1
+        gs 'AlberTalkHomeRun'
+
+    ! --- О детях и лавке ---
+    elseif LegareConflictStage < 4 and AlberTalkShopFirstDone = 0:
+        AlberTalkShopFirstDone = 1
+        gs 'AlberTalkShopRun'
+
+    ! --- Циклическая ротация лор-пулов (все темы сохраняются и циклически повторяются) ---
+    else:
+        AlberLorePoolCycle += 1
+        if AlberLorePoolCycle > 4:
+            AlberLorePoolCycle = 0
         end
-        Talked[$GuyName] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(Friends[$GuyName]>=6 and LegareConflictStage<4,-1,0)"
 
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'Спросить о Лизетте', ''
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        gs 'AlberTalkLizetteText'
-        *p $AlberTalkBlock
-        killvar '$AlberTalkBlock'
-        if Talked[$GuyName] <= 3:
-            Friends[$GuyName] += 1
+        if AlberLorePoolCycle = 0 and LegareConflictStage < 4:
+            gs 'AlberTalkShopRun'
+        elseif AlberLorePoolCycle = 1 and Friends['alber'] >= 6 and LegareConflictStage < 4:
+            gs 'AlberTalkHomeRun'
+        elseif AlberLorePoolCycle = 2 and Friends['alber'] >= 8 and (LizetteKnown = 1 or PortMeetWitnessed = 1) and LegareConflictStage < 4:
+            gs 'AlberTalkLizetteRun'
+        elseif AlberLorePoolCycle = 3 and ClarissaGoldenVineyardPlanted = 1:
+            gs 'AlberTalkHillVineRun'
+        elseif AlberLorePoolCycle = 4 and LegareReconciledWithStefan = 1:
+            gs 'AlberTalkMentorRun'
+        else:
+            gs 'AlberTalkSmalltalkRun'
         end
-        Talked[$GuyName] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(Friends[$GuyName]>=8 and (LizetteKnown=1 or PortMeetWitnessed=1) and LegareConflictStage<4,-1,0)"
+    end
+---
 
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'Помириться', ''
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        gt 'AlberReconcileWithStefan', $AlberReturnLoc
-    }
-    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(LegareReconciledWithStefan=0 and LegareFirstConflictStage>=1 and LegareConflictStage>=2 and LegareConflictStage<7 and Friends[$GuyName]>=6,-1,0)"
+#AlberTalkShopRun
+    gs 'AlberTalkShopText'
+    if Friends['alber'] < 22:
+        Friends['alber'] += 1
+    end
+    Talked['alber'] += 1
+---
 
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'Спросить совета', ''
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        gs 'AlberTalkMentorText'
-        *p $AlberTalkBlock
-        killvar '$AlberTalkBlock'
-        Friends[$GuyName] += 1
-        Talked[$GuyName] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(LegareReconciledWithStefan=1,-1,0)"
+#AlberTalkHomeRun
+    gs 'AlberTalkHomeText'
+    if Friends['alber'] < 25:
+        Friends['alber'] += 1
+    end
+    Talked['alber'] += 1
+---
 
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'О новом винограднике Клариссы', ''
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        gt 'AlberClarissaVineyardReaction', $AlberReturnLoc
-    }
-    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(ClarissaGoldenVineyardPlanted=1 and AlberClarissaVineyardTalkDone=0,-1,0)"
+#AlberTalkLizetteRun
+    gs 'AlberTalkLizetteText'
+    Friends['alber'] += 1
+    Talked['alber'] += 1
+---
 
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'Как растёт лоза на холме', ''
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        *p 'Альбер с одобрительной улыбкой поправляет усы: «Лоза на террасах прижилась отлично, Стефан. Я приставил двух надёжных парней охранять склон по ночам, так что за дело Клариссы можешь быть спокоен. Всё идёт своим чередом.»'
-        Talked[$GuyName] += 1
-    }
-    gs 'Menu.AddCondition', 'MenuAlberTalk', "Result=IIF(ClarissaGoldenVineyardPlanted=1 and AlberClarissaVineyardTalkDone=1,-1,0)"
+#AlberTalkMentorRun
+    gs 'AlberTalkMentorText'
+    Friends['alber'] += 1
+    trading += 1
+    Talked['alber'] += 1
+---
 
-    gs 'MenuUiAdd', 'MenuAlberTalk', 'Вернуться', 'return'
-    gs 'Menu.AddModule', 'MenuAlberTalk', {
-        gt $AlberReturnLoc
-    }
+#AlberTalkHillVineRun
+    gs 'AlberTalkHillVineText'
+    Friends['alber'] += 1
+    Talked['alber'] += 1
+---
 
-    gs 'Menu.Show', 'MenuAlberTalk'
+#AlberTalkSmalltalkRun
+    gs 'AlberTalkSmalltalkText'
+    if Friends['alber'] < 10:
+        Friends['alber'] += 1
+    end
+    Talked['alber'] += 1
+---
 
-    killvar '$AlberReturnLoc'
+#GuyTalkAppendGiftMenuItems
+    $GuyGiftName = LCASE($ARGS[0])
+    $GuyGiftReturnLoc = $ARGS[1]
+    $GuyGiftMenuName = $ARGS[2]
+
+    ! На текущий момент мужчины города подарки не принимают (резерв под будущие предметы/угощения)
+
+    killvar '$GuyGiftName'
+    killvar '$GuyGiftReturnLoc'
+    killvar '$GuyGiftMenuName'
 ---

@@ -3,16 +3,27 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3797
+- Locations: 3809
 
 ## modules/actions
 
 | Location | File | Line |
 | --- | --- | --- |
-| `AlberTalkHomeText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 13 |
-| `AlberTalkLizetteText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 22 |
-| `AlberTalkMentorText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 32 |
-| `AlberTalkShopText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 7 |
+| `AlberImportantCheck` | `modules/actions/dialogs/talk_with_alber.qsps` | 8 |
+| `AlberTalkHillVineRun` | `modules/actions/dialogs/talk_with_alber.qsps` | 180 |
+| `AlberTalkHillVineText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 50 |
+| `AlberTalkHomeRun` | `modules/actions/dialogs/talk_with_alber.qsps` | 159 |
+| `AlberTalkHomeText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 19 |
+| `AlberTalkLimitReachedText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 8 |
+| `AlberTalkLizetteRun` | `modules/actions/dialogs/talk_with_alber.qsps` | 167 |
+| `AlberTalkLizetteText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 28 |
+| `AlberTalkMentorRun` | `modules/actions/dialogs/talk_with_alber.qsps` | 173 |
+| `AlberTalkMentorText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 38 |
+| `AlberTalkShopRun` | `modules/actions/dialogs/talk_with_alber.qsps` | 151 |
+| `AlberTalkShopText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 13 |
+| `AlberTalkSmalltalkRun` | `modules/actions/dialogs/talk_with_alber.qsps` | 186 |
+| `AlberTalkSmalltalkText` | `modules/actions/dialogs/talk_with_alber_text.qsps` | 55 |
+| `AlberUnifiedTalkRun` | `modules/actions/dialogs/talk_with_alber.qsps` | 91 |
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 |
 | `AmandaLegareMmfAfterText` | `modules/actions/sex/group_sex_text.qsps` | 56 |
 | `AmandaLegareMmfApplyAftermath` | `modules/actions/sex/group_sex_gates.qsps` | 113 |
@@ -364,6 +375,7 @@ Generated from active project files in `qsp-project.json`.
 | `GroupSexSandraBeckyStefanScene` | `modules/actions/sex/group_sex.qsps` | 117 |
 | `GroupSexSandraBeckyStefanStart` | `modules/actions/sex/group_sex.qsps` | 88 |
 | `GroupSexSandraBeckyStefanTenderness` | `modules/actions/sex/group_sex.qsps` | 137 |
+| `GuyTalkAppendGiftMenuItems` | `modules/actions/dialogs/talk_with_alber.qsps` | 194 |
 | `IngaBeckyLucasGossipCanStart` | `modules/actions/dialogs/girl_talk_inga.qsps` | 372 |
 | `IngaBeckyLucasGossipPrintText` | `modules/actions/dialogs/girl_talk_inga.qsps` | 431 |
 | `IngaBeckyLucasGossipResolveSource` | `modules/actions/dialogs/girl_talk_inga.qsps` | 361 |
@@ -550,7 +562,7 @@ Generated from active project files in `qsp-project.json`.
 | `ShowGirlNpcLinkLine` | `modules/actions/dialogs/girl_talk_session.qsps` | 258 |
 | `ShowGirlTalkLink` | `modules/actions/dialogs/girl_talk_session.qsps` | 132 |
 | `ShowIntimSceneStatus` | `modules/actions/sex/intim_scene.qsps` | 200 |
-| `TalkWithAlber` | `modules/actions/dialogs/talk_with_alber.qsps` | 7 |
+| `TalkWithAlber` | `modules/actions/dialogs/talk_with_alber.qsps` | 37 |
 | `TalkWithBecky` | `modules/actions/dialogs/talk_with_becky.qsps` | 8 |
 | `TavernBarWorkAdvanceTime` | `modules/actions/tavern/tavern_bar_work.qsps` | 246 |
 | `TavernBarWorkCalculateIncome` | `modules/actions/tavern/tavern_bar_work.qsps` | 168 |
