@@ -77,9 +77,11 @@
         end
     end
 
-    gs 'ActUiPrepare', 'Кувшины с даром Таро', 'gift'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'ChurchTaroUrns'
+    if PlayerHasTaro < 5:
+        gs 'ActUiPrepare', 'Кувшины с даром Таро (' + STR(PlayerHasTaro) + '/5)', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchTaroUrns'
+        end
     end
 
     gs 'ChurchRenderStreetExit'
@@ -102,9 +104,9 @@
 
     gs 'ChurchWeekdayDonationAct'
 
-    gs 'ActUiPrepare', 'Назад', 'return'
+    gs 'ActUiPrepare', 'Назад в церковь', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'Church'
+        gt 'ChurchInterior'
     end
 ---
 
@@ -140,7 +142,7 @@
 
     gs 'ActUiPrepare', 'Назад в церковь', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'Church'
+        gt 'ChurchInterior'
     end
 ---
 
@@ -245,7 +247,7 @@
 
     gs 'ActUiPrepare', 'Назад в зал', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'Church'
+        gt 'ChurchInterior'
     end
 ---
 
@@ -255,7 +257,6 @@
     gs 'AddGlobalButtons'
 
     gs 'ShowLocationScreenTitle', 'ДАР ТАРО — БЛАГОСЛОВЕНИЕ ИЛЬМАТЕРА'
-
     gs 'ShowImage', 'church', 'general', 'normal'
 
     *pl ' '
@@ -267,21 +268,42 @@
     *pl ' '
 
     if PlayerHasTaro < 5:
+        *pl 'В твоём холщовом мешочке: <b>' + STR(PlayerHasTaro) + ' из 5</b> порций порошка Таро.'
+        *pl ' '
         gs 'ActUiPrepare', 'Набрать порошок Таро', 'gift'
         act $ActUiLabel, $ActUiIconPath:
-            PlayerHasTaro = 5
-            *pl ' '
-            gs 'PrintMainP', 'Ты зачерпываешь из глиняного кувшина несколько щедрых горстей серого порошка и ссыпаешь в небольшой холщовый мешочек. Теперь у тебя есть запас благословения Ильматера для бритья и ухода за собой.'
-            *pl ' '
-            gs 'ActUiPrepare', 'Отойти от кувшинов', 'return'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'ChurchInterior'
-            end
+            gt 'ChurchTaroUrnsTake'
         end
     else:
-        *pl '<span style="color:#888"><i>Твой мешочек полон порошка Таро — запаса с лихвой хватит на долгое время.</i></span>'
+        *pl 'В твоём холщовом мешочке: <b>5 из 5</b> порций порошка Таро.'
+        *pl '<span style="color:#888"><i>Твой мешочек полон благословения Ильматера — запаса с лихвой хватит на долгое время.</i></span>'
         *pl ' '
     end
+
+    gs 'ActUiPrepare', 'Отойти от кувшинов', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchInterior'
+    end
+---
+
+#ChurchTaroUrnsTake
+    *clr
+    clr
+    cla
+
+    gs 'AddGlobalButtons'
+
+    PlayerHasTaro = 5
+
+    gs 'ShowLocationScreenTitle', 'ДАР ТАРО — НАПОЛНЕНИЕ МЕШОЧКА'
+    gs 'SceneShowVisual', 'images/locations/church/taro_urns', 'Наполнение мешочка порошком Таро', 'large', 'webp'
+
+    *pl 'Ты достаёшь холщовый мешочек, развязываешь пеньковый шнурок и опускаешь ладонь в прохладную глубину глиняного кувшина.'
+    *pl ' '
+    *pl 'Серый порошок Таро мягкий, шелковистый, пахнет сухой степной полынью, речной глиной и лёгкой щёлочью. Ты зачерпываешь несколько щедрых горстей и аккуратно ссыпаешь в мешочек, наполнив его до самого верха.'
+    *pl ' '
+    *pl 'Затянув шнурок, ты убираешь тугой мешочек за пояс. Теперь у тебя полный запас благословения Ильматера (<b>5 из 5</b>) — этого с лихвой хватит на множество дней чистоты и гладкого бритья.'
+    *pl ' '
 
     gs 'ActUiPrepare', 'Отойти от кувшинов', 'return'
     act $ActUiLabel, $ActUiIconPath:

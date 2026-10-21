@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3843
+- Locations: 3844
 
 ## modules/actions
 
@@ -3474,14 +3474,15 @@ Generated from active project files in `qsp-project.json`.
 | `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 252 |
 | `BuildMayorOfficeTalkMenu` | `modules/locations/town/mayor_office.qsps` | 959 |
 | `Church` | `modules/locations/town/church.qsps` | 7 |
-| `ChurchDonationInfo` | `modules/locations/town/church_weekday.qsps` | 234 |
-| `ChurchGerhardWeekdayTalk` | `modules/locations/town/church_weekday.qsps` | 111 |
+| `ChurchDonationInfo` | `modules/locations/town/church_weekday.qsps` | 236 |
+| `ChurchGerhardWeekdayTalk` | `modules/locations/town/church_weekday.qsps` | 113 |
 | `ChurchInterior` | `modules/locations/town/church.qsps` | 58 |
 | `ChurchSundayQuiet` | `modules/locations/town/church.qsps` | 119 |
-| `ChurchTaroUrns` | `modules/locations/town/church_weekday.qsps` | 252 |
+| `ChurchTaroUrns` | `modules/locations/town/church_weekday.qsps` | 254 |
+| `ChurchTaroUrnsTake` | `modules/locations/town/church_weekday.qsps` | 289 |
 | `ChurchWalkAround` | `modules/locations/town/church.qsps` | 78 |
 | `ChurchWeekday` | `modules/locations/town/church_weekday.qsps` | 7 |
-| `ChurchWeekdayDonations` | `modules/locations/town/church_weekday.qsps` | 88 |
+| `ChurchWeekdayDonations` | `modules/locations/town/church_weekday.qsps` | 90 |
 | `CraftsmenQuarter` | `modules/locations/town/craftsmen_quarter.qsps` | 6 |
 | `DanceDressEnsureName` | `modules/locations/shops/irma_dance_dress.qsps` | 20 |
 | `DanceDressEscortCanStart` | `modules/locations/shops/irma_dance_dress.qsps` | 85 |
@@ -3501,12 +3502,12 @@ Generated from active project files in `qsp-project.json`.
 | `DraupnirUpgradesIntroText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 7 |
 | `DraupnirUpgradesShop` | `modules/locations/shops/draupnir_upgrades.qsps` | 7 |
 | `DraupnirUpgradeTryOrder` | `modules/locations/shops/draupnir_upgrades.qsps` | 242 |
-| `GerhardTalkFamilyRun` | `modules/locations/town/church_weekday.qsps` | 198 |
-| `GerhardTalkLimitReachedText` | `modules/locations/town/church_weekday.qsps` | 193 |
-| `GerhardTalkServiceRun` | `modules/locations/town/church_weekday.qsps` | 224 |
-| `GerhardTalkTaroRun` | `modules/locations/town/church_weekday.qsps` | 206 |
-| `GerhardTalkTavernRun` | `modules/locations/town/church_weekday.qsps` | 215 |
-| `GerhardUnifiedTalkRun` | `modules/locations/town/church_weekday.qsps` | 147 |
+| `GerhardTalkFamilyRun` | `modules/locations/town/church_weekday.qsps` | 200 |
+| `GerhardTalkLimitReachedText` | `modules/locations/town/church_weekday.qsps` | 195 |
+| `GerhardTalkServiceRun` | `modules/locations/town/church_weekday.qsps` | 226 |
+| `GerhardTalkTaroRun` | `modules/locations/town/church_weekday.qsps` | 208 |
+| `GerhardTalkTavernRun` | `modules/locations/town/church_weekday.qsps` | 217 |
+| `GerhardUnifiedTalkRun` | `modules/locations/town/church_weekday.qsps` | 149 |
 | `GirlTalkDanceDressAgree` | `modules/locations/shops/irma_dance_dress.qsps` | 192 |
 | `GirlTalkDanceDressLater` | `modules/locations/shops/irma_dance_dress.qsps` | 236 |
 | `GirlTalkDanceDressStart` | `modules/locations/shops/irma_dance_dress.qsps` | 147 |

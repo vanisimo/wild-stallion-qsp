@@ -150,12 +150,33 @@
     ChurchDonateAmount = $ARGS[0]
 
     if ChurchDonateAmount <= 0:
-        gt 'Church'
+        gt 'ChurchInterior'
     end
 
     if money < ChurchDonateAmount:
-        gs 'PrintMainP', 'Не хватает спинтарий.'
-        gt 'Church'
+        *clr
+        clr
+        cla
+        gs 'AddGlobalButtons'
+        gs 'ShowLocationScreenTitle', 'ЦЕРКОВЬ ИЛЬМАТЕРА: ПОЖЕРТВОВАНИЯ'
+        gs 'ShowImage', 'church', 'general', 'normal'
+
+        *pl 'Ты лезешь в кошель у ящика для подаяний, но понимаешь, что нужной суммы нет.'
+        *pl ' '
+        *pl 'Для такого пожертвования требуется ' + STR(ChurchDonateAmount) + ' спинтарий, а у тебя в кошельке всего ' + STR(money) + '.'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться к выбору дара', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchWeekdayDonations'
+        end
+
+        gs 'ActUiPrepare', 'Отойти от алтаря', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchInterior'
+        end
+        killvar 'ChurchDonateAmount'
+        exit
     end
 
     money -= ChurchDonateAmount
@@ -165,10 +186,16 @@
         tavern_reputation += 2
         ChurchDonationShieldLevel = 2
         ChurchDonationShieldUntilDay = day + 7
+        if LOC('CityRumorsRegisterEvent') = 1:
+            gs 'CityRumorsRegisterEvent', 'church', 2
+        end
     elseif ChurchDonateAmount >= 30:
         tavern_reputation += 2
         ChurchDonationShieldLevel = 1
         ChurchDonationShieldUntilDay = day + 7
+        if LOC('CityRumorsRegisterEvent') = 1:
+            gs 'CityRumorsRegisterEvent', 'church', 1
+        end
     elseif ChurchDonateAmount >= 15:
         tavern_reputation += 1
         ChurchDonationShieldLevel = 0
@@ -179,11 +206,61 @@
         ChurchDonationShieldUntilDay = 0
     end
 
-    gs 'FormatSpintry', ChurchDonateAmount
-    $FormatSpintry_ChurchDonateAmount = $FormatSpintry
-    killvar '$FormatSpintry'
-    gs 'PrintMainP', 'Ты положил ' + $FormatSpintry_ChurchDonateAmount + ' в ящик у алтаря. Отец Герхард кивнул без лишних слов.'
+    *clr
+    clr
+    cla
+    gs 'AddGlobalButtons'
+
+    gs 'ShowLocationScreenTitle', 'ЦЕРКОВЬ ИЛЬМАТЕРА: ДАР ХРАМУ'
+    gs 'SceneShowVisual', 'images/locations/church/donations', 'Пожертвование храму Ильматера', 'large', 'webp'
+
+    if ChurchDonateAmount >= 50:
+        *pl 'Ты отсчитываешь пятьдесят полновесных спинтарий и щедрой пригоршней ссыпаешь их в узкую прорезь кованого ящика. Монеты долго и звонко сыплются на дно, оглашая своды собора чистым серебряным перезвоном.'
+        *pl ' '
+        *pl 'Отец Герхард медленно поднимает взгляд, и в его строгих глазах мелькает искреннее пастырское уважение. Священник плавно простирает руку и осеняет тебя знаком Святого Круга:'
+        *pl ' '
+        *pl '— Поистине щедрый дар благородного покровителя, Стефан. Трактир «Дикий Жеребец» и род Лонгкоков помнят о долге перед Всеблагим. В ближайшее воскресенье перед лицом мэра, гильдейских старейшин и всего честного прихода я воздам должную честь твоему благодеянию.'
+        *pl ' '
+        *pl '<span style="color:#0a8520"><b>Репутация трактира возросла (+2). Храм взял заведение под защиту на 7 дней. На воскресной службе отец Герхард публично благословит твой трактир.</b></span>'
+    elseif ChurchDonateAmount >= 30:
+        *pl 'Ты опускаешь тридцать спинтарий в тёмную щель ящика у алтаря. Тяжёлый серебряный звон разносится по собору.'
+        *pl ' '
+        *pl 'Отец Герхард степенно склоняет седую голову и осеняет тебя священным кругом:'
+        *pl ' '
+        *pl '— Весомая жертва, Стефан. Храм помнит тех, кто делится прибылью на благие дела обители. На воскресной проповеди слово пастыря защитит твой дом от праздных пересудов, а прихожане увидят, что хозяин «Дикого Жеребца» чтит порядок.'
+        *pl ' '
+        *pl '<span style="color:#0a8520"><b>Репутация трактира возросла (+2). Храм защитил трактир от церковных упрёков на 7 дней.</b></span>'
+    elseif ChurchDonateAmount >= 15:
+        *pl 'Ты опускаешь пятнадцать спинтарий в ящик для пожертвований. Монеты со звоном падают в полумрак деревянного короба.'
+        *pl ' '
+        *pl 'Отец Герхард сдержанно кивает, глядя на тебя с пастырским одобрением:'
+        *pl ' '
+        *pl '— Достойное приношение на масло для лампад да пищу для послушников. Молитва о покое твоего очага вознесётся к алтарю Ильматера.'
+        *pl ' '
+        *pl '<span style="color:#0a8520"><b>Репутация трактира возросла (+1).</b></span>'
+    else:
+        *pl 'Ты опускаешь пять спинтарий в ящик для пожертвований. Монеты тихо звякают на дне короба.'
+        *pl ' '
+        *pl 'Отец Герхард тихо кивает, глядя на тебя:'
+        *pl ' '
+        *pl '— Малая лепта, принесённая от чистого сердца, угодна Всеблагому не меньше золота богачей. Ступай с миром, Стефан.'
+        *pl ' '
+        *pl '<span style="color:#0a8520"><b>Репутация трактира возросла (+1).</b></span>'
+    end
+
+    *pl ' '
+    *pl 'У тебя в кошельке осталось: ' + STR(money) + ' спинтарий.'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Остаться в церкви', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchInterior'
+    end
+
+    gs 'ActUiPrepare', 'Выйти на Соборную площадь', 'street'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Church'
+    end
 
     killvar 'ChurchDonateAmount'
-    gt 'Church'
 ---
