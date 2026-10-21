@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/core/rumors/city_rumors_core.qsps
 ! MODULE: core/rumors
-! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
 ! Единый пул городских слухов (City Rumors Engine)
 ! Версия: v2 / слухи Ирмы, Древа Жизни, орков и дворянства
 ! ================================================
@@ -255,6 +255,12 @@
         $CityRumorPickedKey = 'clarissa_golden_vineyard'
         CityRumorReady['clarissa_golden_vineyard'] = 0
         CityRumorHeardOnce['clarissa_golden_vineyard'] = 1
+
+    ! 24. Жоржетта и Лизетта в порту (после начала ночной работы Лизетты)
+    elseif (CityRumorReady['port_georgette_lizette'] = 1 or (LizetteProstPort = 1 and (LizetteKnown = 1 or AmandaMetLizette = 1 or GeorgetteSeekLizetteDone = 1) and CityRumorHeardOnce['port_georgette_lizette'] = 0)) and CityRumorsHeardToday['port_georgette_lizette'] = 0:
+        $CityRumorPickedKey = 'port_georgette_lizette'
+        CityRumorReady['port_georgette_lizette'] = 0
+        CityRumorHeardOnce['port_georgette_lizette'] = 1
     end
 
     ! -----------------------------------------------------------
@@ -274,7 +280,7 @@
             CityRumorAvailCount += 1
         end
 
-        if CityRumorsHeardToday['port_georgette_lizette'] = 0:
+        if (LizetteProstPort = 1 or CityRumorReady['port_georgette_lizette'] = 1) and (LizetteKnown = 1 or AmandaMetLizette = 1 or GeorgetteSeekLizetteDone = 1) and CityRumorsHeardToday['port_georgette_lizette'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'port_georgette_lizette'
             CityRumorAvailCount += 1
         end

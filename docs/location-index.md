@@ -622,7 +622,7 @@ Generated from active project files in `qsp-project.json`.
 | `CheckGirlInLocation` | `modules/core/girls/girl_location.qsps` | 79 |
 | `CheckTavernHiredStaffUnlocked` | `modules/core/tavern/tavern_hired_staff.qsps` | 67 |
 | `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 9 |
-| `CityRumorsGetText` | `modules/core/rumors/city_rumors_core.qsps` | 429 |
+| `CityRumorsGetText` | `modules/core/rumors/city_rumors_core.qsps` | 435 |
 | `CityRumorsPickKey` | `modules/core/rumors/city_rumors_core.qsps` | 128 |
 | `CityRumorsRegisterEvent` | `modules/core/rumors/city_rumors_core.qsps` | 92 |
 | `CityRumorsResetDaily` | `modules/core/rumors/city_rumors_core.qsps` | 26 |
