@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3841
+- Locations: 3843
 
 ## modules/actions
 
@@ -3532,36 +3532,38 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaDanceDressOrderPay` | `modules/locations/shops/irma_dance_dress.qsps` | 430 |
 | `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 376 |
 | `IrmaFirstMeet` | `modules/locations/shops/irma_first_meet.qsps` | 7 |
-| `IrmaShop` | `modules/locations/shops/irma_shop.qsps` | 7 |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 338 |
-| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 368 |
-| `IrmaShopRenderCommonHeader` | `modules/locations/shops/irma_shop.qsps` | 137 |
-| `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 189 |
-| `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 288 |
-| `IrmaShopRenderMainTab` | `modules/locations/shops/irma_shop.qsps` | 176 |
-| `IrmaShopRenderUniformsTab` | `modules/locations/shops/irma_shop.qsps` | 254 |
-| `IrmaUniformBuildMenu` | `modules/locations/shops/irma_uniform_orders.qsps` | 96 |
-| `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 521 |
-| `IrmaUniformEnsureName` | `modules/locations/shops/irma_uniform_orders.qsps` | 554 |
-| `IrmaUniformGetAllPrice` | `modules/locations/shops/irma_uniform_orders.qsps` | 483 |
-| `IrmaUniformGetPrice` | `modules/locations/shops/irma_uniform_orders.qsps` | 452 |
-| `IrmaUniformNormalizeGirl` | `modules/locations/shops/irma_uniform_orders.qsps` | 544 |
-| `IrmaUniformOfferAccept` | `modules/locations/shops/irma_uniform_offer.qsps` | 202 |
+| `IrmaShop` | `modules/locations/shops/irma_shop.qsps` | 8 |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 411 |
+| `IrmaShopFittingRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 332 |
+| `IrmaShopPayRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 373 |
+| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 415 |
+| `IrmaShopRenderCommonHeader` | `modules/locations/shops/irma_shop.qsps` | 152 |
+| `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 202 |
+| `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 263 |
+| `IrmaShopRenderMainTab` | `modules/locations/shops/irma_shop.qsps` | 190 |
+| `IrmaShopRenderUniformsTab` | `modules/locations/shops/irma_shop.qsps` | 227 |
+| `IrmaUniformBuildMenu` | `modules/locations/shops/irma_uniform_orders.qsps` | 82 |
+| `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 507 |
+| `IrmaUniformEnsureName` | `modules/locations/shops/irma_uniform_orders.qsps` | 540 |
+| `IrmaUniformGetAllPrice` | `modules/locations/shops/irma_uniform_orders.qsps` | 469 |
+| `IrmaUniformGetPrice` | `modules/locations/shops/irma_uniform_orders.qsps` | 438 |
+| `IrmaUniformNormalizeGirl` | `modules/locations/shops/irma_uniform_orders.qsps` | 530 |
+| `IrmaUniformOfferAccept` | `modules/locations/shops/irma_uniform_offer.qsps` | 192 |
 | `IrmaUniformOfferCanStart` | `modules/locations/shops/irma_uniform_offer.qsps` | 19 |
-| `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 340 |
-| `IrmaUniformOfferDebugUnlock` | `modules/locations/shops/irma_uniform_offer.qsps` | 322 |
-| `IrmaUniformOfferLater` | `modules/locations/shops/irma_uniform_offer.qsps` | 244 |
+| `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 330 |
+| `IrmaUniformOfferDebugUnlock` | `modules/locations/shops/irma_uniform_offer.qsps` | 312 |
+| `IrmaUniformOfferLater` | `modules/locations/shops/irma_uniform_offer.qsps` | 234 |
 | `IrmaUniformOfferPrintText` | `modules/locations/shops/irma_uniform_offer_text.qsps` | 14 |
-| `IrmaUniformOfferRefuseHard` | `modules/locations/shops/irma_uniform_offer.qsps` | 278 |
-| `IrmaUniformOfferStart` | `modules/locations/shops/irma_uniform_offer.qsps` | 141 |
+| `IrmaUniformOfferRefuseHard` | `modules/locations/shops/irma_uniform_offer.qsps` | 268 |
+| `IrmaUniformOfferStart` | `modules/locations/shops/irma_uniform_offer.qsps` | 137 |
 | `IrmaUniformOfferText` | `modules/locations/shops/irma_uniform_offer_text.qsps` | 22 |
-| `IrmaUniformOrderAllBuy` | `modules/locations/shops/irma_uniform_orders.qsps` | 394 |
-| `IrmaUniformOrderAllConfirm` | `modules/locations/shops/irma_uniform_orders.qsps` | 317 |
-| `IrmaUniformOrderBuy` | `modules/locations/shops/irma_uniform_orders.qsps` | 241 |
-| `IrmaUniformOrderConfirm` | `modules/locations/shops/irma_uniform_orders.qsps` | 170 |
+| `IrmaUniformOrderAllBuy` | `modules/locations/shops/irma_uniform_orders.qsps` | 380 |
+| `IrmaUniformOrderAllConfirm` | `modules/locations/shops/irma_uniform_orders.qsps` | 303 |
+| `IrmaUniformOrderBuy` | `modules/locations/shops/irma_uniform_orders.qsps` | 227 |
+| `IrmaUniformOrderConfirm` | `modules/locations/shops/irma_uniform_orders.qsps` | 156 |
 | `IrmaUniformOrders` | `modules/locations/shops/irma_uniform_orders.qsps` | 19 |
-| `IrmaUniformPrintGirlStatus` | `modules/locations/shops/irma_uniform_orders.qsps` | 145 |
-| `IrmaUniformPrintStatus` | `modules/locations/shops/irma_uniform_orders.qsps` | 132 |
+| `IrmaUniformPrintGirlStatus` | `modules/locations/shops/irma_uniform_orders.qsps` | 131 |
+| `IrmaUniformPrintStatus` | `modules/locations/shops/irma_uniform_orders.qsps` | 118 |
 | `IrmaUniformPrintText` | `modules/locations/shops/irma_uniform_orders_text.qsps` | 15 |
 | `IrmaUniformText` | `modules/locations/shops/irma_uniform_orders_text.qsps` | 23 |
 | `Kitchen` | `modules/locations/tavern/kitchen.qsps` | 12 |

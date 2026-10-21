@@ -3,11 +3,11 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3841
-- Locations with direct incoming calls: 3317
-- Locations without direct incoming calls: 524
-- Review candidates without direct incoming calls: 192
-- Classified entry/helper locations without direct incoming calls: 332
+- Locations: 3843
+- Locations with direct incoming calls: 3316
+- Locations without direct incoming calls: 527
+- Review candidates without direct incoming calls: 193
+- Classified entry/helper locations without direct incoming calls: 334
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -162,6 +162,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IntimScene` | `modules/core/girls/girl_intim_menu.qsps` | 146 | `modules/core` |
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 539 | `modules/locations` |
 | `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 544 | `modules/locations` |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 411 | `modules/locations` |
 | `LegareBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 58 | `modules/events` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 148 | `modules/core` |
 | `MelissaFirstPathChoiceAction` | `modules/events/melissa/melissa_musician_arc.qsps` | 739 | `modules/events` |
@@ -430,7 +431,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 | `entry/helper` |
 | `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 | `entry/helper` |
 | `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 | `entry/helper` |
-| `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 340 | `entry/helper` |
+| `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 507 | `entry/helper` |
+| `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 330 | `entry/helper` |
+| `IrmaUniformOfferDebugUnlock` | `modules/locations/shops/irma_uniform_offer.qsps` | 312 | `entry/helper` |
 | `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 324 | `entry/helper` |
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 19 | `entry/helper` |
 | `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 966 | `entry/helper` |
@@ -552,9 +555,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1775 |
-| `ShowLocationScreenTitle` | 758 |
-| `SceneShowVisual` | 711 |
+| `ActUiPrepare` | 1784 |
+| `ShowLocationScreenTitle` | 759 |
+| `SceneShowVisual` | 710 |
 | `Menu.AddModule` | 592 |
 | `MenuUiAdd` | 533 |
 | `EnsureGirlData` | 244 |
@@ -566,17 +569,17 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Market` | 97 |
 | `Menu.Create` | 95 |
 | `Menu.Destroy` | 92 |
-| `ShowImage` | 90 |
-| `FormatSpintry` | 85 |
+| `ShowImage` | 89 |
 | `PrintMainP` | 85 |
+| `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 77 |
-| `AmandaLizaTalkPoolTry` | 53 |
 | `PrintTitleLine` | 53 |
-| `GirlTalkResult` | 51 |
+| `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `RegisterPlayerCum` | 44 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 
