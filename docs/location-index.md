@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 503
-- Locations: 3781
+- Source files: 505
+- Locations: 3797
 
 ## modules/actions
 
@@ -34,14 +34,14 @@ Generated from active project files in `qsp-project.json`.
 | `BuildGirlLocationNpcLine` | `modules/actions/dialogs/girl_talk_session.qsps` | 187 |
 | `CanStartIntimScene` | `modules/actions/sex/intim_scene.qsps` | 93 |
 | `CanStartSexScene` | `modules/actions/sex/sex_scene_core.qsps` | 98 |
-| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 1432 |
+| `ClampGirlSocialStats` | `modules/actions/dialogs/girl_talk.qsps` | 1440 |
 | `ClampIntimSceneValues` | `modules/actions/sex/intim_scene.qsps` | 517 |
 | `ClarissaDoubleVaginalApplyAftermath` | `modules/actions/sex/group_sex_gates.qsps` | 167 |
-| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 1198 |
-| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 1252 |
-| `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 1274 |
-| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 1308 |
-| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 1382 |
+| `GirlConflictAfterTalk` | `modules/actions/dialogs/girl_talk.qsps` | 1206 |
+| `GirlConflictAfterTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 1260 |
+| `GirlConflictAfterTalkMemoryText` | `modules/actions/dialogs/girl_talk.qsps` | 1282 |
+| `GirlConflictAfterTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 1316 |
+| `GirlConflictAfterTalkResultText` | `modules/actions/dialogs/girl_talk.qsps` | 1390 |
 | `GirlFirstAnal` | `modules/actions/sex/first_sex.qsps` | 142 |
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 197 |
 | `GirlFirstSex` | `modules/actions/sex/first_sex.qsps` | 8 |
@@ -79,8 +79,8 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkAmandaMemoryLimitRun` | `modules/actions/dialogs/girl_talk_amanda.qsps` | 317 |
 | `GirlTalkAmandaMemoryLimitText` | `modules/actions/dialogs/girl_talk_amanda_text.qsps` | 13 |
 | `GirlTalkAmandaUnifiedRun` | `modules/actions/dialogs/girl_talk_amanda.qsps` | 200 |
-| `GirlTalkAppendGiftMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 393 |
-| `GirlTalkAppendIntimMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 417 |
+| `GirlTalkAppendGiftMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 398 |
+| `GirlTalkAppendIntimMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 422 |
 | `GirlTalkBeckyClerkRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 274 |
 | `GirlTalkBeckyEddieGeorgetteRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 204 |
 | `GirlTalkBeckyEddieNormalizeRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 260 |
@@ -97,17 +97,18 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkBeckyPriestRetryRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 247 |
 | `GirlTalkBeckyShopRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 108 |
 | `GirlTalkBeckyUnifiedRun` | `modules/actions/dialogs/girl_talk_becky.qsps` | 67 |
-| `GirlTalkBlockedUsefulTopic` | `modules/actions/dialogs/girl_talk.qsps` | 678 |
+| `GirlTalkBlockedUsefulTopic` | `modules/actions/dialogs/girl_talk.qsps` | 683 |
 | `GirlTalkBuildAmandaMainMenu` | `modules/actions/dialogs/girl_talk_amanda.qsps` | 145 |
 | `GirlTalkBuildBeckyMainMenu` | `modules/actions/dialogs/girl_talk_becky.qsps` | 8 |
 | `GirlTalkBuildClarissaMainMenu` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 8 |
 | `GirlTalkBuildGeorgetteMainMenu` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 106 |
 | `GirlTalkBuildGretaStubMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 7 |
-| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 516 |
+| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 521 |
 | `GirlTalkBuildIngaMainMenu` | `modules/actions/dialogs/girl_talk_inga.qsps` | 8 |
 | `GirlTalkBuildIrmaMainMenu` | `modules/actions/dialogs/girl_talk_irma.qsps` | 8 |
 | `GirlTalkBuildLizetteMainMenu` | `modules/actions/dialogs/girl_talk_lizette.qsps` | 54 |
 | `GirlTalkBuildMainMenu` | `modules/actions/dialogs/girl_talk.qsps` | 308 |
+| `GirlTalkBuildMelissaMainMenu` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 133 |
 | `GirlTalkBuildSandraMainMenu` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 105 |
 | `GirlTalkBuildTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 264 |
 | `GirlTalkBuildTownMainMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 17 |
@@ -127,7 +128,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkClarissaUnifiedRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 101 |
 | `GirlTalkClarissaVineyardMemoryText` | `modules/actions/dialogs/girl_talk_clarissa_text.qsps` | 52 |
 | `GirlTalkClarissaWineShopPoolText` | `modules/actions/dialogs/girl_talk_clarissa_text.qsps` | 97 |
-| `GirlTalkClosedScreen` | `modules/actions/dialogs/girl_talk.qsps` | 747 |
+| `GirlTalkClosedScreen` | `modules/actions/dialogs/girl_talk.qsps` | 752 |
 | `GirlTalkDaughtersPrintText` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 281 |
 | `GirlTalkDaughtersRun` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 266 |
 | `GirlTalkDaughtersText` | `modules/actions/dialogs/girl_talk_sandra_text.qsps` | 10 |
@@ -160,9 +161,9 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkGeorgetteText` | `modules/actions/dialogs/girl_talk_georgette_text.qsps` | 44 |
 | `GirlTalkGeorgetteUnifiedRun` | `modules/actions/dialogs/girl_talk_georgette.qsps` | 172 |
 | `GirlTalkHallEventReaction` | `modules/actions/tavern/girl_talk_hall_event_reaction_compat.qsps` | 7 |
-| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 496 |
-| `GirlTalkHallTopicStart` | `modules/actions/dialogs/girl_talk.qsps` | 525 |
-| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 461 |
+| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 501 |
+| `GirlTalkHallTopicStart` | `modules/actions/dialogs/girl_talk.qsps` | 530 |
+| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 466 |
 | `GirlTalkImageDebugBrief` | `modules/actions/dialogs/girl_talk_images.qsps` | 163 |
 | `GirlTalkImageDebugPanel` | `modules/actions/dialogs/girl_talk_images.qsps` | 197 |
 | `GirlTalkIngaGuardPrintText` | `modules/actions/dialogs/girl_talk_inga.qsps` | 337 |
@@ -188,7 +189,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkIngaSewingRun` | `modules/actions/dialogs/girl_talk_inga.qsps` | 236 |
 | `GirlTalkIngaSewingText` | `modules/actions/dialogs/girl_talk_inga_text.qsps` | 78 |
 | `GirlTalkIngaUnifiedRun` | `modules/actions/dialogs/girl_talk_inga.qsps` | 36 |
-| `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 573 |
+| `GirlTalkIntroText` | `modules/actions/dialogs/girl_talk.qsps` | 578 |
 | `GirlTalkIrmaIngaApprenticeText` | `modules/actions/dialogs/girl_talk_irma_text.qsps` | 62 |
 | `GirlTalkIrmaLimitReachedText` | `modules/actions/dialogs/girl_talk_irma_text.qsps` | 8 |
 | `GirlTalkIrmaLoreProgressText` | `modules/actions/dialogs/girl_talk_irma_text.qsps` | 72 |
@@ -221,6 +222,21 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkLizettePrintText` | `modules/actions/dialogs/girl_talk_lizette.qsps` | 313 |
 | `GirlTalkLizetteText` | `modules/actions/dialogs/girl_talk_lizette_text.qsps` | 9 |
 | `GirlTalkLizetteUnifiedRun` | `modules/actions/dialogs/girl_talk_lizette.qsps` | 91 |
+| `GirlTalkMelissaBooksRun` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 325 |
+| `GirlTalkMelissaBooksText` | `modules/actions/dialogs/girl_talk_melissa_text.qsps` | 48 |
+| `GirlTalkMelissaImportantCheck` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 8 |
+| `GirlTalkMelissaLimitReachedText` | `modules/actions/dialogs/girl_talk_melissa_text.qsps` | 8 |
+| `GirlTalkMelissaMemoryAnalRun` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 294 |
+| `GirlTalkMelissaMemoryAnalText` | `modules/actions/dialogs/girl_talk_melissa_text.qsps` | 27 |
+| `GirlTalkMelissaMemoryBooksRun` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 310 |
+| `GirlTalkMelissaMemoryBooksText` | `modules/actions/dialogs/girl_talk_melissa_text.qsps` | 34 |
+| `GirlTalkMelissaMemoryChildhoodRun` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 318 |
+| `GirlTalkMelissaMemoryChildhoodText` | `modules/actions/dialogs/girl_talk_melissa_text.qsps` | 41 |
+| `GirlTalkMelissaMemoryFirstSexRun` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 302 |
+| `GirlTalkMelissaMemoryFirstSexText` | `modules/actions/dialogs/girl_talk_melissa_text.qsps` | 20 |
+| `GirlTalkMelissaMemoryLimitRun` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 279 |
+| `GirlTalkMelissaMemoryLimitText` | `modules/actions/dialogs/girl_talk_melissa_text.qsps` | 13 |
+| `GirlTalkMelissaUnifiedRun` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 188 |
 | `GirlTalkMenuReturn` | `modules/actions/dialogs/girl_talk_session.qsps` | 17 |
 | `GirlTalkMoodForTavernDayEvent` | `modules/actions/dialogs/girl_talk_images.qsps` | 59 |
 | `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 177 |
@@ -246,7 +262,7 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkRefreshTopicsMenuIfAllowed` | `modules/actions/dialogs/girl_talk_session.qsps` | 70 |
 | `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 278 |
 | `GirlTalkResolveMood` | `modules/actions/dialogs/girl_talk_images.qsps` | 8 |
-| `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 846 |
+| `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 851 |
 | `GirlTalkRootAppendPersonalMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 13 |
 | `GirlTalkSandraImportantCheck` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 8 |
 | `GirlTalkSandraLimitReachedText` | `modules/actions/dialogs/girl_talk_sandra_memories_text.qsps` | 8 |

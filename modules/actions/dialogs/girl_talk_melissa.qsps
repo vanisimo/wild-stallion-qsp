@@ -1,0 +1,331 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_melissa.qsps
+! MODULE: actions/dialogs
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и расширенные разговоры Мелиссы
+! ================================================
+
+#GirlTalkMelissaImportantCheck
+    MelissaImportantReady = 0
+    $MelissaImportantAction = ''
+
+    ! 1.1. Дворянство
+    if LOC('MelissaNobleReactionCanTalk') = 1:
+        gs 'MelissaNobleReactionCanTalk'
+        if MelissaNobleReactionCanTalk = 1:
+            MelissaImportantReady = 1
+            $MelissaImportantAction = 'nobility'
+            exit
+        end
+    end
+
+    ! 1.2. Стычка с Легаре
+    if FridayStreetClashHappened = 1 and MelissaLegareClashTalkDone = 0 and (day <= FridayClashDay + 2 or FridayClashDay = 0) and LOC('MelissaTalkAboutLegareStreetClash') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'legare_clash'
+        exit
+    end
+
+    ! 1.3. Предупреждение насчёт Легаре
+    if MelissaLegareWarningSeen = 1 and MelissaLegarePrivateTalkDone = 0 and LOC('MelissaTalkAboutLegare') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'legare_warning'
+        exit
+    end
+
+    ! 1.4. Ночной разговор Аманды с Легаре
+    if Fact_AmandaLegarePrivateTalk = 1 and MelissaAmandaLegarePrivateTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegarePrivate') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'amanda_legare_private'
+        exit
+    end
+
+    ! 1.5. Встреча Аманды с Легаре
+    if MelissaAmandaLegareOutsideTalkReady = 1 and MelissaAmandaLegareOutsideTalkDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareOutside') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'amanda_legare_outside'
+        exit
+    end
+
+    ! 1.6. Опасность для Аманды
+    if MelissaAmandaLegareMajorRiskTalkReady = 1 and MelissaAmandaLegareMajorRiskDiscussed = 0 and LOC('MelissaTalkAboutAmandaLegareMajor') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'amanda_legare_major'
+        exit
+    end
+
+    ! 1.7. Ссора с Легаре в зале
+    if MelissaLegareConflictTalkReady = 1 and MelissaLegareConflictTalkDone = 0 and LOC('MelissaTalkAboutLegareFirstConflict') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'legare_conflict'
+        exit
+    end
+
+    ! 1.8. Проблемы с поставками
+    if MelissaLegareSupplyTalkReady = 1 and MelissaLegareSupplyTalkDone = 0 and LOC('MelissaTalkAboutLegareSupply') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'legare_supply'
+        exit
+    end
+
+    ! 1.9. Риск для Клариссы
+    if MelissaLegareSuspicionTalkReady = 1 and MelissaLegareSuspicionTalkDone = 0 and LOC('MelissaTalkAboutLegareSuspicion') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'legare_clarissa'
+        exit
+    end
+
+    ! 1.10. Ужин у Блэнкеншипов
+    if MelissaBeckyDinnerGossipPending = 1 and LOC('MelissaTalkAboutBeckyDinner') = 1:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'becky_dinner'
+        exit
+    end
+
+    ! 1.11. Идти к Ирме за платьем
+    if LOC('DanceDressEscortCanStart') = 1:
+        gs 'DanceDressEscortCanStart', 'melissa'
+        if DanceDressEscortCanStart = 1:
+            MelissaImportantReady = 1
+            $MelissaImportantAction = 'dress_escort'
+            exit
+        end
+    end
+
+    ! 1.12. Примерка платья у Ирмы
+    if LOC('DanceDressFittingEscortCanStart') = 1:
+        gs 'DanceDressFittingEscortCanStart', 'melissa'
+        if DanceDressFittingEscortCanStart = 1:
+            MelissaImportantReady = 1
+            $MelissaImportantAction = 'dress_fitting'
+            exit
+        end
+    end
+
+    ! 1.13. Платье для танцев
+    if LOC('DanceDressTalkCanStart') = 1:
+        gs 'DanceDressTalkCanStart', 'melissa'
+        if DanceDressTalkCanStart = 1:
+            MelissaImportantReady = 1
+            $MelissaImportantAction = 'dress_talk'
+            exit
+        end
+    end
+
+    ! 1.14. Реакция на помощниц
+    if LOC('SandraStaffGirlsReactionCanTalk') = 1:
+        gs 'SandraStaffGirlsReactionCanTalk', 'melissa'
+        if SandraStaffGirlsReactionCanTalk = 1:
+            MelissaImportantReady = 1
+            $MelissaImportantAction = 'staff_reaction'
+            exit
+        end
+    end
+
+    ! 1.15. Личная история: о музыканте
+    if GirlPersonalStoryUnlock['melissa_melissa_musician'] = 1 and GirlPersonalStoryDone['melissa_melissa_musician'] = 0:
+        MelissaImportantReady = 1
+        $MelissaImportantAction = 'story_musician'
+        exit
+    end
+---
+
+#GirlTalkBuildMelissaMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    gs 'GirlTalkMelissaImportantCheck'
+    if MelissaImportantReady = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        if $MelissaImportantAction = 'nobility':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutNobility', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'legare_clash':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegareStreetClash', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'legare_warning':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegare', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'amanda_legare_private':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'amanda_legare_outside':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutAmandaLegareOutside', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'amanda_legare_major':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutAmandaLegareMajor', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'legare_conflict':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegareFirstConflict', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'legare_supply':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegareSupply', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'legare_clarissa':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegareSuspicion', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'becky_dinner':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutBeckyDinner', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'dress_escort':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'IrmaDanceDressEscortStart', 'melissa', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'dress_fitting':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'IrmaDanceDressEscortStart', 'melissa', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'dress_talk':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkResult', 'melissa', $TalkReturnLoc, 'dance_dress' }
+        elseif $MelissaImportantAction = 'staff_reaction':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffGirlsReactionTalk', 'melissa', $TalkReturnLoc }
+        elseif $MelissaImportantAction = 'story_musician':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'melissa', $TalkReturnLoc, 'melissa_musician' }
+        end
+    end
+    killvar 'MelissaImportantReady'
+    killvar '$MelissaImportantAction'
+
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', 'melissa', $TalkReturnLoc, 'melissa_unified'
+    }
+
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GirlTalkAppendGiftMenuItems') = 1:
+        gs 'GirlTalkAppendGiftMenuItems'
+    end
+---
+
+#GirlTalkMelissaUnifiedRun
+    ! 1. Проверка лимита полезных разговоров:
+    gs 'UsefulTalkCheck', 'melissa', 'melissa_unified'
+    if UsefulTalkResult = 0:
+        gs 'GirlTalkMelissaLimitReachedText'
+        gs 'ClampGirlSocialStats', 'melissa'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора:
+    gs 'UsefulTalkRegister', 'melissa', 'melissa_unified'
+
+    ! 3. Иерархия тем разговора:
+    ! --- Пик откровения (предел) ---
+    if otkroven['melissa'] >= 25 and (MelissaHomeSex = 1 or HadSex['melissa'] >= 1):
+        gs 'GirlTalkMelissaMemoryLimitRun'
+
+    ! --- Воспоминание об анале ---
+    elseif (MelissaHomeAnalDone = 1 or analfromyou['melissa'] >= 1) and otkroven['melissa'] >= 22 and MelissaMemoryAnalDone = 0:
+        gs 'GirlTalkMelissaMemoryAnalRun'
+
+    ! --- Воспоминание о первой близости в комнате ---
+    elseif (MelissaHomeSex = 1 or HadSex['melissa'] >= 1) and otkroven['melissa'] >= 20 and MelissaMemoryFirstSexDone = 0:
+        gs 'GirlTalkMelissaMemoryFirstSexRun'
+
+    ! --- Воспоминание о книгах и стихах ---
+    elseif otkroven['melissa'] >= 14 and MelissaMemoryBooksDone = 0:
+        gs 'GirlTalkMelissaMemoryBooksRun'
+
+    ! --- Воспоминание о детстве и защите семьи ---
+    elseif otkroven['melissa'] >= 10 and MelissaMemoryChildhoodDone = 0:
+        gs 'GirlTalkMelissaMemoryChildhoodRun'
+
+    ! --- Первые последовательные открытия тем ---
+    elseif MelissaTalkTavernDone = 0:
+        MelissaTalkTavernDone = 1
+        gs 'GirlTalkTavernRun', 'melissa'
+
+    elseif MelissaTalkFamilyDone = 0:
+        MelissaTalkFamilyDone = 1
+        gs 'GirlTalkFamilyRun', 'melissa'
+
+    elseif MelissaTalkBooksDone = 0:
+        MelissaTalkBooksDone = 1
+        gs 'GirlTalkMelissaBooksRun'
+
+    ! --- Повторяющаяся ротация богатых лор-пулов (все 3 темы с сохранением всех авторских текстов) ---
+    else:
+        MelissaLorePoolCycle += 1
+        if MelissaLorePoolCycle > 2:
+            MelissaLorePoolCycle = 0
+        end
+
+        if MelissaLorePoolCycle = 0:
+            gs 'GirlTalkTavernRun', 'melissa'
+        elseif MelissaLorePoolCycle = 1:
+            gs 'GirlTalkFamilyRun', 'melissa'
+        else:
+            gs 'GirlTalkMelissaBooksRun'
+        end
+    end
+
+    ! --- Дополнительные действия на экране разговора ---
+    if MelissaMinstrelMet = 1:
+        if MelissaProhibitMinstrel = 1:
+            gs 'ActUiPrepare', 'Разрешить общение с менестрелем', 'talk'
+        else:
+            gs 'ActUiPrepare', 'Запретить общение с менестрелем', 'talk'
+        end
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkPersonalBanToggle', 'melissa', $TalkReturnLoc, 'minstrel'
+        end
+    end
+
+    if Friends['melissa'] >= 12 or love['melissa'] >= 10 or otkroven['melissa'] >= 12:
+        gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'melissa', $TalkReturnLoc, 'compliment'
+        end
+    end
+
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'melissa', $TalkReturnLoc, 'gift'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+---
+
+#GirlTalkMelissaMemoryLimitRun
+    gs 'GirlTalkMelissaMemoryLimitText'
+
+    if MelissaMemoryLimitDone = 0:
+        MelissaMemoryLimitDone = 1
+        love['melissa'] += 2
+        otkroven['melissa'] += 2
+        Friends['melissa'] += 1
+        GirlTrustStefan['melissa'] += 2
+    else:
+        love['melissa'] += 1
+        otkroven['melissa'] += 1
+    end
+---
+
+#GirlTalkMelissaMemoryAnalRun
+    gs 'GirlTalkMelissaMemoryAnalText'
+    MelissaMemoryAnalDone = 1
+    love['melissa'] += 2
+    otkroven['melissa'] += 2
+    sluttiness['melissa'] += 1
+---
+
+#GirlTalkMelissaMemoryFirstSexRun
+    gs 'GirlTalkMelissaMemoryFirstSexText'
+    MelissaMemoryFirstSexDone = 1
+    love['melissa'] += 2
+    otkroven['melissa'] += 1
+    GirlTrustStefan['melissa'] += 1
+---
+
+#GirlTalkMelissaMemoryBooksRun
+    gs 'GirlTalkMelissaMemoryBooksText'
+    MelissaMemoryBooksDone = 1
+    love['melissa'] += 1
+    Friends['melissa'] += 1
+    otkroven['melissa'] += 1
+---
+
+#GirlTalkMelissaMemoryChildhoodRun
+    gs 'GirlTalkMelissaMemoryChildhoodText'
+    MelissaMemoryChildhoodDone = 1
+    Friends['melissa'] += 1
+    otkroven['melissa'] += 1
+---
+
+#GirlTalkMelissaBooksRun
+    gs 'GirlTalkMelissaBooksText'
+    Friends['melissa'] += 1
+    otkroven['melissa'] += 1
+    trading += 1
+    gs 'ClampGirlSocialStats', 'melissa'
+---

@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 503
-- Locations: 3781
-- Locations with direct incoming calls: 3260
+- Source files: 505
+- Locations: 3797
+- Locations with direct incoming calls: 3276
 - Locations without direct incoming calls: 521
 - Review candidates without direct incoming calls: 189
 - Classified entry/helper locations without direct incoming calls: 332
@@ -66,9 +66,9 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlNoPantiesWorkIsActive` | `modules/actions/tavern/girl_no_panties_work.qsps` | 14 | `modules/actions` |
 | `GirlPolicyResponseApplyStats` | `modules/events/hall/girl_policy_response.qsps` | 188 | `modules/events` |
 | `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 24 | `modules/core` |
-| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 516 | `modules/actions` |
-| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 496 | `modules/actions` |
-| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 461 | `modules/actions` |
+| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 521 | `modules/actions` |
+| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 501 | `modules/actions` |
+| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 466 | `modules/actions` |
 | `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 177 | `modules/actions` |
 | `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1144 | `modules/actions` |
 | `GirlTalkPersonalBuildMainMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1203 | `modules/actions` |
@@ -549,21 +549,21 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1751 |
+| `ActUiPrepare` | 1755 |
 | `ShowLocationScreenTitle` | 755 |
 | `SceneShowVisual` | 707 |
-| `Menu.AddModule` | 586 |
-| `MenuUiAdd` | 552 |
+| `Menu.AddModule` | 602 |
+| `MenuUiAdd` | 554 |
 | `EnsureGirlData` | 244 |
-| `ClampGirlSocialStats` | 240 |
+| `ClampGirlSocialStats` | 243 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 165 |
 | `ShowGirlSidebar` | 106 |
 | `RegisterSex` | 98 |
 | `Market` | 97 |
-| `Menu.Create` | 96 |
+| `Menu.Create` | 97 |
+| `Menu.Destroy` | 92 |
 | `ShowImage` | 91 |
-| `Menu.Destroy` | 91 |
 | `PrintMainP` | 87 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
@@ -571,9 +571,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
-| `GirlTalkResult` | 47 |
+| `GirlTalkResult` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `SexSceneMain` | 44 |
+| `BeckyShop` | 44 |
 
 ## Dynamic Call Sites
 
