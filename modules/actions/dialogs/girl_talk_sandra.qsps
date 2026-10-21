@@ -1,71 +1,266 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_sandra.qsps
 ! MODULE: actions/dialogs
-! Меню и разговоры Сандры как матери семьи
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и расширенные разговоры Сандры как хозяйки трактира
 ! ================================================
+
+#GirlTalkSandraImportantCheck
+    SandraImportantReady = 0
+    $SandraImportantAction = ''
+
+    ! 1.1. Дворянство
+    if LOC('SandraNobleReactionCanTalk') = 1:
+        gs 'SandraNobleReactionCanTalk'
+        if SandraNobleReactionCanTalk = 1:
+            SandraImportantReady = 1
+            $SandraImportantAction = 'nobility'
+            exit
+        end
+    end
+
+    ! 1.2. Тайна происхождения
+    if LOC('SandraBirthRevealCanTalk') = 1:
+        gs 'SandraBirthRevealCanTalk'
+        if SandraBirthRevealCanTalk = 1:
+            SandraImportantReady = 1
+            $SandraImportantAction = 'birth_secret'
+            exit
+        end
+    end
+
+    ! 1.3. Письмо в сундуке
+    if LOC('SandraLermontLetterCanTalk') = 1:
+        gs 'SandraLermontLetterCanTalk'
+        if SandraLermontLetterCanTalk = 1:
+            SandraImportantReady = 1
+            $SandraImportantAction = 'lermont_letter'
+            exit
+        end
+    end
+
+    ! 1.4. Стычка с Легаре
+    if FridayStreetClashHappened = 1 and SandraLegareClashTalkDone = 0 and (day <= FridayClashDay + 2 or FridayClashDay = 0) and LOC('SandraTalkAboutLegareStreetClash') = 1:
+        SandraImportantReady = 1
+        $SandraImportantAction = 'legare_clash'
+        exit
+    end
+
+    ! 1.5. Кризис сплетен Бекки
+    if SandraBeckyCrisisReady = 1 and SandraBeckyCrisisDone = 0:
+        SandraImportantReady = 1
+        $SandraImportantAction = 'becky_crisis'
+        exit
+    end
+
+    ! 1.6. Примирение с Бекки
+    if SandraBeckyCrisisDone = 1 and SandraBeckyTalkBeckyDone = 1 and SandraBeckyTalkSandraDone = 0 and GirlOffenseDays['sandra'] = 0 and SandraBeckyHardOffense = 0:
+        SandraImportantReady = 1
+        $SandraImportantAction = 'becky_reconcile'
+        exit
+    end
+
+    ! 1.7. Отец Герхард
+    if (PlayerKnows_SandraGerhardVisits = 1 or (SandraConfessedDraupnir = 1 and SandraConfessedMayor = 1)) and SandraGerhardVisitsStopped = 0:
+        SandraImportantReady = 1
+        $SandraImportantAction = 'gerhard_stop'
+        exit
+    end
+
+    ! 1.8. Найм помощниц
+    if LOC('SandraStaffHireCanTalk') = 1:
+        gs 'SandraStaffHireCanTalk'
+        if SandraStaffHireCanTalk = 1:
+            SandraImportantReady = 1
+            $SandraImportantAction = 'staff_hire'
+            exit
+        end
+    end
+
+    ! 1.9. Реакция на нанятых помощниц
+    if LOC('SandraStaffGirlsReactionCanTalk') = 1:
+        gs 'SandraStaffGirlsReactionCanTalk', 'sandra'
+        if SandraStaffGirlsReactionCanTalk = 1:
+            SandraImportantReady = 1
+            $SandraImportantAction = 'staff_reaction'
+            exit
+        end
+    end
+
+    ! 1.10. История: столяр Драупнир
+    if GirlPersonalStoryUnlock['sandra_sandra_carpenter'] = 1 and GirlPersonalStoryDone['sandra_sandra_carpenter'] = 0:
+        SandraImportantReady = 1
+        $SandraImportantAction = 'story_carpenter'
+        exit
+    end
+
+    ! 1.11. История: священник Герхард
+    if GirlPersonalStoryUnlock['sandra_sandra_priest'] = 1 and GirlPersonalStoryDone['sandra_sandra_priest'] = 0:
+        SandraImportantReady = 1
+        $SandraImportantAction = 'story_priest'
+        exit
+    end
+---
 
 #GirlTalkBuildSandraMainMenu
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    gs 'GirlTalkRootAppendPersonalMenu'
-
-    if $GirlLocation['sandra'] = 'Kitchen':
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О кухне и трактире', ''
-    else:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О работе трактира', ''
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    gs 'GirlTalkSandraImportantCheck'
+    if SandraImportantReady = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        if $SandraImportantAction = 'nobility':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraTalkAboutNobility', $TalkReturnLoc }
+        elseif $SandraImportantAction = 'birth_secret':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraTalkAboutBirthSecret', $TalkReturnLoc }
+        elseif $SandraImportantAction = 'lermont_letter':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraTalkAboutLermontLetter', $TalkReturnLoc }
+        elseif $SandraImportantAction = 'legare_clash':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraTalkAboutLegareStreetClash', $TalkReturnLoc }
+        elseif $SandraImportantAction = 'becky_crisis':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraBeckyCrisisStart' }
+        elseif $SandraImportantAction = 'becky_reconcile':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraBeckyTalkSandra' }
+        elseif $SandraImportantAction = 'gerhard_stop':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraGerhardStopTalk' }
+        elseif $SandraImportantAction = 'staff_hire':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffHireTalk', $TalkReturnLoc }
+        elseif $SandraImportantAction = 'staff_reaction':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffGirlsReactionTalk', 'sandra', $TalkReturnLoc }
+        elseif $SandraImportantAction = 'story_carpenter':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'sandra', $TalkReturnLoc, 'sandra_carpenter' }
+        elseif $SandraImportantAction = 'story_priest':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'sandra', $TalkReturnLoc, 'sandra_priest' }
+        end
     end
+    killvar 'SandraImportantReady'
+    killvar '$SandraImportantAction'
 
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'tavern'
+        gt 'GirlTalkResult', 'sandra', $TalkReturnLoc, 'sandra_unified'
     }
 
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О доме', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'family'
-    }
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О дочерях', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'daughters'
-    }
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
-    }
-
-    if Friends['sandra'] >= 18 or otkroven['sandra'] >= 18 or love['sandra'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
-        }
-    end
-
-    if SandraBeckyCrisisReady = 1 and SandraBeckyCrisisDone = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить о слухах и Бекки', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'SandraBeckyCrisisStart'
-        }
-    end
-
-    if SandraBeckyCrisisDone = 1 and SandraBeckyTalkBeckyDone = 1 and SandraBeckyTalkSandraDone = 0 and GirlOffenseDays['sandra'] = 0 and SandraBeckyHardOffense = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить о примирении с Бекки', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'SandraBeckyTalkSandra'
-        }
-    end
-
-    if (PlayerKnows_SandraGerhardVisits = 1 or (SandraConfessedDraupnir = 1 and SandraConfessedMayor = 1)) and SandraGerhardVisitsStopped = 0:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О комнате чистых сердец и отце Герхарде', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'SandraGerhardStopTalk'
-        }
-    end
-
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
     if LOC('GirlTalkAppendGiftMenuItems') = 1:
         gs 'GirlTalkAppendGiftMenuItems'
     end
+---
+
+#GirlTalkSandraUnifiedRun
+    ! 1. Проверка лимита полезных разговоров:
+    gs 'UsefulTalkCheck', 'sandra', 'sandra_unified'
+    if UsefulTalkResult = 0:
+        gs 'GirlTalkSandraLimitReachedText'
+        gs 'ClampGirlSocialStats', 'sandra'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора:
+    gs 'UsefulTalkRegister', 'sandra', 'sandra_unified'
+
+    ! 3. Иерархия тем разговора:
+    ! --- Пик откровения (предел) ---
+    if otkroven['sandra'] >= 25 and (SandraHomeSex >= 1 or HadSex['sandra'] >= 1 or SandraBirthRevealTalkDone = 1):
+        gs 'GirlTalkSandraMemoryLimitRun'
+
+    ! --- Воспоминание о первой близости ---
+    elseif (SandraHomeSex >= 1 or HadSex['sandra'] >= 1) and otkroven['sandra'] >= 20 and SandraMemoryFirstSexDone = 0:
+        gs 'GirlTalkSandraMemoryFirstSexRun'
+
+    ! --- Воспоминание о защите при нападении дворянина ---
+    elseif SandraBirthRevealTalkDone = 1 and otkroven['sandra'] >= 14 and SandraMemoryShieldDone = 0:
+        gs 'GirlTalkSandraMemoryShieldRun'
+
+    ! --- Воспоминание о постройке трактира и первых днях ---
+    elseif otkroven['sandra'] >= 10 and SandraMemoryOldDaysDone = 0:
+        gs 'GirlTalkSandraMemoryOldDaysRun'
+
+    ! --- Первые последовательные открытия тем ---
+    elseif SandraTalkDaughtersDone = 0:
+        SandraTalkDaughtersDone = 1
+        gs 'GirlTalkDaughtersRun'
+
+    elseif SandraTalkTavernDone = 0:
+        SandraTalkTavernDone = 1
+        gs 'GirlTalkTavernRun', 'sandra'
+
+    elseif SandraTalkFamilyDone = 0:
+        SandraTalkFamilyDone = 1
+        gs 'GirlTalkFamilyRun', 'sandra'
+
+    ! --- Повторяющаяся ротация богатых лор-пулов (все 3 темы с сохранением всех авторских текстов) ---
+    else:
+        SandraLorePoolCycle += 1
+        if SandraLorePoolCycle > 2:
+            SandraLorePoolCycle = 0
+        end
+
+        if SandraLorePoolCycle = 0:
+            gs 'GirlTalkDaughtersRun'
+        elseif SandraLorePoolCycle = 1:
+            gs 'GirlTalkTavernRun', 'sandra'
+        else:
+            gs 'GirlTalkFamilyRun', 'sandra'
+        end
+    end
+
+    ! --- Дополнительные действия на экране разговора ---
+    if Friends['sandra'] >= 18 or otkroven['sandra'] >= 18 or love['sandra'] >= 12:
+        gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'sandra', $TalkReturnLoc, 'compliment'
+        end
+    end
+
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'sandra', $TalkReturnLoc, 'gift'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'sandra'
+---
+
+#GirlTalkSandraMemoryLimitRun
+    gs 'GirlTalkSandraMemoryLimitText'
+
+    if SandraMemoryLimitDone = 0:
+        SandraMemoryLimitDone = 1
+        love['sandra'] += 2
+        otkroven['sandra'] += 2
+        Friends['sandra'] += 1
+        GirlTrustStefan['sandra'] += 2
+    else:
+        love['sandra'] += 1
+        otkroven['sandra'] += 1
+    end
+---
+
+#GirlTalkSandraMemoryFirstSexRun
+    gs 'GirlTalkSandraMemoryFirstSexText'
+    SandraMemoryFirstSexDone = 1
+    love['sandra'] += 2
+    otkroven['sandra'] += 1
+    GirlTrustStefan['sandra'] += 1
+---
+
+#GirlTalkSandraMemoryShieldRun
+    gs 'GirlTalkSandraMemoryShieldText'
+    SandraMemoryShieldDone = 1
+    otkroven['sandra'] += 2
+    Friends['sandra'] += 1
+    GirlTrustStefan['sandra'] += 1
+---
+
+#GirlTalkSandraMemoryOldDaysRun
+    gs 'GirlTalkSandraMemoryOldDaysText'
+    SandraMemoryOldDaysDone = 1
+    otkroven['sandra'] += 1
+    Friends['sandra'] += 1
 ---
 
 #GirlTalkDaughtersRun
@@ -87,7 +282,7 @@
     gs 'GirlTalkDaughtersText', $ARGS[0]
 
     if $GirlTalkDaughtersText <> '':
-        *p $GirlTalkDaughtersText
+        *pl $GirlTalkDaughtersText
     end
 
     killvar '$GirlTalkDaughtersText'

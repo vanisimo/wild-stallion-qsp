@@ -2,9 +2,9 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 500
-- Locations: 3754
-- Locations with direct incoming calls: 3233
+- Source files: 501
+- Locations: 3765
+- Locations with direct incoming calls: 3244
 - Locations without direct incoming calls: 521
 - Review candidates without direct incoming calls: 189
 - Classified entry/helper locations without direct incoming calls: 332
@@ -549,13 +549,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1741 |
+| `ActUiPrepare` | 1743 |
 | `ShowLocationScreenTitle` | 755 |
 | `SceneShowVisual` | 707 |
-| `Menu.AddModule` | 566 |
-| `MenuUiAdd` | 557 |
+| `Menu.AddModule` | 570 |
+| `MenuUiAdd` | 550 |
 | `EnsureGirlData` | 244 |
-| `ClampGirlSocialStats` | 235 |
+| `ClampGirlSocialStats` | 237 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 165 |
 | `ShowGirlSidebar` | 106 |
@@ -572,8 +572,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `GirlTalkResult` | 45 |
-| `BeckyShop` | 44 |
+| `SexSceneMain` | 44 |
+| `RegisterPlayerCum` | 44 |
 
 ## Dynamic Call Sites
 
