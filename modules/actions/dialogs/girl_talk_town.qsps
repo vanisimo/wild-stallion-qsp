@@ -1,54 +1,8 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_town.qsps
 ! MODULE: actions/dialogs
-! Меню разговоров с городскими девушками
+! Меню разговоров с городскими девушками (Грета, Жюльетта, горожанки)
 ! ================================================
-
-
-
-#GirlTalkBuildIrmaMainMenu
-    gs 'Menu.Destroy', 'GirlTalkMainMenu'
-    gs 'Menu.Create', 'GirlTalkMainMenu'
-
-    if IrmaMet < 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поздороваться', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'IrmaFirstMeet', $TalkReturnLoc
-        }
-
-        exit
-    end
-
-    gs 'GirlTalkRootAppendPersonalMenu'
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О мире за чаем', 'talk'
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'IrmaLoreMenu'
-    }
-
-    if IrmaTalkSmalltalkDone = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О лавке и заказах', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'irma_shop'
-        }
-    end
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', ''
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
-    }
-
-    if Friends['irma'] >= 12 or love['irma'] >= 10 or otkroven['irma'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
-        }
-    end
-
-    if LOC('GirlTalkAppendGiftMenuItems') = 1:
-        gs 'GirlTalkAppendGiftMenuItems'
-    end
----
 
 #GirlTalkBuildGretaStubMenu
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
@@ -58,7 +12,6 @@
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
     }
-
 ---
 
 #GirlTalkBuildTownMainMenu
@@ -105,24 +58,6 @@
     killvar '$TownTalkGirl'
 ---
 
-
-
-#GirlTalkIrmaShopRun
-    gs 'GirlTalkIrmaShopPrintText', 'intro'
-    gs 'GirlTalkIrmaShopPrintText', 'context'
-
-    IrmaTalkShopDone = 1
-    $IrmaShopDayKey = 'irma_' + STR(day)
-    if IrmaShopTalkDayDone[$IrmaShopDayKey] = 0:
-        IrmaShopTalkDayDone[$IrmaShopDayKey] = 1
-        trading += 1
-        if Friends['irma'] < 12:
-            Friends['irma'] += 1
-        end
-    end
-    killvar '$IrmaShopDayKey'
----
-
 #GirlTalkAfterSmalltalk
     gs 'NormalizeGirlKey', $ARGS[0]
     $GirlTalkSmalltalkGirl = $GirlKey
@@ -160,23 +95,11 @@
     killvar '$TownTalkGirl'
 ---
 
-
-
-#GirlTalkIrmaShopPrintText
-    gs 'GirlTalkIrmaShopText', $ARGS[0]
-
-    if $GirlTalkIrmaShopText <> '':
-        *p $GirlTalkIrmaShopText
-    end
-
-    killvar '$GirlTalkIrmaShopText'
----
-
 #GirlTalkTownLifePrintText
     gs 'GirlTalkTownLifeText', $ARGS[0], $ARGS[1]
 
     if $GirlTalkTownLifeText <> '':
-        *p $GirlTalkTownLifeText
+        *pl $GirlTalkTownLifeText
     end
 
     killvar '$GirlTalkTownLifeText'

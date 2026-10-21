@@ -1,0 +1,228 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_irma.qsps
+! MODULE: actions/dialogs
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и расширенные разговоры Ирмы в мастерской
+! ================================================
+
+#GirlTalkBuildIrmaMainMenu
+    gs 'Menu.Destroy', 'GirlTalkMainMenu'
+    gs 'Menu.Create', 'GirlTalkMainMenu'
+
+    ! Если ещё не знакомы — первое знакомство
+    if IrmaMet < 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'IrmaFirstMeet', $TalkReturnLoc
+        }
+        exit
+    end
+
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    ! Предложение о форме для трактира
+    if LOC('IrmaUniformOfferCanStart') = 1:
+        gs 'IrmaUniformOfferCanStart'
+        if IrmaUniformOfferCanStart = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'IrmaUniformOfferStart', $TalkReturnLoc
+            }
+        end
+        killvar 'IrmaUniformOfferCanStart'
+    ! План со вторым караваном и орками
+    elseif SecondCaravanActive = 1 and PlayerHasElfTalisman = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'IrmaSecondCaravanPlan'
+        }
+    ! Тайный сад Древа Жизни (первый вход)
+    elseif IrmaNightFittingDone = 1 and IrmaTreeGardenUnlocked = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'IrmaTreeGardenEnter'
+        }
+    ! Инга на обучении у раскройного стола
+    elseif IngaAtIrmaShop = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'IrmaIngaApprenticeTalk'
+        }
+    end
+
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
+    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+        gt 'GirlTalkResult', 'irma', $TalkReturnLoc, 'irma_unified'
+    }
+
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GirlTalkAppendGiftMenuItems') = 1:
+        gs 'GirlTalkAppendGiftMenuItems'
+    end
+---
+
+#GirlTalkIrmaUnifiedRun
+    ! 1. Проверка лимита полезных разговоров:
+    gs 'UsefulTalkCheck', 'irma', 'irma_unified'
+    if UsefulTalkResult = 0:
+        gs 'GirlTalkIrmaLimitReachedText'
+        gs 'ClampGirlSocialStats', 'irma'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора:
+    gs 'UsefulTalkRegister', 'irma', 'irma_unified'
+
+    ! 3. Иерархия тем разговора:
+    ! --- Пик откровения (предел) ---
+    if otkroven['irma'] >= 25 and (IrmaTreeRitualDone = 1 or HadSex['irma'] > 0):
+        gs 'GirlTalkIrmaMemoryLimitText'
+        if IrmaMemoryLimitDone = 0:
+            IrmaMemoryLimitDone = 1
+            love['irma'] += 2
+            otkroven['irma'] += 2
+            Friends['irma'] += 1
+        else:
+            love['irma'] += 1
+            otkroven['irma'] += 1
+        end
+
+    ! --- Воспоминание о священном ритуале плодородия у Древа ---
+    elseif IrmaTreeRitualDone = 1 and otkroven['irma'] >= 20 and IrmaMemoryFertilityDone = 0:
+        gs 'GirlTalkIrmaMemoryFertilityText'
+        IrmaMemoryFertilityDone = 1
+        love['irma'] += 2
+        otkroven['irma'] += 1
+
+    ! --- Воспоминание о ритуальном омовении в купели ---
+    elseif IrmaTreeBathDone = 1 and otkroven['irma'] >= 16 and IrmaMemoryBathDone = 0:
+        gs 'GirlTalkIrmaMemoryBathText'
+        IrmaMemoryBathDone = 1
+        otkroven['irma'] += 2
+        love['irma'] += 1
+
+    ! --- Воспоминание о ночной примерке без одежды ---
+    elseif IrmaNightFittingDone = 1 and otkroven['irma'] >= 12 and IrmaMemoryFittingDone = 0:
+        gs 'GirlTalkIrmaMemoryFittingText'
+        IrmaMemoryFittingDone = 1
+        love['irma'] += 1
+        otkroven['irma'] += 1
+
+    ! --- Правда о «ночных мерках» и слухах о мэре ---
+    elseif IrmaNightIntroDone = 1 and IrmaMayorTruthDiscussed = 0 and Friends['irma'] >= 10:
+        gs 'GirlTalkIrmaMayorTruthDiscussText'
+        IrmaMayorTruthDiscussed = 1
+        Friends['irma'] += 2
+        otkroven['irma'] += 1
+
+    ! --- Наставничество и уроки для Инги ---
+    elseif (IngaIrmaBond >= 2 or IngaAtIrmaShop = 1) and IrmaIngaApprenticeMemoryDone = 0 and Friends['irma'] >= 8:
+        gs 'GirlTalkIrmaIngaApprenticeText'
+        IrmaIngaApprenticeMemoryDone = 1
+        Friends['irma'] += 1
+        Friends['inga'] += 1
+        otkroven['irma'] += 1
+
+    ! --- Развитие историй о мире и эльфийском наследии (шаги 0-3) ---
+    elseif IrmaLoreProgressStory = 0 and Friends['irma'] >= 4:
+        gs 'GirlTalkIrmaLoreProgressText', 0
+        IrmaLoreProgressStory = 1
+        Friends['irma'] += 1
+        otkroven['irma'] += 1
+
+    elseif IrmaLoreProgressStory = 1 and (Friends['irma'] >= 7 or IrmaLoreSeen['ellona'] = 1):
+        gs 'GirlTalkIrmaLoreProgressText', 1
+        IrmaLoreProgressStory = 2
+        Friends['irma'] += 1
+        otkroven['irma'] += 1
+
+    elseif IrmaLoreProgressStory = 2 and (otkroven['irma'] >= 8 or IrmaTreeGardenUnlocked = 1):
+        gs 'GirlTalkIrmaLoreProgressText', 2
+        IrmaLoreProgressStory = 3
+        otkroven['irma'] += 1
+        love['irma'] += 1
+
+    elseif IrmaLoreProgressStory = 3 and (otkroven['irma'] >= 12 or IrmaLoreSeen['conchita'] = 1):
+        gs 'GirlTalkIrmaLoreProgressText', 3
+        IrmaLoreProgressStory = 4
+        otkroven['irma'] += 2
+        love['irma'] += 1
+
+    ! --- Повседневный пласт лавки портнихи (ротация) ---
+    else:
+        IrmaShopStory += 1
+        if IrmaShopStory >= 4:
+            IrmaShopStory = 0
+        end
+        gs 'GirlTalkIrmaShopPoolText', IrmaShopStory
+
+        $IrmaShopDailyKey = 'irma_' + STR(day)
+        if IrmaShopTalkDayDone[$IrmaShopDailyKey] = 0:
+            IrmaShopTalkDayDone[$IrmaShopDailyKey] = 1
+            trading += 1
+            if Friends['irma'] < 15:
+                Friends['irma'] += 1
+            end
+        end
+        killvar '$IrmaShopDailyKey'
+    end
+
+    ! --- Дополнительные действия на экране разговора ---
+    gs 'ActUiPrepare', 'Побеседовать о мире за чаем', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLoreMenu'
+    end
+
+    if IrmaTreeGardenUnlocked = 1:
+        gs 'ActUiPrepare', 'Пройти в сад к Древу Жизни', 'holy_circle'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaTreeGarden'
+        end
+    end
+
+    if LOC('IrmaUniformOfferCanStart') = 1:
+        gs 'IrmaUniformOfferCanStart'
+        if IrmaUniformOfferCanStart = 1:
+            gs 'ActUiPrepare', 'Обсудить форму для трактира', 'work'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaUniformOfferStart', $TalkReturnLoc
+            end
+        end
+        killvar 'IrmaUniformOfferCanStart'
+    end
+
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'irma', $TalkReturnLoc, 'gift'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'irma'
+---
+
+#GirlTalkIrmaShopRun
+    gs 'GirlTalkIrmaShopPrintText', 'intro'
+    gs 'GirlTalkIrmaShopPrintText', 'context'
+
+    IrmaTalkShopDone = 1
+    $IrmaShopDayKey = 'irma_' + STR(day)
+    if IrmaShopTalkDayDone[$IrmaShopDayKey] = 0:
+        IrmaShopTalkDayDone[$IrmaShopDayKey] = 1
+        trading += 1
+        if Friends['irma'] < 12:
+            Friends['irma'] += 1
+        end
+    end
+    killvar '$IrmaShopDayKey'
+---
+
+#GirlTalkIrmaShopPrintText
+    gs 'GirlTalkIrmaShopText', $ARGS[0]
+
+    if $GirlTalkIrmaShopText <> '':
+        *pl $GirlTalkIrmaShopText
+    end
+
+    killvar '$GirlTalkIrmaShopText'
+---
