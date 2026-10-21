@@ -18,21 +18,52 @@
     gs 'Menu.Show', 'ChurchWeekdayGerhardMenu'
 ---
 
+#GerhardImportantCheck
+    GerhardImportantReady = 0
+    $GerhardImportantAction = ''
+
+    ! 1. Накладная на партию оружия / расследование по мэру
+    if PlayerHasWeaponShipmentInvoice = 1 and GerhardBlackmailTalkDone = 0 and LOC('GerhardBlackmailTalk') = 1:
+        GerhardImportantReady = 1
+        $GerhardImportantAction = 'blackmail'
+        exit
+    end
+
+    ! 2. Визит в парадном облачении
+    if StefanWearingNobleSuit = 1 and StefanNobleTourGerhardDone = 0 and LOC('StefanNobleTourGerhard') = 1:
+        GerhardImportantReady = 1
+        $GerhardImportantAction = 'noble_tour'
+        exit
+    end
+---
+
 #ChurchWeekdayBuildGerhardMenu
     gs 'Menu.Destroy', 'ChurchWeekdayGerhardMenu'
     gs 'Menu.Create', 'ChurchWeekdayGerhardMenu'
 
-    gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Осмотреть', 'look'
-    gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', {
-        gt 'ChurchWeekdayGerhardInspect'
-    }
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GerhardImportantCheck') = 1:
+        gs 'GerhardImportantCheck'
+        if GerhardImportantReady = 1:
+            gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Важный разговор', 'important'
+            if $GerhardImportantAction = 'blackmail':
+                gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', { gt 'GerhardBlackmailTalk' }
+            elseif $GerhardImportantAction = 'noble_tour':
+                gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', { gt 'StefanNobleTourGerhard' }
+            end
+        end
+        killvar 'GerhardImportantReady'
+        killvar '$GerhardImportantAction'
+    end
 
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
     gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Поговорить', 'talk'
     gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', {
         gt 'ChurchGerhardWeekdayTalk'
     }
 
-    gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'О пожертвованиях', 'circle'
+    ! ==================== 3. ПОЖЕРТВОВАТЬ ХРАМУ ====================
+    gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Пожертвовать храму', 'circle'
     gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', {
         gt 'ChurchDonationInfo'
     }

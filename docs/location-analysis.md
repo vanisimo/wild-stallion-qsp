@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3828
-- Locations with direct incoming calls: 3305
-- Locations without direct incoming calls: 523
-- Review candidates without direct incoming calls: 191
+- Locations: 3835
+- Locations with direct incoming calls: 3311
+- Locations without direct incoming calls: 524
+- Review candidates without direct incoming calls: 192
 - Classified entry/helper locations without direct incoming calls: 332
 - Dynamic call sites: 2
 
@@ -41,6 +41,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `ChurchSundayServiceTalkGeorgette` | `modules/events/church/church_sunday_service.qsps` | 103 | `modules/events` |
 | `ChurchSundayServiceTalkLegare` | `modules/events/church/church_sunday_service.qsps` | 93 | `modules/events` |
 | `ChurchUiHolyCircleIcon` | `modules/events/church/church_core.qsps` | 7 | `modules/events` |
+| `ChurchWeekdayGerhardInspect` | `modules/events/church/church_weekday_menus.qsps` | 80 | `modules/events` |
 | `ChurchWeekdayShowGerhardMenu` | `modules/events/church/church_weekday_menus.qsps` | 16 | `modules/events` |
 | `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 9 | `modules/core` |
 | `ClarissaIntimAfterSex` | `modules/events/legare/clarissa_intim_arc.qsps` | 195 | `modules/events` |
@@ -551,10 +552,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1765 |
+| `ActUiPrepare` | 1768 |
 | `ShowLocationScreenTitle` | 757 |
-| `SceneShowVisual` | 709 |
-| `Menu.AddModule` | 591 |
+| `SceneShowVisual` | 710 |
+| `Menu.AddModule` | 592 |
 | `MenuUiAdd` | 537 |
 | `EnsureGirlData` | 244 |
 | `ClampGirlSocialStats` | 243 |
@@ -565,17 +566,17 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Market` | 97 |
 | `Menu.Create` | 95 |
 | `Menu.Destroy` | 92 |
-| `ShowImage` | 91 |
-| `FormatSpintry` | 85 |
+| `ShowImage` | 90 |
 | `PrintMainP` | 85 |
+| `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 78 |
 | `PrintTitleLine` | 53 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
 | `SaveLastHallEvent` | 45 |
-| `RegisterPlayerCum` | 44 |
+| `SexSceneMain` | 44 |
 
 ## Dynamic Call Sites
 

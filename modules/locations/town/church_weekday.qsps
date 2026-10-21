@@ -112,18 +112,123 @@
     cls
 
     gs 'ShowLocationScreenTitle', 'ОТЕЦ ГЕРХАРД'
-    gs 'ShowImage', 'gerhard', 'normal', 'normal'
+    gs 'SceneShowVisual', 'images/locations/church/gerhard', 'Отец Герхард: беседа', 'large', 'webp'
 
-    gs 'ChurchWeekdayText', 'gerhard_talk'
-    *p $ChurchWeekdayText
-    killvar '$ChurchWeekdayText'
+    gs 'GerhardUnifiedTalkRun'
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Назад в зал', 'return'
+    ! Контекстные действия на экране беседы
+    if PlayerHasWeaponShipmentInvoice = 1 and GerhardBlackmailTalkDone = 0 and LOC('GerhardBlackmailTalk') = 1:
+        gs 'ActUiPrepare', 'Поговорить о накладной на оружие', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GerhardBlackmailTalk'
+        end
+    end
+
+    if StefanWearingNobleSuit = 1 and StefanNobleTourGerhardDone = 0 and LOC('StefanNobleTourGerhard') = 1:
+        gs 'ActUiPrepare', 'Визит в парадном облачении', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'StefanNobleTourGerhard'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Пожертвовать храму', 'circle'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchDonationInfo'
+    end
+
+    gs 'ActUiPrepare', 'Назад в церковь', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'Church'
     end
+---
+
+#GerhardUnifiedTalkRun
+    ! 1. Проверка лимита полезных разговоров
+    gs 'UsefulTalkCheck', 'gerhard', 'gerhard_unified'
+    if UsefulTalkResult = 0:
+        gs 'GerhardTalkLimitReachedText'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора
+    gs 'UsefulTalkRegister', 'gerhard', 'gerhard_unified'
+
+    ! 3. Прогрессивная иерархия тем:
+    ! --- О семье и благословении дома ---
+    if Friends['gerhard'] >= 25 and GerhardFamilyTalkFirstDone = 0:
+        GerhardFamilyTalkFirstDone = 1
+        gs 'GerhardTalkFamilyRun'
+
+    ! --- О чистоте и порошке Таро ---
+    elseif GerhardTaroTalkFirstDone = 0:
+        GerhardTaroTalkFirstDone = 1
+        gs 'GerhardTalkTaroRun'
+
+    ! --- О трактире и мирских соблазнах ---
+    elseif GerhardTavernTalkFirstDone = 0:
+        GerhardTavernTalkFirstDone = 1
+        gs 'GerhardTalkTavernRun'
+
+    ! --- Циклическая ротация лор-пулов ---
+    else:
+        GerhardLorePoolCycle += 1
+        if GerhardLorePoolCycle > 3:
+            GerhardLorePoolCycle = 0
+        end
+
+        if GerhardLorePoolCycle = 0:
+            gs 'GerhardTalkTavernRun'
+        elseif GerhardLorePoolCycle = 1:
+            gs 'GerhardTalkTaroRun'
+        elseif GerhardLorePoolCycle = 2 and Friends['gerhard'] >= 25:
+            gs 'GerhardTalkFamilyRun'
+        else:
+            gs 'GerhardTalkServiceRun'
+        end
+    end
+---
+
+#GerhardTalkLimitReachedText
+    *pl 'Отец Герхард поднимает ладонь в плавном останавливающем жесте и негромко произносит:'
+    *pl '— Всему свой час под оком Всеблагого, Стефан. Слова, сказанные сверх меры, обращаются в праздный шум. Если на душе есть тяжкий груз — приди на исповедь в назначенный день, а пока вернись к своим мирским заботам с чистым сердцем.'
+---
+
+#GerhardTalkFamilyRun
+    *pl 'Взгляд священника смягчается, в голосе звучит пастырская забота:'
+    *pl '— Твоя семья пережила немало невзгод, Стефан. Сандра годами несла этот трактир на своих плечах, а сёстры смотрят на тебя в ожидании опоры. Будь для них щитом, а не источником раздора. Когда в семье царит мир и взаимное доверие — благословение Ильматера пребывает на этом доме.'
+    Friends['gerhard'] += 1
+    Reputation['church'] += 1
+    Talked['gerhard'] += 1
+---
+
+#GerhardTalkTaroRun
+    *pl 'Священник бросает взгляд на глиняные кувшины у алтарной преграды:'
+    *pl '— Ильматер заповедал держать в чистоте не только душу, но и бренную плоть, Стефан. Пыль и неряшливость рождают леность духа. Серый порошок у алтаря открыт каждому горожанину без платы: прими его с благодарностью, смой с себя скверну и помни, что опрятность — первая ступень к смирению перед Святым Кругом.'
+    if Friends['gerhard'] < 30:
+        Friends['gerhard'] += 1
+    end
+    Talked['gerhard'] += 1
+---
+
+#GerhardTalkTavernRun
+    *pl 'Отец Герхард внимательно смотрит на тебя:'
+    *pl '— «Дикий Жеребец» — шумное место, Стефан. Туда стекаются люди с трактов, усталые, озлобленные, ищущие забвения в хмеле. Хозяин трактира несёт бремя не меньшее, чем пастырь: ты видишь человеческие пороки без прикрас. Не позволяй жажде серебра заглушить совесть. Если в твоём доме будет порядок, то и в городе станет чуть меньше греха.'
+    if Friends['gerhard'] < 25:
+        Friends['gerhard'] += 1
+    end
+    Talked['gerhard'] += 1
+---
+
+#GerhardTalkServiceRun
+    gs 'ChurchWeekdayText', 'gerhard_talk'
+    *p $ChurchWeekdayText
+    killvar '$ChurchWeekdayText'
+    if Friends['gerhard'] < 20:
+        Friends['gerhard'] += 1
+    end
+    Talked['gerhard'] += 1
 ---
 
 #ChurchDonationInfo
