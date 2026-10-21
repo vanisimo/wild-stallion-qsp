@@ -230,27 +230,31 @@
     *pl ' '
 
     if IrmaUniformOfferUnlocked = 0:
-        *pl 'Ирма пока не поднимает тему откровенной рабочей формы. Для такого заказа нужен повод: городские слухи, скандальная слава трактира, церковный упрёк или достаточно доверительный разговор с самой Ирмой.'
-        *pl ' '
-
-        if LOC('IrmaUniformOfferCanStart') = 1:
-            gs 'IrmaUniformOfferCanStart'
-
-            if IrmaUniformOfferCanStart = 1:
-                gs 'ActUiPrepare', 'Выслушать предложение Ирмы', 'talk'
-                act $ActUiLabel, $ActUiIconPath:
-                    gt 'IrmaUniformOfferStart', $IrmaShopReturnLoc
-                end
+        if IrmaUniformOfferDeclined = 1:
+            *pl 'Ирма с лёгкой усмешкой посматривает на тебя из-за раскройного стола:'
+            *pl ' '
+            *pl '— Надумал вернуться к нашему разговору о нарядах для твоих работниц, Стефан? Моё предложение всё ещё в силе.'
+            *pl ' '
+            gs 'ActUiPrepare', 'Вернуться к предложению о форме', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaUniformOfferStart', $IrmaShopReturnLoc
+            end
+        else:
+            *pl 'Ирма откладывает мерную ленту и внимательно смотрит на тебя. До неё уже дошли городские слухи о трактире, и у полуэльфийки есть деловое предложение, сулящее немалую выгоду.'
+            *pl ' '
+            gs 'ActUiPrepare', 'Выслушать предложение Ирмы', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaUniformOfferStart', $IrmaShopReturnLoc
             end
         end
     else:
         if LOC('IrmaUniformOrders') = 1:
-            gs 'IrmaUniformPrintText', 'intro'
+            *pl 'На рабочем столе Ирмы лежат готовые выкройки и образцы тонких тканей. Здесь ты можешь заказать пошив откровенных нарядов для девушек твоего трактира.'
             *pl ' '
             gs 'IrmaUniformPrintStatus'
             *pl ' '
 
-            gs 'ActUiPrepare', 'Заказать форму', 'shop'
+            gs 'ActUiPrepare', 'Перейти к заказам формы', 'shop'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'IrmaUniformOrders', 'IrmaShop'
             end

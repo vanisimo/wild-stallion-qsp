@@ -1,16 +1,17 @@
 ! ================================================
 ! FILE: modules/locations/shops/irma_uniform_orders.qsps
+! MODULE: modules/locations/shops
 ! Ирма: рабочая форма для девушек трактира
-! Версия: v1 / ordinary + revealing uniforms
+! Версия: v2 / ordinary + revealing uniforms
 ! Назначение:
 ! - купить / сшить откровенную рабочую форму для Аманды, Мелиссы, Сандры
 ! - доступно только после предложения Ирмы IrmaUniformOfferUnlocked = 1
-! - форма имеет только 2 уровня:
+! - форма имеет 2 уровня:
 !   GirlUniformLevel[girl] = 0 обычная
 !   GirlUniformLevel[girl] = 1 откровенная
 ! - покупка открывает возможность носить откровенную форму:
 !   uniform_purchased[girl] = 1
-! - назначение формы лучше делать через разговор/сцену, но здесь можно сразу выдать комплект
+! - назначение формы делается через разговор с девушкой в трактире
 !
 ! Тексты берутся из:
 ! modules/locations/shops/irma_uniform_orders_text.qsps
@@ -36,15 +37,14 @@
     if IrmaUniformOfferUnlocked = 0:
         gs 'ShowLocationScreenTitle', 'ИРМА: РАБОЧАЯ ФОРМА'
 
-        *p 'Ирма пока не поднимает тему откровенной рабочей формы. Для такого заказа нужен повод: городские слухи, скандальная слава трактира, церковный упрёк или достаточно доверительный разговор с самой Ирмой.'
-
+        *pl 'Ирма пока не поднимает тему откровенной рабочей формы. Для такого заказа нужен повод: городские слухи, скандальная слава трактира, церковный упрёк или достаточно доверительный разговор с самой Ирмой.'
         *pl ' '
 
         if LOC('IrmaUniformOfferCanStart') = 1:
             gs 'IrmaUniformOfferCanStart'
 
             if IrmaUniformOfferCanStart = 1:
-                gs 'ActUiPrepare', 'Выслушать предложение Ирмы', 'look'
+                gs 'ActUiPrepare', 'Выслушать предложение Ирмы', 'talk'
                 act $ActUiLabel, $ActUiIconPath:
                     gt 'IrmaUniformOfferStart', $IrmaUniformReturnLoc
                 end
@@ -71,7 +71,45 @@
 
     gs 'IrmaUniformBuildMenu'
 
-    *p 'Что заказать у <a href="exec:gs ''Menu.Show'', ''IrmaUniformMenu''">Ирмы</a>?'
+    *pl 'Что заказать у <a href="exec:gs ''Menu.Show'', ''IrmaUniformMenu''">Ирмы</a>?'
+    *pl ' '
+
+    if uniform_purchased['amanda'] = 0:
+        gs 'IrmaUniformGetPrice', 'amanda'
+        gs 'ActUiPrepare', 'Форма для Аманды (' + STR(IrmaUniformPrice) + ' спинтарий)', 'shop'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
+        end
+    end
+
+    if uniform_purchased['melissa'] = 0:
+        gs 'IrmaUniformGetPrice', 'melissa'
+        gs 'ActUiPrepare', 'Форма для Мелиссы (' + STR(IrmaUniformPrice) + ' спинтарий)', 'shop'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
+        end
+    end
+
+    if uniform_purchased['sandra'] = 0:
+        gs 'IrmaUniformGetPrice', 'sandra'
+        gs 'ActUiPrepare', 'Форма для Сандры (' + STR(IrmaUniformPrice) + ' спинтарий)', 'shop'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaUniformOrderConfirm', 'sandra', $IrmaUniformReturnLoc
+        end
+    end
+
+    gs 'IrmaUniformGetAllPrice'
+    if IrmaUniformAllNeedCount >= 2 and revealing_uniform_all_bought = 0:
+        gs 'ActUiPrepare', 'Комплекты для всех (' + STR(IrmaUniformAllPrice) + ' спинтарий, со скидкой)', 'shop'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaUniformOrderAllConfirm', $IrmaUniformReturnLoc
+        end
+    end
+
+    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $IrmaUniformReturnLoc
+    end
 ---
 
 ! ================================================
@@ -84,30 +122,52 @@
     gs 'Menu.Destroy', 'IrmaUniformMenu'
     gs 'Menu.Create', 'IrmaUniformMenu'
 
-    gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Аманды', ''
-    gs 'Menu.AddModule', 'IrmaUniformMenu', {
-        gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
-    }
+    if uniform_purchased['amanda'] = 0:
+        gs 'IrmaUniformGetPrice', 'amanda'
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Аманды (' + STR(IrmaUniformPrice) + ' спинтарий)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
+        }
+    else:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Аманды (пошита)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
+        }
+    end
 
-    gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Мелиссы', ''
-    gs 'Menu.AddModule', 'IrmaUniformMenu', {
-        gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
-    }
+    if uniform_purchased['melissa'] = 0:
+        gs 'IrmaUniformGetPrice', 'melissa'
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Мелиссы (' + STR(IrmaUniformPrice) + ' спинтарий)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
+        }
+    else:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Мелиссы (пошита)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
+        }
+    end
 
-    gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Сандры', ''
-    gs 'Menu.AddModule', 'IrmaUniformMenu', {
-        gt 'IrmaUniformOrderConfirm', 'sandra', $IrmaUniformReturnLoc
-    }
+    if uniform_purchased['sandra'] = 0:
+        gs 'IrmaUniformGetPrice', 'sandra'
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Сандры (' + STR(IrmaUniformPrice) + ' спинтарий)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'sandra', $IrmaUniformReturnLoc
+        }
+    else:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Сандры (пошита)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'sandra', $IrmaUniformReturnLoc
+        }
+    end
 
-    gs 'MenuUiAdd', 'IrmaUniformMenu', 'Комплекты для всех троих', ''
-    gs 'Menu.AddModule', 'IrmaUniformMenu', {
-        gt 'IrmaUniformOrderAllConfirm', $IrmaUniformReturnLoc
-    }
-
-    gs 'MenuUiAdd', 'IrmaUniformMenu', 'Вернуться', ''
-    gs 'Menu.AddModule', 'IrmaUniformMenu', {
-        gt $IrmaUniformReturnLoc
-    }
+    gs 'IrmaUniformGetAllPrice'
+    if IrmaUniformAllNeedCount >= 2 and revealing_uniform_all_bought = 0:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Комплекты для всех (' + STR(IrmaUniformAllPrice) + ' спинтарий)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderAllConfirm', $IrmaUniformReturnLoc
+        }
+    end
 ---
 
 ! ================================================
@@ -117,14 +177,14 @@
 
 #IrmaUniformPrintStatus
 
-    *pl '<b>Комплекты:</b>'
+    *pl '<b>Состояние заказов:</b>'
 
     gs 'IrmaUniformPrintGirlStatus', 'amanda'
     gs 'IrmaUniformPrintGirlStatus', 'melissa'
     gs 'IrmaUniformPrintGirlStatus', 'sandra'
 
     if revealing_uniform_all_bought = 1:
-        *pl 'Общий заказ: все комплекты уже оплачены.'
+        *pl '<b>Все три комплекта пошиты и готовы к работе.</b>'
     end
 ---
 
@@ -140,9 +200,9 @@
     gs 'IrmaUniformEnsureName', $IrmaUniformGirl
 
     if uniform_purchased[$IrmaUniformGirl] = 1:
-        *pl $RealName[$IrmaUniformGirl] + ': откровенная форма готова.'
+        *pl '• ' + $RealName[$IrmaUniformGirl] + ': откровенная форма пошита.'
     else:
-        *pl $RealName[$IrmaUniformGirl] + ': откровенная форма не куплена.'
+        *pl '• ' + $RealName[$IrmaUniformGirl] + ': откровенная форма ещё не заказана.'
     end
 
     killvar '$IrmaUniformGirl'
@@ -159,7 +219,7 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_order_confirm', 'Ирма: подтверждение заказа формы', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_order_confirm', 'Ирма обсуждает заказ формы', 'large', 'webp'
     gs 'IrmaUniformNormalizeGirl', $ARGS[0]
     $IrmaUniformGirl = $IrmaUniformGirlKey
     $IrmaUniformReturnLoc = $ARGS[1]
@@ -180,14 +240,15 @@
     gs 'IrmaUniformPrintText', 'confirm_one'
 
     *pl ' '
-    *pl 'Цена: ' + STR(IrmaUniformPrice) + ' монет.'
-    *pl 'У тебя: ' + STR(money) + ' монет.'
+    *pl 'Стоимость пошива: ' + STR(IrmaUniformPrice) + ' спинтарий.'
+    *pl 'У тебя в кошельке: ' + STR(money) + ' спинтарий.'
     *pl ' '
 
     if uniform_purchased[$IrmaUniformGirl] = 1:
-        *p 'Этот комплект уже готов.'
+        *pl 'Этот комплект уже пошит и ждёт в твоём трактире.'
+        *pl ' '
 
-        gs 'ActUiPrepare', 'Вернуться', 'return'
+        gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
         end
@@ -200,7 +261,7 @@
 
         *pl ' '
 
-        gs 'ActUiPrepare', 'Вернуться', 'return'
+        gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
         end
@@ -208,7 +269,7 @@
         exit
     end
 
-    gs 'ActUiPrepare', 'Заказать', 'generic'
+    gs 'ActUiPrepare', 'Оплатить и сшить (' + STR(IrmaUniformPrice) + ' спинтарий)', 'coin'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IrmaUniformOrderBuy', $IrmaUniformGirl, $IrmaUniformReturnLoc
     end
@@ -258,10 +319,10 @@
     uniform_purchased[$IrmaUniformGirl] = 1
     IrmaUniformPurchasedCount += 1
 
-    ! Важно:
-    ! Покупка открывает форму, но не обязана автоматически надевать её.
-    ! Однако для удобства теста, если включен auto_set_revealing_uniform_after_buy,
-    ! форма сразу становится рабочей.
+    if uniform_purchased['amanda'] = 1 and uniform_purchased['melissa'] = 1 and uniform_purchased['sandra'] = 1:
+        revealing_uniform_all_bought = 1
+    end
+
     if auto_set_revealing_uniform_after_buy = 1:
         GirlUniformLevel[$IrmaUniformGirl] = 1
     end
@@ -279,7 +340,7 @@
     if auto_set_revealing_uniform_after_buy = 1:
         *pl 'Форма сразу назначена как рабочая.'
     else:
-        *pl 'Форма куплена. Назначить её как рабочую можно через разговор/правило после событий.'
+        *pl 'Новый наряд упакован. Чтобы девушка начала выходить в нём на смену, поговори с ней в трактире о рабочей форме.'
     end
 
     *pl ' '
@@ -315,19 +376,20 @@
     gs 'IrmaUniformGetAllPrice'
 
     gs 'ShowLocationScreenTitle', 'ЗАКАЗ ФОРМЫ ДЛЯ ВСЕХ'
-    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_order_all_confirm', 'ЗАКАЗ ФОРМЫ ДЛЯ ВСЕХ', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_order_all_confirm', 'Ирма принимает общий заказ формы', 'large', 'webp'
 
     gs 'IrmaUniformPrintText', 'confirm_all'
 
     *pl ' '
-    *pl 'Цена: ' + STR(IrmaUniformAllPrice) + ' монет.'
-    *pl 'У тебя: ' + STR(money) + ' монет.'
+    *pl 'Общая стоимость: ' + STR(IrmaUniformAllPrice) + ' спинтарий (с учётом скидки за полный заказ).'
+    *pl 'У тебя в кошельке: ' + STR(money) + ' спинтарий.'
     *pl ' '
 
     if revealing_uniform_all_bought = 1:
-        *p 'Все комплекты уже готовы.'
+        *pl 'Все комплекты уже пошиты и ждут в твоём трактире.'
+        *pl ' '
 
-        gs 'ActUiPrepare', 'Вернуться', 'return'
+        gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
         end
@@ -338,9 +400,10 @@
     if IrmaUniformAllNeedCount <= 0:
         revealing_uniform_all_bought = 1
 
-        *p 'Все комплекты уже были заказаны отдельно.'
+        *pl 'Все комплекты уже были заказаны по отдельности.'
+        *pl ' '
 
-        gs 'ActUiPrepare', 'Вернуться', 'return'
+        gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
         end
@@ -353,7 +416,7 @@
 
         *pl ' '
 
-        gs 'ActUiPrepare', 'Вернуться', 'return'
+        gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
         end
@@ -361,7 +424,7 @@
         exit
     end
 
-    gs 'ActUiPrepare', 'Заказать комплекты', 'generic'
+    gs 'ActUiPrepare', 'Оплатить все комплекты (' + STR(IrmaUniformAllPrice) + ' спинтарий)', 'coin'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IrmaUniformOrderAllBuy', $IrmaUniformReturnLoc
     end
@@ -402,6 +465,7 @@
     uniform_purchased['melissa'] = 1
     uniform_purchased['sandra'] = 1
     revealing_uniform_all_bought = 1
+    IrmaUniformPurchasedCount = 3
 
     if auto_set_revealing_uniform_after_buy = 1:
         GirlUniformLevel['amanda'] = 1
@@ -416,6 +480,14 @@
     gs 'ShowLocationScreenTitle', 'ФОРМА ДЛЯ ВСЕХ ГОТОВА'
 
     gs 'IrmaUniformPrintText', 'bought_all'
+
+    *pl ' '
+
+    if auto_set_revealing_uniform_after_buy = 1:
+        *pl 'Все формы сразу назначены как рабочие.'
+    else:
+        *pl 'Все три наряда упакованы. Чтобы девушки начали выходить в них на смену, поговори с каждой в трактире о рабочей форме.'
+    end
 
     *pl ' '
 

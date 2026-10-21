@@ -1,15 +1,16 @@
 ! ================================================
 ! FILE: modules/locations/shops/irma_uniform_offer.qsps
+! MODULE: modules/locations/shops
 ! Ирма предлагает откровенную форму после слухов
-! Версия: v1 / rumor trigger
+! Версия: v2 / rumor trigger & dialog logic
 ! Назначение:
 ! - убрать раннюю доступность откровенной формы
-! - дать сюжетный толчок: слухи, плохая репутация, пастор, доверие Ирмы
+! - дать сюжетный толчок: слухи, плохая репутация, священник, доверие Ирмы
 ! - открыть заказы формы только после разговора с Ирмой
 !
 ! Условия открытия:
 ! - игрок познакомился с Ирмой
-! - накопились слухи / скандальность трактира / пастор ругал за распущенность
+! - накопились слухи / скандальность трактира / священник ругал за распущенность
 ! - или отношения с Ирмой достаточно высокие
 !
 ! Тексты:
@@ -81,8 +82,7 @@
     end
 
     ! ====================== ПАСТОР / ЦЕРКОВЬ ======================
-    ! Поддерживаем несколько возможных имён флагов,
-    ! чтобы модуль спокойно пережил будущую церковную ветку.
+    ! Поддерживаем флаги храма Ильматера / отца Герхарда
 
     if PastorScoldedTavern = 1 or ChurchScoldedTavern = 1 or PriestScoldedTavern = 1 or PastorWarnedLewdTavern = 1 or ChurchLewdWarning = 1:
         IrmaUniformOfferScore += 3
@@ -126,7 +126,6 @@
     if IrmaUniformOfferScore >= 3:
         IrmaUniformOfferCanStart = 1
     end
-
 ---
 
 ! ================================================
@@ -167,8 +166,7 @@
 
     *pl ' '
 
-
-    gs 'ActUiPrepare', 'Согласиться выслушать Ирму', 'look'
+    gs 'ActUiPrepare', 'Принять предложение Ирмы', 'shop'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IrmaUniformOfferAccept', $IrmaUniformOfferReturnLoc
     end
@@ -178,7 +176,7 @@
         gt 'IrmaUniformOfferLater', $IrmaUniformOfferReturnLoc
     end
 
-    gs 'ActUiPrepare', 'Осадить Ирму', 'generic'
+    gs 'ActUiPrepare', 'Отказаться от такой затеи', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IrmaUniformOfferRefuseHard', $IrmaUniformOfferReturnLoc
     end
@@ -215,7 +213,7 @@
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Посмотреть заказы формы', 'look'
+    gs 'ActUiPrepare', 'Посмотреть заказы формы', 'shop'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IrmaUniformOrders', 'IrmaShop'
     end
@@ -306,20 +304,16 @@
 
 ! ================================================
 ! FILE: modules/locations/shops/irma_uniform_offer.qsps
-! Debug-открытие темы
+! Debug-открытие темы (для тестов)
 ! ================================================
 
 #IrmaUniformOfferDebugUnlock
 
-    IrmaMet = 1
-    IrmaUniformOfferSeen = 1
+    IrmaUniformOfferUnlocked = 1
     IrmaUniformOfferAccepted = 1
     IrmaUniformOfferDeclined = 0
-    IrmaUniformOfferUnlocked = 1
-    IrmaRelationship += 10
-    IrmaTrust += 10
-
-    *pl 'DEBUG: тема откровенной формы у Ирмы открыта.'
+    IrmaUniformOfferHardRefused = 0
+    IrmaMet = 1
 ---
 
 ! ================================================
@@ -329,12 +323,10 @@
 
 #IrmaUniformOfferDebugReset
 
-    IrmaUniformOfferSeen = 0
+    IrmaUniformOfferUnlocked = 0
     IrmaUniformOfferAccepted = 0
     IrmaUniformOfferDeclined = 0
-    IrmaUniformOfferUnlocked = 0
     IrmaUniformOfferHardRefused = 0
+    IrmaUniformOfferScore = 0
     $IrmaUniformOfferReason = ''
-
-    *pl 'DEBUG: тема откровенной формы у Ирмы сброшена.'
 ---
