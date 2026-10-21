@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 500
-- Locations: 3744
-- Locations with direct incoming calls: 3223
+- Locations: 3754
+- Locations with direct incoming calls: 3233
 - Locations without direct incoming calls: 521
 - Review candidates without direct incoming calls: 189
 - Classified entry/helper locations without direct incoming calls: 332
@@ -516,14 +516,14 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 | `entry/helper` |
 | `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 40 | `entry/helper` |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 | `entry/helper` |
-| `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 366 | `entry/helper` |
+| `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 368 | `entry/helper` |
 | `ShowDreamItemIfKnown` | `modules/core/gifts/gift_dream_images.qsps` | 32 | `entry/helper` |
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 511 | `entry/helper` |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 188 | `entry/helper` |
 | `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 580 | `entry/helper` |
 | `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 184 | `entry/helper` |
 | `ShowPortrait` | `modules/core/show_image/show_image_helpers.qsps` | 179 | `entry/helper` |
-| `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 267 | `entry/helper` |
+| `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 269 | `entry/helper` |
 | `ShowSexImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 577 | `entry/helper` |
 | `ShowSizedImage` | `modules/core/show_image/image_debug_random.qsps` | 186 | `entry/helper` |
 | `SparkQueueDebugReset` | `modules/core/tavern/spark_queue.qsps` | 335 | `entry/helper` |
@@ -549,21 +549,21 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1738 |
+| `ActUiPrepare` | 1741 |
 | `ShowLocationScreenTitle` | 755 |
 | `SceneShowVisual` | 707 |
-| `Menu.AddModule` | 571 |
-| `MenuUiAdd` | 562 |
+| `Menu.AddModule` | 566 |
+| `MenuUiAdd` | 557 |
 | `EnsureGirlData` | 244 |
-| `ClampGirlSocialStats` | 231 |
+| `ClampGirlSocialStats` | 235 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 165 |
 | `ShowGirlSidebar` | 106 |
 | `RegisterSex` | 98 |
 | `Market` | 97 |
 | `Menu.Create` | 95 |
+| `ShowImage` | 91 |
 | `Menu.Destroy` | 90 |
-| `ShowImage` | 90 |
 | `PrintMainP` | 87 |
 | `FormatSpintry` | 85 |
 | `UpdateGirlLocations` | 83 |
@@ -571,9 +571,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `PrintTitleLine` | 54 |
 | `AmandaLizaTalkPoolTry` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
-| `GirlTalkResult` | 47 |
 | `SaveLastHallEvent` | 45 |
-| `RegisterPlayerCum` | 44 |
+| `GirlTalkResult` | 45 |
+| `BeckyShop` | 44 |
 
 ## Dynamic Call Sites
 

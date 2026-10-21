@@ -1,7 +1,8 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_lizette.qsps
 ! MODULE: actions/dialogs
-! Меню разговоров Лизетты (лор-пулы)
+! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! Меню и расширенные разговоры Лизетты в порту
 ! ================================================
 
 #GirlTalkLizetteLoreBump
@@ -54,74 +55,177 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
-    gs 'GirlTalkRootAppendPersonalMenu'
-
-    if LizetteKnown = 1 or PortMeetWitnessed = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О корабле и столице', 'talk'
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    ! 1.1. Знакомство в порту (если ещё не говорили о корабле и столице)
+    if LizetteTalkPortDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'port_talk'
+            gt 'GirlTalkResult', 'lizette', $TalkReturnLoc, 'port_talk'
+        }
+    ! 1.2. О влиянии на Аманду и уроках (если влияние выросло, но о том, чему учит девочек, ещё не говорили)
+    elseif AmandaLizaInfluence >= 2 and LizetteTalkIntimDone = 0:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', 'lizette', $TalkReturnLoc, 'lizette_intim'
+        }
+    ! 1.3. О матери Жоржетте (если знает Жоржетту, но разговор о матери ещё не состоялся)
+    elseif GeorgetteKnown = 1 and LizetteTalkMotherDone = 0 and Friends['lizette'] >= 6:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'GirlTalkResult', 'lizette', $TalkReturnLoc, 'lizette_mother'
         }
     end
 
-    if LizetteTalkPortDone = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О себе', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_bio'
-        }
-
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и блеске', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_gifts'
-        }
-    end
-
-    if LizetteTalkPortDone = 1 and (AmandaMetLizette = 1 or PortMeetWitnessed = 1):
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О подарках и Аманде', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_amanda'
-        }
-    end
-
-    if LizetteTalkPortDone = 1 and AmandaLizaInfluence >= 2:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О том, чему она учит девочек', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_intim'
-        }
-    end
-
-    ! play coach Аманды: только подслушивание Аманда↔Лизетта в воскресенье (комната), не кнопка у Лизетты
-
-    if LizetteTalkPortDone = 1 and GeorgetteKnown = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'О матери', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'lizette_mother'
-        }
-    end
-
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поболтать ни о чём', 'talk'
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
     gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
+        gt 'GirlTalkResult', 'lizette', $TalkReturnLoc, 'lizette_unified'
     }
 
-    if Friends['lizette'] >= 12 or love['lizette'] >= 10 or otkroven['lizette'] >= 12:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', 'talk'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
-        }
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GirlTalkAppendGiftMenuItems') = 1:
+        gs 'GirlTalkAppendGiftMenuItems'
+    end
+---
+
+#GirlTalkLizetteUnifiedRun
+    ! 1. Проверка лимита полезных разговоров:
+    gs 'UsefulTalkCheck', 'lizette', 'lizette_unified'
+    if UsefulTalkResult = 0:
+        gs 'GirlTalkLizetteLimitReachedText'
+        gs 'ClampGirlSocialStats', 'lizette'
+        exit
     end
 
+    ! 2. Регистрация полезного разговора:
+    gs 'UsefulTalkRegister', 'lizette', 'lizette_unified'
+
+    ! 3. Иерархия тем разговора:
+    ! --- Пик откровения (предел) ---
+    if otkroven['lizette'] >= 25 and (HadSex['lizette'] > 0 or LizetteSexUnlocked = 1):
+        gs 'GirlTalkLizetteMemoryLimitRun'
+
+    ! --- Воспоминание о ночи в порту ---
+    elseif HadSex['lizette'] > 0 and otkroven['lizette'] >= 18 and LizetteMemoryPortSexDone = 0:
+        gs 'GirlTalkLizetteMemoryPortSexRun'
+
+    ! --- Воспоминание о подглядывании в соборе ---
+    elseif LizettePriestSpySeen = 1 and otkroven['lizette'] >= 14 and LizetteMemoryChurchSpyDone = 0:
+        gs 'GirlTalkLizetteMemoryChurchSpyRun'
+
+    ! --- Воспоминание о дружбе с Амандой ---
+    elseif AmandaMetLizette = 1 and AmandaLizaInfluence >= 5 and otkroven['lizette'] >= 10 and LizetteMemoryAmandaDone = 0:
+        gs 'GirlTalkLizetteMemoryAmandaRun'
+
+    ! --- Первые последовательные открытия лора ---
+    elseif LizetteTalkBioDone = 0:
+        gs 'GirlTalkLizetteBioRun'
+
+    elseif LizetteTalkPortDone = 0:
+        gs 'GirlTalkLizettePortRun'
+
+    elseif LizetteTalkGiftsDone = 0 and Friends['lizette'] >= 6:
+        gs 'GirlTalkLizetteGiftsRun'
+
+    elseif LizetteTalkAmandaDone = 0 and (AmandaMetLizette = 1 or PortMeetWitnessed = 1):
+        gs 'GirlTalkLizetteAmandaRun'
+
+    elseif LizetteTalkMotherDone = 0 and GeorgetteKnown = 1:
+        gs 'GirlTalkLizetteMotherRun'
+
+    elseif LizetteTalkIntimDone = 0 and AmandaLizaInfluence >= 2:
+        gs 'GirlTalkLizetteIntimRun'
+
+    ! --- Повторяющаяся ротация богатых лор-пулов (все 6 пулов сохраняются) ---
+    else:
+        LizetteLorePoolCycle += 1
+        if LizetteLorePoolCycle > 5:
+            LizetteLorePoolCycle = 0
+        end
+
+        if LizetteLorePoolCycle = 0:
+            gs 'GirlTalkLizetteBioRun'
+        elseif LizetteLorePoolCycle = 1:
+            gs 'GirlTalkLizettePortRun'
+        elseif LizetteLorePoolCycle = 2:
+            gs 'GirlTalkLizetteGiftsRun'
+        elseif LizetteLorePoolCycle = 3:
+            gs 'GirlTalkLizetteAmandaRun'
+        elseif LizetteLorePoolCycle = 4:
+            gs 'GirlTalkLizetteMotherRun'
+        else:
+            if AmandaLizaInfluence >= 2:
+                gs 'GirlTalkLizetteIntimRun'
+            else:
+                gs 'GirlTalkLizetteGiftsRun'
+            end
+        end
+    end
+
+    ! --- Дополнительные действия на экране разговора ---
     if $TalkReturnLoc = 'Port' and time = 5 and LizettePortNightGone = 0 and LizetteSexUnlocked = 1:
         gs 'PortNightGirlVisible', 'lizette'
 
         if PortNightGirlVisible = 1:
-            gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Снять Лизетту (10 спинтарий)', 'intim'
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gs 'ActUiPrepare', 'Провести ночь с Лизеттой (10 спинтарий)', 'intim'
+            act $ActUiLabel, $ActUiIconPath:
                 gt 'PortProstNightHire', 'Port', 'lizette'
-            }
+            end
         end
 
         killvar 'PortNightGirlVisible'
     end
+
+    if Friends['lizette'] >= 12 or love['lizette'] >= 10 or otkroven['lizette'] >= 12:
+        gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'lizette', $TalkReturnLoc, 'compliment'
+        end
+    end
+
+    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'lizette', $TalkReturnLoc, 'gift'
+        end
+    end
+
+    gs 'ClampGirlSocialStats', 'lizette'
+---
+
+#GirlTalkLizetteMemoryLimitRun
+    gs 'GirlTalkLizetteMemoryLimitText'
+
+    if LizetteMemoryLimitDone = 0:
+        LizetteMemoryLimitDone = 1
+        love['lizette'] += 2
+        otkroven['lizette'] += 2
+        Friends['lizette'] += 1
+    else:
+        love['lizette'] += 1
+        otkroven['lizette'] += 1
+    end
+---
+
+#GirlTalkLizetteMemoryPortSexRun
+    gs 'GirlTalkLizetteMemoryPortSexText'
+    LizetteMemoryPortSexDone = 1
+    love['lizette'] += 2
+    otkroven['lizette'] += 1
+---
+
+#GirlTalkLizetteMemoryChurchSpyRun
+    gs 'GirlTalkLizetteMemoryChurchSpyText'
+    LizetteMemoryChurchSpyDone = 1
+    otkroven['lizette'] += 2
+    Friends['lizette'] += 1
+---
+
+#GirlTalkLizetteMemoryAmandaRun
+    gs 'GirlTalkLizetteMemoryAmandaText'
+    LizetteMemoryAmandaDone = 1
+    otkroven['lizette'] += 1
+    Friends['lizette'] += 1
 ---
 
 #GirlTalkLizettePortRun
@@ -130,8 +234,11 @@
     gs 'GirlTalkLizettePrintText', 'lizette_port', 'context'
 
     LizetteTalkPortDone = 1
+    LizetteKnown = 1
     Friends['lizette'] += 1
     trading += 1
+
+    gs 'ClampGirlSocialStats', 'lizette'
 ---
 
 #GirlTalkLizetteBioRun
@@ -154,6 +261,8 @@
     LizetteTalkGiftsDone = 1
     Friends['lizette'] += 1
     trading += 1
+
+    gs 'ClampGirlSocialStats', 'lizette'
 ---
 
 #GirlTalkLizetteAmandaRun
@@ -205,7 +314,7 @@
     gs 'GirlTalkLizetteText', $ARGS[0], $ARGS[1]
 
     if $GirlTalkLizetteText <> '':
-        *p $GirlTalkLizetteText
+        *pl $GirlTalkLizetteText
     end
 
     killvar '$GirlTalkLizetteText'
