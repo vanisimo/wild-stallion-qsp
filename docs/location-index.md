@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3835
+- Locations: 3841
 
 ## modules/actions
 
@@ -3471,7 +3471,7 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyShopReturnAfterPurchase` | `modules/locations/shops/becky_shop_buy.qsps` | 10 |
 | `BuildAlberWineTalkMenu` | `modules/locations/shops/wine_shop.qsps` | 331 |
 | `BuildEddieShopTalkMenu` | `modules/locations/shops/becky_shop.qsps` | 541 |
-| `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 147 |
+| `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 252 |
 | `BuildMayorOfficeTalkMenu` | `modules/locations/town/mayor_office.qsps` | 960 |
 | `Church` | `modules/locations/town/church.qsps` | 7 |
 | `ChurchDonationInfo` | `modules/locations/town/church_weekday.qsps` | 234 |
@@ -3510,8 +3510,14 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkDanceDressAgree` | `modules/locations/shops/irma_dance_dress.qsps` | 192 |
 | `GirlTalkDanceDressLater` | `modules/locations/shops/irma_dance_dress.qsps` | 236 |
 | `GirlTalkDanceDressStart` | `modules/locations/shops/irma_dance_dress.qsps` | 147 |
+| `GuardImportantCheck` | `modules/locations/town/guard_post.qsps` | 98 |
 | `GuardPost` | `modules/locations/town/guard_post.qsps` | 8 |
-| `GuardTalk` | `modules/locations/town/guard_post.qsps` | 98 |
+| `GuardTalk` | `modules/locations/town/guard_post.qsps` | 138 |
+| `GuardTalkDutyRun` | `modules/locations/town/guard_post.qsps` | 246 |
+| `GuardTalkLimitReachedText` | `modules/locations/town/guard_post.qsps` | 229 |
+| `GuardTalkPortRun` | `modules/locations/town/guard_post.qsps` | 240 |
+| `GuardTalkSmuggleRun` | `modules/locations/town/guard_post.qsps` | 234 |
+| `GuardUnifiedTalkRun` | `modules/locations/town/guard_post.qsps` | 190 |
 | `IngaGiftForgive` | `modules/locations/shops/becky_shop.qsps` | 497 |
 | `IngaRoom` | `modules/locations/shops/becky_house.qsps` | 31 |
 | `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 190 |

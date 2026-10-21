@@ -95,44 +95,87 @@
     end
 ---
 
+#GuardImportantCheck
+    GuardImportantReady = 0
+    $GuardImportantAction = ''
+
+    ! 1. Подсказка по накладной на оружие
+    if PlayerHasWeaponShipmentInvoice = 1 and GuardPostHintDone = 0 and LOC('GuardPostBlackmailHint') = 1:
+        GuardImportantReady = 1
+        $GuardImportantAction = 'blackmail_hint'
+        exit
+    end
+
+    ! 2. Вступиться за Ингу
+    if IngaGuardHelpPromise > 0 and IngaGuardResolved = 0 and LOC('IngaGuardIntervene') = 1:
+        GuardImportantReady = 1
+        $GuardImportantAction = 'inga_intervene'
+        exit
+    end
+
+    ! 3. Предложение сделки по Инге
+    if IngaDanceRefusedCount >= 2 and IngaGuardSchemeActive = 0 and IngaGuardResolved = 0 and LOC('IngaGuardSchemeProposal') = 1:
+        GuardImportantReady = 1
+        $GuardImportantAction = 'inga_scheme'
+        exit
+    end
+
+    ! 4. Деньги за проход
+    if IngaGuardHelpStage = 2 and IngaGuardLadderDone = 0 and IngaGuardWeeklyActive = 1 and IngaGuardBribedExit = 0 and LOC('IngaGuardBribeExit') = 1:
+        GuardImportantReady = 1
+        $GuardImportantAction = 'inga_bribe'
+        exit
+    end
+
+    ! 5. Встреча со стражником
+    if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0 and LOC('MeetGuard') = 1:
+        GuardImportantReady = 1
+        $GuardImportantAction = 'meet_guard'
+        exit
+    end
+---
+
 #GuardTalk
     cls
 
-    gs 'ShowLocationScreenTitle', 'РАЗГОВОР СО СТРАЖНИКОМ ГРЮНОМ'
+    gs 'ShowLocationScreenTitle', 'ПОСТ ГОРОДСКОЙ СТРАЖИ'
     gs 'ShowImage', 'guard', 'post', 'talk', 'normal'
 
-    *p 'Грюн скрещивает руки на груди:'
-    *p '"Ну что, хозяин трактира? Опять пришёл по делу?"'
+    gs 'GuardUnifiedTalkRun'
 
-    if IngaGuardSchemeActive = 1 and IngaGuardResolved = 0:
-        *p 'Он многозначительно усмехается: "Лавка Блэнкеншип… справная там девчонка работает. Построжу её ещё немного."'
-    elseif IngaGuardProblem = 1 and GuardBribed = 0:
-        *p 'Он многозначительно усмехается: "Лавка Блэнкеншип… симпатичная там девчонка работает."'
+    *pl ' '
+
+    ! Контекстные действия стражи на экране беседы
+    if PlayerHasWeaponShipmentInvoice = 1 and GuardPostHintDone = 0 and LOC('GuardPostBlackmailHint') = 1:
+        gs 'ActUiPrepare', 'Спросить о накладной', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GuardPostBlackmailHint'
+        end
     end
 
-    if IngaDanceRefusedCount >= 2 and IngaGuardSchemeActive = 0 and IngaGuardResolved = 0:
-        gs 'ActUiPrepare', 'Договориться насчёт лавки Блэнкеншип', 'guard'
+    if IngaDanceRefusedCount >= 2 and IngaGuardSchemeActive = 0 and IngaGuardResolved = 0 and LOC('IngaGuardSchemeProposal') = 1:
+        gs 'ActUiPrepare', 'Подкупить стражника', 'guard'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IngaGuardSchemeProposal'
         end
     end
 
-    if IngaGuardHelpPromise > 0 and IngaGuardResolved = 0:
-        gs 'ActUiPrepare', 'Потребовать оставить Ингу в покое', 'guard'
+    if IngaGuardHelpPromise > 0 and IngaGuardResolved = 0 and LOC('IngaGuardIntervene') = 1:
+        gs 'ActUiPrepare', 'Вступиться за Ингу', 'guard'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IngaGuardIntervene'
         end
     end
 
-    if IngaGuardHelpStage = 2 and IngaGuardLadderDone = 0 and IngaGuardWeeklyActive = 1 and IngaGuardBribedExit = 0:
-        gs 'ActUiPrepare', 'Откупить Ингу у сержанта Грюна', 'money'
+    if IngaGuardHelpStage = 2 and IngaGuardLadderDone = 0 and IngaGuardWeeklyActive = 1 and IngaGuardBribedExit = 0 and LOC('IngaGuardBribeExit') = 1:
+        gs 'ActUiPrepare', 'Дать денег за проход', 'money'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IngaGuardBribeExit'
         end
     end
 
-    if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
-        gs 'ActUiPrepare', 'Лавка Бекки', 'shop'
+    if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0 and LOC('MeetGuard') = 1:
+        gs 'ActUiPrepare', 'Договориться о встрече', 'shop'
         act $ActUiLabel, $ActUiIconPath:
             gt 'MeetGuard'
         end
@@ -144,40 +187,101 @@
     end
 ---
 
+#GuardUnifiedTalkRun
+    ! 1. Проверка лимита полезных разговоров
+    gs 'UsefulTalkCheck', 'guard', 'guard_unified'
+    if UsefulTalkResult = 0:
+        gs 'GuardTalkLimitReachedText'
+        exit
+    end
+
+    ! 2. Регистрация полезного разговора
+    gs 'UsefulTalkRegister', 'guard', 'guard_unified'
+
+    ! 3. Прогрессивная иерархия тем:
+    ! --- О контрабанде и обозах ---
+    if GuardSmuggleTalkDone = 0:
+        GuardSmuggleTalkDone = 1
+        gs 'GuardTalkSmuggleRun'
+
+    ! --- О порядке в городе и портовой матросне ---
+    elseif GuardPortTalkDone = 0:
+        GuardPortTalkDone = 1
+        gs 'GuardTalkPortRun'
+
+    ! --- Циклическая ротация тем ---
+    else:
+        GuardLorePoolCycle += 1
+        if GuardLorePoolCycle > 2:
+            GuardLorePoolCycle = 0
+        end
+
+        if GuardLorePoolCycle = 0:
+            gs 'GuardTalkPortRun'
+        elseif GuardLorePoolCycle = 1:
+            gs 'GuardTalkSmuggleRun'
+        else:
+            gs 'GuardTalkDutyRun'
+        end
+    end
+---
+
+#GuardTalkLimitReachedText
+    *pl 'Стражник поправляет копьё, оглядывая улицу, и скучающим тоном цедит:'
+    *pl '— Слушай, парень, у меня караульная служба, а не посиделки в твоём трактире. Капитан каждые полчаса проверяет посты. Если есть дело по службе или донос — говори, а лясы точить иди на рынок.'
+---
+
+#GuardTalkSmuggleRun
+    *pl 'Стражник оглядывается по сторонам и негромко цедит сквозь зубы:'
+    *pl '— Через южные ворота то и дело идут обозы с холмов. Кто-то платит пошлину честно, а кто-то суёт сержанту серебро в рукав. Если видишь в городе подозрительные ящики с клеймами столичных оружейников — лучше не суйся, Стефан, пока голова на плечах.'
+    Talked['guard'] += 1
+---
+
+#GuardTalkPortRun
+    *pl 'Стражник лениво опирается на древко копья:'
+    *pl '— В Верхнем городе всё тихо: там патриции да мэр со своими клерками. А вот у порта вечно шваль со всех морей. Капитаны гребут золото, а мы потом вытаскиваем утопленников да разнимаем пьяную матросню. Твой трактир пока на хорошем счету, Стефан, но смотри, чтоб девки в зале не буянили.'
+    Talked['guard'] += 1
+---
+
+#GuardTalkDutyRun
+    *pl 'Стражник окидывает тебя цепким взглядом стража ворот:'
+    *pl '— День на ногах в железном панцире — то ещё удовольствие, парень. Солнце печёт, пыль от телег скрипит на зубах. Одно радует: вечером сменюсь и зайду к тебе в «Дикий Жеребец» пропустить кружку холодного пива.'
+    Talked['guard'] += 1
+---
+
 #BuildGuardPostMenu
     gs 'Menu.Destroy', 'GuardPostMenu'
     gs 'Menu.Create', 'GuardPostMenu'
 
+    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GuardImportantCheck') = 1:
+        gs 'GuardImportantCheck'
+        if GuardImportantReady = 1:
+            gs 'MenuUiAdd', 'GuardPostMenu', 'Важный разговор', 'important'
+            if $GuardImportantAction = 'blackmail_hint':
+                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'GuardPostBlackmailHint' }
+            elseif $GuardImportantAction = 'inga_intervene':
+                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'IngaGuardIntervene' }
+            elseif $GuardImportantAction = 'inga_scheme':
+                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'IngaGuardSchemeProposal' }
+            elseif $GuardImportantAction = 'inga_bribe':
+                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'IngaGuardBribeExit' }
+            elseif $GuardImportantAction = 'meet_guard':
+                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'MeetGuard' }
+            end
+        end
+        killvar 'GuardImportantReady'
+        killvar '$GuardImportantAction'
+    end
+
+    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
     gs 'MenuUiAdd', 'GuardPostMenu', 'Поговорить', 'talk'
     gs 'Menu.AddModule', 'GuardPostMenu', {
         gt 'GuardTalk'
     }
 
-    if IngaDanceRefusedCount >= 2 and IngaGuardSchemeActive = 0 and IngaGuardResolved = 0:
-        gs 'MenuUiAdd', 'GuardPostMenu', 'Договориться насчёт лавки Блэнкеншип', 'guard'
-        gs 'Menu.AddModule', 'GuardPostMenu', {
-            gt 'IngaGuardSchemeProposal'
-        }
-    end
-
-    if IngaGuardHelpPromise > 0 and IngaGuardResolved = 0:
-        gs 'MenuUiAdd', 'GuardPostMenu', 'Потребовать оставить Ингу в покое', 'guard'
-        gs 'Menu.AddModule', 'GuardPostMenu', {
-            gt 'IngaGuardIntervene'
-        }
-    end
-
-    if IngaGuardHelpStage = 2 and IngaGuardLadderDone = 0 and IngaGuardWeeklyActive = 1 and IngaGuardBribedExit = 0:
-        gs 'MenuUiAdd', 'GuardPostMenu', 'Откупить Ингу у сержанта Грюна', 'money'
-        gs 'Menu.AddModule', 'GuardPostMenu', {
-            gt 'IngaGuardBribeExit'
-        }
-    end
-
-    if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0:
-        gs 'MenuUiAdd', 'GuardPostMenu', 'Лавка Бекки', 'shop'
-        gs 'Menu.AddModule', 'GuardPostMenu', {
-            gt 'MeetGuard'
-        }
+    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
+    if LOC('GuyTalkAppendGiftMenuItems') = 1:
+        gs 'GuyTalkAppendGiftMenuItems', 'guard', 'GuardPost', 'GuardPostMenu'
     end
 ---
