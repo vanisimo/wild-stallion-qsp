@@ -46,8 +46,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 9 | `modules/core` |
 | `ClarissaIntimAfterSex` | `modules/events/legare/clarissa_intim_arc.qsps` | 195 | `modules/events` |
 | `ClearGirlLocation` | `modules/core/girls/girl_location.qsps` | 61 | `modules/core` |
-| `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 61 | `modules/npc` |
-| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 73 | `modules/npc` |
+| `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 63 | `modules/npc` |
+| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 75 | `modules/npc` |
 | `FamilyCouncilTryAtNight` | `modules/events/family/family_council.qsps` | 26 | `modules/events` |
 | `FamilyCouncilTryBeforeNextDay` | `modules/events/family/family_council.qsps` | 40 | `modules/events` |
 | `FormatTextBad` | `modules/core/text/text_format.qsps` | 347 | `modules/core` |
@@ -552,9 +552,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1769 |
-| `ShowLocationScreenTitle` | 757 |
-| `SceneShowVisual` | 710 |
+| `ActUiPrepare` | 1776 |
+| `ShowLocationScreenTitle` | 758 |
+| `SceneShowVisual` | 711 |
 | `Menu.AddModule` | 592 |
 | `MenuUiAdd` | 533 |
 | `EnsureGirlData` | 244 |

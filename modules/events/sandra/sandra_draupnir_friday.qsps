@@ -194,6 +194,72 @@
 
 #DraupnirShop
 
+    ShopOpen = 1
+    $ClosedReason = ''
+
+    if time = 5:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас ночь, мастерская закрыта'
+    elseif week = 5 and time = 4:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас пятничный вечер, мастерская заперта изнутри'
+    elseif week = 7:
+        ShopOpen = 0
+        if time = 1:
+            $ClosedReason = 'сейчас воскресное утро, время службы в соборе'
+        elseif time = 2:
+            $ClosedReason = 'сейчас воскресный полдень, время исповедей'
+        else:
+            $ClosedReason = 'сейчас воскресенье, мастерская закрыта'
+        end
+    end
+
+    if ShopOpen = 0:
+        *clr
+        clr
+        cla
+
+        gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/draupnir_shop', 'лавка Драупнира', 'large', 'webp'
+        gs 'AddGlobalButtons'
+        gs 'ShowLocationScreenTitle', 'МАСТЕРСКАЯ ДРАУПНИРА — ЗАКРЫТО'
+
+        if week = 5 and time = 4 and $GirlLocation['sandra'] = 'DraupnirShop':
+            *pl 'Из закрытой на засов мастерской слышны приглушённые голоса и тихие женские вздохи. Драупнир говорит неторопливо и басовито, а второй голос — знакомый, тёплый, мамин — отвечает ему так ласково и тиховато, как на кухне она отродясь ни с кем не говорила.'
+            *pl ' '
+
+            if SandraDraupnirFridayToday = 0:
+                gs 'ActUiPrepare', 'Заглянуть в окно', 'look'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'SandraDraupnirFridayPeek'
+                end
+
+                gs 'ActUiPrepare', 'Вломиться через дверь мастерской', 'generic'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'SandraDraupnirFridayDoorBurst'
+                end
+
+                gs 'ActUiPrepare', 'Подкараулить у выхода', 'look'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'SandraDraupnirFridayIntercept'
+                end
+            end
+        elseif time = 5:
+            *pl 'Мастерская закрыта на ночь. Тяжёлые дубовые ставни опущены, на двери висит массивный замок. Внутри темно и тихо — столяр давно спит.'
+        elseif week = 7:
+            *pl 'Мастерская закрыта. В воскресенье столяр не работает — в городе день отдыха и молитвы Ильматеру.'
+        else:
+            *pl 'Мастерская закрыта. Причина: ' + $ClosedReason + '.'
+        end
+
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Квартал ремесленников', 'craftsmen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'CraftsmenQuarter'
+        end
+        exit
+    end
+
     *clr
     clr
     cla
@@ -210,25 +276,6 @@
 
     *pl ' '
 
-    if week = 5 and time = 4 and $GirlLocation['sandra'] = 'DraupnirShop' and SandraDraupnirFridayToday = 0:
-        gs 'ActUiPrepare', 'Заглянуть в окно', 'look'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'SandraDraupnirFridayPeek'
-        end
-
-        gs 'ActUiPrepare', 'Вломиться через дверь мастерской', 'generic'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'SandraDraupnirFridayDoorBurst'
-        end
-
-        gs 'ActUiPrepare', 'Подкараулить у выхода', 'look'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'SandraDraupnirFridayIntercept'
-        end
-    end
-
-    *pl ' '
-
     gs 'BuildDraupnirTalkMenu'
     gs 'NpcMenuLink', 'Драупнир', 'DraupnirTalkMenu'
 
@@ -242,28 +289,33 @@
     end
 
     if TavernCarpenterUpgradesUnlocked = 1:
-        act '<b>Улучшения трактира</b>', 'images/common/ui/actions/work.png':
+        gs 'ActUiPrepare', 'Улучшения трактира', 'work'
+        act $ActUiLabel, $ActUiIconPath:
             gt 'DraupnirUpgradesShop'
         end
     else:
-        act '<b>Улучшения трактира (закрыто)</b>', 'images/common/ui/actions/work.png':
+        gs 'ActUiPrepare', 'Улучшения трактира (закрыто)', 'work'
+        act $ActUiLabel, $ActUiIconPath:
             gt 'DraupnirUpgradesLocked'
         end
     end
 
     if TavernRepairNeeded = 1 and TavernRepairOrdered = 0:
-        act '<b>Заказать ремонт</b>', 'images/common/ui/actions/work.png':
+        gs 'ActUiPrepare', 'Заказать ремонт', 'work'
+        act $ActUiLabel, $ActUiIconPath:
             gt 'TavernDayEventCarpenterRepair'
         end
     elseif TavernRepairNeeded = 1 and TavernRepairOrdered = 1:
-        act '<b>Ремонт уже заказан</b>', 'images/common/ui/actions/work.png':
+        gs 'ActUiPrepare', 'Ремонт уже заказан', 'work'
+        act $ActUiLabel, $ActUiIconPath:
             gt 'TavernDayEventCarpenterRepairAlreadyOrdered'
         end
     end
 
     *pl ' '
 
-    act '<b>Квартал ремесленников</b>', 'images/common/ui/actions/craftsmen.png':
+    gs 'ActUiPrepare', 'Квартал ремесленников', 'craftsmen'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'CraftsmenQuarter'
     end
 ---
