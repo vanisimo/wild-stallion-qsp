@@ -1,5 +1,6 @@
 ! ================================================
 ! MODULE: core/show_image/show_image_helpers.qsps
+! [AI-WORKED] Текст переработан / дополнен ассистентом 27.10.2026
 ! Удобные обёртки для ShowImage
 ! Упрощают вызовы картинок по всему проекту
 ! ================================================
@@ -230,8 +231,8 @@ gs 'ShowImage', 'portrait', $girl, '', '', '', $size
 
     gs 'ResolveGirlTalkContextLoc', $TalkImageGirl
 
-    if LOC('GirlTalkShowMoodImage') = 1 and ($TalkImageGirl = 'amanda' or $TalkImageGirl = 'melissa') and $TalkImageLoc <> 'AmandaRoom' and $TalkImageLoc <> 'MelissaRoom':
-        gs 'GirlTalkShowMoodImage', $TalkImageGirl, $TalkImageSize, $TalkImageTopic
+    if LOC('GirlTalkShowMoodImage') = 1 and $TalkImageLoc <> 'AmandaRoom' and $TalkImageLoc <> 'MelissaRoom':
+        gs 'GirlTalkShowMoodImage', $TalkImageGirl, 'portrait', $TalkImageTopic
     elseif $TalkImageLoc = 'AmandaRoom':
         gs 'ShowGirlRoomScene', 'amanda', 'talk', $TalkImageSize
     elseif $TalkImageLoc = 'MelissaRoom':
@@ -244,16 +245,6 @@ gs 'ShowImage', 'portrait', $girl, '', '', '', $size
         else:
             gs 'ShowLocationTimeImage', 'images/locations/tavern/kitchen', 'jpg'
         end
-    elseif $TalkImageGirl = 'becky' or $TalkImageLoc = 'BeckyShop':
-        gs 'ShowImage', 'becky', 'shop', 'normal', 'normal'
-    elseif $TalkImageGirl = 'clarissa' or $TalkImageLoc = 'WineShop':
-        gs 'ShowImage', 'wine', 'shop', 'normal', 'normal'
-    elseif $TalkImageGirl = 'irma' or $TalkImageLoc = 'IrmaShop':
-        gs 'ShowImage', 'irma', 'shop', 'talk', 'normal'
-    elseif $TalkImageGirl = 'lizette':
-        gs 'ShowImage', 'lizette', 'normal', 'normal'
-    elseif $TalkImageGirl = 'georgett' or $TalkImageLoc = 'Port':
-        gs 'ShowImage', 'port', 'general', 'normal'
     elseif $TalkImageLoc = 'TavernMain':
         gs 'ShowImage', 'location', 'tavern_main', '', '', 'png', $TalkImageSize
     else:
@@ -346,10 +337,17 @@ gs 'ShowImage', 'sex', $girl, $type, $pose, 'webp', $size
 
     $SceneVisStub = 'images/common/hall_scene_stub'
 
+    if $SceneVisSize = 'portrait':
+        $SceneVisType = 'portrait'
+    else:
+        $SceneVisType = 'event'
+    end
+
     if SceneArtUseReal = 1 and $SceneVisFuture <> '' and LOC('ShowImagePath') = 1:
-        gs 'ShowImagePath', $SceneVisFuture, '', 'event', $SceneVisExt
+        gs 'ShowImagePath', $SceneVisFuture, '', $SceneVisType, $SceneVisExt
+        SceneArtUseReal = 0
     elseif LOC('ShowImagePath') = 1:
-        gs 'ShowImagePath', $SceneVisStub, '', 'event', 'png'
+        gs 'ShowImagePath', $SceneVisStub, '', $SceneVisType, 'png'
     elseif LOC('ShowImage') = 1:
         gs 'ShowImage', 'common', '', 'hall_scene_stub', '', 'png', $SceneVisSize
     end
@@ -361,6 +359,7 @@ gs 'ShowImage', 'sex', $girl, $type, $pose, 'webp', $size
     killvar '$SceneVisSize'
     killvar '$SceneVisExt'
     killvar '$SceneVisStub'
+    killvar '$SceneVisType'
 ---
 
 ! ====================== ЗАГЛУШКА ДЛЯ СОВМЕСТИМОСТИ ======================
