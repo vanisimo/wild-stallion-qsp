@@ -1,9 +1,66 @@
 ! ================================================
 ! FILE: modules/events/legare/clarissa_golden_wine_arc.qsps
 ! MODULE: events/legare
-! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! [AI-WORKED] Текст переработан / дополнен ассистентом 27.10.2026
 ! Ветка «Золотое вино» Клариссы: мечта о купаже -> монастырский свиток -> горная лоза -> закладка террас и виноградника
 ! ================================================
+
+#ClarissaGoldenWineCanOfferDream
+    ClarissaGoldenWineCanOfferDream = 0
+
+    if ClarissaGoldenWineStage <> 0:
+        exit
+    end
+
+    ! Уже знает о мечте (для совместимости)
+    if PlayerKnows_Dream_GoldenWine = 1:
+        ClarissaGoldenWineCanOfferDream = 1
+        exit
+    end
+
+    ! Проверка расположения и доверия Клариссы к Стефану
+    if Friends['clarissa'] < 4 and love['clarissa'] < 2 and otkroven['clarissa'] < 6 and ClarissaTrustStefan < 2:
+        exit
+    end
+
+    ! Проверка сюжетных триггеров:
+    ! 1. Внимание / отношения Легаре к Аманде (или подозрения Клариссы)
+    _storyTriggered = 0
+    if LegareNoticedAmanda = 1 or AmandaLegareNoticeStage >= 1:
+        _storyTriggered = 1
+    elseif ClarissaSawLegareAmanda = 1 or ClarissaTalkAboutAmandaDone = 1 or ClarissaTalkAboutAmandaReady = 1:
+        _storyTriggered = 1
+    elseif AmandaLegareInterest >= 1 or LegareAmandaInterest >= 1:
+        _storyTriggered = 1
+    elseif FactHappened['amanda_dancewithlegare_1'] = 1 or AmandaDanceWithLegare = 1 or Fact_AmandaDanceWithLegare = 1:
+        _storyTriggered = 1
+    elseif Fact_AmandaLegareOutsideMeet = 1 or AmandaLegareOutsideMeetDone = 1 or Fact_AmandaLegarePrivateTalk = 1:
+        _storyTriggered = 1
+    elseif AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1 or Fact_AmandaLegareFridayAlley = 1:
+        _storyTriggered = 1
+    elseif ClarissaLegareSuspicion >= 1 or ClarissaLegareSuspicionTalkDone = 1 or ClarissaLegareSuspicionTalkReady = 1:
+        _storyTriggered = 1
+    elseif ClarissaAmandaLegareOutsideTalkDiscussed = 1 or ClarissaAmandaLegareMajorRiskDiscussed = 1 or ClarissaAmandaLegarePrivateTalkDiscussed = 1:
+        _storyTriggered = 1
+    end
+
+    ! 2. Начало конфликта с Легаре (давление на трактир, цены, ссора)
+    if LegareFirstConflictStage >= 1 or LegareFirstConflictResult > 0 or LegareConflictStage >= 1:
+        _storyTriggered = 1
+    elseif LegarePricesRaised = 1 or LegareWinePressure = 1 or AmandaLegareConflictWithLegareReady = 1:
+        _storyTriggered = 1
+    elseif ClarissaLegareConflictTalkDone = 1 or ClarissaLegareConflictTalkReady = 1:
+        _storyTriggered = 1
+    elseif LegareFirstConflictAfterTalkDone = 1 or LegareFirstConflictAfterTalkReady = 1:
+        _storyTriggered = 1
+    end
+
+    if _storyTriggered = 1:
+        ClarissaGoldenWineCanOfferDream = 1
+    end
+
+    killvar '_storyTriggered'
+---
 
 #ClarissaGoldenWineDreamTalk
     *clr
@@ -11,31 +68,124 @@
     cla
 
     gs 'ShowLocationScreenTitle', 'МЕЧТА КЛАРИССЫ: ЗОЛОТОЕ ВИНО'
-    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/clarissa_wine_dream', 'Кларисса увлечённо рассказывает Стефану о купаже и Золотом вине', 'large', 'webp'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/locations/clarissa/shop/normal', 'Кларисса отставляет хрустальный бокал и закрывает гроссбух', 'large', 'jpg'
+    SceneArtUseReal = 0
 
-    gs 'ClarissaGoldenWinePrintText', 'dream_talk'
+    gs 'ClarissaGoldenWinePrintText', 'dream_talk_intro'
     *pl ' '
 
-    gs 'ActUiPrepare', 'Пообещать помочь найти рецепт и лозу', 'talk'
+    gs 'ActUiPrepare', '«О выручке и новых клиентах?»', 'talk'
     act $ActUiLabel, $ActUiIconPath:
-        ClarissaGoldenWineActive = 1
-        ClarissaGoldenWineStage = 1
-        PlayerKnows_Dream_GoldenWine = 1
-        PlayerKnows_Dream_GoldenWineRecipe = 1
-        DreamItemKnown['golden_wine'] = 1
-        DreamItemKnown['golden_wine_recipe'] = 1
-        Friends['clarissa'] += 2
-        otkroven['clarissa'] += 2
-        *pl ' '
-        *pl '<i>Кларисса с благодарностью сжимает твою руку. Теперь тебе нужно разузнать о старинном монастырском свитке в храме Ильматера и раздобыть саженцы горной лозы на рынке.</i>'
-        *pl ' '
-        gs 'ActUiPrepare', 'Вернуться к лавке', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'WineShop', 'main'
-        end
+        gt 'ClarissaGoldenWineDreamTalkAlbert'
+    end
+
+    gs 'ActUiPrepare', '«О чём же? Поделись со мной»', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaGoldenWineDreamTalkAlbert'
     end
 
     gs 'ActUiPrepare', 'Пока повременить', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'WineShop', 'main'
+    end
+---
+
+#ClarissaGoldenWineDreamTalkAlbert
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'МЕЧТА КЛАРИССЫ: УСПЕХ АЛЬБЕРА'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/locations/clarissa/shop/talk', 'Кларисса подходит ближе и тихо рассказывает об Альбере', 'large', 'jpg'
+    SceneArtUseReal = 0
+
+    gs 'ClarissaGoldenWinePrintText', 'dream_talk_albert'
+    *pl ' '
+
+    gs 'ActUiPrepare', '«Но тебе этого мало, верно?»', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaGoldenWineDreamTalkGoal'
+    end
+
+    gs 'ActUiPrepare', '«Альбер доволен покоем, а ты хочешь признания?»', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaGoldenWineDreamTalkGoal'
+    end
+---
+
+#ClarissaGoldenWineDreamTalkGoal
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'МЕЧТА КЛАРИССЫ: ЗОЛОТОЙ КУПАЖ'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/locations/clarissa/shop/happy_big_purchase', 'В глазах девушки вспыхивает азартный огонёк', 'large', 'jpg'
+    SceneArtUseReal = 0
+
+    gs 'ClarissaGoldenWinePrintText', 'dream_talk_goal'
+    *pl ' '
+
+    gs 'ActUiPrepare', '«И что же это за две редкие вещи?»', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaGoldenWineDreamTalkPlan'
+    end
+
+    gs 'ActUiPrepare', '«Звучит великолепно. Что для этого нужно?»', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaGoldenWineDreamTalkPlan'
+    end
+---
+
+#ClarissaGoldenWineDreamTalkPlan
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'МЕЧТА КЛАРИССЫ: РЕДКИЕ КОМПОНЕНТЫ'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/locations/clarissa/shop/stress', 'Кларисса загибает тонкие пальчики, перечисляя редкие ингредиенты', 'large', 'jpg'
+    SceneArtUseReal = 0
+
+    gs 'ClarissaGoldenWinePrintText', 'dream_talk_plan'
+    *pl ' '
+
+    gs 'ActUiPrepare', '«По рукам. Я помогу тебе достать рецепт и лозу»', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ClarissaGoldenWineDreamTalkAccept'
+    end
+
+    gs 'ActUiPrepare', '«Замысел смелый, но пока повременим»', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'WineShop', 'main'
+    end
+---
+
+#ClarissaGoldenWineDreamTalkAccept
+    *clr
+    clr
+    cla
+
+    ClarissaGoldenWineActive = 1
+    ClarissaGoldenWineStage = 1
+    PlayerKnows_Dream_GoldenWine = 1
+    PlayerKnows_Dream_GoldenWineRecipe = 1
+    DreamItemKnown['golden_wine'] = 1
+    DreamItemKnown['golden_wine_recipe'] = 1
+    Friends['clarissa'] += 2
+    otkroven['clarissa'] += 2
+
+    gs 'ShowLocationScreenTitle', 'МЕЧТА КЛАРИССЫ: СОЮЗНИКИ'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/portraits/clarissa/portrait1', 'Кларисса с благодарностью сжимает руку Стефана', 'large', 'webp'
+    SceneArtUseReal = 0
+
+    gs 'ClarissaGoldenWinePrintText', 'dream_talk_accept'
+    *pl ' '
+
+    gs 'ActUiPrepare', '«Я займусь поисками. Скоро увидимся»', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'WineShop', 'main'
     end
@@ -47,7 +197,9 @@
     cla
 
     gs 'ShowLocationScreenTitle', 'ПОИСКИ ДЛЯ «ЗОЛОТОГО ВИНА»'
-    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/clarissa_wine_dream', 'Кларисса обсуждает со Стефаном поиски редких компонентов', 'large', 'webp'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/locations/clarissa/shop/talk', 'Кларисса обсуждает со Стефаном поиски редких компонентов', 'large', 'jpg'
+    SceneArtUseReal = 0
 
     *pl 'Кларисса с нетерпением встречает тебя у винных стеллажей:'
     *pl ' '
@@ -84,7 +236,9 @@
     cla
 
     gs 'ShowLocationScreenTitle', 'АРХИВ ХРАМА: СТАРИННЫЙ СВИТОК'
-    gs 'SceneShowVisual', 'images/locations/town/church/gerhard_archive_scroll', 'Отец Герхард достаёт древний свиток монастырского купажа', 'large', 'webp'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/locations/church/gerhard', 'Отец Герхард достаёт древний свиток монастырского купажа', 'large', 'webp'
+    SceneArtUseReal = 0
 
     PlayerHasGoldenWineRecipe = 1
 
@@ -215,7 +369,9 @@
     ClarissaVineyardStatusTalkToday = day
 
     gs 'ShowLocationScreenTitle', 'О НОВОМ ВИНОГРАДНИКЕ'
-    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/clarissa_wine_dream', 'Кларисса с сияющей улыбкой рассказывает о всходах на террасах', 'large', 'webp'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/locations/clarissa/shop/happy_big_purchase', 'Кларисса с сияющей улыбкой рассказывает о всходах на террасах', 'large', 'jpg'
+    SceneArtUseReal = 0
 
     gs 'ClarissaGoldenWinePrintText', 'vineyard_status_text'
     *pl ' '
@@ -237,7 +393,9 @@
     end
 
     gs 'ShowLocationScreenTitle', 'МЕССИР АЛЬБЕР О ВИНОГРАДНИКЕ КЛАРИССЫ'
-    gs 'SceneShowVisual', 'images/locations/shops/wine_shop/alber_vineyard_talk', 'Альбер Легаре с достоинством смотрит на холмы с новым виноградником', 'large', 'webp'
+    SceneArtUseReal = 1
+    gs 'SceneShowVisual', 'images/npc/legare/alber_talk', 'Альбер Легаре с достоинством смотрит на холмы с новым виноградником', 'large', 'webp'
+    SceneArtUseReal = 0
 
     AlberClarissaVineyardTalkDone = 1
     Friends['alber'] += 5
