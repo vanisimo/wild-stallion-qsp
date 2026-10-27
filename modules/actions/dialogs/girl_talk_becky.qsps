@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_becky.qsps
 ! MODULE: actions/dialogs
-! [AI-WORKED] Текст переработан / дополнен ассистентом 20.10.2026
+! [AI-WORKED] Текст переработан / дополнен ассистентом 27.10.2026
 ! Меню и разговоры с Бекки Блэнкеншип в лавке
 ! ================================================
 
@@ -76,7 +76,23 @@
     ! 2. Регистрация полезного разговора:
     gs 'UsefulTalkRegister', 'becky', 'becky_unified'
 
-    ! 3. Иерархия тем:
+    ! 3. Атмосферное вступление:
+    gs 'BeckyTalkIntroText'
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        *pl ' '
+        killvar '$BeckyTalkBlock'
+    end
+
+    ! 4. Динамическая веха близости / отсутствия:
+    gs 'BeckyTalkMilestoneText'
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        *pl ' '
+        killvar '$BeckyTalkBlock'
+    end
+
+    ! 5. Иерархия тем:
     ! --- Воспоминание о визите в гости ---
     if BeckyTimesVisited > 0 and BeckyPastVisitTalkToday <> day:
         gs 'GirlTalkBeckyPastVisitRun'
@@ -97,9 +113,22 @@
     elseif EddieSawGeorg >= 2 and HusbandStory > 0 and EddieStory > 0 and Friends['becky'] >= 10 and GeorgMention = 0:
         gs 'GirlTalkBeckyEddieGeorgetteRun'
 
-    ! --- Повседневный разговор о лавке и заказах ---
+    ! --- Повторяющаяся ротация богатых лор-пулов Бекки ---
     else:
-        gs 'GirlTalkBeckyShopRun'
+        BeckyLorePoolCycle += 1
+        if BeckyLorePoolCycle > 3:
+            BeckyLorePoolCycle = 0
+        end
+
+        if BeckyLorePoolCycle = 0:
+            gs 'GirlTalkBeckyShopRun'
+        elseif BeckyLorePoolCycle = 1:
+            gs 'GirlTalkBeckyHusbandPoolRun'
+        elseif BeckyLorePoolCycle = 2:
+            gs 'GirlTalkBeckyIngaPoolRun'
+        else:
+            gs 'GirlTalkBeckyTownPoolRun'
+        end
     end
 
     gs 'ClampGirlSocialStats', 'becky'
@@ -303,5 +332,41 @@
         killvar '$BeckyTalkBlock'
     end
 
+    gs 'CorruptionProgress', 'becky', 'talk'
+---
+
+#GirlTalkBeckyHusbandPoolRun
+    gs 'BeckyTalkHusbandPoolText'
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        *pl ' '
+        killvar '$BeckyTalkBlock'
+    end
+    otkroven['becky'] += 1
+    gs 'CorruptionProgress', 'becky', 'flirt'
+---
+
+#GirlTalkBeckyIngaPoolRun
+    gs 'BeckyTalkIngaPoolText'
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        *pl ' '
+        killvar '$BeckyTalkBlock'
+    end
+    Friends['becky'] += 1
+    gs 'CorruptionProgress', 'becky', 'talk'
+---
+
+#GirlTalkBeckyTownPoolRun
+    gs 'BeckyTalkTownPoolText'
+    if $BeckyTalkBlock <> '':
+        *pl $BeckyTalkBlock
+        *pl ' '
+        killvar '$BeckyTalkBlock'
+    end
+    Friends['becky'] += 1
+    if trading < 30:
+        trading += 1
+    end
     gs 'CorruptionProgress', 'becky', 'talk'
 ---

@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_irma.qsps
 ! MODULE: actions/dialogs
-! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! [AI-WORKED] Текст переработан / дополнен ассистентом 27.10.2026
 ! Меню и расширенные разговоры Ирмы в мастерской
 ! ================================================
 
@@ -73,9 +73,15 @@
     ! 2. Регистрация полезного разговора:
     gs 'UsefulTalkRegister', 'irma', 'irma_unified'
 
-    ! 3. Иерархия тем разговора:
+    ! 3. Атмосферное вступление:
+    gs 'GirlTalkIrmaIntroText'
+
+    ! 4. Динамическая веха близости / отсутствия:
+    gs 'GirlTalkIrmaMilestoneText'
+
+    ! 5. Иерархия тем разговора:
     ! --- Пик откровения (предел) ---
-    if otkroven['irma'] >= 25 and (IrmaTreeRitualDone = 1 or HadSex['irma'] > 0):
+    if otkroven['irma'] >= 25 and (IrmaTreeRitualDone = 1 or HadSex['irma'] > 0) and IrmaMemoryLimitDone = 0:
         gs 'GirlTalkIrmaMemoryLimitText'
         if IrmaMemoryLimitDone = 0:
             IrmaMemoryLimitDone = 1
@@ -203,6 +209,7 @@
 
 #GirlTalkIrmaShopRun
     gs 'GirlTalkIrmaShopPrintText', 'intro'
+    gs 'GirlTalkIrmaShopPrintText', 'milestone'
     gs 'GirlTalkIrmaShopPrintText', 'context'
 
     IrmaTalkShopDone = 1

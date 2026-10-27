@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_clarissa.qsps
 ! MODULE: actions/dialogs
-! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
+! [AI-WORKED] Текст переработан / дополнен ассистентом 27.10.2026
 ! Меню и расширенные разговоры Клариссы в винной лавке
 ! ================================================
 
@@ -9,27 +9,17 @@
     gs 'Menu.Destroy', 'GirlTalkMainMenu'
     gs 'Menu.Create', 'GirlTalkMainMenu'
 
+    ClarissaGoldenWineCanOfferDream = 0
+    if LOC('ClarissaGoldenWineCanOfferDream') = 1:
+        gs 'ClarissaGoldenWineCanOfferDream'
+    end
+
     ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
-    ! Квесты «Золотого вина»
+    ! Квесты «Золотого вина»: доставка компонентов
     if ClarissaGoldenWineStage = 1 and PlayerHasGoldenWineRecipe = 1 and PlayerHasGoldenGrapeVines = 1:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'ClarissaGoldenWineDeliver'
-        }
-    elseif ClarissaGoldenWineStage = 0 and (PlayerKnows_Dream_GoldenWine = 1 or Friends['clarissa'] >= 5 or love['clarissa'] >= 3 or otkroven['clarissa'] >= 8):
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'ClarissaGoldenWineDreamTalk'
-        }
-    elseif ClarissaGoldenWineStage = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'ClarissaGoldenWineProgressHint'
-        }
-    elseif ClarissaGoldenVineyardPlanted = 1 and ClarissaVineyardStatusTalkToday <> day:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
-        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-            gt 'ClarissaGoldenWineVineyardTalk'
         }
     ! Сюжетные события вокруг Аманды и Легаре
     elseif ClarissaAmandaLegareMajorRiskTalkReady = 1 and ClarissaAmandaLegareMajorRiskDiscussed = 0 and LOC('ClarissaTalkAboutAmandaLegareMajor') = 1:
@@ -75,6 +65,22 @@
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'ClarissaTalkAboutSupplyRoute', $TalkReturnLoc
         }
+    ! Квесты «Золотого вина»: предложение мечты, подсказка или статус виноградника
+    elseif ClarissaGoldenWineCanOfferDream = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaGoldenWineDreamTalk'
+        }
+    elseif ClarissaGoldenWineStage = 1:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaGoldenWineProgressHint'
+        }
+    elseif ClarissaGoldenVineyardPlanted = 1 and ClarissaVineyardStatusTalkToday <> day:
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
+        gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+            gt 'ClarissaGoldenWineVineyardTalk'
+        }
     elseif LOC('MarkClarissaSupplyAftermathReady') = 1:
         gs 'MarkClarissaSupplyAftermathReady'
         if ClarissaSupplyAftermathReady = 1 and LOC('ClarissaTalkAboutSupplyAftermath') = 1:
@@ -85,6 +91,8 @@
         end
         killvar 'ClarissaSupplyAftermathReady'
     end
+
+    killvar 'ClarissaGoldenWineCanOfferDream'
 
     ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
     gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
@@ -112,7 +120,7 @@
 
     ! 3. Иерархия тем разговора:
     ! --- Пик откровения (предел) ---
-    if otkroven['clarissa'] >= 25 and (ClarissaIntimSex = 1 or HadSex['clarissa'] > 0 or ClarissaAnalDone = 1):
+    if otkroven['clarissa'] >= 25 and (ClarissaIntimSex = 1 or HadSex['clarissa'] > 0 or ClarissaAnalDone = 1) and ClarissaMemoryLimitDone = 0:
         gs 'GirlTalkClarissaMemoryLimitText'
         if ClarissaMemoryLimitDone = 0:
             ClarissaMemoryLimitDone = 1
@@ -284,6 +292,7 @@
 
 #GirlTalkWineShopRun
     gs 'GirlTalkWineShopPrintText', 'intro'
+    gs 'GirlTalkWineShopPrintText', 'milestone'
     gs 'GirlTalkWineShopPrintText', 'context'
 
     $WineShopKey = 'clarissa_' + STR(day)
@@ -299,6 +308,7 @@
 
 #GirlTalkClarissaHomeRun
     gs 'GirlTalkClarissaHomePrintText', 'intro'
+    gs 'GirlTalkClarissaHomePrintText', 'milestone'
     gs 'GirlTalkClarissaHomePrintText', 'context'
 
     $ClarissaHomeKey = 'clarissa_home_' + STR(day)
