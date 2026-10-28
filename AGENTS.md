@@ -142,7 +142,7 @@ Files marked **`USER-OWNED TEXT`** in the header are authored/edited by the user
 | `modules/actions/tavern/girl_work_policy_assignment_reaction_text.qsps` | reactions to policy 1–3 |
 | `modules/events/becky/becky_home_chain_text.qsps` | Becky home chain |
 | `modules/events/becky/becky_dance_text.qsps` | Becky dances |
-| `modules/events/becky/becky_talk_text.qsps` | Becky talk |
+| `modules/actions/dialogs/girl_talk_becky_text.qsps` | Becky talk |
 | `modules/events/eddie/eddie_arc_text.qsps` | Eddie arc |
 | `modules/events/visits/sunday_amanda_lizette_text.qsps` | Amanda + Lizette overhear (moved to visits) |
 | `modules/events/church/church_spy_lizette_text.qsps` | church spy Lizette |
