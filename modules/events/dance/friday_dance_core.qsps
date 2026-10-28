@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/events/dance/friday_dance_core.qsps
 ! События пятничных танцев
 ! Версия: schedule v4 / hard return fix
@@ -36,7 +36,9 @@
         MelissaMinstrelState = RAND(0, 1)
 
         ! 3. Инга и Лукас (1 = танцуют с Лукасом, 0 = Инга одна)
-        if IngaGuardProblem = 1 and IngaGuardLadderDone = 0:
+        IngaLucasDanceObserveSeenTonight = 0
+        ClarissaLegareDanceObserveSeenTonight = 0
+        if IngaLucasAlleySpySeen = 1 or IngaDanceUnlocked = 1 or IngaPlayerRouteOpen = 1 or IngaBackroomSex = 1 or IngaDanceStreetAlleyDone = 1 or IngaRoomUnlocked = 1 or IngaRoomFirstSexDone = 1 or (IngaGuardProblem = 1 and IngaGuardLadderDone = 0):
             IngaLucasState = 0
         else:
             IngaLucasState = RAND(0, 1)
@@ -77,10 +79,9 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'ПЯТНИЧНЫЕ ТАНЦЫ'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_sponsor_prompt', 'ПЯТНИЧНЫЕ ТАНЦЫ', 'large', 'webp'
     gs 'FridayDanceSponsorPromptText'
-
-    gs 'ShowLocationScreenTitle', 'ПЯТНИЧНЫЕ ТАНЦЫ'
     *p $FridayDanceSponsorPromptText
     *pl ' '
     *pl 'Нужно из запасов: вино ' + STR(FridayDanceSponsorWineCost) + ', пиво ' + STR(FridayDanceSponsorBeerCost) + ', еда ' + STR(FridayDanceSponsorFoodCost)
@@ -192,10 +193,9 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'ВЫСТУПЛЕНИЕ МЭРА'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_mayor_speech', 'ВЫСТУПЛЕНИЕ МЭРА', 'large', 'webp'
     gs 'FridayDanceMayorSpeechText'
-
-    gs 'ShowLocationScreenTitle', 'ВЫСТУПЛЕНИЕ МЭРА'
     *p $FridayDanceText
     *pl ' '
 
@@ -231,10 +231,9 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'ПЛОЩАДЬ И ТАНЦЫ'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_observe', 'ПЛОЩАДЬ И ТАНЦЫ', 'large', 'webp'
     gs 'FridayDanceObserveText'
-
-    gs 'ShowLocationScreenTitle', 'ПЛОЩАДЬ И ТАНЦЫ'
     *p $FridayDanceText
     *pl ' '
 
@@ -289,11 +288,10 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'ПРОЙТИСЬ ПО ПЛОЩАДИ: ГОРОДСКИЕ СЛУХИ'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_rumor', 'ГОРОДСКИЕ СЛУХИ', 'large', 'webp'
 
     gs 'CityRumorsGetText', 'dance'
-
-    gs 'ShowLocationScreenTitle', 'ПРОЙТИСЬ ПО ПЛОЩАДИ: ГОРОДСКИЕ СЛУХИ'
 
     if $CityRumorText <> '':
         *p $CityRumorText
@@ -359,11 +357,10 @@
     cla
 
     gs 'EnsureGirlData', $DanceNpc
+    gs 'ShowLocationScreenTitle', 'ТЫ ПОДОШЁЛ К ' + UCASE($RealName[$DanceNpc])
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_card_' + $DanceNpc, 'НА ТАНЦАХ: ' + UCASE($RealName[$DanceNpc]), 'large', 'webp'
 
     gs 'FridayDanceCardText', $DanceNpc
-
-    gs 'ShowLocationScreenTitle', 'ВЫ ПОДОШЛИ К ' + UCASE($RealName[$DanceNpc])
     *p $FridayDanceCardDesc
     *pl ' '
 
@@ -382,21 +379,20 @@
 
     gs 'EnsureGirlData', $TalkNpc
 
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР: ' + UCASE($RealName[$TalkNpc])
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_talk_' + $TalkNpc, 'БЕСЕДА: ' + UCASE($RealName[$TalkNpc]), 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'РАЗГОВОР: ' + UCASE($RealName[$TalkNpc])
-
     if $TalkNpc = 'melissa':
-        *pl 'Вы отводите Мелиссу к колоннаде и заводите разговор о столичных книгах и балладах. Сестра с жаром делится мыслями о поэзии, радуясь, что хоть кто-то в трактире способен поддержать возвышенную тему.'
+        *pl 'Ты отводишь Мелиссу к колоннаде и заводишь разговор о столичных книгах и балладах. Сестра с жаром делится мыслями о поэзии, радуясь, что хоть кто-то в трактире способен поддержать возвышенную тему.'
         Friends['melissa'] += 1
     elseif $TalkNpc = 'amanda':
-        *pl 'Вы болтаете с Амандой о ярмарочных новостях и её новом наряде. Сестра весело щебечет, сыплет шутками и с гордостью ловит взгляды проходящих парней.'
+        *pl 'Ты болтаешь с Амандой о ярмарочных новостях и её новом наряде. Сестра весело щебечет, сыплет шутками и с гордостью ловит взгляды проходящих парней.'
         Friends['amanda'] += 1
     elseif $TalkNpc = 'becky':
-        *pl 'Вдова Блэнкеншип звонко хохочет над вашими шутками, охотно делясь новостями с рынка и сетуя на то, как тяжело бедной вдове управляться с большой лавкой без мужской руки.'
+        *pl 'Вдова Блэнкеншип звонко хохочет над твоими шутками, охотно делясь новостями с рынка и сетуя на то, как тяжело бедной вдове управляться с большой лавкой без мужской руки.'
         Friends['becky'] += 1
     elseif $TalkNpc = 'inga':
-        *pl 'Инга немного успокаивается в вашем присутствии. Она тихо рассказывает, как помогала матери готовить праздничные пироги, и признаётся, что шумная толпа её немного пугает.'
+        *pl 'Инга немного успокаивается в твоём присутствии. Она тихо рассказывает, как помогала матери готовить праздничные пироги, и признаётся, что шумная толпа её немного пугает.'
         Friends['inga'] += 1
     elseif $TalkNpc = 'clarissa':
         *pl 'Госпожа Легаре благосклонно принимает вашу вежливую беседу. Вы обсуждаете городские дела и виноторговлю. Кларисса тонко улыбается, оценивая ваш ум и сдержанность.'
@@ -428,8 +424,6 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/dance/friday_dance/melissa_minstrel_eavesdrop', 'МЕЛИССА И ЭЛРИК', 'large', 'webp'
-
     if MelissaMinstrelAffairStage < 0:
         MelissaMinstrelAffairStage = 0
     end
@@ -437,21 +431,22 @@
     MelissaMinstrelAffairStage += 1
 
     gs 'ShowLocationScreenTitle', 'ПОДСЛУШАТЬ: МЕЛИССА И ЭЛРИК'
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/melissa_minstrel_eavesdrop', 'МЕЛИССА И ЭЛРИК', 'large', 'webp'
 
     if MelissaMinstrelAffairStage = 1:
-        *pl 'Вы неслышно встаёте за каменную колонну у помоста. Элрик берет нежный аккорд на лютне и, склоняясь к Мелиссе, проникновенно шепчет:'
+        *pl 'Ты неслышно встаёшь за каменную колонну у помоста. Элрик берет нежный аккорд на лютне и, склоняясь к Мелиссе, проникновенно шепчет:'
         *pl ' '
         *pl '— Ваша стать, госпожа... в ней нет суетности обычных трактирных девиц. Вы напоминаете мне царственную королеву Алисию из древних преданий — ту, что правила мудро и карала легкомыслие. Такие, как вы, вдохновляют слагать поэмы, а не просто пустые куплеты.'
         *pl ' '
         *pl 'Мелисса заливается краской удовольствия. Её спина выпрямляется, в глазах сияет гордость — менестрель попал в самую суть её сокровенных грёз.'
     elseif MelissaMinstrelAffairStage = 2:
-        *pl 'Вы наблюдаете из тени галереи. Музыка стихла на перерыв. Элрик спускается с помоста прямо к Мелиссе, держа в руке кубок сладкого южного вина.'
+        *pl 'Ты наблюдаешь из тени галереи. Музыка стихла на перерыв. Элрик спускается с помоста прямо к Мелиссе, держа в руке кубок сладкого южного вина.'
         *pl ' '
         *pl '— Моя королева скучает среди этой шумной черни? — бард улыбается и смело берет её за тонкие пальцы. — Ваши руки созданы перелистывать фолианты мудрецов, а не разливать брагу...'
         *pl ' '
         *pl 'Мелисса смущённо опускает ресницы, но пальцы не отнимает. Элрик делает шаг ближе и осторожно касается ладонью её талии. Сестра лишь слегка вздрагивает, завороженная его речами.'
     elseif MelissaMinstrelAffairStage = 3:
-        *pl 'Элрик увлекает Мелиссу в полумрак арочного прохода под ратушей. Ты осторожно ступаете следом по каменным плитам.'
+        *pl 'Элрик увлекает Мелиссу в полумрак арочного прохода под ратушей. Ты осторожно ступаешь следом по каменным плитам.'
         *pl ' '
         *pl '— Зачем скрывать огонь, моя королева?.. — шепчет бард, прижимая девушку к холодному камню. Его рука скользит по её спине.'
         *pl ' '
@@ -474,13 +469,13 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'ВМЕШАТЕЛЬСТВО: МЕЛИССА И ЭЛРИК'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/melissa_minstrel_distract', 'ОТВЛЕЧЬ МЕЛИССУ', 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'ВМЕШАТЕЛЬСТВО: МЕЛИССА И ЭЛРИК'
-    *pl 'Ты решительно подходите к помосту и становитесь прямо между Мелиссой и бардом, громко окликая сестру:'
+    *pl 'Ты решительно подходишь к помосту и становишься прямо между Мелиссой и бардом, громко окликая сестру:'
     *pl '— Мелисса! Хватит витать в облаках, дома дела не ждут, да и матушка просила не задерживаться у бродячих музыкантов.'
     *pl ' '
-    *pl 'Элрик на мгновение замирает, окинув вас оценивающим взглядом, но быстро надевает вежливую маску светского менестреля, кланяется и отступает назад к лютне: «Прошу прощения, благородные господа. Музыка не должна сеять раздор».'
+    *pl 'Элрик на мгновение замирает, окинув тебя оценивающим взглядом, но быстро надевает вежливую маску светского менестреля, кланяется и отступает назад к лютне: «Прошу прощения, благородные господа. Музыка не должна сеять раздор».'
     *pl ' '
     *pl 'Мелисса вспыхивает от гнева, её глаза мечут молнии:'
     *pl '— Стефан! Вечно ты лезешь со своими кабацкими замашками! Не позорь меня перед культурным человеком! Ты только и умеешь, что бочки считать, а в настоящем искусстве ничего не смыслишь!'
@@ -502,17 +497,16 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/dance/friday_dance/becky_eddie_dance_observe', 'ЭДДИ И БЕККИ В КРУГУ', 'large', 'webp'
-
     gs 'ShowLocationScreenTitle', 'СЕМЕЙНЫЙ ТАНЕЦ БЛЭНКЕНШИПОВ'
-    *pl 'Вы с усмешкой наблюдаете за тем, как рыжий Эдди выводит свою мать в центр площади. Парень явно навеселе — его руки без малейшего стеснения сжимают пышные, сочные бёдра Бекки, прижимая вдову к себе куда теснее, чем положено сыну.'
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/becky_eddie_dance_observe', 'ЭДДИ И БЕККИ В КРУГУ', 'large', 'webp'
+    *pl 'Ты с усмешкой наблюдаешь за тем, как рыжий Эдди выводит свою мать в центр площади. Парень явно навеселе — его руки без малейшего стеснения сжимают пышные, сочные бёдра Бекки, прижимая вдову к себе куда теснее, чем положено сыну.'
     *pl ' '
     *pl 'Бекки запрокидывает голову и заливисто смеётся, её роскошная грудь ходит ходуном в глубоком декольте. Горожане вокруг добродушно улыбаются: мол, надо же, какой заботливый сынок у почтенной торговки!'
     *pl ' '
-    *pl 'Мелодия подходит к концу. Эдди что-то шепчет матери прямо в разгорячённое ушко. Бекки слегка краснеет, томно прикусывает губу и кивает. Парень подмигивает вам через плечо и ведёт захмелевшую мать прочь с площади:'
+    *pl 'Мелодия подходит к концу. Эдди что-то шепчет матери прямо в разгорячённое ушко. Бекки слегка краснеет, томно прикусывает губу и кивает. Парень подмигивает тебе через плечо и ведёт захмелевшую мать прочь с площади:'
     *pl '— Мамуля сегодня перебрала сладкой наливочки... отведу её в спаленку, уложу под одеялко.'
     *pl ' '
-    *pl 'Вы провожаете их взглядом. Семейные забавы Блэнкеншипов явно продолжатся дома.'
+    *pl 'Ты провожаешь их взглядом. Семейные забавы Блэнкеншипов явно продолжатся дома.'
     *pl ' '
 
     BeckyEddieState = 0
@@ -529,9 +523,11 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/dance/friday_dance/inga_lucas_dance_observe', 'ИНГА И ЛУКАС', 'large', 'webp'
+    IngaLucasState = 0
+    IngaLucasDanceObserveSeenTonight = 1
 
     gs 'ShowLocationScreenTitle', 'ТАНЕЦ ИНГИ И ЛУКАСА'
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/inga_lucas_dance_observe', 'ИНГА И ЛУКАС', 'large', 'webp'
     *pl 'Инга кружится в танце с крепким широкоплечим кузнечным подмастерьем Лукасом. Лукас держит девушку властно и грубовато, его широкие ладони лежат на её талии, не позволяя отстраниться ни на дюйм.'
     *pl 'Инга смущённо улыбается, стараясь не встречаться взглядом с другими мужчинами.'
     *pl ' '
@@ -555,10 +551,13 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/dance/friday_dance/clarissa_legare_dance_observe', 'ЧЕТА ЛЕГАРЕ', 'large', 'webp'
+    ClarissaLegareState = 3
+    ClarissaLegareDanceObserveSeenTonight = 1
 
     gs 'ShowLocationScreenTitle', 'ТАНЕЦ ЧЕТЫ ЛЕГАРЕ'
-    *pl 'Вы наблюдаете за танцем четы Легаре. Альбер и Кларисса движутся с безупречным изяществом благородной пары. На их лицах сияют вежливые светские улыбки, предназначенные для завистливых глаз горожан.'
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/clarissa_legare_dance_observe', 'ЧЕТА ЛЕГАРЕ', 'large', 'webp'
+
+    *pl 'Ты наблюдаешь за танцем четы Легаре. Альбер и Кларисса движутся с безупречным изяществом благородной пары. На их лицах сияют вежливые светские улыбки, предназначенные для завистливых глаз горожан.'
     *pl 'Они оба прекрасно знают слабости друг друга: Альбер падок на молоденьких вертихвосток, а Кларисса умеет извлекать выгоду из своего положения и сохранять ледяное самообладание.'
     *pl 'Вмешиваться в их танец бессмысленно — публичный этикет они соблюдают идеально.'
     *pl ' '
@@ -576,10 +575,9 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'ОТКАЗ ИНГИ'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_inga_refusal', 'ОТКАЗ ИНГИ', 'large', 'webp'
     gs 'FridayDanceIngaRefusalBoyfriendText'
-
-    gs 'ShowLocationScreenTitle', 'ОТКАЗ ИНГИ'
     *p $FridayDanceText
     *pl ' '
 
@@ -647,11 +645,10 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_sister_limited', 'танцы: сестра без платья — ограниченный танец', 'large', 'webp'
     gs 'EnsureGirlData', $FridayDanceSisterGirl
-    gs 'FridayDanceNoDressText', $FridayDanceSisterGirl
-
     gs 'ShowLocationScreenTitle', 'ТАНЕЦ С ' + UCASE($RealName[$FridayDanceSisterGirl])
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_sister_limited', 'танцы: сестра без платья — ограниченный танец', 'large', 'webp'
+    gs 'FridayDanceNoDressText', $FridayDanceSisterGirl
     *p $FridayDanceText
     *pl ' '
 
@@ -767,21 +764,20 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_stefan_no_suit', 'танцы: Стефан без приличного костюма', 'large', 'webp'
-
     $FridayDanceNoSuitTarget = LCASE($ARGS[0])
 
     gs 'ShowLocationScreenTitle', 'ПЛОЩАДЬ: НУЖЕН ПРИЛИЧНЫЙ КОСТЮМ'
+    gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_stefan_no_suit', 'танцы: Стефан без приличного костюма', 'large', 'webp'
 
     if $FridayDanceNoSuitTarget = 'becky':
-        *pl 'Вы направляетесь к Бекки, но вовремя одёргиваете себя.'
-        *pl 'Вдова весело переговаривается со знакомыми купцами, на ней нарядное платье с вышивкой. Вы бросаете взгляд на свои заношенные трактирные штаны и протертую на локтях куртку.'
+        *pl 'Ты направляешься к Бекки, но вовремя одёргиваешь себя.'
+        *pl 'Вдова весело переговаривается со знакомыми купцами, на ней нарядное платье с вышивкой. Ты бросаешь взгляд на свои заношенные трактирные штаны и протертую на локтях куртку.'
         *pl '«Видит Ильматер... Если я сейчас подойду звать её в круг в таком виде — Бекки поднимет меня на смех, а весь торговый ряд будет неделю зубоскалить. Хозяин заведения должен выглядеть подобающе».'
         *pl ' '
         *pl 'Чтобы уверенно звать Бекки в центр площади, нужно купить приличный костюм у Ирмы (95 монет).'
     elseif $FridayDanceNoSuitTarget = 'inga':
-        *pl 'Вы собираетесь подойти к Инге, но останавливаетесь в паре шагов.'
-        *pl 'Девушка разодета для ярмарки, рядом крутятся городские стражники в начищенных бляхах. Ваш заношенный рабочий наряд на их фоне смотрится убого.'
+        *pl 'Ты собираешься подойти к Инге, но останавливаешься в паре шагов.'
+        *pl 'Девушка разодета для ярмарки, рядом крутятся городские стражники в начищенных бляхах. Твой заношенный рабочий наряд на их фоне смотрится убого.'
         *pl '«Вылезать в центр круга в этих лохмотьях — только позориться. Сначала надо справить нормальную одежду».'
         *pl ' '
         *pl 'Нужно заглянуть к модистке Ирме и купить приличный костюм (95 монет).'
@@ -828,11 +824,10 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'DEBUG: ПЯТНИЧНЫЕ ТАНЦЫ'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_debug_menu', 'DEBUG: ПЯТНИЧНЫЕ ТАНЦЫ', 'large', 'webp'
     gs 'GetCitySchedulePhase'
     gs 'UpdateGirlLocations'
-
-    gs 'ShowLocationScreenTitle', 'DEBUG: ПЯТНИЧНЫЕ ТАНЦЫ'
     *pl 'week: ' + STR(week)
     *pl 'time: ' + STR(time)
     *pl 'phase: ' + $CitySchedulePhase
@@ -922,8 +917,7 @@
 
     ! Проверка на активные сцены наблюдения (рандом):
     if $DanceMenuTarget = 'melissa':
-        if MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
-            MelissaMinstrelMet = 1
+        if MelissaMinstrelMet = 1 and MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
             if RAND(1, 100) <= 75:
                 gt 'MelissaMinstrelDanceStageLook'
             end
@@ -937,12 +931,20 @@
             gt 'BeckyEddieDanceObserve'
         end
     elseif $DanceMenuTarget = 'clarissa':
-        if ClarissaLegareState = 1:
+        if ClarissaLegareState = 1 and ClarissaLegareDanceObserveSeenTonight = 0:
+            ClarissaLegareState = 3
+            ClarissaLegareDanceObserveSeenTonight = 1
             gt 'ClarissaLegareDanceObserve'
+        else:
+            ClarissaLegareState = 3
         end
     elseif $DanceMenuTarget = 'inga':
-        if IngaLucasState = 1:
+        if IngaLucasState = 1 and IngaLucasAlleySpySeen = 0 and IngaLucasDanceObserveSeenTonight = 0:
+            IngaLucasState = 0
+            IngaLucasDanceObserveSeenTonight = 1
             gt 'IngaLucasDanceObserve'
+        else:
+            IngaLucasState = 0
         end
     end
 
@@ -996,21 +998,20 @@
 
     $DanceRefuseTarget = LCASE($ARGS[0])
 
+    gs 'ShowLocationScreenTitle', 'ПЛОЩАДЬ: ОТКАЗ В ТАНЦЕ'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_refuse_' + $DanceRefuseTarget, 'ОТКАЗ В ТАНЦЕ: ' + UCASE($RealName[$DanceRefuseTarget]), 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'ПЛОЩАДЬ: ОТКАЗ В ТАНЦЕ'
-
     if $DanceRefuseTarget = 'melissa':
-        *pl 'Вы с галантным видом подходите к Мелиссе и протягиваете руку, приглашая сестру в круг танцующих.'
+        *pl 'Ты с галантным видом подходишь к Мелиссе и протягиваешь руку, приглашая сестру в круг танцующих.'
         *pl ' '
-        *pl 'Мелисса медленно опускает взгляд на ваши заношенные рукава, на пыльные сапоги и трактирные штаны. На её губах появляется язвительная усмешка, а бровь надменно взлетает:'
+        *pl 'Мелисса медленно опускает взгляд на твои заношенные рукава, на пыльные сапоги и трактирные штаны. На её губах появляется язвительная усмешка, а бровь надменно взлетает:'
         *pl ' '
         *pl '— Стефан, ты в своём уме? Посмотри на себя! Я надела праздничное шёлковое платье от Ирмы, а ты выглядишь так, будто только что выкатывал бочки с кислым пивом на задний двор. Весь город будет пальцами тыкать в хозяина таверны, который не может справить себе приличный костюм! Сначала зайди к Ирме и оденься как подобает, а потом уже приглашай меня в центр площади.'
 
     elseif $DanceRefuseTarget = 'amanda':
-        *pl 'Вы с улыбкой шагаете к Аманде и зовёте её в круг.'
+        *pl 'Ты с улыбкой шагаешь к Аманде и зовёшь её в круг.'
         *pl ' '
-        *pl 'Сестра радостно улыбается, но тут же испуганно спохватывается, оглядывая вашу заношенную рабочую куртку. Она делает шаг назад, нервно теребя кружево своего нового наряда, и смущённо шепчет:'
+        *pl 'Сестра радостно улыбается, но тут же испуганно спохватывается, оглядывая твою заношенную рабочую куртку. Она делает шаг назад, нервно теребя кружево своего нового наряда, и смущённо шепчет:'
         *pl ' '
         *pl '— Стефан... ну ты чего? Я так старалась, так долго выбирала это платье у Ирмы! На меня же все городские парни смотрят, и подружки тут... А ты в этих старых штанах! Они же станут смеяться и дразнить меня, что у моего брата даже приличного дублета нет. Пожалуйста, купи себе нормальный костюм, тогда и потанцуем!'
 
@@ -1063,11 +1064,10 @@
     clr
     cla
 
+    gs 'ShowLocationScreenTitle', 'ПЯТНИЧНЫЙ ВЕЧЕР — ПОСЛЕ ТАНЦЕВ'
     gs 'SceneShowVisual', 'images/events/dance/friday_dance/friday_dance_aftermath', 'ПОСЛЕ ТАНЦЕВ: ПЛОЩАДЬ ПУСТЕЕТ', 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'ПЯТНИЧНЫЙ ВЕЧЕР — ПОСЛЕ ТАНЦЕВ'
-
-    if MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
+    if MelissaMinstrelMet = 1 and MelissaDanceDressReady = 1 and MelissaMinstrelWagonStage < 4 and MelissaMinstrelWagonToday = 0:
         MelissaMinstrelWagonStage += 1
         MelissaMinstrelWagonToday = 1
         MelissaMinstrelWagonLastDay = day
