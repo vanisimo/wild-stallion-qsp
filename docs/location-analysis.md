@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 505
-- Locations: 3862
-- Locations with direct incoming calls: 3333
-- Locations without direct incoming calls: 529
-- Review candidates without direct incoming calls: 193
+- Locations: 3887
+- Locations with direct incoming calls: 3353
+- Locations without direct incoming calls: 534
+- Review candidates without direct incoming calls: 198
 - Classified entry/helper locations without direct incoming calls: 336
 - Dynamic call sites: 2
 
@@ -46,6 +46,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `CityRumorsEnsureVars` | `modules/core/rumors/city_rumors_core.qsps` | 9 | `modules/core` |
 | `ClarissaIntimAfterSex` | `modules/events/legare/clarissa_intim_arc.qsps` | 195 | `modules/events` |
 | `ClearGirlLocation` | `modules/core/girls/girl_location.qsps` | 61 | `modules/core` |
+| `DanceDressShopIsOpen` | `modules/locations/shops/irma_dance_dress.qsps` | 41 | `modules/locations` |
 | `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 63 | `modules/npc` |
 | `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 75 | `modules/npc` |
 | `FamilyCouncilTryAtNight` | `modules/events/family/family_council.qsps` | 26 | `modules/events` |
@@ -70,6 +71,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlPolicyResponseApplyStats` | `modules/events/hall/girl_policy_response.qsps` | 188 | `modules/events` |
 | `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 24 | `modules/core` |
 | `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 521 | `modules/actions` |
+| `GirlTalkDanceDressLater` | `modules/locations/shops/irma_dance_dress.qsps` | 321 | `modules/locations` |
 | `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 501 | `modules/actions` |
 | `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 466 | `modules/actions` |
 | `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 177 | `modules/actions` |
@@ -160,9 +162,12 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IngaLucasCucumberShop` | `modules/events/inga/inga_lucas_arc.qsps` | 333 | `modules/events` |
 | `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 190 | `modules/locations` |
 | `IntimScene` | `modules/core/girls/girl_intim_menu.qsps` | 146 | `modules/core` |
-| `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 539 | `modules/locations` |
-| `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 544 | `modules/locations` |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 415 | `modules/locations` |
+| `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 790 | `modules/locations` |
+| `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 795 | `modules/locations` |
+| `IrmaDanceDressFittingScene` | `modules/locations/shops/irma_dance_dress.qsps` | 780 | `modules/locations` |
+| `IrmaDanceDressOrderPay` | `modules/locations/shops/irma_dance_dress.qsps` | 775 | `modules/locations` |
+| `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 770 | `modules/locations` |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 419 | `modules/locations` |
 | `LegareBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 58 | `modules/events` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 148 | `modules/core` |
 | `MelissaFirstPathChoiceAction` | `modules/events/melissa/melissa_musician_arc.qsps` | 739 | `modules/events` |
@@ -262,7 +267,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaPathChoiceTryAutoStart` | `modules/events/amanda/home/amanda_path_choice.qsps` | 12 | `entry/helper` |
 | `ApplyTavernWorkDay` | `modules/core/tavern/tavern_income.qsps` | 526 | `entry/helper` |
 | `ArtLevelText` | `modules/core/init_npc/art_level_text.qsps` | 6 | `entry/helper` |
-| `BeckyCatchIngaLucasOfferText` | `modules/actions/sex/group_sex_text.qsps` | 140 | `entry/helper` |
+| `BeckyCatchIngaLucasOfferText` | `modules/actions/sex/group_sex_text.qsps` | 141 | `entry/helper` |
 | `BeckyEddieConfessionIntroText` | `modules/events/eddie/eddie_arc_text.qsps` | 34 | `entry/helper` |
 | `BeckyEddieConfessionPaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 42 | `entry/helper` |
 | `BeckyEddieConfessionUnpaidText` | `modules/events/eddie/eddie_arc_text.qsps` | 46 | `entry/helper` |
@@ -360,12 +365,12 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `FridayDanceNpcTalkText` | `modules/events/dance/friday_dance_text.qsps` | 119 | `entry/helper` |
 | `FridayDanceTreatText` | `modules/events/dance/friday_dance_text.qsps` | 163 | `entry/helper` |
 | `GeorgetteChurchSexStart` | `modules/events/church/church_georgette_service_sex.qsps` | 84 | `entry/helper` |
-| `GetBeckyShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 299 | `entry/helper` |
+| `GetBeckyShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 322 | `entry/helper` |
 | `GetNpcGtLinkHref` | `modules/menu/npc/npc_clickable_link.qsps` | 362 | `entry/helper` |
 | `GetRandomTalkPhraseFromTable` | `modules/core/system/functions.qsps` | 24 | `entry/helper` |
 | `GetStefanAmandaTalk` | `modules/core/system/functions.qsps` | 75 | `entry/helper` |
 | `GetTavernReputationName` | `modules/core/tavern/tavern_reputation.qsps` | 52 | `entry/helper` |
-| `GetWineShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 309 | `entry/helper` |
+| `GetWineShopSeller` | `modules/core/time/npc_city_schedule.qsps` | 332 | `entry/helper` |
 | `GiftDebugAddAll` | `modules/core/gifts/gift_registry.qsps` | 228 | `entry/helper` |
 | `GirlMemoryOfStefanApplyChoice` | `modules/events/hall/girl_memory_of_stefan.qsps` | 251 | `entry/helper` |
 | `GirlMemoryOfStefanDebugPanel` | `modules/events/hall/girl_memory_of_stefan.qsps` | 195 | `entry/helper` |
@@ -431,12 +436,12 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 | `entry/helper` |
 | `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 | `entry/helper` |
 | `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 | `entry/helper` |
-| `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 579 | `entry/helper` |
+| `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 953 | `entry/helper` |
 | `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 324 | `entry/helper` |
 | `IrmaUniformOfferDebugUnlock` | `modules/locations/shops/irma_uniform_offer.qsps` | 310 | `entry/helper` |
 | `IrmaUniformOfferText` | `modules/locations/shops/irma_uniform_offer_text.qsps` | 76 | `entry/helper` |
-| `IrmaUniformText` | `modules/locations/shops/irma_uniform_orders_text.qsps` | 76 | `entry/helper` |
-| `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 324 | `entry/helper` |
+| `IrmaUniformText` | `modules/locations/shops/irma_uniform_orders_text.qsps` | 286 | `entry/helper` |
+| `IsNpcAtLocation` | `modules/core/time/npc_city_schedule.qsps` | 347 | `entry/helper` |
 | `ItemPanelClick` | `modules/menu/system/add_global_buttons.qsps` | 19 | `entry/helper` |
 | `KitchenCustomerDebugReset` | `modules/events/kitchen/kitchen_customer_event.qsps` | 958 | `entry/helper` |
 | `KitchenCustomerEventTryAutoStart` | `modules/events/kitchen/kitchen_customer_event.qsps` | 9 | `entry/helper` |
@@ -529,7 +534,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 511 | `entry/helper` |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 189 | `entry/helper` |
 | `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 580 | `entry/helper` |
-| `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 184 | `entry/helper` |
+| `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 186 | `entry/helper` |
 | `ShowPortrait` | `modules/core/show_image/show_image_helpers.qsps` | 180 | `entry/helper` |
 | `ShowScene` | `modules/core/show_image/show_image_helpers.qsps` | 260 | `entry/helper` |
 | `ShowSexImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 577 | `entry/helper` |
@@ -546,8 +551,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 974 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 855 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 643 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 470 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 699 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 526 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 304 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -557,29 +562,29 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1804 |
-| `ShowLocationScreenTitle` | 766 |
-| `SceneShowVisual` | 710 |
-| `Menu.AddModule` | 594 |
-| `MenuUiAdd` | 535 |
-| `EnsureGirlData` | 244 |
+| `ActUiPrepare` | 1805 |
+| `ShowLocationScreenTitle` | 786 |
+| `SceneShowVisual` | 728 |
+| `Menu.AddModule` | 601 |
+| `MenuUiAdd` | 538 |
+| `EnsureGirlData` | 254 |
 | `ClampGirlSocialStats` | 243 |
 | `NormalizeGirlKey` | 201 |
 | `TavernMain` | 165 |
-| `ShowGirlSidebar` | 106 |
+| `ShowGirlSidebar` | 117 |
 | `RegisterSex` | 98 |
 | `Market` | 97 |
 | `Menu.Create` | 95 |
-| `ShowImage` | 92 |
 | `Menu.Destroy` | 92 |
+| `ShowImage` | 92 |
 | `FormatSpintry` | 84 |
 | `UpdateGirlLocations` | 83 |
-| `PrintMainP` | 82 |
 | `MarketDance` | 77 |
+| `PrintMainP` | 70 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `PrintTitleLine` | 53 |
-| `GirlTalkResult` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `PrintTitleLine` | 51 |
+| `GirlTalkResult` | 49 |
 | `SaveLastHallEvent` | 45 |
 | `RegisterPlayerCum` | 44 |
 

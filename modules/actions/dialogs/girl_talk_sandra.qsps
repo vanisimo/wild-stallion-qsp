@@ -87,6 +87,26 @@
         end
     end
 
+    ! 1.9a. Пропущенная примерка рабочей формы у Ирмы
+    if LOC('UniformFittingMissedCanStart') = 1:
+        gs 'UniformFittingMissedCanStart', 'sandra'
+        if UniformFittingMissedCanStart = 1:
+            SandraImportantReady = 1
+            $SandraImportantAction = 'uniform_missed'
+            exit
+        end
+    end
+
+    ! 1.9b. Примерка рабочей формы у Ирмы
+    if LOC('UniformFittingTalkCanStart') = 1:
+        gs 'UniformFittingTalkCanStart', 'sandra'
+        if UniformFittingTalkCanStart = 1:
+            SandraImportantReady = 1
+            $SandraImportantAction = 'uniform_talk'
+            exit
+        end
+    end
+
     ! 1.10. История: столяр Драупнир
     if GirlPersonalStoryUnlock['sandra_sandra_carpenter'] = 1 and GirlPersonalStoryDone['sandra_sandra_carpenter'] = 0:
         SandraImportantReady = 1
@@ -128,6 +148,10 @@
             gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffHireTalk', $TalkReturnLoc }
         elseif $SandraImportantAction = 'staff_reaction':
             gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffGirlsReactionTalk', 'sandra', $TalkReturnLoc }
+        elseif $SandraImportantAction = 'uniform_missed':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkUniformFittingMissed', 'sandra', $TalkReturnLoc }
+        elseif $SandraImportantAction = 'uniform_talk':
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkUniformFittingTalk', 'sandra', $TalkReturnLoc }
         elseif $SandraImportantAction = 'story_carpenter':
             gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'sandra', $TalkReturnLoc, 'sandra_carpenter' }
         elseif $SandraImportantAction = 'story_priest':
@@ -284,6 +308,7 @@
 
     if $GirlTalkDaughtersText <> '':
         *pl $GirlTalkDaughtersText
+        *pl ' '
     end
 
     killvar '$GirlTalkDaughtersText'

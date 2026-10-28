@@ -1,17 +1,23 @@
 ! ================================================
 ! FILE: modules/locations/shops/irma_uniform_orders.qsps
 ! MODULE: modules/locations/shops
+! [AI-WORKED] Текст переработан / дополнен ассистентом 28.10.2026
 ! Ирма: рабочая форма для девушек трактира
-! Версия: v2 / ordinary + revealing uniforms
+! Версия: v3 / order → tavern agreement → morning fitting at Irma's
 ! Назначение:
-! - купить / сшить откровенную рабочую форму для Аманды, Мелиссы, Сандры
-! - доступно только после предложения Ирмы IrmaUniformOfferUnlocked = 1
+! - заказ откровенной рабочей формы для Аманды, Мелиссы, Сандры
+! - доступно после предложения Ирмы IrmaUniformOfferUnlocked = 1
+! - схема заказа:
+!   1) Оплата ткани и раскроя у Ирмы (один комплект или все три)
+!   2) Разговор с девушкой в таверне («Важный разговор») о примерке
+!   3) Утром девушка в лавке Ирмы, Стефан приходит на примерку
+!   4) Подгонка за ширмой (с возможностью подсмотреть)
+!   5) Финальный показ у зеркала и получение формы
 ! - форма имеет 2 уровня:
 !   GirlUniformLevel[girl] = 0 обычная
 !   GirlUniformLevel[girl] = 1 откровенная
-! - покупка открывает возможность носить откровенную форму:
+! - получение открывает возможность носить откровенную форму:
 !   uniform_purchased[girl] = 1
-! - назначение формы делается через разговор с девушкой в трактире
 !
 ! Тексты берутся из:
 ! modules/locations/shops/irma_uniform_orders_text.qsps
@@ -74,7 +80,7 @@
     *pl 'Что заказать у <a href="exec:gs ''Menu.Show'', ''IrmaUniformMenu''">Ирмы</a>?'
     *pl ' '
 
-    if uniform_purchased['amanda'] = 0:
+    if uniform_purchased['amanda'] = 0 and uniform_ordered['amanda'] = 0:
         gs 'IrmaUniformGetPrice', 'amanda'
         gs 'ActUiPrepare', 'Форма для Аманды (' + STR(IrmaUniformPrice) + ' спинтарий)', 'shop'
         act $ActUiLabel, $ActUiIconPath:
@@ -82,7 +88,7 @@
         end
     end
 
-    if uniform_purchased['melissa'] = 0:
+    if uniform_purchased['melissa'] = 0 and uniform_ordered['melissa'] = 0:
         gs 'IrmaUniformGetPrice', 'melissa'
         gs 'ActUiPrepare', 'Форма для Мелиссы (' + STR(IrmaUniformPrice) + ' спинтарий)', 'shop'
         act $ActUiLabel, $ActUiIconPath:
@@ -90,7 +96,7 @@
         end
     end
 
-    if uniform_purchased['sandra'] = 0:
+    if uniform_purchased['sandra'] = 0 and uniform_ordered['sandra'] = 0:
         gs 'IrmaUniformGetPrice', 'sandra'
         gs 'ActUiPrepare', 'Форма для Сандры (' + STR(IrmaUniformPrice) + ' спинтарий)', 'shop'
         act $ActUiLabel, $ActUiIconPath:
@@ -122,40 +128,55 @@
     gs 'Menu.Destroy', 'IrmaUniformMenu'
     gs 'Menu.Create', 'IrmaUniformMenu'
 
-    if uniform_purchased['amanda'] = 0:
+    if uniform_purchased['amanda'] = 1:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Аманды (пошита)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
+        }
+    elseif uniform_ordered['amanda'] = 1:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Аманды (оплачена, ждёт примерки)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
+        }
+    else:
         gs 'IrmaUniformGetPrice', 'amanda'
         gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Аманды (' + STR(IrmaUniformPrice) + ' спинтарий)', ''
         gs 'Menu.AddModule', 'IrmaUniformMenu', {
             gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
         }
-    else:
-        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Аманды (пошита)', ''
-        gs 'Menu.AddModule', 'IrmaUniformMenu', {
-            gt 'IrmaUniformOrderConfirm', 'amanda', $IrmaUniformReturnLoc
-        }
     end
 
-    if uniform_purchased['melissa'] = 0:
+    if uniform_purchased['melissa'] = 1:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Мелиссы (пошита)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
+        }
+    elseif uniform_ordered['melissa'] = 1:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Мелиссы (оплачена, ждёт примерки)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
+        }
+    else:
         gs 'IrmaUniformGetPrice', 'melissa'
         gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Мелиссы (' + STR(IrmaUniformPrice) + ' спинтарий)', ''
         gs 'Menu.AddModule', 'IrmaUniformMenu', {
             gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
         }
-    else:
-        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Мелиссы (пошита)', ''
-        gs 'Menu.AddModule', 'IrmaUniformMenu', {
-            gt 'IrmaUniformOrderConfirm', 'melissa', $IrmaUniformReturnLoc
-        }
     end
 
-    if uniform_purchased['sandra'] = 0:
-        gs 'IrmaUniformGetPrice', 'sandra'
-        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Сандры (' + STR(IrmaUniformPrice) + ' спинтарий)', ''
+    if uniform_purchased['sandra'] = 1:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Сандры (пошита)', ''
+        gs 'Menu.AddModule', 'IrmaUniformMenu', {
+            gt 'IrmaUniformOrderConfirm', 'sandra', $IrmaUniformReturnLoc
+        }
+    elseif uniform_ordered['sandra'] = 1:
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Сандры (оплачена, ждёт примерки)', ''
         gs 'Menu.AddModule', 'IrmaUniformMenu', {
             gt 'IrmaUniformOrderConfirm', 'sandra', $IrmaUniformReturnLoc
         }
     else:
-        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Сандры (пошита)', ''
+        gs 'IrmaUniformGetPrice', 'sandra'
+        gs 'MenuUiAdd', 'IrmaUniformMenu', 'Откровенная форма для Сандры (' + STR(IrmaUniformPrice) + ' спинтарий)', ''
         gs 'Menu.AddModule', 'IrmaUniformMenu', {
             gt 'IrmaUniformOrderConfirm', 'sandra', $IrmaUniformReturnLoc
         }
@@ -200,7 +221,11 @@
     gs 'IrmaUniformEnsureName', $IrmaUniformGirl
 
     if uniform_purchased[$IrmaUniformGirl] = 1:
-        *pl '• ' + $RealName[$IrmaUniformGirl] + ': откровенная форма пошита.'
+        *pl '• ' + $RealName[$IrmaUniformGirl] + ': откровенная форма пошита и готова к работе.'
+    elseif uniform_fitting_agreed[$IrmaUniformGirl] = 1:
+        *pl '• ' + $RealName[$IrmaUniformGirl] + ': примерка назначена на утро ' + STR(uniform_fitting_day[$IrmaUniformGirl]) + '-го дня.'
+    elseif uniform_ordered[$IrmaUniformGirl] = 1:
+        *pl '• ' + $RealName[$IrmaUniformGirl] + ': заказ оплачен, ждёт назначения примерки в таверне.'
     else:
         *pl '• ' + $RealName[$IrmaUniformGirl] + ': откровенная форма ещё не заказана.'
     end
@@ -245,7 +270,19 @@
     *pl ' '
 
     if uniform_purchased[$IrmaUniformGirl] = 1:
-        *pl 'Этот комплект уже пошит и ждёт в твоём трактире.'
+        *pl 'Этот комплект уже пошит и готов к работе в твоём трактире.'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
+        end
+
+        exit
+    end
+
+    if uniform_ordered[$IrmaUniformGirl] = 1:
+        *pl 'Этот комплект уже оплачен и ждёт примерки. Поговори с девушкой в трактире, чтобы назначить день утреннего визита к Ирме.'
         *pl ' '
 
         gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
@@ -269,7 +306,7 @@
         exit
     end
 
-    gs 'ActUiPrepare', 'Оплатить и сшить (' + STR(IrmaUniformPrice) + ' спинтарий)', 'coin'
+    gs 'ActUiPrepare', 'Оплатить заказ (' + STR(IrmaUniformPrice) + ' спинтарий)', 'coin'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IrmaUniformOrderBuy', $IrmaUniformGirl, $IrmaUniformReturnLoc
     end
@@ -282,7 +319,7 @@
 
 ! ================================================
 ! FILE: modules/locations/shops/irma_uniform_orders.qsps
-! Покупка одного комплекта
+! Покупка одного комплекта (оплата и назначение примерки)
 ! ================================================
 
 #IrmaUniformOrderBuy
@@ -291,7 +328,7 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_order_buy', 'ФОРМА ГОТОВА', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_order_buy', 'ЗАКАЗ ОПЛАЧЕН', 'large', 'webp'
     gs 'IrmaUniformNormalizeGirl', $ARGS[0]
     $IrmaUniformGirl = $IrmaUniformGirlKey
     $IrmaUniformReturnLoc = $ARGS[1]
@@ -307,7 +344,7 @@
     gs 'IrmaUniformEnsureName', $IrmaUniformGirl
     gs 'IrmaUniformGetPrice', $IrmaUniformGirl
 
-    if uniform_purchased[$IrmaUniformGirl] = 1:
+    if uniform_purchased[$IrmaUniformGirl] = 1 or uniform_ordered[$IrmaUniformGirl] = 1:
         gt 'IrmaUniformOrders', $IrmaUniformReturnLoc
     end
 
@@ -316,33 +353,15 @@
     end
 
     money -= IrmaUniformPrice
-    uniform_purchased[$IrmaUniformGirl] = 1
+    uniform_ordered[$IrmaUniformGirl] = 1
     IrmaUniformPurchasedCount += 1
 
-    if uniform_purchased['amanda'] = 1 and uniform_purchased['melissa'] = 1 and uniform_purchased['sandra'] = 1:
-        revealing_uniform_all_bought = 1
-    end
+    gs 'ShowLocationScreenTitle', 'ЗАКАЗ ОПЛАЧЕН: ' + UCASE($RealName[$IrmaUniformGirl])
 
-    if auto_set_revealing_uniform_after_buy = 1:
-        GirlUniformLevel[$IrmaUniformGirl] = 1
-    end
-
-    if LOC('ClampTavernEventState') = 1:
-        gs 'ClampTavernEventState'
-    end
-
-    gs 'ShowLocationScreenTitle', 'ФОРМА ГОТОВА'
-
-    gs 'IrmaUniformPrintText', 'bought_one'
+    gs 'IrmaUniformPrintText', 'ordered_one'
 
     *pl ' '
-
-    if auto_set_revealing_uniform_after_buy = 1:
-        *pl 'Форма сразу назначена как рабочая.'
-    else:
-        *pl 'Новый наряд упакован. Чтобы девушка начала выходить в нём на смену, поговори с ней в трактире о рабочей форме.'
-    end
-
+    *pl 'Заказ оплачен. Чтобы назначить день примерки, поговори с ' + $RealName[$IrmaUniformGirl] + ' в трактире.'
     *pl ' '
 
     gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
@@ -398,9 +417,7 @@
     end
 
     if IrmaUniformAllNeedCount <= 0:
-        revealing_uniform_all_bought = 1
-
-        *pl 'Все комплекты уже были заказаны по отдельности.'
+        *pl 'Все три комплекта уже оплачены и ожидают примерки.'
         *pl ' '
 
         gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
@@ -446,7 +463,7 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_order_all_buy', 'ФОРМА ДЛЯ ВСЕХ ГОТОВА', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_order_all_buy', 'ОБЩИЙ ЗАКАЗ ОПЛАЧЕН', 'large', 'webp'
     $IrmaUniformReturnLoc = $ARGS[0]
 
     if $IrmaUniformReturnLoc = '':
@@ -461,34 +478,17 @@
 
     money -= IrmaUniformAllPrice
 
-    uniform_purchased['amanda'] = 1
-    uniform_purchased['melissa'] = 1
-    uniform_purchased['sandra'] = 1
-    revealing_uniform_all_bought = 1
+    uniform_ordered['amanda'] = 1
+    uniform_ordered['melissa'] = 1
+    uniform_ordered['sandra'] = 1
     IrmaUniformPurchasedCount = 3
 
-    if auto_set_revealing_uniform_after_buy = 1:
-        GirlUniformLevel['amanda'] = 1
-        GirlUniformLevel['melissa'] = 1
-        GirlUniformLevel['sandra'] = 1
-    end
+    gs 'ShowLocationScreenTitle', 'ОБЩИЙ ЗАКАЗ ОПЛАЧЕН'
 
-    if LOC('ClampTavernEventState') = 1:
-        gs 'ClampTavernEventState'
-    end
-
-    gs 'ShowLocationScreenTitle', 'ФОРМА ДЛЯ ВСЕХ ГОТОВА'
-
-    gs 'IrmaUniformPrintText', 'bought_all'
+    gs 'IrmaUniformPrintText', 'ordered_all'
 
     *pl ' '
-
-    if auto_set_revealing_uniform_after_buy = 1:
-        *pl 'Все формы сразу назначены как рабочие.'
-    else:
-        *pl 'Все три наряда упакованы. Чтобы девушки начали выходить в них на смену, поговори с каждой в трактире о рабочей форме.'
-    end
-
+    *pl 'Все три комплекта оплачены. Поговори с девушками в трактире, чтобы отправлять их на примерку к Ирме по очереди.'
     *pl ' '
 
     gs 'ActUiPrepare', 'Вернуться к заказам', 'return'
@@ -543,19 +543,19 @@
     IrmaUniformAllPrice = 0
     IrmaUniformAllNeedCount = 0
 
-    if uniform_purchased['amanda'] = 0:
+    if uniform_purchased['amanda'] = 0 and uniform_ordered['amanda'] = 0:
         gs 'IrmaUniformGetPrice', 'amanda'
         IrmaUniformAllPrice += IrmaUniformPrice
         IrmaUniformAllNeedCount += 1
     end
 
-    if uniform_purchased['melissa'] = 0:
+    if uniform_purchased['melissa'] = 0 and uniform_ordered['melissa'] = 0:
         gs 'IrmaUniformGetPrice', 'melissa'
         IrmaUniformAllPrice += IrmaUniformPrice
         IrmaUniformAllNeedCount += 1
     end
 
-    if uniform_purchased['sandra'] = 0:
+    if uniform_purchased['sandra'] = 0 and uniform_ordered['sandra'] = 0:
         gs 'IrmaUniformGetPrice', 'sandra'
         IrmaUniformAllPrice += IrmaUniformPrice
         IrmaUniformAllNeedCount += 1
@@ -568,6 +568,380 @@
 
     if IrmaUniformAllPrice < 0:
         IrmaUniformAllPrice = 0
+    end
+---
+
+! ================================================
+! ПРОВЕРКИ ДЛЯ ВАЖНОГО РАЗГОВОРА В ТАВЕРНЕ
+! ================================================
+
+#UniformFittingTalkCanStart
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $UniformFittingCheckGirl = $IrmaUniformGirlKey
+    UniformFittingTalkCanStart = 0
+
+    if $UniformFittingCheckGirl = '':
+        killvar '$UniformFittingCheckGirl'
+        exit
+    end
+
+    if uniform_ordered[$UniformFittingCheckGirl] = 1 and uniform_fitting_agreed[$UniformFittingCheckGirl] = 0 and uniform_purchased[$UniformFittingCheckGirl] = 0:
+        UniformFittingTalkCanStart = 1
+    end
+
+    killvar '$UniformFittingCheckGirl'
+---
+
+#UniformFittingMissedCanStart
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $UniformFittingMissedGirl = $IrmaUniformGirlKey
+    UniformFittingMissedCanStart = 0
+
+    if $UniformFittingMissedGirl = '':
+        killvar '$UniformFittingMissedGirl'
+        exit
+    end
+
+    if uniform_fitting_agreed[$UniformFittingMissedGirl] = 1 and uniform_purchased[$UniformFittingMissedGirl] = 0:
+        if day > uniform_fitting_day[$UniformFittingMissedGirl] or (day = uniform_fitting_day[$UniformFittingMissedGirl] and time >= 2):
+            UniformFittingMissedCanStart = 1
+        end
+    end
+
+    killvar '$UniformFittingMissedGirl'
+---
+
+! ================================================
+! ДИАЛОГ В ТАВЕРНЕ: СООБЩИТЬ О ЗАКАЗЕ ФОРМЫ
+! ================================================
+
+#GirlTalkUniformFittingTalk
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $TalkGirl = $IrmaUniformGirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkGirl = '':
+        gt $TalkReturnLoc
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'IrmaUniformEnsureName', $TalkGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $TalkGirl
+    end
+
+    gs 'ShowLocationScreenTitle', 'РАБОЧАЯ ФОРМА — ' + UCASE($RealName[$TalkGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/' + $TalkGirl + '_uniform_talk_intro', 'Разговор: ' + $RealName[$TalkGirl] + ', Стефан сообщает о заказе формы'
+
+    gs 'IrmaUniformPrintText', 'talk_' + $TalkGirl + '_fitting'
+
+    *pl ' '
+
+    act '<b>Договорились: завтра утром у Ирмы</b>', 'images/common/ui/actions/shop.png':
+        gt 'GirlTalkUniformFittingAgree', $TalkGirl, $TalkReturnLoc
+    end
+
+    act '<b>Отложить разговор</b>', 'images/common/ui/actions/return.png':
+        gt 'GirlTalk', $TalkGirl, $TalkReturnLoc
+    end
+---
+
+#GirlTalkUniformFittingAgree
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $TalkGirl = $IrmaUniformGirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'IrmaUniformEnsureName', $TalkGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $TalkGirl
+    end
+
+    uniform_fitting_agreed[$TalkGirl] = 1
+    uniform_fitting_day[$TalkGirl] = day + 1
+    Friends[$TalkGirl] += 1
+
+    gs 'ShowLocationScreenTitle', 'РАБОЧАЯ ФОРМА — ' + UCASE($RealName[$TalkGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/' + $TalkGirl + '_uniform_talk_agree', 'Разговор: ' + $RealName[$TalkGirl] + ' соглашается прийти к Ирме'
+
+    if $TalkGirl = 'amanda':
+        *pl 'Аманда смущённо улыбается и кивает:'
+        *pl '— Договорились, Стефанчик! Завтра утром прямо к открытию буду у Ирмы. Только не опаздывай!'
+    elseif $TalkGirl = 'melissa':
+        *pl 'Мелисса спокойно кивает:'
+        *pl '— Хорошо. Завтра утром я буду в лавке Ирмы. Жду тебя там.'
+    elseif $TalkGirl = 'sandra':
+        *pl 'Сандра тяжело вздыхает:'
+        *pl '— Ладно, Стефан. Завтра с утра схожу. Только попробуй не прийти вовремя!'
+    end
+
+    *pl ' '
+
+    act '<b>Договорились</b>', 'images/common/ui/actions/return.png':
+        gt $TalkReturnLoc
+    end
+---
+
+! ================================================
+! ДИАЛОГ В ТАВЕРНЕ: УПРЁК ПРИ ОПОЗДАНИИ СТЕФАНА
+! ================================================
+
+#GirlTalkUniformFittingMissed
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $TalkGirl = $IrmaUniformGirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'IrmaUniformEnsureName', $TalkGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $TalkGirl
+    end
+
+    gs 'ShowLocationScreenTitle', 'РАБОЧАЯ ФОРМА — ' + UCASE($RealName[$TalkGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/' + $TalkGirl + '_uniform_talk_missed', 'Разговор: ' + $RealName[$TalkGirl] + ' упрекает за пропущенную примерку'
+
+    gs 'IrmaUniformPrintText', 'talk_' + $TalkGirl + '_fitting_missed'
+
+    *pl ' '
+
+    act '<b>Извиниться и перенести на завтрашнее утро</b>', 'images/common/ui/actions/talk.png':
+        gt 'GirlTalkUniformFittingForgive', $TalkGirl, $TalkReturnLoc
+    end
+
+    act '<b>Отложить пока примерку</b>', 'images/common/ui/actions/return.png':
+        uniform_fitting_agreed[$TalkGirl] = 0
+        gt $TalkReturnLoc
+    end
+---
+
+#GirlTalkUniformFittingForgive
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $TalkGirl = $IrmaUniformGirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'IrmaUniformEnsureName', $TalkGirl
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $TalkGirl
+    end
+
+    uniform_fitting_day[$TalkGirl] = day + 1
+
+    gs 'ShowLocationScreenTitle', 'РАБОЧАЯ ФОРМА — ' + UCASE($RealName[$TalkGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/' + $TalkGirl + '_uniform_talk_forgive', 'Разговор: ' + $RealName[$TalkGirl] + ' соглашается перенести примерку на завтра'
+
+    gs 'IrmaUniformPrintText', 'talk_' + $TalkGirl + '_fitting_forgive'
+
+    *pl ' '
+
+    act '<b>Договорились</b>', 'images/common/ui/actions/return.png':
+        gt $TalkReturnLoc
+    end
+---
+
+! ================================================
+! ПРИМЕРКА В ЛАВКЕ У ИРМЫ УТРОМ
+! ================================================
+
+#IrmaUniformHandleVisit
+
+    if time = 1 and week <> 7:
+        if uniform_fitting_agreed['amanda'] = 1 and uniform_purchased['amanda'] = 0 and day = uniform_fitting_day['amanda']:
+            gt 'IrmaUniformFittingShopScene', 'amanda'
+        elseif uniform_fitting_agreed['melissa'] = 1 and uniform_purchased['melissa'] = 0 and day = uniform_fitting_day['melissa']:
+            gt 'IrmaUniformFittingShopScene', 'melissa'
+        elseif uniform_fitting_agreed['sandra'] = 1 and uniform_purchased['sandra'] = 0 and day = uniform_fitting_day['sandra']:
+            gt 'IrmaUniformFittingShopScene', 'sandra'
+        end
+    end
+---
+
+#IrmaUniformFittingShopScene
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $UniformGirl = $IrmaUniformGirlKey
+    gs 'IrmaUniformEnsureName', $UniformGirl
+
+    gs 'ShowLocationScreenTitle', 'ЛАВКА ПОРТНИХИ ИРМЫ — ПРИМЕРКА ФОРМЫ ДЛЯ ' + UCASE($RealName[$UniformGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_fitting_shop_' + $UniformGirl, 'Ирма: примерка формы, ' + $RealName[$UniformGirl] + ' в лавке'
+
+    gs 'IrmaUniformPrintText', 'shop_' + $UniformGirl + '_fitting_scene'
+
+    *pl ' '
+
+    act '<b>Идти за ширму на примерку</b>', 'images/common/ui/actions/shop.png':
+        gt 'IrmaUniformFittingRoom', $UniformGirl
+    end
+---
+
+#IrmaUniformFittingRoom
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $UniformGirl = $IrmaUniformGirlKey
+    gs 'IrmaUniformEnsureName', $UniformGirl
+
+    gs 'ShowLocationScreenTitle', 'ПОДГОНКА ФОРМЫ — ' + UCASE($RealName[$UniformGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_screen_' + $UniformGirl, 'Ирма: ' + $RealName[$UniformGirl] + ' за ширмой на подгонке формы'
+
+    *pl 'Ирма уводит ' + $RealName[$UniformGirl] + ' за плотную штору в углу лавки. Оттуда доносится шорох снимаемой одежды, позвякивание булавок и негромкие наставления полуэльфийки.'
+    *pl ' '
+
+    act '<b>Подсмотреть за ширму</b>', 'images/common/ui/actions/look.png':
+        gt 'IrmaUniformFittingPeep', $UniformGirl
+    end
+
+    act '<b>Дождаться окончания примерки</b>', 'images/common/ui/actions/generic.png':
+        gt 'IrmaUniformFittingFinish', $UniformGirl
+    end
+---
+
+! ================================================
+! ЭКРАН 2А В ЛАВКЕ: Подглядывание за ширму (кадр 1)
+! ================================================
+
+#IrmaUniformFittingPeep
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $UniformGirl = $IrmaUniformGirlKey
+    gs 'IrmaUniformEnsureName', $UniformGirl
+
+    gs 'ShowLocationScreenTitle', 'ПОДГОНКА ФОРМЫ — ' + UCASE($RealName[$UniformGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_peep1_' + $UniformGirl, 'Подглядывание за ширму: ' + $RealName[$UniformGirl] + ' перед примеркой формы'
+
+    gs 'IrmaUniformPrintText', 'shop_' + $UniformGirl + '_fitting_peep1'
+
+    *pl ' '
+
+    act '<b>Смотреть дальше</b>', 'images/common/ui/actions/look.png':
+        gt 'IrmaUniformFittingPeep2', $UniformGirl
+    end
+
+    act '<b>Дождаться окончания примерки</b>', 'images/common/ui/actions/generic.png':
+        gt 'IrmaUniformFittingFinish', $UniformGirl
+    end
+---
+
+! ================================================
+! ЭКРАН 2Б В ЛАВКЕ: Подглядывание за ширму (кадр 2)
+! ================================================
+
+#IrmaUniformFittingPeep2
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $UniformGirl = $IrmaUniformGirlKey
+    gs 'IrmaUniformEnsureName', $UniformGirl
+
+    gs 'ShowLocationScreenTitle', 'ПОДГОНКА ФОРМЫ — ' + UCASE($RealName[$UniformGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_peep2_' + $UniformGirl, 'Подглядывание за ширму: ' + $RealName[$UniformGirl] + ' примеряет форму'
+
+    gs 'IrmaUniformPrintText', 'shop_' + $UniformGirl + '_fitting_peep2'
+
+    *pl ' '
+
+    act '<b>Дождаться окончания примерки</b>', 'images/common/ui/actions/generic.png':
+        gt 'IrmaUniformFittingFinish', $UniformGirl
+    end
+---
+
+#IrmaUniformFittingFinish
+
+    *clr
+    clr
+    cla
+
+    gs 'IrmaUniformNormalizeGirl', $ARGS[0]
+    $UniformGirl = $IrmaUniformGirlKey
+    gs 'IrmaUniformEnsureName', $UniformGirl
+
+    uniform_purchased[$UniformGirl] = 1
+    uniform_ordered[$UniformGirl] = 0
+    uniform_fitting_agreed[$UniformGirl] = 0
+    Friends[$UniformGirl] += 2
+    otkroven[$UniformGirl] += 1
+    Friends['irma'] += 1
+    $GirlLocation[$UniformGirl] = 'TavernMain'
+
+    if uniform_purchased['amanda'] = 1 and uniform_purchased['melissa'] = 1 and uniform_purchased['sandra'] = 1:
+        revealing_uniform_all_bought = 1
+    end
+
+    if auto_set_revealing_uniform_after_buy = 1:
+        GirlUniformLevel[$UniformGirl] = 1
+    end
+
+    if LOC('ClampTavernEventState') = 1:
+        gs 'ClampTavernEventState'
+    end
+
+    gs 'ShowLocationScreenTitle', 'ОТКРОВЕННАЯ ФОРМА — ' + UCASE($RealName[$UniformGirl])
+    gs 'SceneShowVisual', 'images/locations/shops/irma_uniform_orders/irma_uniform_finish_' + $UniformGirl, 'Ирма: ' + $RealName[$UniformGirl] + ' в новой откровенной форме у зеркала'
+
+    gs 'IrmaUniformPrintText', 'shop_' + $UniformGirl + '_fitting_finish'
+
+    *pl ' '
+    *pl 'Новый комплект упакован. Чтобы девушка начала выходить в нём на смену, поговори с ней в трактире о рабочей форме.'
+    *pl ' '
+
+    act '<b>Выйти из лавки</b>', 'images/common/ui/actions/return.png':
+        gt 'CraftsmenQuarter'
     end
 ---
 
