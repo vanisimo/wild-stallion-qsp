@@ -686,11 +686,23 @@
         *pl ' '
     end
 
-    if $KitchenCustomerScene <> 'compliment_food' and LOC('GirlWorkPolicyTalkKitchen') = 1:
-        gs 'ActUiPrepare', 'Поговорить с ней о правилах на кухне', 'kitchen'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlWorkPolicyTalkKitchen', $KitchenCustomerGirl, $KitchenCustomerReturnLoc
+    if $KitchenCustomerScene <> 'compliment_food':
+        $PolicyTalkGirl = $KitchenCustomerGirl
+        $PolicyTalkArea = 'kitchen'
+        if LOC('GirlWorkPolicyTalkEnsureName') = 1:
+            gs 'GirlWorkPolicyTalkEnsureName', $KitchenCustomerGirl
         end
+
+        if LOC('GirlWorkPolicyTalkPrintText') = 1:
+            gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
+            *pl ' '
+        end
+
+        gs 'KitchenCustomerBuildPolicyMenu'
+        gs 'GetMenuOpenLinkHref', 'KitchenCustomerPolicyMenu', 'Обсудить правило поведения'
+        *p $MenuOpenLinkHref + '.'
+        killvar '$MenuOpenLinkHref'
+        *pl ' '
     end
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
@@ -699,6 +711,93 @@
     end
 
     killvar '$KitchenCustomerChoice'
+---
+
+#KitchenCustomerBuildPolicyMenu
+    gs 'Menu.Destroy', 'KitchenCustomerPolicyMenu'
+    gs 'Menu.Create', 'KitchenCustomerPolicyMenu'
+
+    gs 'MenuUiAdd', 'KitchenCustomerPolicyMenu', 'Вести себя сдержанно', ''
+    gs 'Menu.AddModule', 'KitchenCustomerPolicyMenu', {
+        gt 'KitchenCustomerPolicyChoose', 1
+    }
+
+    if FamilyLiberationGateOpen = 1:
+        gs 'MenuUiAdd', 'KitchenCustomerPolicyMenu', 'Решать самой', ''
+        gs 'Menu.AddModule', 'KitchenCustomerPolicyMenu', {
+            gt 'KitchenCustomerPolicyChoose', 2
+        }
+
+        gs 'MenuUiAdd', 'KitchenCustomerPolicyMenu', 'Вести себя расковано', ''
+        gs 'Menu.AddModule', 'KitchenCustomerPolicyMenu', {
+            gt 'KitchenCustomerPolicyChoose', 3
+        }
+    end
+---
+
+#KitchenCustomerPolicyChoose
+    KitchenCustomerPolicyValue = ARGS[0]
+    if KitchenCustomerPolicyValue < 1:
+        KitchenCustomerPolicyValue = 1
+    end
+    if KitchenCustomerPolicyValue > 3:
+        KitchenCustomerPolicyValue = 3
+    end
+    if FamilyLiberationGateOpen = 0 and KitchenCustomerPolicyValue > 1:
+        KitchenCustomerPolicyValue = 1
+    end
+
+    if $KitchenCustomerGirl = '':
+        $KitchenCustomerGirl = 'sandra'
+    end
+
+    if $KitchenCustomerReturnLoc = '':
+        $KitchenCustomerReturnLoc = 'Kitchen'
+    end
+    if LOC($KitchenCustomerReturnLoc) = 0:
+        $KitchenCustomerReturnLoc = 'TavernMain'
+    end
+
+    $PolicyTalkGirl = $KitchenCustomerGirl
+    $PolicyTalkArea = 'kitchen'
+    if LOC('GirlWorkPolicyTalkEnsureName') = 1:
+        gs 'GirlWorkPolicyTalkEnsureName', $KitchenCustomerGirl
+    end
+
+    if LOC('GirlWorkPolicyTalkAfterHarassApply') = 1:
+        gs 'GirlWorkPolicyTalkAfterHarassApply', $KitchenCustomerGirl, 'kitchen', KitchenCustomerPolicyValue
+    end
+
+    HallEventDiscussed[$KitchenCustomerGirl] = 1
+
+    *clr
+    clr
+    cla
+
+    if LOC('ShowGirlSidebar') = 1:
+        gs 'ShowGirlSidebar', $KitchenCustomerGirl
+    end
+
+    gs 'ShowLocationScreenTitle', 'ПРАВИЛО ОБНОВЛЕНО'
+    if LOC('SceneShowVisual') = 1:
+        gs 'SceneShowVisual', 'images/events/' + $KitchenCustomerGirl + '/hall_harass/policy_updated', 'правило обновлено: ' + $KitchenCustomerGirl + ' / kitchen — реакция на policy', 'large', 'webp'
+    end
+
+    if LOC('GirlWorkPolicyAssignmentReactionPrint') = 1:
+        gs 'GirlWorkPolicyAssignmentReactionPrint', $KitchenCustomerGirl, 'kitchen', KitchenCustomerPolicyValue
+        *pl ' '
+    end
+
+    if $GirlTalkPendingNotice[$KitchenCustomerGirl] <> '':
+        *pl $GirlTalkPendingNotice[$KitchenCustomerGirl]
+        $GirlTalkPendingNotice[$KitchenCustomerGirl] = ''
+        *pl ' '
+    end
+
+    gs 'ActUiPrepare', 'Вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $KitchenCustomerReturnLoc
+    end
 ---
 
 ! ================================================

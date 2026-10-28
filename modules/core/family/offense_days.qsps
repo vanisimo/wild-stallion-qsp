@@ -844,7 +844,6 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/core/family/offense_days/offense_days_talk_start', 'разговор: дни обиды в семье', 'large', 'webp'
     if LOC('ShowGirlSidebar') = 1:
         gs 'ShowGirlSidebar', $OffenseGirl
     end
@@ -855,7 +854,11 @@
     gs 'OffenseDaysShowTalkImage', $OffenseGirl, 'angry', 'large'
     *pl ' '
 
-    if LOC('OffenseDaysTalkIntroText') = 1:
+    if GirlOffenseApologizeDay[$OffenseSessionGirl] = day:
+        *pl $RealName[$OffenseSessionGirl] + ' скрещивает руки на груди и недовольно отворачивается:'
+        *pl ' '
+        *pl '— Ты уже извинялся сегодня, Стефан. Твои слова я услышала, но обида так быстро не проходит. Не ходи за мной хвостом — дай мне время остыть.'
+    elseif LOC('OffenseDaysTalkIntroText') = 1:
         gs 'OffenseDaysTalkIntroText', $OffenseSessionGirl
     else:
         *p $RealName[$OffenseSessionGirl] + ' смотрит мимо. Разговор сейчас — только про то, что между вами треснуло.'
@@ -877,6 +880,18 @@
     gs 'OffenseDaysTalkBuildMenu', $OffenseSessionGirl, $OffenseSessionReturn
 
     *p 'Что будешь <a href="exec:gs ''Menu.Show'', ''OffenseDaysTalkMenu''">делать</a>?'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Оставить в покое', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        if $OffenseReturnLoc <> '' and LOC($OffenseReturnLoc) = 1:
+            gt $OffenseReturnLoc
+        elseif $OffenseSessionReturn <> '' and LOC($OffenseSessionReturn) = 1:
+            gt $OffenseSessionReturn
+        else:
+            gt 'TavernMain'
+        end
+    end
 ---
 
 #OffenseDaysTalkBuildMenu
@@ -932,6 +947,11 @@
         gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Подарить', ''
         gs 'Menu.AddModule', 'OffenseDaysTalkMenu', $OffenseModCode
     end
+
+    ! Всегда даём пункт выхода в меню выбора
+    $OffenseModCode = 'gt ''' + $OffenseReturnLoc + ''''
+    gs 'MenuUiAdd', 'OffenseDaysTalkMenu', 'Оставить в покое', ''
+    gs 'Menu.AddModule', 'OffenseDaysTalkMenu', $OffenseModCode
 
     killvar '$OffenseModCode'
 ---
@@ -997,7 +1017,6 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/core/family/offense_days/offense_days_talk_action', 'Ты уже извинялся сегодня. Ещё раз — завтра, или подарок / время.', 'large', 'webp'
     $OffenseTalkChoice = LCASE($ARGS[0])
     gs 'NormalizeGirlKey', $ARGS[1]
     $OffenseGirl = $GirlKey
