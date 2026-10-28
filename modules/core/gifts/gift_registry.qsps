@@ -198,31 +198,70 @@
 ---
 
 #MenuGirlGiftAddShelfActs
-    $MenuGiftShelfGirl = $ARGS[0]
-    $MenuGiftShelfReturn = $ARGS[1]
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $MenuGiftTargetGirl = $GirlKey
+    $MenuGiftTargetReturn = $ARGS[1]
 
-    gs 'MenuGirlGiftTryAct', 'gift_cheap', $MenuGiftShelfGirl, $MenuGiftShelfReturn
-    gs 'MenuGirlGiftTryAct', 'gift_expensive', $MenuGiftShelfGirl, $MenuGiftShelfReturn
+    if $MenuGiftTargetGirl = '':
+        $MenuGiftTargetGirl = $GirlActionName
+    end
+    if $MenuGiftTargetGirl = '':
+        $MenuGiftTargetGirl = $TalkGirl
+    end
 
-    killvar '$MenuGiftShelfGirl'
-    killvar '$MenuGiftShelfReturn'
+    if $MenuGiftTargetReturn = '':
+        $MenuGiftTargetReturn = $GirlReturnLoc
+    end
+    if $MenuGiftTargetReturn = '':
+        $MenuGiftTargetReturn = $TalkReturnLoc
+    end
+    if $MenuGiftTargetReturn = '':
+        $MenuGiftTargetReturn = 'TavernMain'
+    end
+
+    if GiftInventory['gift_cheap'] > 0:
+        gs 'MenuGirlGiftName', 'gift_cheap'
+        $GiftCheapBtnLabel = 'Подарить: ' + $GiftName + ' (' + STR(GiftInventory['gift_cheap']) + ')'
+        gs 'ActUiPrepare', $GiftCheapBtnLabel, 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MenuGirlGiftGive', $MenuGiftTargetGirl, $MenuGiftTargetReturn, 'gift_cheap'
+        end
+        killvar '$GiftCheapBtnLabel'
+    end
+
+    if GiftInventory['gift_expensive'] > 0:
+        gs 'MenuGirlGiftName', 'gift_expensive'
+        $GiftExpBtnLabel = 'Подарить: ' + $GiftName + ' (' + STR(GiftInventory['gift_expensive']) + ')'
+        gs 'ActUiPrepare', $GiftExpBtnLabel, 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MenuGirlGiftGive', $MenuGiftTargetGirl, $MenuGiftTargetReturn, 'gift_expensive'
+        end
+        killvar '$GiftExpBtnLabel'
+    end
 ---
 
 #MenuGirlGiftTryAct
+    ! legacy compat helper
     $MenuGiftActId = LCASE($ARGS[0])
     $MenuGiftActGirl = $ARGS[1]
     $MenuGiftActReturn = $ARGS[2]
 
-    if GiftInventory[$MenuGiftActId] > 0:
-        gs 'MenuGirlGiftName', $MenuGiftActId
-        act $GiftName + ' (' + STR(GiftInventory[$MenuGiftActId]) + ')':
-            gt 'MenuGirlGiftGive', $MenuGiftActGirl, $MenuGiftActReturn, $MenuGiftActId
-        end
+    if $MenuGiftActGirl = '':
+        $MenuGiftActGirl = $MenuGiftTargetGirl
+    end
+    if $MenuGiftActReturn = '':
+        $MenuGiftActReturn = $MenuGiftTargetReturn
     end
 
-    killvar '$MenuGiftActId'
-    killvar '$MenuGiftActGirl'
-    killvar '$MenuGiftActReturn'
+    if GiftInventory[$MenuGiftActId] > 0:
+        gs 'MenuGirlGiftName', $MenuGiftActId
+        $GiftTryLabel = 'Подарить: ' + $GiftName + ' (' + STR(GiftInventory[$MenuGiftActId]) + ')'
+        gs 'ActUiPrepare', $GiftTryLabel, 'gift'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'MenuGirlGiftGive', $MenuGiftActGirl, $MenuGiftActReturn, $MenuGiftActId
+        end
+        killvar '$GiftTryLabel'
+    end
 ---
 
 #GiftDebugAddAll

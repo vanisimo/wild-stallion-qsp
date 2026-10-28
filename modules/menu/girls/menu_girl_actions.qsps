@@ -48,8 +48,16 @@
     $GirlReturnLoc = $ARGS[1]
 
     if $GirlActionName = '':
+        $GirlActionName = $TalkGirl
+    end
+
+    if $GirlActionName = '':
         msg 'Ошибка: MenuGirlGift вызван без имени девушки.'
         exit
+    end
+
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = $TalkReturnLoc
     end
 
     if $GirlReturnLoc = '':
@@ -59,6 +67,9 @@
     if $GirlReturnLoc = '':
         $GirlReturnLoc = 'TavernMain'
     end
+
+    $MenuGiftTargetGirl = $GirlActionName
+    $MenuGiftTargetReturn = $GirlReturnLoc
 
     gs 'EnsureGirlData', $GirlActionName
     gs 'MenuGirlCalcConditions', $GirlActionName, $GirlReturnLoc
@@ -72,11 +83,34 @@
     gs 'ShowGirlSidebar', $GirlActionName
 
     gs 'ShowLocationScreenTitle', 'ПОДАРОК: ' + $RealName[$GirlActionName]
+    gs 'SceneShowVisual', 'images/actions/gifts/' + $GirlActionName + '_gift_select', 'подарок: выбор подарка для ' + $RealName[$GirlActionName], 'large', 'webp'
+
+    if $GirlActionName = 'amanda':
+        $GiftTargetNameDat = 'Аманде'
+    elseif $GirlActionName = 'melissa':
+        $GiftTargetNameDat = 'Мелиссе'
+    elseif $GirlActionName = 'sandra':
+        $GiftTargetNameDat = 'Сандре'
+    elseif $GirlActionName = 'inga':
+        $GiftTargetNameDat = 'Инге'
+    elseif $GirlActionName = 'clarissa':
+        $GiftTargetNameDat = 'Клариссе'
+    elseif $GirlActionName = 'irma':
+        $GiftTargetNameDat = 'Ирме'
+    elseif $GirlActionName = 'georgett' or $GirlActionName = 'georgette':
+        $GiftTargetNameDat = 'Жоржетте'
+    elseif $GirlActionName = 'lizette':
+        $GiftTargetNameDat = 'Лизетте'
+    elseif $GirlActionName = 'becky':
+        $GiftTargetNameDat = 'Бекки'
+    else:
+        $GiftTargetNameDat = $RealName[$GirlActionName]
+    end
 
     if GirlConflictUntilDay[$GirlActionName] >= day:
-        *p $RealName[$GirlActionName] + ' всё ещё сердится и не настроена на обычный разговор. Подарок сейчас звучит не как ухаживание, а как попытка признать вину.'
+        *pl $RealName[$GirlActionName] + ' всё ещё сердится и не настроена на обычный разговор. Подарок сейчас звучит не как ухаживание, а как попытка загладить вину.'
     else:
-        *p 'Вы выбираете, что подарить ' + $RealName[$GirlActionName] + '.'
+        *pl 'Ты выбираешь, что подарить ' + $GiftTargetNameDat + '.'
     end
 
     *pl ' '
@@ -86,10 +120,11 @@
     gs 'GiftHasAnyInInventory'
 
     if GiftHasAny = 0:
-        *p 'У вас нет подарков. Их можно купить у корабля из столицы в порту. Содержимое сумки — кнопка «Сумка» в панели предметов.'
+        *pl 'В твоей сумке сейчас нет подходящих подарков. Их можно присмотреть у купцов с заморского корабля в порту.'
     end
 
     killvar 'GiftHasAny'
+    killvar '$GiftTargetNameDat'
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -105,10 +140,23 @@
     GiftInviteIntim = 0
 
     if $GiftGirl = '':
+        $GiftGirl = $MenuGiftTargetGirl
+    end
+    if $GiftGirl = '':
+        $GiftGirl = $TalkGirl
+    end
+
+    if $GiftGirl = '':
         msg 'Ошибка: MenuGirlGiftGive вызван без имени девушки.'
         exit
     end
 
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = $MenuGiftTargetReturn
+    end
+    if $GirlReturnLoc = '':
+        $GirlReturnLoc = $TalkReturnLoc
+    end
     if $GirlReturnLoc = '':
         $GirlReturnLoc = 'TavernMain'
     end
@@ -122,11 +170,12 @@
     gs 'ShowGirlSidebar', $GiftGirl
 
     gs 'ShowLocationScreenTitle', 'ПОДАРОК: ' + $RealName[$GiftGirl]
+    gs 'SceneShowVisual', 'images/actions/gifts/' + $GiftGirl + '_' + $GiftId, 'вручение подарка: ' + $RealName[$GiftGirl] + ' (' + $GiftId + ')', 'large', 'webp'
 
     if $GiftId = '' or GiftInventory[$GiftId] <= 0:
-        *p 'Такого подарка у вас сейчас нет.'
+        *pl 'Такого подарка у тебя сейчас нет.'
     elseif GiftGirlCanReceive = 0:
-        *p 'Этой девушке сейчас нечего дарить из вашей сумки.'
+        *pl 'Этой девушке сейчас нечего дарить из твоей сумки.'
     else:
         GiftInventory[$GiftId] -= 1
         GirlGiftCount[$GiftGirl] += 1
@@ -134,11 +183,19 @@
 
         gs 'GiftSimpleRegisterGive', $GiftGirl, $GiftId
         gs 'GiftSimpleNarrative', $GiftGirl, $GiftId
-        *p $GiftNarrativeText
+        if $GiftNarrativeText <> '':
+            *pl $GiftNarrativeText
+            *pl ' '
+        end
         killvar '$GiftNarrativeText'
 
         gs 'MenuGirlGiftReactionText', $GiftGirl, $GiftId, GiftCheapStreakToday
-        *p $GiftReactionText
+        if $GiftReactionText <> '':
+            *pl $GiftReactionText
+            *pl ' '
+        end
+        killvar '$GiftReactionText'
+
         gs 'MenuGirlGiftApplyReaction', $GiftGirl, GiftValue
 
         if hate[$GiftGirl] > 0:
@@ -155,7 +212,7 @@
     *pl ' '
 
     if GiftInviteIntim = 1:
-        gs 'ActUiPrepare', 'Остаться с ней', 'generic'
+        gs 'ActUiPrepare', 'Остаться с ней', 'intim'
         act $ActUiLabel, $ActUiIconPath:
             gt 'GirlIntim', $GiftGirl, $GirlReturnLoc
         end
