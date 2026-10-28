@@ -385,12 +385,14 @@
         gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'smalltalk'
     }
 
-    if Friends[$TalkGirl] >= 12 or love[$TalkGirl] >= 10 or otkroven[$TalkGirl] >= 12:
+    $ComplimentMenuKey = $TalkGirl + '_' + STR(day)
+    if (Friends[$TalkGirl] >= 12 or love[$TalkGirl] >= 10 or otkroven[$TalkGirl] >= 12) and GirlComplimentDay[$ComplimentMenuKey] = 0:
         gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Сделать комплимент', ''
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkResult', $TalkGirl, $TalkReturnLoc, 'compliment'
         }
     end
+    killvar '$ComplimentMenuKey'
 
     gs 'GirlTalkAppendGiftMenuItems'
 ---
@@ -1152,15 +1154,16 @@
             *p 'Комплимент ей приятен. Она старается скрыть реакцию, но это получается не полностью.'
 
             $ComplimentKey = $TalkGirl + '_' + STR(day)
-            if GirlComplimentDay[$ComplimentKey] = 0:
-                GirlComplimentDay[$ComplimentKey] = 1
-                love[$TalkGirl] += 1
-                if Friends[$TalkGirl] < 12:
-                    Friends[$TalkGirl] += 1
-                end
+            GirlComplimentDay[$ComplimentKey] = 1
+            love[$TalkGirl] += 1
+            if Friends[$TalkGirl] < 12:
+                Friends[$TalkGirl] += 1
             end
             killvar '$ComplimentKey'
         else:
+            $ComplimentKey = $TalkGirl + '_' + STR(day)
+            GirlComplimentDay[$ComplimentKey] = 1
+            killvar '$ComplimentKey'
             *p 'Она принимает комплимент сдержанно и быстро меняет тему.'
         end
 

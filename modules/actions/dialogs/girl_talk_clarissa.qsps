@@ -353,18 +353,37 @@
 ---
 
 #GirlTalkClarissaPaternityRun
-    gs 'GirlTalkClarissaPaternityPrintText', 'intro'
-    gs 'GirlTalkClarissaPaternityPrintText', 'context'
+    gs 'GirlTalkClarissaPaternityPrintText', 'intro', ClarissaPaternityStory
+    gs 'GirlTalkClarissaPaternityPrintText', 'context', ClarissaPaternityStory
 
-    ClarissaPaternityTalkDone = 1
-    Friends['clarissa'] += 2
-    otkroven['clarissa'] += 2
-    ClarissaTrustStefan += 1
+    if ClarissaPaternityStory = 0:
+        ClarissaPaternityStory = 1
+        Friends['clarissa'] += 1
+        otkroven['clarissa'] += 1
+    elseif ClarissaPaternityStory = 1:
+        ClarissaPaternityStory = 2
+        Friends['clarissa'] += 1
+        otkroven['clarissa'] += 1
+    else:
+        ClarissaPaternityStory = 3
+        ClarissaPaternityTalkDone = 1
+        Friends['clarissa'] += 1
+        otkroven['clarissa'] += 1
+        ClarissaTrustStefan += 1
+    end
+
+    if ClarissaPaternityTalkDone = 0 and ClarissaPaternityStory < 3:
+        gs 'ActUiPrepare', 'Расспросить дальше', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkResult', 'clarissa', $TalkReturnLoc, 'clarissa_paternity'
+        end
+    end
+
     gs 'ClampGirlSocialStats', 'clarissa'
 ---
 
 #GirlTalkClarissaPaternityPrintText
-    gs 'GirlTalkClarissaPaternityText', $ARGS[0]
+    gs 'GirlTalkClarissaPaternityText', $ARGS[0], ARGS[1]
 
     if $GirlTalkClarissaPaternityText <> '':
         *pl $GirlTalkClarissaPaternityText

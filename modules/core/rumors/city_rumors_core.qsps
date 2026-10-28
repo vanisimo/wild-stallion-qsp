@@ -101,22 +101,22 @@
 
     if $CityRumorsEventCat = 'hall_lewd':
         CityRumorsHallLewdScore += CityRumorsEventSeverity
-        if CityRumorsHallLewdScore >= 3:
+        if CityRumorsHallLewdScore >= 3 and (TavernScandal >= 20 or TavernLewdFame >= 10 or FamilyCorruptionStage >= 2):
             CityRumorReady['tavern_scandal'] = 1
         end
     elseif $CityRumorsEventCat = 'kitchen':
         CityRumorsKitchenScore += CityRumorsEventSeverity
-        if CityRumorsKitchenScore >= 3:
+        if CityRumorsKitchenScore >= 3 and (TavernKitchenRumor >= 1 or SandraLewdKitchenCount >= 1 or SandraKitchenHarassDone >= 2 or FamilyCorruptionStage >= 2):
             CityRumorReady['kitchen_sandra'] = 1
         end
     elseif $CityRumorsEventCat = 'girls':
         CityRumorsGirlsScore += CityRumorsEventSeverity
-        if CityRumorsGirlsScore >= 3:
+        if CityRumorsGirlsScore >= 3 and (FamilyCorruptionStage >= 2 or TavernLewdFame >= 10 or TavernScandal >= 20 or AmandaScandalLevel >= 1):
             CityRumorReady['girls_behavior'] = 1
         end
     elseif $CityRumorsEventCat = 'church':
         CityRumorsChurchScore += CityRumorsEventSeverity
-        if CityRumorsChurchScore >= 2:
+        if CityRumorsChurchScore >= 2 and (PlayerChurchDonationTotal > 0 or ChurchDonationDone >= 1):
             CityRumorReady['stefan_donation'] = 1
         end
     end
@@ -134,42 +134,42 @@
     ! ПРИОРИТЕТ 1: Сюжетные слухи (квесты, подсказки, вехи)
     ! -----------------------------------------------------------
 
-    ! 1. Интрижка Мэра и Ирмы
-    if PlayerKnows_MayorIrmaAffair = 0 and CityRumorsHeardToday['mayor_irma'] = 0:
+    ! 1. Интрижка Мэра и Ирмы (только после пятничных танцев)
+    if PlayerKnows_MayorIrmaAffair = 0 and FridayDancesCount >= 1 and day > 5 and CityRumorsHeardToday['mayor_irma'] = 0:
         $CityRumorPickedKey = 'mayor_irma'
         PlayerKnows_MayorIrmaAffair = 1
 
     ! 2. Слухи о разгуле в трактире (отзвук событий в зале)
-    elseif (CityRumorReady['tavern_scandal'] = 1 or ChurchTavernRumorReady = 1 or TavernLewdFame >= 1 or TavernGirlsEasyRumor = 1) and CityRumorsHeardToday['tavern_scandal'] = 0:
+    elseif (CityRumorReady['tavern_scandal'] = 1 or ChurchTavernRumorReady = 1 or TavernLewdFame >= 15 or TavernScandal >= 25 or TavernGirlsEasyRumor = 1) and (TavernScandal >= 20 or TavernLewdFame >= 10 or ChurchTavernRumorReady = 1 or FamilyCorruptionStage >= 2) and day > 3 and CityRumorsHeardToday['tavern_scandal'] = 0:
         $CityRumorPickedKey = 'tavern_scandal'
         ChurchTavernRumorHeard = 1
         ChurchTavernRumorReady = 0
         CityRumorReady['tavern_scandal'] = 0
 
-    ! 4. Легаре и Аманда
-    elseif (CityRumorReady['legare_amanda'] = 1 or LegareAmandaRumorReady = 1) and CityRumorsHeardToday['legare_amanda'] = 0:
+    ! 4. Легаре и Аманда (после танцев и не ранее второй недели)
+    elseif (CityRumorReady['legare_amanda'] = 1 or LegareAmandaRumorReady = 1) and FridayDancesCount >= 1 and day > 7 and CityRumorsHeardToday['legare_amanda'] = 0:
         $CityRumorPickedKey = 'legare_amanda'
         LegareAmandaRumorHeard = 1
         LegareAmandaRumorReady = 0
         CityRumorReady['legare_amanda'] = 0
 
     ! 5. Слухи о кухне Сандры
-    elseif CityRumorReady['kitchen_sandra'] = 1 and CityRumorsHeardToday['kitchen_sandra'] = 0:
+    elseif CityRumorReady['kitchen_sandra'] = 1 and (TavernKitchenRumor >= 1 or SandraLewdKitchenCount >= 1 or SandraKitchenHarassDone >= 2 or FamilyCorruptionStage >= 2) and day > 4 and CityRumorsHeardToday['kitchen_sandra'] = 0:
         $CityRumorPickedKey = 'kitchen_sandra'
         CityRumorReady['kitchen_sandra'] = 0
 
     ! 6. Выходки дочерей (Мелисса и Аманда)
-    elseif CityRumorReady['girls_behavior'] = 1 and CityRumorsHeardToday['girls_behavior'] = 0:
+    elseif CityRumorReady['girls_behavior'] = 1 and (FamilyCorruptionStage >= 2 or TavernLewdFame >= 10 or TavernScandal >= 20 or AmandaScandalLevel >= 1) and day > 4 and CityRumorsHeardToday['girls_behavior'] = 0:
         $CityRumorPickedKey = 'girls_behavior'
         CityRumorReady['girls_behavior'] = 0
 
-    ! 7. Пожертвования / откуп Стефана
-    elseif CityRumorReady['stefan_donation'] = 1 and CityRumorsHeardToday['stefan_donation'] = 0:
+    ! 7. Пожертвования / откуп Стефана (только если Стефан жертвовал в храм)
+    elseif (CityRumorReady['stefan_donation'] = 1 or CityRumorsChurchScore >= 2) and (PlayerChurchDonationTotal > 0 or ChurchDonationDone >= 1) and CityRumorsHeardToday['stefan_donation'] = 0:
         $CityRumorPickedKey = 'stefan_donation'
         CityRumorReady['stefan_donation'] = 0
 
-    ! 8. Инга и Лукас на улице (подворотни, слухи)
-    elseif (CityRumorReady['inga_lucas'] = 1 or IngaRumorDays_Lucas > 0) and CityRumorsHeardToday['inga_lucas'] = 0:
+    ! 8. Инга и Лукас на улице (подворотни, слухи после танцев)
+    elseif (CityRumorReady['inga_lucas'] = 1 or IngaRumorDays_Lucas > 0 or IngaLucasRelation >= 1) and FridayDancesCount >= 1 and day > 5 and CityRumorsHeardToday['inga_lucas'] = 0:
         $CityRumorPickedKey = 'inga_lucas'
         CityRumorReady['inga_lucas'] = 0
 
@@ -257,7 +257,7 @@
         CityRumorHeardOnce['clarissa_golden_vineyard'] = 1
 
     ! 24. Жоржетта и Лизетта в порту (после начала ночной работы Лизетты)
-    elseif (CityRumorReady['port_georgette_lizette'] = 1 or (LizetteProstPort = 1 and (LizetteKnown = 1 or AmandaMetLizette = 1 or GeorgetteSeekLizetteDone = 1) and CityRumorHeardOnce['port_georgette_lizette'] = 0)) and CityRumorsHeardToday['port_georgette_lizette'] = 0:
+    elseif (CityRumorReady['port_georgette_lizette'] = 1 or (LizetteProstPort = 1 and (LizetteKnown = 1 or AmandaMetLizette = 1 or GeorgetteSeekLizetteDone = 1) and CityRumorHeardOnce['port_georgette_lizette'] = 0)) and day > 5 and CityRumorsHeardToday['port_georgette_lizette'] = 0:
         $CityRumorPickedKey = 'port_georgette_lizette'
         CityRumorReady['port_georgette_lizette'] = 0
         CityRumorHeardOnce['port_georgette_lizette'] = 1
@@ -275,22 +275,22 @@
             CityRumorAvailCount += 1
         end
 
-        if CityRumorsHeardToday['mayor_irma'] = 0:
+        if FridayDancesCount >= 1 and day > 5 and CityRumorsHeardToday['mayor_irma'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'mayor_irma'
             CityRumorAvailCount += 1
         end
 
-        if (LizetteProstPort = 1 or CityRumorReady['port_georgette_lizette'] = 1) and (LizetteKnown = 1 or AmandaMetLizette = 1 or GeorgetteSeekLizetteDone = 1) and CityRumorsHeardToday['port_georgette_lizette'] = 0:
+        if (LizetteProstPort = 1 or CityRumorReady['port_georgette_lizette'] = 1) and (LizetteKnown = 1 or AmandaMetLizette = 1 or GeorgetteSeekLizetteDone = 1) and day > 5 and CityRumorsHeardToday['port_georgette_lizette'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'port_georgette_lizette'
             CityRumorAvailCount += 1
         end
 
-        if CityRumorsHeardToday['stefan_gaze'] = 0:
+        if day >= 2 and CityRumorsHeardToday['stefan_gaze'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'stefan_gaze'
             CityRumorAvailCount += 1
         end
 
-        if CityRumorsHeardToday['gerhard_clean_hearts'] = 0:
+        if day >= 2 and CityRumorsHeardToday['gerhard_clean_hearts'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'gerhard_clean_hearts'
             CityRumorAvailCount += 1
         end
@@ -300,32 +300,32 @@
             CityRumorAvailCount += 1
         end
 
-        if (CityRumorReady['tavern_scandal'] = 1 or ChurchTavernRumorReady = 1 or TavernLewdFame >= 1 or TavernGirlsEasyRumor = 1 or CityRumorsHallLewdScore >= 3) and CityRumorsHeardToday['tavern_scandal'] = 0:
+        if (CityRumorReady['tavern_scandal'] = 1 or ChurchTavernRumorReady = 1 or TavernLewdFame >= 15 or TavernScandal >= 25 or TavernGirlsEasyRumor = 1 or CityRumorsHallLewdScore >= 5) and (TavernScandal >= 20 or TavernLewdFame >= 10 or ChurchTavernRumorReady = 1 or FamilyCorruptionStage >= 2) and day > 3 and CityRumorsHeardToday['tavern_scandal'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'tavern_scandal'
             CityRumorAvailCount += 1
         end
 
-        if (CityRumorReady['kitchen_sandra'] = 1 or CityRumorsKitchenScore >= 3) and CityRumorsHeardToday['kitchen_sandra'] = 0:
+        if (CityRumorReady['kitchen_sandra'] = 1 or (CityRumorsKitchenScore >= 3 and (TavernKitchenRumor >= 1 or SandraLewdKitchenCount >= 1 or SandraKitchenHarassDone >= 2 or FamilyCorruptionStage >= 2))) and (TavernKitchenRumor >= 1 or SandraLewdKitchenCount >= 1 or SandraKitchenHarassDone >= 2 or FamilyCorruptionStage >= 2) and day > 4 and CityRumorsHeardToday['kitchen_sandra'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'kitchen_sandra'
             CityRumorAvailCount += 1
         end
 
-        if (CityRumorReady['girls_behavior'] = 1 or CityRumorsGirlsScore >= 3 or FamilyCorruptionStage >= 2) and CityRumorsHeardToday['girls_behavior'] = 0:
+        if (CityRumorReady['girls_behavior'] = 1 or (CityRumorsGirlsScore >= 3 and FamilyCorruptionStage >= 2)) and (FamilyCorruptionStage >= 2 or TavernLewdFame >= 10 or TavernScandal >= 20 or AmandaScandalLevel >= 1) and day > 4 and CityRumorsHeardToday['girls_behavior'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'girls_behavior'
             CityRumorAvailCount += 1
         end
 
-        if (CityRumorReady['legare_amanda'] = 1 or LegareAmandaRumorReady = 1) and CityRumorsHeardToday['legare_amanda'] = 0:
+        if (CityRumorReady['legare_amanda'] = 1 or LegareAmandaRumorReady = 1) and FridayDancesCount >= 1 and day > 7 and CityRumorsHeardToday['legare_amanda'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'legare_amanda'
             CityRumorAvailCount += 1
         end
 
-        if (CityRumorReady['stefan_donation'] = 1 or CityRumorsChurchScore >= 2) and CityRumorsHeardToday['stefan_donation'] = 0:
+        if (CityRumorReady['stefan_donation'] = 1 or CityRumorsChurchScore >= 2) and (PlayerChurchDonationTotal > 0 or ChurchDonationDone >= 1) and CityRumorsHeardToday['stefan_donation'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'stefan_donation'
             CityRumorAvailCount += 1
         end
 
-        if (IngaRumorDays_Lucas > 0 or IngaLucasRelation >= 1) and CityRumorsHeardToday['inga_lucas'] = 0:
+        if (IngaRumorDays_Lucas > 0 or IngaLucasRelation >= 1 or CityRumorReady['inga_lucas'] = 1) and FridayDancesCount >= 1 and day > 5 and CityRumorsHeardToday['inga_lucas'] = 0:
             $CityRumorAvailPool[CityRumorAvailCount] = 'inga_lucas'
             CityRumorAvailCount += 1
         end
@@ -404,7 +404,11 @@
             CityRumorPickIdx = RAND(0, CityRumorAvailCount - 1)
             $CityRumorPickedKey = $CityRumorAvailPool[CityRumorPickIdx]
         else:
-            $CityRumorPickedKey = 'lermont_legacy'
+            if RAND(1, 2) = 1:
+                $CityRumorPickedKey = 'lermont_legacy'
+            else:
+                $CityRumorPickedKey = 'taro_powder'
+            end
         end
 
         killvar '$CityRumorAvailPool'

@@ -269,12 +269,14 @@
         killvar 'PortNightGirlVisible'
     end
 
-    if Friends['georgett'] >= 12 or love['georgett'] >= 10 or otkroven['georgett'] >= 12:
+    $ComplimentActKey = 'georgett_' + STR(day)
+    if (Friends['georgett'] >= 12 or love['georgett'] >= 10 or otkroven['georgett'] >= 12) and GirlComplimentDay[$ComplimentActKey] = 0:
         gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
         act $ActUiLabel, $ActUiIconPath:
             gt 'GirlTalkResult', 'georgett', $TalkReturnLoc, 'compliment'
         end
     end
+    killvar '$ComplimentActKey'
 
     if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
         gs 'ActUiPrepare', 'Сделать подарок', 'gift'
@@ -484,8 +486,9 @@
     gs 'GirlTalkGeorgettePrintText', 'georgette_compliment', 'intro'
     gs 'GirlTalkGeorgettePrintText', 'georgette_compliment', 'context'
 
-    TalkTopicUseful = 1
-    gs 'UsefulTalkRegister', 'georgett', 'compliment'
+    $ComplimentKey = 'georgett_' + STR(day)
+    GirlComplimentDay[$ComplimentKey] = 1
+    killvar '$ComplimentKey'
 
     TalkRoll = RAND(1, 100)
     TalkChance = 40 + Friends['georgett'] + love['georgett'] + otkroven['georgett']
@@ -495,15 +498,10 @@
     end
 
     if TalkRoll <= TalkChance:
-        $ComplimentKey = 'georgett_' + STR(day)
-        if GirlComplimentDay[$ComplimentKey] = 0:
-            GirlComplimentDay[$ComplimentKey] = 1
-            love['georgett'] += 1
-            if Friends['georgett'] < 12:
-                Friends['georgett'] += 1
-            end
+        love['georgett'] += 1
+        if Friends['georgett'] < 12:
+            Friends['georgett'] += 1
         end
-        killvar '$ComplimentKey'
     end
 
     gs 'ClampGirlSocialStats', 'georgett'

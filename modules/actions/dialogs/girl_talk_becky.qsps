@@ -1,7 +1,7 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_becky.qsps
 ! MODULE: actions/dialogs
-! [AI-WORKED] Текст переработан / дополнен ассистентом 27.10.2026
+! [AI-WORKED] Текст переработан / дополнен ассистентом 28.10.2026
 ! Меню и разговоры с Бекки Блэнкеншип в лавке
 ! ================================================
 
@@ -68,7 +68,7 @@
     ! 1. Проверка лимита полезных разговоров:
     gs 'UsefulTalkCheck', 'becky', 'becky_unified'
     if UsefulTalkResult = 0:
-        *pl '— Ох, Стефанчик, не отвлекай хозяйку! — весело подмигивает Бекки, оглаживая цветастый фартук на пышных бёдрах. — Поболтали на славу, а мне ещё кульки перевязывать да муку пересыпать. Заходи попозже, сосед!'
+        gs 'GirlTalkBeckyLimitReachedText'
         gs 'ClampGirlSocialStats', 'becky'
         exit
     end
@@ -78,19 +78,10 @@
 
     ! 3. Атмосферное вступление:
     gs 'BeckyTalkIntroText'
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        *pl ' '
-        killvar '$BeckyTalkBlock'
-    end
+    *pl ' '
 
     ! 4. Динамическая веха близости / отсутствия:
     gs 'BeckyTalkMilestoneText'
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        *pl ' '
-        killvar '$BeckyTalkBlock'
-    end
 
     ! 5. Иерархия тем:
     ! --- Воспоминание о визите в гости ---
@@ -135,13 +126,7 @@
 ---
 
 #GirlTalkBeckyShopRun
-    *pl 'Ты интересуешься у Бекки, как идут дела в лавке и не подводят ли поставщики.'
-    *pl ' '
-    *pl 'Вдова охотно отзывается, оглаживая цветастый фартук на пышных бёдрах:'
-    *pl ' '
-    *pl '— Ох, Стефанчик, грех жаловаться! Мешки с мукой да крупой разлетаются быстро — город-то растёт, кушать все хотят. А трактир твой для меня и вовсе первейший заказчик! Ты заходи почаще, для доброго соседа у меня всегда и товар посвежее припасён, и мера полная.'
-    *pl ' '
-    *pl 'Бекки лукаво подмигивает, окинув тебя тёплым взглядом хозяйки, знающей толк в торговле.'
+    gs 'GirlTalkBeckyShopText'
 
     $BeckyShopDailyKey = 'becky_shop_' + STR(day)
     if BeckyShopTalkDay[$BeckyShopDailyKey] = 0:
@@ -173,11 +158,6 @@
         sluttiness['becky'] += 1
     end
 
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
-
     gs 'CorruptionProgress', 'becky', 'flirt'
 ---
 
@@ -207,11 +187,6 @@
         otkroven['becky'] += 1
     end
 
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
-
     gs 'CorruptionProgress', 'becky', 'flirt'
 ---
 
@@ -220,11 +195,6 @@
     gs 'BeckyTalkEddieStory1Text'
     if Friends['becky'] < 15:
         Friends['becky'] += 1
-    end
-
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
     end
 
     gs 'CorruptionProgress', 'becky', 'talk'
@@ -239,11 +209,6 @@
     otkroven['becky'] += 2
     sluttiness['becky'] += 1
 
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
-
     gs 'CorruptionProgress', 'becky', 'flirt'
 ---
 
@@ -251,11 +216,6 @@
     BeckyEddieOutraged = 1
     gs 'BeckyTalkEddieOutragedText'
     otkroven['becky'] += 1
-
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
 
     gs 'CorruptionProgress', 'becky', 'flirt'
 ---
@@ -265,11 +225,6 @@
     gs 'BeckyTalkPriestHintText'
     Friends['becky'] += 1
 
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
-
     gs 'CorruptionProgress', 'becky', 'talk'
 ---
 
@@ -277,11 +232,6 @@
     BeckyPriestRetry = 1
     gs 'BeckyTalkPriestRetryText'
     Friends['becky'] += 2
-
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
 
     gs 'CorruptionProgress', 'becky', 'talk'
 ---
@@ -292,11 +242,6 @@
     Friends['becky'] += 2
     otkroven['becky'] += 1
 
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
-
     gs 'CorruptionProgress', 'becky', 'talk'
 ---
 
@@ -306,64 +251,37 @@
     Friends['becky'] += 1
     trading += 1
 
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
-
     gs 'CorruptionProgress', 'becky', 'talk'
 ---
 
 #GirlTalkBeckyHomeInviteRunTopic
     gs 'BeckyTalkHomeInviteRun'
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
-
     gs 'CorruptionProgress', 'becky', 'flirt'
 ---
 
 #GirlTalkBeckyPastVisitRun
     BeckyPastVisitTalkToday = day
     gs 'BeckyTalkPastVisitText'
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        killvar '$BeckyTalkBlock'
-    end
-
     gs 'CorruptionProgress', 'becky', 'talk'
 ---
 
 #GirlTalkBeckyHusbandPoolRun
     gs 'BeckyTalkHusbandPoolText'
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        *pl ' '
-        killvar '$BeckyTalkBlock'
-    end
+    *pl ' '
     otkroven['becky'] += 1
     gs 'CorruptionProgress', 'becky', 'flirt'
 ---
 
 #GirlTalkBeckyIngaPoolRun
     gs 'BeckyTalkIngaPoolText'
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        *pl ' '
-        killvar '$BeckyTalkBlock'
-    end
+    *pl ' '
     Friends['becky'] += 1
     gs 'CorruptionProgress', 'becky', 'talk'
 ---
 
 #GirlTalkBeckyTownPoolRun
     gs 'BeckyTalkTownPoolText'
-    if $BeckyTalkBlock <> '':
-        *pl $BeckyTalkBlock
-        *pl ' '
-        killvar '$BeckyTalkBlock'
-    end
+    *pl ' '
     Friends['becky'] += 1
     if trading < 30:
         trading += 1
