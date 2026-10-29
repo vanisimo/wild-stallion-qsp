@@ -480,7 +480,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MelissaFirstPathChoiceIntroText` | `modules/events/melissa/melissa_musician_arc_text.qsps` | 166 | `entry/helper` |
 | `MelissaFirstPathChoiceStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 727 | `entry/helper` |
 | `MelissaFirstPathChoiceTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 723 | `entry/helper` |
-| `MelissaFlirt` | `modules/actions/flirts/flirts.qsps` | 24 | `entry/helper` |
+| `MelissaFlirt` | `modules/actions/flirts/flirts.qsps` | 22 | `entry/helper` |
 | `MelissaMinstrelBackroomDebugReset` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 312 | `entry/helper` |
 | `MelissaMinstrelBackroomTryStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 63 | `entry/helper` |
 | `MelissaMinstrelFridayRaceDebugReset` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 312 | `entry/helper` |
@@ -491,16 +491,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Chosen` | `modules/menu/system/otd_lib_menu.qsps` | 150 | `entry/helper` |
 | `Menu.Info` | `modules/menu/system/otd_lib_menu.qsps` | 13 | `entry/helper` |
 | `Menu.Time` | `modules/menu/system/otd_lib_menu.qsps` | 156 | `entry/helper` |
-| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 345 | `entry/helper` |
-| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 355 | `entry/helper` |
-| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 365 | `entry/helper` |
-| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 375 | `entry/helper` |
+| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 349 | `entry/helper` |
+| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 359 | `entry/helper` |
+| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 369 | `entry/helper` |
+| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 379 | `entry/helper` |
 | `MenuGirlFlirt` | `modules/menu/girls/menu_girl_actions.qsps` | 393 | `entry/helper` |
 | `MenuGirlGiftApplySpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 283 | `entry/helper` |
 | `MenuGirlGiftTryAct` | `modules/core/gifts/gift_registry.qsps` | 243 | `entry/helper` |
-| `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 435 | `entry/helper` |
+| `MenuGirlJob` | `modules/menu/girls/menu_girl_actions.qsps` | 437 | `entry/helper` |
 | `MenuGirlOverview` | `modules/menu/girls/menu_girl_overview.qsps` | 10 | `entry/helper` |
-| `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 467 | `entry/helper` |
+| `MenuGirlSpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 469 | `entry/helper` |
 | `MenuGirlTalk` | `modules/menu/girls/menu_girl_actions.qsps` | 7 | `entry/helper` |
 | `NPC_Click` | `modules/menu/npc/npc_click.qsps` | 8 | `entry/helper` |
 | `NpcMenuIntimOpenIconLink` | `modules/menu/npc/npc_clickable_link.qsps` | 182 | `entry/helper` |
@@ -546,7 +546,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ResetHallRumorDaily` | `modules/events/hall/hall_rumors.qsps` | 133 | `entry/helper` |
 | `SandraDraupnirFridayCanStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 78 | `entry/helper` |
 | `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 | `entry/helper` |
-| `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 40 | `entry/helper` |
+| `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 36 | `entry/helper` |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 | `entry/helper` |
 | `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 367 | `entry/helper` |
 | `ShowDreamItemIfKnown` | `modules/core/gifts/gift_dream_images.qsps` | 32 | `entry/helper` |
@@ -602,8 +602,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MarketDance` | 77 |
 | `PrintMainP` | 70 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `PrintTitleLine` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `PrintTitleLine` | 51 |
 | `GirlTalkResult` | 47 |
 | `ShowImagePath` | 46 |
 | `SaveLastHallEvent` | 45 |

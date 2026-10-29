@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_touch.qsps
 ! MODULE: actions/dialogs
 ! [AI-WORKED] Текст переработан / дополнен ассистентом 29.10.2026
@@ -172,6 +172,19 @@
 
     gs 'EnsureGirlData', $TalkGirl
     cls
+
+    ! Определение ступени коррупции / раскрепощённости
+    if $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
+        TouchStage = FamilyCorruptionStage
+    else:
+        if sluttiness[$TalkGirl] < 20 and otkroven[$TalkGirl] < 15:
+            TouchStage = 1
+        elseif sluttiness[$TalkGirl] < 45 and otkroven[$TalkGirl] < 30:
+            TouchStage = 2
+        else:
+            TouchStage = 4
+        end
+    end
 
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
     gs 'ShowLocationScreenTitle', 'ЗАИГРЫВАНИЕ: ' + $RealName[$TalkGirl]
