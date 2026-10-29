@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/actions/dialogs/talk_with_alber.qsps
 ! MODULE: actions/dialogs
 ! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
@@ -51,40 +51,119 @@
     gs 'ShowImagePath', 'images/npc/legare/alber_talk', '', 'portrait', 'webp'
     gs 'ShowLocationScreenTitle', 'РАЗГОВОР С МЕССИРОМ ЛЕГАРЕ'
 
-    gs 'AlberUnifiedTalkRun'
-
+    *pl 'Мессир Легаре поднимает взгляд от конторских записей и меряет тебя внимательным, цепким взором.'
+    *pl '— Слушаю тебя, Стефан. По какому вопросу пришёл?'
     *pl ' '
+    gs 'AlberBuildMainMenu'
+    gs 'GetNpcMenuLinkHref', 'AlberMainMenu', 'мессир Легаре'
 
-    ! Контекстные действия на экране беседы
-    if LOC('AlberReconcileCanOffer') = 1:
-        gs 'AlberReconcileCanOffer'
-        if AlberReconcileCanOffer = 1 and LegareReconciledWithStefan = 0:
-            gs 'ActUiPrepare', 'Предложить помириться', 'talk'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AlberReconcileWithStefan', $AlberReturnLoc
-            end
-        end
-    end
+    *pl $NpcMenuLinkHref + ' сидит за конторкой и меряет тебя внимательным взглядом.'
+    killvar '$NpcMenuLinkHref'
 
-    if ClarissaGoldenVineyardPlanted = 1 and AlberClarissaVineyardTalkDone = 0 and LOC('AlberClarissaVineyardReaction') = 1:
-        gs 'ActUiPrepare', 'Спросить о винограднике Клариссы', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'AlberClarissaVineyardReaction', $AlberReturnLoc
-        end
-    end
-
-    if StefanWearingNobleSuit = 1 and StefanNobleTourLegareDone = 0 and LOC('StefanNobleTourLegare') = 1:
-        gs 'ActUiPrepare', 'Визит в парадном облачении', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'StefanNobleTourLegare'
-        end
-    end
-
-    gs 'ActUiPrepare', 'Вернуться к прилавку', 'return'
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         $TmpLoc = $AlberReturnLoc
         killvar '$AlberReturnLoc'
         gt $TmpLoc
+    end
+---
+
+#AlberBuildMainMenu
+    gs 'Menu.Destroy', 'AlberMainMenu'
+    gs 'Menu.Create', 'AlberMainMenu'
+
+    gs 'AlberImportantCheck'
+    if AlberImportantReady = 1:
+        gs 'MenuUiAdd', 'AlberMainMenu', 'Важная беседа', 'important'
+        gs 'Menu.AddModule', 'AlberMainMenu', {
+            gt 'AlberImportantScreen', $AlberReturnLoc
+        }
+    end
+
+    gs 'MenuUiAdd', 'AlberMainMenu', 'Разговор', 'talk'
+    gs 'Menu.AddModule', 'AlberMainMenu', {
+        gt 'AlberChatScreen', $AlberReturnLoc
+    }
+---
+
+#AlberImportantScreen
+    $AlberReturnLoc = $ARGS[0]
+    if $AlberReturnLoc = '' or LOC($AlberReturnLoc) = 0:
+        $AlberReturnLoc = 'WineShop'
+    end
+
+    cls
+    gs 'ShowImagePath', 'images/npc/legare/alber_talk', '', 'portrait', 'webp'
+    gs 'ShowLocationScreenTitle', 'ВАЖНЫЙ РАЗГОВОР: МЕССИР ЛЕГАРЕ'
+
+    gs 'AlberBuildImportantMenu'
+    gs 'GetNpcMenuLinkHref', 'AlberImportantMenu', 'мессиром Легаре'
+
+    *pl 'У вас есть деловые или личные вопросы, требующие серьёзного обсуждения с ' + $NpcMenuLinkHref + '.'
+    killvar '$NpcMenuLinkHref'
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AlberReturnLoc
+    end
+---
+
+#AlberBuildImportantMenu
+    gs 'Menu.Destroy', 'AlberImportantMenu'
+    gs 'Menu.Create', 'AlberImportantMenu'
+
+    if LOC('AlberReconcileCanOffer') = 1:
+        gs 'AlberReconcileCanOffer'
+        if AlberReconcileCanOffer = 1 and LegareReconciledWithStefan = 0:
+            gs 'MenuUiAdd', 'AlberImportantMenu', 'Предложить помириться', 'talk'
+            gs 'Menu.AddModule', 'AlberImportantMenu', {
+                gt 'AlberReconcileWithStefan', $AlberReturnLoc
+            }
+        end
+    end
+
+    if ClarissaGoldenVineyardPlanted = 1 and AlberClarissaVineyardTalkDone = 0 and LOC('AlberClarissaVineyardReaction') = 1:
+        gs 'MenuUiAdd', 'AlberImportantMenu', 'Спросить о винограднике Клариссы', 'talk'
+        gs 'Menu.AddModule', 'AlberImportantMenu', {
+            gt 'AlberClarissaVineyardReaction', $AlberReturnLoc
+        }
+    end
+
+    if StefanWearingNobleSuit = 1 and StefanNobleTourLegareDone = 0 and LOC('StefanNobleTourLegare') = 1:
+        gs 'MenuUiAdd', 'AlberImportantMenu', 'Визит в парадном облачении', 'talk'
+        gs 'Menu.AddModule', 'AlberImportantMenu', {
+            gt 'StefanNobleTourLegare'
+        }
+    end
+---
+
+#AlberChatScreen
+    $AlberReturnLoc = $ARGS[0]
+    if $AlberReturnLoc = '' or LOC($AlberReturnLoc) = 0:
+        $AlberReturnLoc = 'WineShop'
+    end
+
+    cls
+    gs 'ShowImagePath', 'images/npc/legare/alber_talk', '', 'portrait', 'webp'
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С МЕССИРОМ ЛЕГАРЕ'
+
+    gs 'AlberUnifiedTalkRun'
+    *pl ' '
+
+    gs 'UsefulTalkCheck', 'alber', 'alber_unified'
+    if UsefulTalkResult = 1:
+        gs 'AlberBuildMainMenu'
+        gs 'GetNpcMenuLinkHref', 'AlberMainMenu', 'Мессир Легаре'
+        *pl $NpcMenuLinkHref + ' возвращается к своим бумагам.'
+        killvar '$NpcMenuLinkHref'
+    else:
+        *pl 'Мессир Легаре возвращается к своим бумагам.'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $AlberReturnLoc
     end
 ---
 

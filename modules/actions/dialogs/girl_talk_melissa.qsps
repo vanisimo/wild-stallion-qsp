@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_melissa.qsps
 ! MODULE: actions/dialogs
 ! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
@@ -141,60 +141,7 @@
 ---
 
 #GirlTalkBuildMelissaMainMenu
-    gs 'Menu.Destroy', 'GirlTalkMainMenu'
-    gs 'Menu.Create', 'GirlTalkMainMenu'
-
-    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
-    gs 'GirlTalkMelissaImportantCheck'
-    if MelissaImportantReady = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
-        if $MelissaImportantAction = 'nobility':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutNobility', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'legare_clash':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegareStreetClash', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'legare_warning':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegare', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'amanda_legare_private':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutAmandaLegarePrivate', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'amanda_legare_outside':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutAmandaLegareOutside', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'amanda_legare_major':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutAmandaLegareMajor', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'legare_conflict':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegareFirstConflict', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'legare_supply':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegareSupply', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'legare_clarissa':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutLegareSuspicion', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'becky_dinner':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'MelissaTalkAboutBeckyDinner', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'dress_missed':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkDanceDressMissed', 'melissa', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'dress_talk':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkDanceDressStart', 'melissa', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'uniform_missed':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkUniformFittingMissed', 'melissa', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'uniform_talk':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkUniformFittingTalk', 'melissa', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'staff_reaction':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffGirlsReactionTalk', 'melissa', $TalkReturnLoc }
-        elseif $MelissaImportantAction = 'story_musician':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'melissa', $TalkReturnLoc, 'melissa_musician' }
-        end
-    end
-    killvar 'MelissaImportantReady'
-    killvar '$MelissaImportantAction'
-
-    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', 'melissa', $TalkReturnLoc, 'melissa_unified'
-    }
-
-    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
-    if LOC('GirlTalkAppendGiftMenuItems') = 1:
-        gs 'GirlTalkAppendGiftMenuItems'
-    end
+    gs 'GirlTalkBuildTopicsMenu'
 ---
 
 #GirlTalkMelissaUnifiedRun
@@ -259,33 +206,7 @@
         end
     end
 
-    ! --- Дополнительные действия на экране разговора ---
-    if MelissaMinstrelMet = 1:
-        if MelissaProhibitMinstrel = 1:
-            gs 'ActUiPrepare', 'Разрешить общение с менестрелем', 'talk'
-        else:
-            gs 'ActUiPrepare', 'Запретить общение с менестрелем', 'talk'
-        end
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkPersonalBanToggle', 'melissa', $TalkReturnLoc, 'minstrel'
-        end
-    end
 
-    $ComplimentActKey = 'melissa_' + STR(day)
-    if (Friends['melissa'] >= 12 or love['melissa'] >= 10 or otkroven['melissa'] >= 12) and GirlComplimentDay[$ComplimentActKey] = 0:
-        gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkResult', 'melissa', $TalkReturnLoc, 'compliment'
-        end
-    end
-    killvar '$ComplimentActKey'
-
-    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
-        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkResult', 'melissa', $TalkReturnLoc, 'gift'
-        end
-    end
 
     gs 'ClampGirlSocialStats', 'melissa'
 ---

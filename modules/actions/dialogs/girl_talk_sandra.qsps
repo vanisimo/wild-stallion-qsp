@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_sandra.qsps
 ! MODULE: actions/dialogs
 ! [AI-WORKED] Текст переработан / дополнен ассистентом 27.10.2026
@@ -123,54 +123,7 @@
 ---
 
 #GirlTalkBuildSandraMainMenu
-    gs 'Menu.Destroy', 'GirlTalkMainMenu'
-    gs 'Menu.Create', 'GirlTalkMainMenu'
-
-    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
-    gs 'GirlTalkSandraImportantCheck'
-    if SandraImportantReady = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
-        if $SandraImportantAction = 'nobility':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraTalkAboutNobility', $TalkReturnLoc }
-        elseif $SandraImportantAction = 'birth_secret':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraTalkAboutBirthSecret', $TalkReturnLoc }
-        elseif $SandraImportantAction = 'lermont_letter':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraTalkAboutLermontLetter', $TalkReturnLoc }
-        elseif $SandraImportantAction = 'legare_clash':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraTalkAboutLegareStreetClash', $TalkReturnLoc }
-        elseif $SandraImportantAction = 'becky_crisis':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraBeckyCrisisStart' }
-        elseif $SandraImportantAction = 'becky_reconcile':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraBeckyTalkSandra' }
-        elseif $SandraImportantAction = 'gerhard_stop':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraGerhardStopTalk' }
-        elseif $SandraImportantAction = 'staff_hire':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffHireTalk', $TalkReturnLoc }
-        elseif $SandraImportantAction = 'staff_reaction':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffGirlsReactionTalk', 'sandra', $TalkReturnLoc }
-        elseif $SandraImportantAction = 'uniform_missed':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkUniformFittingMissed', 'sandra', $TalkReturnLoc }
-        elseif $SandraImportantAction = 'uniform_talk':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkUniformFittingTalk', 'sandra', $TalkReturnLoc }
-        elseif $SandraImportantAction = 'story_carpenter':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'sandra', $TalkReturnLoc, 'sandra_carpenter' }
-        elseif $SandraImportantAction = 'story_priest':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'sandra', $TalkReturnLoc, 'sandra_priest' }
-        end
-    end
-    killvar 'SandraImportantReady'
-    killvar '$SandraImportantAction'
-
-    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', 'sandra', $TalkReturnLoc, 'sandra_unified'
-    }
-
-    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
-    if LOC('GirlTalkAppendGiftMenuItems') = 1:
-        gs 'GirlTalkAppendGiftMenuItems'
-    end
+    gs 'GirlTalkBuildTopicsMenu'
 ---
 
 #GirlTalkSandraUnifiedRun
@@ -231,22 +184,7 @@
         end
     end
 
-    ! --- Дополнительные действия на экране разговора ---
-    $ComplimentActKey = 'sandra_' + STR(day)
-    if (Friends['sandra'] >= 18 or otkroven['sandra'] >= 18 or love['sandra'] >= 12) and GirlComplimentDay[$ComplimentActKey] = 0:
-        gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkResult', 'sandra', $TalkReturnLoc, 'compliment'
-        end
-    end
-    killvar '$ComplimentActKey'
 
-    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
-        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkResult', 'sandra', $TalkReturnLoc, 'gift'
-        end
-    end
 
     gs 'ClampGirlSocialStats', 'sandra'
 ---

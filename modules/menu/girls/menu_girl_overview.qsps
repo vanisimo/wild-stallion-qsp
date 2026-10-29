@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/menu/menu_girl_overview.qsps
 ! Универсальное выпадающее меню взаимодействия с девушкой
 ! Работает через otd_lib_menu
@@ -42,32 +42,67 @@
         gs 'MenuGirlInspect', $MenuCurrentGirl
     }
 
+    if LOC('OffenseDaysTalkCanStart') = 1:
+        gs 'OffenseDaysTalkCanStart', $MenuCurrentGirl
+        if OffenseDaysTalkCanStart = 1:
+            gs 'MenuUiAdd', $MenuName, 'Помириться', 'talk'
+            gs 'Menu.AddModule', $MenuName, {
+                gt 'OffenseDaysTalkStart', $MenuCurrentGirl, $MenuGirlReturnLoc
+            }
+            gs 'Menu.Show', $MenuName
+            exit
+        end
+    end
+
     if MenuCanTalk = 1:
-        gs 'MenuUiAdd', $MenuName, 'Поговорить', 'talk'
-        gs 'Menu.AddModule', $MenuName, {
-            gt 'GirlTalk', $MenuCurrentGirl, $MenuGirlReturnLoc
-        }
-    end
+        ! 1. Важная беседа
+        gs 'GirlTalkHasImportantTopics', $MenuCurrentGirl
+        if GirlTalkImportantTopicsCount > 0:
+            gs 'MenuUiAdd', $MenuName, 'Важная беседа', 'important'
+            gs 'Menu.AddModule', $MenuName, {
+                gt 'GirlTalkImportantScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
+            }
+        end
 
-    if MenuCanGift = 1:
-        gs 'MenuUiAdd', $MenuName, 'Подарить подарок', 'gift'
+        ! 2. Разговор
+        gs 'MenuUiAdd', $MenuName, 'Разговор', 'talk'
         gs 'Menu.AddModule', $MenuName, {
-            gt 'MenuGirlGift', $MenuCurrentGirl, $MenuGirlReturnLoc
+            gt 'GirlTalkChatScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
         }
-    end
 
-    if MenuCanFlirt = 1:
-        gs 'MenuUiAdd', $MenuName, 'Флиртовать', 'flirt'
-        gs 'Menu.AddModule', $MenuName, {
-            gt 'MenuGirlFlirt', $MenuCurrentGirl, $MenuGirlReturnLoc
-        }
-    end
+        ! 3. Подарок
+        if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
+            gs 'MenuUiAdd', $MenuName, 'Подарок', 'gift'
+            gs 'Menu.AddModule', $MenuName, {
+                gt 'GirlTalkGiftScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
+            }
+        end
 
-    if MenuCanIntim = 1:
-        gs 'MenuUiAdd', $MenuName, 'Интим', 'intim'
-        gs 'Menu.AddModule', $MenuName, {
-            gt 'GirlIntim', $MenuCurrentGirl, $MenuGirlReturnLoc
-        }
+        ! 4. Заигрывание
+        if ($MenuCurrentGirl = 'amanda' or $MenuCurrentGirl = 'melissa' or $MenuCurrentGirl = 'sandra' or Friends[$MenuCurrentGirl] >= 5) and GirlTouchDailyCount[$MenuCurrentGirl] < 2:
+            gs 'MenuUiAdd', $MenuName, 'Заигрывание', 'flirt'
+            gs 'Menu.AddModule', $MenuName, {
+                gt 'GirlTalkTouchScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
+            }
+        end
+
+        ! 5. Наказ
+        if $MenuCurrentGirl = 'amanda' or $MenuCurrentGirl = 'melissa' or $MenuCurrentGirl = 'sandra':
+            gs 'MenuUiAdd', $MenuName, 'Наказ', 'policy'
+            gs 'Menu.AddModule', $MenuName, {
+                gt 'GirlTalkOrdersScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
+            }
+        end
+
+        ! 6. Интим
+        gs 'GirlIntimCheckNpcLinkAvailable', $MenuCurrentGirl, $MenuGirlReturnLoc
+        if GirlIntimMenuReady = 1:
+            gs 'MenuUiAdd', $MenuName, 'Интим', 'intim'
+            gs 'Menu.AddModule', $MenuName, {
+                gt 'GirlIntim', $MenuCurrentGirl, $MenuGirlReturnLoc
+            }
+        end
+        killvar 'GirlIntimMenuReady'
     end
 
         ! ====================== ДЕБАГ УСЛОВИЙ МЕНЮ ======================

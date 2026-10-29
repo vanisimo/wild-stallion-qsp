@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/core/family/offense_days.qsps
 ! MODULE: core/family
 ! Обида-дни v1: движок + накопление dual protect/policy
@@ -57,7 +57,7 @@
 
 #OffenseDaysInterceptK
 
-    OffenseDaysInterceptK = 3
+    OffenseDaysInterceptK = 4
 ---
 
 #OffenseDaysStart
@@ -312,6 +312,7 @@
 
     gs 'OffenseDaysInterceptK'
     GirlOffenseInterceptCount[$OffenseRegGirl] += 1
+    GirlOffenseMismatchLastDay[$OffenseRegGirl] = day
 
     if GirlOffenseInterceptCount[$OffenseRegGirl] >= OffenseDaysInterceptK:
         gs 'OffenseDaysStart', $OffenseRegGirl, 'intercept'
@@ -319,6 +320,25 @@
     end
 
     killvar '$OffenseRegGirl'
+---
+
+#OffenseDaysCoolDownIntercept
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseCoolGirl = $GirlKey
+
+    if $OffenseCoolGirl = '':
+        killvar '$OffenseCoolGirl'
+        exit
+    end
+
+    if GirlOffenseDays[$OffenseCoolGirl] <= 0:
+        if GirlOffenseInterceptCount[$OffenseCoolGirl] > 0:
+            GirlOffenseInterceptCount[$OffenseCoolGirl] -= 1
+        end
+    end
+
+    killvar '$OffenseCoolGirl'
 ---
 
 #OffenseDaysHarassmentAfter
@@ -357,6 +377,8 @@
             gs 'OffenseDaysRegisterIntercept', $OffenseHarassGirl
         end
     else
+        gs 'OffenseDaysCoolDownIntercept', $OffenseHarassGirl
+
         if FamilyLiberationGateOpen = 1:
             OffenseNoProtectOk = 0
 
@@ -456,6 +478,8 @@
                 gs 'OffenseDaysRegisterIntercept', $OffenseMissingGirl
             end
         end
+    else
+        gs 'OffenseDaysCoolDownIntercept', $OffenseMissingGirl
     end
 
     ! дочь: ignore → sandra; peek/watch_lewd НЕ (слишком часто)
@@ -763,6 +787,12 @@
         exit
     end
 
+    if day > GirlOffenseMismatchLastDay[$OffenseGirl]:
+        if GirlOffenseDays[$OffenseGirl] <= 0 and GirlOffenseInterceptCount[$OffenseGirl] > 0:
+            GirlOffenseInterceptCount[$OffenseGirl] -= 1
+        end
+    end
+
     if day - GirlOffenseMismatchLastDay[$OffenseGirl] >= 7:
         if GirlOffenseMismatchProtect[$OffenseGirl] > 0:
             GirlOffenseMismatchProtect[$OffenseGirl] -= 1
@@ -776,6 +806,97 @@
     end
 
     killvar '$OffenseGirl'
+---
+
+#OffenseDaysPrintIndicator
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $OffenseIndGirl = $GirlKey
+    $OffenseIndKind = LCASE($ARGS[1])
+
+    if $OffenseIndGirl = '':
+        killvar '$OffenseIndGirl'
+        killvar '$OffenseIndKind'
+        exit
+    end
+
+    if $OffenseIndKind = '':
+        $OffenseIndKind = 'intercept'
+    end
+
+    $OffenseIndIcon = 'images/common/ui/actions/guard.png'
+    $OffenseIndColor = ''
+    $OffenseIndBadge = ''
+
+    ! 1. Если активна обида
+    if GirlOffenseDays[$OffenseIndGirl] > 0:
+        $OffenseIndColor = '#8b0000'
+        if $GirlOffenseReason[$OffenseIndGirl] = 'intercept':
+            $OffenseIndBadge = '✖ [Обида: сестра обижена на чрезмерную опеку]'
+            $OffenseIndIcon = 'images/common/ui/actions/guard.png'
+        elseif $GirlOffenseReason[$OffenseIndGirl] = 'no_protect_low' or $GirlOffenseReason[$OffenseIndGirl] = 'daughter_no_protect':
+            $OffenseIndBadge = '✖ [Обида: сестра задета отсутствием защиты]'
+            $OffenseIndIcon = 'images/common/ui/actions/look.png'
+        elseif $GirlOffenseReason[$OffenseIndGirl] = 'policy_mismatch' or $GirlOffenseReason[$OffenseIndGirl] = 'protect_high':
+            $OffenseIndBadge = '✖ [Обида: сестра протестует против порядков]'
+            $OffenseIndIcon = 'images/common/ui/actions/policy.png'
+        else:
+            $OffenseIndBadge = '✖ [Обида: отношения испорчены (' + STR(GirlOffenseDays[$OffenseIndGirl]) + ' дн.)]'
+            $OffenseIndIcon = 'images/common/ui/actions/guard.png'
+        end
+
+    ! 2. Накопление опеки (intercept)
+    elseif $OffenseIndKind = 'intercept':
+        if GirlOffenseInterceptCount[$OffenseIndGirl] >= 3:
+            $OffenseIndColor = '#c0392b'
+            $OffenseIndBadge = '◆ [Критично: на грани срыва и обиды!]'
+        elseif GirlOffenseInterceptCount[$OffenseIndGirl] = 2:
+            $OffenseIndColor = '#d4a017'
+            $OffenseIndBadge = '◆ [Предупреждение: раздражение опекой растёт]'
+        elseif GirlOffenseInterceptCount[$OffenseIndGirl] = 1:
+            $OffenseIndColor = '#2e8b57'
+            $OffenseIndBadge = '◆ [Лёгкое недовольство опекой]'
+        end
+
+    ! 3. Накопление отсутствия защиты (no_protect)
+    elseif $OffenseIndKind = 'no_protect':
+        $OffenseIndIcon = 'images/common/ui/actions/look.png'
+        if GirlOffenseMismatchProtect[$OffenseIndGirl] >= 3:
+            $OffenseIndColor = '#c0392b'
+            $OffenseIndBadge = '◆ [Критично: на грани обиды из-за безучастия!]'
+        elseif GirlOffenseMismatchProtect[$OffenseIndGirl] = 2:
+            $OffenseIndColor = '#d4a017'
+            $OffenseIndBadge = '◆ [Предупреждение: задета твоим безучастием]'
+        elseif GirlOffenseMismatchProtect[$OffenseIndGirl] = 1:
+            $OffenseIndColor = '#2e8b57'
+            $OffenseIndBadge = '◆ [Лёгкое недовольство: ждала заступничества]'
+        end
+
+    ! 4. Накопление несоответствия правил (policy)
+    elseif $OffenseIndKind = 'policy':
+        $OffenseIndIcon = 'images/common/ui/actions/policy.png'
+        if GirlOffenseMismatchPolicy[$OffenseIndGirl] >= 3:
+            $OffenseIndColor = '#c0392b'
+            $OffenseIndBadge = '◆ [Критично: бунт против указаний!]'
+        elseif GirlOffenseMismatchPolicy[$OffenseIndGirl] = 2:
+            $OffenseIndColor = '#d4a017'
+            $OffenseIndBadge = '◆ [Предупреждение: протест против навязанного правила]'
+        elseif GirlOffenseMismatchPolicy[$OffenseIndGirl] = 1:
+            $OffenseIndColor = '#2e8b57'
+            $OffenseIndBadge = '◆ [Лёгкое недовольство наказами]'
+        end
+    end
+
+    if $OffenseIndBadge <> '':
+        *pl '<img src="' + $OffenseIndIcon + '" width="16" height="16"> <font color="' + $OffenseIndColor + '"><b>' + $OffenseIndBadge + '</b></font>'
+        *pl ' '
+    end
+
+    killvar '$OffenseIndGirl'
+    killvar '$OffenseIndKind'
+    killvar '$OffenseIndIcon'
+    killvar '$OffenseIndColor'
+    killvar '$OffenseIndBadge'
 ---
 
 #OffenseDaysShowTalkImage
@@ -878,11 +999,12 @@
     end
 
     gs 'OffenseDaysTalkBuildMenu', $OffenseSessionGirl, $OffenseSessionReturn
+    gs 'GetNpcMenuLinkHref', 'OffenseDaysTalkMenu', $RealName[$OffenseSessionGirl]
 
-    *p 'Что будешь <a href="exec:gs ''Menu.Show'', ''OffenseDaysTalkMenu''">делать</a>?'
-    *pl ' '
+    *pl 'Ты смотришь на ' + $NpcMenuLinkHref + ', решая, как загладить вину.'
+    killvar '$NpcMenuLinkHref'
 
-    gs 'ActUiPrepare', 'Оставить в покое', 'return'
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         if $OffenseReturnLoc <> '' and LOC($OffenseReturnLoc) = 1:
             gt $OffenseReturnLoc
@@ -1096,8 +1218,13 @@
             gs 'OffenseDaysTalkApologizeText', $OffenseGirl
         end
 
-        if GirlOffenseDays[$OffenseGirl] > 0:
-            GirlOffenseDays[$OffenseGirl] -= 1
+        if NobleAttackStage = 0:
+            GirlOffenseDays[$OffenseGirl] = 0
+            GirlOffenseInterceptCount[$OffenseGirl] = 0
+        else:
+            if GirlOffenseDays[$OffenseGirl] > 0:
+                GirlOffenseDays[$OffenseGirl] -= 1
+            end
         end
 
         Friends[$OffenseGirl] += 1
@@ -1216,7 +1343,7 @@
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться', 'return'
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         if $OffenseReturnLoc <> '' and LOC($OffenseReturnLoc) = 1:
             gt $OffenseReturnLoc

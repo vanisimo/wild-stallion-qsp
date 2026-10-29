@@ -1,0 +1,251 @@
+! ================================================
+! FILE: modules/actions/dialogs/girl_talk_touch.qsps
+! MODULE: actions/dialogs
+! [AI-WORKED] Текст переработан / дополнен ассистентом 29.10.2026
+! Тактильные инициативы и приставания Стефана («Заигрывание»)
+! ================================================
+
+#GirlTalkTouchScreen
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+
+    if $TalkGirl = '':
+        $TalkGirl = 'amanda'
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    cls
+
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
+    gs 'ShowLocationScreenTitle', 'ЗАИГРЫВАНИЕ: ' + $RealName[$TalkGirl]
+    gs 'SceneShowVisual', 'images/actions/flirt/' + $TalkGirl + '_touch_select', 'заигрывание: ' + $RealName[$TalkGirl], 'large', 'webp'
+
+    ! Проверка дневного лимита (максимум 2 раза в день)
+    if GirlTouchDailyCount[$TalkGirl] >= 2:
+        *pl 'Ты уже дважды за сегодня позволил себе вольности с ' + $RealName[$TalkGirl] + '.'
+        *pl 'Она мягко, но решительно отстраняется с улыбкой:'
+        *pl '— Стефан, на сегодня довольно. Дай мне спокойно заняться делами.'
+        *pl ' '
+
+        ! Единственная кнопка на панели act: Отойти
+        gs 'ActUiPrepare', 'Отойти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $TalkReturnLoc
+        end
+        exit
+    end
+
+    ! Определение ступени коррупции / раскрепощённости
+    if $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
+        TouchStage = FamilyCorruptionStage
+    else:
+        if sluttiness[$TalkGirl] < 20 and otkroven[$TalkGirl] < 15:
+            TouchStage = 1
+        elseif sluttiness[$TalkGirl] < 45 and otkroven[$TalkGirl] < 30:
+            TouchStage = 2
+        else:
+            TouchStage = 4
+        end
+    end
+
+    gs 'GirlTalkBuildTouchMenu'
+    gs 'GetNpcMenuLinkHref', 'GirlTalkTouchMenu', $RealName[$TalkGirl]
+
+    ! Контекстный вводный текст в зависимости от локации
+    if $TalkReturnLoc = 'Kitchen':
+        *pl $NpcMenuLinkHref + ' стоит у кухонного стола среди звона посуды. В жаре очага вы остаётесь наедине, укрытые от шума зала.'
+    elseif $TalkReturnLoc = 'TavernMain' or $TalkReturnLoc = 'TavernHall':
+        *pl $NpcMenuLinkHref + ' проходит между дубовыми столиками зала. В общем гуле голосов твоё движение остаётся незамеченным.'
+    elseif $TalkReturnLoc = 'Home' or $TalkReturnLoc = 'GirlsRoom' or $TalkReturnLoc = 'StefanRoom':
+        *pl $NpcMenuLinkHref + ' останавливается в тишине жилых комнат. За закрытой дверью вам никто не мешает.'
+    elseif $TalkReturnLoc = 'BeckyShop' or $TalkReturnLoc = 'IrmaShop' or $TalkReturnLoc = 'WineShop':
+        *pl $NpcMenuLinkHref + ' стоит за прилавком среди полок с товарами, укрытая от взглядов с улицы.'
+    else:
+        *pl $NpcMenuLinkHref + ' делает шаг навстречу, оказавшись в полушаге от тебя.'
+    end
+    killvar '$NpcMenuLinkHref'
+    *pl ' '
+
+    ! Единственная кнопка на панели act: Отойти
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $TalkReturnLoc
+    end
+---
+
+#GirlTalkBuildTouchMenu
+    gs 'Menu.Destroy', 'GirlTalkTouchMenu'
+    gs 'Menu.Create', 'GirlTalkTouchMenu'
+
+    ! --- 1. Низкая коррупция (TouchStage <= 1) ---
+    if TouchStage <= 1:
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Обнять за плечи', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'hug'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Поцеловать в щёку', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'kiss_cheek'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Шлёпнуть по попе', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'slap_butt'
+        }
+
+    ! --- 2. Средняя коррупция (TouchStage 2-3) ---
+    elseif TouchStage <= 3:
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Поцеловать в щёку', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'kiss_cheek'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Притянуть за талию', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'waist'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Поцеловать в шею', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'kiss_neck'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Сжать ягодицу', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'squeeze_butt'
+        }
+
+    ! --- 3. Высокая коррупция (TouchStage >= 4) ---
+    else:
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Притянуть за талию', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'waist'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Прижать к себе и поцеловать в губы', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'kiss_lips'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Провести ладонью по груди', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'touch_chest'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Залезть рукой под юбку', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'under_skirt'
+        }
+    end
+
+    if FamilyCorruptionStage >= 3 or otkroven[$TalkGirl] >= 15:
+        gs 'GirlIntimCheckNpcLinkAvailable', $TalkGirl, $TalkReturnLoc
+        if GirlIntimMenuReady = 1:
+            gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Интим', 'intim'
+            gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+                gt 'GirlIntim', $TalkGirl, $TalkReturnLoc
+            }
+        end
+        killvar 'GirlIntimMenuReady'
+    end
+---
+
+#GirlTalkTouchAction
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+    $TouchAction = LCASE($ARGS[2])
+
+    if $TalkGirl = '':
+        $TalkGirl = 'amanda'
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    cls
+
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
+    gs 'ShowLocationScreenTitle', 'ЗАИГРЫВАНИЕ: ' + $RealName[$TalkGirl]
+    gs 'SceneShowVisual', 'images/actions/flirt/' + $TalkGirl + '_' + $TouchAction, 'заигрывание: ' + $RealName[$TalkGirl] + ' (' + $TouchAction + ')', 'large', 'webp'
+
+    gs 'GirlTalkTouchText', $TalkGirl, $TouchAction
+
+    ! Учёт использования действия (лимит 2 в день)
+    GirlTouchDailyCount[$TalkGirl] += 1
+
+    ! Статистика по действиям и коррупции
+    if $TouchAction = 'hug':
+        Friends[$TalkGirl] += 1
+        love[$TalkGirl] += 1
+    elseif $TouchAction = 'kiss_cheek':
+        love[$TalkGirl] += 1
+        otkroven[$TalkGirl] += 1
+    elseif $TouchAction = 'slap_butt':
+        if ($TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra') and FamilyCorruptionStage <= 1:
+            GirlRebellion[$TalkGirl] += 1
+            otkroven[$TalkGirl] += 1
+        else:
+            sluttiness[$TalkGirl] += 1
+            otkroven[$TalkGirl] += 1
+        end
+    elseif $TouchAction = 'waist':
+        love[$TalkGirl] += 1
+        otkroven[$TalkGirl] += 1
+        sluttiness[$TalkGirl] += 1
+    elseif $TouchAction = 'kiss_neck':
+        love[$TalkGirl] += 1
+        otkroven[$TalkGirl] += 2
+        sluttiness[$TalkGirl] += 1
+    elseif $TouchAction = 'squeeze_butt':
+        sluttiness[$TalkGirl] += 2
+        otkroven[$TalkGirl] += 1
+    elseif $TouchAction = 'kiss_lips':
+        love[$TalkGirl] += 2
+        otkroven[$TalkGirl] += 2
+        sluttiness[$TalkGirl] += 1
+    elseif $TouchAction = 'touch_chest':
+        sluttiness[$TalkGirl] += 2
+        otkroven[$TalkGirl] += 2
+    elseif $TouchAction = 'under_skirt':
+        sluttiness[$TalkGirl] += 3
+        otkroven[$TalkGirl] += 2
+    end
+
+    gs 'ClampGirlSocialStats', $TalkGirl
+    *pl ' '
+
+    ! Если интим доступен и уровень возбуждения высок
+    if FamilyCorruptionStage >= 3 or otkroven[$TalkGirl] >= 15:
+        gs 'GirlIntimCheckNpcLinkAvailable', $TalkGirl, $TalkReturnLoc
+        if GirlIntimMenuReady = 1:
+            *pl '<a href="exec:gt ''GirlIntim'', ''' + $TalkGirl + ''', ''' + $TalkReturnLoc + '''"><b>[ Интим: уединиться прямо сейчас ]</b></a>'
+        end
+        killvar 'GirlIntimMenuReady'
+    end
+
+    if GirlTouchDailyCount[$TalkGirl] < 2:
+        gs 'GirlTalkBuildTouchMenu'
+        gs 'GetNpcMenuLinkHref', 'GirlTalkTouchMenu', $RealName[$TalkGirl]
+        *pl $NpcMenuLinkHref + ' переводит дыхание, глядя на тебя из-под ресниц.'
+        killvar '$NpcMenuLinkHref'
+    else:
+        *pl $RealName[$TalkGirl] + ' слегка отстраняется с улыбкой, давая понять, что на сегодня вольностей довольно.'
+    end
+
+    *pl ' '
+
+    ! Единственная кнопка на панели act: Отойти
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $TalkReturnLoc
+    end
+---

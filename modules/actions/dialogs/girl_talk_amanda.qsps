@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_amanda.qsps
 ! MODULE: actions/dialogs
 ! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
@@ -153,60 +153,7 @@
 ---
 
 #GirlTalkBuildAmandaMainMenu
-    gs 'Menu.Destroy', 'GirlTalkMainMenu'
-    gs 'Menu.Create', 'GirlTalkMainMenu'
-
-    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
-    gs 'GirlTalkAmandaImportantCheck'
-    if AmandaImportantReady = 1:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Важный разговор', 'important'
-        if $AmandaImportantAction = 'nobility':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutNobility', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'noble_dress':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaGiveNobleDress', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'legare_clash':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutLegareStreetClash', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'legare_visit':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutLegare', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'legare_private':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaLegarePrivateAftermath', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'legare_outside':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaLegareOutsideAftermath', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'legare_major':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaLegareMajorAftermath', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'legare_hall_conflict':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutLegareFirstConflict', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'becky_dinner':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'AmandaTalkAboutBeckyDinner', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'dress_missed':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkDanceDressMissed', 'amanda', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'dress_talk':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkDanceDressStart', 'amanda', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'uniform_missed':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkUniformFittingMissed', 'amanda', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'uniform_talk':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkUniformFittingTalk', 'amanda', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'staff_reaction':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'SandraStaffGirlsReactionTalk', 'amanda', $TalkReturnLoc }
-        elseif $AmandaImportantAction = 'story_legare':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'amanda', $TalkReturnLoc, 'amanda_legare' }
-        elseif $AmandaImportantAction = 'story_boys':
-            gs 'Menu.AddModule', 'GirlTalkMainMenu', { gt 'GirlTalkPersonalStoryStart', 'amanda', $TalkReturnLoc, 'amanda_boys' }
-        end
-    end
-    killvar 'AmandaImportantReady'
-    killvar '$AmandaImportantAction'
-
-    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
-    gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Поговорить', 'talk'
-    gs 'Menu.AddModule', 'GirlTalkMainMenu', {
-        gt 'GirlTalkResult', 'amanda', $TalkReturnLoc, 'amanda_unified'
-    }
-
-    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
-    if LOC('GirlTalkAppendGiftMenuItems') = 1:
-        gs 'GirlTalkAppendGiftMenuItems'
-    end
+    gs 'GirlTalkBuildTopicsMenu'
 ---
 
 #GirlTalkAmandaUnifiedRun
@@ -268,60 +215,6 @@
             gs 'GirlTalkFamilyRun', 'amanda'
         else:
             gs 'GirlTalkAmandaDreamsRun'
-        end
-    end
-
-    ! --- Дополнительные действия на экране разговора ---
-    if AmandaMetLizette = 1 or LizetteKnown = 1:
-        if LizetteBanned = 1:
-            gs 'ActUiPrepare', 'Разрешить болтать с Лизеттой', 'talk'
-        else
-            gs 'ActUiPrepare', 'Запретить болтать с Лизеттой', 'talk'
-        end
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkPersonalBanToggle', 'amanda', $TalkReturnLoc, 'lizette'
-        end
-    end
-
-    if AmandaLegareInterest >= 1 or AmandaLegareTalkDone = 1 or Fact_AmandaLegareOutsideMeet = 1 or FactHappened['amanda_dancewithlegare_1'] = 1 or AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1:
-        gs 'GirlTalkPersonalLegareBanned'
-        if GirlTalkPersonalLegareBanned = 1:
-            gs 'ActUiPrepare', 'Разрешить общение с Легаре', 'talk'
-        else
-            gs 'ActUiPrepare', 'Запретить общение с Легаре', 'talk'
-        end
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkPersonalBanToggle', 'amanda', $TalkReturnLoc, 'legare'
-        end
-        killvar 'GirlTalkPersonalLegareBanned'
-    end
-
-    gs 'GirlTalkPersonalGuysBanCanShow', 'amanda'
-    if GirlTalkPersonalGuysBanCanShow = 1:
-        if AmandaProhibitGuys = 1:
-            gs 'ActUiPrepare', 'Разрешить встречаться с парнями', 'talk'
-        else
-            gs 'ActUiPrepare', 'Запретить встречаться с парнями', 'talk'
-        end
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkPersonalBanToggle', 'amanda', $TalkReturnLoc, 'guys'
-        end
-    end
-    killvar 'GirlTalkPersonalGuysBanCanShow'
-
-    $ComplimentActKey = 'amanda_' + STR(day)
-    if (Friends['amanda'] >= 12 or love['amanda'] >= 10 or otkroven['amanda'] >= 12) and GirlComplimentDay[$ComplimentActKey] = 0:
-        gs 'ActUiPrepare', 'Сделать комплимент', 'flirt'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkResult', 'amanda', $TalkReturnLoc, 'compliment'
-        end
-    end
-    killvar '$ComplimentActKey'
-
-    if GiftInventory['gift_cheap'] > 0 or GiftInventory['gift_expensive'] > 0:
-        gs 'ActUiPrepare', 'Сделать подарок', 'gift'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GirlTalkResult', 'amanda', $TalkReturnLoc, 'gift'
         end
     end
 

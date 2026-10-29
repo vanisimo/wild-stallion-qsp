@@ -300,6 +300,10 @@
     end
     killvar '$HallHarassAftermathLine'
 
+    if LOC('OffenseDaysPrintIndicator') = 1:
+        gs 'OffenseDaysPrintIndicator', $HallHarassGirl, 'intercept'
+    end
+
     if GirlOffenseDays[$HallHarassGirl] > 0:
         if LOC('OffenseDaysPrintSceneReaction') = 1:
             gs 'OffenseDaysPrintSceneReaction', $HallHarassGirl
@@ -320,28 +324,6 @@
         *pl ' '
         SandraWitnessedIgnore = 0
     end
-
-    if GirlWorkPolicy[$PolicyTalkGirl] = 1:
-        $CurrentPolicyName = 'вести себя сдержанно'
-    elseif GirlWorkPolicy[$PolicyTalkGirl] = 3:
-        $CurrentPolicyName = 'вести себя раскованно'
-    else
-        $CurrentPolicyName = 'решать самой по обстановке'
-    end
-
-    *pl $RealName[$PolicyTalkGirl] + ' помнит ваше указание: <i>' + $CurrentPolicyName + '</i>.'
-    *pl ' '
-    gs 'HallHarassmentBuildPolicyMenu'
-    if HallHarassPolicyChosen = 0:
-        gs 'GetMenuOpenLinkHref', 'HallHarassPolicyMenu', '[Сменить наказ]'
-        *pl $MenuOpenLinkHref
-        killvar '$MenuOpenLinkHref'
-        *pl ' '
-    else
-        gs 'HallHarassmentShowPolicyReactionBlock'
-        *pl ' '
-    end
-    killvar '$CurrentPolicyName'
 
     killvar '$PolicyTalkGirl'
     killvar '$PolicyTalkArea'
@@ -390,6 +372,10 @@
     end
     killvar '$HallHarassAftermathLine'
 
+    if LOC('OffenseDaysPrintIndicator') = 1:
+        gs 'OffenseDaysPrintIndicator', $HallHarassGirl, 'intercept'
+    end
+
     if GirlOffenseDays[$HallHarassGirl] > 0:
         if LOC('OffenseDaysPrintSceneReaction') = 1:
             gs 'OffenseDaysPrintSceneReaction', $HallHarassGirl
@@ -405,22 +391,6 @@
         end
     end
     $HallHarassOffenseDebug = ''
-
-    ! D) правила
-    gs 'GirlWorkPolicyTalkPrintText', 'after_harass_intro'
-    *pl ' '
-    gs 'HallHarassmentBuildPolicyMenu'
-    if HallHarassPolicyChosen = 0:
-        gs 'GetMenuOpenLinkHref', 'HallHarassPolicyMenu', 'Обсудить правило поведения'
-        *p $MenuOpenLinkHref + '.'
-        killvar '$MenuOpenLinkHref'
-        *pl ' '
-    end
-
-    if HallHarassPolicyChosen = 1:
-        *pl ' '
-        gs 'HallHarassmentShowPolicyReactionBlock'
-    end
 
     killvar '$PolicyTalkGirl'
     killvar '$PolicyTalkArea'
@@ -600,7 +570,7 @@
         gs 'HallHarassmentChoose', 'protect_hard'
     }
 
-    if FamilyLiberationGateOpen = 1:
+    if FamilyLiberationGateOpen = 1 or NobleAttackStage > 0:
         gs 'MenuUiAdd', 'HallHarassmentChoiceMenu', 'Смотреть', ''
         gs 'Menu.AddModule', 'HallHarassmentChoiceMenu', {
             gs 'HallHarassmentChoose', 'watch'
@@ -766,7 +736,17 @@
         elseif $HallHarassTalkReaction = 'protect_fail':
             $HallHarassAfterId = 'talk_protect_fail'
         else
-            $HallHarassAfterId = 'talk_protect_thanks'
+            if GirlOffenseDays[$HallHarassGirl] > 0 and $GirlOffenseReason[$HallHarassGirl] = 'intercept':
+                $HallHarassAfterId = 'talk_protect_intercept_4'
+            elseif GirlOffenseInterceptCount[$HallHarassGirl] >= 3:
+                $HallHarassAfterId = 'talk_protect_intercept_3'
+            elseif GirlOffenseInterceptCount[$HallHarassGirl] = 2:
+                $HallHarassAfterId = 'talk_protect_intercept_2'
+            elseif GirlOffenseInterceptCount[$HallHarassGirl] = 1:
+                $HallHarassAfterId = 'talk_protect_intercept_1'
+            else
+                $HallHarassAfterId = 'talk_protect_thanks'
+            end
         end
     elseif $HallHarassReaction = 'watch':
         if HallHarassAfterBand = 0:

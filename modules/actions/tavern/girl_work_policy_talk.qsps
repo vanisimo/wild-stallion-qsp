@@ -612,3 +612,49 @@
 
     killvar '$PolicyTalkNameKey'
 ---
+
+#GirlWorkPolicyPanelCycle
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $PolicyCycleGirl = $GirlKey
+    $PolicyCycleCaller = LCASE($ARGS[1])
+
+    if $PolicyCycleGirl = '':
+        killvar '$PolicyCycleGirl'
+        killvar '$PolicyCycleCaller'
+        exit
+    end
+
+    if FamilyLiberationGateOpen = 0:
+        msg 'До семейного совета девушкам заповедано вести себя сдержанно.'
+        killvar '$PolicyCycleGirl'
+        killvar '$PolicyCycleCaller'
+        exit
+    end
+
+    ! Циклическое переключение: 1 -> 2 -> 3 -> 1
+    if GirlWorkPolicy[$PolicyCycleGirl] = 1:
+        GirlWorkPolicy[$PolicyCycleGirl] = 2
+    elseif GirlWorkPolicy[$PolicyCycleGirl] = 2:
+        GirlWorkPolicy[$PolicyCycleGirl] = 3
+    else:
+        GirlWorkPolicy[$PolicyCycleGirl] = 1
+    end
+
+    ! Синхронизируем кухню для Сандры
+    if $PolicyCycleGirl = 'sandra':
+        GirlKitchenPolicy['sandra'] = GirlWorkPolicy['sandra']
+    end
+
+    if $PolicyCycleCaller = 'sidebar':
+        gs 'ShowGirlSidebar', $PolicyCycleGirl
+    elseif $PolicyCycleCaller = 'desc_panel':
+        gs 'NpcShowDescriptionPanel', $PolicyCycleGirl
+    elseif $PolicyCycleCaller = 'family_info':
+        gs 'PanelFamilyInfo'
+    else:
+        gs 'PanelFamilyInfo'
+    end
+
+    killvar '$PolicyCycleGirl'
+    killvar '$PolicyCycleCaller'
+---

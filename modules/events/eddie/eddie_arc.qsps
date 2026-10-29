@@ -1,4 +1,4 @@
-! ================================================
+﻿! ================================================
 ! FILE: modules/events/eddie/eddie_arc.qsps
 ! MODULE: events/becky
 ! Ветка Эдди: talk → подворотня → исповедь → дом
@@ -92,7 +92,7 @@
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         killvar '$EddieActionType'
         gt $EddieTalkReturnLoc
@@ -100,7 +100,6 @@
 ---
 
 #TalkWithEddie
-
     $GuyName = 'eddie'
 
     if $ARGS[0] <> '':
@@ -118,37 +117,124 @@
     gs 'ShowImagePath', 'images/events/eddie/eddie_arc/eddie_talk', '', 'portrait', 'webp'
     gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ЭДДИ'
 
-    gs 'EddieUnifiedTalkRun'
-
+    *pl 'Ты находишь Эдди в задней части лавки среди ящиков и свёртков ткани.'
+    *pl 'Он поднимает на тебя усталый, но приветливый взгляд:'
+    *pl '— Здорово, Стефан. Какими судьбами?'
     *pl ' '
+    gs 'EddieBuildMainMenu'
+    gs 'GetNpcMenuLinkHref', 'EddieMainMenu', 'Эдди'
 
-    ! Контекстные действия на экране разговора (если доступны важные темы)
-    if day >= 6 and PlayerKnows_SandraDraupnirFriday = 0 and SandraDraupnirHintEddie = 0 and SandraCarpenterSecret = 0 and SandraHomeSex = 0 and Friends['eddie'] >= 10:
-        gs 'ActUiPrepare', 'Заметить задумчивый взгляд Эдди', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'EddieRunImportantAction', 'sandra_friday'
-        end
-    end
+    *pl $NpcMenuLinkHref + ' стоит в задней части лавки и смотрит на тебя.'
+    killvar '$NpcMenuLinkHref'
 
-    if BeckyHomeSex = 1 and EddieSawGeorg = 2 and EddieHelpPromised = 0 and Friends['eddie'] >= 10 and BeckyEddieDone = 0:
-        gs 'ActUiPrepare', 'Пообещать помощь', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'EddieRunImportantAction', 'help_promise'
-        end
-    end
-
-    if BeckyEddieDone = 1 and EddieBestFriend = 0 and Friends['eddie'] >= 18:
-        gs 'ActUiPrepare', 'Поговорить по душам', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'EddieRunImportantAction', 'best_friend'
-        end
-    end
-
-    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         $TmpLoc = $EddieTalkReturnLoc
         killvar '$EddieTalkReturnLoc'
         gt $TmpLoc
+    end
+---
+
+#EddieBuildMainMenu
+    gs 'Menu.Destroy', 'EddieMainMenu'
+    gs 'Menu.Create', 'EddieMainMenu'
+
+    gs 'EddieImportantCheck'
+    if EddieImportantReady = 1:
+        gs 'MenuUiAdd', 'EddieMainMenu', 'Важная беседа', 'important'
+        gs 'Menu.AddModule', 'EddieMainMenu', {
+            gt 'EddieImportantScreen', $EddieTalkReturnLoc
+        }
+    end
+
+    gs 'MenuUiAdd', 'EddieMainMenu', 'Разговор', 'talk'
+    gs 'Menu.AddModule', 'EddieMainMenu', {
+        gt 'EddieChatScreen', $EddieTalkReturnLoc
+    }
+---
+
+#EddieImportantScreen
+    $EddieTalkReturnLoc = $ARGS[0]
+    if $EddieTalkReturnLoc = '':
+        $EddieTalkReturnLoc = 'BeckyShop'
+    end
+
+    cls
+    gs 'ShowImagePath', 'images/events/eddie/eddie_arc/eddie_talk', '', 'portrait', 'webp'
+    gs 'ShowLocationScreenTitle', 'ВАЖНЫЙ РАЗГОВОР: ЭДДИ'
+
+    gs 'EddieBuildImportantMenu'
+    gs 'GetNpcMenuLinkHref', 'EddieImportantMenu', 'Эдди'
+
+    *pl 'Ты заводишь разговор на тему, требующую отдельного внимания с ' + $NpcMenuLinkHref + '.'
+    killvar '$NpcMenuLinkHref'
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $EddieTalkReturnLoc
+    end
+---
+
+#EddieBuildImportantMenu
+    gs 'Menu.Destroy', 'EddieImportantMenu'
+    gs 'Menu.Create', 'EddieImportantMenu'
+
+    if day >= 6 and PlayerKnows_SandraDraupnirFriday = 0 and SandraDraupnirHintEddie = 0 and SandraCarpenterSecret = 0 and SandraHomeSex = 0 and Friends['eddie'] >= 10:
+        gs 'MenuUiAdd', 'EddieImportantMenu', 'Заметить задумчивый взгляд Эдди', 'talk'
+        gs 'Menu.AddModule', 'EddieImportantMenu', {
+            gt 'EddieRunImportantAction', 'sandra_friday'
+        }
+    end
+
+    if BeckyHomeSex = 1 and EddieSawGeorg = 2 and EddieHelpPromised = 0 and Friends['eddie'] >= 10 and BeckyEddieDone = 0:
+        gs 'MenuUiAdd', 'EddieImportantMenu', 'Пообещать помощь', 'talk'
+        gs 'Menu.AddModule', 'EddieImportantMenu', {
+            gt 'EddieRunImportantAction', 'help_promise'
+        }
+    end
+
+    if BeckyEddieDone = 1 and EddieBestFriend = 0 and Friends['eddie'] >= 18:
+        gs 'MenuUiAdd', 'EddieImportantMenu', 'Поговорить по душам', 'talk'
+        gs 'Menu.AddModule', 'EddieImportantMenu', {
+            gt 'EddieRunImportantAction', 'best_friend'
+        }
+    end
+
+    if BeckyEddieDone = 1 and EddieBeckyPostTalkDone = 0:
+        gs 'MenuUiAdd', 'EddieImportantMenu', 'Сказать, что всё в порядке', 'talk'
+        gs 'Menu.AddModule', 'EddieImportantMenu', {
+            gt 'EddieRunImportantAction', 'becky_post'
+        }
+    end
+---
+
+#EddieChatScreen
+    $EddieTalkReturnLoc = $ARGS[0]
+    if $EddieTalkReturnLoc = '':
+        $EddieTalkReturnLoc = 'BeckyShop'
+    end
+
+    cls
+    gs 'ShowImagePath', 'images/events/eddie/eddie_arc/eddie_talk', '', 'portrait', 'webp'
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ЭДДИ'
+
+    gs 'EddieUnifiedTalkRun'
+    *pl ' '
+
+    gs 'UsefulTalkCheck', 'eddie', 'eddie_unified'
+    if UsefulTalkResult = 1:
+        gs 'EddieBuildMainMenu'
+        gs 'GetNpcMenuLinkHref', 'EddieMainMenu', 'Эдди'
+        *pl $NpcMenuLinkHref + ' перебирает инструменты на верстаке.'
+        killvar '$NpcMenuLinkHref'
+    else:
+        *pl 'Эдди возвращается к работе за верстаком.'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $EddieTalkReturnLoc
     end
 ---
 

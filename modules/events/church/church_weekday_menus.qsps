@@ -35,31 +35,34 @@
         $GerhardImportantAction = 'noble_tour'
         exit
     end
+
+    ! 3. Об Аманде
+    if GerhardAmandaWarningAvailable = 1 and LOC('ChurchGerhardAmandaConfront') = 1:
+        GerhardImportantReady = 1
+        $GerhardImportantAction = 'amanda_confront'
+        exit
+    end
 ---
 
 #ChurchWeekdayBuildGerhardMenu
     gs 'Menu.Destroy', 'ChurchWeekdayGerhardMenu'
     gs 'Menu.Create', 'ChurchWeekdayGerhardMenu'
 
-    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    ! ==================== 1. ВАЖНАЯ БЕСЕДА (ЕСЛИ ЕСТЬ) ====================
     if LOC('GerhardImportantCheck') = 1:
         gs 'GerhardImportantCheck'
         if GerhardImportantReady = 1:
-            gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Важный разговор', 'important'
-            if $GerhardImportantAction = 'blackmail':
-                gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', { gt 'GerhardBlackmailTalk' }
-            elseif $GerhardImportantAction = 'noble_tour':
-                gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', { gt 'StefanNobleTourGerhard' }
-            end
+            gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Важная беседа', 'important'
+            gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', { gt 'GerhardImportantScreen' }
         end
         killvar 'GerhardImportantReady'
         killvar '$GerhardImportantAction'
     end
 
-    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
-    gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Поговорить', 'talk'
+    ! ==================== 2. РАЗГОВОР (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'ChurchWeekdayGerhardMenu', 'Разговор', 'talk'
     gs 'Menu.AddModule', 'ChurchWeekdayGerhardMenu', {
-        gt 'ChurchGerhardWeekdayTalk'
+        gt 'GerhardChatScreen'
     }
 
     ! ==================== 3. ПОЖЕРТВОВАТЬ ХРАМУ ====================

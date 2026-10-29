@@ -1,6 +1,7 @@
 ! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_tavern.qsps
 ! MODULE: actions/dialogs
+! [AI-WORKED] Текст переработан / дополнен ассистентом 29.10.2026
 ! Контекстный разговор о делах трактира
 ! ================================================
 
@@ -62,6 +63,8 @@
                     $GirlTalkTavernDanceDressHookKey = $GirlTalkTavernGirl + '_' + STR(day)
                     GirlTalkDanceDressHookDiscussed[$GirlTalkTavernDanceDressHookKey] = 1
                     killvar '$GirlTalkTavernDanceDressHookKey'
+                else:
+                    gs 'GirlTalkTavernPrintPolicyFeedback', $GirlTalkTavernGirl
                 end
             end
         end
@@ -300,4 +303,43 @@
     end
 
     killvar '$DanceDressHintGirl'
+---
+
+#GirlTalkTavernPrintPolicyFeedback
+    $PolicyFeedGirl = LCASE($ARGS[0])
+
+    if $PolicyFeedGirl = '':
+        exit
+    end
+
+    if $PolicyFeedGirl = 'amanda':
+        if GirlWorkPolicy['amanda'] = 3:
+            *pl 'Аманда лукаво улыбается, поправляя фартук: «Гости сегодня щедрые! Я с ними посмелее, шучу, улыбаюсь — серебра на чай насыпали изрядно. Главное — вовремя уворачиваться от самых прытких».'
+        elseif GirlWorkPolicy['amanda'] = 2:
+            *pl 'Аманда пожимает плечами: «В зале всё спокойно. Сама смотрю по людям: кому улыбнуться, а кому и кружку молча поставить».'
+        else:
+            *pl 'Аманда тихо вздыхает: «Держусь строго, как ты и велел. Гости, правда, иногда косятся и чаевых меньше, зато руки к юбке никто не тянет».'
+        end
+        *pl ' '
+
+    elseif $PolicyFeedGirl = 'melissa':
+        if GirlWorkPolicy['melissa'] = 3:
+            *pl 'Мелисса с тонкой усмешкой откладывает грифель: «Посетители на удивление покладисты, когда им позволяешь чуть больше вольностей в разговоре. Доходы трактира от этого только выигрывают».'
+        elseif GirlWorkPolicy['melissa'] = 2:
+            *pl 'Мелисса спокойно кивает: «В зале порядок. Я держу дистанцию сообразно манерам каждого гостя, так что поводов для беспокойства нет».'
+        else:
+            *pl 'Мелисса строго поправляет воротничок: «Следую твоему наказу о сдержанности. Никаких вольностей и пустых разговоров с захмелевшими зеваками».'
+        end
+        *pl ' '
+
+    elseif $PolicyFeedGirl = 'sandra':
+        if GirlKitchenPolicy['sandra'] = 3 or GirlWorkPolicy['sandra'] = 3:
+            *pl 'Сандра усмехается, помешивая похлёбку: «Мужики на кухню заглядывают чаще обычного. Я им спуску не даю, но лишняя пара монет за сытный обед в кошельке не помешает».'
+        else:
+            *pl 'Сандра веско кивает: «На кухне у меня порядок, Стефан. Лишних не пускаю, всё строго и по-хозяйски».'
+        end
+        *pl ' '
+    end
+
+    killvar '$PolicyFeedGirl'
 ---

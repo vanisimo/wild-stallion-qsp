@@ -95,6 +95,76 @@
         pl 'Сейчас свободна'
     end
 
+    if $GirlName = 'amanda' or $GirlName = 'melissa' or $GirlName = 'sandra':
+        pl ' '
+        if GirlWorkPolicy[$GirlName] = 3:
+            $DescPolName = 'раскованно'
+        elseif GirlWorkPolicy[$GirlName] = 2:
+            $DescPolName = 'по обстановке'
+        else:
+            $DescPolName = 'сдержанно'
+        end
+        pl 'Поведение в зале: <a href="exec:gs ''GirlWorkPolicyPanelCycle'', ''' + $GirlName + ''', ''desc_panel''">[' + $DescPolName + ']</a>'
+        pl ' '
+
+        pl '<b>Действующие правила:</b>'
+        if $GirlName = 'amanda':
+            if AmandaProhibitGuys = 1:
+                pl '• Встречи с парнями: <b>Запрещены</b>'
+            else:
+                pl '• Встречи с парнями: Разрешены'
+            end
+
+            gs 'GirlTalkPersonalLegareBanned'
+            if GirlTalkPersonalLegareBanned = 1:
+                pl '• Общение с Легаре: <b>Запрещено</b>'
+            else:
+                pl '• Общение с Легаре: Разрешено'
+            end
+            killvar 'GirlTalkPersonalLegareBanned'
+
+            if LizetteBanned = 1:
+                pl '• Общение с Лизеттой: <b>Запрещено</b>'
+            else:
+                pl '• Общение с Лизеттой: Разрешено'
+            end
+
+            if GirlNoPantiesWork['amanda'] = 1:
+                pl '• Ношение белья в зале: <b>Запрещено (без белья)</b>'
+            else:
+                pl '• Ношение белья в зале: Разрешено'
+            end
+
+        elseif $GirlName = 'melissa':
+            if MelissaProhibitMinstrel = 1:
+                pl '• Встречи с менестрелем: <b>Запрещены</b>'
+            else:
+                pl '• Встречи с менестрелем: Разрешены'
+            end
+
+            if MelissaProhibitGuys = 1:
+                pl '• Вечерние прогулки: <b>Запрещены</b>'
+            else:
+                pl '• Вечерние прогулки: Разрешены'
+            end
+
+            if GirlNoPantiesWork['melissa'] = 1:
+                pl '• Ношение белья в зале: <b>Запрещено (без белья)</b>'
+            else:
+                pl '• Ношение белья в зале: Разрешено'
+            end
+
+        elseif $GirlName = 'sandra':
+            if GirlNoPantiesWork['sandra'] = 1:
+                pl '• Ношение белья: <b>Запрещено (без белья)</b>'
+            else:
+                pl '• Ношение белья: Разрешено'
+            end
+        end
+
+        killvar '$DescPolName'
+    end
+
     pl ' '
     gs 'PanelUiDivider'
 

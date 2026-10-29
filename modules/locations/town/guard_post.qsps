@@ -138,50 +138,91 @@
 #GuardTalk
     cls
 
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР СО СТРАЖНИКОМ'
+    gs 'ShowImage', 'guard', 'post', 'talk', 'normal'
+
+    *pl 'Стражник у ворот опирается на древко копья и смеривает тебя цепким взглядом из-под шлема.'
+    *pl '— Здорово, трактирщик. Чего замер, язык проглотил?'
+    *pl ' '
+    gs 'GuardBuildMainMenu'
+    gs 'GetNpcMenuLinkHref', 'GuardMainMenu', 'стражник'
+
+    *pl $NpcMenuLinkHref + ' стоит на посту, опираясь на древко копья.'
+    killvar '$NpcMenuLinkHref'
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GuardPost'
+    end
+---
+
+#GuardBuildMainMenu
+    gs 'Menu.Destroy', 'GuardMainMenu'
+    gs 'Menu.Create', 'GuardMainMenu'
+
+    gs 'GuardImportantCheck'
+    if GuardImportantReady = 1:
+        gs 'MenuUiAdd', 'GuardMainMenu', 'Важная беседа', 'important'
+        gs 'Menu.AddModule', 'GuardMainMenu', {
+            gt 'GuardImportantScreen'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GuardMainMenu', 'Разговор', 'talk'
+    gs 'Menu.AddModule', 'GuardMainMenu', {
+        gt 'GuardChatScreen'
+    }
+---
+
+#GuardImportantScreen
+    cls
+    gs 'ShowLocationScreenTitle', 'ВАЖНЫЙ РАЗГОВОР: СТРАЖНИК'
+    gs 'ShowImage', 'guard', 'post', 'talk', 'normal'
+
+    gs 'GuardBuildImportantMenu'
+    gs 'GetNpcMenuLinkHref', 'GuardImportantMenu', 'стражнику'
+
+    *pl 'У тебя есть важное дело к ' + $NpcMenuLinkHref + '.'
+    killvar '$NpcMenuLinkHref'
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GuardPost'
+    end
+---
+
+#GuardBuildImportantMenu
+    gs 'Menu.Destroy', 'GuardImportantMenu'
+    gs 'Menu.Create', 'GuardImportantMenu'
+
+    if PlayerHasWeaponShipmentInvoice = 1 and GuardPostHintDone = 0 and LOC('GuardPostBlackmailHint') = 1:
+        gs 'MenuUiAdd', 'GuardBuildImportantMenu', 'О накладной на оружие', 'talk'
+        gs 'Menu.AddModule', 'GuardBuildImportantMenu', {
+            gt 'GuardPostBlackmailHint'
+        }
+    end
+---
+
+#GuardChatScreen
+    cls
     gs 'ShowLocationScreenTitle', 'ПОСТ ГОРОДСКОЙ СТРАЖИ'
     gs 'ShowImage', 'guard', 'post', 'talk', 'normal'
 
     gs 'GuardUnifiedTalkRun'
-
     *pl ' '
 
-    ! Контекстные действия стражи на экране беседы
-    if PlayerHasWeaponShipmentInvoice = 1 and GuardPostHintDone = 0 and LOC('GuardPostBlackmailHint') = 1:
-        gs 'ActUiPrepare', 'Спросить о накладной', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'GuardPostBlackmailHint'
-        end
+    gs 'UsefulTalkCheck', 'guard', 'guard_unified'
+    if UsefulTalkResult = 1:
+        gs 'GuardBuildMainMenu'
+        gs 'GetNpcMenuLinkHref', 'GuardMainMenu', 'Стражник'
+        *pl $NpcMenuLinkHref + ' поправляет кожаный ремень кирасы.'
+        killvar '$NpcMenuLinkHref'
+    else:
+        *pl 'Стражник возвращается к наблюдению за воротами.'
     end
+    *pl ' '
 
-    if IngaDanceRefusedCount >= 2 and IngaGuardSchemeActive = 0 and IngaGuardResolved = 0 and LOC('IngaGuardSchemeProposal') = 1:
-        gs 'ActUiPrepare', 'Подкупить стражника', 'guard'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IngaGuardSchemeProposal'
-        end
-    end
-
-    if IngaGuardHelpPromise > 0 and IngaGuardResolved = 0 and LOC('IngaGuardIntervene') = 1:
-        gs 'ActUiPrepare', 'Вступиться за Ингу', 'guard'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IngaGuardIntervene'
-        end
-    end
-
-    if IngaGuardHelpStage = 2 and IngaGuardLadderDone = 0 and IngaGuardWeeklyActive = 1 and IngaGuardBribedExit = 0 and LOC('IngaGuardBribeExit') = 1:
-        gs 'ActUiPrepare', 'Дать денег за проход', 'money'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IngaGuardBribeExit'
-        end
-    end
-
-    if IngaGuardProblem = 1 and GuardBribed = 0 and IngaGuardHelpIntent > 0 and LOC('MeetGuard') = 1:
-        gs 'ActUiPrepare', 'Договориться о встрече', 'shop'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MeetGuard'
-        end
-    end
-
-    gs 'ActUiPrepare', 'Назад', 'return'
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'GuardPost'
     end
@@ -253,35 +294,20 @@
     gs 'Menu.Destroy', 'GuardPostMenu'
     gs 'Menu.Create', 'GuardPostMenu'
 
-    ! ==================== 1. ВАЖНЫЙ РАЗГОВОР (ЕСЛИ ЕСТЬ) ====================
+    ! ==================== 1. ВАЖНАЯ БЕСЕДА (ЕСЛИ ЕСТЬ) ====================
     if LOC('GuardImportantCheck') = 1:
         gs 'GuardImportantCheck'
         if GuardImportantReady = 1:
-            gs 'MenuUiAdd', 'GuardPostMenu', 'Важный разговор', 'important'
-            if $GuardImportantAction = 'blackmail_hint':
-                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'GuardPostBlackmailHint' }
-            elseif $GuardImportantAction = 'inga_intervene':
-                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'IngaGuardIntervene' }
-            elseif $GuardImportantAction = 'inga_scheme':
-                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'IngaGuardSchemeProposal' }
-            elseif $GuardImportantAction = 'inga_bribe':
-                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'IngaGuardBribeExit' }
-            elseif $GuardImportantAction = 'meet_guard':
-                gs 'Menu.AddModule', 'GuardPostMenu', { gt 'MeetGuard' }
-            end
+            gs 'MenuUiAdd', 'GuardPostMenu', 'Важная беседа', 'important'
+            gs 'Menu.AddModule', 'GuardPostMenu', { gt 'GuardImportantScreen' }
         end
         killvar 'GuardImportantReady'
         killvar '$GuardImportantAction'
     end
 
-    ! ==================== 2. ПОГОВОРИТЬ (ВСЕГДА) ====================
-    gs 'MenuUiAdd', 'GuardPostMenu', 'Поговорить', 'talk'
+    ! ==================== 2. РАЗГОВОР (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'GuardPostMenu', 'Разговор', 'talk'
     gs 'Menu.AddModule', 'GuardPostMenu', {
-        gt 'GuardTalk'
+        gt 'GuardChatScreen'
     }
-
-    ! ==================== 3. СДЕЛАТЬ ПОДАРОК (ЕСЛИ ЕСТЬ) ====================
-    if LOC('GuyTalkAppendGiftMenuItems') = 1:
-        gs 'GuyTalkAppendGiftMenuItems', 'guard', 'GuardPost', 'GuardPostMenu'
-    end
 ---

@@ -111,7 +111,7 @@
         gs 'ChurchWeekdayDonationAct'
     end
 
-    gs 'ActUiPrepare', 'Назад в церковь', 'return'
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'ChurchInterior'
     end
@@ -123,31 +123,111 @@
     gs 'ShowLocationScreenTitle', 'ОТЕЦ ГЕРХАРД'
     gs 'ShowImagePath', 'images/locations/church/gerhard', '', 'portrait', 'webp'
 
-    gs 'GerhardUnifiedTalkRun'
-
+    *pl 'Отец Герхард стоит у аналоя, неторопливо перебирая деревянные чётки. Его лицо строго и спокойно, но взгляд внимательно следит за твоими движениями.'
+    *pl '— Мир тебе, Стефан. Зачем пришёл под сень всеблагого Ильматера?'
     *pl ' '
+    gs 'GerhardBuildMainMenu'
+    gs 'GetNpcMenuLinkHref', 'GerhardMainMenu', 'отец Герхард'
 
-    ! Контекстные действия на экране беседы
+    *pl $NpcMenuLinkHref + ' стоит у аналоя, перебирая деревянные чётки.'
+    killvar '$NpcMenuLinkHref'
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchInterior'
+    end
+---
+
+#GerhardBuildMainMenu
+    gs 'Menu.Destroy', 'GerhardMainMenu'
+    gs 'Menu.Create', 'GerhardMainMenu'
+
+    if LOC('GerhardImportantCheck') = 1:
+        gs 'GerhardImportantCheck'
+    end
+    if GerhardImportantReady = 1:
+        gs 'MenuUiAdd', 'GerhardMainMenu', 'Важная беседа', 'important'
+        gs 'Menu.AddModule', 'GerhardMainMenu', {
+            gt 'GerhardImportantScreen'
+        }
+    end
+
+    gs 'MenuUiAdd', 'GerhardMainMenu', 'Разговор', 'talk'
+    gs 'Menu.AddModule', 'GerhardMainMenu', {
+        gt 'GerhardChatScreen'
+    }
+
+    gs 'MenuUiAdd', 'GerhardMainMenu', 'Пожертвовать храму', 'circle'
+    gs 'Menu.AddModule', 'GerhardMainMenu', {
+        gt 'ChurchDonationInfo'
+    }
+---
+
+#GerhardImportantScreen
+    cls
+
+    gs 'ShowLocationScreenTitle', 'ВАЖНЫЙ РАЗГОВОР: ОТЕЦ ГЕРХАРД'
+    gs 'ShowImagePath', 'images/locations/church/gerhard', '', 'portrait', 'webp'
+
+    gs 'GerhardBuildImportantMenu'
+    gs 'GetNpcMenuLinkHref', 'GerhardImportantMenu', 'отцу Герхарду'
+
+    *pl 'У тебя есть важные дела или вопросы к ' + $NpcMenuLinkHref + '.'
+    killvar '$NpcMenuLinkHref'
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchInterior'
+    end
+---
+
+#GerhardBuildImportantMenu
+    gs 'Menu.Destroy', 'GerhardImportantMenu'
+    gs 'Menu.Create', 'GerhardImportantMenu'
+
     if PlayerHasWeaponShipmentInvoice = 1 and GerhardBlackmailTalkDone = 0 and LOC('GerhardBlackmailTalk') = 1:
-        gs 'ActUiPrepare', 'Поговорить о накладной на оружие', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
+        gs 'MenuUiAdd', 'GerhardImportantMenu', 'Поговорить о накладной на оружие', 'talk'
+        gs 'Menu.AddModule', 'GerhardImportantMenu', {
             gt 'GerhardBlackmailTalk'
-        end
+        }
     end
 
     if StefanWearingNobleSuit = 1 and StefanNobleTourGerhardDone = 0 and LOC('StefanNobleTourGerhard') = 1:
-        gs 'ActUiPrepare', 'Визит в парадном облачении', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
+        gs 'MenuUiAdd', 'GerhardImportantMenu', 'Визит в парадном облачении', 'talk'
+        gs 'Menu.AddModule', 'GerhardImportantMenu', {
             gt 'StefanNobleTourGerhard'
-        end
+        }
     end
 
-    gs 'ActUiPrepare', 'Пожертвовать храму', 'circle'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'ChurchDonationInfo'
+    if GerhardAmandaWarningAvailable = 1 and LOC('ChurchGerhardAmandaConfront') = 1:
+        gs 'MenuUiAdd', 'GerhardImportantMenu', 'Поговорить об Аманде', 'talk'
+        gs 'Menu.AddModule', 'GerhardImportantMenu', {
+            gt 'ChurchGerhardAmandaConfront'
+        }
     end
+---
 
-    gs 'ActUiPrepare', 'Назад в церковь', 'return'
+#GerhardChatScreen
+    cls
+
+    gs 'ShowLocationScreenTitle', 'ОТЕЦ ГЕРХАРД'
+    gs 'ShowImagePath', 'images/locations/church/gerhard', '', 'portrait', 'webp'
+
+    gs 'GerhardUnifiedTalkRun'
+    *pl ' '
+
+    gs 'UsefulTalkCheck', 'gerhard', 'gerhard_weekday'
+    if UsefulTalkResult = 1:
+        gs 'GerhardBuildMainMenu'
+        gs 'GetNpcMenuLinkHref', 'GerhardMainMenu', 'Отец Герхард'
+        *pl $NpcMenuLinkHref + ' осеняет тебя знаком Святого Круга.'
+        killvar '$NpcMenuLinkHref'
+    else:
+        *pl 'Отец Герхард возвращается к молитвеннику.'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'ChurchInterior'
     end

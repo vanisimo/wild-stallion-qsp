@@ -93,36 +93,116 @@
     gs 'ShowImagePath', 'images/npc/town/draupnir/draupnir_talk', '', 'portrait', 'webp'
     gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ДРАУПНИРОМ'
 
-    gs 'DraupnirUnifiedTalkRun'
-
+    *pl 'Драупнир откладывает стамеску и стряхивает с широкого кожаного фартука древесную стружку. Его взгляд внимателен и скуп на эмоции.'
+    *pl '— Чего тебе, хозяин трактира? По делу заглянул или так, языком почесать?'
     *pl ' '
+    gs 'DraupnirBuildMainMenu'
+    gs 'GetNpcMenuLinkHref', 'DraupnirMainMenu', 'Драупнир'
 
-    ! Контекстные действия на экране беседы
-    if PlayerHasWeaponShipmentInvoice = 1 and DraupnirBlackmailTalkDone = 0 and LOC('DraupnirBlackmailTalk') = 1:
-        gs 'ActUiPrepare', 'Поговорить о накладной на оружие', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'DraupnirBlackmailTalk'
-        end
-    end
+    *pl $NpcMenuLinkHref + ' встречает тебя в мастерской за рабочим столом.'
+    killvar '$NpcMenuLinkHref'
 
-    if StefanWearingNobleSuit = 1 and StefanNobleTourDraupnirDone = 0 and LOC('StefanNobleTourDraupnir') = 1:
-        gs 'ActUiPrepare', 'Визит в парадном облачении', 'craftsmen'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'StefanNobleTourDraupnir'
-        end
-    end
-
-    if TavernCarpenterUpgradesUnlocked = 1:
-        act '<b>Улучшения трактира</b>', 'images/common/ui/actions/work.png':
-            gt 'DraupnirUpgradesShop'
-        end
-    end
-
-    gs 'ActUiPrepare', 'Назад в мастерскую', 'return'
+    gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         $TmpLoc = $DraupnirReturnLoc
         killvar '$DraupnirReturnLoc'
         gt $TmpLoc
+    end
+---
+
+#DraupnirBuildMainMenu
+    gs 'Menu.Destroy', 'DraupnirMainMenu'
+    gs 'Menu.Create', 'DraupnirMainMenu'
+
+    gs 'DraupnirImportantCheck'
+    if DraupnirImportantReady = 1:
+        gs 'MenuUiAdd', 'DraupnirMainMenu', 'Важная беседа', 'important'
+        gs 'Menu.AddModule', 'DraupnirMainMenu', {
+            gt 'DraupnirImportantScreen', $DraupnirReturnLoc
+        }
+    end
+
+    gs 'MenuUiAdd', 'DraupnirMainMenu', 'Разговор', 'talk'
+    gs 'Menu.AddModule', 'DraupnirMainMenu', {
+        gt 'DraupnirChatScreen', $DraupnirReturnLoc
+    }
+
+    if TavernCarpenterUpgradesUnlocked = 1:
+        gs 'MenuUiAdd', 'DraupnirMainMenu', 'Улучшения трактира', 'work'
+        gs 'Menu.AddModule', 'DraupnirMainMenu', {
+            gt 'DraupnirUpgradesShop'
+        }
+    end
+---
+
+#DraupnirImportantScreen
+    $DraupnirReturnLoc = $ARGS[0]
+    if $DraupnirReturnLoc = '' or LOC($DraupnirReturnLoc) = 0:
+        $DraupnirReturnLoc = 'DraupnirShop'
+    end
+
+    cls
+    gs 'ShowImagePath', 'images/npc/town/draupnir/draupnir_talk', '', 'portrait', 'webp'
+    gs 'ShowLocationScreenTitle', 'ВАЖНЫЙ РАЗГОВОР: ДРАУПНИР'
+
+    gs 'DraupnirBuildImportantMenu'
+    gs 'GetNpcMenuLinkHref', 'DraupnirImportantMenu', 'Драупниру'
+
+    *pl 'У тебя есть важное дело или разговор к мастеру ' + $NpcMenuLinkHref + '.'
+    killvar '$NpcMenuLinkHref'
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $DraupnirReturnLoc
+    end
+---
+
+#DraupnirBuildImportantMenu
+    gs 'Menu.Destroy', 'DraupnirImportantMenu'
+    gs 'Menu.Create', 'DraupnirImportantMenu'
+
+    if PlayerHasWeaponShipmentInvoice = 1 and DraupnirBlackmailTalkDone = 0 and LOC('DraupnirBlackmailTalk') = 1:
+        gs 'MenuUiAdd', 'DraupnirImportantMenu', 'Поговорить о накладной на оружие', 'talk'
+        gs 'Menu.AddModule', 'DraupnirImportantMenu', {
+            gt 'DraupnirBlackmailTalk'
+        }
+    end
+
+    if StefanWearingNobleSuit = 1 and StefanNobleTourDraupnirDone = 0 and LOC('StefanNobleTourDraupnir') = 1:
+        gs 'MenuUiAdd', 'DraupnirImportantMenu', 'Визит в парадном облачении', 'craftsmen'
+        gs 'Menu.AddModule', 'DraupnirImportantMenu', {
+            gt 'StefanNobleTourDraupnir'
+        }
+    end
+---
+
+#DraupnirChatScreen
+    $DraupnirReturnLoc = $ARGS[0]
+    if $DraupnirReturnLoc = '' or LOC($DraupnirReturnLoc) = 0:
+        $DraupnirReturnLoc = 'DraupnirShop'
+    end
+
+    cls
+    gs 'ShowImagePath', 'images/npc/town/draupnir/draupnir_talk', '', 'portrait', 'webp'
+    gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ДРАУПНИРОМ'
+
+    gs 'DraupnirUnifiedTalkRun'
+    *pl ' '
+
+    gs 'UsefulTalkCheck', 'draupnir', 'draupnir_unified'
+    if UsefulTalkResult = 1:
+        gs 'DraupnirBuildMainMenu'
+        gs 'GetNpcMenuLinkHref', 'DraupnirMainMenu', 'Драупнир'
+        *pl $NpcMenuLinkHref + ' возвращается к резцу и дереву.'
+        killvar '$NpcMenuLinkHref'
+    else:
+        *pl 'Драупнир возвращается к резцу и дереву.'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $DraupnirReturnLoc
     end
 ---
 
