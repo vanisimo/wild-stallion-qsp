@@ -11,6 +11,11 @@ from pathlib import Path
 def _candidate_paths() -> list[Path]:
     candidates: list[Path] = []
 
+    repo_root = Path(__file__).resolve().parents[1]
+    local_base = repo_root / ".build" / "tools" / "node_modules"
+    candidates.append(local_base / "@qsp" / "cli" / "node_modules" / "@qsp" / "converters" / "dist" / "index.cjs")
+    candidates.append(local_base / "@qsp" / "converters" / "dist" / "index.cjs")
+
     appdata = os.environ.get("APPDATA", "")
     if appdata:
         base = Path(appdata) / "npm" / "node_modules"
@@ -26,6 +31,10 @@ def _candidate_paths() -> list[Path]:
 
 
 def resolve_converters_cjs() -> str:
+    for candidate in _candidate_paths():
+        if candidate.is_file():
+            return str(candidate)
+
     node = r"""
 try {
   process.stdout.write(require.resolve('@qsp/converters/dist/index.cjs'));
@@ -45,12 +54,8 @@ try {
     except subprocess.CalledProcessError:
         pass
 
-    for candidate in _candidate_paths():
-        if candidate.is_file():
-            return str(candidate)
-
     raise FileNotFoundError(
-        "@qsp/converters not found. Run: npm install -g @qsp/cli"
+        "@qsp/converters not found. Run: npm install --prefix .build/tools @qsp/cli"
     )
 
 

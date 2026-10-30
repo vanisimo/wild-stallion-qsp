@@ -1,14 +1,20 @@
 import re
 import subprocess
 import json
+import sys
 from pathlib import Path
 
 repo = Path(__file__).resolve().parents[1]
 
-node = r"""
-const {readQsps}=require('C:/Users/SlavID/AppData/Roaming/npm/node_modules/@qsp/cli/node_modules/@qsp/converters/dist/index.cjs');
+converters = subprocess.check_output(
+    [sys.executable, str(Path(__file__).with_name("resolve_qsp_converters.py"))],
+    text=True,
+).strip().replace("\\", "/")
+
+node = f"""
+const {{readQsps}}=require('{converters}');
 const fs=require('fs');
-const parsed=readQsps(fs.readFileSync(process.argv[1],'utf8'));
+const parsed=readQsps(fs.readFileSync(0,'utf8'));
 console.log(JSON.stringify(parsed.map(l=>l.name)));
 """
 
@@ -18,7 +24,7 @@ def regex_names(text: str) -> list[str]:
 
 def parsed_names(text: str) -> set[str]:
     return set(json.loads(subprocess.check_output(
-        ["node", "-e", node, "-"], input=text, text=True
+        ["node", "-e", node], input=text, encoding="utf-8"
     )))
 
 

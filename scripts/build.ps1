@@ -2,6 +2,7 @@ param(
     [ValidateSet('dev', 'release')]
     [string]$Profile = 'dev',
     [switch]$SkipCheck,
+    [switch]$SkipIndexUpdate,
     [switch]$NoCopy
 )
 
@@ -15,14 +16,27 @@ $targetGame = Join-Path $repoRoot 'game.qsp'
 $checkScript = Join-Path $PSScriptRoot 'check.ps1'
 
 if (-not $SkipCheck) {
-    & $checkScript -Strict
+    if ($SkipIndexUpdate) {
+        & $checkScript -Strict
+    }
+    else {
+        & $checkScript -Strict -UpdateIndex
+    }
 }
 
+$localToolsBin = Join-Path $repoRoot '.build\tools\node_modules\.bin'
 $nodeDir = 'C:\Program Files\nodejs'
 $npmDir = Join-Path $env:APPDATA 'npm'
-$env:PATH = "$nodeDir;$npmDir;$env:PATH"
+$env:PATH = "$localToolsBin;$nodeDir;$npmDir;$env:PATH"
 
 $qspCli = Get-Command qsp-cli.cmd -ErrorAction SilentlyContinue
+if (-not $qspCli) {
+    $toolsDir = Join-Path $repoRoot '.build\tools'
+    New-Item -ItemType Directory -Force $toolsDir | Out-Null
+    Write-Host 'Installing @qsp/cli into .build/tools...'
+    & npm install --prefix $toolsDir @qsp/cli --no-audit --no-fund
+    $qspCli = Get-Command qsp-cli.cmd -ErrorAction SilentlyContinue
+}
 if (-not $qspCli) {
     throw 'qsp-cli.cmd was not found. Install @qsp/cli or add it to PATH.'
 }

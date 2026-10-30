@@ -1,6 +1,7 @@
 param(
     [switch]$ShowWarnings,
-    [switch]$Strict
+    [switch]$Strict,
+    [switch]$UpdateIndex
 )
 
 $ErrorActionPreference = 'Stop'
@@ -160,6 +161,15 @@ if ($errors.Count -gt 0) {
 
 if ($Strict -and $warnings.Count -gt 0) {
     exit 1
+}
+
+if ($UpdateIndex) {
+    if (Test-Path $locationIndexScript) {
+        & $locationIndexScript
+    }
+    if (Test-Path $locationAnalysisScript) {
+        & $locationAnalysisScript
+    }
 }
 
 if ($Strict -and (Test-Path $locationIndexScript)) {
