@@ -1,25 +1,17 @@
 ! ================================================
-! FILE: modules/events/dance/amanda_dark_alley.qsps
-! Подворотня после танца с Амандой
-! Версия: FridayDance / compact alley scene v2
+! FILE: modules/events/amanda/dance/amanda_dark_alley.qsps
+! MODULE: events/amanda/dance
+! Подворотня после пятничного танца с Амандой (v3 — структурированная)
 ! Назначение:
-! - сюжетный ивент после пятничного танца с Амандой
-! - петтинг под юбкой
-! - минет (2 экрана + финал) с проверкой глубины горла и коррупции
-! - полноценный секс (стена / арба, вагинальный / анальный + ATM проверка)
-! - застукивание соседскими парнями (10 вариантов с реакцией по развращённости)
-! - интеграция с общими счётчиками секса и семяизвержений
-!
-! Тексты берутся из:
-! modules/events/dance/amanda_dark_alley_text.qsps
-!
-! Вход сюда идёт из:
-! modules/events/dance/amanda_dance.qsps
-! через локатор #AmandaDanceAlleyEvent
+! - Пошаговая прелюдия (оглядеться -> поцелуй -> объятия -> ласки под юбкой), доступная всегда
+! - Осознанный выбор места близости (у каменной стены или в арбе с сеном, если арба в переулке)
+! - Минет (начало -> разгар / глубокий минет -> финал)
+! - Полноценный секс (начало -> разгар -> переходы между всеми позами -> финал + ATM)
+! - Застукивание соседскими парнями (единый пул из 10 парней с привязкой к заднему двору)
+! - Чистая интеграция с RegisterSex, CanCumToday и утренними реакциями
 ! ================================================
 
 #AmandaDanceAlleyCanOffer
-
     AmandaDanceAlleyCanOffer = 0
 
     if AmandaHomeStage < 3:
@@ -37,9 +29,7 @@
     AmandaDanceAlleyCanOffer = 1
 ---
 
-
 #AmandaDanceAlleyReset
-
     AmandaAlleyDay = day
     AmandaAlleyStage = 0
     AmandaAlleyRisk = 0
@@ -55,10 +45,10 @@
     AmandaAlleyInterrupted = 0
     $AmandaAlleyLastText = ''
     $AmandaAlleyResumeAction = ''
+    $AmandaAlleyLastTransition = ''
 ---
 
 #AmandaDanceAlleyEvent
-
     *clr
     clr
     cla
@@ -78,10 +68,12 @@
         AmandaAlleyStage = 1
         AmandaAlleyRisk = 10 + AmandaDancePublicRisk + AmandaPublicAttention / 5
         AmandaSecretiveness += 1
-        if RAND(1, 100) <= 30:
+        if RAND(1, 100) <= 50:
             AmandaAlleyCart = 1
-        else:
+            AmandaAlleyPlace = 2
+        else
             AmandaAlleyCart = 0
+            AmandaAlleyPlace = 1
         end
     end
 
@@ -92,135 +84,48 @@
         gs 'SceneShowVisual', 'images/dance/amanda/YouClose', 'ПОДВОРОТНЯ — ОБЪЯТИЯ', 'large', 'webp'
     elseif AmandaAlleyKiss = 1:
         gs 'SceneShowVisual', 'images/dance/amanda/YouKiss', 'ПОДВОРОТНЯ — ПОЦЕЛУЙ', 'large', 'webp'
-    else:
+    else
         gs 'SceneShowVisual', 'images/dance/amanda/YouClose', 'ПОДВОРОТНЯ У ПЛОЩАДИ', 'large', 'webp'
     end
 
     gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
 
+    if AmandaAlleyStage = 1 and $AmandaAlleyLastText = '' and LOC('AmandaDanceAlleyText') = 1:
+        gs 'AmandaDanceAlleyText'
+        *pl ' '
+    end
+
     if LOC('AmandaDanceAlleyMainText') = 1:
         gs 'AmandaDanceAlleyMainText'
-    else:
+    else
         if $AmandaAlleyLastText <> '':
             *p $AmandaAlleyLastText
-        else:
-            *p 'Вы с Амандой отходите с шумной площади в тёмный проход между домами.'
-            *p 'Музыка всё ещё слышна, но здесь каждый звук кажется опаснее.'
+        else
+            *pl 'Ты уводишь Аманду с шумной площади в тёмный проход между домами.'
+            *pl 'Музыка всё ещё слышна, но здесь каждый шорох кажется опаснее.'
         end
     end
 
-    if AmandaAlleyCart = 1 and AmandaAlleyStage <= 2:
+    if AmandaAlleyCart = 1:
         *pl ' '
-        *pl 'В глубине переулка стоит оставленная купцом высокая деревянная арба, доверху гружённая сухим чистым сеном.'
+        if AmandaAlleyPlace = 2:
+            *pl 'В глубине переулка стоит высокая деревянная арба с сухим сеном — вы с Амандой укрылись прямо у её борта.'
+        else
+            *pl 'В глубине переулка стоит оставленная купцом высокая деревянная арба, доверху гружённая сухим сеном.'
+        end
     end
 
     *pl ' '
 
     if debug = 1:
-        *pl '[DEBUG ALLEY] Stage: ' + STR(AmandaAlleyStage)
-        *pl '[DEBUG ALLEY] Cart: ' + STR(AmandaAlleyCart)
-        *pl '[DEBUG ALLEY] Risk: ' + STR(AmandaAlleyRisk)
-        *pl '[DEBUG ALLEY] Kiss: ' + STR(AmandaAlleyKiss)
-        *pl '[DEBUG ALLEY] Close: ' + STR(AmandaAlleyClose)
-        *pl '[DEBUG ALLEY] Petting: ' + STR(AmandaAlleyPetting)
-        *pl '[DEBUG ALLEY] AfterSex: ' + STR(AmandaAlleyAfterSex)
-        *pl '[DEBUG ALLEY] Caught: ' + STR(AmandaAlleyCaught)
+        *pl '[DEBUG ALLEY] Stage: ' + STR(AmandaAlleyStage) + ' | Cart: ' + STR(AmandaAlleyCart) + ' | Place: ' + STR(AmandaAlleyPlace)
+        *pl '[DEBUG ALLEY] Risk: ' + STR(AmandaAlleyRisk) + ' | Caught: ' + STR(AmandaAlleyCaught)
         *pl ' '
     end
 
-    gs 'Menu.Destroy', 'AmandaAlleyMenu'
-    gs 'Menu.Create', 'AmandaAlleyMenu'
+    gs 'AmandaDanceAlleyBuildForeplayMenu'
 
-    if AmandaAlleyStage = 1:
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Оглядеться', 'look'
-        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-            gt 'AmandaDanceAlleyAction', 'look'
-        }
-
-    elseif AmandaAlleyStage = 2:
-        if AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Минет', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyBlowjob'
-            }
-
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                if AmandaAlleyCart = 1:
-                    AmandaAlleyPlace = RAND(1, 2)
-                else:
-                    AmandaAlleyPlace = 1
-                end
-                gt 'AmandaDanceAlleySex'
-            }
-
-        elseif AmandaHomeStage >= 3 or BlowjobCount['amanda'] >= 1 or oralacts['amanda'] >= 1:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Полапать', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyAction', 'petting'
-            }
-
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Минет', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyBlowjob'
-            }
-
-        elseif AmandaHomeStage >= 2:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Поцеловать', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyAction', 'kiss'
-            }
-
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Полапать', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyAction', 'petting'
-            }
-
-        else:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Поцеловать', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyAction', 'kiss'
-            }
-        end
-
-    elseif AmandaAlleyStage = 3:
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Обнять', 'intim'
-        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-            gt 'AmandaDanceAlleyAction', 'close'
-        }
-
-        if AmandaHomeStage >= 3:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Полапать', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyAction', 'petting'
-            }
-        end
-
-    elseif AmandaAlleyStage = 4 or AmandaAlleyStage = 5:
-        if AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Минет', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyBlowjob'
-            }
-
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                if AmandaAlleyCart = 1:
-                    AmandaAlleyPlace = RAND(1, 2)
-                else:
-                    AmandaAlleyPlace = 1
-                end
-                gt 'AmandaDanceAlleySex'
-            }
-        elseif AmandaHomeStage >= 3 or BlowjobCount['amanda'] >= 1 or oralacts['amanda'] >= 1:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Минет', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleyBlowjob'
-            }
-        end
-    end
-
-    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''AmandaAlleyMenu''">делать</a>?'
+    *p 'Что ты будешь <a href="exec:gs ''Menu.Show'', ''AmandaAlleyMenu''">делать</a>?'
 
     gs 'ActUiPrepare', 'Уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -228,32 +133,123 @@
     end
 ---
 
-#AmandaDanceAlleyAction
+#AmandaDanceAlleyBuildForeplayMenu
+    gs 'Menu.Destroy', 'AmandaAlleyMenu'
+    gs 'Menu.Create', 'AmandaAlleyMenu'
 
+    ! 1. Пошаговая прелюдия (всегда доступна по порядку, не пропадает при открытом сексе)
+    if AmandaAlleyStage = 1:
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Оглядеться по сторонам', 'look'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'look'
+        }
+    end
+
+    if AmandaAlleyKiss = 0:
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Поцеловать в губы', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'kiss'
+        }
+    elseif AmandaAlleyClose = 0:
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Крепко обнять и прижать', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'close'
+        }
+    elseif AmandaAlleyPetting = 0 and AmandaHomeStage >= 2:
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Запустить руку под юбку', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'petting'
+        }
+    elseif AmandaAlleyPetting = 1:
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Продолжать ласкать под юбкой', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyAction', 'petting'
+        }
+    end
+
+    ! 2. Переход к оральным ласкам и полноценной близости (после оглядки или поцелуя)
+    if AmandaAlleyStage >= 2:
+        if AmandaHomeStage >= 3 or BlowjobCount['amanda'] >= 1 or oralacts['amanda'] >= 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Опустить на колени (Минет)', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleyBlowjob'
+            }
+        end
+
+        if AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1 or AmandaHomeStage >= 3:
+            if AmandaAlleyCart = 1:
+                gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Прижать к каменной стене', 'intim'
+                gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                    AmandaAlleyPlace = 1
+                    $AmandaAlleySexBranch = 'vaginal'
+                    gt 'AmandaDanceAlleySex', 'vaginal'
+                }
+
+                gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Увлечь в арбу с сеном', 'intim'
+                gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                    AmandaAlleyPlace = 2
+                    $AmandaAlleySexBranch = 'vaginal'
+                    gt 'AmandaDanceAlleySex', 'vaginal'
+                }
+            else
+                gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Прижать к стене (Близость)', 'intim'
+                gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                    AmandaAlleyPlace = 1
+                    $AmandaAlleySexBranch = 'vaginal'
+                    gt 'AmandaDanceAlleySex', 'vaginal'
+                }
+            end
+
+            if (AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1) and (analacts['amanda'] > 0 or analfromyou['amanda'] > 0 or AmandaHomeAnalDone = 1):
+                gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Взять в попку', 'intim'
+                gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                    if AmandaAlleyPlace = 0:
+                        if AmandaAlleyCart = 1:
+                            AmandaAlleyPlace = 2
+                        else
+                            AmandaAlleyPlace = 1
+                        end
+                    end
+                    $AmandaAlleySexBranch = 'anal'
+                    gt 'AmandaDanceAlleySex', 'anal'
+                }
+            end
+        end
+    end
+---
+
+#AmandaDanceAlleyAction
     $AmandaAlleyAction = LCASE($ARGS[0])
     $AmandaAlleyGirl = 'amanda'
 
     gs 'EnsureGirlData', $AmandaAlleyGirl
 
     if $AmandaAlleyAction = 'look':
-        AmandaAlleyStage = 2
+        if AmandaAlleyStage < 2:
+            AmandaAlleyStage = 2
+        end
         AmandaAlleyRisk += 2
 
     elseif $AmandaAlleyAction = 'kiss':
         AmandaAlleyKiss = 1
-        AmandaAlleyStage = 3
+        if AmandaAlleyStage < 2:
+            AmandaAlleyStage = 2
+        end
         AmandaAlleyRisk += 5
 
         Friends[$AmandaAlleyGirl] += 1
         love[$AmandaAlleyGirl] += 1
         otkroven[$AmandaAlleyGirl] += 1
+        KissCount[$AmandaAlleyGirl] += 1
         AmandaPlayerPath += 1
         AmandaSecretiveness += 1
 
     elseif $AmandaAlleyAction = 'close':
         AmandaAlleyClose = 1
-        AmandaAlleyStage = 4
-        AmandaAlleyRisk += 8
+        if AmandaAlleyStage < 3:
+            AmandaAlleyStage = 3
+        end
+        AmandaAlleyRisk += 6
 
         love[$AmandaAlleyGirl] += 1
         otkroven[$AmandaAlleyGirl] += 1
@@ -263,37 +259,34 @@
 
     elseif $AmandaAlleyAction = 'petting':
         AmandaAlleyPetting = 1
-        AmandaAlleyStage = 5
-        AmandaAlleyRisk += 10
+        if AmandaAlleyStage < 4:
+            AmandaAlleyStage = 4
+        end
+        AmandaAlleyRisk += 8
 
         love[$AmandaAlleyGirl] += 1
         otkroven[$AmandaAlleyGirl] += 1
         sluttiness[$AmandaAlleyGirl] += 1
+        CaressCount[$AmandaAlleyGirl] += 1
         AmandaScandalLevel += 1
         AmandaSecretiveness += 1
 
-        ! Early peeper check on petting:
-        if RAND(1, 100) <= 15:
-            $AmandaAlleyResumeAction = 'petting'
-            gs 'AmandaAlleyCheckPeeper'
-        end
-
-    else:
+    else
         AmandaAlleyRisk += 1
     end
 
     if LOC('AmandaDanceAlleyActionText') = 1:
         gs 'AmandaDanceAlleyActionText', $AmandaAlleyAction
-    else:
+    else
         if $AmandaAlleyAction = 'look':
             $AmandaAlleyLastText = 'Ты оглядываешься. Проход кажется чистым и пустым, лишь с площади доносятся отголоски музыки.'
         elseif $AmandaAlleyAction = 'kiss':
-            $AmandaAlleyLastText = 'Вы целуете Аманду. Она прислушивается к шагам на площади, но не отстраняется.'
+            $AmandaAlleyLastText = 'Ты целуешь Аманду. Она прислушивается к шагам на площади, но не отстраняется.'
         elseif $AmandaAlleyAction = 'close':
-            $AmandaAlleyLastText = 'Вы обнимаете её. Аманда прижимается к вам, переводя дыхание.'
+            $AmandaAlleyLastText = 'Ты крепко обнимаешь её. Аманда прижимается к тебе, переводя дыхание.'
         elseif $AmandaAlleyAction = 'petting':
-            $AmandaAlleyLastText = 'Вы ласкаешь Аманду под юбкой. Она смущённо вздрагивает, прижимаясь к вашей руке.'
-        else:
+            $AmandaAlleyLastText = 'Ты ласкаешь Аманду под юбкой. Она смущённо вздрагивает, прижимаясь к твоей руке.'
+        else
             $AmandaAlleyLastText = 'Вы задерживаетесь в подворотне ещё на несколько мгновений.'
         end
     end
@@ -307,12 +300,11 @@
 ---
 
 #AmandaDanceAlleyRiskCheck
-
     AmandaAlleyRoll = RAND(1, 100)
     AmandaAlleyChance = AmandaAlleyRisk
 
-    if AmandaAlleyChance > 60:
-        AmandaAlleyChance = 60
+    if AmandaAlleyChance > 55:
+        AmandaAlleyChance = 55
     end
 
     if AmandaAlleyRoll <= AmandaAlleyChance:
@@ -323,7 +315,7 @@
 
         if LOC('AmandaDanceAlleyRiskText') = 1:
             gs 'AmandaDanceAlleyRiskText'
-        else:
+        else
             $AmandaAlleyLastText += '<br><br>С улицы доносится чужой голос. Вы оба на мгновение замираете.'
         end
     end
@@ -333,31 +325,30 @@
 ---
 
 #AmandaAlleyPeepersInit
-
+    ! Единый пул из 10 соседских парней (совпадает с пулом встреч на заднем дворе)
     $AmandaAlleyBoyName[0] = 'Томас'
     $AmandaAlleyBoyDesc[0] = 'сын мясника с рынка'
-    $AmandaAlleyBoyName[1] = 'Питер'
-    $AmandaAlleyBoyDesc[1] = 'подмастерье кузнеца'
-    $AmandaAlleyBoyName[2] = 'Бруно'
-    $AmandaAlleyBoyDesc[2] = 'паренёк из портовых доков'
-    $AmandaAlleyBoyName[3] = 'Люк'
-    $AmandaAlleyBoyDesc[3] = 'помощник мельника'
-    $AmandaAlleyBoyName[4] = 'Ханс'
-    $AmandaAlleyBoyDesc[4] = 'племянник пекаря'
-    $AmandaAlleyBoyName[5] = 'Мика'
-    $AmandaAlleyBoyDesc[5] = 'соседский сорванец'
-    $AmandaAlleyBoyName[6] = 'Отто'
-    $AmandaAlleyBoyDesc[6] = 'сын кожевенника'
-    $AmandaAlleyBoyName[7] = 'Якоб'
-    $AmandaAlleyBoyDesc[7] = 'подручный плотника'
-    $AmandaAlleyBoyName[8] = 'Финн'
-    $AmandaAlleyBoyDesc[8] = 'конюх с постоялого двора'
-    $AmandaAlleyBoyName[9] = 'Йенс'
-    $AmandaAlleyBoyDesc[9] = 'рыбацкое подмастерье'
+    $AmandaAlleyBoyName[1] = 'Ханс'
+    $AmandaAlleyBoyDesc[1] = 'племянник пекаря'
+    $AmandaAlleyBoyName[2] = 'Курт'
+    $AmandaAlleyBoyDesc[2] = 'подмастерье бондаря'
+    $AmandaAlleyBoyName[3] = 'Феликс'
+    $AmandaAlleyBoyDesc[3] = 'помощник сапожника'
+    $AmandaAlleyBoyName[4] = 'Люк'
+    $AmandaAlleyBoyDesc[4] = 'помощник мельника'
+    $AmandaAlleyBoyName[5] = 'Якоб'
+    $AmandaAlleyBoyDesc[5] = 'подручный плотника'
+    $AmandaAlleyBoyName[6] = 'Финн'
+    $AmandaAlleyBoyDesc[6] = 'конюх с постоялого двора'
+    $AmandaAlleyBoyName[7] = 'Питер'
+    $AmandaAlleyBoyDesc[7] = 'подмастерье кузнеца'
+    $AmandaAlleyBoyName[8] = 'Бруно'
+    $AmandaAlleyBoyDesc[8] = 'паренёк из портовых доков'
+    $AmandaAlleyBoyName[9] = 'Отто'
+    $AmandaAlleyBoyDesc[9] = 'сын кожевенника'
 ---
 
 #AmandaAlleyCheckPeeper
-
     if AmandaAlleyPeeperTriggered = 1:
         exit
     end
@@ -371,30 +362,39 @@
         $AmandaAlleyCurrentBoy = $AmandaAlleyBoyName[AmandaAlleyBoyIdx]
         $AmandaAlleyCurrentBoyDesc = $AmandaAlleyBoyDesc[AmandaAlleyBoyIdx]
 
+        ! Запоминаем свидетеля для будущих встреч на заднем дворе и разговоров с Амандой
+        AmandaAlleyPeeperEver = 1
+        AmandaAlleyPeeperSeen[$AmandaAlleyCurrentBoy] = 1
+        $AmandaAlleyLastPeeperBoy = $AmandaAlleyCurrentBoy
+        $AmandaAlleyLastPeeperDesc = $AmandaAlleyCurrentBoyDesc
+        AmandaAlleyPeeperTalkPending = 1
+
         AmandaAlleyCaught += 1
         TavernScandal += 1
         TavernScandalLevel += 1
         AmandaScandalLevel += 1
 
+        killvar 'AmandaAlleyPeeperRoll'
         gt 'AmandaAlleyPeeperCaught'
     end
+
+    killvar 'AmandaAlleyPeeperRoll'
 ---
 
 #AmandaAlleyPeeperCaught
-
     SceneArtUseReal = 1
     *clr
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'ПОДВОРОТНЯ — СВИДЕТЕЛЬ', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'ПОДВОРОТНЯ — СВИДЕТЕЛЬ ЗА ЗАБОРОМ', 'large', 'webp'
 
     gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — СВИДЕТЕЛЬ'
 
     if LOC('AmandaAlleyPeeperText') = 1:
         gs 'AmandaAlleyPeeperText', $AmandaAlleyCurrentBoy, $AmandaAlleyCurrentBoyDesc
-    else:
-        *pl 'Внезапно в тишине переулка раздаётся шорох — за вами кто-то наблюдает!'
+    else
+        *pl 'Внезапно в тишине переулка раздаётся шорох — за вами сквозь щель забора наблюдает ' + $AmandaAlleyCurrentBoy + '!'
     end
 
     *pl ' '
@@ -409,30 +409,30 @@
         gs 'GetCitySchedulePhase'
         gs 'UpdateGirlLocations'
         $GirlLocation['amanda'] = 'AmandaRoom'
-        gs 'ActUiPrepare', 'В трактир', 'tavern'
+        gs 'ActUiPrepare', 'Вернуться в трактир', 'tavern'
         act $ActUiLabel, $ActUiIconPath:
             gt 'TavernMain'
         end
     elseif sluttiness['amanda'] < 45:
-        gs 'ActUiPrepare', 'Уйти', 'return'
+        gs 'ActUiPrepare', 'Уйти из переулка', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'AmandaDanceAlleyEnd'
         end
-    else:
+    else
         if $AmandaAlleyResumeAction = 'blowjob':
-            gs 'ActUiPrepare', 'Продолжить', 'generic'
+            gs 'ActUiPrepare', 'Продолжать у всех на виду', 'intim'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'AmandaDanceAlleyBlowjobBuild'
             end
+        elseif $AmandaAlleyResumeAction = 'deep':
+            gs 'ActUiPrepare', 'Продолжать глубокий минет', 'intim'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'AmandaDanceAlleyBlowjobDeep'
+            end
         elseif $AmandaAlleyResumeAction = 'sex':
-            gs 'ActUiPrepare', 'Продолжить', 'generic'
+            gs 'ActUiPrepare', 'Продолжать с ещё большим жаром', 'intim'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'AmandaDanceAlleySexBuild', $AmandaAlleySexBranch
-            end
-        elseif $AmandaAlleyResumeAction = 'petting':
-            gs 'ActUiPrepare', 'Продолжить', 'generic'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaDanceAlleyAction', 'petting'
             end
         end
 
@@ -448,99 +448,192 @@
     $AmandaAlleyGirl = 'amanda'
     gs 'EnsureGirlData', $AmandaAlleyGirl
 
+    if AmandaAlleyPlace = 0:
+        if AmandaAlleyCart = 1:
+            AmandaAlleyPlace = 2
+        else
+            AmandaAlleyPlace = 1
+        end
+    end
+
     gs 'Menu.Destroy', 'AmandaAlleyMenu'
     gs 'Menu.Create', 'AmandaAlleyMenu'
 
     if $MenuContext = 'start':
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Минет', 'intim'
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Опустить на колени (Минет)', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gt 'AmandaDanceAlleyBlowjob'
         }
 
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть киску', 'intim'
-        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-            if AmandaAlleyCart = 1:
-                AmandaAlleyPlace = RAND(1, 2)
-            else:
+        if AmandaAlleyCart = 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Прижать к каменной стене', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
                 AmandaAlleyPlace = 1
-            end
-            $AmandaAlleySexBranch = 'vaginal'
-            gt 'AmandaDanceAlleySex', 'vaginal'
+                $AmandaAlleySexBranch = 'vaginal'
+                gt 'AmandaDanceAlleySex', 'vaginal'
+            }
+
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Увлечь в арбу с сеном', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                AmandaAlleyPlace = 2
+                $AmandaAlleySexBranch = 'vaginal'
+                gt 'AmandaDanceAlleySex', 'vaginal'
+            }
+        else
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Взять её у стены', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                AmandaAlleyPlace = 1
+                $AmandaAlleySexBranch = 'vaginal'
+                gt 'AmandaDanceAlleySex', 'vaginal'
+            }
+        end
+
+        if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0 or AmandaHomeAnalDone = 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Взять в попку', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                $AmandaAlleySexBranch = 'anal'
+                gt 'AmandaDanceAlleySex', 'anal'
+            }
+        end
+
+    elseif $MenuContext = 'blowjob_start':
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Ускорить темп минета', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleyBlowjobBuild'
         }
+
+        if oraldeep[$AmandaAlleyGirl] > 0 or AmandaOralStage >= 5 or sluttiness[$AmandaAlleyGirl] >= 45:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Взять глубоко в горло', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleySexTransition', 'blowjob_to_deep'
+            }
+        end
+
+        if AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Перейти к киске', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleySexTransition', 'blowjob_to_vaginal'
+            }
+
+            if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0 or AmandaHomeAnalDone = 1:
+                gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Перейти к попке', 'intim'
+                gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                    gt 'AmandaDanceAlleySexTransition', 'blowjob_to_anal'
+                }
+            end
+        end
 
     elseif $MenuContext = 'blowjob':
         if oraldeep[$AmandaAlleyGirl] > 0 or AmandaOralStage >= 5 or sluttiness[$AmandaAlleyGirl] >= 45:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть ротик', 'intim'
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть ротик глубоко', 'intim'
             gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                if AmandaAlleyCart = 1:
-                    AmandaAlleyPlace = RAND(1, 2)
-                else:
-                    AmandaAlleyPlace = 1
-                end
-                $AmandaAlleyLastTransition = 'blowjob_to_deep'
-                gt 'AmandaDanceAlleyBlowjobDeep'
+                gt 'AmandaDanceAlleySexTransition', 'blowjob_to_deep'
             }
         end
 
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть киску', 'intim'
-        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-            if AmandaAlleyCart = 1:
-                AmandaAlleyPlace = RAND(1, 2)
-            else:
-                AmandaAlleyPlace = 1
+        if AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть киску', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleySexTransition', 'blowjob_to_vaginal'
+            }
+
+            if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0 or AmandaHomeAnalDone = 1:
+                gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть попку', 'intim'
+                gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                    gt 'AmandaDanceAlleySexTransition', 'blowjob_to_anal'
+                }
             end
-            $AmandaAlleySexBranch = 'vaginal'
-            $AmandaAlleyLastTransition = 'blowjob_to_vaginal'
-            gt 'AmandaDanceAlleySexBuild', 'vaginal'
-        }
-
-        if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть попку', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                if AmandaAlleyCart = 1:
-                    AmandaAlleyPlace = RAND(1, 2)
-                else:
-                    AmandaAlleyPlace = 1
-                end
-                $AmandaAlleySexBranch = 'anal'
-                $AmandaAlleyLastTransition = 'blowjob_to_anal'
-                gt 'AmandaDanceAlleySexBuild', 'anal'
-            }
         end
 
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить', 'intim'
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить...', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gs 'AmandaAlleyOpenMenu', 'finish_blowjob'
         }
 
     elseif $MenuContext = 'deep':
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить', 'intim'
+        if AmandaHomeSex >= 1 or HadVaginalWithPlayer['amanda'] >= 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Перейти к киске', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleySexTransition', 'blowjob_to_vaginal'
+            }
+
+            if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0 or AmandaHomeAnalDone = 1:
+                gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Перейти к попке', 'intim'
+                gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                    gt 'AmandaDanceAlleySexTransition', 'blowjob_to_anal'
+                }
+            end
+        end
+
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить...', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gs 'AmandaAlleyOpenMenu', 'finish_deep'
         }
 
-    elseif $MenuContext = 'vaginal':
-        if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Трахнуть попку', 'intim'
+    elseif $MenuContext = 'sex_start_vaginal':
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Набрать темп', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexBuild', 'vaginal'
+        }
+
+        if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0 or AmandaHomeAnalDone = 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Перейти к попке', 'intim'
             gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                if AmandaAlleyCart = 1:
-                    AmandaAlleyPlace = RAND(1, 2)
-                else:
-                    AmandaAlleyPlace = 1
-                end
-                $AmandaAlleySexBranch = 'anal'
-                $AmandaAlleyLastTransition = 'vaginal_to_anal'
-                gt 'AmandaDanceAlleySexBuild', 'anal'
+                gt 'AmandaDanceAlleySexTransition', 'vaginal_to_anal'
             }
         end
 
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить', 'intim'
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Вернуть в ротик', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexTransition', 'vaginal_to_blowjob'
+        }
+
+    elseif $MenuContext = 'sex_start_anal':
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Набрать темп', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexBuild', 'anal'
+        }
+
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Вернуться к киске', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexTransition', 'anal_to_vaginal'
+        }
+
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Опустить на колени (в ротик)', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexTransition', 'anal_to_blowjob'
+        }
+
+    elseif $MenuContext = 'vaginal':
+        if analacts[$AmandaAlleyGirl] > 0 or analfromyou[$AmandaAlleyGirl] > 0 or AmandaHomeAnalDone = 1:
+            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Перейти к попке', 'intim'
+            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+                gt 'AmandaDanceAlleySexTransition', 'vaginal_to_anal'
+            }
+        end
+
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Поставить на колени (Минет)', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexTransition', 'vaginal_to_blowjob'
+        }
+
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить...', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gs 'AmandaAlleyOpenMenu', 'finish_vaginal'
         }
 
     elseif $MenuContext = 'anal':
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить', 'intim'
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Вернуться к киске', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexTransition', 'anal_to_vaginal'
+        }
+
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Дать в ротик после попки', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexTransition', 'anal_to_blowjob'
+        }
+
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить...', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gs 'AmandaAlleyOpenMenu', 'finish_anal'
         }
@@ -561,13 +654,13 @@
             gt 'AmandaDanceAlleyBlowjobFinish', 'breast'
         }
 
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить наружу', 'intim'
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить на камни', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gt 'AmandaDanceAlleyBlowjobFinish', 'outside'
         }
 
     elseif $MenuContext = 'finish_deep':
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить в рот', 'intim'
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить глубоко в горло', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gt 'AmandaDanceAlleyBlowjobFinish', 'mouth', 'deep'
         }
@@ -593,6 +686,11 @@
             gt 'AmandaDanceAlleySexFinish', 'vaginal', 'inside'
         }
 
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить в ротик', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexFinish', 'vaginal', 'mouth'
+        }
+
         gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить на лицо', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gt 'AmandaDanceAlleySexFinish', 'vaginal', 'face'
@@ -609,17 +707,15 @@
         }
 
     elseif $MenuContext = 'finish_anal':
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить внутрь', 'intim'
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить в попку', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gt 'AmandaDanceAlleySexFinish', 'anal', 'inside'
         }
 
-        if AmandaOralAtmCalmDone = 1 or (AmandaOralStage >= 5 and analfromyou['amanda'] >= 1) or SexAtmStage >= 2:
-            gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить в рот', 'intim'
-            gs 'Menu.AddModule', 'AmandaAlleyMenu', {
-                gt 'AmandaDanceAlleySexFinish', 'anal', 'mouth'
-            }
-        end
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Из попки прямо в рот (ATM)', 'intim'
+        gs 'Menu.AddModule', 'AmandaAlleyMenu', {
+            gt 'AmandaDanceAlleySexFinish', 'anal', 'mouth'
+        }
 
         gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить на лицо', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
@@ -631,7 +727,7 @@
             gt 'AmandaDanceAlleySexFinish', 'anal', 'breast'
         }
 
-        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить наружу', 'intim'
+        gs 'MenuUiAdd', 'AmandaAlleyMenu', 'Кончить на ягодицы', 'intim'
         gs 'Menu.AddModule', 'AmandaAlleyMenu', {
             gt 'AmandaDanceAlleySexFinish', 'anal', 'outside'
         }
@@ -642,7 +738,6 @@
 ---
 
 #AmandaDanceAlleyToSexScene
-
     SceneArtUseReal = 1
     *clr
     clr
@@ -659,28 +754,27 @@
     if AmandaHomeSex = 0 and HadVaginalWithPlayer['amanda'] = 0:
         if LOC('AmandaDanceAlleyHomeGateText') = 1:
             gs 'AmandaDanceAlleyHomeGateText'
-        else:
-            *p 'Аманда отстраняется и тихо говорит, что здесь — слишком. Сначала ей нужно довериться вам по-настоящему, дома, без чужих глаз.'
-            *p 'Подворотня после танца может подождать — дома будет спокойнее.'
+        else
+            *pl 'Аманда отстраняется и тихо говорит, что здесь — слишком рискованно для первого раза. Сначала ей нужно довериться тебе дома, без чужих глаз.'
         end
 
         *pl ' '
 
-        if (AmandaHomeStage >= 3 or BlowjobCount['amanda'] >= 1 or oralacts['amanda'] >= 1):
-            gs 'ActUiPrepare', 'Минет', 'generic'
+        if AmandaHomeStage >= 3 or BlowjobCount['amanda'] >= 1 or oralacts['amanda'] >= 1:
+            gs 'ActUiPrepare', 'Помочь ротиком (Минет)', 'intim'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'AmandaDanceAlleyBlowjob'
             end
         end
 
         if AmandaHomeStage >= 3:
-            gs 'ActUiPrepare', 'В трактир', 'tavern'
+            gs 'ActUiPrepare', 'Увести домой в трактир', 'tavern'
             act $ActUiLabel, $ActUiIconPath:
                 gt 'AmandaDanceLeaveHome'
             end
         end
 
-        gs 'ActUiPrepare', 'Назад', 'return'
+        gs 'ActUiPrepare', 'Назад в переулок', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'AmandaDanceAlleyEvent'
         end
@@ -694,7 +788,7 @@
     end
 
     if IntimStage[$AmandaAlleyGirl] < 1:
-        *p 'Аманда резко качает головой. После танца она позволила себе больше обычного, но к настоящей близости пока не готова.'
+        *pl 'Аманда резко качает головой. После танца она позволила себе больше обычного, но к настоящей близости пока не готова.'
         *pl ' '
 
         gs 'ActUiPrepare', 'Назад', 'return'
@@ -724,13 +818,13 @@
 
     if LOC('AmandaDanceAlleyBeforeSexText') = 1:
         gs 'AmandaDanceAlleyBeforeSexText'
-    else:
-        *p 'Ты остаёшься с Амандой в тени подворотни. Её дыхание становится тише, но напряжение между вами уже не исчезает.'
+    else
+        *pl 'Ты остаёшься с Амандой в тени подворотни. Её дыхание становится глубже, и напряжение между вами ищет выхода.'
     end
 
     *pl ' '
 
-    *p 'Что вы будете <a href="exec:gs ''AmandaAlleyOpenMenu'', ''start''">делать</a>?'
+    *p 'Что ты будешь <a href="exec:gs ''AmandaAlleyOpenMenu'', ''start''">делать</a>?'
 
     gs 'ActUiPrepare', 'Уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -739,6 +833,11 @@
 ---
 
 #AmandaDanceAlleyBlowjob
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 0 and debug = 0:
+        $AmandaAlleyLastText = 'Ты чувствуешь, что на сегодня уже полностью выложился — сил на новую разрядку в переулке не осталось.'
+        gt 'AmandaDanceAlleyEvent'
+    end
 
     SceneArtUseReal = 1
     *clr
@@ -753,7 +852,7 @@
         $OralArt = 'minet3'
     elseif sluttiness[$AmandaAlleyGirl] >= 25 or oralacts[$AmandaAlleyGirl] >= 3:
         $OralArt = 'minet2'
-    else:
+    else
         $OralArt = 'minet1'
     end
 
@@ -763,14 +862,15 @@
 
     if LOC('AmandaDanceAlleyBlowjobText') = 1:
         gs 'AmandaDanceAlleyBlowjobText'
-    else:
-        *p 'Аманда опускается на колени прямо в полумраке подворотни.'
-        *p 'Она вздрагивает от каждого доносящегося с площади звука, но послушно берёт ваш член в рот.'
+    else
+        *pl 'Аманда опускается на колени прямо в полумраке подворотни.'
+        *pl 'Она вздрагивает от каждого доносящегося с площади звука, но послушно берёт твой член в рот.'
     end
 
-    *p 'Что вы будете <a href="exec:gs ''AmandaAlleyOpenMenu'', ''blowjob''">делать</a>?'
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''AmandaAlleyOpenMenu'', ''blowjob_start''">делать</a>?'
 
-    gs 'ActUiPrepare', 'Продолжать', 'generic'
+    gs 'ActUiPrepare', 'Продолжать', 'intim'
     act $ActUiLabel, $ActUiIconPath:
         gt 'AmandaDanceAlleyBlowjobBuild'
     end
@@ -784,7 +884,6 @@
 ---
 
 #AmandaDanceAlleyBlowjobBuild
-
     $AmandaAlleyResumeAction = 'blowjob'
     gs 'AmandaAlleyCheckPeeper'
 
@@ -795,23 +894,16 @@
 
     gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/minet4', 'ПОДВОРОТНЯ — МИНЕТ В РАЗГАРЕ', 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — МИНЕТ'
-
-    if $AmandaAlleyLastTransition <> '':
-        if LOC('AmandaDanceAlleySexTransitionText') = 1:
-            gs 'AmandaDanceAlleySexTransitionText', $AmandaAlleyLastTransition
-            *pl ' '
-        end
-        killvar '$AmandaAlleyLastTransition'
-    end
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — МИНЕТ В РАЗГАРЕ'
 
     if LOC('AmandaDanceAlleyBlowjobBuildText') = 1:
         gs 'AmandaDanceAlleyBlowjobBuildText'
-    else:
+    else
         *pl 'Темп ласк стремительно нарастает. Развязка неумолимо близка.'
     end
 
-    *p 'Что вы будете <a href="exec:gs ''AmandaAlleyOpenMenu'', ''blowjob''">делать</a>?'
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''AmandaAlleyOpenMenu'', ''blowjob''">делать</a>?'
 
     gs 'ActUiPrepare', 'Уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -820,8 +912,7 @@
 ---
 
 #AmandaDanceAlleyBlowjobDeep
-
-    $AmandaAlleyResumeAction = 'blowjob'
+    $AmandaAlleyResumeAction = 'deep'
     gs 'AmandaAlleyCheckPeeper'
 
     SceneArtUseReal = 1
@@ -832,26 +923,19 @@
     gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/minet3', 'ПОДВОРОТНЯ — ГЛУБОКИЙ МИНЕТ', 'large', 'webp'
 
     if AmandaAlleyPlace = 2:
-        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — В ТЕЛЕГЕ'
-    else:
-        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — ГЛУБОКИЙ МИНЕТ'
-    end
-
-    if $AmandaAlleyLastTransition <> '':
-        if LOC('AmandaDanceAlleySexTransitionText') = 1:
-            gs 'AmandaDanceAlleySexTransitionText', $AmandaAlleyLastTransition
-            *pl ' '
-        end
-        killvar '$AmandaAlleyLastTransition'
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — ГЛУБОКИЙ МИНЕТ В ТЕЛЕГЕ'
+    else
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — ГЛУБОКИЙ МИНЕТ У СТЕНЫ'
     end
 
     if LOC('AmandaDanceAlleyBlowjobDeepText') = 1:
         gs 'AmandaDanceAlleyBlowjobDeepText'
-    else:
-        *pl 'Вы укладываете Аманду на спину в мягкое сено арбы и глубоко входите в её ротик.'
+    else
+        *pl 'Ты глубоко входишь в её податливое горлышко в полумраке переулка.'
     end
 
-    *p 'Что вы будете <a href="exec:gs ''AmandaAlleyOpenMenu'', ''deep''">делать</a>?'
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''AmandaAlleyOpenMenu'', ''deep''">делать</a>?'
 
     gs 'ActUiPrepare', 'Уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -860,7 +944,6 @@
 ---
 
 #AmandaDanceAlleyBlowjobFinish
-
     $FinishOral = $ARGS[0]
     $OralMode = $ARGS[1]
     $AmandaAlleyGirl = 'amanda'
@@ -873,41 +956,51 @@
     AmandaScandalLevel += 1
     sluttiness[$AmandaAlleyGirl] += 1
     love[$AmandaAlleyGirl] += 1
-    BlowjobCount[$AmandaAlleyGirl] += 1
-    oralacts[$AmandaAlleyGirl] += 1
     AmandaPlayerPath += 1
+    LastSexDay[$AmandaAlleyGirl] = day
 
     if $OralMode = 'deep':
         oraldeep[$AmandaAlleyGirl] += 1
     end
 
     if sluttiness[$AmandaAlleyGirl] >= 45:
-        orgasm[$AmandaAlleyGirl] += 1
+        orgasms[$AmandaAlleyGirl] += 1
+        GiveOrgasms[$AmandaAlleyGirl] += 1
     end
 
-    gs 'RegisterPlayerCum'
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 1:
+        gs 'RegisterPlayerCum'
+    elseif debug = 1:
+        daily_cum_count += 1
+        total_cumshots += 1
+    end
 
     if $FinishOral = 'mouth':
-        cummouth[$AmandaAlleyGirl] += 1
-        oralcum[$AmandaAlleyGirl] += 1
         oralswallow[$AmandaAlleyGirl] += 1
         gs 'RegisterSex', $AmandaAlleyGirl, 'oral', 1, 1
         $FinishOralArt = 'minet5'
     elseif $FinishOral = 'face':
-        cumface[$AmandaAlleyGirl] += 1
-        facialcum[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'oral', 0, 1
         gs 'RegisterSex', $AmandaAlleyGirl, 'facial', 0, 1
         $FinishOralArt = 'cumface'
     elseif $FinishOral = 'breast' or $FinishOral = 'dress':
-        cumbreast[$AmandaAlleyGirl] += 1
-        cumoutside[$AmandaAlleyGirl] += 1
-        gs 'RegisterSex', $AmandaAlleyGirl, 'cumbreast', 0, 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'oral', 0, 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'cumbody', 0, 1
         $FinishOralArt = 'minet5'
-    else:
-        cumoutside[$AmandaAlleyGirl] += 1
+    else
         gs 'RegisterSex', $AmandaAlleyGirl, 'oral', 0, 1
         $FinishOralArt = 'minet5'
     end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'amanda_alley_player'
+    end
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'amanda_alley_player', 'witness'
+    end
+
+    gs 'ClampGirlSocialStats', $AmandaAlleyGirl
 
     SceneArtUseReal = 1
     *clr
@@ -916,13 +1009,13 @@
 
     gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $FinishOralArt, 'ПОДВОРОТНЯ — ФИНАЛ МИНЕТА', 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — МИНЕТ'
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — ФИНАЛ МИНЕТА'
 
     if $OralMode = 'deep' and LOC('AmandaDanceAlleyDeepFinishText') = 1:
         gs 'AmandaDanceAlleyDeepFinishText', $FinishOral
     elseif LOC('AmandaDanceAlleyBlowjobFinishText') = 1:
         gs 'AmandaDanceAlleyBlowjobFinishText', $FinishOral
-    else:
+    else
         *pl 'Горячая разрядка накрывает вас в темноте переулка.'
     end
 
@@ -940,7 +1033,6 @@
 ---
 
 #AmandaDanceAlleySex
-
     $AmandaAlleyGirl = 'amanda'
     $AmandaAlleyResumeAction = 'sex'
     gs 'EnsureGirlData', $AmandaAlleyGirl
@@ -949,26 +1041,36 @@
         gt 'AmandaDanceAlleyToSexScene'
     end
 
-    $AmandaAlleySexBranch = $ARGS[0]
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 0 and debug = 0:
+        $AmandaAlleyLastText = 'Ты чувствуешь, что на сегодня уже полностью выложился — сил на новую близость в переулке не осталось.'
+        gt 'AmandaDanceAlleyEvent'
+    end
+
+    $AmandaAlleySexBranch = LCASE($ARGS[0])
     if $AmandaAlleySexBranch = '':
         $AmandaAlleySexBranch = 'vaginal'
     end
 
     if AmandaAlleyPlace = 0:
-        AmandaAlleyPlace = 1
+        if AmandaAlleyCart = 1:
+            AmandaAlleyPlace = 2
+        else
+            AmandaAlleyPlace = 1
+        end
     end
 
     if $AmandaAlleySexBranch = 'anal':
         $SexStartArt = 'fuck2'
         if AmandaAlleyPlace = 2:
             $AmandaAlleyPlaceName = 'arba'
-        else:
+        else
             $AmandaAlleyPlaceName = 'wall'
         end
     elseif AmandaAlleyPlace = 2:
         $AmandaAlleyPlaceName = 'arba'
         $SexStartArt = 'fuckarba1'
-    else:
+    else
         $AmandaAlleyPlaceName = 'wall'
         $SexStartArt = 'fuck1'
     end
@@ -978,19 +1080,24 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $SexStartArt, 'ПОДВОРОТНЯ — БЛИЗОСТЬ', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $SexStartArt, 'ПОДВОРОТНЯ — НАЧАЛО БЛИЗОСТИ', 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — БЛИЗОСТЬ'
+    if AmandaAlleyPlace = 2:
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — В АРБЕ С СЕНОМ'
+    else
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — У КАМЕННОЙ СТЕНЫ'
+    end
 
     if LOC('AmandaDanceAlleySexStartText') = 1:
         gs 'AmandaDanceAlleySexStartText', $AmandaAlleyPlaceName, $AmandaAlleySexBranch
-    else:
+    else
         *pl 'Ты остаёшься с Амандой в тени переулка, предаваясь страсти.'
     end
 
-    *p 'Что вы будете <a href="exec:gs ''AmandaAlleyOpenMenu'', ''<<$AmandaAlleySexBranch>>''">делать</a>?'
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''AmandaAlleyOpenMenu'', ''sex_start_<<$AmandaAlleySexBranch>>''">делать</a>?'
 
-    gs 'ActUiPrepare', 'Продолжать', 'generic'
+    gs 'ActUiPrepare', 'Продолжать', 'intim'
     act $ActUiLabel, $ActUiIconPath:
         gt 'AmandaDanceAlleySexBuild', $AmandaAlleySexBranch
     end
@@ -1004,9 +1111,26 @@
 ---
 
 #AmandaDanceAlleySexTransition
-
-    $TransitionType = $ARGS[0]
+    $TransitionType = LCASE($ARGS[0])
     $AmandaAlleyResumeAction = 'sex'
+
+    if AmandaAlleyPlace = 0:
+        if AmandaAlleyCart = 1:
+            AmandaAlleyPlace = 2
+        else
+            AmandaAlleyPlace = 1
+        end
+    end
+
+    if $TransitionType = 'blowjob_to_vaginal' or $TransitionType = 'anal_to_vaginal':
+        $AmandaAlleySexBranch = 'vaginal'
+    elseif $TransitionType = 'blowjob_to_anal' or $TransitionType = 'vaginal_to_anal':
+        $AmandaAlleySexBranch = 'anal'
+    elseif $TransitionType = 'vaginal_to_blowjob' or $TransitionType = 'anal_to_blowjob':
+        $AmandaAlleyResumeAction = 'blowjob'
+    elseif $TransitionType = 'blowjob_to_deep':
+        $AmandaAlleyResumeAction = 'deep'
+    end
 
     gs 'AmandaAlleyCheckPeeper'
 
@@ -1016,61 +1140,69 @@
     cla
 
     if $TransitionType = 'blowjob_to_vaginal':
-        $AmandaAlleySexBranch = 'vaginal'
         if AmandaAlleyPlace = 2:
             $TransitionArt = 'fuckarba1'
-        else:
+        else
             $TransitionArt = 'fuck1'
         end
-    elseif $TransitionType = 'blowjob_to_anal':
-        $AmandaAlleySexBranch = 'anal'
-        $TransitionArt = 'fuck2'
-    elseif $TransitionType = 'vaginal_to_anal':
-        $AmandaAlleySexBranch = 'anal'
+    elseif $TransitionType = 'blowjob_to_anal' or $TransitionType = 'vaginal_to_anal':
         $TransitionArt = 'fuck2'
     elseif $TransitionType = 'anal_to_vaginal':
-        $AmandaAlleySexBranch = 'vaginal'
         if AmandaAlleyPlace = 2:
             $TransitionArt = 'fuckarba2'
-        else:
+        else
             $TransitionArt = 'fuck3'
         end
     elseif $TransitionType = 'vaginal_to_blowjob' or $TransitionType = 'anal_to_blowjob':
         $TransitionArt = 'minet4'
     elseif $TransitionType = 'blowjob_to_deep':
         $TransitionArt = 'minet3'
+    else
+        $TransitionArt = 'fuck1'
     end
 
-    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $TransitionArt, 'ПОДВОРОТНЯ — СМЕНА ЛАСК', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $TransitionArt, 'ПОДВОРОТНЯ — СМЕНА ПОЗЫ', 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — БЛИЗОСТЬ'
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — СМЕНА ЛАСК'
 
     if LOC('AmandaDanceAlleySexTransitionText') = 1:
         gs 'AmandaDanceAlleySexTransitionText', $TransitionType
-    else:
-        *pl 'Вы меняете ласки, продолжая близость в полумраке переулка.'
+    else
+        *pl 'Вы меняете позу, продолжая близость в полумраке переулка.'
     end
 
     *pl ' '
 
-    gs 'ActUiPrepare', 'Продолжать', 'generic'
+    gs 'ActUiPrepare', 'Продолжать', 'intim'
     act $ActUiLabel, $ActUiIconPath:
         if $TransitionType = 'blowjob_to_deep':
+            killvar '$TransitionArt'
+            killvar '$TransitionType'
             gt 'AmandaDanceAlleyBlowjobDeep'
         elseif $TransitionType = 'vaginal_to_blowjob' or $TransitionType = 'anal_to_blowjob':
+            killvar '$TransitionArt'
+            killvar '$TransitionType'
             gt 'AmandaDanceAlleyBlowjobBuild'
-        else:
+        else
+            killvar '$TransitionArt'
+            killvar '$TransitionType'
             gt 'AmandaDanceAlleySexBuild', $AmandaAlleySexBranch
         end
     end
 
-    killvar '$TransitionArt'
-    killvar '$TransitionType'
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar '$TransitionArt'
+        killvar '$TransitionType'
+        gt 'AmandaDanceAlleyEnd'
+    end
 ---
 
 #AmandaDanceAlleySexBuild
-
-    $AmandaAlleySexBranch = $ARGS[0]
+    $AmandaAlleySexBranch = LCASE($ARGS[0])
+    if $AmandaAlleySexBranch = '':
+        $AmandaAlleySexBranch = 'vaginal'
+    end
     $AmandaAlleyResumeAction = 'sex'
 
     gs 'AmandaAlleyCheckPeeper'
@@ -1082,33 +1214,30 @@
 
     if $AmandaAlleySexBranch = 'anal':
         $SexBuildArt = 'fuck2'
-    else:
+    else
         if AmandaAlleyPlace = 2:
             $SexBuildArt = 'fuckarba2'
-        else:
+        else
             $SexBuildArt = 'fuck3'
         end
     end
 
     gs 'SceneShowVisual', 'images/events/amanda/sexafterdance/' + $SexBuildArt, 'ПОДВОРОТНЯ — В РАЗГАРЕ БЛИЗОСТИ', 'large', 'webp'
 
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — БЛИЗОСТЬ'
-
-    if $AmandaAlleyLastTransition <> '':
-        if LOC('AmandaDanceAlleySexTransitionText') = 1:
-            gs 'AmandaDanceAlleySexTransitionText', $AmandaAlleyLastTransition
-            *pl ' '
-        end
-        killvar '$AmandaAlleyLastTransition'
+    if AmandaAlleyPlace = 2:
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — В АРБЕ С СЕНОМ'
+    else
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — У КАМЕННОЙ СТЕНЫ'
     end
 
     if LOC('AmandaDanceAlleySexBuildText') = 1:
         gs 'AmandaDanceAlleySexBuildText', $AmandaAlleySexBranch
-    else:
+    else
         *pl 'Толчки становятся глубже и увереннее, приближая финал.'
     end
 
-    *p 'Что вы будете <a href="exec:gs ''AmandaAlleyOpenMenu'', ''<<$AmandaAlleySexBranch>>''">делать</a>?'
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''AmandaAlleyOpenMenu'', ''<<$AmandaAlleySexBranch>>''">делать</a>?'
 
     gs 'ActUiPrepare', 'Уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -1119,9 +1248,8 @@
 ---
 
 #AmandaDanceAlleySexFinish
-
-    $AmandaAlleySexBranch = $ARGS[0]
-    $FinishType = $ARGS[1]
+    $AmandaAlleySexBranch = LCASE($ARGS[0])
+    $FinishType = LCASE($ARGS[1])
     $AmandaAlleyGirl = 'amanda'
     gs 'EnsureGirlData', $AmandaAlleyGirl
 
@@ -1131,50 +1259,83 @@
     AmandaScandalLevel += 1
     sluttiness[$AmandaAlleyGirl] += 1
     love[$AmandaAlleyGirl] += 1
-    orgasm[$AmandaAlleyGirl] += 1
+    orgasms[$AmandaAlleyGirl] += 1
+    GiveOrgasms[$AmandaAlleyGirl] += 1
     AmandaPlayerPath += 1
+    LastSexDay[$AmandaAlleyGirl] = day
+
+    if $AmandaAlleySexBranch = 'anal':
+        analvirgin[$AmandaAlleyGirl] = 0
+        AmandaHomeAnalDone = 1
+    else
+        virginity[$AmandaAlleyGirl] = 0
+    end
 
     ! ATM gate check: anal to mouth
     if $AmandaAlleySexBranch = 'anal' and $FinishType = 'mouth':
         $SexGirl = $AmandaAlleyGirl
         gs 'SexSceneCalcAtmStage'
-        if AmandaOralAtmCalmDone = 1 or (AmandaOralStage >= 5 and analfromyou['amanda'] >= 1) or SexAtmStage >= 2:
+        if AmandaOralAtmCalmDone = 1 or (AmandaOralStage >= 5 and analfromyou['amanda'] >= 1) or SexAtmStage >= 2 or sluttiness[$AmandaAlleyGirl] >= 40:
             $FinishType = 'atm'
-        else:
+            AmandaOralAtmCalmDone = 1
+        else
             $FinishType = 'refuse_atm'
         end
     end
 
-    gs 'RegisterPlayerCum'
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 1:
+        gs 'RegisterPlayerCum'
+    elseif debug = 1:
+        daily_cum_count += 1
+        total_cumshots += 1
+    end
 
     if $FinishType = 'inside':
-        cuminside[$AmandaAlleyGirl] += 1
-        if $AmandaAlleySexBranch = 'anal':
-            analcum[$AmandaAlleyGirl] += 1
-        else:
-            vaginalcum[$AmandaAlleyGirl] += 1
-        end
         gs 'RegisterSex', $AmandaAlleyGirl, $AmandaAlleySexBranch, 1, 1
         $FinishSexArt = 'fuck4'
 
     elseif $FinishType = 'outside':
-        cumoutside[$AmandaAlleyGirl] += 1
         gs 'RegisterSex', $AmandaAlleyGirl, $AmandaAlleySexBranch, 0, 1
         $FinishSexArt = 'fuck4'
 
+    elseif $FinishType = 'breast':
+        gs 'RegisterSex', $AmandaAlleyGirl, $AmandaAlleySexBranch, 0, 1
+        gs 'RegisterSex', $AmandaAlleyGirl, 'cumbody', 0, 1
+        $FinishSexArt = 'fuck4'
+
     elseif $FinishType = 'face' or $FinishType = 'refuse_atm':
-        cumface[$AmandaAlleyGirl] += 1
-        facialcum[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, $AmandaAlleySexBranch, 0, 1
         gs 'RegisterSex', $AmandaAlleyGirl, 'facial', 0, 1
         $FinishSexArt = 'cumface'
 
     elseif $FinishType = 'mouth' or $FinishType = 'atm':
-        cummouth[$AmandaAlleyGirl] += 1
-        oralcum[$AmandaAlleyGirl] += 1
         oralswallow[$AmandaAlleyGirl] += 1
+        gs 'RegisterSex', $AmandaAlleyGirl, $AmandaAlleySexBranch, 0, 1
         gs 'RegisterSex', $AmandaAlleyGirl, 'oral', 1, 1
         $FinishSexArt = 'cumface'
+    else
+        gs 'RegisterSex', $AmandaAlleyGirl, $AmandaAlleySexBranch, 0, 1
+        $FinishSexArt = 'fuck4'
     end
+
+    if LOC('KnowledgeRegisterFact') = 1:
+        gs 'KnowledgeRegisterFact', 'amanda_alley_player'
+    end
+    if LOC('KnowledgeRegisterPlayerKnows') = 1:
+        gs 'KnowledgeRegisterPlayerKnows', 'amanda_alley_player', 'witness'
+    end
+
+    ! Подключаем запись ночи для утренней двухэкранной системы (с шансом на реакцию «светится от счастья»)
+    SexSceneHadActivity = 1
+    SexGirlCameInScene = 1
+    if LOC('FamilyMorningAfterRecordNight') = 1:
+        gs 'FamilyMorningAfterRecordNight', 'amanda'
+    end
+    killvar 'SexSceneHadActivity'
+    killvar 'SexGirlCameInScene'
+
+    gs 'ClampGirlSocialStats', $AmandaAlleyGirl
 
     SceneArtUseReal = 1
     *clr
@@ -1187,7 +1348,7 @@
 
     if LOC('AmandaDanceAlleySexFinishText') = 1:
         gs 'AmandaDanceAlleySexFinishText', $AmandaAlleySexBranch, $FinishType
-    else:
+    else
         *pl 'Бурная разрядка оставляет вас обоих тяжело дышащими в темноте подворотни.'
     end
 
@@ -1204,9 +1365,7 @@
     killvar '$FinishSexArt'
 ---
 
-
 #AmandaDanceAlleyEnd
-
     SceneArtUseReal = 1
     *clr
     clr
@@ -1232,8 +1391,8 @@
 
         if LOC('AmandaDanceAlleyEndText') = 1:
             gs 'AmandaDanceAlleyEndText'
-        else:
-            *p 'После случившегося в подворотне оставаться на площади нет смысла. Вы с Амандой покидаете ярмарку и возвращаетесь домой в трактир.'
+        else
+            *pl 'После случившегося в подворотне оставаться на площади нет смысла. Вы с Амандой покидаете ярмарку и возвращаетесь домой в трактир.'
         end
 
         *pl ' '
@@ -1245,10 +1404,10 @@
 
     elseif $AmandaAlleyResumeAction <> '':
         AmandaAlleyInterrupted = 1
-        if $AmandaAlleyResumeAction = 'blowjob':
+        if $AmandaAlleyResumeAction = 'blowjob' or $AmandaAlleyResumeAction = 'deep':
             Friends[$AmandaAlleyGirl] -= 2
             love[$AmandaAlleyGirl] -= 1
-        else:
+        else
             Friends[$AmandaAlleyGirl] -= 5
             love[$AmandaAlleyGirl] -= 3
             FamilyTension += 2
@@ -1269,8 +1428,8 @@
 
         if LOC('AmandaDanceAlleyEndText') = 1:
             gs 'AmandaDanceAlleyEndText'
-        else:
-            *p 'После случившегося в подворотне оставаться на площади нет смысла. Вы с Амандой покидаете ярмарку и возвращаетесь домой в трактир.'
+        else
+            *pl 'После случившегося в подворотне оставаться на площади нет смысла. Вы с Амандой покидаете ярмарку и возвращаетесь домой в трактир.'
         end
 
         *pl ' '
@@ -1280,15 +1439,15 @@
             gt 'TavernMain'
         end
 
-    else:
+    else
         gs 'SceneShowVisual', 'images/dance/amanda/YouClose', 'ВОЗВРАЩЕНИЕ НА ПЛОЩАДЬ', 'large', 'webp'
         gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
 
         if LOC('AmandaDanceAlleyEndText') = 1:
             gs 'AmandaDanceAlleyEndText'
-        else:
-            *pl 'Ты решаешь не заходить дальше и выходите из тёмного прохода обратно к праздничной площади.'
-            *pl 'Аманда тихо переводит дух, поправляет платье и улыбается вам.'
+        else
+            *pl 'Ты решаешь не заходить дальше и выходишь из тёмного прохода обратно к праздничной площади.'
+            *pl 'Аманда тихо переводит дух, поправляет платье и улыбается тебе.'
         end
 
         *pl ' '

@@ -521,6 +521,10 @@
         if FamilyMorningNoFinishTalkPending['amanda'] = 1:
             FamilyFirstSexTalkAvailableCount += 1
         end
+
+        if AmandaAlleyPeeperTalkPending = 1:
+            FamilyFirstSexTalkAvailableCount += 1
+        end
     end
 
     killvar '$CountGirl'
@@ -684,6 +688,13 @@
                 gt 'FamilyFirstSexTalkStart', 'amanda', 'amanda', 'no_finish_apology', $TalkReturnLoc
             }
         end
+
+        if AmandaAlleyPeeperTalkPending = 1:
+            gs 'MenuUiAdd', 'GirlTalkMainMenu', '* О парне у забора в переулке', 'talk'
+            gs 'Menu.AddModule', 'GirlTalkMainMenu', {
+                gt 'FamilyFirstSexTalkStart', 'amanda', 'amanda', 'alley_peeper', $TalkReturnLoc
+            }
+        end
     end
 
     killvar '$MenuGirl'
@@ -791,6 +802,17 @@
         gs 'ActUiPrepare', 'Пообещать наверстать сегодня ночью', 'talk'
         act $ActUiLabel, $ActUiIconPath:
             gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'promise', $TalkReturnLoc
+        end
+
+    elseif $TalkMode = 'alley_peeper':
+        gs 'ActUiPrepare', 'Пригрозить парню, чтобы молчал', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'protect', $TalkReturnLoc
+        end
+
+        gs 'ActUiPrepare', 'Подразнить: тебе ведь понравилось внимание', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyFirstSexTalkChoice', $TalkGirl, $TargetGirl, $TalkMode, 'tease_peeper', $TalkReturnLoc
         end
 
     else
@@ -923,6 +945,17 @@
         FamilyMorningNoFinishTalkPending[$TalkGirl] = 0
         Friends[$TalkGirl] += 2
         love[$TalkGirl] += 1
+
+    elseif $TalkMode = 'alley_peeper':
+        AmandaAlleyPeeperTalkPending = 0
+        if $Choice = 'protect':
+            AmandaTrustStefan += 2
+            AmandaPlayerPath += 1
+        else
+            sluttiness['amanda'] += 2
+            otkroven['amanda'] += 1
+            AmandaNpcPath += 1
+        end
 
     elseif $TalkMode = 'understood':
         FamilyIntimUnderstoodTalkDone[$TalkGirl, $TargetGirl] = 1

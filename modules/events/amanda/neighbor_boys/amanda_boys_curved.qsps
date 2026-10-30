@@ -27,19 +27,25 @@
     AmandaNeighborBoysToday = 1
     gs 'EnsureGirlData', 'amanda'
 
+    CurvedBonus = 0
+    if AmandaAlleyPeeperSeen['Отто'] = 1:
+        CurvedBonus = 10
+    end
+
     ! Определение доступной стадии Отто
     if AmandaBoyCurvedStage = 0:
-        if sluttiness['amanda'] >= 20 or AmandaNpcPath >= 5:
+        if sluttiness['amanda'] + CurvedBonus >= 20 or AmandaNpcPath >= 5:
             $CurvedTargetStep = 'stage1_ready'
         else:
             $CurvedTargetStep = 'early_intro'
         end
     elseif AmandaBoyCurvedStage = 1:
-        if sluttiness['amanda'] >= 30 and oralacts['amanda'] >= 2:
+        if sluttiness['amanda'] + CurvedBonus >= 30 and oralacts['amanda'] >= 1:
             $CurvedTargetStep = 'stage2_ready'
         else:
             $CurvedTargetStep = 'stage1_repeat'
         end
+    killvar 'CurvedBonus'
     elseif AmandaBoyCurvedStage = 2:
         if sluttiness['amanda'] >= 40 and vaginalacts['amanda'] >= 2:
             $CurvedTargetStep = 'stage3_ready'
@@ -63,6 +69,8 @@
     else:
         *pl 'Отто неловко топчется у телеги, сжимая в руках букетик цветов.'
     end
+
+    gs 'AmandaNeighborBoyPrintAlleyLeverage', 'Отто'
 
     *pl ' '
 
