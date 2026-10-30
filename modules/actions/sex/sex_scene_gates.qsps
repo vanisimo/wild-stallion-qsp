@@ -1,0 +1,791 @@
+! ================================================
+! FILE: modules/actions/sex/sex_scene_gates.qsps
+! MODULE: actions/sex
+! ??????? ???????, ?????? ????????????? ?????? ? ?????????? ???? ???????? ?????
+! ================================================
+
+#CanStartSexScene
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $SexCheckGirl = $GirlKey
+
+    SexSceneAllowed = 1
+    $SexSceneDenyReason = ''
+
+    if $SexCheckGirl = '':
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = '??????: ??????? ?? ???????.'
+        exit
+    end
+
+    gs 'SexSceneCheckStoryBypass', $SexCheckGirl
+    if SexSceneStoryBypass = 1:
+        killvar 'SexSceneStoryBypass'
+        killvar '$SexCheckGirl'
+        exit
+    end
+    killvar 'SexSceneStoryBypass'
+
+    if IntimStage[$SexCheckGirl] < 1:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = $RealName[$SexCheckGirl] + ' ???? ?? ?????? ? ????? ????????.'
+        killvar '$SexCheckGirl'
+        exit
+    end
+
+    if Friends[$SexCheckGirl] < 20 and love[$SexCheckGirl] < 15:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = '?????? ????? ???? ???????????? ??????? ??? ????? ????????.'
+        killvar '$SexCheckGirl'
+        exit
+    end
+
+    if otkroven[$SexCheckGirl] < 10:
+        SexSceneAllowed = 0
+        $SexSceneDenyReason = $RealName[$SexCheckGirl] + ' ???? ??????? ??????? ??? ????? ????????.'
+        killvar '$SexCheckGirl'
+        exit
+    end
+
+    killvar '$SexCheckGirl'
+---
+
+#SexSceneCheckStoryBypass
+
+    SexSceneStoryBypass = 0
+    $SexBypassGirl = $ARGS[0]
+
+    if $SexBypassGirl = 'georgett':
+        if GeorgettePortSexPaidActive = 1 or GeorgetteChurchSexPaidActive = 1 or GeorgettePortSexDone = 1:
+            SexSceneStoryBypass = 1
+        end
+    elseif $SexBypassGirl = 'lizette':
+        if PortProstNightSexActive = 1 or LizetteSexUnlocked = 1:
+            SexSceneStoryBypass = 1
+        end
+    elseif $SexBypassGirl = 'becky':
+        if BeckyHomeFirstSexActive = 1 or BeckyHomeSex = 1:
+            SexSceneStoryBypass = 1
+        end
+    elseif $SexBypassGirl = 'amanda':
+        if AmandaHomeFirstSexActive = 1 or AmandaHomeSex = 1 or AmandaHomeAnalActive = 1:
+            SexSceneStoryBypass = 1
+        end
+    elseif $SexBypassGirl = 'melissa':
+        if MelissaHomeFirstSexActive = 1 or MelissaHomeSex = 1 or MelissaAnalWithGgActive = 1 or MelissaHomeAnalActive = 1:
+            SexSceneStoryBypass = 1
+        end
+    elseif $SexBypassGirl = 'sandra':
+        if SandraHomeFirstSexActive = 1 or SandraHomeSex = 1:
+            SexSceneStoryBypass = 1
+        end
+    elseif $SexBypassGirl = 'inga':
+        if IngaBackroomFirstSexActive = 1 or IngaBackroomSex = 1 or IngaRoomFirstSexDone = 1:
+            SexSceneStoryBypass = 1
+        end
+    elseif $SexBypassGirl = 'clarissa':
+        if ClarissaIntimFirstSexActive = 1 or ClarissaIntimSex = 1:
+            SexSceneStoryBypass = 1
+        end
+    elseif $SexBypassGirl = 'irma':
+        if IrmaTreeRitualDone = 1:
+            SexSceneStoryBypass = 1
+        end
+    end
+
+    killvar '$SexBypassGirl'
+---
+
+#SexSceneEnsureIntimStage
+
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $SexStageGirl = $GirlKey
+
+    if $SexStageGirl = '':
+        exit
+    end
+
+    if IntimStage[$SexStageGirl] <= 0:
+        if sluttiness[$SexStageGirl] >= 60 and otkroven[$SexStageGirl] >= 40 and Friends[$SexStageGirl] >= 45:
+            IntimStage[$SexStageGirl] = 5
+        elseif sluttiness[$SexStageGirl] >= 45 and otkroven[$SexStageGirl] >= 35:
+            IntimStage[$SexStageGirl] = 4
+        elseif sluttiness[$SexStageGirl] >= 30 and otkroven[$SexStageGirl] >= 25:
+            IntimStage[$SexStageGirl] = 3
+        elseif Friends[$SexStageGirl] >= 30 or love[$SexStageGirl] >= 25:
+            IntimStage[$SexStageGirl] = 2
+        elseif Friends[$SexStageGirl] >= 20 or love[$SexStageGirl] >= 15:
+            IntimStage[$SexStageGirl] = 1
+        end
+    end
+
+    killvar '$SexStageGirl'
+---
+
+#SexSceneBuildMenu
+
+    gs 'Menu.Destroy', 'SexSceneMenu'
+    gs 'Menu.Create', 'SexSceneMenu'
+    gs 'SexSceneCalcMenuUnlocks'
+
+    SexSceneShowChangePose = 0
+
+    if SexScenePenetrationActive = 1 and ($SexActType = 'vaginal' or $SexActType = 'anal'):
+        gs 'SexSceneCalcChangePoseAvailable'
+
+        if SexSceneChangePoseAvailable = 1:
+            SexSceneShowChangePose = 1
+        end
+    end
+
+    if SexSceneMode = 1:
+        gs 'SexSceneUpdatePlayerOut'
+
+        if SexPlayerOut = 1 and debug = 0:
+            SexSceneMode = 0
+        end
+    end
+
+    if SexSceneMode = 1:
+        gs 'SexSceneBuildFinishMenu'
+        exit
+    end
+
+    if SexSceneMode = 2:
+        if SexGirlExhausted = 1:
+            gs 'Menu.Add', 'SexSceneMenu', 'Уйти'
+            gs 'Menu.AddModule', 'SexSceneMenu', {
+                gt 'SexSceneEnd'
+            }
+        else
+            gs 'SexSceneBuildAfterFinishMenu'
+        end
+        exit
+    end
+
+    if SexGirlExhausted = 1:
+        gs 'Menu.Add', 'SexSceneMenu', 'Уйти'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneEnd'
+        }
+        exit
+    end
+
+    if SexScenePhase = 1:
+        gs 'SexSceneBuildMenuPhase1'
+    else
+        gs 'SexSceneBuildMenuPhase2'
+    end
+---
+
+#SexSceneBuildMenuPhase1
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Целовать'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionKiss'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=1 and SexSceneKissCount<2,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Лапать'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionCaress'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=2 and SexSceneGropeCount<2,-1,0)"
+
+    if $SexGirl = 'becky':
+        $SexUndressMenuLabel = 'Снять платье'
+    elseif $SexGirl = 'amanda' or $SexGirl = 'melissa' or $SexGirl = 'sandra':
+        $SexUndressMenuLabel = 'Снять ночнушку'
+    else:
+        $SexUndressMenuLabel = 'Раздеться'
+    end
+
+    gs 'MenuUiAdd', 'SexSceneMenu', $SexUndressMenuLabel, 'intim'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionUndress', 'her'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneUndressReady=1 and SexClothesStage=0,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Уйти'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneEnd'
+    }
+---
+
+#SexSceneBuildMenuPhase2
+
+    if $SexGirl = 'georgett':
+        gs 'Menu.Add', 'SexSceneMenu', 'Целовать'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionKiss'
+        }
+        gs 'Menu.AddCondition', 'SexSceneMenu', "Result=-1"
+
+        gs 'Menu.Add', 'SexSceneMenu', 'Лапать грудь'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionCaress'
+        }
+        gs 'Menu.AddCondition', 'SexSceneMenu', "Result=-1"
+    end
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Лизать киску'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionCuni'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Минет'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionBlowjob'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=4 and SexSceneBlowjobMenuOk=1 and SexScenePlayerPenisOk=1,-1,0)"
+
+    if $SexGirl = 'georgett':
+        gs 'Menu.Add', 'SexSceneMenu', 'Глубокое горло'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionDeepthroat'
+        }
+        gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneDeepthroatUnlocked=1 and SexScenePlayerPenisOk=1,-1,0)"
+    end
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Анилингус'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionRim'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneRimUnlocked=1,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Римминг Стефану'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionRimjob'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneRimjobUnlocked=1 and SexScenePlayerPenisOk=1,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Трахать'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionVaginal'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(IntimStage[$SexGirl]>=5 and SexScenePenetrationReady=1 and SexScenePlayerPenisOk=1,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Анал'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionAnal'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneAnalUnlocked=1 and SexScenePlayerPenisOk=1,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Сменить позу'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionChangePose'
+    }
+    gs 'Menu.AddCondition', 'SexSceneMenu', "Result=IIF(SexSceneShowChangePose=1 and SexScenePlayerPenisOk=1,-1,0)"
+
+    gs 'Menu.Add', 'SexSceneMenu', 'Уйти'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneEnd'
+    }
+---
+
+#SexSceneBuildFinishMenu
+
+    if $SexActType = 'blowjob' or $SexActType = 'deepthroat':
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить в рот', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'mouth'
+        }
+
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на лицо', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'face'
+        }
+
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Завершить на грудь', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'chest'
+        }
+    elseif $SexActType = 'vaginal':
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить в киску', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'inside'
+        }
+
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на живот', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'belly'
+        }
+
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на грудь', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'chest'
+        }
+
+        if $SexGirl = 'georgett':
+            gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить в рот', 'intim'
+            gs 'Menu.AddModule', 'SexSceneMenu', {
+                gt 'SexSceneActionFinish', 'mouth'
+            }
+
+            gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на лицо', 'intim'
+            gs 'Menu.AddModule', 'SexSceneMenu', {
+                gt 'SexSceneActionFinish', 'face'
+            }
+        end
+    elseif $SexActType = 'anal':
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить в попку', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'inside'
+        }
+
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на ягодицы', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'belly'
+        }
+
+        if $SexGirl = 'georgett':
+            gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить в рот', 'intim'
+            gs 'Menu.AddModule', 'SexSceneMenu', {
+                gt 'SexSceneActionFinish', 'mouth'
+            }
+
+            gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на лицо', 'intim'
+            gs 'Menu.AddModule', 'SexSceneMenu', {
+                gt 'SexSceneActionFinish', 'face'
+            }
+        end
+    else
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить на тело', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'body'
+        }
+
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Кончить снаружи', 'intim'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionFinish', 'outside'
+        }
+    end
+
+    if SexSceneHoldBackUsed = 0:
+        gs 'MenuUiAdd', 'SexSceneMenu', 'Сдержаться', 'return'
+        gs 'Menu.AddModule', 'SexSceneMenu', {
+            gt 'SexSceneActionHoldBack'
+        }
+    end
+---
+
+#SexSceneBuildAfterFinishMenu
+
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Передохнуть', 'sleep'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneActionRest'
+    }
+
+    gs 'MenuUiAdd', 'SexSceneMenu', 'Уйти', 'return'
+    gs 'Menu.AddModule', 'SexSceneMenu', {
+        gt 'SexSceneEnd'
+    }
+---
+
+#SexSceneCalcCumPlayStage
+
+    gs 'EnsureGirlData', $SexGirl
+    gs 'SexSceneEnsureIntimStage', $SexGirl
+
+    SexCumPlayStage = 0
+
+    if oralswallow[$SexGirl] >= 1 or oralcum[$SexGirl] >= 1 or facialcum[$SexGirl] >= 1:
+        SexCumPlayStage = 1
+    elseif sluttiness[$SexGirl] >= 18:
+        SexCumPlayStage = 1
+    end
+
+    if $SexGirl = 'becky':
+        if SexCumPlayStage < 1:
+            SexCumPlayStage = 1
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 1:
+        if SexCumPlayStage < 1:
+            SexCumPlayStage = 1
+        end
+    end
+
+    if oralswallow[$SexGirl] >= 2 or sluttiness[$SexGirl] >= 26:
+        if SexCumPlayStage < 2:
+            SexCumPlayStage = 2
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 3:
+        if SexCumPlayStage < 2:
+            SexCumPlayStage = 2
+        end
+    end
+
+    if $SexGirl = 'amanda' and AmandaLizaInfluence >= 3 and sluttiness['amanda'] >= 14:
+        if SexCumPlayStage < 2:
+            SexCumPlayStage = 2
+        end
+    end
+
+    if oralswallow[$SexGirl] >= 3 or sluttiness[$SexGirl] >= 34 or cuminside[$SexGirl] >= 2:
+        if SexCumPlayStage < 3:
+            SexCumPlayStage = 3
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 4:
+        if SexCumPlayStage < 3:
+            SexCumPlayStage = 3
+        end
+    end
+
+    if oralswallow[$SexGirl] >= 4 or sluttiness[$SexGirl] >= 42 or cuminside[$SexGirl] >= 3:
+        if SexCumPlayStage < 4:
+            SexCumPlayStage = 4
+        end
+    end
+
+    if otkroven[$SexGirl] >= 28 and sluttiness[$SexGirl] >= 38 and oralswallow[$SexGirl] >= 2:
+        if SexCumPlayStage < 4:
+            SexCumPlayStage = 4
+        end
+    end
+
+    if $SexGirl = 'amanda' and AmandaLizaInfluence >= 5 and sluttiness['amanda'] >= 32:
+        if SexCumPlayStage < 4:
+            SexCumPlayStage = 4
+        end
+    end
+
+    if oralswallow[$SexGirl] >= 6 or sluttiness[$SexGirl] >= 50 or cuminside[$SexGirl] >= 5:
+        if SexCumPlayStage < 5:
+            SexCumPlayStage = 5
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 6:
+        if SexCumPlayStage < 5:
+            SexCumPlayStage = 5
+        end
+    end
+
+    if $SexGirl = 'amanda' and AmandaOralStage < 3 and SexCumPlayStage > 2:
+        SexCumPlayStage = 2
+    end
+
+    if $SexGirl = 'amanda' and AmandaOralStage < 5 and SexCumPlayStage > 3:
+        SexCumPlayStage = 3
+    end
+
+    if $SexGirl = 'amanda' and AmandaOralStage < 6 and SexCumPlayStage > 4:
+        SexCumPlayStage = 4
+    end
+
+    if $SexGirl = 'melissa' and sluttiness['melissa'] < 32 and SexCumPlayStage > 0:
+        SexCumPlayStage -= 1
+    end
+
+    if $SexGirl = 'sandra' and sluttiness['sandra'] < 36 and SexCumPlayStage > 1:
+        SexCumPlayStage -= 1
+    end
+
+    if SexCumPlayStage < 0:
+        SexCumPlayStage = 0
+    end
+
+    if SexCumPlayStage > 5:
+        SexCumPlayStage = 5
+    end
+---
+
+#SexSceneCalcAtmStage
+
+    gs 'EnsureGirlData', $SexGirl
+
+    SexAtmStage = 0
+
+    if analacts[$SexGirl] = 0 and analfromyou[$SexGirl] = 0:
+        exit
+    end
+
+    if analfromyou[$SexGirl] >= 1:
+        SexAtmStage = 1
+    elseif analacts[$SexGirl] >= 1 and sluttiness[$SexGirl] >= 22:
+        SexAtmStage = 1
+    end
+
+    if $SexGirl = 'amanda' and AmandaLizaInfluence >= 2 and analacts['amanda'] >= 1:
+        if SexAtmStage < 1:
+            SexAtmStage = 1
+        end
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 4:
+        if SexAtmStage < 1:
+            SexAtmStage = 1
+        end
+    end
+
+    if analfromyou[$SexGirl] >= 2 or (oralswallow[$SexGirl] >= 2 and analacts[$SexGirl] >= 2):
+        if SexAtmStage < 2:
+            SexAtmStage = 2
+        end
+    end
+
+    if sluttiness[$SexGirl] >= 38 and analacts[$SexGirl] >= 2:
+        if SexAtmStage < 2:
+            SexAtmStage = 2
+        end
+    end
+
+    if $SexGirl = 'becky' and analacts['becky'] >= 1:
+        if SexAtmStage < 2:
+            SexAtmStage = 2
+        end
+    end
+
+    if $SexGirl = 'melissa' and MelissaAnalWithGgDone = 1 and oralswallow['melissa'] >= 2:
+        if SexAtmStage < 2:
+            SexAtmStage = 2
+        end
+    end
+
+    if sluttiness[$SexGirl] >= 44 and oralswallow[$SexGirl] >= 4 and analfromyou[$SexGirl] >= 2:
+        SexAtmStage = 3
+    end
+
+    if $SexGirl = 'amanda' and AmandaLizaInfluence >= 5 and sluttiness['amanda'] >= 38 and analfromyou['amanda'] >= 1:
+        SexAtmStage = 3
+    end
+
+    if $SexGirl = 'inga' and IngaOralStage >= 5 and analacts['inga'] >= 1:
+        SexAtmStage = 3
+    end
+
+    if SexAtmStage > 3:
+        SexAtmStage = 3
+    end
+
+    if $SexGirl = 'amanda':
+        if AmandaOralStage < 5 or AmandaLizetteAnalTalkDone = 0:
+            SexAtmStage = 0
+        end
+    end
+---
+
+#SexSceneCalcMenuUnlocks
+
+    SexSceneRimUnlocked = 0
+    SexSceneAnalUnlocked = 0
+    SexSceneAnalWarmed = 0
+    SexScenePenetrationReady = 0
+    SexSceneUndressReady = 0
+
+    if SexScenePhase = 1 and SexGirlArousal >= 32 and SexSceneKissCount >= 2 and SexSceneGropeCount >= 2:
+        SexSceneUndressReady = 1
+    end
+
+    if SexGirlArousal >= 40 and SexPlayerArousal >= 40 and SexScenePhase >= 2 and SexClothesStage >= 2:
+        SexScenePenetrationReady = 1
+    end
+
+    if SexScenePenetrationActive = 1 and ($SexActType = 'vaginal' or $SexActType = 'anal'):
+        SexScenePenetrationReady = 1
+    end
+
+    if SexSceneHadBlowjob = 1 or SexSceneHadVaginal = 1 or SexSceneHadRim = 1:
+        SexSceneAnalWarmed = 1
+    end
+
+    if IntimStage[$SexGirl] >= 4:
+        if $SexGirl = 'amanda' and AmandaLizetteAnalTalkDone = 1:
+            SexSceneRimUnlocked = 1
+        elseif $SexGirl = 'melissa' and (MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or MelissaHomeAnalStage >= 2 or MelissaAnalDiscoveryStage >= 3):
+            SexSceneRimUnlocked = 1
+        elseif $SexGirl <> 'amanda' and $SexGirl <> 'melissa':
+            if otkroven[$SexGirl] >= 25 or sluttiness[$SexGirl] >= 35:
+                SexSceneRimUnlocked = 1
+            end
+        end
+    end
+
+    if SexScenePenetrationReady = 1 and SexSceneAnalWarmed = 1:
+        if AmandaHomeAnalActive = 1 or MelissaAnalWithGgActive = 1:
+            SexSceneAnalUnlocked = 1
+        elseif $SexGirl = 'amanda':
+            if AmandaHomeSex = 1 and AmandaLizetteAnalTalkDone = 1:
+                SexSceneAnalUnlocked = 1
+            end
+        elseif $SexGirl = 'melissa':
+            if MelissaHomeSex = 1 and (MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or MelissaAnalDiscoveryStage >= 3):
+                SexSceneAnalUnlocked = 1
+            end
+        elseif $SexGirl = 'sandra':
+            if HadSex[$SexGirl] > 0 and analvirgin[$SexGirl] = 0:
+                SexSceneAnalUnlocked = 1
+            end
+        elseif $SexGirl = 'inga':
+            if IngaAnalUnlocked = 1 or IngaHomeAnalDone = 1 or IngaAnalWithGgActive = 1 or IngaLucasAnalDone = 1:
+                SexSceneAnalUnlocked = 1
+            end
+        elseif $SexGirl = 'becky':
+            if BeckyAnalUnlocked = 1 or BeckyHomeAnalDone = 1:
+                SexSceneAnalUnlocked = 1
+            end
+        elseif $SexGirl = 'clarissa':
+            if ClarissaAnalUnlocked = 1 or (HadSex['clarissa'] >= 5 and HadAnalSexWithAny = 1):
+                SexSceneAnalUnlocked = 1
+            end
+        elseif analvirgin[$SexGirl] = 0:
+            SexSceneAnalUnlocked = 1
+        elseif HadSex[$SexGirl] > 0 and sluttiness[$SexGirl] >= 55 and otkroven[$SexGirl] >= 40:
+            SexSceneAnalUnlocked = 1
+        end
+    end
+
+    SexSceneRimjobUnlocked = 0
+
+    if $SexGirl = 'amanda':
+        if AmandaOralStage >= 6:
+            SexSceneRimjobUnlocked = 1
+        end
+    elseif $SexGirl = 'melissa':
+        if MelissaClarissaAnalTalkDone = 1 or MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or MelissaRimjobUnlocked = 1:
+            SexSceneRimjobUnlocked = 1
+        end
+    elseif $SexGirl = 'inga':
+        if IngaRimjobUnlocked = 1 or IngaHomeRimjobDone = 1 or (sluttiness['inga'] >= 65 and IngaAnalUnlocked = 1):
+            SexSceneRimjobUnlocked = 1
+        end
+    elseif $SexGirl = 'clarissa':
+        if ClarissaRimjobUnlocked = 1 or sluttiness['clarissa'] >= 50:
+            SexSceneRimjobUnlocked = 1
+        end
+    elseif $SexGirl = 'becky':
+        if BeckyRimjobUnlocked = 1:
+            SexSceneRimjobUnlocked = 1
+        end
+    elseif $SexGirl = 'georgett':
+        SexSceneRimjobUnlocked = 0
+    else
+        if RimjobUnlocked[$SexGirl] = 1:
+            SexSceneRimjobUnlocked = 1
+        end
+    end
+
+    if $SexGirl = 'georgett':
+        SexSceneRimUnlocked = 0
+        SexSceneRimjobUnlocked = 0
+
+        if (SexSceneHadBlowjob = 1 or SexSceneHadCuni = 1 or SexGirlArousal >= 45 or SexScenePenetrationActive = 1) and SexPlayerArousal >= 20:
+            SexScenePenetrationReady = 1
+        end
+
+        if (SexSceneHadBlowjob = 1 or SexSceneHadVaginal = 1) and SexPlayerArousal >= 20:
+            SexSceneAnalUnlocked = 1
+        end
+    end
+
+    SexSceneDeepthroatUnlocked = 0
+
+    if $SexGirl = 'georgett' and (Friends['georgett'] >= 14 or GeorgettePortSexDone >= 1):
+        SexSceneDeepthroatUnlocked = 1
+    elseif DeepthroatUnlocked[$SexGirl] = 1:
+        SexSceneDeepthroatUnlocked = 1
+    elseif $SexGirl = 'amanda':
+        if AmandaOralStage >= 5:
+            SexSceneDeepthroatUnlocked = 1
+        end
+    elseif $SexGirl = 'melissa':
+        if MelissaOralStage >= 3 or sluttiness['melissa'] >= 50 or oralswallow['melissa'] >= 2:
+            SexSceneDeepthroatUnlocked = 1
+        end
+    elseif $SexGirl = 'inga':
+        if IngaDeepthroatUnlocked = 1 or IngaOralStage >= 3 or (sluttiness['inga'] >= 55 and OralCount['inga'] >= 5):
+            SexSceneDeepthroatUnlocked = 1
+        end
+    elseif $SexGirl = 'clarissa':
+        if sluttiness['clarissa'] >= 45 or BlowjobCount['clarissa'] >= 4:
+            SexSceneDeepthroatUnlocked = 1
+        end
+    elseif $SexGirl = 'becky':
+        if sluttiness['becky'] >= 45 or BlowjobCount['becky'] >= 4:
+            SexSceneDeepthroatUnlocked = 1
+        end
+    elseif $SexGirl = 'sandra':
+        if sluttiness['sandra'] >= 50 and BlowjobCount['sandra'] >= 4:
+            SexSceneDeepthroatUnlocked = 1
+        end
+    else
+        if sluttiness[$SexGirl] >= 50 and BlowjobCount[$SexGirl] >= 4:
+            SexSceneDeepthroatUnlocked = 1
+        end
+    end
+
+    SexSceneBlowjobMenuOk = 1
+
+    if $SexGirl = 'amanda':
+        gs 'SexSceneCalcAmandaBlowjobCap'
+
+        SexSceneNextBlowjobMenu = SexSceneBlowjobCount + 1
+
+        if SexSceneNextBlowjobMenu > 5:
+            SexSceneNextBlowjobMenu = 2
+        end
+
+        if SexSceneNextBlowjobMenu > AmandaBlowjobCap:
+            SexSceneBlowjobMenuOk = 0
+        end
+
+        killvar 'SexSceneNextBlowjobMenu'
+        killvar 'AmandaBlowjobCap'
+    end
+
+    gs 'SexSceneUpdatePlayerOut'
+    SexScenePlayerPenisOk = 1
+
+    if SexPlayerOut = 1 and debug = 0:
+        SexScenePlayerPenisOk = 0
+    end
+---
+
+#SexSceneCalcGirlOrgasmCap
+
+    SexGirlOrgasmCap = 0
+
+    if $SexGirl = 'amanda':
+        SexGirlOrgasmCap = 8
+    elseif $SexGirl = 'melissa':
+        SexGirlOrgasmCap = 7
+    elseif $SexGirl = 'sandra':
+        SexGirlOrgasmCap = 6
+    elseif $SexGirl = 'georgett':
+        SexGirlOrgasmCap = 8
+    end
+---
+
+#SexSceneCalcHoldBackChance
+
+    gs 'EnsureGirlData', $SexGirl
+
+    SexHoldBackChance = 28
+    SexHoldBackChance += sexual_endurance / 5
+    SexHoldBackChance += IntimStage[$SexGirl] * 2
+
+    if SexGirlArousal >= 85:
+        if SexScenePenetrationActive = 1 and ($SexActType = 'vaginal' or $SexActType = 'anal'):
+            SexHoldBackChance -= 22
+        elseif $SexActType = 'blowjob' or $SexActType = 'rimjob':
+            SexHoldBackChance -= 12
+        else
+            SexHoldBackChance -= 8
+        end
+    end
+
+    if SexHoldBackChance < 8:
+        SexHoldBackChance = 8
+    end
+
+    if SexHoldBackChance > 75:
+        SexHoldBackChance = 75
+    end
+---

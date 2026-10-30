@@ -1,83 +1,16 @@
 ! ================================================
-! MODULE: core/group_sex.qsps
-! Универсальное меню группового секса
+! FILE: modules/actions/sex/group_sex.qsps
+! MODULE: actions/sex
+! ???????? ????????? ????? (??? ? ???)
 ! ================================================
 
 #GroupSexMenu
-
-$GirlName = $ARGS[0]
-if $CurrentLoc = '':
-    $CurrentLoc = 'PlayerRoom'
-end
-
-cls
-gs 'ShowLocationScreenTitle', 'ГРУППОВОЙ СЕКС С <<$RealName[$GirlName]>>'
-
-gs 'Menu.Create','GroupMenu'
-
-! ====================== ДВА ПАРТНЁРА ======================
-gs 'MenuUiAdd','GroupMenu','Двойной вагинальный',''
-gs 'Menu.AddModule','GroupMenu',{
-    *p 'Два члена одновременно входят в её киску.'
-    gs 'ShowImage', $GirlName, $CurrentLoc, 'group', 'double_vaginal'
-    gs 'RegisterSex', $GirlName, 'double_vaginal', 1, 1
-    gs 'CorruptionProgress', $GirlName, 'group'
-}
-
-gs 'MenuUiAdd','GroupMenu','Двойное анальное',''
-gs 'Menu.AddModule','GroupMenu',{
-    *p 'Два члена одновременно растягивают её анус.'
-    gs 'ShowImage', $GirlName, $CurrentLoc, 'group', 'double_anal'
-    gs 'RegisterSex', $GirlName, 'double_anal', 1, 1
-    gs 'CorruptionProgress', $GirlName, 'group'
-}
-
-gs 'MenuUiAdd','GroupMenu','Один в рот + один в вагину',''
-gs 'Menu.AddModule','GroupMenu',{
-    *p 'Один член в рот, второй — в вагину.'
-    gs 'ShowImage', $GirlName, $CurrentLoc, 'group', 'oral_vaginal'
-    gs 'RegisterSex', $GirlName, 'oral_vaginal', 1, 1
-    gs 'CorruptionProgress', $GirlName, 'group'
-}
-
-gs 'MenuUiAdd','GroupMenu','Один в рот + один в попу',''
-gs 'Menu.AddModule','GroupMenu',{
-    *p 'Один член в рот, второй — в анус.'
-    gs 'ShowImage', $GirlName, $CurrentLoc, 'group', 'oral_anal'
-    gs 'RegisterSex', $GirlName, 'oral_anal', 1, 1
-    gs 'CorruptionProgress', $GirlName, 'group'
-}
-
-gs 'MenuUiAdd','GroupMenu','Один в вагину + один в попу',''
-gs 'Menu.AddModule','GroupMenu',{
-    *p 'Один член в вагину, второй — в анус.'
-    gs 'ShowImage', $GirlName, $CurrentLoc, 'group', 'vaginal_anal'
-    gs 'RegisterSex', $GirlName, 'vaginal_anal', 1, 1
-    gs 'CorruptionProgress', $GirlName, 'group'
-}
-
-! ====================== ТРИ И ЧЕТЫРЕ ПАРТНЁРА ======================
-gs 'MenuUiAdd','GroupMenu','Один в рот + один в вагину + один в попу (Airtight)',''
-gs 'Menu.AddModule','GroupMenu',{
-    *p 'Три члена одновременно заполняют все её отверстия.'
-    gs 'ShowImage', $GirlName, $CurrentLoc, 'group', 'triple_airtight'
-    gs 'RegisterSex', $GirlName, 'triple_airtight', 1, 1
-    gs 'CorruptionProgress', $GirlName, 'group'
-}
-
-gs 'MenuUiAdd','GroupMenu','Лесбийский секс между девушками',''
-gs 'Menu.AddModule','GroupMenu',{
-    *p 'Девушки страстно ласкают и лижут друг друга.'
-    gs 'ShowImage', $GirlName, $CurrentLoc, 'group', 'lesbian'
-    gs 'CorruptionProgress', $GirlName, 'group'
-}
-
-gs 'MenuUiAdd','GroupMenu','Вернуться в меню интима',''
-gs 'Menu.AddModule','GroupMenu',{
-    gt 'StartIntimMenu', $GirlName, $CurrentLoc
-}
-
-gs 'Menu.Show','GroupMenu'
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $GroupMenuGirl = $GirlKey
+    if $CurrentLoc = '':
+        $CurrentLoc = 'PlayerRoom'
+    end
+    gt 'GirlIntim', $GroupMenuGirl, $CurrentLoc
 ---
 
 ! ================================================
@@ -95,7 +28,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         *clr
         clr
         cla
@@ -245,7 +178,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         *p 'Сегодня вы не выдержите такую ночь.'
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
@@ -300,7 +233,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'WineShop'
@@ -353,7 +286,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt 'WineShop'
@@ -413,7 +346,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         *p 'Сегодня вы слишком вымотаны. Сёстры перенесут этот разговор — или не перенесут.'
 
         gs 'ActUiPrepare', 'Вернуться', 'return'
@@ -490,7 +423,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         *p 'Сегодня вы не выдержите такую ночь.'
 
         gs 'ActUiPrepare', 'Вернуться', 'return'
@@ -566,7 +499,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         *p 'Сегодня вы слишком устали для закулисья.'
 
         gs 'ActUiPrepare', 'Вернуться в главный зал', 'return'
@@ -640,7 +573,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         *p 'Сегодня не время для такого примирения.'
 
         gs 'ActUiPrepare', 'Вернуться', 'return'
@@ -717,7 +650,7 @@ gs 'Menu.Show','GroupMenu'
 
     gs 'CanCumToday'
 
-    if Result = 0 and debug = 0:
+    if PlayerCanCumToday = 0 and debug = 0:
         *p 'Инга мягко отказывает: "Сегодня — нет. Я устала."'
 
         gs 'ActUiPrepare', 'Вернуться', 'return'
@@ -831,4 +764,3 @@ gs 'Menu.Show','GroupMenu'
         gt 'WineShop'
     end
 ---
-

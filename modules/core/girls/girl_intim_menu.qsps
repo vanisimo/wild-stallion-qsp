@@ -1,10 +1,7 @@
 ! ================================================
-! FILE: modules/core/girl_intim_menu.qsps
-! Универсальное интимное меню девушки
-! Стабильная версия без выпадающего Menu.Show
-! Все действия выводятся обычными act
-! Debug-режим не блокируется лимитом Стефана
-! CorruptionProgress временно не вызывается, чтобы не улетать в неготовые брейкпоинты
+! FILE: modules/core/girls/girl_intim_menu.qsps
+! MODULE: core/girls
+! ??????? ??????? ???? ?????? ? ????????????? ?? ??????? ????????
 ! ================================================
 
 #StartIntimMenu
@@ -13,7 +10,7 @@
     $IntimReturnLoc = $ARGS[1]
 
     if $IntimGirl = '':
-        msg 'Ошибка: StartIntimMenu вызван без имени девушки.'
+        msg '??????: StartIntimMenu ?????? ??? ????? ???????.'
         exit
     end
 
@@ -28,38 +25,27 @@
     gt 'GirlIntim', $IntimGirl, $IntimReturnLoc
 ---
 
-! ================================================
-! FILE: modules/core/girl_intim_menu.qsps
-! Текст места для интимного меню
-! ================================================
-
 #IntimLocationText
     $IntimTextLoc = $ARGS[1]
 
     if $IntimTextLoc = 'PlayerRoom':
-        *p 'Вы находитесь в комнате Стефана. Здесь тихо и достаточно уединённо.'
+        *pl '?? ? ????? ??????? ???????. ????? ?????? ???????? ? ????? ???? ? ????? ?? ????????.'
     elseif $IntimTextLoc = 'SandraRoom':
-        *p 'Комната Сандры даёт вам достаточно уединения, но сама обстановка делает момент особенно напряжённым.'
+        *pl '? ??????? ?????? ???????? ? ??????, ?????????? ??? ?? ?????????? ????.'
     elseif $IntimTextLoc = 'MelissaRoom':
-        *p 'Комната Мелиссы скрыта от шума трактира. Здесь проще забыть о посторонних.'
+        *pl '??????? ??????? ?????? ?? ???? ????. ????? ????? ?????? ? ??????? ???????.'
     elseif $IntimTextLoc = 'AmandaRoom':
-        *p 'Комната Аманды кажется маленькой и тихой. Любое движение здесь ощущается особенно близким.'
+        *pl '? ?????? ??????? ?????? ???? ? ?????? ???????? ? ????? ??????? ???????? ????????.'
     elseif $IntimTextLoc = 'Kitchen':
-        *p 'На кухне не самое спокойное место. Нужно быть осторожнее.'
+        *pl '?? ????? ????? ?? ?????, ? ?? ?????????? ? ????? ?????? ????? ??????????? ????.'
     elseif $IntimTextLoc = 'TavernMain':
-        *p 'Главный зал слишком людный. Любая близость здесь требует крайней осторожности.'
+        *pl '? ???? ???????? ????? ? ????? ????????? ????? ??????? ???????????? ??? ????????? ????????.'
     else:
-        *p 'Вы выбираете момент, чтобы остаться ближе друг к другу.'
+        *pl '?? ????????? ?????????? ??????, ????? ???????? ? ??? ???????.'
     end
 
     killvar '$IntimTextLoc'
 ---
-! ================================================
-! FILE: modules/core/girl_intim_menu.qsps
-! Мягкая регистрация оргазма Стефана
-! В debug-режиме позволяет тестировать сверх дневного лимита
-! В обычном режиме уважает дневной лимит
-! ================================================
 
 #IntimRegisterPlayerCumSoft
     IntimCumRegistered = 0
@@ -87,17 +73,12 @@
             IntimCumRegistered = 1
             IntimPlayerOrgasmCount += 1
 
-            *pl '[DEBUG] Лимит Стефана был исчерпан, но тестовый оргазм зарегистрирован.'
+            *pl '[DEBUG] ????? ??????? ??? ????????, ?? ???????? ?????? ???????????????.'
         else:
-            msg 'Стефан слишком вымотан за сегодня.'
+            msg '?????? ??????? ??????? ?? ???????.'
         end
     end
 ---
-
-! ================================================
-! FILE: modules/core/girl_intim_menu.qsps
-! Мягкое повышение близости без прыжков в неготовые брейкпоинты
-! ================================================
 
 #IntimSoftProgress
     gs 'NormalizeGirlKey', $ARGS[0]
@@ -137,20 +118,12 @@
     gs 'ClampGirlSocialStats', $ProgressGirl
 ---
 
-! ================================================
-! FILE: modules/core/girl_intim_menu.qsps
-! Универсальная интимная сцена
-! Все переходы возвращают в StartIntimMenu или исходную локацию
-! ================================================
-
 #IntimScene
     gs 'NormalizeGirlKey', $ARGS[0]
     $SceneGirl = $GirlKey
     $SceneReturnLoc = $ARGS[1]
-    $SceneType = LCASE($ARGS[2])
 
     if $SceneGirl = '':
-        msg 'Ошибка: IntimScene вызван без имени девушки.'
         exit
     end
 
@@ -158,136 +131,8 @@
         $SceneReturnLoc = 'PlayerRoom'
     end
 
-    gs 'EnsureGirlData', $SceneGirl
-
-    if $RealName[$SceneGirl] = '':
-        $RealName[$SceneGirl] = UCASE(MID($SceneGirl, 1, 1)) + LCASE(MID($SceneGirl, 2))
-    end
-
-    if $SceneType <> 'kiss' and $SceneType <> 'caress':
-        if IntimPlayerOrgasmCount >= IntimMaxOrgasmCount and debug = 0:
-            msg 'Стефан уже достаточно вымотан в этой сцене.'
-            gt 'GirlIntim', $SceneGirl, $SceneReturnLoc
-        end
-    end
-
-    $IntimGirl = $SceneGirl
-    $IntimReturnLoc = $SceneReturnLoc
-
-    gs 'GirlIntimSessionBegin'
-    gs 'GirlIntimInitSceneState', $SceneGirl, $SceneReturnLoc
-
-    cls
-
-    gs 'GirlIntimShowSidebarWithAnchor', $SceneGirl
-
-    gs 'ShowLocationScreenTitle', 'ИНТИМ: ' + $RealName[$SceneGirl]
-
-    gs 'GirlIntimShowNpcMenuAnchor', 'main'
-    *pl ' '
-
-    if $SceneType = 'kiss':
-        *p 'Вы нежно целуете ' + $RealName[$SceneGirl] + '.'
-        *p 'Она отвечает не сразу, но не отстраняется.'
-
-        kissed[$SceneGirl] += 1
-        IntimForeplayDone = 1
-
-        gs 'IntimSoftProgress', $SceneGirl, 'kiss'
-    elseif $SceneType = 'caress':
-        *p 'Вы мягко прижимаете ' + $RealName[$SceneGirl] + ' к себе.'
-        *p 'Между вами становится заметно теплее.'
-
-        IntimForeplayDone = 1
-
-        gs 'IntimSoftProgress', $SceneGirl, 'caress'
-    elseif $SceneType = 'hand':
-        *p $RealName[$SceneGirl] + ' соглашается на более смелые ласки.'
-        *p 'Близость становится уже не просто разговором.'
-
-        gs 'RegisterSex', $SceneGirl, 'handjob', 0, 1
-        gs 'IntimSoftProgress', $SceneGirl, 'hand'
-        gs 'IntimRegisterPlayerCumSoft'
-
-        IntimForeplayDone = 1
-    elseif $SceneType = 'oral':
-        *p 'Она заметно волнуется, но всё же позволяет моменту продолжиться.'
-        *p 'Этот шаг делает ваши отношения гораздо откровеннее.'
-
-        gs 'RegisterOral', $SceneGirl, 0, 1
-        gs 'IntimSoftProgress', $SceneGirl, 'oral'
-        gs 'IntimRegisterPlayerCumSoft'
-
-        IntimForeplayDone = 1
-    elseif $SceneType = 'vaginal':
-        if virginity[$SceneGirl] = 1:
-            gt 'GirlFirstSex', $SceneGirl, $SceneReturnLoc
-        end
-
-        *p 'Вы переходите к полной близости с ' + $RealName[$SceneGirl] + '.'
-        *p 'Она принимает вас уже увереннее, чем раньше.'
-
-        gs 'RegisterSex', $SceneGirl, 'vaginal', 1, 1
-        gs 'IntimSoftProgress', $SceneGirl, 'vaginal'
-        gs 'IntimRegisterPlayerCumSoft'
-
-        IntimForeplayDone = 1
-    elseif $SceneType = 'anal':
-        if analvirgin[$SceneGirl] = 1:
-            gt 'GirlFirstAnal', $SceneGirl, $SceneReturnLoc
-        end
-
-        if IntimForeplayDone = 0 and sluttiness[$SceneGirl] < 60:
-            *p $RealName[$SceneGirl] + ' напряжённо качает головой.'
-            *p 'Без подготовки она не готова к такому.'
-
-            gs 'ActUiPrepare', 'Вернуться', 'return'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'GirlIntim', $SceneGirl, $SceneReturnLoc
-            end
-
-            exit
-        end
-
-        *p 'Вы переходите к особенно смелой близости.'
-        *p $RealName[$SceneGirl] + ' тяжело дышит, но не отстраняется.'
-
-        gs 'RegisterSex', $SceneGirl, 'anal', 1, 1
-        gs 'IntimSoftProgress', $SceneGirl, 'anal'
-        gs 'IntimRegisterPlayerCumSoft'
-
-        IntimForeplayDone = 1
-    else:
-        *p 'Вы немного задерживаетесь рядом с ней.'
-
-        gs 'IntimSoftProgress', $SceneGirl, 'other'
-    end
-
-    *pl ' '
-
-    if debug = 1:
-        *pl '[DEBUG] IntimScene: ' + $SceneGirl + ' / ' + $SceneType
-        *pl '[DEBUG] Оргазмы сцены: ' + STR(IntimPlayerOrgasmCount) + ' / ' + STR(IntimMaxOrgasmCount)
-        *pl '[DEBUG] Сегодня: ' + STR(daily_cum_count) + ' / ' + STR(max_daily_cum)
-        *pl ' '
-    end
-
-    gs 'ActUiPrepare', 'Продолжить', 'generic'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'GirlIntim', $SceneGirl, $SceneReturnLoc
-    end
-
-    gs 'ActUiPrepare', 'Закончить', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'IntimEnd', $SceneGirl, $SceneReturnLoc
-    end
+    gt 'SexSceneStart', $SceneGirl, $SceneReturnLoc
 ---
-
-! ================================================
-! FILE: modules/core/girl_intim_menu.qsps
-! Завершение интимной сцены
-! Сбрасывает временные переменные сцены и возвращает игрока
-! ================================================
 
 #IntimEnd
     gs 'NormalizeGirlKey', $ARGS[0]
@@ -298,23 +143,6 @@
         $IntimEndReturnLoc = 'TavernMain'
     end
 
-    cls
-
-    if $IntimEndGirl <> '':
-        gs 'ShowGirlSidebar', $IntimEndGirl
-    end
-
-    gs 'ShowLocationScreenTitle', 'ЗАВЕРШЕНИЕ'
-
-    *p 'Вы приводите себя в порядок и стараетесь не привлекать лишнего внимания.'
-
     gs 'GirlIntimSessionEnd'
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Вернуться', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $IntimEndReturnLoc
-    end
+    gt $IntimEndReturnLoc
 ---
-
