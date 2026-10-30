@@ -58,7 +58,7 @@
         ! 1. Важная беседа
         gs 'GirlTalkHasImportantTopics', $MenuCurrentGirl
         if GirlTalkImportantTopicsCount > 0:
-            gs 'MenuUiAdd', $MenuName, 'Важная беседа', 'important'
+            gs 'MenuUiAdd', $MenuName, '* Важная беседа', 'important'
             gs 'Menu.AddModule', $MenuName, {
                 gt 'GirlTalkImportantScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
             }
@@ -88,10 +88,14 @@
 
         ! 5. Наказ
         if $MenuCurrentGirl = 'amanda' or $MenuCurrentGirl = 'melissa' or $MenuCurrentGirl = 'sandra':
-            gs 'MenuUiAdd', $MenuName, 'Наказ', 'policy'
-            gs 'Menu.AddModule', $MenuName, {
-                gt 'GirlTalkOrdersScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
-            }
+            gs 'GirlTalkOrdersCheckAvailable', $MenuCurrentGirl
+            if GirlTalkOrdersCount > 0:
+                gs 'MenuUiAdd', $MenuName, 'Наказ', 'policy'
+                gs 'Menu.AddModule', $MenuName, {
+                    gt 'GirlTalkOrdersScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
+                }
+            end
+            killvar 'GirlTalkOrdersCount'
         end
 
         ! 6. Интим

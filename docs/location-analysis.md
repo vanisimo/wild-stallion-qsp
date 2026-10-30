@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 507
-- Locations: 3952
-- Locations with direct incoming calls: 3398
+- Locations: 3953
+- Locations with direct incoming calls: 3399
 - Locations without direct incoming calls: 554
 - Review candidates without direct incoming calls: 216
 - Classified entry/helper locations without direct incoming calls: 338
@@ -585,11 +585,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ActUiPrepare` | 1805 |
 | `ShowLocationScreenTitle` | 810 |
 | `SceneShowVisual` | 738 |
-| `Menu.AddModule` | 695 |
-| `MenuUiAdd` | 685 |
+| `Menu.AddModule` | 713 |
+| `MenuUiAdd` | 708 |
 | `EnsureGirlData` | 263 |
 | `ClampGirlSocialStats` | 247 |
-| `NormalizeGirlKey` | 215 |
+| `NormalizeGirlKey` | 216 |
 | `TavernMain` | 166 |
 | `ShowGirlSidebar` | 119 |
 | `Menu.Create` | 106 |
@@ -602,9 +602,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MarketDance` | 77 |
 | `PrintMainP` | 70 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `PrintTitleLine` | 51 |
-| `GirlTalkResult` | 47 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
+| `GirlTalkResult` | 51 |
 | `ShowImagePath` | 46 |
 | `SaveLastHallEvent` | 45 |
 
