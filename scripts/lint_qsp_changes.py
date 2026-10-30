@@ -6,9 +6,10 @@ Checks:
 3. Duplicate #LocationName across all connected folders in qsp-project.json.
 4. @qsp/converters (readQsps) parse verification on modified .qsps files (catches unclosed quotes).
 5. Bare `act 'Label':` without second icon argument ($ActUiIconPath).
-6. Mandatory `! [AI-WORKED]` header in modified *_text.qsps files (excluding USER-OWNED TEXT).
-7. Glued consecutive `*p '...'` lines without a trailing space.
-8. Prohibited Christian / non-lore terms («боже», «господи», «ради бога», «перекрестился») in modified non-USER-OWNED *_text.qsps files.
+6. Eaten $-variables (e.g. `= LCASE([0])`, `if  = '...'`, `killvar ''`).
+7. Mandatory `! [AI-WORKED]` header in modified *_text.qsps files (excluding USER-OWNED TEXT).
+8. Glued consecutive `*p '...'` lines without a trailing space.
+9. Prohibited Christian / non-lore terms («боже», «господи», «ради бога», «перекрестился») in modified non-USER-OWNED *_text.qsps files.
 """
 
 from __future__ import annotations
@@ -24,6 +25,10 @@ LOCATION_RE = re.compile(r"^\s*#\s*(\S+)\s*$")
 SEPARATOR_RE = re.compile(r"^\s*---\s*(?:!.*)?$")
 BARE_ACT_RE = re.compile(
     r"^\s*act\s+(?:'(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"|\$[A-Za-z0-9_.]+)\s*:",
+    re.IGNORECASE,
+)
+EATEN_VAR_RE = re.compile(
+    r"(?:^\s*=\s*|\b(?:if|elseif)\s+=\s*|killvar\s+''|(?<![A-Za-z0-9_$])\[0\])",
     re.IGNORECASE,
 )
 STAR_P_LITERAL_RE = re.compile(r"^\s*\*p\s+'((?:''|[^'])*)'\s*$", re.IGNORECASE)
@@ -161,6 +166,11 @@ def check_qsps_files(repo_root: Path, files: list[Path]) -> list[str]:
             stripped = line.strip()
             if not stripped or stripped.startswith("!"):
                 continue
+
+            if EATEN_VAR_RE.search(line):
+                errors.append(
+                    f"{rel_path}:{idx}: пропущено имя переменной (возможно, съедена $-переменная): {stripped[:60]}"
+                )
 
             if BARE_ACT_RE.match(line):
                 errors.append(

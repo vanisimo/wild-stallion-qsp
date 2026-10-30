@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 507
-- Locations: 3941
+- Locations: 3952
 
 ## modules/actions
 
@@ -161,10 +161,11 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkBuildOrdersMenu` | `modules/actions/dialogs/girl_talk.qsps` | 2381 |
 | `GirlTalkBuildSandraMainMenu` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 125 |
 | `GirlTalkBuildTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 267 |
-| `GirlTalkBuildTouchMenu` | `modules/actions/dialogs/girl_talk_touch.qsps` | 81 |
+| `GirlTalkBuildTouchMenu` | `modules/actions/dialogs/girl_talk_touch.qsps` | 120 |
 | `GirlTalkBuildTownMainMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 17 |
 | `GirlTalkChatScreen` | `modules/actions/dialogs/girl_talk.qsps` | 2079 |
 | `GirlTalkCheckNpcLinkAvailable` | `modules/actions/dialogs/girl_talk.qsps` | 117 |
+| `GirlTalkCheckSandraThreshold` | `modules/actions/dialogs/girl_talk_touch.qsps` | 239 |
 | `GirlTalkClarissaHomePrintText` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 344 |
 | `GirlTalkClarissaHomeProgressText` | `modules/actions/dialogs/girl_talk_clarissa_text.qsps` | 62 |
 | `GirlTalkClarissaHomeRun` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 309 |
@@ -322,7 +323,10 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 240 |
 | `GirlTalkRefreshTopicsMenuIfAllowed` | `modules/actions/dialogs/girl_talk_session.qsps` | 63 |
 | `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 341 |
+| `GirlTalkResolveClimaxOption` | `modules/actions/dialogs/girl_talk_touch.qsps` | 343 |
+| `GirlTalkResolveFollowupOption` | `modules/actions/dialogs/girl_talk_touch.qsps` | 246 |
 | `GirlTalkResolveMood` | `modules/actions/dialogs/girl_talk_images.qsps` | 10 |
+| `GirlTalkResolveTouchContext` | `modules/actions/dialogs/girl_talk_touch.qsps` | 8 |
 | `GirlTalkResult` | `modules/actions/dialogs/girl_talk.qsps` | 793 |
 | `GirlTalkRootAppendPersonalMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 12 |
 | `GirlTalkRunTopic` | `modules/actions/dialogs/girl_talk.qsps` | 2149 |
@@ -356,19 +360,26 @@ Generated from active project files in `qsp-project.json`.
 | `GirlTalkTavernPrintText` | `modules/actions/dialogs/girl_talk_tavern.qsps` | 205 |
 | `GirlTalkTavernRun` | `modules/actions/dialogs/girl_talk_tavern.qsps` | 8 |
 | `GirlTalkTavernText` | `modules/actions/dialogs/girl_talk_tavern_text.qsps` | 9 |
-| `GirlTalkTouchAction` | `modules/actions/dialogs/girl_talk_touch.qsps` | 159 |
-| `GirlTalkTouchAmandaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 83 |
-| `GirlTalkTouchBeckyText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 639 |
-| `GirlTalkTouchClarissaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 769 |
-| `GirlTalkTouchGenericText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 525 |
-| `GirlTalkTouchGeorgetteText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 1271 |
-| `GirlTalkTouchIngaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 901 |
-| `GirlTalkTouchIrmaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 1027 |
-| `GirlTalkTouchLizetteText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 1149 |
-| `GirlTalkTouchMelissaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 231 |
-| `GirlTalkTouchSandraText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 377 |
-| `GirlTalkTouchScreen` | `modules/actions/dialogs/girl_talk_touch.qsps` | 8 |
-| `GirlTalkTouchText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 15 |
+| `GirlTalkTouchAction` | `modules/actions/dialogs/girl_talk_touch.qsps` | 431 |
+| `GirlTalkTouchAmandaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 123 |
+| `GirlTalkTouchBeckyText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 478 |
+| `GirlTalkTouchChurchQuickText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 102 |
+| `GirlTalkTouchClarissaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 528 |
+| `GirlTalkTouchClimax` | `modules/actions/dialogs/girl_talk_touch.qsps` | 709 |
+| `GirlTalkTouchClimaxText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 1360 |
+| `GirlTalkTouchDanceQuickText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 67 |
+| `GirlTalkTouchEnvironmentText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 932 |
+| `GirlTalkTouchFollowup` | `modules/actions/dialogs/girl_talk_touch.qsps` | 637 |
+| `GirlTalkTouchFollowupText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 1034 |
+| `GirlTalkTouchGenericText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 397 |
+| `GirlTalkTouchGeorgetteText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 826 |
+| `GirlTalkTouchIngaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 578 |
+| `GirlTalkTouchIrmaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 628 |
+| `GirlTalkTouchLizetteText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 727 |
+| `GirlTalkTouchMelissaText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 248 |
+| `GirlTalkTouchSandraText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 320 |
+| `GirlTalkTouchScreen` | `modules/actions/dialogs/girl_talk_touch.qsps` | 21 |
+| `GirlTalkTouchText` | `modules/actions/dialogs/girl_talk_touch_text.qsps` | 13 |
 | `GirlTalkTownLifePrintText` | `modules/actions/dialogs/girl_talk_town.qsps` | 58 |
 | `GirlTalkTownLifeRun` | `modules/actions/dialogs/girl_talk_town.qsps` | 34 |
 | `GirlTalkTownLifeText` | `modules/actions/dialogs/girl_talk_town_text.qsps` | 9 |
@@ -1893,21 +1904,21 @@ Generated from active project files in `qsp-project.json`.
 | `ChurchSundayServiceBuildMenu` | `modules/events/church/church_sunday_service_menus.qsps` | 53 |
 | `ChurchSundayServiceCanEnter` | `modules/events/church/church_sunday_service.qsps` | 73 |
 | `ChurchSundayServiceEmbedMenuLink` | `modules/events/church/church_sunday_service_menus.qsps` | 27 |
-| `ChurchSundayServiceGeorgetteHint` | `modules/events/church/church_sunday_service_menus.qsps` | 95 |
-| `ChurchSundayServiceInspect` | `modules/events/church/church_sunday_service_menus.qsps` | 153 |
+| `ChurchSundayServiceGeorgetteHint` | `modules/events/church/church_sunday_service_menus.qsps` | 120 |
+| `ChurchSundayServiceInspect` | `modules/events/church/church_sunday_service_menus.qsps` | 178 |
 | `ChurchSundayServiceInspectIrma` | `modules/events/church/church_sunday_service.qsps` | 113 |
 | `ChurchSundayServiceInspectMayor` | `modules/events/church/church_sunday_service.qsps` | 108 |
 | `ChurchSundayServiceMenu` | `modules/events/church/church_sunday_service.qsps` | 41 |
 | `ChurchSundayServiceMenuRunInspect` | `modules/events/church/church_sunday_service_menus.qsps` | 7 |
 | `ChurchSundayServiceMenuRunTalk` | `modules/events/church/church_sunday_service_menus.qsps` | 17 |
-| `ChurchSundayServicePrintIntro` | `modules/events/church/church_sunday_service_menus.qsps` | 238 |
+| `ChurchSundayServicePrintIntro` | `modules/events/church/church_sunday_service_menus.qsps` | 263 |
 | `ChurchSundayServiceRumor` | `modules/events/church/church_sunday_rumors.qsps` | 52 |
 | `ChurchSundayServiceRumorAct` | `modules/events/church/church_sunday_rumors.qsps` | 37 |
 | `ChurchSundayServiceSermon` | `modules/events/church/church_sunday_service.qsps` | 45 |
 | `ChurchSundayServiceShowMenu` | `modules/events/church/church_sunday_service_menus.qsps` | 41 |
-| `ChurchSundayServiceShowNpcImage` | `modules/events/church/church_sunday_service_menus.qsps` | 129 |
-| `ChurchSundayServiceTalk` | `modules/events/church/church_sunday_service_menus.qsps` | 181 |
-| `ChurchSundayServiceTalkAllowed` | `modules/events/church/church_sunday_service_menus.qsps` | 105 |
+| `ChurchSundayServiceShowNpcImage` | `modules/events/church/church_sunday_service_menus.qsps` | 154 |
+| `ChurchSundayServiceTalk` | `modules/events/church/church_sunday_service_menus.qsps` | 206 |
+| `ChurchSundayServiceTalkAllowed` | `modules/events/church/church_sunday_service_menus.qsps` | 130 |
 | `ChurchSundayServiceTalkBecky` | `modules/events/church/church_sunday_service.qsps` | 98 |
 | `ChurchSundayServiceTalkFamily` | `modules/events/church/church_sunday_service.qsps` | 88 |
 | `ChurchSundayServiceTalkGeorgette` | `modules/events/church/church_sunday_service.qsps` | 103 |
@@ -2070,18 +2081,18 @@ Generated from active project files in `qsp-project.json`.
 | `FamilyNobleDinnerReactions` | `modules/events/family/family_noble_celebration.qsps` | 50 |
 | `FamilyNobleReactionPrintText` | `modules/events/family/family_noble_reaction_text.qsps` | 8 |
 | `FridayDanceAdvanceRound` | `modules/events/dance/friday_dance_core.qsps` | 620 |
-| `FridayDanceAfter` | `modules/events/dance/friday_dance_core.qsps` | 1062 |
+| `FridayDanceAfter` | `modules/events/dance/friday_dance_core.qsps` | 1067 |
 | `FridayDanceAfterText` | `modules/events/dance/friday_dance_text.qsps` | 289 |
 | `FridayDanceBeckyDanceText` | `modules/events/dance/friday_dance_text.qsps` | 220 |
 | `FridayDanceBeckyTalkText` | `modules/events/dance/friday_dance_text.qsps` | 212 |
 | `FridayDanceCardText` | `modules/events/dance/friday_dance_text.qsps` | 240 |
 | `FridayDanceDebugMenu` | `modules/events/dance/friday_dance_core.qsps` | 821 |
 | `FridayDanceEmbedMenuLink` | `modules/events/dance/friday_dance_core.qsps` | 897 |
-| `FridayDanceGirlRefuseNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 994 |
+| `FridayDanceGirlRefuseNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 999 |
 | `FridayDanceIngaBoyfriendRefusal` | `modules/events/dance/friday_dance_core.qsps` | 573 |
 | `FridayDanceIngaRefusalBoyfriendText` | `modules/events/dance/friday_dance_text.qsps` | 285 |
 | `FridayDanceInit` | `modules/events/dance/friday_dance_core.qsps` | 19 |
-| `FridayDanceInviteAction` | `modules/events/dance/friday_dance_core.qsps` | 970 |
+| `FridayDanceInviteAction` | `modules/events/dance/friday_dance_core.qsps` | 975 |
 | `FridayDanceMayorSpeech` | `modules/events/dance/friday_dance_core.qsps` | 190 |
 | `FridayDanceMayorSpeechText` | `modules/events/dance/friday_dance_text.qsps` | 16 |
 | `FridayDanceMelissaDanceText` | `modules/events/dance/friday_dance_text.qsps` | 236 |

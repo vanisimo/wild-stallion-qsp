@@ -1,9 +1,22 @@
-﻿! ================================================
+! ================================================
 ! FILE: modules/actions/dialogs/girl_talk_touch.qsps
 ! MODULE: actions/dialogs
-! [AI-WORKED] Текст переработан / дополнен ассистентом 29.10.2026
-! Тактильные инициативы и приставания Стефана («Заигрывание»)
+! [AI-WORKED] Текст переработан / дополнен ассистентом 30.10.2026
+! Тактильные инициативы Стефана: 3-шаговые цепочки (Шаг 1 -> Шаг 2 укрытие -> Шаг 3 пик за стойкой/в углу)
 ! ================================================
+
+#GirlTalkResolveTouchContext
+    $TouchCtxLoc = $ARGS[0]
+    $TouchLocContext = 'public'
+
+    if $TouchCtxLoc = 'Home' or $TouchCtxLoc = 'GirlsRoom' or $TouchCtxLoc = 'StefanRoom' or $TouchCtxLoc = 'PlayerRoom' or $TouchCtxLoc = 'AmandaRoom' or $TouchCtxLoc = 'MelissaRoom' or $TouchCtxLoc = 'SandraRoom' or $TouchCtxLoc = 'BeckyHome' or $TouchCtxLoc = 'IngaRoom':
+        $TouchLocContext = 'private'
+    elseif $TouchCtxLoc = 'TavernMain' or $TouchCtxLoc = 'TavernHall' or $TouchCtxLoc = 'Kitchen' or $TouchCtxLoc = 'BeckyShop' or $TouchCtxLoc = 'IrmaShop' or $TouchCtxLoc = 'WineShop':
+        $TouchLocContext = 'work'
+    end
+
+    killvar '$TouchCtxLoc'
+---
 
 #GirlTalkTouchScreen
     gs 'NormalizeGirlKey', $ARGS[0]
@@ -25,14 +38,11 @@
     gs 'ShowLocationScreenTitle', 'ЗАИГРЫВАНИЕ: ' + $RealName[$TalkGirl]
     gs 'SceneShowVisual', 'images/actions/flirt/' + $TalkGirl + '_touch_select', 'заигрывание: ' + $RealName[$TalkGirl], 'large', 'webp'
 
-    ! Проверка дневного лимита (максимум 2 раза в день)
-    if GirlTouchDailyCount[$TalkGirl] >= 2:
-        *pl 'Ты уже дважды за сегодня позволил себе вольности с ' + $RealName[$TalkGirl] + '.'
-        *pl 'Она мягко, но решительно отстраняется с улыбкой:'
-        *pl '— Стефан, на сегодня довольно. Дай мне спокойно заняться делами.'
+    if $TalkGirl = 'irma':
+        *pl 'Ирма спокойно приподнимает бровь, перебирая на столе мерные ленты и булавки:'
+        *pl '— Стефан, в моей мастерской руки распускают только во время примерок, и то — по делу.'
         *pl ' '
 
-        ! Единственная кнопка на панели act: Отойти
         gs 'ActUiPrepare', 'Отойти', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt $TalkReturnLoc
@@ -40,9 +50,39 @@
         exit
     end
 
-    ! Определение ступени коррупции / раскрепощённости
+    if $TalkGirl = 'sandra' and $TalkReturnLoc <> 'Kitchen':
+        *pl 'Сандра качает головой и бросает выразительный взгляд в сторону кухни:'
+        *pl '— Стефан, не посреди же зала на виду у дочерей. Загляни ко мне на кухню, когда буду у печи.'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Отойти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $TalkReturnLoc
+        end
+        exit
+    end
+
+    if GirlTouchDailyCount[$TalkGirl] >= 2:
+        *pl 'Ты уже дважды за сегодня уделил особое внимание ' + $RealName[$TalkGirl] + '.'
+        *pl 'Она мягко, но решительно отстраняется с улыбкой:'
+        *pl '— Стефан, на сегодня довольно. Дай мне спокойно заняться делами.'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Отойти', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $TalkReturnLoc
+        end
+        exit
+    end
+
     if $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
         TouchStage = FamilyCorruptionStage
+    elseif $TalkGirl = 'becky':
+        if sluttiness['becky'] >= 25 or otkroven['becky'] >= 10 or Friends['becky'] >= 8 or BeckyHomeStage >= 1:
+            TouchStage = 4
+        else:
+            TouchStage = 3
+        end
     else:
         if sluttiness[$TalkGirl] < 20 and otkroven[$TalkGirl] < 15:
             TouchStage = 1
@@ -53,25 +93,24 @@
         end
     end
 
+    gs 'GirlTalkResolveTouchContext', $TalkReturnLoc
     gs 'GirlTalkBuildTouchMenu'
     gs 'GetNpcMenuLinkHref', 'GirlTalkTouchMenu', $RealName[$TalkGirl]
 
-    ! Контекстный вводный текст в зависимости от локации
     if $TalkReturnLoc = 'Kitchen':
-        *pl $NpcMenuLinkHref + ' стоит у кухонного стола среди звона посуды. В жаре очага вы остаётесь наедине, укрытые от шума зала.'
+        *pl $NpcMenuLinkHref + ' стоит у кухонного стола среди звона посуды. За дверью кухни вы укрыты от прямых взглядов из зала.'
     elseif $TalkReturnLoc = 'TavernMain' or $TalkReturnLoc = 'TavernHall':
-        *pl $NpcMenuLinkHref + ' проходит между дубовыми столиками зала. В общем гуле голосов твоё движение остаётся незамеченным.'
-    elseif $TalkReturnLoc = 'Home' or $TalkReturnLoc = 'GirlsRoom' or $TalkReturnLoc = 'StefanRoom':
-        *pl $NpcMenuLinkHref + ' останавливается в тишине жилых комнат. За закрытой дверью вам никто не мешает.'
+        *pl $NpcMenuLinkHref + ' проходит между дубовыми столиками зала. В общем гуле голосов можно выбрать момент для сближения.'
+    elseif $TouchLocContext = 'private':
+        *pl $NpcMenuLinkHref + ' останавливается в тишине жилой комнаты. За закрытой дверью вам никто не мешает.'
     elseif $TalkReturnLoc = 'BeckyShop' or $TalkReturnLoc = 'IrmaShop' or $TalkReturnLoc = 'WineShop':
-        *pl $NpcMenuLinkHref + ' стоит за прилавком среди полок с товарами, укрытая от взглядов с улицы.'
+        *pl $NpcMenuLinkHref + ' стоит за прилавком среди полок с товарами, укрытая от прохожих с улицы.'
     else:
         *pl $NpcMenuLinkHref + ' делает шаг навстречу, оказавшись в полушаге от тебя.'
     end
     killvar '$NpcMenuLinkHref'
     *pl ' '
 
-    ! Единственная кнопка на панели act: Отойти
     gs 'ActUiPrepare', 'Отойти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt $TalkReturnLoc
@@ -81,6 +120,37 @@
 #GirlTalkBuildTouchMenu
     gs 'Menu.Destroy', 'GirlTalkTouchMenu'
     gs 'Menu.Create', 'GirlTalkTouchMenu'
+
+    ! На пятничных танцах и в церкви — быстрая система из двух действий
+    if $TalkReturnLoc = 'MarketDance' or $TalkReturnLoc = 'Church' or $TalkReturnLoc = 'ChurchSundayService' or $TalkReturnLoc = 'ChurchSundayNoon':
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Шлёпнуть по попе', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'slap_butt'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Сжать грудь', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'touch_chest'
+        }
+        exit
+    end
+
+    ! Для Лизетты и Жоржетты — только быстрое действие «Шлёпнуть по попе»
+    if $TalkGirl = 'lizette' or $TalkGirl = 'georgett':
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Шлёпнуть по попе', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'slap_butt'
+        }
+        exit
+    end
+
+    if GirlOffenseDays[$TalkGirl] > 0:
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Обнять за плечи (смягчить обиду)', 'talk'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'hug'
+        }
+        exit
+    end
 
     ! --- 1. Низкая коррупция (TouchStage <= 1) ---
     if TouchStage <= 1:
@@ -116,16 +186,16 @@
             gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'kiss_neck'
         }
 
-        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Сжать ягодицу', 'flirt'
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Схватить за попу', 'flirt'
         gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
             gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'squeeze_butt'
         }
 
     ! --- 3. Высокая коррупция (TouchStage >= 4) ---
     else:
-        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Притянуть за талию', 'flirt'
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Схватить за попу', 'flirt'
         gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
-            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'waist'
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'squeeze_butt'
         }
 
         gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Прижать к себе и поцеловать в губы', 'flirt'
@@ -138,9 +208,19 @@
             gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'touch_chest'
         }
 
-        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Залезть рукой под юбку', 'flirt'
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Залезть рукой под юбку (пальцами)', 'flirt'
         gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
             gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'under_skirt'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Залезть под юбку (спуститься губами)', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'skirt_oral'
+        }
+
+        gs 'MenuUiAdd', 'GirlTalkTouchMenu', 'Положить её руку себе на пах', 'flirt'
+        gs 'Menu.AddModule', 'GirlTalkTouchMenu', {
+            gt 'GirlTalkTouchAction', $TalkGirl, $TalkReturnLoc, 'guide_hand'
         }
     end
 
@@ -153,6 +233,198 @@
             }
         end
         killvar 'GirlIntimMenuReady'
+    end
+---
+
+#GirlTalkCheckSandraThreshold
+    SandraMissingThreshold = 0
+    if LCASE($HallMissingPhase['sandra']) = 'hard' or LCASE($HallMissingPhase['sandra']) = 'free' or HallMissingHardLadderDone['sandra'] = 1 or HallMissingGirlPrivateCount['sandra'] >= 1 or SandraNpcPath >= 25:
+        SandraMissingThreshold = 1
+    end
+---
+
+#GirlTalkResolveFollowupOption
+    ! Шаг 1 -> Шаг 2 (укрыть спиной / отвести с глаз + усилить; на кухне у Сандры и в подсобке у Бекки — без пряток)
+    $FollowupActKey = ''
+    $FollowupActLabel = ''
+
+    if $TalkReturnLoc = 'MarketDance' or $TalkReturnLoc = 'Church' or $TalkReturnLoc = 'ChurchSundayService' or $TalkReturnLoc = 'ChurchSundayNoon' or $TalkGirl = 'lizette' or $TalkGirl = 'georgett':
+        exit
+    end
+
+    gs 'GirlTalkCheckSandraThreshold'
+
+    if $TouchAction = 'hug':
+        $FollowupActKey = 'hug_stroke_back'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Прижать к себе у стола и погладить вдоль поясницы'
+        else:
+            $FollowupActLabel = 'Закрыть спиной от прохода и погладить вдоль поясницы'
+        end
+    elseif $TouchAction = 'kiss_cheek' and (TouchStage >= 1 or otkroven[$TalkGirl] >= 8):
+        $FollowupActKey = 'kiss_corner_lips'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Повернуть её лицо за подбородок и поцеловать в уголок губ'
+        else:
+            $FollowupActLabel = 'Заслонить собой от взглядов и поцеловать в уголок губ'
+        end
+    elseif $TouchAction = 'slap_butt':
+        $FollowupActKey = 'slap_pull_hide'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Перехватить за талию и по-хозяйски погладить место шлепка'
+        else:
+            $FollowupActLabel = 'Перехватить, закрыть спиной и погладить место шлепка'
+        end
+    elseif $TouchAction = 'waist' and (TouchStage >= 2 or otkroven[$TalkGirl] >= 12):
+        $FollowupActKey = 'waist_behind_lock'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Прижать спиной к своей груди у стола'
+        elseif $TalkGirl = 'clarissa' or $TalkGirl = 'inga':
+            $FollowupActLabel = 'Оттеснить за высокие ящики и бочки, прижав спиной к груди'
+        else:
+            $FollowupActLabel = 'Оттеснить в нишу и зажать спиной к своей груди'
+        end
+    elseif $TouchAction = 'kiss_neck' and (TouchStage >= 2 or otkroven[$TalkGirl] >= 12):
+        $FollowupActKey = 'neck_collar_pull'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Сдвинуть воротник платья и целовать ключицу'
+        else:
+            $FollowupActLabel = 'Закрыть спиной от дверей, сдвинуть воротник и целовать ключицу'
+        end
+    elseif $TouchAction = 'squeeze_butt' and (TouchStage >= 2 or otkroven[$TalkGirl] >= 12):
+        $FollowupActKey = 'squeeze_both_hide'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Прижать к краю стола и сжать обеими руками'
+        else:
+            $FollowupActLabel = 'Укрыть своей спиной и сжать посильнее обеими руками'
+        end
+    elseif $TouchAction = 'kiss_lips':
+        $FollowupActKey = 'kiss_tongue'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Прижать к столу и поцеловать с языком'
+        else:
+            $FollowupActLabel = 'Скрыть за широкой спиной и поцеловать с языком'
+        end
+    elseif $TouchAction = 'touch_chest' and (TouchStage >= 3 or otkroven[$TalkGirl] >= 18):
+        $FollowupActKey = 'chest_hide_counter'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Ослабить шнуровку у стола и освободить её пышную грудь'
+        else:
+            $FollowupActLabel = 'Прикрыть спиной, ослабить шнуровку и залезть рукой под корсаж'
+        end
+    elseif $TouchAction = 'under_skirt' and (TouchStage >= 4 or sluttiness[$TalkGirl] >= 25):
+        $FollowupActKey = 'skirt_between_legs'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Прижать к столу и положить ладонь между бёдер'
+        else:
+            $FollowupActLabel = 'Закрыть собой от взглядов и положить ладонь между бёдер'
+        end
+    elseif $TouchAction = 'skirt_oral' and (TouchStage >= 4 or sluttiness[$TalkGirl] >= 30):
+        $FollowupActKey = 'skirt_oral_counter_sit'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Усадить на край стола в подсобке и развести её бёдра'
+        elseif $TalkGirl = 'clarissa' or $TalkGirl = 'inga':
+            $FollowupActLabel = 'Увести за стойку и бочки, усадив на край прилавка'
+        else:
+            $FollowupActLabel = 'Затащить за стойку / в укрытие и усадить на край'
+        end
+    elseif $TouchAction = 'guide_hand' and (TouchStage >= 4 or sluttiness[$TalkGirl] >= 30):
+        $FollowupActKey = 'groin_hide_unbutton'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $FollowupActLabel = 'Прижать к столу и расстегнуть штаны'
+        elseif $TalkGirl = 'clarissa' or $TalkGirl = 'inga':
+            $FollowupActLabel = 'Затащить за стойку и ящики, расстегнув штаны'
+        else:
+            $FollowupActLabel = 'Затащить за стойку / в укрытие и расстегнуть штаны'
+        end
+    end
+---
+
+#GirlTalkResolveClimaxOption
+    ! Шаг 2 -> Шаг 3 (финальный пик микро-сценки в укрытии / за стойкой / у стола)
+    $ClimaxActKey = ''
+    $ClimaxActLabel = ''
+    gs 'GirlTalkCheckSandraThreshold'
+
+    if $FollowAction = 'hug_stroke_back' and (TouchStage >= 1 or love[$TalkGirl] >= 8):
+        $ClimaxActKey = 'hug_chin_gaze'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $ClimaxActLabel = 'Приподнять за подбородок у стола и задержаться у самых губ'
+        else:
+            $ClimaxActLabel = 'Приподнять за подбородок в укрытии и задержаться у самых губ'
+        end
+    elseif $FollowAction = 'kiss_corner_lips' and (TouchStage >= 2 or otkroven[$TalkGirl] >= 12):
+        $ClimaxActKey = 'kiss_tongue'
+        $ClimaxActLabel = 'Перейти на глубокий поцелуй с языком'
+    elseif $FollowAction = 'slap_pull_hide' and (TouchStage >= 2 or otkroven[$TalkGirl] >= 12):
+        $ClimaxActKey = 'slap_hold_hips'
+        $ClimaxActLabel = 'Схватить обеими руками и прижать к себе вплотную'
+    elseif $FollowAction = 'waist_behind_lock' and (TouchStage >= 2 or otkroven[$TalkGirl] >= 15):
+        $ClimaxActKey = 'waist_two_hands'
+        $ClimaxActLabel = 'Провести одной рукой вверх к корсажу, а другой — по бедру'
+    elseif $FollowAction = 'neck_collar_pull' and (TouchStage >= 2 or otkroven[$TalkGirl] >= 15):
+        $ClimaxActKey = 'neck_turn_kiss'
+        $ClimaxActLabel = 'Прикусить шею и развернуть к себе для поцелуя'
+    elseif $FollowAction = 'squeeze_both_hide' and (TouchStage >= 3 or otkroven[$TalkGirl] >= 18):
+        $ClimaxActKey = 'squeeze_lift_press'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            if SandraMissingThreshold = 1 or $TalkGirl = 'becky':
+                $ClimaxActLabel = 'Нагнуть через край стола для быстрой близости'
+            else:
+                $ClimaxActLabel = 'Приподнять и усадить на край стола, вжав в себя'
+            end
+        elseif $TalkGirl = 'clarissa' or $TalkGirl = 'inga':
+            $ClimaxActLabel = 'Завести за высокие бочки и ящики, приподняв на себя'
+        else:
+            $ClimaxActLabel = 'Завести за стойку / в угол и приподнять за ягодицы на себя'
+        end
+    elseif $FollowAction = 'kiss_tongue' and (TouchStage >= 3 or otkroven[$TalkGirl] >= 18):
+        $ClimaxActKey = 'kiss_lift_counter'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $ClimaxActLabel = 'Не прерывая поцелуя, усадить на стол и нырнуть под подол'
+        else:
+            $ClimaxActLabel = 'Не прерывая поцелуя, усадить на край стойки / стола в укрытии'
+        end
+    elseif $FollowAction = 'chest_hide_counter' and (TouchStage >= 3 or otkroven[$TalkGirl] >= 20):
+        $ClimaxActKey = 'chest_kiss_decollete'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            if SandraMissingThreshold = 1 or $TalkGirl = 'becky':
+                $ClimaxActLabel = 'Зажать себя между её пышных грудей у стола'
+            else:
+                $ClimaxActLabel = 'Оголить вырез у стола и целовать её грудь'
+            end
+        else:
+            $ClimaxActLabel = 'Затащить глубже за стойку, оголить вырез и целовать грудь'
+        end
+    elseif $FollowAction = 'skirt_between_legs' and (TouchStage >= 4 or sluttiness[$TalkGirl] >= 28):
+        $ClimaxActKey = 'skirt_hide_counter'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            if SandraMissingThreshold = 1 or $TalkGirl = 'becky':
+                $ClimaxActLabel = 'Прижать к столу и взять быстрым напором'
+            else:
+                $ClimaxActLabel = 'Прижать к столу и продолжить ласку рукой'
+            end
+        elseif $TalkGirl = 'clarissa' or $TalkGirl = 'inga':
+            $ClimaxActLabel = 'Утащить за прилавок и бочки, продолжив пальцами'
+        else:
+            $ClimaxActLabel = 'Утащить за стойку / прилавок и продолжить пальцами'
+        end
+    elseif $FollowAction = 'skirt_oral_counter_sit':
+        $ClimaxActKey = 'skirt_oral_climax'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $ClimaxActLabel = 'Нырнуть головой под юбку у стола и продолжить языком'
+        else:
+            $ClimaxActLabel = 'Нырнуть головой под юбку за стойкой и продолжить языком'
+        end
+    elseif $FollowAction = 'groin_hide_unbutton':
+        $ClimaxActKey = 'groin_oral_climax'
+        if $TalkGirl = 'sandra' or $TalkGirl = 'becky':
+            $ClimaxActLabel = 'Опустить её на колени прямо у стола'
+        elseif $TalkGirl = 'clarissa' or $TalkGirl = 'inga':
+            $ClimaxActLabel = 'Опустить её на колени под прилавок лавки и встать за стойку'
+        else:
+            $ClimaxActLabel = 'Опустить её на колени под стойку и встать принимать заказы'
+        end
     end
 ---
 
@@ -173,9 +445,14 @@
     gs 'EnsureGirlData', $TalkGirl
     cls
 
-    ! Определение ступени коррупции / раскрепощённости
     if $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
         TouchStage = FamilyCorruptionStage
+    elseif $TalkGirl = 'becky':
+        if sluttiness['becky'] >= 25 or otkroven['becky'] >= 10 or Friends['becky'] >= 8 or BeckyHomeStage >= 1:
+            TouchStage = 4
+        else:
+            TouchStage = 3
+        end
     else:
         if sluttiness[$TalkGirl] < 20 and otkroven[$TalkGirl] < 15:
             TouchStage = 1
@@ -186,63 +463,154 @@
         end
     end
 
+    gs 'GirlTalkResolveTouchContext', $TalkReturnLoc
+
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
     gs 'ShowLocationScreenTitle', 'ЗАИГРЫВАНИЕ: ' + $RealName[$TalkGirl]
     gs 'SceneShowVisual', 'images/actions/flirt/' + $TalkGirl + '_' + $TouchAction, 'заигрывание: ' + $RealName[$TalkGirl] + ' (' + $TouchAction + ')', 'large', 'webp'
 
-    gs 'GirlTalkTouchText', $TalkGirl, $TouchAction
+    gs 'GirlTalkTouchText', $TalkGirl, $TouchAction, $TouchLocContext
+    gs 'GirlTalkTouchEnvironmentText', $TalkGirl, $TouchAction, $TouchLocContext
 
-    ! Учёт использования действия (лимит 2 в день)
     GirlTouchDailyCount[$TalkGirl] += 1
 
-    ! Статистика по действиям и коррупции
+    if not ($TouchAction = 'slap_butt' and TouchStage <= 1):
+        LastAttentionDay[$TalkGirl] = day
+    end
+
     if $TouchAction = 'hug':
         Friends[$TalkGirl] += 1
         love[$TalkGirl] += 1
+        if $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
+            FamilyTrust += 1
+            if FamilyTension > 0:
+                FamilyTension -= 1
+            end
+            if $TalkGirl = 'amanda':
+                GirlTrustStefan['amanda'] += 1
+                AmandaTrustStefan += 1
+            elseif $TalkGirl = 'melissa':
+                GirlTrustStefan['melissa'] += 1
+                MelissaTrustStefan += 1
+            elseif $TalkGirl = 'sandra':
+                SandraTrustStefan += 1
+                SandraTrust += 1
+            end
+        end
     elseif $TouchAction = 'kiss_cheek':
         love[$TalkGirl] += 1
         otkroven[$TalkGirl] += 1
+        if $TalkGirl = 'amanda':
+            GirlTrustStefan['amanda'] += 1
+            AmandaTrustStefan += 1
+        elseif $TalkGirl = 'melissa':
+            GirlTrustStefan['melissa'] += 1
+            MelissaTrustStefan += 1
+        elseif $TalkGirl = 'sandra':
+            SandraTrustStefan += 1
+            SandraTrust += 1
+        end
     elseif $TouchAction = 'slap_butt':
         if ($TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra') and FamilyCorruptionStage <= 1:
             GirlRebellion[$TalkGirl] += 1
             otkroven[$TalkGirl] += 1
+            FamilyTension += 1
+            if $TalkGirl = 'amanda':
+                AmandaRebellion += 1
+            elseif $TalkGirl = 'melissa':
+                MelissaFamilyConcern += 1
+            elseif $TalkGirl = 'sandra':
+                SandraMoralResistance += 1
+                SandraFamilyConcern += 1
+            end
         else:
             sluttiness[$TalkGirl] += 1
             otkroven[$TalkGirl] += 1
+            if $TalkGirl = 'amanda':
+                AmandaPlayerPath += 1
+            elseif $TalkGirl = 'melissa':
+                MelissaPlayerPath += 1
+            end
         end
     elseif $TouchAction = 'waist':
         love[$TalkGirl] += 1
         otkroven[$TalkGirl] += 1
         sluttiness[$TalkGirl] += 1
+        if $TalkGirl = 'amanda':
+            AmandaPlayerPath += 1
+        elseif $TalkGirl = 'melissa':
+            MelissaPlayerPath += 1
+            MelissaRespectStefan += 1
+        elseif $TalkGirl = 'sandra':
+            SandraTrust += 1
+        end
     elseif $TouchAction = 'kiss_neck':
         love[$TalkGirl] += 1
         otkroven[$TalkGirl] += 2
         sluttiness[$TalkGirl] += 1
+        if $TalkGirl = 'amanda':
+            AmandaPlayerPath += 1
+        elseif $TalkGirl = 'melissa':
+            MelissaPlayerPath += 1
+        elseif $TalkGirl = 'sandra':
+            if SandraMoralResistance > 0:
+                SandraMoralResistance -= 1
+            end
+        end
     elseif $TouchAction = 'squeeze_butt':
         sluttiness[$TalkGirl] += 2
         otkroven[$TalkGirl] += 1
+        if $TalkGirl = 'amanda':
+            AmandaPlayerPath += 1
+        elseif $TalkGirl = 'melissa':
+            MelissaPlayerPath += 1
+        end
     elseif $TouchAction = 'kiss_lips':
         love[$TalkGirl] += 2
         otkroven[$TalkGirl] += 2
         sluttiness[$TalkGirl] += 1
+        if $TalkGirl = 'amanda':
+            AmandaPlayerPath += 2
+        elseif $TalkGirl = 'melissa':
+            MelissaPlayerPath += 2
+        elseif $TalkGirl = 'sandra':
+            SandraTrust += 1
+            if SandraMoralResistance > 0:
+                SandraMoralResistance -= 1
+            end
+        end
     elseif $TouchAction = 'touch_chest':
         sluttiness[$TalkGirl] += 2
         otkroven[$TalkGirl] += 2
-    elseif $TouchAction = 'under_skirt':
+        if $TalkGirl = 'amanda':
+            AmandaPlayerPath += 2
+        elseif $TalkGirl = 'melissa':
+            MelissaPlayerPath += 2
+        end
+    elseif $TouchAction = 'under_skirt' or $TouchAction = 'skirt_oral' or $TouchAction = 'guide_hand':
         sluttiness[$TalkGirl] += 3
         otkroven[$TalkGirl] += 2
+        if $TalkGirl = 'amanda':
+            AmandaPlayerPath += 2
+        elseif $TalkGirl = 'melissa':
+            MelissaPlayerPath += 2
+        end
     end
 
+    if LOC('HallFamilyStateClamp') = 1:
+        gs 'HallFamilyStateClamp'
+    end
     gs 'ClampGirlSocialStats', $TalkGirl
     *pl ' '
+    *pl '<small>[Знаки внимания за сегодня: ' + STR(GirlTouchDailyCount[$TalkGirl]) + '/2]</small>'
+    *pl ' '
 
-    ! Если интим доступен и уровень возбуждения высок
-    if FamilyCorruptionStage >= 3 or otkroven[$TalkGirl] >= 15:
-        gs 'GirlIntimCheckNpcLinkAvailable', $TalkGirl, $TalkReturnLoc
-        if GirlIntimMenuReady = 1:
-            *pl '<a href="exec:gt ''GirlIntim'', ''' + $TalkGirl + ''', ''' + $TalkReturnLoc + '''"><b>[ Интим: уединиться прямо сейчас ]</b></a>'
+    gs 'GirlTalkResolveFollowupOption'
+    if $FollowupActKey <> '':
+        gs 'ActUiPrepare', $FollowupActLabel, 'flirt'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkTouchFollowup', $TalkGirl, $TalkReturnLoc, $FollowupActKey
         end
-        killvar 'GirlIntimMenuReady'
     end
 
     if GirlTouchDailyCount[$TalkGirl] < 2:
@@ -256,8 +624,161 @@
 
     *pl ' '
 
-    ! Единственная кнопка на панели act: Отойти
+    killvar '$TouchLocContext'
+
     gs 'ActUiPrepare', 'Отойти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar '$FollowupActKey'
+        killvar '$FollowupActLabel'
+        gt $TalkReturnLoc
+    end
+---
+
+#GirlTalkTouchFollowup
+    ! Шаг 2: Укрытие спиной / за стойкой + углубление
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+    $FollowAction = LCASE($ARGS[2])
+
+    if $TalkGirl = '':
+        $TalkGirl = 'amanda'
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'GirlTalkResolveTouchContext', $TalkReturnLoc
+    cls
+
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
+    if $TalkGirl = 'sandra':
+        gs 'ShowLocationScreenTitle', 'НА КУХНЕ: ' + $RealName[$TalkGirl]
+    elseif $TalkGirl = 'becky':
+        gs 'ShowLocationScreenTitle', 'В ПОДСОБКЕ ЛАВКИ: ' + $RealName[$TalkGirl]
+    else:
+        gs 'ShowLocationScreenTitle', 'УКРЫТИЕ ОТ ВЗГЛЯДОВ: ' + $RealName[$TalkGirl]
+    end
+    gs 'SceneShowVisual', 'images/actions/flirt/' + $TalkGirl + '_' + $FollowAction, 'укрытие: ' + $RealName[$TalkGirl] + ' (' + $FollowAction + ')', 'large', 'webp'
+
+    gs 'GirlTalkTouchFollowupText', $TalkGirl, $FollowAction, $TouchLocContext, $TalkReturnLoc
+    if $TalkGirl = 'sandra' or $TalkGirl = 'becky' or $TalkGirl = 'clarissa' or $TalkGirl = 'inga':
+        gs 'GirlTalkTouchEnvironmentText', $TalkGirl, $FollowAction, $TouchLocContext
+    end
+
+    $TouchDiscoveryKey = $TalkGirl + '_' + $FollowAction + '_' + $TalkReturnLoc
+    if TouchSceneSeen[$TouchDiscoveryKey] = 0:
+        TouchSceneSeen[$TouchDiscoveryKey] = 1
+        TouchScenesDiscoveredCount += 1
+        *pl ' '
+        *pl '<small><b>[Открыта новая укромная сценка (Шаг 2)! Всего найдено: ' + STR(TouchScenesDiscoveredCount) + ']</b></small>'
+    end
+    killvar '$TouchDiscoveryKey'
+
+    love[$TalkGirl] += 1
+    otkroven[$TalkGirl] += 1
+
+    if LOC('HallFamilyStateClamp') = 1:
+        gs 'HallFamilyStateClamp'
+    end
+    gs 'ClampGirlSocialStats', $TalkGirl
+    *pl ' '
+
+    gs 'GirlTalkResolveClimaxOption'
+    if $ClimaxActKey <> '':
+        gs 'ActUiPrepare', $ClimaxActLabel, 'flirt'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'GirlTalkTouchClimax', $TalkGirl, $TalkReturnLoc, $ClimaxActKey
+        end
+    end
+
+    killvar '$FollowupActKey'
+    killvar '$FollowupActLabel'
+    killvar '$TouchLocContext'
+
+    gs 'ActUiPrepare', 'Отпустить и вернуться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar '$ClimaxActKey'
+        killvar '$ClimaxActLabel'
+        gt $TalkReturnLoc
+    end
+---
+
+#GirlTalkTouchClimax
+    ! Шаг 3: Пик микро-сценки за стойкой / в укрытии
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $TalkGirl = $GirlKey
+    $TalkReturnLoc = $ARGS[1]
+    $ClimaxAction = LCASE($ARGS[2])
+
+    if $TalkGirl = '':
+        $TalkGirl = 'amanda'
+    end
+
+    if $TalkReturnLoc = '':
+        $TalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', $TalkGirl
+    gs 'GirlTalkResolveTouchContext', $TalkReturnLoc
+    cls
+
+    gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
+    if $TalkGirl = 'sandra':
+        gs 'ShowLocationScreenTitle', 'У КУХОННОГО СТОЛА: ' + $RealName[$TalkGirl]
+    elseif $TalkGirl = 'becky':
+        gs 'ShowLocationScreenTitle', 'У ПРИЛАВКА В ПОДСОБКЕ: ' + $RealName[$TalkGirl]
+    else:
+        gs 'ShowLocationScreenTitle', 'ЗА СТОЙКОЙ: ' + $RealName[$TalkGirl]
+    end
+    gs 'SceneShowVisual', 'images/actions/flirt/' + $TalkGirl + '_' + $ClimaxAction, 'кульминация в укрытии: ' + $RealName[$TalkGirl] + ' (' + $ClimaxAction + ')', 'large', 'webp'
+
+    gs 'GirlTalkTouchClimaxText', $TalkGirl, $ClimaxAction, $TouchLocContext, $TalkReturnLoc
+    if $TalkGirl = 'sandra' or $TalkGirl = 'becky' or $TalkGirl = 'clarissa' or $TalkGirl = 'inga':
+        gs 'GirlTalkTouchEnvironmentText', $TalkGirl, $ClimaxAction, $TouchLocContext
+    end
+
+    $TouchDiscoveryKey = $TalkGirl + '_' + $ClimaxAction + '_' + $TalkReturnLoc
+    if TouchSceneSeen[$TouchDiscoveryKey] = 0:
+        TouchSceneSeen[$TouchDiscoveryKey] = 1
+        TouchScenesDiscoveredCount += 1
+        *pl ' '
+        *pl '<small><b>[Открыта финальная сценка в укрытии (Шаг 3)! Всего найдено: ' + STR(TouchScenesDiscoveredCount) + ']</b></small>'
+    end
+    killvar '$TouchDiscoveryKey'
+
+    love[$TalkGirl] += 1
+    otkroven[$TalkGirl] += 2
+    sluttiness[$TalkGirl] += 2
+    if $TalkGirl = 'amanda':
+        AmandaPlayerPath += 2
+    elseif $TalkGirl = 'melissa':
+        MelissaPlayerPath += 2
+    elseif $TalkGirl = 'sandra':
+        SandraTrust += 2
+    end
+
+    if LOC('HallFamilyStateClamp') = 1:
+        gs 'HallFamilyStateClamp'
+    end
+    gs 'ClampGirlSocialStats', $TalkGirl
+    *pl ' '
+
+    if GirlTouchDailyCount[$TalkGirl] < 2:
+        gs 'GirlTalkBuildTouchMenu'
+        gs 'GetNpcMenuLinkHref', 'GirlTalkTouchMenu', $RealName[$TalkGirl]
+        *pl $NpcMenuLinkHref + ' торопливо приводит себя в порядок, бросая на тебя заговорщицкий взгляд из-за укрытия.'
+        killvar '$NpcMenuLinkHref'
+        *pl ' '
+    end
+
+    killvar '$ClimaxActKey'
+    killvar '$ClimaxActLabel'
+    killvar '$TouchLocContext'
+
+    gs 'ActUiPrepare', 'Вернуться на место', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt $TalkReturnLoc
     end
