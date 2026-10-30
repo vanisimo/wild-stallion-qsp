@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 510
-- Locations: 3955
-- Locations with direct incoming calls: 3382
+- Locations: 3956
+- Locations with direct incoming calls: 3383
 - Locations without direct incoming calls: 573
 - Review candidates without direct incoming calls: 231
 - Classified entry/helper locations without direct incoming calls: 342
@@ -69,8 +69,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 43 | `modules/actions` |
 | `GirlFirstSex` | `modules/actions/sex/first_sex.qsps` | 7 | `modules/actions` |
 | `GirlFirstSexResult` | `modules/actions/sex/first_sex.qsps` | 23 | `modules/actions` |
-| `GirlIntimOpenNpcMenu` | `modules/core/girls/girl_intim_session.qsps` | 281 | `modules/core` |
-| `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 322 | `modules/core` |
+| `GirlIntimOpenNpcMenu` | `modules/core/girls/girl_intim_session.qsps` | 385 | `modules/core` |
+| `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 439 | `modules/core` |
 | `GirlNoPantiesWorkIsActive` | `modules/actions/tavern/girl_no_panties_work.qsps` | 14 | `modules/actions` |
 | `GirlPolicyResponseApplyStats` | `modules/events/hall/girl_policy_response.qsps` | 188 | `modules/events` |
 | `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 24 | `modules/core` |
@@ -508,10 +508,10 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Chosen` | `modules/menu/system/otd_lib_menu.qsps` | 150 | `entry/helper` |
 | `Menu.Info` | `modules/menu/system/otd_lib_menu.qsps` | 13 | `entry/helper` |
 | `Menu.Time` | `modules/menu/system/otd_lib_menu.qsps` | 156 | `entry/helper` |
-| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 349 | `entry/helper` |
-| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 359 | `entry/helper` |
-| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 369 | `entry/helper` |
-| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 379 | `entry/helper` |
+| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 335 | `entry/helper` |
+| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 345 | `entry/helper` |
+| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 355 | `entry/helper` |
+| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 365 | `entry/helper` |
 | `MenuGirlFlirt` | `modules/menu/girls/menu_girl_actions.qsps` | 393 | `entry/helper` |
 | `MenuGirlGiftApplySpecial` | `modules/menu/girls/menu_girl_actions.qsps` | 283 | `entry/helper` |
 | `MenuGirlGiftTryAct` | `modules/core/gifts/gift_registry.qsps` | 243 | `entry/helper` |
@@ -570,7 +570,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowDreamItemIfKnown` | `modules/core/gifts/gift_dream_images.qsps` | 32 | `entry/helper` |
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 511 | `entry/helper` |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 189 | `entry/helper` |
-| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 709 | `entry/helper` |
+| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 836 | `entry/helper` |
 | `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 186 | `entry/helper` |
 | `ShowIntimSceneStatus` | `modules/actions/sex/intim_scene.qsps` | 22 | `entry/helper` |
 | `ShowPortrait` | `modules/core/show_image/show_image_helpers.qsps` | 180 | `entry/helper` |
@@ -602,11 +602,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | Location | Incoming calls |
 | --- | --- |
 | `ActUiPrepare` | 1775 |
-| `ShowLocationScreenTitle` | 794 |
-| `SceneShowVisual` | 740 |
+| `ShowLocationScreenTitle` | 795 |
+| `SceneShowVisual` | 741 |
 | `Menu.AddModule` | 705 |
 | `MenuUiAdd` | 701 |
-| `EnsureGirlData` | 260 |
+| `EnsureGirlData` | 261 |
 | `ClampGirlSocialStats` | 239 |
 | `NormalizeGirlKey` | 207 |
 | `TavernMain` | 166 |
@@ -614,16 +614,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Create` | 105 |
 | `Menu.Destroy` | 103 |
 | `Market` | 98 |
-| `ShowImage` | 87 |
 | `RegisterSex` | 87 |
+| `ShowImage` | 87 |
 | `FormatSpintry` | 84 |
 | `UpdateGirlLocations` | 83 |
 | `MarketDance` | 77 |
 | `PrintMainP` | 70 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `GirlTalkResult` | 51 |
 | `PrintTitleLine` | 51 |
 | `AmandaLizaTalkApplyInfluence` | 51 |
+| `GirlTalkResult` | 51 |
 | `SexSceneMain` | 48 |
 | `ShowImagePath` | 46 |
 

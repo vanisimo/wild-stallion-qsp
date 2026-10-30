@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 510
-- Locations: 3955
+- Locations: 3956
 
 ## modules/actions
 
@@ -788,24 +788,25 @@ Generated from active project files in `qsp-project.json`.
 | `GiftTryPurchase` | `modules/core/gifts/gift_registry.qsps` | 95 |
 | `GirlDailyEvent` | `modules/core/system/compatibility_aliases.qsps` | 153 |
 | `GirlInitBase` | `modules/core/init_npc/girl_init_base.qsps` | 6 |
-| `GirlIntim` | `modules/core/girls/girl_intim_session.qsps` | 775 |
-| `GirlIntimAddAmandaHomeMenu` | `modules/core/girls/girl_intim_session.qsps` | 377 |
-| `GirlIntimAddGenericSexMenu` | `modules/core/girls/girl_intim_session.qsps` | 602 |
-| `GirlIntimAddMelissaHomeMenu` | `modules/core/girls/girl_intim_session.qsps` | 473 |
-| `GirlIntimAddSandraHomeMenu` | `modules/core/girls/girl_intim_session.qsps` | 561 |
-| `GirlIntimBuildMainMenu` | `modules/core/girls/girl_intim_session.qsps` | 362 |
-| `GirlIntimCheckNpcLinkAvailable` | `modules/core/girls/girl_intim_session.qsps` | 229 |
-| `GirlIntimClosedScreen` | `modules/core/girls/girl_intim_session.qsps` | 843 |
+| `GirlIntim` | `modules/core/girls/girl_intim_session.qsps` | 902 |
+| `GirlIntimAddAmandaHomeMenu` | `modules/core/girls/girl_intim_session.qsps` | 504 |
+| `GirlIntimAddGenericSexMenu` | `modules/core/girls/girl_intim_session.qsps` | 729 |
+| `GirlIntimAddMelissaHomeMenu` | `modules/core/girls/girl_intim_session.qsps` | 600 |
+| `GirlIntimAddSandraHomeMenu` | `modules/core/girls/girl_intim_session.qsps` | 688 |
+| `GirlIntimBuildMainMenu` | `modules/core/girls/girl_intim_session.qsps` | 489 |
+| `GirlIntimCheckNpcLinkAvailable` | `modules/core/girls/girl_intim_session.qsps` | 333 |
+| `GirlIntimClosedScreen` | `modules/core/girls/girl_intim_session.qsps` | 970 |
 | `GirlIntimCountMenuOptions` | `modules/core/girls/girl_intim_session.qsps` | 47 |
-| `GirlIntimInitSceneState` | `modules/core/girls/girl_intim_session.qsps` | 334 |
+| `GirlIntimInitSceneState` | `modules/core/girls/girl_intim_session.qsps` | 461 |
 | `GirlIntimMenuReturn` | `modules/core/girls/girl_intim_session.qsps` | 21 |
-| `GirlIntimOpenNpcMenu` | `modules/core/girls/girl_intim_session.qsps` | 281 |
-| `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 322 |
-| `GirlIntimRefreshMenuIfAllowed` | `modules/core/girls/girl_intim_session.qsps` | 630 |
+| `GirlIntimOpenNpcMenu` | `modules/core/girls/girl_intim_session.qsps` | 385 |
+| `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 439 |
+| `GirlIntimRefreshMenuIfAllowed` | `modules/core/girls/girl_intim_session.qsps` | 757 |
+| `GirlIntimRunSingleOption` | `modules/core/girls/girl_intim_session.qsps` | 250 |
 | `GirlIntimSessionBegin` | `modules/core/girls/girl_intim_session.qsps` | 7 |
 | `GirlIntimSessionEnd` | `modules/core/girls/girl_intim_session.qsps` | 11 |
-| `GirlIntimShowNpcMenuAnchor` | `modules/core/girls/girl_intim_session.qsps` | 669 |
-| `GirlIntimShowSidebarWithAnchor` | `modules/core/girls/girl_intim_session.qsps` | 700 |
+| `GirlIntimShowNpcMenuAnchor` | `modules/core/girls/girl_intim_session.qsps` | 796 |
+| `GirlIntimShowSidebarWithAnchor` | `modules/core/girls/girl_intim_session.qsps` | 827 |
 | `GirlPolicyResponseEvaluate` | `modules/core/system/compatibility_aliases.qsps` | 58 |
 | `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 24 |
 | `GirlsDescShowPortrait` | `modules/core/init_npc/girls_desc.qsps` | 6 |
@@ -976,9 +977,9 @@ Generated from active project files in `qsp-project.json`.
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 511 |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 189 |
 | `ShowGirlInLocation` | `modules/core/girls/girl_location.qsps` | 104 |
-| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 709 |
+| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 836 |
 | `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 186 |
-| `ShowGirlNpcLinks` | `modules/core/girls/girl_intim_session.qsps` | 764 |
+| `ShowGirlNpcLinks` | `modules/core/girls/girl_intim_session.qsps` | 891 |
 | `ShowGirlPortraitImage` | `modules/core/show_image/image_debug_random.qsps` | 590 |
 | `ShowGirlRoomPresence` | `modules/core/girls/girl_room_presence.qsps` | 111 |
 | `ShowGirlRoomScene` | `modules/core/girls/girl_room_outfit.qsps` | 56 |
@@ -3612,8 +3613,8 @@ Generated from active project files in `qsp-project.json`.
 | `IngaGiftForgive` | `modules/locations/shops/becky_shop.qsps` | 497 |
 | `IngaRoom` | `modules/locations/shops/becky_house.qsps` | 31 |
 | `IngaRoomAfterSex` | `modules/locations/shops/becky_house.qsps` | 190 |
-| `IngaRoomNightClimb` | `modules/locations/shops/becky_house.qsps` | 222 |
-| `IngaRoomSleepUntilMorning` | `modules/locations/shops/becky_house.qsps` | 253 |
+| `IngaRoomNightClimb` | `modules/locations/shops/becky_house.qsps` | 229 |
+| `IngaRoomSleepUntilMorning` | `modules/locations/shops/becky_house.qsps` | 260 |
 | `IrmaBuyAmandaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 790 |
 | `IrmaBuyMelissaDanceDress` | `modules/locations/shops/irma_dance_dress.qsps` | 795 |
 | `IrmaDanceDressBlockedNoGirl` | `modules/locations/shops/irma_dance_dress.qsps` | 474 |
@@ -3858,10 +3859,10 @@ Generated from active project files in `qsp-project.json`.
 | `Menu.Show` | `modules/menu/system/otd_lib_menu.qsps` | 73 |
 | `Menu.Time` | `modules/menu/system/otd_lib_menu.qsps` | 156 |
 | `MenuGirlCalcConditions` | `modules/menu/girls/menu_girl_conditions.qsps` | 8 |
-| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 349 |
-| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 359 |
-| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 369 |
-| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 379 |
+| `MenuGirlCanFlirt` | `modules/menu/girls/menu_girl_conditions.qsps` | 335 |
+| `MenuGirlCanIntim` | `modules/menu/girls/menu_girl_conditions.qsps` | 345 |
+| `MenuGirlCanJob` | `modules/menu/girls/menu_girl_conditions.qsps` | 355 |
+| `MenuGirlCanSpecial` | `modules/menu/girls/menu_girl_conditions.qsps` | 365 |
 | `MenuGirlFlirt` | `modules/menu/girls/menu_girl_actions.qsps` | 393 |
 | `MenuGirlGift` | `modules/menu/girls/menu_girl_actions.qsps` | 45 |
 | `MenuGirlGiftApplyReaction` | `modules/menu/girls/menu_girl_actions.qsps` | 256 |
