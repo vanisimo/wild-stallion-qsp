@@ -3,11 +3,11 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 510
-- Locations: 3956
-- Locations with direct incoming calls: 3383
-- Locations without direct incoming calls: 573
-- Review candidates without direct incoming calls: 231
-- Classified entry/helper locations without direct incoming calls: 342
+- Locations: 3966
+- Locations with direct incoming calls: 3390
+- Locations without direct incoming calls: 576
+- Review candidates without direct incoming calls: 230
+- Classified entry/helper locations without direct incoming calls: 346
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -20,8 +20,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `AdvanceTimeWalk` | `modules/core/time/time_control.qsps` | 126 | `modules/core` |
 | `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 202 | `modules/events` |
 | `AmandaDanceAlleySexTransition` | `modules/events/amanda/dance/amanda_dark_alley.qsps` | 1006 | `modules/events` |
-| `AmandaFirstSexFamilyTalkFinish` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 626 | `modules/events` |
-| `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 148 | `modules/events` |
+| `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 228 | `modules/events` |
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 193 | `modules/events` |
 | `AmandaLizaRoomDoorPeek` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 79 | `modules/events` |
 | `AmandaLizetteFirstTalk` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 220 | `modules/events` |
@@ -256,15 +255,19 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | --- | --- | --- | --- |
 | `AmandaBoyBrothersCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_brothers.qsps` | 13 | `entry/helper` |
 | `AmandaBoyCurvedCanStart` | `modules/events/amanda/neighbor_boys/amanda_boys_curved.qsps` | 16 | `entry/helper` |
-| `AmandaFirstSexAmandaWorryTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 199 | `entry/helper` |
-| `AmandaFirstSexFamilyTalkCanStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 576 | `entry/helper` |
-| `AmandaFirstSexFamilyTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 602 | `entry/helper` |
-| `AmandaFirstSexMelissaUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 191 | `entry/helper` |
-| `AmandaFirstSexMorningCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 80 | `entry/helper` |
-| `AmandaFirstSexMorningText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 73 | `entry/helper` |
-| `AmandaFirstSexSandraSuspicionChoiceText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 183 | `entry/helper` |
-| `AmandaFirstSexSandraSuspicionTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 179 | `entry/helper` |
-| `AmandaFirstSexSandraUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 195 | `entry/helper` |
+| `AmandaFirstSexAmandaWorryCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1009 | `entry/helper` |
+| `AmandaFirstSexAmandaWorryTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 503 | `entry/helper` |
+| `AmandaFirstSexFamilyTalkCanStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 989 | `entry/helper` |
+| `AmandaFirstSexFamilyTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1013 | `entry/helper` |
+| `AmandaFirstSexMelissaUnderstoodCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1001 | `entry/helper` |
+| `AmandaFirstSexMelissaUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 495 | `entry/helper` |
+| `AmandaFirstSexMorningCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 177 | `entry/helper` |
+| `AmandaFirstSexMorningText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 304 | `entry/helper` |
+| `AmandaFirstSexSandraSuspicionCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 997 | `entry/helper` |
+| `AmandaFirstSexSandraSuspicionChoiceText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 487 | `entry/helper` |
+| `AmandaFirstSexSandraSuspicionTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 483 | `entry/helper` |
+| `AmandaFirstSexSandraUnderstoodCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1005 | `entry/helper` |
+| `AmandaFirstSexSandraUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 499 | `entry/helper` |
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 | `entry/helper` |
 | `AmandaHomeAnalStart` | `modules/events/family/intimacy_kinks.qsps` | 423 | `entry/helper` |
 | `AmandaLegareAfterDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1133 | `entry/helper` |
@@ -590,8 +593,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 974 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 835 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 699 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 526 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 705 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 532 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 304 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -601,14 +604,14 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1775 |
-| `ShowLocationScreenTitle` | 795 |
-| `SceneShowVisual` | 741 |
-| `Menu.AddModule` | 705 |
-| `MenuUiAdd` | 701 |
+| `ActUiPrepare` | 1782 |
+| `ShowLocationScreenTitle` | 796 |
+| `SceneShowVisual` | 745 |
+| `Menu.AddModule` | 713 |
+| `MenuUiAdd` | 709 |
 | `EnsureGirlData` | 261 |
-| `ClampGirlSocialStats` | 239 |
-| `NormalizeGirlKey` | 207 |
+| `ClampGirlSocialStats` | 242 |
+| `NormalizeGirlKey` | 208 |
 | `TavernMain` | 166 |
 | `ShowGirlSidebar` | 114 |
 | `Menu.Create` | 105 |
@@ -621,9 +624,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MarketDance` | 77 |
 | `PrintMainP` | 70 |
 | `AmandaLizaTalkPoolTry` | 53 |
-| `PrintTitleLine` | 51 |
-| `AmandaLizaTalkApplyInfluence` | 51 |
 | `GirlTalkResult` | 51 |
+| `AmandaLizaTalkApplyInfluence` | 51 |
+| `PrintTitleLine` | 51 |
 | `SexSceneMain` | 48 |
 | `ShowImagePath` | 46 |
 

@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 510
-- Locations: 3956
+- Locations: 3966
 
 ## modules/actions
 
@@ -1330,22 +1330,25 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaEscapeWorkTryAutoStart` | `modules/events/tavern/amanda_escape_work.qsps` | 48 |
 | `AmandaEscapeWorkWatch` | `modules/events/tavern/amanda_escape_work.qsps` | 291 |
 | `AmandaEscapeWorkWatchLeave` | `modules/events/tavern/amanda_escape_work.qsps` | 408 |
-| `AmandaFirstSexAmandaWorryTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 199 |
-| `AmandaFirstSexFamilyTalkCanStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 576 |
-| `AmandaFirstSexFamilyTalkFinish` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 626 |
-| `AmandaFirstSexFamilyTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 602 |
-| `AmandaFirstSexMarkMelissaUnderstood` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 174 |
-| `AmandaFirstSexMarkSandraUnderstood` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 178 |
-| `AmandaFirstSexMelissaTeaseCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 580 |
-| `AmandaFirstSexMelissaTeaseText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 187 |
-| `AmandaFirstSexMelissaUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 191 |
-| `AmandaFirstSexMorningCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 80 |
-| `AmandaFirstSexMorningMarkPending` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 45 |
-| `AmandaFirstSexMorningText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 73 |
-| `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 148 |
-| `AmandaFirstSexSandraSuspicionChoiceText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 183 |
-| `AmandaFirstSexSandraSuspicionTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 179 |
-| `AmandaFirstSexSandraUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 195 |
+| `AmandaFirstSexAmandaWorryCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1009 |
+| `AmandaFirstSexAmandaWorryTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 503 |
+| `AmandaFirstSexFamilyTalkCanStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 989 |
+| `AmandaFirstSexFamilyTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1013 |
+| `AmandaFirstSexMarkMelissaUnderstood` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 415 |
+| `AmandaFirstSexMarkSandraUnderstood` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 422 |
+| `AmandaFirstSexMelissaTeaseCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 993 |
+| `AmandaFirstSexMelissaTeaseText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 491 |
+| `AmandaFirstSexMelissaUnderstoodCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1001 |
+| `AmandaFirstSexMelissaUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 495 |
+| `AmandaFirstSexMorningCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 177 |
+| `AmandaFirstSexMorningMarkPending` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 47 |
+| `AmandaFirstSexMorningText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 304 |
+| `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 228 |
+| `AmandaFirstSexSandraSuspicionCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 997 |
+| `AmandaFirstSexSandraSuspicionChoiceText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 487 |
+| `AmandaFirstSexSandraSuspicionTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 483 |
+| `AmandaFirstSexSandraUnderstoodCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1005 |
+| `AmandaFirstSexSandraUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 499 |
 | `AmandaFridayDanceAdvance` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 57 |
 | `AmandaGiveNobleDress` | `modules/events/family/family_noble_reaction.qsps` | 238 |
 | `AmandaHomeAfterFirstSexTonightText` | `modules/events/amanda/home/amanda_home_first_sex_text.qsps` | 318 |
@@ -2068,17 +2071,24 @@ Generated from active project files in `qsp-project.json`.
 | `FamilyCouncilText6` | `modules/events/family/family_council_text.qsps` | 158 |
 | `FamilyCouncilTryAtNight` | `modules/events/family/family_council.qsps` | 26 |
 | `FamilyCouncilTryBeforeNextDay` | `modules/events/family/family_council.qsps` | 40 |
-| `FamilyFirstSexMarkUnderstood` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 152 |
-| `FamilyFirstSexMorningCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 49 |
+| `FamilyFirstSexMarkUnderstood` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 391 |
+| `FamilyFirstSexMorningCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 154 |
 | `FamilyFirstSexMorningMarkPending` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 7 |
-| `FamilyFirstSexMorningText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 8 |
-| `FamilyFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 85 |
-| `FamilyFirstSexTalkAddMenuItems` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 246 |
-| `FamilyFirstSexTalkChoice` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 437 |
-| `FamilyFirstSexTalkChoiceText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 125 |
-| `FamilyFirstSexTalkCount` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 182 |
-| `FamilyFirstSexTalkIntroText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 77 |
-| `FamilyFirstSexTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 354 |
+| `FamilyFirstSexMorningText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 294 |
+| `FamilyFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 214 |
+| `FamilyFirstSexTalkAddMenuItems` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 529 |
+| `FamilyFirstSexTalkChoice` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 804 |
+| `FamilyFirstSexTalkChoiceText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 398 |
+| `FamilyFirstSexTalkCount` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 433 |
+| `FamilyFirstSexTalkIntroText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 308 |
+| `FamilyFirstSexTalkStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 693 |
+| `FamilyMorningAfterCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 186 |
+| `FamilyMorningAfterPickWitness` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 59 |
+| `FamilyMorningAfterRecordNight` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 98 |
+| `FamilyMorningAfterScreen1` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 232 |
+| `FamilyMorningAfterScreen1Text` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 8 |
+| `FamilyMorningAfterScreen2` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 283 |
+| `FamilyMorningAfterScreen2Text` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 136 |
 | `FamilyNobleCelebrationPrintText` | `modules/events/family/family_noble_celebration_text.qsps` | 8 |
 | `FamilyNobleDinnerCelebration` | `modules/events/family/family_noble_celebration.qsps` | 8 |
 | `FamilyNobleDinnerDressUp` | `modules/events/family/family_noble_celebration.qsps` | 25 |
@@ -3276,7 +3286,7 @@ Generated from active project files in `qsp-project.json`.
 | `SandraHomeAfterSexText` | `modules/events/sandra/sandra_home_chain_text.qsps` | 49 |
 | `SandraHomeCanAdvance` | `modules/events/sandra/sandra_home_chain.qsps` | 8 |
 | `SandraHomeFirstSexLaunch` | `modules/events/sandra/sandra_home_chain.qsps` | 174 |
-| `SandraHomeGoodnightUnlock` | `modules/events/sandra/sandra_home_chain.qsps` | 239 |
+| `SandraHomeGoodnightUnlock` | `modules/events/sandra/sandra_home_chain.qsps` | 240 |
 | `SandraHomeStep` | `modules/events/sandra/sandra_home_chain.qsps` | 80 |
 | `SandraHomeStepText` | `modules/events/sandra/sandra_home_chain_text.qsps` | 9 |
 | `SandraHomeUnlockTry` | `modules/events/sandra/sandra_home_chain.qsps` | 47 |
@@ -3685,8 +3695,8 @@ Generated from active project files in `qsp-project.json`.
 | `KitchenLookRegister` | `modules/locations/tavern/kitchen_activity.qsps` | 44 |
 | `KitchenLookReturnToKitchen` | `modules/locations/tavern/kitchen_activity.qsps` | 170 |
 | `KitchenLookTryRareBonusEvents` | `modules/locations/tavern/kitchen_activity.qsps` | 256 |
-| `KitchenShowBackgroundImage` | `modules/locations/tavern/kitchen.qsps` | 212 |
-| `KitchenShowLocationImage` | `modules/locations/tavern/kitchen.qsps` | 188 |
+| `KitchenShowBackgroundImage` | `modules/locations/tavern/kitchen.qsps` | 217 |
+| `KitchenShowLocationImage` | `modules/locations/tavern/kitchen.qsps` | 193 |
 | `Market` | `modules/locations/town/market.qsps` | 8 |
 | `MarketDance` | `modules/locations/town/market_dance.qsps` | 14 |
 | `MarketRumors` | `modules/locations/town/market.qsps` | 161 |
@@ -3801,16 +3811,16 @@ Generated from active project files in `qsp-project.json`.
 | `TavernHallLookReturnToMain` | `modules/locations/tavern/tavern_hall_activity.qsps` | 86 |
 | `TavernHallLookTryRareBonusEvents` | `modules/locations/tavern/tavern_hall_activity.qsps` | 199 |
 | `TavernMain` | `modules/locations/tavern/tavern_main.qsps` | 11 |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 699 |
-| `TavernMainBuildDynamicHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 453 |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 526 |
-| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 631 |
-| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 409 |
-| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 399 |
-| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 375 |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 705 |
+| `TavernMainBuildDynamicHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 459 |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 532 |
+| `TavernMainLookHallNormal` | `modules/locations/tavern/tavern_main.qsps` | 637 |
+| `TavernMainPrintHallDescription` | `modules/locations/tavern/tavern_main.qsps` | 415 |
+| `TavernMainShowHallBackgroundImage` | `modules/locations/tavern/tavern_main.qsps` | 405 |
+| `TavernMainShowLocationImage` | `modules/locations/tavern/tavern_main.qsps` | 381 |
 | `TavernManagement` | `modules/locations/tavern/tavern_management.qsps` | 7 |
 | `TavernPriceSettings` | `modules/locations/tavern/tavern_management.qsps` | 31 |
-| `TavernSecondFloor` | `modules/locations/tavern/tavern_main.qsps` | 253 |
+| `TavernSecondFloor` | `modules/locations/tavern/tavern_main.qsps` | 259 |
 | `TavernStaffManagement` | `modules/locations/tavern/tavern_management.qsps` | 87 |
 | `UniformFittingMissedCanStart` | `modules/locations/shops/irma_uniform_orders.qsps` | 596 |
 | `UniformFittingTalkCanStart` | `modules/locations/shops/irma_uniform_orders.qsps` | 578 |
