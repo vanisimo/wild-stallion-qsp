@@ -19,7 +19,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `Act1IsHonestPhase` | `modules/events/family/act1_setup_core.qsps` | 7 | `modules/events` |
 | `AdvanceTimeWalk` | `modules/core/time/time_control.qsps` | 126 | `modules/core` |
 | `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 202 | `modules/events` |
-| `AmandaDanceAlleyIntro` | `modules/events/amanda/dance/amanda_dance.qsps` | 476 | `modules/events` |
+| `AmandaDanceAlleyIntro` | `modules/events/amanda/dance/amanda_dance.qsps` | 480 | `modules/events` |
 | `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 228 | `modules/events` |
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 193 | `modules/events` |
 | `AmandaLizaRoomDoorPeek` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 79 | `modules/events` |
@@ -270,30 +270,30 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaFirstSexSandraUnderstoodTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 526 | `entry/helper` |
 | `AmandaFlirt` | `modules/actions/flirts/flirts.qsps` | 8 | `entry/helper` |
 | `AmandaHomeAnalStart` | `modules/events/family/intimacy_kinks.qsps` | 423 | `entry/helper` |
-| `AmandaLegareAfterDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1133 | `entry/helper` |
+| `AmandaLegareAfterDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1143 | `entry/helper` |
 | `AmandaLegareAutoNoticeDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 174 | `entry/helper` |
 | `AmandaLegareBranchDebugUnlock` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 50 | `entry/helper` |
-| `AmandaLegareDanceCanStart` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 431 | `entry/helper` |
-| `AmandaLegareDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 707 | `entry/helper` |
-| `AmandaLegareDanceStart` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 462 | `entry/helper` |
-| `AmandaLegareFridayRaceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1486 | `entry/helper` |
-| `AmandaLegareInviteDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 414 | `entry/helper` |
-| `AmandaLegareMajorAftermathDebugReset` | `modules/events/amanda/legare/amanda_legare_major_aftermath.qsps` | 435 | `entry/helper` |
-| `AmandaLegareMajorRiskDebugReset` | `modules/events/amanda/legare/amanda_legare_major_risk.qsps` | 395 | `entry/helper` |
+| `AmandaLegareDanceCanStart` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 436 | `entry/helper` |
+| `AmandaLegareDanceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 712 | `entry/helper` |
+| `AmandaLegareDanceStart` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 467 | `entry/helper` |
+| `AmandaLegareFridayRaceDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 1501 | `entry/helper` |
+| `AmandaLegareInviteDebugReset` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 419 | `entry/helper` |
+| `AmandaLegareMajorAftermathDebugReset` | `modules/events/amanda/legare/amanda_legare_major_aftermath.qsps` | 436 | `entry/helper` |
+| `AmandaLegareMajorRiskDebugReset` | `modules/events/amanda/legare/amanda_legare_major_risk.qsps` | 401 | `entry/helper` |
 | `AmandaLegareMajorRiskTryAutoStart` | `modules/events/amanda/legare/amanda_legare_major_risk.qsps` | 60 | `entry/helper` |
-| `AmandaLegareOutsideMeetDebugReset` | `modules/events/amanda/legare/amanda_legare_outside_meet.qsps` | 577 | `entry/helper` |
+| `AmandaLegareOutsideMeetDebugReset` | `modules/events/amanda/legare/amanda_legare_outside_meet.qsps` | 587 | `entry/helper` |
 | `AmandaLegareOutsideMeetTryAutoStart` | `modules/events/amanda/legare/amanda_legare_outside_meet.qsps` | 68 | `entry/helper` |
-| `AmandaLegareOutsideWallDebugReset` | `modules/events/amanda/legare/amanda_legare_outside_wall.qsps` | 373 | `entry/helper` |
+| `AmandaLegareOutsideWallDebugReset` | `modules/events/amanda/legare/amanda_legare_outside_wall.qsps` | 378 | `entry/helper` |
 | `AmandaLegareOutsideWallTryAutoStart` | `modules/events/amanda/legare/amanda_legare_outside_wall.qsps` | 59 | `entry/helper` |
 | `AmandaLegarePrivateAftermathDebugReset` | `modules/events/amanda/legare/amanda_legare_private_aftermath.qsps` | 371 | `entry/helper` |
-| `AmandaLegareSecondMeetDebugReset` | `modules/events/amanda/legare/amanda_legare_second_meet.qsps` | 396 | `entry/helper` |
+| `AmandaLegareSecondMeetDebugReset` | `modules/events/amanda/legare/amanda_legare_second_meet.qsps` | 401 | `entry/helper` |
 | `AmandaLegareSecondMeetTryAutoStart` | `modules/events/amanda/legare/amanda_legare_second_meet.qsps` | 68 | `entry/helper` |
 | `AmandaLegareSpyCanStart` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 31 | `entry/helper` |
 | `AmandaLegareSpyDebugReset` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 569 | `entry/helper` |
 | `AmandaLegareSpyReset` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 59 | `entry/helper` |
 | `AmandaLegareSpyStart` | `modules/events/amanda/legare/amanda_legare_spy.qsps` | 121 | `entry/helper` |
-| `AmandaLegareTalkDebugReset` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 546 | `entry/helper` |
-| `AmandaLegareTavernVisitDebugReset` | `modules/events/amanda/legare/amanda_legare_tavern_visit.qsps` | 379 | `entry/helper` |
+| `AmandaLegareTalkDebugReset` | `modules/events/amanda/legare/amanda_legare_talk.qsps` | 562 | `entry/helper` |
+| `AmandaLegareTavernVisitDebugReset` | `modules/events/amanda/legare/amanda_legare_tavern_visit.qsps` | 384 | `entry/helper` |
 | `AmandaLegareTavernVisitTryAutoStart` | `modules/events/amanda/legare/amanda_legare_tavern_visit.qsps` | 68 | `entry/helper` |
 | `AmandaLizetteDebugMenu` | `modules/events/amanda/lizette/amanda_lizette.qsps` | 183 | `entry/helper` |
 | `AmandaNeighborBoysDebugReset` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 740 | `entry/helper` |
@@ -604,7 +604,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1785 |
+| `ActUiPrepare` | 1798 |
 | `ShowLocationScreenTitle` | 798 |
 | `SceneShowVisual` | 745 |
 | `Menu.AddModule` | 730 |
@@ -617,7 +617,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Create` | 105 |
 | `Menu.Destroy` | 103 |
 | `Market` | 98 |
-| `RegisterSex` | 94 |
+| `RegisterSex` | 95 |
 | `ShowImage` | 87 |
 | `FormatSpintry` | 84 |
 | `UpdateGirlLocations` | 83 |
