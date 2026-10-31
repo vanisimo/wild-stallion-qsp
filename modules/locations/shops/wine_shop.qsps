@@ -189,14 +189,50 @@
     *p 'В лавке пахнет дубовыми бочками, вином и солодом. Здесь закупают запас для зала и стойки трактира.'
 ---
 
+#WineShopResolveConflictTier
+    LegareConflictIsActive = 0
+    ClarissaBarrelTier = 3
+
+    if (LegareConflictStage >= 1 or LegarePricesRaised = 1 or LegareWinePressure = 1 or TavernAlcoholShortage = 1) and LegareTaxConfrontDone = 0:
+        LegareConflictIsActive = 1
+
+        if Friends['clarissa'] >= 14 and (ClarissaIntimUnlocked = 1 or ClarissaIntimSex = 1 or ClarissaSexUnlocked = 1):
+            ClarissaBarrelTier = 3
+        elseif Friends['clarissa'] >= 8 or ClarissaTrustStefan >= 2:
+            ClarissaBarrelTier = 2
+        else:
+            ClarissaBarrelTier = 1
+        end
+    end
+---
+
 #WineShopRenderWineTab
     gs 'PrintMainLine', 'Вино в бочёнках'
     *pl ' '
     gs 'WineShopRenderWinePriceTable'
     *pl ' '
 
-    if $CurrentSeller = 'alber' and Friends['alber'] < 15:
-        *p 'Альбер хмуро смотрит на вас: «Извини, но я не собираюсь продавать тебе ничего после того, как ты себя вёл.»'
+    gs 'WineShopResolveConflictTier'
+
+    if LegareConflictIsActive = 1:
+        if $CurrentSeller = 'alber':
+            *p 'Альбер хмуро скрещивает руки на груди: «Я предупреждал тебя, трактирщик. Ни капли вина для твоего заведения. Проваливай.»'
+            *pl ' '
+            exit
+        else:
+            if ClarissaBarrelTier = 1:
+                *p 'Кларисса тихо вздыхает: «За тебя просила Мелисса, и только ради неё я иду на обход запрета Альбера. Но могу отпустить только малый бочонок — если пропадёт большой, он сразу заметит в амбарных книгах.»'
+                *pl ' '
+            elseif ClarissaBarrelTier = 2:
+                *p 'Кларисса оглядывается на дверь: «Я доверяю тебе, Стефан. Средний бочонок я ещё смогу списать на бой посуды, но большой брать не рискуй — Альбер пересчитывает крупные бочки сам.»'
+                *pl ' '
+            else:
+                *p 'Кларисса тепло улыбается: «Ради тебя я пойду на риск и отпущу большой бочонок под видом возврата поставщику. Только огромную бочку не трогай — её вывоз скрыть невозможно.»'
+                *pl ' '
+            end
+        end
+    elseif $CurrentSeller = 'alber' and Friends['alber'] < 15:
+        *p 'Альбер хмуро смотрит на тебя: «Извини, но я не собираюсь продавать тебе ничего после того, как ты себя вёл.»'
         *pl ' '
     end
 
@@ -205,19 +241,25 @@
         gs 'WineShopBuyWine', 'small'
     end
 
-    act '<b>Средний бочёнок</b>', 'images/common/ui/actions/shop.png':
-        $WineShopTab = 'wine'
-        gs 'WineShopBuyWine', 'medium'
+    if LegareConflictIsActive = 0 or ClarissaBarrelTier >= 2:
+        act '<b>Средний бочёнок</b>', 'images/common/ui/actions/shop.png':
+            $WineShopTab = 'wine'
+            gs 'WineShopBuyWine', 'medium'
+        end
     end
 
-    act '<b>Большой бочёнок</b>', 'images/common/ui/actions/shop.png':
-        $WineShopTab = 'wine'
-        gs 'WineShopBuyWine', 'large'
+    if LegareConflictIsActive = 0 or ClarissaBarrelTier >= 3:
+        act '<b>Большой бочёнок</b>', 'images/common/ui/actions/shop.png':
+            $WineShopTab = 'wine'
+            gs 'WineShopBuyWine', 'large'
+        end
     end
 
-    act '<b>Огромный бочёнок</b>', 'images/common/ui/actions/shop.png':
-        $WineShopTab = 'wine'
-        gs 'WineShopBuyWine', 'huge'
+    if LegareConflictIsActive = 0:
+        act '<b>Огромный бочёнок</b>', 'images/common/ui/actions/shop.png':
+            $WineShopTab = 'wine'
+            gs 'WineShopBuyWine', 'huge'
+        end
     end
 ---
 
@@ -227,8 +269,27 @@
     gs 'WineShopRenderBeerPriceTable'
     *pl ' '
 
-    if $CurrentSeller = 'alber' and Friends['alber'] < 15:
-        *p 'Альбер отказывается продавать вам пиво.'
+    gs 'WineShopResolveConflictTier'
+
+    if LegareConflictIsActive = 1:
+        if $CurrentSeller = 'alber':
+            *p 'Альбер отказывается продавать тебе пиво.'
+            *pl ' '
+            exit
+        else:
+            if ClarissaBarrelTier = 1:
+                *p 'Кларисса шепчет: «Могу отпустить только малый бочонок пива, чтобы Альбер не заподозрил неладное.»'
+                *pl ' '
+            elseif ClarissaBarrelTier = 2:
+                *p 'Кларисса кивает: «Средний бочонок пива я смогу списать тайком, но большой не возьмусь.»'
+                *pl ' '
+            else:
+                *p 'Кларисса улыбается: «Бери хоть большой бочонок пива — ради тебя всё спишу.»'
+                *pl ' '
+            end
+        end
+    elseif $CurrentSeller = 'alber' and Friends['alber'] < 15:
+        *p 'Альбер отказывается продавать тебе пиво.'
         *pl ' '
     end
 
@@ -237,14 +298,18 @@
         gs 'WineShopBuyBeer', 'small'
     end
 
-    act '<b>Средний бочёнок</b>', 'images/common/ui/actions/shop.png':
-        $WineShopTab = 'beer'
-        gs 'WineShopBuyBeer', 'medium'
+    if LegareConflictIsActive = 0 or ClarissaBarrelTier >= 2:
+        act '<b>Средний бочёнок</b>', 'images/common/ui/actions/shop.png':
+            $WineShopTab = 'beer'
+            gs 'WineShopBuyBeer', 'medium'
+        end
     end
 
-    act '<b>Большой бочёнок</b>', 'images/common/ui/actions/shop.png':
-        $WineShopTab = 'beer'
-        gs 'WineShopBuyBeer', 'large'
+    if LegareConflictIsActive = 0 or ClarissaBarrelTier >= 3:
+        act '<b>Большой бочёнок</b>', 'images/common/ui/actions/shop.png':
+            $WineShopTab = 'beer'
+            gs 'WineShopBuyBeer', 'large'
+        end
     end
 ---
 
@@ -257,10 +322,10 @@
     $WineShopWineTableHtml += '<th style="' + $WineShopThStyle + '">Бочёнок</th>'
     $WineShopWineTableHtml += '<th style="' + $WineShopThStyle + '">Количество</th>'
     $WineShopWineTableHtml += '<th style="' + $WineShopThStyle + '">Цена</th></tr>'
-    $WineShopWineTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Малый</td><td style="' + $WineShopCellStyle + '">25 ед.</td><td style="' + $WineShopCellStyle + '">220 монет</td></tr>'
-    $WineShopWineTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Средний</td><td style="' + $WineShopCellStyle + '">60 ед.</td><td style="' + $WineShopCellStyle + '">510 монет</td></tr>'
-    $WineShopWineTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Большой</td><td style="' + $WineShopCellStyle + '">120 ед.</td><td style="' + $WineShopCellStyle + '">990 монет</td></tr>'
-    $WineShopWineTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Огромный</td><td style="' + $WineShopCellStyle + '">200 ед.</td><td style="' + $WineShopCellStyle + '">1550 монет</td></tr>'
+    $WineShopWineTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Малый</td><td style="' + $WineShopCellStyle + '">25 ед.</td><td style="' + $WineShopCellStyle + '">220 спринтриев</td></tr>'
+    $WineShopWineTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Средний</td><td style="' + $WineShopCellStyle + '">60 ед.</td><td style="' + $WineShopCellStyle + '">510 спринтриев</td></tr>'
+    $WineShopWineTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Большой</td><td style="' + $WineShopCellStyle + '">120 ед.</td><td style="' + $WineShopCellStyle + '">990 спринтриев</td></tr>'
+    $WineShopWineTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Огромный</td><td style="' + $WineShopCellStyle + '">200 ед.</td><td style="' + $WineShopCellStyle + '">1550 спринтриев</td></tr>'
     $WineShopWineTableHtml += '</table>'
 
     *p $WineShopWineTableHtml
@@ -280,9 +345,9 @@
     $WineShopBeerTableHtml += '<th style="' + $WineShopThStyle + '">Бочёнок</th>'
     $WineShopBeerTableHtml += '<th style="' + $WineShopThStyle + '">Количество</th>'
     $WineShopBeerTableHtml += '<th style="' + $WineShopThStyle + '">Цена</th></tr>'
-    $WineShopBeerTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Малый</td><td style="' + $WineShopCellStyle + '">40 ед.</td><td style="' + $WineShopCellStyle + '">150 монет</td></tr>'
-    $WineShopBeerTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Средний</td><td style="' + $WineShopCellStyle + '">100 ед.</td><td style="' + $WineShopCellStyle + '">360 монет</td></tr>'
-    $WineShopBeerTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Большой</td><td style="' + $WineShopCellStyle + '">200 ед.</td><td style="' + $WineShopCellStyle + '">700 монет</td></tr>'
+    $WineShopBeerTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Малый</td><td style="' + $WineShopCellStyle + '">40 ед.</td><td style="' + $WineShopCellStyle + '">150 спринтриев</td></tr>'
+    $WineShopBeerTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Средний</td><td style="' + $WineShopCellStyle + '">100 ед.</td><td style="' + $WineShopCellStyle + '">360 спринтриев</td></tr>'
+    $WineShopBeerTableHtml += '<tr><td style="' + $WineShopCellStyle + '">Большой</td><td style="' + $WineShopCellStyle + '">200 ед.</td><td style="' + $WineShopCellStyle + '">700 спринтриев</td></tr>'
     $WineShopBeerTableHtml += '</table>'
 
     *p $WineShopBeerTableHtml

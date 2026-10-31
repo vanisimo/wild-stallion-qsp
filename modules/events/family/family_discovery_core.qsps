@@ -45,13 +45,47 @@
         exit
     end
 
-    ! Условие накопления: 4 счастливых утра или 2 тяжелых утра (марафон)
-    if FamilyMorningHappyCount[$SuspCheckGirl] >= 4 or FamilyMorningMarathonCount[$SuspCheckGirl] >= 2:
-        FamilySisterSuspicionStage = 1
-        FamilySisterSuspicionDay = day
-        $FamilySuspicionTargetGirl = $SuspCheckGirl
+    ! Гейт 1: Семейный совет должен быть завершён (тайна происхождения открыта)
+    if FamilyCouncilDone = 0:
+        killvar '$SuspCheckGirl'
+        exit
     end
 
+    ! Гейт 2: Семья должна достичь минимум 2-й стадии коррупции
+    if FamilyCorruptionStage < 2:
+        killvar '$SuspCheckGirl'
+        exit
+    end
+
+    ! Проверяем близость с сёстрами
+    HasSexWithAmanda = 0
+    if AmandaHomeSex = 1 or HadSex['amanda'] > 0 or AmandaHomeFirstVaginalRegistered = 1:
+        HasSexWithAmanda = 1
+    end
+
+    HasSexWithMelissa = 0
+    if MelissaHomeSex = 1 or HadSex['melissa'] > 0:
+        HasSexWithMelissa = 1
+    end
+
+    ! Если связь с ОБЕИМИ сёстрами (любовный треугольник в семье)
+    if HasSexWithAmanda = 1 and HasSexWithMelissa = 1:
+        if (FamilyMorningHappyCount['amanda'] + FamilyMorningHappyCount['melissa'] >= 4) or (FamilyMorningMarathonCount['amanda'] + FamilyMorningMarathonCount['melissa'] >= 2):
+            FamilySisterSuspicionStage = 1
+            FamilySisterSuspicionDay = day
+            $FamilySuspicionTargetGirl = $SuspCheckGirl
+        end
+    else:
+        ! Связь только с одной сестрой: подозрения зреют дольше (требуется больше следов)
+        if FamilyMorningHappyCount[$SuspCheckGirl] >= 6 or FamilyMorningMarathonCount[$SuspCheckGirl] >= 3:
+            FamilySisterSuspicionStage = 1
+            FamilySisterSuspicionDay = day
+            $FamilySuspicionTargetGirl = $SuspCheckGirl
+        end
+    end
+
+    killvar 'HasSexWithAmanda'
+    killvar 'HasSexWithMelissa'
     killvar '$SuspCheckGirl'
 ---
 

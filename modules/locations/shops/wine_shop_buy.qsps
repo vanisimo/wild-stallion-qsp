@@ -25,8 +25,43 @@
     $WineShopBarrelSize = LCASE($ARGS[0])
     WineShopBigPurchaseFlash = 0
 
-    if $CurrentSeller = 'alber' and Friends['alber'] < 15:
-        $WineShopMessage = 'Альбер не собирается продавать вам вино после того, как вы себя вели.'
+    LegareConflictIsActive = 0
+    ClarissaBarrelTier = 3
+
+    if (LegareConflictStage >= 1 or LegarePricesRaised = 1 or LegareWinePressure = 1 or TavernAlcoholShortage = 1) and LegareTaxConfrontDone = 0:
+        LegareConflictIsActive = 1
+
+        if Friends['clarissa'] >= 14 and (ClarissaIntimUnlocked = 1 or ClarissaIntimSex = 1 or ClarissaSexUnlocked = 1):
+            ClarissaBarrelTier = 3
+        elseif Friends['clarissa'] >= 8 or ClarissaTrustStefan >= 2:
+            ClarissaBarrelTier = 2
+        else:
+            ClarissaBarrelTier = 1
+        end
+    end
+
+    if LegareConflictIsActive = 1:
+        if $CurrentSeller = 'alber':
+            $WineShopMessage = 'Альбер наотрез отказывается продавать выпивку твоему трактиру.'
+            gs 'WineShopReturnAfterPurchase'
+            exit
+        else:
+            if $WineShopBarrelSize = 'huge':
+                $WineShopMessage = 'Кларисса не может отпустить огромный бочонок в обход Альбера — такую пропажу скрыть невозможно.'
+                gs 'WineShopReturnAfterPurchase'
+                exit
+            elseif $WineShopBarrelSize = 'large' and ClarissaBarrelTier < 3:
+                $WineShopMessage = 'Кларисса пока не решается рисковать настолько сильно ради большого бочонка.'
+                gs 'WineShopReturnAfterPurchase'
+                exit
+            elseif $WineShopBarrelSize = 'medium' and ClarissaBarrelTier < 2:
+                $WineShopMessage = 'Кларисса может отпустить только малый бочонок ради Мелиссы.'
+                gs 'WineShopReturnAfterPurchase'
+                exit
+            end
+        end
+    elseif $CurrentSeller = 'alber' and Friends['alber'] < 15:
+        $WineShopMessage = 'Альбер не собирается продавать тебе вино после того, как ты себя вёл.'
         gs 'WineShopReturnAfterPurchase'
         exit
     end
@@ -58,14 +93,14 @@
     end
 
     if money < WineShopBarrelCost:
-        $WineShopMessage = 'У вас недостаточно денег на ' + $WineShopBarrelLabel + '.'
+        $WineShopMessage = 'У тебя недостаточно спринтриев на ' + $WineShopBarrelLabel + '.'
         gs 'WineShopReturnAfterPurchase'
         exit
     end
 
     money -= WineShopBarrelCost
     winenum += WineShopBarrelUnits
-    $WineShopMessage = 'Вы покупаете ' + $WineShopBarrelLabel + ' (' + STR(WineShopBarrelUnits) + ' ед.).'
+    $WineShopMessage = 'Ты покупаешь ' + $WineShopBarrelLabel + ' (' + STR(WineShopBarrelUnits) + ' ед.).'
 
     if $WineShopBarrelSize = 'medium':
         if $CurrentSeller = 'clarissa' and LOC('ClarissaWineBulkPurchase') = 1:
@@ -100,8 +135,39 @@
 #WineShopBuyBeer
     $WineShopBarrelSize = LCASE($ARGS[0])
 
-    if $CurrentSeller = 'alber' and Friends['alber'] < 15:
-        $WineShopMessage = 'Альбер отказывается продавать вам пиво.'
+    LegareConflictIsActive = 0
+    ClarissaBarrelTier = 3
+
+    if (LegareConflictStage >= 1 or LegarePricesRaised = 1 or LegareWinePressure = 1 or TavernAlcoholShortage = 1) and LegareTaxConfrontDone = 0:
+        LegareConflictIsActive = 1
+
+        if Friends['clarissa'] >= 14 and (ClarissaIntimUnlocked = 1 or ClarissaIntimSex = 1 or ClarissaSexUnlocked = 1):
+            ClarissaBarrelTier = 3
+        elseif Friends['clarissa'] >= 8 or ClarissaTrustStefan >= 2:
+            ClarissaBarrelTier = 2
+        else:
+            ClarissaBarrelTier = 1
+        end
+    end
+
+    if LegareConflictIsActive = 1:
+        if $CurrentSeller = 'alber':
+            $WineShopMessage = 'Альбер отказывается продавать тебе пиво.'
+            gs 'WineShopReturnAfterPurchase'
+            exit
+        else:
+            if $WineShopBarrelSize = 'large' and ClarissaBarrelTier < 3:
+                $WineShopMessage = 'Кларисса пока не решается рисковать настолько сильно ради большого бочонка.'
+                gs 'WineShopReturnAfterPurchase'
+                exit
+            elseif $WineShopBarrelSize = 'medium' and ClarissaBarrelTier < 2:
+                $WineShopMessage = 'Кларисса может отпустить только малый бочонок ради Мелиссы.'
+                gs 'WineShopReturnAfterPurchase'
+                exit
+            end
+        end
+    elseif $CurrentSeller = 'alber' and Friends['alber'] < 15:
+        $WineShopMessage = 'Альбер отказывается продавать тебе пиво.'
         gs 'WineShopReturnAfterPurchase'
         exit
     end
@@ -129,14 +195,14 @@
     end
 
     if money < WineShopBarrelCost:
-        $WineShopMessage = 'У вас недостаточно денег на ' + $WineShopBarrelLabel + '.'
+        $WineShopMessage = 'У тебя недостаточно спринтриев на ' + $WineShopBarrelLabel + '.'
         gs 'WineShopReturnAfterPurchase'
         exit
     end
 
     money -= WineShopBarrelCost
     beernum += WineShopBarrelUnits
-    $WineShopMessage = 'Вы покупаете ' + $WineShopBarrelLabel + ' (' + STR(WineShopBarrelUnits) + ' ед.).'
+    $WineShopMessage = 'Ты покупаешь ' + $WineShopBarrelLabel + ' (' + STR(WineShopBarrelUnits) + ' ед.).'
 
     killvar '$WineShopBarrelLabel'
     killvar '$WineShopBarrelSize'

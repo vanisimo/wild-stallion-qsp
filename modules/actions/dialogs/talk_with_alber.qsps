@@ -1,4 +1,4 @@
-﻿! ================================================
+! ================================================
 ! FILE: modules/actions/dialogs/talk_with_alber.qsps
 ! MODULE: actions/dialogs
 ! [AI-WORKED] Текст переработан / дополнен ассистентом 21.10.2026
@@ -8,6 +8,13 @@
 #AlberImportantCheck
     AlberImportantReady = 0
     $AlberImportantAction = ''
+
+    ! 0. Налоговый компромат (очная ставка)
+    if LegareTaxEvidenceReady = 1 and LegareTaxConfrontDone = 0:
+        AlberImportantReady = 1
+        $AlberImportantAction = 'tax_confront'
+        exit
+    end
 
     ! 1. Примирение со Стефаном
     if LOC('AlberReconcileCanOffer') = 1:
@@ -111,6 +118,13 @@
 #AlberBuildImportantMenu
     gs 'Menu.Destroy', 'AlberImportantMenu'
     gs 'Menu.Create', 'AlberImportantMenu'
+
+    if LegareTaxEvidenceReady = 1 and LegareTaxConfrontDone = 0:
+        gs 'MenuUiAdd', 'AlberImportantMenu', 'Показать бумаги', 'important'
+        gs 'Menu.AddModule', 'AlberImportantMenu', {
+            gt 'LegareTaxConfrontStart', $AlberReturnLoc
+        }
+    end
 
     if LOC('AlberReconcileCanOffer') = 1:
         gs 'AlberReconcileCanOffer'

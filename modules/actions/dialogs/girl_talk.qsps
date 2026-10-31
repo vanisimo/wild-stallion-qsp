@@ -989,6 +989,9 @@
     elseif $TalkTopic = 'port_talk':
         gs 'GirlTalkLizettePortRun', $TalkGirl
 
+    elseif $TalkTopic = 'lizette_legare_clue':
+        gs 'GirlTalkLizetteLegareClueRun', $TalkGirl
+
     elseif $TalkTopic = 'lizette_amanda':
         gs 'GirlTalkLizetteAmandaRun', $TalkGirl
 
@@ -1602,6 +1605,10 @@
         if GirlPersonalStoryUnlock['melissa_melissa_musician'] = 1 and GirlPersonalStoryDone['melissa_melissa_musician'] = 0:
             GirlTalkImportantTopicsCount += 1
         end
+        if LOC('LegareTaxAuditCanStart') = 1:
+            gs 'LegareTaxAuditCanStart'
+            if LegareTaxAuditCanStart = 1: GirlTalkImportantTopicsCount += 1
+        end
 
     elseif $CheckGirl = 'sandra':
         if LOC('SandraNobleReactionCanTalk') = 1:
@@ -1716,6 +1723,7 @@
         if LizetteTalkPortDone = 0: GirlTalkImportantTopicsCount += 1
         if AmandaLizaInfluence >= 2 and LizetteTalkIntimDone = 0: GirlTalkImportantTopicsCount += 1
         if GeorgetteKnown = 1 and LizetteTalkMotherDone = 0 and Friends['lizette'] >= 6: GirlTalkImportantTopicsCount += 1
+        if (LegareConflictStage >= 1 or LegarePricesRaised = 1 or LegareWinePressure = 1 or TavernAlcoholShortage = 1) and LegareClue_PortManifest = 0 and LegareTaxEvidenceReady = 0 and LegareTaxConfrontDone = 0: GirlTalkImportantTopicsCount += 1
 
     elseif $CheckGirl = 'georgett':
         if GeorgetteKnown < 1: GirlTalkImportantTopicsCount += 1
@@ -2002,6 +2010,13 @@
             gs 'MenuUiAdd', 'GirlTalkImportantMenu', '* Личное: о менестреле', 'talk'
             gs 'Menu.AddModule', 'GirlTalkImportantMenu', { gt 'GirlTalkPersonalStoryStart', 'melissa', $TalkReturnLoc, 'melissa_musician' }
         end
+        if LOC('LegareTaxAuditCanStart') = 1:
+            gs 'LegareTaxAuditCanStart'
+            if LegareTaxAuditCanStart = 1:
+                gs 'MenuUiAdd', 'GirlTalkImportantMenu', '* Показать бумаги', 'important'
+                gs 'Menu.AddModule', 'GirlTalkImportantMenu', { gt 'LegareTaxAuditStart', $TalkReturnLoc }
+            end
+        end
 
     elseif $TalkGirl = 'sandra':
         if LOC('SandraNobleReactionCanTalk') = 1:
@@ -2244,6 +2259,10 @@
         if GeorgetteKnown = 1 and LizetteTalkMotherDone = 0 and Friends['lizette'] >= 6:
             gs 'MenuUiAdd', 'GirlTalkImportantMenu', '* О Жоржетте', 'talk'
             gs 'Menu.AddModule', 'GirlTalkImportantMenu', { gt 'GirlTalkResult', 'lizette', $TalkReturnLoc, 'lizette_mother' }
+        end
+        if (LegareConflictStage >= 1 or LegarePricesRaised = 1 or LegareWinePressure = 1 or TavernAlcoholShortage = 1) and LegareClue_PortManifest = 0 and LegareTaxEvidenceReady = 0 and LegareTaxConfrontDone = 0:
+            gs 'MenuUiAdd', 'GirlTalkImportantMenu', '* О Легаре', 'important'
+            gs 'Menu.AddModule', 'GirlTalkImportantMenu', { gt 'GirlTalkResult', 'lizette', $TalkReturnLoc, 'lizette_legare_clue' }
         end
 
     elseif $TalkGirl = 'georgett':

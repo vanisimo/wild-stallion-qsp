@@ -1,0 +1,97 @@
+! ================================================
+! FILE: modules/events/legare/legare_tax_investigation.qsps
+! MODULE: events/legare
+! [AI-WORKED] Текст переработан / дополнен ассистентом 31.10.2026
+! Скрытая детективная ветка: налоговый компромат на Легаре (Мелисса, Лизетта, Кларисса)
+! ================================================
+
+#LegareTaxAuditCanStart
+    LegareTaxAuditCanStart = 0
+
+    if LegareTaxEvidenceReady = 1 or LegareTaxConfrontDone = 1:
+        exit
+    end
+
+    if LegareConflictStage < 1 and LegarePricesRaised = 0 and LegareWinePressure = 0:
+        exit
+    end
+
+    if LegareClue_ClarissaLedger = 0 and LegareClue_PortManifest = 0:
+        exit
+    end
+
+    if Friends['melissa'] < 8 and love['melissa'] < 2 and MelissaHomeSex = 0:
+        exit
+    end
+
+    LegareTaxAuditCanStart = 1
+---
+
+#LegareTaxAuditStart
+    $LegareTaxReturnLoc = $ARGS[0]
+    if $LegareTaxReturnLoc = '' or LOC($LegareTaxReturnLoc) = 0:
+        $LegareTaxReturnLoc = 'MelissaRoom'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА МЕЛИССЫ: РАСЧЁТЫ'
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_audit', 'МЕЛИССА ИЗУЧАЕТ НАКЛАДНЫЕ', 'large', 'webp'
+
+    gs 'LegareTaxAuditText'
+
+    LegareTaxEvidenceReady = 1
+    MelissaRespectStefan += 2
+    Friends['melissa'] += 2
+
+    gs 'ActUiPrepare', 'Забрать расчёты', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $LegareTaxReturnLoc
+    end
+---
+
+#LegareTaxConfrontCanStart
+    LegareTaxConfrontCanStart = 0
+
+    if LegareTaxConfrontDone = 1:
+        exit
+    end
+
+    if LegareTaxEvidenceReady = 0:
+        exit
+    end
+
+    LegareTaxConfrontCanStart = 1
+---
+
+#LegareTaxConfrontStart
+    $LegareConfrontReturnLoc = $ARGS[0]
+    if $LegareConfrontReturnLoc = '' or LOC($LegareConfrontReturnLoc) = 0:
+        $LegareConfrontReturnLoc = 'WineShop'
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ЛАВКА ЛЕГАРЕ: ОЧНАЯ СТАВКА'
+    gs 'SceneShowVisual', 'images/events/legare/tax_confront', 'СТЕФАН И ЛЕГАРЕ У КОНТОРКИ', 'large', 'webp'
+
+    gs 'LegareTaxConfrontText'
+
+    ! Завершение конфликта и нормализация поставок
+    LegareTaxConfrontDone = 1
+    LegareConflictStage = 0
+    LegarePricesRaised = 0
+    LegareWinePressure = 0
+    TavernAlcoholShortage = 0
+    AlberRespectStefan = 50
+    Friends['alber'] = MAX(Friends['alber'], 10)
+
+    gs 'ActUiPrepare', 'Выйти из лавки', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $LegareConfrontReturnLoc
+    end
+---

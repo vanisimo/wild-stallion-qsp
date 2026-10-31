@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 513
-- Locations: 4001
-- Locations with direct incoming calls: 3422
-- Locations without direct incoming calls: 579
+- Source files: 515
+- Locations: 4010
+- Locations with direct incoming calls: 3430
+- Locations without direct incoming calls: 580
 - Review candidates without direct incoming calls: 233
-- Classified entry/helper locations without direct incoming calls: 346
+- Classified entry/helper locations without direct incoming calls: 347
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -52,7 +52,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `FamilyCouncilTryAtNight` | `modules/events/family/family_council.qsps` | 26 | `modules/events` |
 | `FamilyCouncilTryBeforeNextDay` | `modules/events/family/family_council.qsps` | 40 | `modules/events` |
 | `FamilyDiscoveryInit` | `modules/events/family/family_discovery_core.qsps` | 7 | `modules/events` |
-| `FamilySisterBoycottCheck` | `modules/events/family/family_discovery_core.qsps` | 120 | `modules/events` |
+| `FamilySisterBoycottCheck` | `modules/events/family/family_discovery_core.qsps` | 154 | `modules/events` |
 | `FormatTextBad` | `modules/core/text/text_format.qsps` | 347 | `modules/core` |
 | `FormatTextDialog` | `modules/core/text/text_format.qsps` | 351 | `modules/core` |
 | `FormatTextGood` | `modules/core/text/text_format.qsps` | 339 | `modules/core` |
@@ -86,7 +86,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlTalkBuildIngaMainMenu` | `modules/actions/dialogs/girl_talk_inga.qsps` | 8 | `modules/actions` |
 | `GirlTalkBuildLizetteMainMenu` | `modules/actions/dialogs/girl_talk_lizette.qsps` | 54 | `modules/actions` |
 | `GirlTalkBuildMainMenu` | `modules/actions/dialogs/girl_talk.qsps` | 371 | `modules/actions` |
-| `GirlTalkBuildMelissaMainMenu` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 143 | `modules/actions` |
+| `GirlTalkBuildMelissaMainMenu` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 153 | `modules/actions` |
 | `GirlTalkBuildSandraMainMenu` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 135 | `modules/actions` |
 | `GirlTalkBuildTownMainMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 17 | `modules/actions` |
 | `GirlTalkDanceDressLater` | `modules/locations/shops/irma_dance_dress.qsps` | 321 | `modules/locations` |
@@ -106,7 +106,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlWorkPolicyTalkKitchenAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 139 | `modules/actions` |
 | `GuardBribeResolve` | `modules/events/quests/guard_bribe_quest.qsps` | 294 | `modules/events` |
 | `GuardTalk` | `modules/locations/town/guard_post.qsps` | 138 | `modules/locations` |
-| `GuyTalkAppendGiftMenuItems` | `modules/actions/dialogs/talk_with_alber.qsps` | 273 | `modules/actions` |
+| `GuyTalkAppendGiftMenuItems` | `modules/actions/dialogs/talk_with_alber.qsps` | 287 | `modules/actions` |
 | `HallEventChoiceThoughtsBody` | `modules/events/hall/hall_event_choice_thoughts_text.qsps` | 20 | `modules/events` |
 | `HallHarassmentAftermathFamily` | `modules/events/hall/hall_harassment.qsps` | 1381 | `modules/events` |
 | `HallHarassmentResolve` | `modules/events/hall/hall_harassment.qsps` | 1016 | `modules/events` |
@@ -494,6 +494,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `LegareFirstConflictDebugReset` | `modules/events/legare/legare_first_conflict.qsps` | 497 | `entry/helper` |
 | `LegareSupplyAftermathDebugReset` | `modules/events/legare/legare_supply_aftermath.qsps` | 376 | `entry/helper` |
 | `LegareSupplyPressureDebugReset` | `modules/events/legare/legare_supply_pressure.qsps` | 373 | `entry/helper` |
+| `LegareTaxConfrontCanStart` | `modules/events/legare/legare_tax_investigation.qsps` | 55 | `entry/helper` |
 | `LOC` | `modules/core/system/loc.qsps` | 9 | `entry/helper` |
 | `MayorOfficeBirthCertificateClerkText` | `modules/events/family/birth_certificate_text.qsps` | 40 | `entry/helper` |
 | `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 265 | `entry/helper` |
@@ -607,13 +608,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1840 |
-| `ShowLocationScreenTitle` | 821 |
-| `SceneShowVisual` | 768 |
-| `Menu.AddModule` | 731 |
-| `MenuUiAdd` | 727 |
+| `ActUiPrepare` | 1842 |
+| `ShowLocationScreenTitle` | 823 |
+| `SceneShowVisual` | 770 |
+| `Menu.AddModule` | 735 |
+| `MenuUiAdd` | 731 |
 | `EnsureGirlData` | 262 |
-| `ClampGirlSocialStats` | 245 |
+| `ClampGirlSocialStats` | 246 |
 | `NormalizeGirlKey` | 208 |
 | `TavernMain` | 169 |
 | `ShowGirlSidebar` | 115 |
@@ -627,8 +628,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MarketDance` | 77 |
 | `PrintMainP` | 70 |
 | `AmandaLizaTalkPoolTry` | 54 |
+| `GirlTalkResult` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 52 |
-| `GirlTalkResult` | 51 |
 | `PrintTitleLine` | 51 |
 | `SexSceneMain` | 48 |
 | `RegisterPlayerCum` | 47 |
