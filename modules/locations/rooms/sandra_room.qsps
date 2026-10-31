@@ -22,6 +22,29 @@
 
     killvar 'GirlInLocation'
 
+    if LocationGirlShown = 1:
+        if SandraBoycottActive = 1:
+            *pl 'Дверь спальни закрыта на засов. Из-за двери не доносится ни звука — Сандра не желает никого видеть.'
+            gs 'ActUiPrepare', 'Назад в коридор', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'TavernSecondFloor'
+            end
+            exit
+        end
+
+        if time = 5:
+            gs 'FamilySleepingGirlCheck', 'sandra'
+            if FamilyGirlSleepingDeep = 1:
+                gt 'FamilySleepingGirlScene', 'sandra'
+            end
+
+            gs 'FamilyMasturbationCheck', 'sandra'
+            if FamilyGirlMasturbating = 1:
+                gt 'FamilyMasturbationScene', 'sandra'
+            end
+        end
+    end
+
     gs 'ShowLocationImage', 'sandra_room', 'full', 'png'
 
     if LocationGirlShown = 1:
@@ -83,8 +106,8 @@
 
     gs 'ShowLocationImage', 'sandra_room', 'full', 'png'
 
-    *p 'Вы осматриваете комнату Сандры внимательнее.'
-    *p 'Вещи лежат аккуратно, кровать застелена ровно, на столике — расчёска и узелок сушёных трав.'
+    *pl 'Ты осматриваешь комнату Сандры внимательнее.'
+    *pl 'Вещи лежат аккуратно, кровать застелена ровно, на столике — расчёска и узелок сушёных трав.'
 
     *pl ' '
 
@@ -100,15 +123,60 @@
 
     *pl ' '
 
+    if (SandraLermontLetterFound = 1 or SandraLermontLetterSearched = 1) and SandraChestGnomeDildoFound = 0:
+        *pl 'Ты помнишь потайную панель с неприметным стыком, которую приметил при поиске письма в сундуке.'
+    end
+
     if SandraLermontLetterCanSearch = 1:
-        gs 'ActUiPrepare', 'Осмотреть сундук', 'look'
+        gs 'ActUiPrepare', 'Осмотреть сундук (письмо)', 'look'
         act $ActUiLabel, $ActUiIconPath:
             gt 'SandraLermontLetterSearchChest'
+        end
+    end
+
+    if (SandraLermontLetterFound = 1 or SandraLermontLetterSearched = 1) and FamilyCorruptionStage >= 2 and SandraChestGnomeDildoFound = 0:
+        gs 'ActUiPrepare', 'Обыскать тайник в сундуке', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'SandraRoomInspectGnomeDildo'
         end
     end
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'SandraRoom'
+    end
+---
+
+#SandraRoomInspectGnomeDildo
+    *clr
+    clr
+    cla
+
+    SandraChestGnomeDildoFound = 1
+    SandraGnomeDildoTalkPending = 1
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА САНДРЫ: ТАЙНИК В СУНДУКЕ'
+    gs 'SceneShowVisual', 'images/events/sandra/gnome_dildo_chest', 'ТАЙНИК САНДРЫ', 'large', 'webp'
+
+    *pl 'Ты вспоминаешь неприметный стык на дне сундука, замеченный ещё при поиске письма.'
+    *pl 'Надавливаешь на скрытый паз — защёлка мягко щёлкает, и планка отходит в сторону.'
+    *pl 'Пальцы нащупывают свёрток из замши. Тяжёлый.'
+    *pl ' '
+    *pl 'Ты разворачиваешь ткань — и присвистываешь.'
+    *pl 'Внутри — мужской уд из волшебного тентаклевого дерева из Диких Земель. Оно живое само по себе: стоит прикоснуться, как гладкая поверхность сама теплеет, упруго пружинит и мягко пульсирует в ладони, словно настоящая плоть! Обработать такую породу — редчайшее мастерство: Драупниру потребовалась ювелирная тонкость, чтобы придать форму и не повредить то, что живёт и действует само. Оно само возбуждает и при сжатии ритмично выстреливает внутрь влагу, словно живой уд семенем брызжет!'
+    if PlayerKnows_SandraDraupnirFriday = 1 or SandraDraupnirAffairStage >= 3:
+        *pl 'На основании — аккуратное клеймо Драупнира. Столяр совершил чудо, ювелирно подчинив живое дерево и сохранив его силу для мамы.'
+    else
+        *pl 'На основании вырезаны тонкие гномьи руны. Ювелирная работа — обычный мастер просто сломал бы то, что живёт и работает само.'
+    end
+    *pl ' '
+    *pl 'Ты взвешиваешь его в ладони и хмыкаешь: а ты-то думал, мама по вечерам молитвы читает.'
+    *pl 'Край замши затёрт, а дерево у головки отполировано до блеска. Вещь явно не пылится без дела.'
+    *pl ' '
+    *pl 'Ты заворачиваешь находку обратно, кладёшь на место и задвигаешь планку — ни следа. Но разговор с Сандрой об этом теперь неизбежен.'
+
+    gs 'ActUiPrepare', 'Вернуться к осмотру', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'SandraRoomInspect'
     end
 ---

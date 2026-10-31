@@ -1,0 +1,122 @@
+! ================================================
+! FILE: modules/actions/dialogs/sandra_gnome_dildo_talk.qsps
+! MODULE: actions/dialogs
+! [AI-WORKED] Разговор с Сандрой о деревянном органе из тайника в сундуке 30.10.2026
+! ================================================
+
+#SandraGnomeDildoCanTalk
+    SandraGnomeDildoCanTalk = 0
+
+    if SandraChestGnomeDildoFound <> 1:
+        exit
+    end
+
+    if SandraGnomeDildoTalkDone = 1:
+        exit
+    end
+
+    SandraGnomeDildoCanTalk = 1
+---
+
+#SandraTalkAboutGnomeDildo
+    *clr
+    clr
+    cla
+
+    $SandraDildoTalkReturnLoc = $ARGS[0]
+
+    if $SandraDildoTalkReturnLoc = '':
+        $SandraDildoTalkReturnLoc = 'TavernMain'
+    end
+
+    if LOC($SandraDildoTalkReturnLoc) = 0:
+        $SandraDildoTalkReturnLoc = 'TavernMain'
+    end
+
+    gs 'EnsureGirlData', 'sandra'
+    gs 'MenuGirlCalcConditions', 'sandra', $SandraDildoTalkReturnLoc
+
+    if MenuCanTalk = 0:
+        gs 'GirlTalkClosedScreen', 'sandra', $SandraDildoTalkReturnLoc
+        exit
+    end
+
+    gs 'SandraGnomeDildoCanTalk'
+
+    if SandraGnomeDildoCanTalk = 0:
+        gt 'GirlTalk', 'sandra', $SandraDildoTalkReturnLoc
+        exit
+    end
+
+    gs 'ShowGirlSidebar', 'sandra'
+
+    gs 'ShowLocationScreenTitle', 'САНДРА О ТАЙНИКЕ В СУНДУКЕ'
+    gs 'SceneShowVisual', 'images/events/sandra/gnome_dildo_talk', 'САНДРА И ТАЙНИК', 'large', 'webp'
+
+    *pl 'Ты ловишь Сандру, когда рядом никого нет, и негромко говоришь:'
+    *pl '— Мама... я тут случайно нашёл потайную панель в твоём сундуке. На самом дне, под бельём.'
+    *pl ' '
+
+    if PlayerKnows_SandraDraupnirFriday = 1 or SandraDraupnirAffairStage >= 3:
+        ! Ветка 3: Стефан знает о гноме Драупнире
+        *pl 'Сандра вздрагивает, щёки заливает краска — но потом она шумно выдыхает и прячет улыбку:'
+        *pl ' '
+        *pl '— Нашёл всё-таки, следопыт... — она теребит край фартука. — Да, Драупнир выточил. Сказал: «Чтоб не скучала, пока меня рядом нет». По пятницам-то свидания коротки, а ночей в неделе много.'
+        *pl 'Она понижает голос:'
+        *pl '— Это волшебное тентаклевое дерево из Диких Земель. Оно ведь живое, всё само делает — само теплеет, пульсирует, возбуждает и само внутрь стреляет! Обработать такое — великий труд: Драупнир работал тончайшим резцом, ювелирно, чтобы придать форму и не сломать то, что само живёт и работает. С себя мерку снимал, хвастун бородатый.'
+        *pl ' '
+        *pl '— Надеюсь, ты его на место положил? Вещь штучная, он с ней как с хрусталём возился.'
+        if FamilyCorruptionStage >= 4:
+            *pl ' '
+            *pl 'Она прищуривается и вдруг смотрит тебе прямо на пах:'
+            *pl '— А чего покраснел, хозяин? Сравнивал, что ли? Гномий талант и живое дерево хороши, но живой уд рядом всегда нужнее. Так что не стой столбом — пора тебе исполнять свои обязанности перед мамкой.'
+        end
+
+    elseif SandraHomeSex = 1 or HadSex['sandra'] >= 1:
+        ! Ветка 2: Есть интимная связь со Стефаном
+        *pl 'Ты наклоняешься к её уху:'
+        *pl '— Волшебное тентаклевое дерево, мама? Само всё делает и само внутрь стреляет? А я тебе на что? Разве живой уд не лучше?'
+        *pl ' '
+        *pl 'Сандра вспыхивает, кусает губу — и тут же вскидывает подбородок и тычет пальцем тебе в грудь:'
+        *pl '— Дерево волшебное, да только живая плоть и кровь куда слаще! Так что шляйся поменьше по ночам, хозяин! Почаще в мою спальню заглядывай и исполняй свои обязанности, а не к девкам по углам бегай — тогда и тайник в сундуке без дела пылиться будет!'
+        if FamilyCorruptionStage >= 4:
+            *pl ' '
+            *pl 'Она оглядывается на дверь и добавляет совсем тихо, почти касаясь губами твоего уха:'
+            *pl '— А ещё лучше — приходи сегодня вечером. Покажу, как оно само пульсирует и как стреляет. А потом ты покажешь, насколько твоё семя горячее.'
+        else
+            *pl ' '
+            *pl 'Она шутливо отталкивает тебя ладонью:'
+            *pl '— Тоже мне, ревнивец выискался. Сам девок щупает, а матери в сундук нос суёт.'
+        end
+
+    else
+        ! Ветка 1: Связь с гномом неизвестна, близости со Стефаном нет
+        *pl 'Сандра резко замирает. В глазах вспыхивает испуг, который тут же сменяется румянцем и гневом:'
+        *pl ' '
+        *pl '— Что?! — шипит она, оглядываясь по сторонам. — Что за дурная привычка копаться в чужих вещах?! Это мне сделал один умелый мастер. Из волшебного тентаклевого дерева Диких Земель выточил, тончайшая работа, чтобы не повредить то, что само живёт и греет плоть! Но это не твоё дело!'
+        *pl ' '
+        *pl 'Она упирает руки в бока, пряча пылающие щёки:'
+        *pl '— Я взрослая женщина, Стефан! И у меня тоже есть потребности, видит Ильматер! Думаешь, вдова по ночам только молится? Уйди от меня. Немедленно. И забудь, что видел!'
+    end
+
+    *pl ' '
+
+    SandraGnomeDildoTalkDone = 1
+    SandraGnomeDildoTalkPending = 0
+    SandraGnomeDildoCanTalk = 0
+
+    otkroven['sandra'] += 2
+    sluttiness['sandra'] += 1
+    Friends['sandra'] += 1
+    gs 'ClampGirlSocialStats', 'sandra'
+
+    gs 'ActUiPrepare', 'Поговорить ещё', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'GirlTalk', 'sandra', $SandraDildoTalkReturnLoc
+    end
+
+    act '<b>Вернуться</b>', 'images/common/ui/actions/return.png':
+        gt $SandraDildoTalkReturnLoc
+        killvar '$SandraDildoTalkReturnLoc'
+    end
+---

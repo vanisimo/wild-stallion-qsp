@@ -212,6 +212,22 @@
 #BeckyShopRenderMainTab
     *p 'На полках ящики с зерном, солью и провизией. Здесь закупают всё, что потом уходит на кухню трактира.'
 
+    if SandraDiscoveryCrisisStage = 2:
+        *pl ' '
+        gs 'ActUiPrepare', 'Подслушать разговор Сандры и Бекки', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyDiscoverySandraBeckyTalk'
+        end
+    end
+
+    if (FamilySisterSuspicionStage >= 1 or FamilyCorruptionStage >= 2) and time <> 5 and day <> SisterVegetableSceneDay:
+        *pl ' '
+        gs 'ActUiPrepare', 'Сестра у лотка с овощами', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'BeckyShopSisterVegetablesScene'
+        end
+    end
+
     if BeckyHomeStage >= 3 and time = 4 and LOC('BeckyHomeGuestArrival') = 1:
         *pl ' '
 
@@ -536,7 +552,6 @@
         gt 'BeckyShop'
     end
 ---
----
 
 #BuildEddieShopTalkMenu
     gs 'Menu.Destroy', 'EddieShopTalkMenu'
@@ -558,4 +573,73 @@
     gs 'Menu.AddModule', 'EddieShopTalkMenu', {
         gt 'EddieChatScreen', 'BeckyShop'
     }
+---
+
+#BeckyShopSisterVegetablesScene
+    *clr
+    clr
+    cla
+
+    SisterVegetableSceneDay = day
+
+    if RAND(1, 2) = 1:
+        $VegGirl = 'amanda'
+    else
+        $VegGirl = 'melissa'
+    end
+
+    gs 'ShowLocationScreenTitle', 'ЛАВКА БЛЭНКЕНШИП: ВЫБОР ОВОЩЕЙ'
+    gs 'SceneShowVisual', 'images/events/shops/vegetables_butt_slap', 'СЕСТРА У ЛОТКА С ОВОЩАМИ', 'large', 'webp'
+
+    *pl 'У лотков с овощами стоит ' + $RealName[$VegGirl] + ', склонившись над корзиной огурцов.'
+    *pl 'Она вертит в пальцах крупный изогнутый огурец, прикидывает длину, обхватывает ладонью — проверяет толщину.'
+    *pl 'Платье туго натянуто на выставленных назад бёдрах.'
+    *pl ' '
+    *pl 'Ты подходишь сзади и звонко шлёпаешь её по ягодице.'
+    *pl ' '
+
+    if FamilyCorruptionStage >= 4:
+        *pl 'Она даже не вздрагивает. Только медленно оглядывается через плечо и прогибается чуть сильнее:'
+        *pl '— Ещё раз, — шепчет она. — Только посильнее.'
+        *pl ' '
+        *pl '— Ты лучше скажи, зачем тебе огурец, когда дома я есть? — ухмыляешься ты.'
+        *pl ' '
+        *pl '— Ты днём в трактире, а я днём скучаю. — Она проводит огурцом по губам, не сводя глаз с твоего паха. — Этот будет дневным. А ты — ночным.'
+        *pl ' '
+        *pl 'Бекки за прилавком довольно крякает:'
+        *pl '— Вот это хозяйственная девка! Бери два, ' + $RealName[$VegGirl] + ', второй в подарок. Чтоб братцу отдых давать, хе-хе!'
+        *pl ' '
+        *pl $RealName[$VegGirl] + ' кладёт в корзину оба огурца, расплачивается и, уходя, нарочно трётся о тебя бедром.'
+    elseif FamilyCorruptionStage >= 2:
+        *pl '— Ой! — она подскакивает и оборачивается, щёки пылают. — Стефан! Здесь же люди!'
+        *pl ' '
+        *pl '— А куда тебе такой длинный, сестрёнка? — ты киваешь на огурец. — Размерчик под себя подбираешь, чтобы ночью не скучать?'
+        *pl ' '
+        *pl '— Дурак! — шипит она, но огурец из рук не выпускает. — Не твоё дело, что я к ужину беру.'
+        *pl ' '
+        *pl '— К ужину? — ты наклоняешься к её уху. — Так я тебе и к ужину могу, и после.'
+        *pl ' '
+        *pl 'Бекки хохочет, уперев руки в бока:'
+        *pl '— А что, парень дело говорит! Бери, ' + $RealName[$VegGirl] + ', огурчик крепкий, в руке лежит как влитой. А коли братец обленится — вот тебе и замена, хе-хе!'
+        *pl ' '
+        *pl $RealName[$VegGirl] + ' заливается краской, прячет огурец в сумку и, проходя мимо, щиплет тебя за бок. Но взгляд у неё горячий.'
+    else
+        *pl '— Ай! — ' + $RealName[$VegGirl] + ' роняет огурец и разворачивается, красная до ушей. — Стефан! Ты одурел?! Люди же смотрят!'
+        *pl ' '
+        *pl '— Пусть смотрят, — ухмыляешься ты. — Огурчик-то не мелковат? Ты его так щупала, будто жениха выбирала.'
+        *pl ' '
+        *pl 'Бекки за прилавком прыскает в кулак:'
+        *pl '— Бери, бери, деточка! Для салата самое то. А для чего ещё — не моё дело, хе-хе!'
+        *pl ' '
+        *pl $RealName[$VegGirl] + ' хватает корзину, испепеляет тебя взглядом и вылетает из лавки. Огурец, впрочем, на лоток так и не вернулся.'
+    end
+
+    sluttiness[$VegGirl] += 1
+    otkroven[$VegGirl] += 1
+    killvar '$VegGirl'
+
+    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'BeckyShop'
+    end
 ---

@@ -1,0 +1,244 @@
+! ================================================
+! FILE: modules/events/family/family_discovery_core.qsps
+! MODULE: events/family
+! Диспетчер системы обнаружения связей в семье (подозрения, слухи, ссора сестёр, поимка Сандрой)
+! ================================================
+
+#FamilyDiscoveryInit
+    if FamilyDiscoveryInitDone = 1:
+        exit
+    end
+    FamilyDiscoveryInitDone = 1
+
+    FamilySisterSuspicionStage = 0
+    FamilyMorningHappyCount['amanda'] = 0
+    FamilyMorningHappyCount['melissa'] = 0
+    FamilyMorningHappyCount['sandra'] = 0
+    FamilyMorningMarathonCount['amanda'] = 0
+    FamilyMorningMarathonCount['melissa'] = 0
+    FamilyMorningMarathonCount['sandra'] = 0
+
+    FamilySisterBoycottActive = 0
+    $FamilySisterBoycottType = ''
+    FamilySisterBoycottDay = 0
+
+    FamilyLegareIntercepted = 0
+    FamilyMinstrelConfronted = 0
+
+    SandraNightWatchPending = 0
+    SandraDiscoveryCrisisStage = 0
+    SandraCrisisDay = 0
+    SandraBoycottActive = 0
+---
+
+#FamilyDiscoveryCheckSuspicion
+    $SuspCheckGirl = LCASE($ARGS[0])
+
+    if $SuspCheckGirl <> 'amanda' and $SuspCheckGirl <> 'melissa':
+        killvar '$SuspCheckGirl'
+        exit
+    end
+
+    ! Проверяем только если подозрения ещё не начались и ссоры ещё не было
+    if FamilySisterSuspicionStage > 0:
+        killvar '$SuspCheckGirl'
+        exit
+    end
+
+    ! Условие накопления: 4 счастливых утра или 2 тяжелых утра (марафон)
+    if FamilyMorningHappyCount[$SuspCheckGirl] >= 4 or FamilyMorningMarathonCount[$SuspCheckGirl] >= 2:
+        FamilySisterSuspicionStage = 1
+        FamilySisterSuspicionDay = day
+        $FamilySuspicionTargetGirl = $SuspCheckGirl
+    end
+
+    killvar '$SuspCheckGirl'
+---
+
+#FamilyNightPreRollState
+    if FamilyNightPreRollDay = day:
+        exit
+    end
+    FamilyNightPreRollDay = day
+
+    ! Считаем дни воздержания девушек (если Стефан не был у них)
+    if LastSexDay['amanda'] > 0:
+        FamilyGirlHornyDays['amanda'] = day - LastSexDay['amanda']
+    else
+        FamilyGirlHornyDays['amanda'] = 0
+    end
+
+    if LastSexDay['melissa'] > 0:
+        FamilyGirlHornyDays['melissa'] = day - LastSexDay['melissa']
+    else
+        FamilyGirlHornyDays['melissa'] = 0
+    end
+
+    if LastSexDay['sandra'] > 0:
+        FamilyGirlHornyDays['sandra'] = day - LastSexDay['sandra']
+    else
+        FamilyGirlHornyDays['sandra'] = 0
+    end
+
+    ! Рандом глубокого сна перед ночью (15% шанс на каждую девушку)
+    if RAND(1, 100) <= 15:
+        FamilyDeepSleepTonight['amanda'] = 1
+    else
+        FamilyDeepSleepTonight['amanda'] = 0
+    end
+
+    if RAND(1, 100) <= 15:
+        FamilyDeepSleepTonight['melissa'] = 1
+    else
+        FamilyDeepSleepTonight['melissa'] = 0
+    end
+
+    if RAND(1, 100) <= 15:
+        FamilyDeepSleepTonight['sandra'] = 1
+    else
+        FamilyDeepSleepTonight['sandra'] = 0
+    end
+---
+
+#FamilySisterArgumentCheck
+    FamilySisterArgumentCanTrigger = 0
+
+    if FamilySisterSuspicionStage <> 2 and FamilySisterArgumentPending <> 1:
+        exit
+    end
+
+    if FamilySisterBoycottActive = 1 or FamilySisterSuspicionStage >= 4:
+        exit
+    end
+
+    ! Ссора происходит дома вечером или ночью
+    if time >= 4:
+        FamilySisterArgumentCanTrigger = 1
+    end
+---
+
+#FamilySisterBoycottCheck
+    $BoycottGirl = LCASE($ARGS[0])
+    FamilyGirlInBoycott = 0
+
+    if FamilySisterBoycottActive = 1:
+        if $BoycottGirl = 'amanda' or $BoycottGirl = 'melissa':
+            FamilyGirlInBoycott = 1
+        end
+    end
+
+    if SandraBoycottActive = 1 and $BoycottGirl = 'sandra':
+        FamilyGirlInBoycott = 1
+    end
+
+    killvar '$BoycottGirl'
+---
+
+#FamilySandraNightCatchCheck
+    FamilySandraNightCatchTrigger = 0
+
+    if SandraNightWatchPending = 1 and time = 5 and SandraDiscoveryCrisisStage = 0:
+        FamilySandraNightCatchTrigger = 1
+    end
+---
+
+#FamilyMasturbationCheck
+    $MastCheckGirl = LCASE($ARGS[0])
+    FamilyGirlMasturbating = 0
+
+    if FamilyCorruptionStage >= 4 and time = 5:
+        if FamilyDeepSleepTonight[$MastCheckGirl] = 0 and FamilyGirlHornyDays[$MastCheckGirl] >= 3:
+            FamilyGirlMasturbating = 1
+        end
+    end
+
+    killvar '$MastCheckGirl'
+---
+
+#FamilySleepingGirlCheck
+    $SleepCheckGirl = LCASE($ARGS[0])
+    FamilyGirlSleepingDeep = 0
+
+    if time = 5 and FamilyDeepSleepTonight[$SleepCheckGirl] = 1:
+        FamilyGirlSleepingDeep = 1
+    end
+
+    killvar '$SleepCheckGirl'
+---
+
+#FamilyDiscoveryLadderSisterReaction
+    $ReactionSister = LCASE($ARGS[0])
+    $ReactionType = LCASE($ARGS[1])
+    SisterKnownOther = 0
+
+    if $ReactionSister = 'amanda':
+        if MelissaHomeSex = 1 or FamilySistersConfrontationStage >= 2 or FamilySistersKnowShared = 1:
+            SisterKnownOther = 1
+        end
+    elseif $ReactionSister = 'melissa':
+        if AmandaHomeSex = 1 or FamilySistersConfrontationStage >= 2 or FamilySistersKnowShared = 1:
+            SisterKnownOther = 1
+        end
+    end
+
+    if SisterKnownOther = 1:
+        *pl ' '
+        if $ReactionSister = 'amanda':
+            if $ReactionType = 'first_sex' or $ReactionType = 'presex':
+                if FamilyCorruptionStage >= 4:
+                    *pl 'Аманда смеётся низким, хрипловатым смехом и толкает тебя на кровать:'
+                    *pl '— Мелисса вчера хвасталась, какой ты неутомимый. Врёт, наверное, зазнайка. — Она забирается сверху и стягивает рубашку через голову. — Сейчас проверим. А потом я ей в лицо расскажу, сколько раз ты меня... Пусть локти кусает.'
+                elseif FamilyCorruptionStage >= 2:
+                    *pl 'Аманда прижимается к тебе и шепчет на ухо, щекоча дыханием:'
+                    *pl '— Я всё знаю про Мелиссу, братик. Не отпирайся. — Её пальцы ползут к твоему поясу. — Но спорим, она так не умеет? Она же и в постели, небось, вслух считает. А я тебя так приму, что ты её имя забудешь.'
+                else
+                    *pl 'Аманда вдруг замирает и упирается ладонями тебе в грудь. Глаза блестят от ревности:'
+                    *pl '— Подожди. Ты с Мелиссой так же? Тоже шептал ей, что она красивая? — Она закусывает губу. — Не отвечай. Просто сейчас ты только мой. Слышишь? Только мой.'
+                end
+            else
+                if FamilyCorruptionStage >= 4:
+                    *pl 'Аманда садится тебе на колени и ёрзает бёдрами:'
+                    *pl '— Мелисса сказала, ты к ней вчера заходил. Ну и как, не замёрз у этой ледышки? — Она хихикает и прижимается грудью. — Иди лучше ко мне грейся.'
+                elseif FamilyCorruptionStage >= 2:
+                    *pl 'Аманда лукаво щурится и ведёт пальцем по твоим губам:'
+                    *pl '— Интересно, Мелисса тебе так же улыбается? Нет, не отвечай. Я знаю, со мной тебе слаще. Она же холодная, как кадка в погребе.'
+                else
+                    *pl 'Аманда отводит глаза и тихо спрашивает:'
+                    *pl '— А Мелиссе ты тоже подарки носишь?.. Ладно. Мне всё равно.'
+                    *pl 'По голосу слышно — не всё равно.'
+                end
+            end
+        elseif $ReactionSister = 'melissa':
+            if $ReactionType = 'first_sex' or $ReactionType = 'presex':
+                if FamilyCorruptionStage >= 4:
+                    *pl 'Мелисса усмехается и толкает тебя к кровати ладонью в грудь:'
+                    *pl '— Аманда утверждает, что ты с ней дважды за ночь. Наивная. Считала она, а не ты. — Платье соскальзывает с её плеч. — Я тоже буду считать. Вслух. И предупреждаю: на два я не согласна.'
+                elseif FamilyCorruptionStage >= 2:
+                    *pl 'Мелисса расстёгивает верхнюю пуговицу, не сводя с тебя глаз:'
+                    *pl '— Давай проясним. Аманда хвасталась, что ты от неё до утра не отлипал. Полагаю, это была гипербола. — Ещё пуговица. — Сегодня у тебя будет возможность сравнить. И учти: я училась на её ошибках.'
+                else
+                    *pl 'Мелисса придерживает твои руки и смотрит прямо в глаза:'
+                    *pl '— Я знаю про Аманду, Стефан. Я слышала её ночами — стены у нас, увы, не каменные. — Она медленно выдыхает. — Я не она. Сказки и вздохи мне не нужны. Если ты здесь — будь здесь целиком. Без сравнений.'
+                end
+            else
+                if FamilyCorruptionStage >= 4:
+                    *pl 'Мелисса откидывается на стуле и закидывает ногу на ногу — юбка ползёт вверх по бедру:'
+                    *pl '— Аманда сказала, ты рычишь, когда кончаешь. Я сочла это преувеличением. — Пауза. — Но готова провести собственное исследование.'
+                elseif FamilyCorruptionStage >= 2:
+                    *pl '— Аманда опять светится, — замечает Мелисса, не отрывая пера от строки. — Подозреваю причинно-следственную связь.'
+                    *pl 'Она поднимает взгляд:'
+                    *pl '— Если думаешь, что я уступлю ей хоть в чём-то, ты сильно недооцениваешь старшую сестру.'
+                else
+                    *pl 'Мелисса не поднимает глаз от книги:'
+                    *pl '— Не сравнивай меня с Амандой, Стефан. Я знаю о твоих ночных визитах. И учти: я не обижаюсь. Я запоминаю.'
+                end
+            end
+        end
+        *pl ' '
+    end
+
+    killvar '$ReactionSister'
+    killvar '$ReactionType'
+    killvar 'SisterKnownOther'
+---
+

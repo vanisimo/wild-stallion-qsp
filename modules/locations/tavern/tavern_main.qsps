@@ -228,6 +228,13 @@
         end
     end
 
+    if FamilyMinstrelConfrontAvailable = 1:
+        gs 'ActUiPrepare', 'Выставить менестреля Элрика', 'fight'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyDiscoveryConfrontMinstrel'
+        end
+    end
+
     ! ====================== ПЕРЕХОДЫ ======================
 
     act '<b>Второй этаж</b>', 'images/common/ui/actions/floor.png':
@@ -262,6 +269,17 @@
     gs 'AddGlobalButtons'
     gs 'GetDateTimeNames'
     gs 'UpdateGirlLocations'
+
+    if LOC('FamilySisterArgumentCheck') = 1:
+        gs 'FamilySisterArgumentCheck'
+        if FamilySisterArgumentCanTrigger = 1:
+            gt 'FamilySisterArgumentScene'
+        end
+    end
+
+    if time = 5 and LOC('FamilyNightPreRollState') = 1:
+        gs 'FamilyNightPreRollState'
+    end
 
     gs 'ShowLocationScreenTitle', 'ВТОРОЙ ЭТАЖ ТРАКТИРА'
 
@@ -349,6 +367,13 @@
         end
     end
     killvar 'SundayVisitAmandaLizetteCanEavesdrop'
+
+    if FamilyLegareIntercepted = 1 and FamilyMinstrelConfronted = 1 and FamilySisterBoycottActive = 1:
+        gs 'ActUiPrepare', 'Собрать сестёр в комнате', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'FamilyDiscoverySistersReconcile'
+        end
+    end
 
     act '<b>Комната Стефана</b>', 'images/common/ui/actions/travel.png':
         gt 'PlayerRoom'
