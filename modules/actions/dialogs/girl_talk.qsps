@@ -308,12 +308,35 @@
     end
 
     ! ==================== 4. ЗАИГРЫВАНИЕ (ПРИСТАВАНИЯ) ====================
-    if $TalkGirl <> 'irma' and not ($TalkGirl = 'sandra' and $TalkReturnLoc <> 'Kitchen') and ($TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra' or Friends[$TalkGirl] >= 5) and GirlTouchDailyCount[$TalkGirl] < 2:
-        gs 'MenuUiAdd', 'GirlTalkMainMenu', 'Заигрывание', 'flirt'
+    _canTouchGirl = 0
+    if $TalkGirl = 'amanda' or $TalkGirl = 'melissa':
+        _canTouchGirl = 1
+    elseif $TalkGirl = 'sandra' and $TalkReturnLoc = 'Kitchen':
+        _canTouchGirl = 1
+    elseif $TalkGirl = 'inga':
+        if IngaPlayerRouteOpen = 1 or IngaRomanceUnlocked = 1 or IngaDanceUnlocked = 1 or HadSex['inga'] > 0 or IngaBackroomSex = 1:
+            _canTouchGirl = 1
+        end
+    elseif $TalkGirl <> 'irma' and $TalkGirl <> 'sandra' and Friends[$TalkGirl] >= 5:
+        _canTouchGirl = 1
+    end
+
+    if _canTouchGirl = 1 and GirlTouchDailyCount[$TalkGirl] < 2:
+        if ($TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra') and (FamilyCouncilDone = 0 or FamilyCorruptionStage = 0):
+            $TouchMenuLabel = 'Забота'
+            $TouchMenuIcon = 'talk'
+        else:
+            $TouchMenuLabel = 'Заигрывание'
+            $TouchMenuIcon = 'flirt'
+        end
+        gs 'MenuUiAdd', 'GirlTalkMainMenu', $TouchMenuLabel, $TouchMenuIcon
         gs 'Menu.AddModule', 'GirlTalkMainMenu', {
             gt 'GirlTalkTouchScreen', $TalkGirl, $TalkReturnLoc
         }
+        killvar '$TouchMenuLabel'
+        killvar '$TouchMenuIcon'
     end
+    killvar '_canTouchGirl'
 
     ! ==================== 5. НАКАЗ (ТОЛЬКО ДЛЯ СЕМЬИ И ЕСЛИ ЕСТЬ НАКАЗЫ) ====================
     if $TalkGirl = 'amanda' or $TalkGirl = 'melissa' or $TalkGirl = 'sandra':
@@ -485,15 +508,6 @@
     end
 
     gs 'EnsureGirlData', $TalkGirl
-
-    gs 'UsefulTalkCheck', $TalkGirl, $GirlTalkHallTopic
-
-    if UsefulTalkResult = 0:
-        gt 'GirlTalkBlockedUsefulTopic', $TalkGirl, $TalkReturnLoc
-        exit
-    end
-
-    gs 'UsefulTalkRegister', $TalkGirl, $GirlTalkHallTopic
 
     if $GirlTalkHallTopic = 'hall_event':
         gt 'GirlTalkHallEventReaction', $TalkGirl, $TalkReturnLoc
@@ -677,7 +691,11 @@
         $GirlTalkPendingNotice[$TalkBlockedGirl] = '— Стефан, ты меня слышишь? — ' + $RealName[$TalkBlockedGirl] + ' уже смотрит раздражённо. — Я сказала: серьёзные разговоры потом.'
         gt 'GirlTalk', $TalkBlockedGirl, $TalkBlockedReturnLoc
     else:
-        $GirlTalkPendingNotice[$TalkBlockedGirl] = '— Стефан, хватит болтать, — говорит ' + $RealName[$TalkBlockedGirl] + '. — У меня нет столько времени. Если хочешь просто перекинуться парой слов — ладно, но серьёзное оставь на потом.'
+        if $UsefulTalkReason <> '':
+            $GirlTalkPendingNotice[$TalkBlockedGirl] = $UsefulTalkReason
+        else:
+            $GirlTalkPendingNotice[$TalkBlockedGirl] = '— Стефан, хватит болтать, — говорит ' + $RealName[$TalkBlockedGirl] + '. — У меня нет столько времени. Если хочешь просто перекинуться парой слов — ладно, но серьёзное оставь на потом.'
+        end
         gt 'GirlTalk', $TalkBlockedGirl, $TalkBlockedReturnLoc
     end
 
@@ -861,7 +879,6 @@
     ! Важно: этот разговор передаётся в отдельный локатор, потому что там есть выбор инструкции.
 
     if $TalkTopic = 'hall_event':
-        gs 'UsefulTalkRegister', $TalkGirl, $TalkTopic
         gt 'GirlTalkHallEventReaction', $TalkGirl, $TalkReturnLoc
     end
 
@@ -1694,7 +1711,7 @@
         end
         if ClarissaSupplyTalkReady = 1 and LOC('ClarissaTalkAboutSupplyRoute') = 1: GirlTalkImportantTopicsCount += 1
         if ClarissaGoldenWineCanOfferDream = 1: GirlTalkImportantTopicsCount += 1
-        if ClarissaGoldenWineStage = 1 and not (PlayerHasGoldenWineRecipe = 1 and PlayerHasGoldenGrapeVines = 1): GirlTalkImportantTopicsCount += 1
+        if ClarissaGoldenWineStage = 1 and (PlayerHasGoldenWineRecipe = 0 or PlayerHasGoldenGrapeVines = 0): GirlTalkImportantTopicsCount += 1
         if ClarissaGoldenVineyardPlanted = 1 and ClarissaVineyardStatusTalkToday <> day: GirlTalkImportantTopicsCount += 1
         if LOC('MarkClarissaSupplyAftermathReady') = 1:
             gs 'MarkClarissaSupplyAftermathReady'
@@ -1758,6 +1775,7 @@
 
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
     gs 'ShowLocationScreenTitle', 'ВАЖНАЯ БЕСЕДА: ' + $RealName[$TalkGirl]
+    SceneArtUseReal = 1
     gs 'SceneShowVisual', 'images/actions/dialogs/' + $TalkGirl + '_important', 'важная беседа: ' + $RealName[$TalkGirl], 'large', 'webp'
 
     gs 'GirlTalkBuildImportantMenu'
@@ -2189,7 +2207,7 @@
             gs 'MenuUiAdd', 'GirlTalkImportantMenu', '* О мечте про Золотое вино', 'talk'
             gs 'Menu.AddModule', 'GirlTalkImportantMenu', { gt 'ClarissaGoldenWineDreamTalk' }
         end
-        if ClarissaGoldenWineStage = 1 and not (PlayerHasGoldenWineRecipe = 1 and PlayerHasGoldenGrapeVines = 1):
+        if ClarissaGoldenWineStage = 1 and (PlayerHasGoldenWineRecipe = 0 or PlayerHasGoldenGrapeVines = 0):
             gs 'MenuUiAdd', 'GirlTalkImportantMenu', '* О поисках Золотого вина', 'work'
             gs 'Menu.AddModule', 'GirlTalkImportantMenu', { gt 'ClarissaGoldenWineProgressHint' }
         end
@@ -2432,6 +2450,7 @@
 
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
     gs 'ShowLocationScreenTitle', 'РАЗГОВОР: ' + $RealName[$TalkGirl]
+    SceneArtUseReal = 1
     gs 'SceneShowVisual', 'images/actions/dialogs/' + $TalkGirl + '_chat', 'разговор: ' + $RealName[$TalkGirl], 'large', 'webp'
 
     gs 'GirlTalkBuildChatMenu'
@@ -2528,6 +2547,7 @@
     cls
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
     gs 'ShowLocationScreenTitle', 'РАЗГОВОР: ' + $RealName[$TalkGirl]
+    SceneArtUseReal = 1
     gs 'SceneShowVisual', 'images/actions/dialogs/' + $TalkGirl + '_' + $TalkTopic, 'разговор: ' + $RealName[$TalkGirl] + ' (' + $TalkTopic + ')', 'large', 'webp'
     *pl ' '
 
@@ -2655,6 +2675,7 @@
 
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
     gs 'ShowLocationScreenTitle', 'ПОДАРОК: ' + $RealName[$TalkGirl]
+    SceneArtUseReal = 1
     gs 'SceneShowVisual', 'images/actions/dialogs/' + $TalkGirl + '_gift', 'подарок: ' + $RealName[$TalkGirl], 'large', 'webp'
 
     gs 'GirlTalkBuildGiftMenu'
@@ -2695,17 +2716,17 @@
     $OrdersCheckGirl = $GirlKey
 
     if $OrdersCheckGirl = 'amanda':
-        if AmandaProhibitGuys = 1 or AmandaNeighborBoysStage >= 1 or AmandaSeenWithGuys = 1 or day >= 3:
+        if AmandaProhibitGuys = 1 or AmandaNeighborBoysStage >= 1 or AmandaSeenWithGuys = 1 or AmandaBoysCaught = 1 or HallMissingGirlPrivateCount['amanda'] >= 1:
             GirlTalkOrdersCount += 1
         end
 
         gs 'GirlTalkPersonalLegareBanned'
-        if GirlTalkPersonalLegareBanned = 1 or AmandaLegareMet = 1 or AmandaLegareDanceDone = 1 or PortMeetWitnessed = 1:
+        if GirlTalkPersonalLegareBanned = 1 or AmandaLegareMet = 1 or AmandaLegareDanceDone = 1 or AmandaLegareInterest >= 1 or AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1 or FactHappened['amanda_dancewithlegare_1'] = 1:
             GirlTalkOrdersCount += 1
         end
         killvar 'GirlTalkPersonalLegareBanned'
 
-        if LizetteBanned = 1 or LizetteKnown = 1 or PortMeetWitnessed = 1:
+        if LizetteBanned = 1 or ((GeorgetteKnown = 1 or LizetteTalkMotherDone = 1 or GeorgetteSeekLizetteDone = 1) and (AmandaLizaInfluence >= 3 or AmandaRebellion >= 2)):
             GirlTalkOrdersCount += 1
         end
 
@@ -2719,10 +2740,6 @@
 
     elseif $OrdersCheckGirl = 'melissa':
         if MelissaProhibitMinstrel = 1 or MelissaMinstrelMet = 1:
-            GirlTalkOrdersCount += 1
-        end
-
-        if MelissaProhibitGuys = 1 or day >= 3:
             GirlTalkOrdersCount += 1
         end
 
@@ -2764,6 +2781,7 @@
 
     gs 'GirlTalkShowSidebarWithAnchor', $TalkGirl
     gs 'ShowLocationScreenTitle', 'НАКАЗ: ' + $RealName[$TalkGirl]
+    SceneArtUseReal = 1
     gs 'SceneShowVisual', 'images/actions/tavern/' + $TalkGirl + '_orders', 'наказы: ' + $RealName[$TalkGirl], 'large', 'webp'
 
     gs 'GirlTalkBuildOrdersMenu'
@@ -2791,7 +2809,7 @@
     gs 'Menu.Create', 'GirlTalkOrdersMenu'
 
     if $TalkGirl = 'amanda':
-        if AmandaProhibitGuys = 1 or AmandaNeighborBoysStage >= 1 or AmandaSeenWithGuys = 1 or day >= 3:
+        if AmandaProhibitGuys = 1 or AmandaNeighborBoysStage >= 1 or AmandaSeenWithGuys = 1 or AmandaBoysCaught = 1 or HallMissingGirlPrivateCount['amanda'] >= 1:
             if AmandaProhibitGuys = 1:
                 gs 'MenuUiAdd', 'GirlTalkOrdersMenu', 'Разрешить встречи с парнями', 'talk'
                 gs 'Menu.AddModule', 'GirlTalkOrdersMenu', {
@@ -2806,7 +2824,7 @@
         end
 
         gs 'GirlTalkPersonalLegareBanned'
-        if GirlTalkPersonalLegareBanned = 1 or AmandaLegareMet = 1 or AmandaLegareDanceDone = 1 or PortMeetWitnessed = 1:
+        if GirlTalkPersonalLegareBanned = 1 or AmandaLegareMet = 1 or AmandaLegareDanceDone = 1 or AmandaLegareInterest >= 1 or AmandaLegareStreetInterceptDone = 1 or AmandaLegareBackyardDone = 1 or FactHappened['amanda_dancewithlegare_1'] = 1:
             if GirlTalkPersonalLegareBanned = 1:
                 gs 'MenuUiAdd', 'GirlTalkOrdersMenu', 'Разрешить общение с Легаре', 'talk'
                 gs 'Menu.AddModule', 'GirlTalkOrdersMenu', {
@@ -2821,7 +2839,7 @@
         end
         killvar 'GirlTalkPersonalLegareBanned'
 
-        if LizetteBanned = 1 or LizetteKnown = 1 or PortMeetWitnessed = 1:
+        if LizetteBanned = 1 or ((GeorgetteKnown = 1 or LizetteTalkMotherDone = 1 or GeorgetteSeekLizetteDone = 1) and (AmandaLizaInfluence >= 3 or AmandaRebellion >= 2)):
             if LizetteBanned = 1:
                 gs 'MenuUiAdd', 'GirlTalkOrdersMenu', 'Разрешить болтать с Лизеттой', 'talk'
                 gs 'Menu.AddModule', 'GirlTalkOrdersMenu', {
@@ -2865,20 +2883,6 @@
                 gs 'MenuUiAdd', 'GirlTalkOrdersMenu', 'Запретить встречи с менестрелем', 'talk'
                 gs 'Menu.AddModule', 'GirlTalkOrdersMenu', {
                     gt 'GirlTalkPersonalBanToggle', 'melissa', $TalkReturnLoc, 'minstrel'
-                }
-            end
-        end
-
-        if MelissaProhibitGuys = 1 or day >= 3:
-            if MelissaProhibitGuys = 1:
-                gs 'MenuUiAdd', 'GirlTalkOrdersMenu', 'Разрешить гулять по вечерам', 'talk'
-                gs 'Menu.AddModule', 'GirlTalkOrdersMenu', {
-                    gt 'GirlTalkPersonalBanToggle', 'melissa', $TalkReturnLoc, 'guys'
-                }
-            else:
-                gs 'MenuUiAdd', 'GirlTalkOrdersMenu', 'Запретить гулять по вечерам', 'talk'
-                gs 'Menu.AddModule', 'GirlTalkOrdersMenu', {
-                    gt 'GirlTalkPersonalBanToggle', 'melissa', $TalkReturnLoc, 'guys'
                 }
             end
         end

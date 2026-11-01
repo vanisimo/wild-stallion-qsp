@@ -236,13 +236,22 @@
 
     gs 'ClampGirlSocialStats', 'amanda'
 
-    if $BrothersChoice = 'watch' and not ($BrothersTargetStep = 'early_refusal' or (($BrothersTargetStep = 'stage8_ready' or $BrothersTargetStep = 'stage8_repeat') and AmandaBrothersTrained = 0)):
+    BrothersCanAct = 0
+    if $BrothersChoice = 'watch' and $BrothersTargetStep <> 'early_refusal':
+        if $BrothersTargetStep <> 'stage8_ready' and $BrothersTargetStep <> 'stage8_repeat':
+            BrothersCanAct = 1
+        elseif AmandaBrothersTrained > 0:
+            BrothersCanAct = 1
+        end
+    end
+
+    if BrothersCanAct = 1:
         gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_event', 'Братья Йенс и Бруно с Амандой: сам акт', 'large', 'webp'
     else:
         gs 'SceneShowVisual', 'images/events/amanda/amanda_events/amanda_neighbor_boys_action', 'Исход встречи с братьями', 'large', 'webp'
     end
 
-    if $BrothersChoice = 'watch' and not ($BrothersTargetStep = 'early_refusal' or (($BrothersTargetStep = 'stage8_ready' or $BrothersTargetStep = 'stage8_repeat') and AmandaBrothersTrained = 0)):
+    if BrothersCanAct = 1:
         gs 'ShowLocationScreenTitle', 'БРАТЬЯ И АМАНДА: САМ АКТ'
     else:
         gs 'ShowLocationScreenTitle', 'ПОСЛЕ ВСТРЕЧИ'
@@ -256,13 +265,14 @@
 
     *pl ' '
 
-    if $BrothersChoice = 'watch' and not ($BrothersTargetStep = 'early_refusal' or (($BrothersTargetStep = 'stage8_ready' or $BrothersTargetStep = 'stage8_repeat') and AmandaBrothersTrained = 0)):
+    if BrothersCanAct = 1:
+        killvar 'BrothersCanAct'
         gs 'ActUiPrepare', 'Дальше', 'generic'
         act $ActUiLabel, $ActUiIconPath:
             gt 'AmandaBoyBrothersActionScreen2'
         end
     else:
-
+        killvar 'BrothersCanAct'
         gs 'ActUiPrepare', 'Вернуться', 'return'
         act $ActUiLabel, $ActUiIconPath:
             killvar '$BrothersChoice'

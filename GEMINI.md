@@ -16,8 +16,8 @@ Current core design constraints:
   - `daily_cum_count`
   - `RegisterPlayerCum`
 - Useful conversations are limited:
-  - 1 important conversation per part of day
-  - maximum 3 important conversations with one NPC per day
+  - regular useful conversations (tavern, family, personal in «Разговор» menu): 1 per part of day, maximum 3 per day with one NPC
+  - story/important conversations («* Важная беседа» menu, hall reactions, story beats) do not consume the daily talk quota and are not blocked by it
   - normal small talk remains available
 - NPC menu should not use a manual “Close” button; it closes on cursor leave.
 - Dropdown `GirlTalk*Menu` lists must not include a manual «Вернуться» / «Закрыть» item; exit is cursor-leave only (`GirlTalkSessionEnd`).

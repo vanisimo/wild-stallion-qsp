@@ -1,4 +1,4 @@
-﻿! ================================================
+! ================================================
 ! FILE: modules/events/dance/friday_dance_core.qsps
 ! События пятничных танцев
 ! Версия: schedule v4 / hard return fix
@@ -963,10 +963,20 @@
         gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Пригласить на танец', 'dance'
         gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gs 'FridayDanceInviteAction', '" + $DanceMenuTarget + "'"
 
-        if $DanceMenuTarget <> 'irma' and GirlTouchDailyCount[$DanceMenuTarget] < 2:
+        _danceCanFlirt = 1
+        if $DanceMenuTarget = 'irma':
+            _danceCanFlirt = 0
+        elseif $DanceMenuTarget = 'inga':
+            if IngaPlayerRouteOpen = 0 and IngaDanceUnlocked = 0 and HadSex['inga'] = 0 and IngaBackroomSex = 0:
+                _danceCanFlirt = 0
+            end
+        end
+
+        if _danceCanFlirt = 1 and GirlTouchDailyCount[$DanceMenuTarget] < 2:
             gs 'MenuUiAdd', 'FridayDanceNpcMenu', 'Заигрывание', 'flirt'
             gs 'Menu.AddModule', 'FridayDanceNpcMenu', "gt 'GirlTalkTouchScreen', '" + $DanceMenuTarget + "', 'MarketDance'"
         end
+        killvar '_danceCanFlirt'
     end
 
     gs 'Menu.Show', 'FridayDanceNpcMenu'

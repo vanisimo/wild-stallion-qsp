@@ -1,4 +1,4 @@
-﻿! ================================================
+! ================================================
 ! FILE: modules/menu/menu_girl_overview.qsps
 ! Универсальное выпадающее меню взаимодействия с девушкой
 ! Работает через otd_lib_menu
@@ -78,12 +78,21 @@
             }
         end
 
-        ! 4. Заигрывание
-        if $MenuCurrentGirl <> 'irma' and not ($MenuCurrentGirl = 'sandra' and $MenuGirlReturnLoc <> 'Kitchen') and ($MenuCurrentGirl = 'amanda' or $MenuCurrentGirl = 'melissa' or $MenuCurrentGirl = 'sandra' or Friends[$MenuCurrentGirl] >= 5) and GirlTouchDailyCount[$MenuCurrentGirl] < 2:
-            gs 'MenuUiAdd', $MenuName, 'Заигрывание', 'flirt'
+        ! 4. Заигрывание / Забота
+        if $MenuCurrentGirl <> 'irma' and ($MenuCurrentGirl <> 'sandra' or $MenuGirlReturnLoc = 'Kitchen') and ($MenuCurrentGirl = 'amanda' or $MenuCurrentGirl = 'melissa' or $MenuCurrentGirl = 'sandra' or ($MenuCurrentGirl = 'inga' and (IngaPlayerRouteOpen = 1 or IngaRomanceUnlocked = 1 or IngaDanceUnlocked = 1 or HadSex['inga'] > 0 or IngaBackroomSex = 1)) or ($MenuCurrentGirl <> 'inga' and Friends[$MenuCurrentGirl] >= 5)) and GirlTouchDailyCount[$MenuCurrentGirl] < 2:
+            if ($MenuCurrentGirl = 'amanda' or $MenuCurrentGirl = 'melissa' or $MenuCurrentGirl = 'sandra') and (FamilyCouncilDone = 0 or FamilyCorruptionStage = 0):
+                $TouchMenuLabel = 'Забота'
+                $TouchMenuIcon = 'talk'
+            else:
+                $TouchMenuLabel = 'Заигрывание'
+                $TouchMenuIcon = 'flirt'
+            end
+            gs 'MenuUiAdd', $MenuName, $TouchMenuLabel, $TouchMenuIcon
             gs 'Menu.AddModule', $MenuName, {
                 gt 'GirlTalkTouchScreen', $MenuCurrentGirl, $MenuGirlReturnLoc
             }
+            killvar '$TouchMenuLabel'
+            killvar '$TouchMenuIcon'
         end
 
         ! 5. Наказ

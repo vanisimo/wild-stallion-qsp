@@ -57,7 +57,7 @@
         exit
     end
 
-    if SparkQueueConsumeHall = 1 and $SparkQueueConsumeGirl <> '':
+    if SparkQueueConsumeHall = 1 and $SparkQueueConsumeGirl <> '' and $GirlLocation[$SparkQueueConsumeGirl] = 'TavernMain' and jobwaitress[$SparkQueueConsumeGirl] = 1:
         $HallHarassGirl = $SparkQueueConsumeGirl
         $HallHarassJob = 'waitress'
     else:
@@ -73,7 +73,7 @@
         gs 'HallHarassmentPrintText', 'no_girl'
 
         if LOC('SaveLastHallEvent') = 1:
-            gs 'SaveLastHallEvent', 'calm', '', 'Вы осмотрели главный зал, но ничего особенного не произошло.', 'none'
+            gs 'SaveLastHallEvent', 'calm', '', 'Ты осмотрел главный зал, но ничего особенного не произошло.', 'none'
         end
 
         *pl ' '
@@ -238,6 +238,7 @@
             if LOC('HallMissingBargainStart') = 1:
                 gt 'HallMissingBargainStart', $HallHarassGirl, $HallHarassReturnLoc
             elseif LOC('HallMissingGirlStartFromPlay') = 1:
+                HallMissingSkipNotice = 0
                 gt 'HallMissingGirlStartFromPlay', $HallHarassGirl, $HallHarassReturnLoc
             end
             exit
@@ -418,9 +419,9 @@
 
     if GirlWorkPolicy[$HallHarassGirl] = 1:
         if $PolicyTintArea = 'kitchen':
-            *pl $RealName[$HallHarassGirl] + ' помнит ваш наказ: на кухне без вольностей, даже ценой чаевых.'
+            *pl $RealName[$HallHarassGirl] + ' помнит твой наказ: на кухне без вольностей, даже ценой чаевых.'
         else
-            *pl $RealName[$HallHarassGirl] + ' помнит ваш наказ: без вольностей, даже ценой чаевых.'
+            *pl $RealName[$HallHarassGirl] + ' помнит твой наказ: без вольностей, даже ценой чаевых.'
         end
     elseif GirlWorkPolicy[$HallHarassGirl] = 2:
         *pl $RealName[$HallHarassGirl] + ' помнит: решать самой — и сейчас она на этом и держится.'
@@ -428,12 +429,12 @@
         if HallHarassUnderTableCock = 1 and $HallHarassUnderReact = 'flee':
             *pl $RealName[$HallHarassGirl] + ' помнит про «раскованнее» — но сейчас отшатнулась: даже ради выручки есть предел.'
         elseif $HallHarassSubScene = 'drop_coin' or HallHarassType = 5:
-            *pl $RealName[$HallHarassGirl] + ' помнит про выручку — потому и полезла за монетой, а не сразу за вами.'
+            *pl $RealName[$HallHarassGirl] + ' помнит про выручку — потому и полезла за монетой, а не сразу за тобой.'
         elseif $PolicyTintArea = 'kitchen' and HarassTier >= 3 and HallHarassType = 3:
             ! crotch: сцена «выставила» — не «держит раскованно»
             *pl $RealName[$HallHarassGirl] + ' помнит про выручку, но этого гостя выставила сама: на кухне граница важнее «раскованнее».'
         elseif $PolicyTintArea = 'kitchen' and HarassTier >= 3 and HallHarassType = 4 and $HarassGirlStance <> 'provoke':
-            *pl $RealName[$HallHarassGirl] + ' помнит про «раскованнее», но у кладовой сама ставит предел — не зовёт вас в голос.'
+            *pl $RealName[$HallHarassGirl] + ' помнит про «раскованнее», но у кладовой сама ставит предел — не зовёт тебя в голос.'
         elseif $PolicyTintArea = 'kitchen':
             *pl $RealName[$HallHarassGirl] + ' помнит про «раскованнее» и выручку — это видно в том, как она держит кухню.'
         else
@@ -612,6 +613,7 @@
                 if LOC('HallMissingBargainStart') = 1:
                     gt 'HallMissingBargainStart', $HallHarassGirl, $HallHarassReturnLoc
                 elseif LOC('HallMissingGirlStartFromPlay') = 1:
+                    HallMissingSkipNotice = 0
                     gt 'HallMissingGirlStartFromPlay', $HallHarassGirl, $HallHarassReturnLoc
                 end
                 exit
@@ -841,52 +843,25 @@
 ---
 
 #HallHarassmentTryFromBar
-    $HallHarassReturnLoc = $ARGS[0]
-
-    if $HallHarassReturnLoc = '':
-        $HallHarassReturnLoc = 'TavernMain'
-    end
-
-    HallHarassmentStarted = 0
-
-    if HallHarassmentDay = day and HallHarassmentTime = time:
-        exit
-    end
-
-    gs 'SparkQueueTryStartHallFromLook', $HallHarassReturnLoc
-
-    if HallHarassmentStarted = 1:
-        exit
-    end
-
-    gs 'UpdateGirlLocations'
-
-    if LOC('CalculateTavernStaffEfficiency') = 1:
-        gs 'CalculateTavernStaffEfficiency'
-    end
-
-    gs 'HallHarassmentPickGirl'
-
-    if $HallHarassGirl <> '':
-        if RAND(1, 100) <= 35:
-            HallHarassmentStarted = 1
-            gt 'HallHarassment', $HallHarassReturnLoc
-        else:
-            gs 'SparkQueueEnqueueHall', $HallHarassGirl
-        end
-    end
+    gs 'HallHarassmentTryCore', $ARGS[0], 35
 ---
 
 #HallHarassmentTry
+    gs 'HallHarassmentTryCore', $ARGS[0], 25
+---
+
+! ARGS[0] — return loc, ARGS[1] — шанс % старта
+#HallHarassmentTryCore
     $HallHarassReturnLoc = $ARGS[0]
 
     if $HallHarassReturnLoc = '':
         $HallHarassReturnLoc = 'TavernMain'
     end
 
+    HallHarassTryChance = ARGS[1]
     HallHarassmentStarted = 0
 
-    ! Очередь AFK — всегда первой, даже если уже был слот (consume сам чистит).
+    ! Очередь AFK — всегда первой, даже если слот времени уже занят (consume сам чистит).
     gs 'SparkQueueTryStartHallFromLook', $HallHarassReturnLoc
 
     if HallHarassmentStarted = 1:
@@ -906,7 +881,7 @@
     gs 'HallHarassmentPickGirl'
 
     if $HallHarassGirl <> '':
-        if RAND(1, 100) <= 25:
+        if RAND(1, 100) <= HallHarassTryChance:
             HallHarassmentStarted = 1
             gt 'HallHarassment', $HallHarassReturnLoc
         else:
@@ -985,7 +960,7 @@
         gs 'HallHarassmentPrintText', 'amanda_first_intro'
         *pl ' '
         if $HarassGirlStance = 'mixed' or $HarassGirlStance = 'provoke':
-            *pl 'Она всё ещё красная, но не орёт — будто ждёт, что вы сделаете на стойке.'
+            *pl 'Она всё ещё красная, но не орёт — будто ждёт, что ты сделаешь на стойке.'
             *pl ' '
         end
     else

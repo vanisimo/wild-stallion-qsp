@@ -22,13 +22,8 @@
     $FamilySisterBoycottType = ''
     FamilySisterBoycottDay = 0
 
-    FamilyLegareIntercepted = 0
-    FamilyMinstrelConfronted = 0
-
-    SandraNightWatchPending = 0
-    SandraDiscoveryCrisisStage = 0
-    SandraCrisisDay = 0
-    SandraBoycottActive = 0
+    FamilyBoycottTalkAmandaDone = 0
+    FamilyBoycottTalkMelissaDone = 0
 ---
 
 #FamilyDiscoveryCheckSuspicion
@@ -114,23 +109,34 @@
         FamilyGirlHornyDays['sandra'] = 0
     end
 
-    ! Рандом глубокого сна перед ночью (15% шанс на каждую девушку)
-    if RAND(1, 100) <= 15:
-        FamilyDeepSleepTonight['amanda'] = 1
-    else
-        FamilyDeepSleepTonight['amanda'] = 0
-    end
+    ! Рандом глубокого сна перед ночью (максимум одна девушка за ночь, только после срыва покровов)
+    FamilyDeepSleepTonight['amanda'] = 0
+    FamilyDeepSleepTonight['melissa'] = 0
+    FamilyDeepSleepTonight['sandra'] = 0
 
-    if RAND(1, 100) <= 15:
-        FamilyDeepSleepTonight['melissa'] = 1
-    else
-        FamilyDeepSleepTonight['melissa'] = 0
-    end
+    if (FamilyCouncilDone = 1 or FamilyLiberationGateOpen = 1) and FamilyCorruptionStage >= 2 and RAND(1, 100) <= 20:
+        $SleepCandidate[0] = ''
+        _sleepCount = 0
+        if AmandaHomeSex = 1 or HadSex['amanda'] > 0:
+            $SleepCandidate[_sleepCount] = 'amanda'
+            _sleepCount += 1
+        end
+        if MelissaHomeSex = 1 or HadSex['melissa'] > 0:
+            $SleepCandidate[_sleepCount] = 'melissa'
+            _sleepCount += 1
+        end
+        if SandraHomeSex = 1 or HadSex['sandra'] > 0:
+            $SleepCandidate[_sleepCount] = 'sandra'
+            _sleepCount += 1
+        end
 
-    if RAND(1, 100) <= 15:
-        FamilyDeepSleepTonight['sandra'] = 1
-    else
-        FamilyDeepSleepTonight['sandra'] = 0
+        if _sleepCount > 0:
+            _sleepPick = RAND(0, _sleepCount - 1)
+            FamilyDeepSleepTonight[$SleepCandidate[_sleepPick]] = 1
+        end
+        killvar '$SleepCandidate'
+        killvar '_sleepCount'
+        killvar '_sleepPick'
     end
 ---
 
@@ -161,19 +167,13 @@
         end
     end
 
-    if SandraBoycottActive = 1 and $BoycottGirl = 'sandra':
-        FamilyGirlInBoycott = 1
-    end
+
 
     killvar '$BoycottGirl'
 ---
 
 #FamilySandraNightCatchCheck
     FamilySandraNightCatchTrigger = 0
-
-    if SandraNightWatchPending = 1 and time = 5 and SandraDiscoveryCrisisStage = 0:
-        FamilySandraNightCatchTrigger = 1
-    end
 ---
 
 #FamilyMasturbationCheck
@@ -192,6 +192,47 @@
 #FamilySleepingGirlCheck
     $SleepCheckGirl = LCASE($ARGS[0])
     FamilyGirlSleepingDeep = 0
+
+    ! Доступно только после срыва покровов (раскрытие семейной тайны и раскрепощение семьи)
+    if FamilyCouncilDone = 0 and FamilyLiberationGateOpen = 0:
+        killvar '$SleepCheckGirl'
+        exit
+    end
+
+    if FamilyCorruptionStage < 2:
+        killvar '$SleepCheckGirl'
+        exit
+    end
+
+    ! Не более одного посещения спящей девушки за ночь
+    if FamilySleepingGirlVisitedDay = day:
+        killvar '$SleepCheckGirl'
+        exit
+    end
+
+    ! Если сегодня с ней уже был секс
+    if SexUsedToday[$SleepCheckGirl] = 1:
+        killvar '$SleepCheckGirl'
+        exit
+    end
+
+    ! Доступно только если с девушкой уже была близость
+    if $SleepCheckGirl = 'amanda':
+        if AmandaHomeSex = 0 and HadSex['amanda'] = 0:
+            killvar '$SleepCheckGirl'
+            exit
+        end
+    elseif $SleepCheckGirl = 'melissa':
+        if MelissaHomeSex = 0 and HadSex['melissa'] = 0:
+            killvar '$SleepCheckGirl'
+            exit
+        end
+    elseif $SleepCheckGirl = 'sandra':
+        if SandraHomeSex = 0 and HadSex['sandra'] = 0:
+            killvar '$SleepCheckGirl'
+            exit
+        end
+    end
 
     if time = 5 and FamilyDeepSleepTonight[$SleepCheckGirl] = 1:
         FamilyGirlSleepingDeep = 1

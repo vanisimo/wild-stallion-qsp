@@ -17,10 +17,18 @@
     end
 
     if CurSexStep = 0:
+        AmandaLegareBackyardCount += 1
+        AmandaLegareBackyardDone = 1
         if oralacts['amanda'] = 0 and virginity['amanda'] = 1:
             SexType = 0
         elseif virginity['amanda'] = 1:
-            SexType = RAND(1, 2)
+            if (AmandaHomeAnalDone = 1 or analacts['amanda'] > 0) and AmandaLegareBackyardCount >= 2 and RAND(1, 100) <= 50:
+                SexType = 5
+            else:
+                SexType = RAND(1, 2)
+            end
+        elseif (AmandaHomeAnalDone = 1 or analacts['amanda'] > 0) and (AmandaLegareBackyardCount >= 2 or sluttiness['amanda'] >= 35) and RAND(1, 100) <= 50:
+            SexType = 5
         elseif HadVaginalWithPlayer['amanda'] = 1:
             SexType = 3
         else:
@@ -51,6 +59,11 @@
         elseif SexType = 0 or SexType = 1:
             oralacts['amanda'] += 1
             sexacts['amanda'] += 1
+        elseif SexType = 5:
+            analacts['amanda'] += 1
+            sexacts['amanda'] += 1
+            AmandaLegareAnalDone = 1
+            gs 'RegisterSex', 'amanda', 'anal', 0, 0
         else:
             AmandaLegareFirstSexDone = 1
             vaginalacts['amanda'] += 1
@@ -71,9 +84,9 @@
             FinishRoll = RAND(1, 2)
             if FinishRoll = 1:
                 cuminside['amanda'] += 1
-                gs 'AmandaLegareBackyardFinishInsideText'
+                gs 'AmandaLegareBackyardFinishInsideText', SexType
             else:
-                gs 'AmandaLegareBackyardFinishOutsideText'
+                gs 'AmandaLegareBackyardFinishOutsideText', SexType
             end
             killvar 'FinishRoll'
         end
