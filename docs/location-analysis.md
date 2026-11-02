@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 516
-- Locations: 4007
-- Locations with direct incoming calls: 3423
-- Locations without direct incoming calls: 584
-- Review candidates without direct incoming calls: 237
+- Locations: 4030
+- Locations with direct incoming calls: 3445
+- Locations without direct incoming calls: 585
+- Review candidates without direct incoming calls: 238
 - Classified entry/helper locations without direct incoming calls: 347
 - Dynamic call sites: 2
 
@@ -18,7 +18,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | --- | --- | --- | --- |
 | `Act1IsHonestPhase` | `modules/events/family/act1_setup_core.qsps` | 7 | `modules/events` |
 | `AdvanceTimeWalk` | `modules/core/time/time_control.qsps` | 126 | `modules/core` |
-| `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 202 | `modules/events` |
+| `AmandaBrothersNightTalkMelissa` | `modules/events/amanda/neighbor_boys/amanda_melissa_training.qsps` | 201 | `modules/events` |
 | `AmandaDanceAlleyIntro` | `modules/events/amanda/dance/amanda_dance.qsps` | 480 | `modules/events` |
 | `AmandaFirstSexMorningTryShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 228 | `modules/events` |
 | `AmandaHomeAfterSex` | `modules/events/amanda/home/amanda_home_chain.qsps` | 195 | `modules/events` |
@@ -65,15 +65,15 @@ These locations have no direct literal incoming calls and are not classified as 
 | `FormatTextWarn` | `modules/core/text/text_format.qsps` | 343 | `modules/core` |
 | `FridayDanceShowNpcMenu` | `modules/events/dance/friday_dance_core.qsps` | 911 | `modules/events` |
 | `FridayDanceStefanNoSuit` | `modules/events/dance/friday_dance_core.qsps` | 761 | `modules/events` |
-| `GeorgettePortAfterSex` | `modules/events/georgette/georgette_port_night.qsps` | 72 | `modules/events` |
+| `GeorgettePortAfterSex` | `modules/events/georgette/georgette_port_night.qsps` | 73 | `modules/events` |
 | `GeorgettePortNightMenu` | `modules/events/georgette/georgette_port_night.qsps` | 26 | `modules/events` |
 | `GirlDailyEvent` | `modules/core/system/compatibility_aliases.qsps` | 153 | `modules/core` |
 | `GirlFirstAnal` | `modules/actions/sex/first_sex.qsps` | 27 | `modules/actions` |
 | `GirlFirstAnalResult` | `modules/actions/sex/first_sex.qsps` | 43 | `modules/actions` |
 | `GirlFirstSex` | `modules/actions/sex/first_sex.qsps` | 7 | `modules/actions` |
 | `GirlFirstSexResult` | `modules/actions/sex/first_sex.qsps` | 23 | `modules/actions` |
-| `GirlIntimOpenNpcMenu` | `modules/core/girls/girl_intim_session.qsps` | 385 | `modules/core` |
-| `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 439 | `modules/core` |
+| `GirlIntimOpenNpcMenu` | `modules/core/girls/girl_intim_session.qsps` | 386 | `modules/core` |
+| `GirlIntimPrepareForNpcLink` | `modules/core/girls/girl_intim_session.qsps` | 440 | `modules/core` |
 | `GirlNoPantiesWorkIsActive` | `modules/actions/tavern/girl_no_panties_work.qsps` | 14 | `modules/actions` |
 | `GirlPolicyResponseApplyStats` | `modules/events/hall/girl_policy_response.qsps` | 188 | `modules/events` |
 | `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 24 | `modules/core` |
@@ -207,6 +207,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `KitchenCustomerBuildPolicyMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 699 | `modules/events` |
 | `LegareBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 58 | `modules/events` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 148 | `modules/core` |
+| `MelissaDanceAlleyCanOffer` | `modules/events/melissa/melissa_dark_alley.qsps` | 17 | `modules/events` |
 | `MelissaFirstPathChoiceAction` | `modules/events/melissa/melissa_musician_arc.qsps` | 739 | `modules/events` |
 | `MelissaHomeAfterSex` | `modules/events/melissa/melissa_home_chain.qsps` | 243 | `modules/events` |
 | `MelissaHomeAnalStep1` | `modules/events/melissa/melissa_home_anal.qsps` | 66 | `modules/events` |
@@ -221,8 +222,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `PortAmandaLizetteMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 128 | `modules/events` |
 | `PortAmandaLizetteShowAmandaMenu` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 41 | `modules/events` |
 | `PortAmandaLizetteTryMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 110 | `modules/events` |
-| `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 74 | `modules/events` |
-| `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 104 | `modules/events` |
+| `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 76 | `modules/events` |
+| `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 107 | `modules/events` |
 | `PortProstNightMenu` | `modules/events/port/port_prost_night.qsps` | 30 | `modules/events` |
 | `PrepareSkipDays` | `modules/core/time/skip_days.qsps` | 7 | `modules/core` |
 | `ProcessSandraBeckyOffense` | `modules/events/sandra/sandra_becky_conflict.qsps` | 133 | `modules/events` |
@@ -359,7 +360,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `DebugKnowledgeSeedHall` | `modules/debug/debug_knowledge_panel.qsps` | 68 | `entry/helper` |
 | `DebugMayorArcPanel` | `modules/debug/debug_mayor_arc.qsps` | 7 | `entry/helper` |
 | `DebugMelissaArcPanel` | `modules/debug/debug_melissa_arc.qsps` | 11 | `entry/helper` |
-| `DebugMelissaArcReset` | `modules/debug/debug_melissa_arc.qsps` | 616 | `entry/helper` |
+| `DebugMelissaArcReset` | `modules/debug/debug_melissa_arc.qsps` | 620 | `entry/helper` |
 | `DebugMelissaPresetDanceAlley` | `modules/debug/debug_melissa_arc.qsps` | 473 | `entry/helper` |
 | `DebugMelissaPresetHomeAnal` | `modules/debug/debug_melissa_arc.qsps` | 561 | `entry/helper` |
 | `DebugMelissaPresetHomeFirstSex` | `modules/debug/debug_melissa_arc.qsps` | 553 | `entry/helper` |
@@ -479,8 +480,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `IntimSceneStart` | `modules/actions/sex/intim_scene.qsps` | 7 | `entry/helper` |
 | `IrmaAmandaDanceDressBoughtText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 204 | `entry/helper` |
 | `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 | `entry/helper` |
-| `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 51 | `entry/helper` |
-| `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 47 | `entry/helper` |
+| `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 98 | `entry/helper` |
+| `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 94 | `entry/helper` |
 | `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 953 | `entry/helper` |
 | `IrmaUniformOfferDebugReset` | `modules/locations/shops/irma_uniform_offer.qsps` | 324 | `entry/helper` |
 | `IrmaUniformOfferDebugUnlock` | `modules/locations/shops/irma_uniform_offer.qsps` | 310 | `entry/helper` |
@@ -509,12 +510,12 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `MelissaFirstPathChoiceStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 727 | `entry/helper` |
 | `MelissaFirstPathChoiceTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 723 | `entry/helper` |
 | `MelissaFlirt` | `modules/actions/flirts/flirts.qsps` | 22 | `entry/helper` |
-| `MelissaMinstrelBackroomDebugReset` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 312 | `entry/helper` |
-| `MelissaMinstrelBackroomTryStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 63 | `entry/helper` |
+| `MelissaMinstrelBackroomDebugReset` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 341 | `entry/helper` |
+| `MelissaMinstrelBackroomTryStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 51 | `entry/helper` |
 | `MelissaMinstrelFridayRaceDebugReset` | `modules/events/melissa/melissa_minstrel_alley_race.qsps` | 312 | `entry/helper` |
 | `MelissaMinstrelHallMissingTryStart` | `modules/events/melissa/melissa_musician_arc.qsps` | 546 | `entry/helper` |
-| `MelissaMinstrelThreesomeStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 307 | `entry/helper` |
-| `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 41 | `entry/helper` |
+| `MelissaMinstrelThreesomeStart` | `modules/events/melissa/melissa_minstrel_backroom.qsps` | 337 | `entry/helper` |
+| `MelissaMinstrelWagonTryStart` | `modules/events/melissa/melissa_minstrel_wagon.qsps` | 45 | `entry/helper` |
 | `MelissaMusicianArcDebugReset` | `modules/events/melissa/melissa_musician_arc.qsps` | 747 | `entry/helper` |
 | `Menu.Chosen` | `modules/menu/system/otd_lib_menu.qsps` | 150 | `entry/helper` |
 | `Menu.Info` | `modules/menu/system/otd_lib_menu.qsps` | 13 | `entry/helper` |
@@ -581,7 +582,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `ShowDreamItemIfKnown` | `modules/core/gifts/gift_dream_images.qsps` | 32 | `entry/helper` |
 | `ShowEventImageVertical` | `modules/core/show_image/image_debug_random.qsps` | 511 | `entry/helper` |
 | `ShowGirl` | `modules/core/show_image/show_image_helpers.qsps` | 189 | `entry/helper` |
-| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 836 | `entry/helper` |
+| `ShowGirlIntimLink` | `modules/core/girls/girl_intim_session.qsps` | 838 | `entry/helper` |
 | `ShowGirlLocationLine` | `modules/core/girls/girl_location.qsps` | 186 | `entry/helper` |
 | `ShowIntimSceneStatus` | `modules/actions/sex/intim_scene.qsps` | 22 | `entry/helper` |
 | `ShowPortrait` | `modules/core/show_image/show_image_helpers.qsps` | 180 | `entry/helper` |
@@ -601,8 +602,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `TavernHallEventWaitressAttention` | `modules/events/hall/tavern_hall_events.qsps` | 974 | `entry/helper` |
 | `TavernHallLookDebugReset` | `modules/locations/tavern/tavern_hall_activity.qsps` | 19 | `entry/helper` |
 | `TavernHarassmentEvent` | `modules/events/hall/hall_harassment.qsps` | 837 | `entry/helper` |
-| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 725 | `entry/helper` |
-| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 552 | `entry/helper` |
+| `TavernMainBarWork` | `modules/locations/tavern/tavern_main.qsps` | 729 | `entry/helper` |
+| `TavernMainLookHall` | `modules/locations/tavern/tavern_main.qsps` | 556 | `entry/helper` |
 | `TavernRandomEvents` | `modules/events/engine/events_engine.qsps` | 8 | `entry/helper` |
 | `TavernSupplyEconomyDebugReset` | `modules/core/economy/tavern_supply_economy.qsps` | 304 | `entry/helper` |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 | `entry/helper` |
@@ -612,19 +613,19 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1833 |
-| `ShowLocationScreenTitle` | 820 |
-| `SceneShowVisual` | 773 |
-| `Menu.AddModule` | 736 |
-| `MenuUiAdd` | 732 |
-| `EnsureGirlData` | 262 |
-| `ClampGirlSocialStats` | 246 |
+| `ActUiPrepare` | 1855 |
+| `ShowLocationScreenTitle` | 848 |
+| `SceneShowVisual` | 804 |
+| `Menu.AddModule` | 761 |
+| `MenuUiAdd` | 757 |
+| `EnsureGirlData` | 267 |
+| `ClampGirlSocialStats` | 249 |
 | `NormalizeGirlKey` | 209 |
 | `TavernMain` | 166 |
 | `ShowGirlSidebar` | 115 |
-| `Menu.Create` | 105 |
-| `Menu.Destroy` | 103 |
-| `Market` | 100 |
+| `Menu.Create` | 102 |
+| `Menu.Destroy` | 100 |
+| `Market` | 99 |
 | `RegisterSex` | 96 |
 | `ShowImage` | 87 |
 | `FormatSpintry` | 84 |
@@ -636,7 +637,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaLizaTalkApplyInfluence` | 52 |
 | `PrintTitleLine` | 49 |
 | `SexSceneMain` | 48 |
-| `RegisterPlayerCum` | 47 |
+| `BeckyShop` | 47 |
 
 ## Dynamic Call Sites
 
