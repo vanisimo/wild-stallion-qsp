@@ -1,26 +1,56 @@
 ! ================================================
 ! FILE: modules/events/melissa/melissa_dark_alley.qsps
 ! MODULE: events/melissa
-! [AI-WORKED] 20.09.2026
-! Подворотня с Мелиссой после танцев на площади
-! Уникальная интерактивная цепочка:
-! 1. Вход в тень (психологический фасад)
-! 2. Тактильное сближение (слабость со спины)
-! 3. Момент риска (шаги за углом)
-! 4. Выбор формата близости (по уровню самообладания)
-! 5. Процесс и выбор кульминации (по FamilyCorruptionStage)
-! 6. Экран последствий и завершение фестиваля
+! [AI-WORKED] Текст переработан / дополнен ассистентом 02.11.2026
+! Подворотня после пятничного танца с Мелиссой (v3 — структурированная)
+! По подобию Аманды, со своими позами и книжными акцентами Мелиссы:
+! - Пошаговая прелюдия (оглядеться -> поцелуй -> объятия -> ласки под юбкой)
+! - Выбор чистого места: каменная стена арки или деревянные ступени конторы
+! - Позы: у стены с ногой / у стены раком / на ступенях наездница / обратная наездница на ступенях при анале
+! - Ветка орала: минет у ступеней -> ускорение -> глубокий минет -> финал
+! - Переход из задней дырочки в рот (ATM / Ass-to-Mouth)
+! - Постоянный наблюдатель на ступенях конторы (вероятность 20%)
+! - Вероятность беременности при окончании внутрь 20%
+! - Свидетели: стража (посмеивается), Легаре с Клариссой или Амандой, менестрель Элрик, горожане
 ! ================================================
+
+#MelissaDanceAlleyCanOffer
+    MelissaDanceAlleyCanOffer = 0
+
+    if MelissaHomeSex = 0:
+        exit
+    end
+
+    if MelissaDanceKiss = 0:
+        exit
+    end
+
+    if MelissaDanceAlley = 1:
+        exit
+    end
+
+    MelissaDanceAlleyCanOffer = 1
+---
 
 #MelissaDanceAlleyReset
     MelissaAlleyDay = day
     MelissaAlleyStage = 0
-    MelissaAlleyRisk = 8 + MelissaDancePublicRisk
-    MelissaAlleyComposure = 2
+    MelissaAlleyRisk = 0
+    MelissaAlleyKiss = 0
+    MelissaAlleyClose = 0
+    MelissaAlleyPetting = 0
+    MelissaAlleyPlace = 0
+    MelissaAlleyPose = ''
+    MelissaAlleySexBranch = 'vaginal'
+    MelissaAlleyPeeperTriggered = 0
+    MelissaAlleyClerkWitness = 0
+    MelissaAlleyWitnessTriggered = 0
+    MelissaAlleyWitnessType = 0
     MelissaAlleyAfterSex = 0
-    $MelissaAlleyFormat = ''
-    $MelissaAlleyFinish = ''
-    $MelissaAlleyLastAction = ''
+    MelissaAlleyPregnantTalkTriggered = 0
+    $MelissaAlleyLastText = ''
+    $MelissaAlleyResumeAction = ''
+    $MelissaAlleyLastTransition = ''
 ---
 
 #MelissaDanceAlleyEvent
@@ -35,191 +65,59 @@
         gs 'MelissaDanceAlleyReset'
     end
 
-    MelissaAlleyStage = 1
-
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_event', 'ПОДВОРОТНЯ У ПЛОЩАДИ', 'large', 'webp'
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
-
-    if LOC('MelissaDanceAlleyStage1Text') = 1:
-        gs 'MelissaDanceAlleyStage1Text'
-    else:
-        *pl 'Вы с Мелиссой отходите с шумной площади в тёмный проход между домами.'
-        *pl 'Музыка слышна за углом, но здесь, в полумраке у каменной кладки, каждый звук кажется громче.'
-    end
-
-    *pl ' '
-
-    gs 'Menu.Destroy', 'MelissaAlleyMenu'
-    gs 'Menu.Create', 'MelissaAlleyMenu'
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Поговорить', 'talk'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        gt 'MelissaDanceAlleyAction', 'talk'
-    }
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Шепнуть', 'talk'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        gt 'MelissaDanceAlleyAction', 'whisper'
-    }
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Прислушаться', 'look'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        gt 'MelissaDanceAlleyAction', 'listen'
-    }
-
-    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaAlleyMenu''">делать</a>?'
-
-    gs 'ActUiPrepare', 'Уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MelissaDanceAlleyEnd'
-    end
----
-
-#MelissaDanceAlleyStage2
-    *clr
-    clr
-    cla
-
-    MelissaAlleyStage = 2
-
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_close', 'МЕЛИССА В ОБЪЯТИЯХ У СТЕНЫ', 'large', 'webp'
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
-
-    if LOC('MelissaDanceAlleyStage2Text') = 1:
-        gs 'MelissaDanceAlleyStage2Text', $MelissaAlleyLastAction
-    else:
-        *pl 'Мелисса прижата к прохладной каменной кладке. Её дыхание сбито, но взгляд всё ещё ищет пути к отступлению.'
-    end
-
-    *pl ' '
-
-    gs 'Menu.Destroy', 'MelissaAlleyMenu'
-    gs 'Menu.Create', 'MelissaAlleyMenu'
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'К стене', 'intim'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        gt 'MelissaDanceAlleyAction', 'wall'
-    }
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Поцеловать', 'intim'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        gt 'MelissaDanceAlleyAction', 'kiss'
-    }
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Под подол', 'intim'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        gt 'MelissaDanceAlleyAction', 'petting'
-    }
-
-    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaAlleyMenu''">делать</a>?'
-
-    gs 'ActUiPrepare', 'Уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MelissaDanceAlleyEnd'
-    end
----
-
-#MelissaDanceAlleyStage3
-    *clr
-    clr
-    cla
-
-    MelissaAlleyStage = 3
-
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_look', 'ТЁМНЫЙ ПРОХОД МЕЖДУ ДОМАМИ', 'large', 'webp'
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
-
-    if LOC('MelissaDanceAlleyStage3Text') = 1:
-        gs 'MelissaDanceAlleyStage3Text', $MelissaAlleyLastAction
-    else:
-        *pl 'За углом раздаётся шум шагов и хмельные голоса подгулявших горожан.'
-        *pl 'Мелисса вздрагивает и замирает, в ужасе глядя в сторону освещённой площади.'
-    end
-
-    *pl ' '
-
-    gs 'Menu.Destroy', 'MelissaAlleyMenu'
-    gs 'Menu.Create', 'MelissaAlleyMenu'
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Зажать рот', 'intim'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        gt 'MelissaDanceAlleyAction', 'hold_mouth'
-    }
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Прикрыть собой', 'look'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        gt 'MelissaDanceAlleyAction', 'shield'
-    }
-
-    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaAlleyMenu''">делать</a>?'
-
-    gs 'ActUiPrepare', 'Уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MelissaDanceAlleyEnd'
-    end
----
-
-#MelissaDanceAlleyStage4
-    *clr
-    clr
-    cla
-
-    MelissaAlleyStage = 4
-
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_to_sex_scene', 'МЕЛИССА: ТЁМНЫЙ ПЕРЕУЛОК', 'large', 'webp'
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
-
-    if MelissaHomeSex = 0:
-        if LOC('MelissaDanceAlleyHomeGateText') = 1:
-            gs 'MelissaDanceAlleyHomeGateText'
+    if MelissaAlleyStage = 0:
+        MelissaAlleyStage = 1
+        MelissaAlleyRisk = 8 + MelissaDancePublicRisk
+        MelissaPlayerPath += 1
+        otkroven['melissa'] += 1
+        if RAND(1, 100) <= 50:
+            MelissaAlleyPlace = 2
         else:
-            *pl 'Мелисса упирается ладонями в твою грудь и тихо, но твёрдо качает головой:'
-            *pl '«Не здесь, Стефан. Сначала дома... Я не хочу начинать в грязном переулке».'
+            MelissaAlleyPlace = 1
         end
-
-        *pl ' '
-
-        gs 'ActUiPrepare', 'Уйти', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'MelissaDanceAlleyEnd'
-        end
-        exit
     end
 
-    if LOC('MelissaDanceAlleyStage4Text') = 1:
-        gs 'MelissaDanceAlleyStage4Text', MelissaAlleyComposure
+    if MelissaAlleyPetting = 1:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_petting', 'МЕЛИССА: ЛАСКИ ПОД ЮБКОЙ', 'large', 'webp'
+    elseif MelissaAlleyClose = 1:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_close', 'МЕЛИССА: ОБЪЯТИЯ В ПОЛУМРАКЕ', 'large', 'webp'
+    elseif MelissaAlleyKiss = 1:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_kiss', 'МЕЛИССА: ПОЦЕЛУЙ В ТЕМНОТЕ', 'large', 'webp'
     else:
-        *pl 'Голоса за углом стихают. Мелисса тяжело дышит у каменной кладки, не в силах скрыть дрожь возбуждения.'
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_event', 'ПОДВОРОТНЯ У ПЛОЩАДИ', 'large', 'webp'
+    end
+
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
+
+    if LOC('MelissaDanceAlleyMainText') = 1:
+        gs 'MelissaDanceAlleyMainText'
+    else:
+        if $MelissaAlleyLastText <> '':
+            *p $MelissaAlleyLastText
+        else:
+            *pl 'Ты с Мелиссой отходишь от шумной ярмарочной площади в тёмный проход между домами.'
+            *pl 'Музыка слышна за углом, но здесь, в полумраке у каменной кладки, каждый звук кажется громче.'
+        end
+    end
+
+    if MelissaAlleyPlace = 2:
+        *pl ' '
+        *pl 'В глубине переулка ведут наверх широкие деревянные ступени бокового крыльца магистратской конторы — здесь сухо, чисто и тень портика надёжно скрывает вас от огней площади.'
+    else:
+        *pl ' '
+        *pl 'Узкий проход упирается в прохладную гладкую каменную кладку древней арки — здесь царит глубокая тень.'
     end
 
     *pl ' '
 
-    gs 'Menu.Destroy', 'MelissaAlleyMenu'
-    gs 'Menu.Create', 'MelissaAlleyMenu'
-
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Минет', 'intim'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        $MelissaAlleyFormat = 'blowjob'
-        gt 'MelissaDanceAlleyStage5'
-    }
-
-    if MelissaAlleyComposure <= 1 and MelissaHomeSex >= 1:
-        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Трахнуть киску', 'intim'
-        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-            $MelissaAlleyFormat = 'vaginal'
-            gt 'MelissaDanceAlleyStage5'
-        }
+    if debug = 1:
+        *pl '[DEBUG MELISSA ALLEY] Stage: ' + STR(MelissaAlleyStage) + ' | Place: ' + STR(MelissaAlleyPlace) + ' | Risk: ' + STR(MelissaAlleyRisk)
+        *pl ' '
     end
 
-    if MelissaAlleyComposure <= 0 and (MelissaAnalDiscoveryStage >= 3 or hadanal['melissa'] = 1):
-        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Трахнуть попку', 'intim'
-        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-            $MelissaAlleyFormat = 'anal'
-            gt 'MelissaDanceAlleyStage5'
-        }
-    end
+    gs 'MelissaDanceAlleyBuildForeplayMenu'
 
-    *p 'Что вы будете <a href="exec:gs ''Menu.Show'', ''MelissaAlleyMenu''">делать</a>?'
+    *p 'Что ты будешь <a href="exec:gs ''Menu.Show'', ''MelissaAlleyMenu''">делать</a>?'
 
     gs 'ActUiPrepare', 'Уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -227,97 +125,681 @@
     end
 ---
 
-#MelissaDanceAlleyStage5
+#MelissaDanceAlleyBuildForeplayMenu
+    gs 'Menu.Destroy', 'MelissaAlleyMenu'
+    gs 'Menu.Create', 'MelissaAlleyMenu'
+
+    ! Пошаговая прелюдия
+    if MelissaAlleyStage = 1:
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Оглядеться по сторонам', 'look'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyAction', 'look'
+        }
+    end
+
+    if MelissaAlleyKiss = 0:
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Поцеловать в губы', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyAction', 'kiss'
+        }
+    elseif MelissaAlleyClose = 0:
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Прижать к себе', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyAction', 'close'
+        }
+    elseif MelissaAlleyPetting = 0:
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Запустить руку под платье', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyAction', 'petting'
+        }
+    elseif MelissaAlleyPetting = 1:
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Продолжать ласки под платьем', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyAction', 'petting'
+        }
+    end
+
+    ! Переход к оралу и полноценному сексу
+    if MelissaAlleyStage >= 2:
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Присесть на ступени (Минет)', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyBlowjob'
+        }
+
+        if MelissaHomeSex >= 1 or HadVaginalWithPlayer['melissa'] >= 1:
+            if MelissaAlleyPlace = 2:
+                gs 'MenuUiAdd', 'MelissaAlleyMenu', 'На ступени крыльца (Близость)', 'intim'
+                gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                    MelissaAlleyPlace = 2
+                    $MelissaAlleySexBranch = 'vaginal'
+                    $MelissaAlleyPose = 'stairs_cowgirl'
+                    gt 'MelissaDanceAlleySex', 'vaginal'
+                }
+
+                gs 'MenuUiAdd', 'MelissaAlleyMenu', 'У каменной стены арки', 'intim'
+                gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                    MelissaAlleyPlace = 1
+                    $MelissaAlleySexBranch = 'vaginal'
+                    $MelissaAlleyPose = 'wall_standing_leg'
+                    gt 'MelissaDanceAlleySex', 'vaginal'
+                }
+            else:
+                gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Прижать к каменной стене', 'intim'
+                gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                    MelissaAlleyPlace = 1
+                    $MelissaAlleySexBranch = 'vaginal'
+                    $MelissaAlleyPose = 'wall_standing_leg'
+                    gt 'MelissaDanceAlleySex', 'vaginal'
+                }
+
+                gs 'MenuUiAdd', 'MelissaAlleyMenu', 'К ступеням конторы', 'intim'
+                gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                    MelissaAlleyPlace = 2
+                    $MelissaAlleySexBranch = 'vaginal'
+                    $MelissaAlleyPose = 'stairs_cowgirl'
+                    gt 'MelissaDanceAlleySex', 'vaginal'
+                }
+            end
+
+            ! Проверка анала Мелиссы
+            if MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or analacts['melissa'] > 0 or analfromyou['melissa'] > 0:
+                gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Взять в попку', 'intim'
+                gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                    if MelissaAlleyPlace = 0:
+                        MelissaAlleyPlace = 1
+                    end
+                    $MelissaAlleySexBranch = 'anal'
+                    if MelissaAlleyPlace = 2:
+                        $MelissaAlleyPose = 'stairs_reverse_cowgirl'
+                    else:
+                        $MelissaAlleyPose = 'wall_doggy'
+                    end
+                    gt 'MelissaDanceAlleySex', 'anal'
+                }
+            end
+        end
+    end
+---
+
+#MelissaDanceAlleyAction
+    $MelissaAlleyAction = LCASE($ARGS[0])
+    $MelissaAlleyGirl = 'melissa'
+    gs 'EnsureGirlData', $MelissaAlleyGirl
+
+    if $MelissaAlleyAction = 'look':
+        if MelissaAlleyStage < 2:
+            MelissaAlleyStage = 2
+        end
+        MelissaAlleyRisk += 2
+
+    elseif $MelissaAlleyAction = 'kiss':
+        MelissaAlleyKiss = 1
+        if MelissaAlleyStage < 2:
+            MelissaAlleyStage = 2
+        end
+        MelissaAlleyRisk += 3
+        Friends[$MelissaAlleyGirl] += 1
+        love[$MelissaAlleyGirl] += 1
+        otkroven[$MelissaAlleyGirl] += 1
+        KissCount[$MelissaAlleyGirl] += 1
+        MelissaPlayerPath += 1
+
+    elseif $MelissaAlleyAction = 'close':
+        MelissaAlleyClose = 1
+        if MelissaAlleyStage < 3:
+            MelissaAlleyStage = 3
+        end
+        MelissaAlleyRisk += 3
+        love[$MelissaAlleyGirl] += 1
+        otkroven[$MelissaAlleyGirl] += 1
+
+    elseif $MelissaAlleyAction = 'petting':
+        MelissaAlleyPetting = 1
+        if MelissaAlleyStage < 4:
+            MelissaAlleyStage = 4
+        end
+        MelissaAlleyRisk += 4
+        sluttiness[$MelissaAlleyGirl] += 1
+        otkroven[$MelissaAlleyGirl] += 1
+    end
+
+    gs 'ClampGirlSocialStats', $MelissaAlleyGirl
+
+    if LOC('MelissaDanceAlleyForeplayText') = 1:
+        gs 'MelissaDanceAlleyForeplayText', $MelissaAlleyAction
+    else:
+        $MelissaAlleyLastText = 'Ты осторожно продолжаешь сближение с Мелиссой в тишине переулка.'
+    end
+
+    gt 'MelissaDanceAlleyEvent'
+---
+
+#MelissaDanceAlleyPeeperCheck
+    ! Постоянный наблюдатель на ступенях конторы (вероятность 20%)
+    if MelissaAlleyPlace = 2 and MelissaAlleyPeeperTriggered = 0:
+        MelissaPeeperRoll = RAND(1, 100)
+        if MelissaPeeperRoll <= 20:
+            MelissaAlleyPeeperTriggered = 1
+            MelissaAlleyClerkWitness = 1
+            MelissaAlleyRisk += 4
+            TavernScandal += 1
+            if LOC('MelissaDanceAlleyPeeperText') = 1:
+                gs 'MelissaDanceAlleyPeeperText'
+            end
+        end
+    end
+    killvar 'MelissaPeeperRoll'
+---
+
+#MelissaDanceAlleyWitnessCheck
+    ! Случайные свидетели на улице (вероятность 35%)
+    if MelissaAlleyWitnessTriggered = 0:
+        MelissaWitnessRoll = RAND(1, 100)
+        if MelissaWitnessRoll <= 35:
+            MelissaAlleyWitnessTriggered = 1
+            MelissaAlleyWitnessType = RAND(1, 4)
+            ! 1 = стража
+            ! 2 = Легаре (с женой или Амандой)
+            ! 3 = менестрель Элрик
+            ! 4 = просто горожане
+            if LOC('MelissaDanceAlleyWitnessText') = 1:
+                gs 'MelissaDanceAlleyWitnessText', MelissaAlleyWitnessType
+            end
+        end
+    end
+    killvar 'MelissaWitnessRoll'
+---
+
+#MelissaDanceAlleyBlowjob
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 0 and debug = 0:
+        $MelissaAlleyLastText = 'Ты чувствуешь, что на сегодня уже полностью выложился — сил на новую разрядку в переулке не осталось.'
+        gt 'MelissaDanceAlleyEvent'
+    end
+
     *clr
     clr
     cla
 
-    MelissaAlleyStage = 5
+    $MelissaAlleyGirl = 'melissa'
+    $MelissaAlleyResumeAction = 'blowjob'
+    gs 'EnsureGirlData', $MelissaAlleyGirl
 
-    if $MelissaAlleyFormat = 'blowjob':
-        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_blowjob', 'МЕЛИССА: В ПОЛУМРАКЕ', 'large', 'webp'
-    elseif $MelissaAlleyFormat = 'vaginal':
-        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_vaginal', 'МЕЛИССА: У СТЕНЫ', 'large', 'webp'
-    elseif $MelissaAlleyFormat = 'anal':
-        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_anal', 'МЕЛИССА: СО СПИНЫ', 'large', 'webp'
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_blowjob', 'МЕЛИССА: МИНЕТ У СТУПЕНЕЙ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — МИНЕТ'
+
+    if LOC('MelissaDanceAlleyBlowjobText') = 1:
+        gs 'MelissaDanceAlleyBlowjobText', 'start'
     else:
-        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_finish', 'МЕЛИССА: КУЛЬМИНАЦИЯ', 'large', 'webp'
+        *pl 'Мелисса присаживается на чистую ступеньку крыльца, придерживая ткань платья, и бережно берёт твой член в ротик.'
     end
 
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''MelissaDanceAlleyOpenMenu'', ''blowjob_start''">делать</a>?'
 
-    if LOC('MelissaDanceAlleyStage5Text') = 1:
-        gs 'MelissaDanceAlleyStage5Text', $MelissaAlleyFormat
+    gs 'ActUiPrepare', 'Продолжать', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyBlowjobBuild'
+    end
+
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyEnd'
+    end
+---
+
+#MelissaDanceAlleyBlowjobBuild
+    $MelissaAlleyResumeAction = 'blowjob'
+    gs 'MelissaDanceAlleyPeeperCheck'
+    gs 'MelissaDanceAlleyWitnessCheck'
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_blowjob_build', 'МЕЛИССА: МИНЕТ В РАЗГАРЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — УСКОРЕНИЕ'
+
+    if LOC('MelissaDanceAlleyBlowjobText') = 1:
+        gs 'MelissaDanceAlleyBlowjobText', 'build'
     else:
-        *pl 'В глубине переулка время словно замирает. Всхлипы и сдавленные стоны тонут в музыке с площади.'
+        *pl 'Мелисса двигает головой быстрее, её учёный ротик жадно ласкает ствол.'
+    end
+
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''MelissaDanceAlleyOpenMenu'', ''blowjob''">делать</a>?'
+
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyEnd'
+    end
+---
+
+#MelissaDanceAlleyBlowjobDeep
+    $MelissaAlleyResumeAction = 'deep'
+    gs 'MelissaDanceAlleyPeeperCheck'
+    gs 'MelissaDanceAlleyWitnessCheck'
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_blowjob_deep', 'МЕЛИССА: ГЛУБОКИЙ МИНЕТ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — ГЛУБОКИЙ МИНЕТ'
+
+    if LOC('MelissaDanceAlleyBlowjobText') = 1:
+        gs 'MelissaDanceAlleyBlowjobText', 'deep'
+    else:
+        *pl 'Ты глубоко погружаешься в её горячее податливое горлышко.'
+    end
+
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''MelissaDanceAlleyOpenMenu'', ''deep''">делать</a>?'
+
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyEnd'
+    end
+---
+
+#MelissaDanceAlleySex
+    $MelissaAlleyGirl = 'melissa'
+    $MelissaAlleyResumeAction = 'sex'
+    gs 'EnsureGirlData', $MelissaAlleyGirl
+
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 0 and debug = 0:
+        $MelissaAlleyLastText = 'Ты чувствуешь, что на сегодня уже полностью выложился — сил на новую близость в переулке не осталось.'
+        gt 'MelissaDanceAlleyEvent'
+    end
+
+    $MelissaAlleySexBranch = LCASE($ARGS[0])
+    if $MelissaAlleySexBranch = '':
+        $MelissaAlleySexBranch = 'vaginal'
+    end
+
+    if $MelissaAlleyPose = '':
+        if $MelissaAlleySexBranch = 'anal':
+            if MelissaAlleyPlace = 2:
+                $MelissaAlleyPose = 'stairs_reverse_cowgirl'
+            else:
+                $MelissaAlleyPose = 'wall_doggy'
+            end
+        else:
+            if MelissaAlleyPlace = 2:
+                $MelissaAlleyPose = 'stairs_cowgirl'
+            else:
+                $MelissaAlleyPose = 'wall_standing_leg'
+            end
+        end
+    end
+
+    *clr
+    clr
+    cla
+
+    if $MelissaAlleyPose = 'stairs_reverse_cowgirl':
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_anal_reverse', 'МЕЛИССА: ОБРАТНАЯ НАЕЗДНИЦА НА СТУПЕНЯХ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'СТУПЕНИ КОНТОРЫ — ОБРАТНАЯ НАЕЗДНИЦА'
+    elseif $MelissaAlleyPose = 'wall_doggy':
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_doggy', 'МЕЛИССА: У СТЕНЫ РАКОМ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'КАМЕННАЯ СТЕНА — У СТЕНЫ РАКОМ'
+    elseif $MelissaAlleyPose = 'stairs_cowgirl':
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_vaginal_stairs', 'МЕЛИССА: НА СТУПЕНЯХ НАЕЗДНИЦА', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'СТУПЕНИ КОНТОРЫ — НАЕЗДНИЦА'
+    else:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_vaginal_wall', 'МЕЛИССА: У КАМЕННОЙ СТЕНЫ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'КАМЕННАЯ СТЕНА — БЛИЗОСТЬ У СТЕНЫ'
+    end
+
+    if LOC('MelissaDanceAlleySexStartText') = 1:
+        gs 'MelissaDanceAlleySexStartText', $MelissaAlleyPose, $MelissaAlleySexBranch
+    else:
+        *pl 'Ты с Мелиссой предаёшься сокровенной страсти в полумраке переулка.'
+    end
+
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''MelissaDanceAlleyOpenMenu'', ''sex_start_<<$MelissaAlleySexBranch>>''">делать</a>?'
+
+    gs 'ActUiPrepare', 'Продолжать', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleySexBuild', $MelissaAlleySexBranch
+    end
+
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyEnd'
+    end
+---
+
+#MelissaDanceAlleySexTransition
+    $TransitionType = LCASE($ARGS[0])
+    $MelissaAlleyResumeAction = 'sex'
+
+    gs 'MelissaDanceAlleyPeeperCheck'
+    gs 'MelissaDanceAlleyWitnessCheck'
+
+    *clr
+    clr
+    cla
+
+    if $TransitionType = 'to_wall_doggy':
+        $MelissaAlleyPose = 'wall_doggy'
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_doggy', 'МЕЛИССА: СМЕНА ПОЗЫ — У СТЕНЫ РАКОМ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'КАМЕННАЯ СТЕНА — У СТЕНЫ РАКОМ'
+
+    elseif $TransitionType = 'to_stairs_reverse':
+        $MelissaAlleyPose = 'stairs_reverse_cowgirl'
+        $MelissaAlleySexBranch = 'anal'
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_anal_reverse', 'МЕЛИССА: ОБРАТНАЯ НАЕЗДНИЦА НА СТУПЕНЯХ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'СТУПЕНИ КОНТОРЫ — ОБРАТНАЯ НАЕЗДНИЦА В АНАЛ'
+
+    elseif $TransitionType = 'to_stairs_cowgirl':
+        $MelissaAlleyPose = 'stairs_cowgirl'
+        $MelissaAlleySexBranch = 'vaginal'
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_vaginal_stairs', 'МЕЛИССА: НА СТУПЕНЯХ НАЕЗДНИЦА', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'СТУПЕНИ КОНТОРЫ — НАЕЗДНИЦА'
+
+    elseif $TransitionType = 'to_wall_standing':
+        $MelissaAlleyPose = 'wall_standing_leg'
+        $MelissaAlleySexBranch = 'vaginal'
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_vaginal_wall', 'МЕЛИССА: У КАМЕННОЙ СТЕНЫ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'КАМЕННАЯ СТЕНА — БЛИЗОСТЬ У СТЕНЫ'
+
+    elseif $TransitionType = 'anal_to_mouth':
+        $MelissaAlleyResumeAction = 'blowjob'
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_atm', 'МЕЛИССА: ИЗ ЗАДНЕЙ ДЫРОЧКИ В РОТ (ATM)', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — ИЗ ПОПКИ В РОТИК'
+
+    elseif $TransitionType = 'vaginal_to_blowjob':
+        $MelissaAlleyResumeAction = 'blowjob'
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_blowjob_build', 'МЕЛИССА: ПЕРЕХОД К МИНЕТУ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — МИНЕТ'
+
+    else:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_event', 'СМЕНА ПОЗЫ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — СМЕНА ЛАСК'
+    end
+
+    if LOC('MelissaDanceAlleySexTransitionText') = 1:
+        gs 'MelissaDanceAlleySexTransitionText', $TransitionType
+    else:
+        *pl 'Вы плавно меняете позу, продолжая сокровенную страсть в полумраке переулка.'
     end
 
     *pl ' '
 
+    gs 'ActUiPrepare', 'Продолжать', 'intim'
+    act $ActUiLabel, $ActUiIconPath:
+        if $TransitionType = 'anal_to_mouth' or $TransitionType = 'vaginal_to_blowjob':
+            gt 'MelissaDanceAlleyBlowjobBuild'
+        else:
+            gt 'MelissaDanceAlleySexBuild', $MelissaAlleySexBranch
+        end
+    end
+
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyEnd'
+    end
+---
+
+#MelissaDanceAlleySexBuild
+    $MelissaAlleySexBranch = LCASE($ARGS[0])
+    if $MelissaAlleySexBranch = '':
+        $MelissaAlleySexBranch = 'vaginal'
+    end
+    $MelissaAlleyResumeAction = 'sex'
+
+    gs 'MelissaDanceAlleyPeeperCheck'
+    gs 'MelissaDanceAlleyWitnessCheck'
+
+    *clr
+    clr
+    cla
+
+    if $MelissaAlleyPose = 'stairs_reverse_cowgirl':
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_anal_reverse', 'МЕЛИССА: ОБРАТНАЯ НАЕЗДНИЦА В РАЗГАРЕ', 'large', 'webp'
+    elseif $MelissaAlleyPose = 'wall_doggy':
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_doggy', 'МЕЛИССА: У СТЕНЫ РАКОМ В РАЗГАРЕ', 'large', 'webp'
+    elseif $MelissaAlleyPose = 'stairs_cowgirl':
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_vaginal_stairs', 'МЕЛИССА: НАЕЗДНИЦА В РАЗГАРЕ', 'large', 'webp'
+    else:
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_vaginal_wall', 'МЕЛИССА: У СТЕНЫ В РАЗГАРЕ', 'large', 'webp'
+    end
+
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — В РАЗГАРЕ СТРАСТИ'
+
+    if LOC('MelissaDanceAlleySexBuildText') = 1:
+        gs 'MelissaDanceAlleySexBuildText', $MelissaAlleyPose, $MelissaAlleySexBranch
+    else:
+        *pl 'Ритм и глубина толчков нарастают, неумолимо приближая сладостную развязку.'
+    end
+
+    *pl ' '
+    *p 'Что ты будешь <a href="exec:gs ''MelissaDanceAlleyOpenMenu'', ''<<$MelissaAlleySexBranch>>''">делать</a>?'
+
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyEnd'
+    end
+---
+
+#MelissaDanceAlleyOpenMenu
+    $MenuContext = LCASE($ARGS[0])
+    $MelissaAlleyGirl = 'melissa'
+    gs 'EnsureGirlData', $MelissaAlleyGirl
+
     gs 'Menu.Destroy', 'MelissaAlleyMenu'
     gs 'Menu.Create', 'MelissaAlleyMenu'
 
-    gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить наружу', 'intim'
-    gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-        $MelissaAlleyFinish = 'outside'
-        gt 'MelissaDanceAlleyAftermath'
-    }
-
-    if FamilyCorruptionStage >= 2 and ($MelissaAlleyFormat = 'vaginal' or $MelissaAlleyFormat = 'anal'):
-        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить внутрь', 'intim'
+    if $MenuContext = 'blowjob_start':
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Ускорить темп минета', 'intim'
         gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-            $MelissaAlleyFinish = 'inside'
-            gt 'MelissaDanceAlleyAftermath'
+            gt 'MelissaDanceAlleyBlowjobBuild'
         }
-    end
 
-    if ($MelissaAlleyFormat = 'blowjob' and FamilyCorruptionStage >= 2) or (FamilyCorruptionStage >= 3 and ($MelissaAlleyFormat = 'vaginal' or $MelissaAlleyFormat = 'anal')):
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Взять глубоко в горлышко', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleyBlowjobDeep'
+        }
+
+        if MelissaHomeSex >= 1:
+            gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Перейти к киске', 'intim'
+            gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                gt 'MelissaDanceAlleySexTransition', 'to_wall_standing'
+            }
+
+            if MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or analacts['melissa'] > 0:
+                gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Перейти к попке', 'intim'
+                gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                    gt 'MelissaDanceAlleySexTransition', 'to_stairs_reverse'
+                }
+            end
+        end
+
+    elseif $MenuContext = 'blowjob' or $MenuContext = 'deep':
+        if $MenuContext = 'blowjob':
+            gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Глубокий минет', 'intim'
+            gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                gt 'MelissaDanceAlleyBlowjobDeep'
+            }
+        end
+
+        if MelissaHomeSex >= 1:
+            gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Перейти к киске', 'intim'
+            gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                gt 'MelissaDanceAlleySexTransition', 'to_wall_standing'
+            }
+
+            if MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or analacts['melissa'] > 0:
+                gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Перейти к попке', 'intim'
+                gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                    gt 'MelissaDanceAlleySexTransition', 'to_stairs_reverse'
+                }
+            end
+        end
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить...', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gs 'MelissaDanceAlleyOpenMenu', 'finish_blowjob'
+        }
+
+    elseif $MenuContext = 'sex_start_vaginal' or $MenuContext = 'vaginal':
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Набрать темп', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexBuild', 'vaginal'
+        }
+
+        if $MelissaAlleyPose <> 'wall_doggy':
+            gs 'MenuUiAdd', 'MelissaAlleyMenu', 'У стены раком', 'intim'
+            gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                gt 'MelissaDanceAlleySexTransition', 'to_wall_doggy'
+            }
+        end
+
+        if $MelissaAlleyPose <> 'stairs_cowgirl':
+            gs 'MenuUiAdd', 'MelissaAlleyMenu', 'На ступени (наездница)', 'intim'
+            gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                gt 'MelissaDanceAlleySexTransition', 'to_stairs_cowgirl'
+            }
+        end
+
+        if MelissaAnalUnlocked = 1 or MelissaHomeAnalDone = 1 or analacts['melissa'] > 0:
+            gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Перейти в попку (на ступенях)', 'intim'
+            gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                gt 'MelissaDanceAlleySexTransition', 'to_stairs_reverse'
+            }
+        end
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Опустить на колени (минет)', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexTransition', 'vaginal_to_blowjob'
+        }
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить...', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gs 'MelissaDanceAlleyOpenMenu', 'finish_vaginal'
+        }
+
+    elseif $MenuContext = 'sex_start_anal' or $MenuContext = 'anal':
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Набрать темп в попке', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexBuild', 'anal'
+        }
+
+        if $MelissaAlleyPose <> 'stairs_reverse_cowgirl':
+            gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Обратная наездница на ступенях', 'intim'
+            gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                gt 'MelissaDanceAlleySexTransition', 'to_stairs_reverse'
+            }
+        end
+
+        if $MelissaAlleyPose <> 'wall_doggy':
+            gs 'MenuUiAdd', 'MelissaAlleyMenu', 'У стены раком', 'intim'
+            gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+                gt 'MelissaDanceAlleySexTransition', 'to_wall_doggy'
+            }
+        end
+
+        ! Из задней дырочки в рот (ATM)
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Из попки в ротик (ATM)', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexTransition', 'anal_to_mouth'
+        }
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Вернуться к киске', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexTransition', 'to_wall_standing'
+        }
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить...', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gs 'MelissaDanceAlleyOpenMenu', 'finish_anal'
+        }
+
+    elseif $MenuContext = 'finish_blowjob':
         gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить в рот', 'intim'
         gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-            $MelissaAlleyFinish = 'mouth'
-            gt 'MelissaDanceAlleyAftermath'
+            gt 'MelissaDanceAlleySexFinish', 'mouth'
         }
-    end
 
-    if FamilyCorruptionStage >= 3:
         gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить на лицо', 'intim'
         gs 'Menu.AddModule', 'MelissaAlleyMenu', {
-            $MelissaAlleyFinish = 'face'
-            gt 'MelissaDanceAlleyAftermath'
+            gt 'MelissaDanceAlleySexFinish', 'face'
+        }
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить на ступени наружу', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexFinish', 'outside'
+        }
+
+    elseif $MenuContext = 'finish_vaginal':
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить внутрь (риск беременности)', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexFinish', 'inside'
+        }
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Вынуть и кончить наружу', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexFinish', 'outside'
+        }
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить в ротик', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexFinish', 'mouth'
+        }
+
+    elseif $MenuContext = 'finish_anal':
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Кончить внутрь попки', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexFinish', 'inside'
+        }
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Вынуть и кончить на попку', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexFinish', 'outside'
+        }
+
+        gs 'MenuUiAdd', 'MelissaAlleyMenu', 'Из попки в рот и кончить', 'intim'
+        gs 'Menu.AddModule', 'MelissaAlleyMenu', {
+            gt 'MelissaDanceAlleySexFinish', 'mouth'
         }
     end
 
-    *p 'Куда вы хочешь <a href="exec:gs ''Menu.Show'', ''MelissaAlleyMenu''">кончить</a>?'
-
-    gs 'ActUiPrepare', 'Уйти', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'MelissaDanceAlleyEnd'
-    end
+    gs 'Menu.Show', 'MelissaAlleyMenu'
 ---
 
-#MelissaDanceAlleyAftermath
+#MelissaDanceAlleySexFinish
+    $MelissaAlleyFinish = LCASE($ARGS[0])
+    $MelissaAlleyGirl = 'melissa'
+    gs 'EnsureGirlData', $MelissaAlleyGirl
+
     *clr
     clr
     cla
-
-    MelissaAlleyStage = 6
-    MelissaAlleyAfterSex = 1
-
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_aftermath', 'МЕЛИССА: ПОСЛЕ БЛИЗОСТИ', 'large', 'webp'
-    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ'
 
     gs 'RegisterPlayerCum'
 
+    ! Разговор о риске залететь (вероятность 20% при окончании внутрь вагинально, без фактической беременности)
+    if $MelissaAlleyFinish = 'inside' and $MelissaAlleySexBranch = 'vaginal':
+        MelissaPregnancyTalkRoll = RAND(1, 100)
+        if MelissaPregnancyTalkRoll <= 20:
+            MelissaAlleyPregnantTalkTriggered = 1
+        end
+        killvar 'MelissaPregnancyTalkRoll'
+    end
+
     if $MelissaAlleyFinish = 'outside':
         cumoutside['melissa'] += 1
-        gs 'RegisterSex', 'melissa', $MelissaAlleyFormat, 0, 1
+        gs 'RegisterSex', 'melissa', $MelissaAlleySexBranch, 0, 1
     elseif $MelissaAlleyFinish = 'inside':
-        if $MelissaAlleyFormat = 'vaginal':
+        if $MelissaAlleySexBranch = 'vaginal':
             cuminside['melissa'] += 1
             vaginalcum['melissa'] += 1
             vaginalacts['melissa'] += 1
             gs 'RegisterSex', 'melissa', 'vaginal', 1, 1
-        elseif $MelissaAlleyFormat = 'anal':
+        elseif $MelissaAlleySexBranch = 'anal':
             cumanal['melissa'] += 1
             analacts['melissa'] += 1
             gs 'RegisterSex', 'melissa', 'anal', 1, 1
@@ -334,23 +816,25 @@
         gs 'RegisterSex', 'melissa', 'facial', 0, 1
     end
 
-    if $MelissaAlleyFormat = 'anal':
+    if $MelissaAlleySexBranch = 'anal':
         hadanal['melissa'] = 1
         analacts['melissa'] += 1
         sluttiness['melissa'] += 3
-    elseif $MelissaAlleyFormat = 'vaginal':
+    elseif $MelissaAlleySexBranch = 'vaginal':
         hadvaginal['melissa'] = 1
         vaginalacts['melissa'] += 1
         sluttiness['melissa'] += 2
         if virginity['melissa'] = 1:
             virginity['melissa'] = 0
         end
-    elseif $MelissaAlleyFormat = 'blowjob':
+    elseif $MelissaAlleySexBranch = 'blowjob':
         oralacts['melissa'] += 1
         BlowjobCount['melissa'] += 1
         sluttiness['melissa'] += 2
     end
 
+    MelissaAlleyStage = 6
+    MelissaAlleyAfterSex = 1
     SexUsedToday['melissa'] = 1
     MelissaPlayerAlleySexEver = 1
     FridayDancesCount = 8
@@ -371,11 +855,36 @@
 
     gs 'ClampGirlSocialStats', 'melissa'
 
-    if LOC('MelissaDanceAlleyAftermathText') = 1:
-        gs 'MelissaDanceAlleyAftermathText', $MelissaAlleyFormat, $MelissaAlleyFinish
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_finish', 'МЕЛИССА: КУЛЬМИНАЦИЯ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — ФИНАЛ'
+
+    if LOC('MelissaDanceAlleySexFinishText') = 1:
+        gs 'MelissaDanceAlleySexFinishText', $MelissaAlleySexBranch, $MelissaAlleyFinish, MelissaAlleyPregnantTalkTriggered
     else:
-        *pl 'Мелисса торопливо приводит себя в порядок, поправляя подол и смахивая пыль с ткани платья.'
-        *pl 'Оставаться на площади нет смысла — пора возвращаться в трактир.'
+        *pl 'На пике исступлённого восторга сладостная судорога проходит по вашим телам.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Привести себя в порядок', 'generic'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaDanceAlleyAftermath'
+    end
+---
+
+#MelissaDanceAlleyAftermath
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_dark_alley/melissa_dance_alley_aftermath', 'МЕЛИССА: ПОСЛЕ БЛИЗОСТИ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОДВОРОТНЯ У ПЛОЩАДИ — ПОСЛЕДСТВИЯ'
+
+    if LOC('MelissaDanceAlleyAftermathText') = 1:
+        gs 'MelissaDanceAlleyAftermathText', $MelissaAlleySexBranch, $MelissaAlleyFinish, MelissaAlleyClerkWitness, MelissaAlleyPregnantTalkTriggered
+    else:
+        *pl 'Мелисса торопливо приводит себя в порядок, поправляя подол платья и смахивая пылинки.'
+        *pl 'Пора возвращаться в трактир.'
     end
 
     *pl ' '
@@ -383,68 +892,6 @@
     gs 'ActUiPrepare', 'В трактир', 'tavern'
     act $ActUiLabel, $ActUiIconPath:
         gt 'TavernMain'
-    end
----
-
-#MelissaDanceAlleyAction
-    $MelissaAlleyActionKey = LCASE($ARGS[0])
-    $MelissaAlleyLastAction = $MelissaAlleyActionKey
-
-    if $MelissaAlleyActionKey = 'talk':
-        MelissaAlleyComposure -= 1
-        MelissaAlleyRisk += 2
-        otkroven['melissa'] += 1
-        gt 'MelissaDanceAlleyStage2'
-
-    elseif $MelissaAlleyActionKey = 'whisper':
-        MelissaAlleyComposure -= 1
-        love['melissa'] += 1
-        MelissaAlleyRisk += 1
-        gt 'MelissaDanceAlleyStage2'
-
-    elseif $MelissaAlleyActionKey = 'listen':
-        MelissaAlleyRisk -= 4
-        if MelissaAlleyRisk < 0:
-            MelissaAlleyRisk = 0
-        end
-        gt 'MelissaDanceAlleyStage2'
-
-    elseif $MelissaAlleyActionKey = 'wall':
-        MelissaAlleyComposure = 0
-        MelissaAlleyRisk += 4
-        sluttiness['melissa'] += 1
-        gt 'MelissaDanceAlleyStage3'
-
-    elseif $MelissaAlleyActionKey = 'kiss':
-        MelissaAlleyComposure -= 1
-        love['melissa'] += 1
-        MelissaAlleyRisk += 2
-        gt 'MelissaDanceAlleyStage3'
-
-    elseif $MelissaAlleyActionKey = 'petting':
-        MelissaAlleyComposure -= 1
-        sluttiness['melissa'] += 1
-        MelissaAlleyRisk += 3
-        gt 'MelissaDanceAlleyStage3'
-
-    elseif $MelissaAlleyActionKey = 'hold_mouth':
-        MelissaAlleyComposure -= 1
-        if MelissaAlleyComposure < 0:
-            MelissaAlleyComposure = 0
-        end
-        MelissaAlleyRisk += 1
-        gt 'MelissaDanceAlleyStage4'
-
-    elseif $MelissaAlleyActionKey = 'shield':
-        MelissaTrustStefan += 1
-        MelissaAlleyRisk -= 3
-        if MelissaAlleyRisk < 0:
-            MelissaAlleyRisk = 0
-        end
-        gt 'MelissaDanceAlleyStage4'
-
-    else:
-        gt 'MelissaDanceAlleyStage2'
     end
 ---
 
@@ -469,8 +916,8 @@
         if LOC('MelissaDanceAlleyEndText') = 1:
             gs 'MelissaDanceAlleyEndText'
         else:
-            *pl 'После случившегося в подворотне оставаться на ярмарке нет смысла.'
-            *pl 'Вы с Мелиссой возвращаетесь в «Дикий Жеребец». Она торопливо поднимается наверх в свою комнату, чтобы отдохнуть.'
+            *pl 'После пережитого в подворотне оставаться на ярмарочной площади нет смысла.'
+            *pl 'Ты с Мелиссой возвращаешься в «Дикий Жеребец». Она бесшумно поднимается к себе в комнату отдыхать.'
         end
 
         *pl ' '
@@ -487,7 +934,7 @@
         if LOC('MelissaDanceAlleyEndText') = 1:
             gs 'MelissaDanceAlleyEndText'
         else:
-            *pl 'Ты решаешь не заходить дальше и выходите из тёмного прохода обратно к праздничной площади.'
+            *pl 'Ты решаешь не заходить дальше и выходишь из тёмного прохода обратно к праздничной площади.'
             *pl 'Мелисса тихо переводит дух и старается держаться с невозмутимым видом.'
         end
 

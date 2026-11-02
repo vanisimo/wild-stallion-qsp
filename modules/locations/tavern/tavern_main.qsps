@@ -305,12 +305,14 @@
 
     *pl ' '
 
-    if time = 5 and (sluttiness['melissa'] >= 30 or MelissaNpcPath >= 3 or FamilyCorruptionStage >= 2):
+    if time = 5:
         if (AmandaBrothersMelissaTalkPending = 1 or AmandaMelissaTrainingPending = 1) and AmandaMelissaTrainingStage = 0:
-            *pl 'Из приоткрытой двери комнаты Мелиссы слышен взволнованный шёпот Аманды...'
-            gs 'ActUiPrepare', 'Подслушать разговор сестёр', 'look'
-            act $ActUiLabel, $ActUiIconPath:
-                gt 'AmandaMelissaNightTraining'
+            if FamilyCorruptionStage >= 4 and MelissaHomeSex = 1 and (MelissaHomeAnalDone = 1 or MelissaAnalUnlocked = 1) and (AmandaHomeAnalDone = 1 or analfromyou['amanda'] >= 1) and sluttiness['amanda'] >= 50 and sluttiness['melissa'] >= 40:
+                *pl 'Из приоткрытой двери комнаты Мелиссы слышен взволнованный шёпот Аманды...'
+                gs 'ActUiPrepare', 'Подслушать разговор сестёр', 'look'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'AmandaMelissaNightTraining'
+                end
             end
         elseif AmandaMelissaTrainingStage = 1 and day >= AmandaMelissaNextDay:
             *pl 'Из комнаты Мелиссы снова доносятся голоса — Аманда пришла с уговорами...'
@@ -336,6 +338,8 @@
             act $ActUiLabel, $ActUiIconPath:
                 gt 'AmandaMelissaNightTraining'
             end
+        elseif AmandaMelissaTrainingStage = 4 and day >= AmandaMelissaNextDay and AmandaWildOilFound = 0:
+            *pl '<i>Из комнаты Мелиссы доносится вздох Аманды: тренировки сестёр приостановлены, пока не удастся достать редкое масло из Диких земель (стоит расспросить хозяйку лавки на рынке — Бекки).</i>'
         elseif AmandaMelissaTrainingStage = 5 and day >= AmandaMelissaNextDay and AmandaMelissaTrainingDone = 0:
             *pl 'Из комнаты Мелиссы доносятся тихие стоны — сёстры начинают финальный четвёртый урок...'
             gs 'ActUiPrepare', 'Подглядывать за уроком (4-й этап: глубинная растяжка)', 'look'
