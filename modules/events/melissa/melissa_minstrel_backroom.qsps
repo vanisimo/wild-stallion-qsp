@@ -131,22 +131,49 @@
     gs 'EnsureGirlData', 'melissa'
 
     if $MelissaBackroomChoice = 'interrupt':
-        MelissaTrustStefan += 1
-        Friends['melissa'] += 1
-        MelissaPlayerPath += 2
-        MelissaMusicianInterest -= 1
-        if MelissaMusicianInterest < 0:
-            MelissaMusicianInterest = 0
-        end
-
         gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_interrupt', 'ВМЕШАТЕЛЬСТВО СТЕФАНА', 'large', 'webp'
         gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: ВМЕШАТЕЛЬСТВО'
         gs 'MelissaMinstrelBackroomText', 'interrupt'
         *pl ' '
 
-        gs 'ActUiPrepare', 'Вернуться в зал', 'return'
-        act $ActUiLabel, $ActUiIconPath:
-            gt $MelissaBackroomReturnLoc
+        if MelissaBedroomTier = 1:
+            MelissaTrustStefan += 1
+            Friends['melissa'] += 1
+            MelissaPlayerPath += 2
+            MelissaMusicianInterest -= 1
+            if MelissaMusicianInterest < 0:
+                MelissaMusicianInterest = 0
+            end
+
+            gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt $MelissaBackroomReturnLoc
+            end
+
+        elseif MelissaBedroomTier = 2:
+            MelissaPlayerPath += 1
+            MelissaMusicianInterest -= 1
+            GirlOffenseDays['melissa'] += 1
+            if MelissaMusicianInterest < 0:
+                MelissaMusicianInterest = 0
+            end
+
+            gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt $MelissaBackroomReturnLoc
+            end
+
+        else:
+            ! Высокая коррупция: выбор Стефана — выкинуть менестреля или уйти
+            gs 'ActUiPrepare', 'Выставить Элрика вон', 'stop'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'MelissaMinstrelBackroomInterruptKick', $MelissaBackroomReturnLoc
+            end
+
+            gs 'ActUiPrepare', 'Уйти и не мешать', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'MelissaMinstrelBackroomInterruptLeave', $MelissaBackroomReturnLoc
+            end
         end
 
     elseif $MelissaBackroomChoice = 'spy':
@@ -315,4 +342,51 @@
     MelissaMinstrelBackroomDone = 0
     MelissaMinstrelBackroomResult = 0
     MelissaMinstrelBackroomLastDay = 0
+---
+
+#MelissaMinstrelBackroomInterruptKick
+    *clr
+    clr
+    cla
+
+    $MelissaBackroomReturnLoc = $ARGS[0]
+
+    MelissaPlayerPath += 1
+    MelissaMustVisitTonight = 1
+    GirlOffenseDays['melissa'] += 1
+
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step_0', 'МЕЛИССА ОСТАЛАСЬ ОДНА', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: ТРЕБОВАНИЕ МЕЛИССЫ'
+    gs 'MelissaMinstrelBackroomText', 'interrupt_tier3_kicked'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $MelissaBackroomReturnLoc
+    end
+---
+
+#MelissaMinstrelBackroomInterruptLeave
+    *clr
+    clr
+    cla
+
+    $MelissaBackroomReturnLoc = $ARGS[0]
+
+    MelissaNpcPath += 2
+    GirlNpcPath['melissa'] += 2
+    MelissaMusicianInterest += 2
+    sluttiness['melissa'] += 2
+    sexacts['melissa'] += 1
+    vaginalacts['melissa'] += 1
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_first_sex', 'ИНТИМ ПРОДОЛЖАЕТСЯ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: СТРАСТЬ ПРОДОЛЖАЕТСЯ'
+    gs 'MelissaMinstrelBackroomText', 'interrupt_tier3_continued'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $MelissaBackroomReturnLoc
+    end
 ---
