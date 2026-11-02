@@ -1,34 +1,21 @@
 ! ================================================
 ! FILE: modules/events/melissa/melissa_minstrel_backroom.qsps
 ! MODULE: events/family
-! [AI-WORKED] 18.09.2026
-! Первый секс NPC-path: Мелисса + менестрель у сцены
+! [AI-WORKED] 02.11.2026: Сцена в спальне Мелиссы на 2-м этаже (3 уровня коррупции, гейты)
 ! ================================================
 
 #MelissaMinstrelBackroomCanStart
 
     MelissaMinstrelBackroomCanStart = 0
 
-    if MelissaMinstrelBackroomDone = 1:
-        if MelissaMinstrelBackroomSparkPending <> 1:
-            exit
-        end
-    end
-
-    if MelissaMinstrelFirstSexDone = 1:
+    ! Не чаще 1 раза в день
+    if MelissaMinstrelBackroomDone = 1 and MelissaMinstrelBackroomLastDay = day:
         exit
     end
 
-    if MelissaHomeSex = 1:
-        if GirlOffenseDays['melissa'] = 0 and (day - LastAttentionDay['melissa'] < 7):
-            exit
-        end
-    end
-
-    if MelissaProhibitMinstrel = 1:
-        if GirlOffenseDays['melissa'] = 0 and (day - LastAttentionDay['melissa'] < 7):
-            exit
-        end
+    ! ДЕФЛОРАЦИЯ СТРОГО В ПОВОЗКЕ: до первого секса в повозке сцена в спальне недоступна
+    if MelissaMinstrelFirstSexDone = 0 and MelissaMinstrelWagonStage < 4:
+        exit
     end
 
     if TavernUpgradeStageDone = 0:
@@ -43,6 +30,7 @@
         exit
     end
 
+    ! Вечер четверга во время работы таверны
     if week <> 4:
         exit
     end
@@ -51,8 +39,8 @@
         exit
     end
 
-    if MelissaMinstrelAffairStage < 1:
-        if MelissaMinstrelHallMissingDone = 0:
+    if MelissaProhibitMinstrel = 1:
+        if GirlOffenseDays['melissa'] = 0 and (day - LastAttentionDay['melissa'] < 7):
             exit
         end
     end
@@ -77,32 +65,29 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step_0', 'КОМНАТА МЕЛИССЫ: НОЧНОЙ ГОСТЬ', 'large', 'webp'
     $MelissaBackroomReturnLoc = $ARGS[0]
-
     if $MelissaBackroomReturnLoc = '':
         $MelissaBackroomReturnLoc = 'TavernMain'
     end
 
     MelissaMinstrelBackroomDone = 1
-    MelissaMinstrelBackroomSoftNearMiss = 0
-    MelissaMinstrelBackroomSpyRollHard = 0
-
-    if MelissaMinstrelBackroomSparkPending = 1:
-        MelissaMinstrelBackroomSparkPending = 0
-    end
+    MelissaMinstrelBackroomLastDay = day
 
     gs 'EnsureGirlData', 'melissa'
 
-    gs 'ShowLocationScreenTitle', 'КОМНАТА МЕЛИССЫ: НОЧНОЙ ГОСТЬ'
-
-    if LOC('MelissaMinstrelBackroomIntroText') = 1:
-        gs 'MelissaMinstrelBackroomIntroText'
+    ! Определение уровня коррупции для сцены
+    if FamilyCorruptionStage >= 4:
+        MelissaBedroomTier = 3
+    elseif FamilyCorruptionStage >= 2:
+        MelissaBedroomTier = 2
     else:
-        *pl 'Музыка в зале глухая — сцена отгорожена тканью. За ней слышны приглушённые голоса.'
-        *pl 'Мелисса и ' + $MelissaMinstrelName + ' слишком долго не выходят.'
+        MelissaBedroomTier = 1
     end
 
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step_0', 'СПАЛЬНЯ МЕЛИССЫ: ТАЙНЫЙ ГОСТЬ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ВТОРОЙ ЭТАЖ: СПАЛЬНЯ МЕЛИССЫ'
+
+    gs 'MelissaMinstrelBackroomText', 'intro'
     *pl ' '
 
     gs 'MelissaMinstrelBackroomBuildMenu'
@@ -115,12 +100,12 @@
     gs 'Menu.Destroy', 'MelissaBackroomMenu'
     gs 'Menu.Create', 'MelissaBackroomMenu'
 
-    gs 'MenuUiAdd', 'MelissaBackroomMenu', 'Ворваться', 'talk'
+    gs 'MenuUiAdd', 'MelissaBackroomMenu', 'Ворваться', 'stop'
     gs 'Menu.AddModule', 'MelissaBackroomMenu', {
         gt 'MelissaMinstrelBackroomAction', 'interrupt', $MelissaBackroomReturnLoc
     }
 
-    gs 'MenuUiAdd', 'MelissaBackroomMenu', 'Подслушать', 'look'
+    gs 'MenuUiAdd', 'MelissaBackroomMenu', 'Подглядывать', 'look'
     gs 'Menu.AddModule', 'MelissaBackroomMenu', {
         gt 'MelissaMinstrelBackroomAction', 'spy', $MelissaBackroomReturnLoc
     }
@@ -137,9 +122,11 @@
     clr
     cla
 
-    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step_1', 'В КОМНАТЕ МЕЛИССЫ', 'large', 'webp'
     $MelissaBackroomChoice = LCASE($ARGS[0])
     $MelissaBackroomReturnLoc = $ARGS[1]
+    if $MelissaBackroomReturnLoc = '':
+        $MelissaBackroomReturnLoc = 'TavernMain'
+    end
 
     gs 'EnsureGirlData', 'melissa'
 
@@ -147,171 +134,185 @@
         MelissaTrustStefan += 1
         Friends['melissa'] += 1
         MelissaPlayerPath += 2
-        MelissaMusicianInterest -= 2
-
+        MelissaMusicianInterest -= 1
         if MelissaMusicianInterest < 0:
             MelissaMusicianInterest = 0
         end
 
-        MelissaMinstrelBackroomResult = 0
+        gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_interrupt', 'ВМЕШАТЕЛЬСТВО СТЕФАНА', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: ВМЕШАТЕЛЬСТВО'
+        gs 'MelissaMinstrelBackroomText', 'interrupt'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Вернуться в зал', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            gt $MelissaBackroomReturnLoc
+        end
 
     elseif $MelissaBackroomChoice = 'spy':
-        MelissaMinstrelBackroomResult = 1
         MelissaWatchMinstrel = 1
         MelissaNpcPath += 2
         GirlNpcPath['melissa'] += 2
         MelissaMusicianInterest += 2
         MelissaSecretiveness += 1
         TavernScandal += 1
-        MelissaMinstrelBackroomSpyRollHard = 1
+
+        ! Переход к экрану 2 (процесс близости)
+        gt 'MelissaMinstrelBedroomStep2', $MelissaBackroomReturnLoc
 
     elseif $MelissaBackroomChoice = 'leave':
-        MelissaMinstrelBackroomResult = 2
-        MelissaNpcPath += 3
-        GirlNpcPath['melissa'] += 3
-        MelissaMusicianInterest += 3
-        MelissaSecretiveness += 2
-        TavernScandal += 2
+        MelissaNpcPath += 1
+        GirlNpcPath['melissa'] += 1
+        MelissaMusicianInterest += 1
 
-        MinstrelBackroomRoll = RAND(1, 100)
-        MinstrelBackroomChance = 55 + sluttiness['melissa'] / 2 + MelissaMusicianInterest * 2
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step_0', 'ТИШИНА В КОРИДОРЕ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'КОРИДОР ВТОРОГО ЭТАЖА'
+        gs 'MelissaMinstrelBackroomText', 'leave'
+        *pl ' '
 
-        if MinstrelBackroomChance > 90:
-            MinstrelBackroomChance = 90
-        end
-
-        if MinstrelBackroomRoll <= MinstrelBackroomChance:
-            MelissaMinstrelBackroomSoftNearMiss = 1
-            MelissaMinstrelBackroomSparkPending = 1
-            MelissaNpcPath += 1
-            GirlNpcPath['melissa'] += 1
-            MelissaMusicianInterest += 1
-            gs 'MelissaMinstrelAffairAdvance'
-        end
-
-        killvar 'MinstrelBackroomRoll'
-        killvar 'MinstrelBackroomChance'
-    end
-
-    if MelissaMinstrelAffairStage >= 2:
-        MelissaMinstrelThreesomeReady = 1
-    end
-
-    gs 'ClampGirlSocialStats', 'melissa'
-
-    gs 'ShowLocationScreenTitle', 'В КОМНАТЕ МЕЛИССЫ'
-
-    if LOC('MelissaMinstrelBackroomActionText') = 1:
-        gs 'MelissaMinstrelBackroomActionText', $MelissaBackroomChoice
-    end
-
-    *pl ' '
-
-    MelissaMinstrelWatchReactionDone = 0
-
-    if $MelissaBackroomChoice = 'spy':
-        gs 'MelissaMinstrelWatchReactionStart', 'backroom', $MelissaBackroomReturnLoc
-    end
-
-    if MelissaMinstrelWatchReactionDone = 0:
         gs 'ActUiPrepare', 'Вернуться в зал', 'return'
         act $ActUiLabel, $ActUiIconPath:
             gt $MelissaBackroomReturnLoc
         end
     end
 
-    killvar '$MelissaBackroomChoice'
+    gs 'ClampGirlSocialStats', 'melissa'
 ---
 
-#MelissaMinstrelBackroomSpyCommitHard
+#MelissaMinstrelBedroomStep2
+    *clr
+    clr
+    cla
 
-    if MelissaMinstrelBackroomSpyRollHard <> 1:
-        exit
+    $MelissaBackroomReturnLoc = $ARGS[0]
+
+    ! Проверка доступности анала по гейтам
+    MelissaBedroomAnalAllowed = 0
+    if MelissaHomeAnalDone = 1 or analfromyou['melissa'] >= 1 or MelissaMinstrelAnalDone = 1:
+        MelissaBedroomAnalAllowed = 1
     end
 
-    if MelissaMinstrelFirstSexDone = 1:
-        MelissaMinstrelBackroomSpyRollHard = 0
-        exit
+    ! Определение позы и действия в зависимости от ступени коррупции
+    if MelissaBedroomTier = 1:
+        ! Низкая коррупция: у шкафа (стоя раком)
+        MelissaBedroomAct = 'closet_stand'
+        gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step_1', 'У ШКАФА СРЕДИ САЛФЕТОК', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: У ДУБОВОГО ШКАФА'
+        gs 'MelissaMinstrelBackroomText', 'act_tier1'
+
+    elseif MelissaBedroomTier = 2:
+        ! Средняя коррупция: сидит на кровати, минет -> вагинал в миссионерской (или анал при гейте)
+        if MelissaBedroomAnalAllowed = 1 and RAND(1, 3) = 1:
+            MelissaBedroomAct = 'bed_anal_missionary'
+            gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_loop_anal', 'НА КРОВАТИ: ЗАПРЕТНЫЙ ПУТЬ', 'large', 'webp'
+            gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: СТРАСТЬ НА КРОВАТИ'
+            gs 'MelissaMinstrelBackroomText', 'act_tier2_anal'
+        else:
+            MelissaBedroomAct = 'bed_missionary'
+            gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_first_sex', 'НА КРОВАТИ: МИССИОНЕРСКАЯ ПОЗА', 'large', 'webp'
+            gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: ЛАСКИ НА КРОВАТИ'
+            gs 'MelissaMinstrelBackroomText', 'act_tier2_vaginal'
+        end
+
+    else:
+        ! Высокая коррупция: сидит на кровати, рука под юбкой -> расширенный пул
+        MelissaTier3Roll = RAND(1, 3)
+        if MelissaBedroomAnalAllowed = 1 and MelissaTier3Roll = 1:
+            MelissaBedroomAct = 'bed_cowgirl_reverse_anal'
+            gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_loop_anal', 'ОБРАТНАЯ НАЕЗДНИЦА В АНАЛ', 'large', 'webp'
+            gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: БЕССТЫДНЫЙ АНАЛ'
+            gs 'MelissaMinstrelBackroomText', 'act_tier3_anal'
+        elseif MelissaTier3Roll = 2:
+            MelissaBedroomAct = 'bed_doggy_vaginal'
+            gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_loop_prelude', 'РАКОМ НА КРОВАТИ', 'large', 'webp'
+            gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: СТРАСТЬ РАКОМ'
+            gs 'MelissaMinstrelBackroomText', 'act_tier3_doggy'
+        else:
+            MelissaBedroomAct = 'bed_deep_oral_missionary'
+            gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_first_sex', 'ПОЛНАЯ ПОКОРНОСТЬ МУЗЫ', 'large', 'webp'
+            gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: НЕИСТОВОЕ СЛИЯНИЕ'
+            gs 'MelissaMinstrelBackroomText', 'act_tier3_full'
+        end
+        killvar 'MelissaTier3Roll'
     end
 
-    MelissaMinstrelFirstSexDone = 1
-    MelissaNpcPath += 3
-    GirlNpcPath['melissa'] += 3
-    MelissaFirstPathChoiceReady = 1
-    Fact_MelissaMinstrelBackroomSex = 1
-    MelissaMinstrelBackroomSpyRollHard = 0
-    gs 'MelissaMinstrelAffairAdvance'
+    *pl ' '
 
-    if LOC('MelissaMinstrelBackroomSpyDetailText') = 1:
-        gs 'MelissaMinstrelBackroomSpyDetailText'
+    gs 'ActUiPrepare', 'Смотреть финал', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelBedroomStep3', $MelissaBackroomReturnLoc
     end
 ---
 
-#MelissaMinstrelBackroomSpyAbortHard
+#MelissaMinstrelBedroomStep3
+    *clr
+    clr
+    cla
 
-    if MelissaMinstrelBackroomSpyRollHard <> 1:
-        exit
-    end
+    $MelissaBackroomReturnLoc = $ARGS[0]
 
-    MelissaMinstrelBackroomSpyRollHard = 0
-    MelissaMinstrelBackroomSoftNearMiss = 1
-    MelissaMinstrelBackroomSparkPending = 1
+    gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step_2', 'ФИНАЛ В СПАЛЬНЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: РАЗВЯЗКА'
+
+    gs 'MelissaMinstrelBackroomText', 'finish'
+    *pl ' '
+
     MelissaNpcPath += 1
-    GirlNpcPath['melissa'] += 1
+    sluttiness['melissa'] += 2
+    otkroven['melissa'] += 1
+    sexacts['melissa'] += 1
+
+    if MelissaBedroomAct = 'bed_anal_missionary' or MelissaBedroomAct = 'bed_cowgirl_reverse_anal':
+        analacts['melissa'] += 1
+        MelissaMinstrelAnalDone = 1
+    else:
+        vaginalacts['melissa'] += 1
+    end
+
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    killvar 'MelissaBedroomTier'
+    killvar 'MelissaBedroomAct'
+    killvar 'MelissaBedroomAnalAllowed'
+
+    gs 'ActUiPrepare', 'Вернуться в зал таверны', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $MelissaBackroomReturnLoc
+    end
 ---
 
 #MelissaMinstrelThreesomeCanOffer
-
     MelissaMinstrelThreesomeCanOffer = 0
-
-    ! Заблокировано: доступ к тройничку будет реализован через отдельный сюжетный ивент
     if MelissaMinstrelThreesomeEventUnlocked = 0:
         exit
     end
-
     if MelissaMinstrelThreesomeDone = 1:
         exit
     end
-
     if MelissaMinstrelThreesomeReady = 0:
         exit
     end
-
     if FamilyCorruptionStage < 3:
         exit
     end
-
     if MelissaHomeSex = 0:
         exit
     end
-
     if TavernUpgradeStageDone = 0:
         exit
     end
-
     if MelissaMinstrelFirstSexDone = 0:
         exit
     end
-
     MelissaMinstrelThreesomeCanOffer = 1
 ---
 
 #MelissaMinstrelThreesomeStart
-
     gt 'GroupSexMelissaMinstrelStefanStart'
 ---
 
 #MelissaMinstrelBackroomDebugReset
-
     MelissaMinstrelBackroomDone = 0
     MelissaMinstrelBackroomResult = 0
-    MelissaMinstrelBackroomSparkPending = 0
-    MelissaMinstrelBackroomSoftNearMiss = 0
-    MelissaMinstrelBackroomSpyRollHard = 0
-    MelissaMinstrelWatchReactionDone = 0
-    MelissaMinstrelFirstSexDone = 0
-    Fact_MelissaMinstrelBackroomSex = 0
-    MelissaMinstrelThreesomeReady = 0
-    MelissaMinstrelThreesomeCanOffer = 0
-    MelissaMinstrelThreesomeDone = 0
+    MelissaMinstrelBackroomLastDay = 0
 ---
