@@ -20,19 +20,23 @@
         exit
     end
 
-    ! Доступно по пятницам вечером на танцах или во вторник днем/вечером
-    if week = 5 and time = 4:
-        ! OK
-    elseif week = 2 and (time >= 2 and time <= 4):
-        ! OK
+    ! До прохождения лесенки (Stage < 4): доступно по пятницам вечером или во вторник
+    ! После прохождения лесенки (Stage >= 4): регулярный луп доступен СТРОГО по пятницам вечером
+    if MelissaMinstrelWagonStage < 4:
+        if week = 5 and time = 4:
+            ! OK
+        elseif week = 2 and (time >= 2 and time <= 4):
+            ! OK
+        else:
+            if MelissaMinstrelWeekdayAllow <> 1:
+                exit
+            end
+        end
     else:
-        if MelissaMinstrelWeekdayAllow <> 1:
+        ! Регулярный луп в повозке после первого секса — строго вечер пятницы
+        if week <> 5 or time <> 4:
             exit
         end
-    end
-
-    if MelissaMinstrelWagonStage >= 4:
-        exit
     end
 
     MelissaMinstrelWagonCanStart = 1
@@ -58,11 +62,8 @@
     elseif MelissaMinstrelWagonStage = 3:
         gt 'MelissaMinstrelWagonScene4_1'
     else:
-        if week = 5 and time = 4:
-            gt 'MarketDance'
-        else:
-            gt 'Market'
-        end
+        ! Регулярный луп в повозке (после завершения сюжетной лесенки)
+        gt 'MelissaMinstrelWagonLoop1'
     end
 ---
 
@@ -601,5 +602,96 @@
     gs 'ActUiPrepare', 'Вернуться на рынок', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'Market'
+    end
+---
+
+! ================================================
+! РЕГУЛЯРНЫЙ ЛУП В ПОВОЗКЕ (ПО ПЯТНИЦАМ ПОСЛЕ ЛЕСЕНКИ)
+! ================================================
+
+#MelissaMinstrelWagonLoop1
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_loop_prelude', 'ПОВОЗКА МЕНЕСТРЕЛЯ — ПЯТНИЧНОЕ УЕДИНЕНИЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОВОЗКА МЕНЕСТРЕЛЯ — ПЯТНИЧНЫЙ ВЕЧЕР'
+
+    MelissaMinstrelWagonToday = 1
+    MelissaMinstrelWagonLastDay = day
+
+    gs 'MelissaMinstrelWagonText', 'loop_prelude'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Наблюдать дальше', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonLoop2'
+    end
+
+    gs 'ActUiPrepare', 'Постучать в борт', 'stop'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonInterrupt', 4
+    end
+---
+
+#MelissaMinstrelWagonLoop2
+    *clr
+    clr
+    cla
+
+    ! Проверяем, открыт ли анал (домашний гейт или опыт)
+    MelissaWagonAnalAllowed = 0
+    if MelissaHomeAnalDone = 1 or analfromyou['melissa'] >= 1 or MelissaMinstrelAnalDone = 1:
+        MelissaWagonAnalAllowed = 1
+    end
+
+    ! Рандом или выбор позы менестрелем
+    if MelissaWagonAnalAllowed = 1 and RAND(1, 2) = 1:
+        MelissaMinstrelWagonAct = 'anal'
+        gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_loop_anal', 'ЗАПРЕТНЫЙ ЖАР ВДОХНОВЕНИЯ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'ПОВОЗКА МЕНЕСТРЕЛЯ — ЗАПРЕТНЫЙ ПУТЬ'
+        gs 'MelissaMinstrelWagonText', 'loop_anal'
+    else:
+        MelissaMinstrelWagonAct = 'vaginal'
+        gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_first_sex', 'СЛИЯНИЕ В ПОЛУМРАКЕ', 'large', 'webp'
+        gs 'ShowLocationScreenTitle', 'ПОВОЗКА МЕНЕСТРЕЛЯ — ЖАР СТРАСТИ'
+        gs 'MelissaMinstrelWagonText', 'loop_vaginal'
+    end
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Смотреть развязку', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MelissaMinstrelWagonLoop3'
+    end
+---
+
+#MelissaMinstrelWagonLoop3
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_stage_depart', 'ФИНАЛ В ПОВОЗКЕ', 'large', 'webp'
+    gs 'ShowLocationScreenTitle', 'ПОВОЗКА МЕНЕСТРЕЛЯ — НАСЛАЖДЕНИЕ'
+
+    gs 'MelissaMinstrelWagonText', 'loop_finish'
+    *pl ' '
+
+    MelissaNpcPath += 1
+    sluttiness['melissa'] += 1
+    if MelissaMinstrelWagonAct = 'anal':
+        analacts['melissa'] += 1
+        MelissaMinstrelAnalDone = 1
+    else:
+        vaginalacts['melissa'] += 1
+    end
+    sexacts['melissa'] += 1
+    gs 'ClampGirlSocialStats', 'melissa'
+
+    killvar 'MelissaMinstrelWagonAct'
+    killvar 'MelissaWagonAnalAllowed'
+
+    gs 'ActUiPrepare', 'Вернуться на площадь', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'MarketDance'
     end
 ---
