@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 516
-- Locations: 4030
-- Locations with direct incoming calls: 3445
-- Locations without direct incoming calls: 585
-- Review candidates without direct incoming calls: 238
-- Classified entry/helper locations without direct incoming calls: 347
+- Source files: 524
+- Locations: 4067
+- Locations with direct incoming calls: 3477
+- Locations without direct incoming calls: 590
+- Review candidates without direct incoming calls: 241
+- Classified entry/helper locations without direct incoming calls: 349
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -203,7 +203,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IrmaDanceDressFittingScene` | `modules/locations/shops/irma_dance_dress.qsps` | 780 | `modules/locations` |
 | `IrmaDanceDressOrderPay` | `modules/locations/shops/irma_dance_dress.qsps` | 775 | `modules/locations` |
 | `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 770 | `modules/locations` |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 419 | `modules/locations` |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 428 | `modules/locations` |
 | `KitchenCustomerBuildPolicyMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 699 | `modules/events` |
 | `LegareBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 58 | `modules/events` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 148 | `modules/core` |
@@ -238,8 +238,11 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 776 | `modules/events` |
 | `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 722 | `modules/events` |
 | `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 727 | `modules/events` |
-| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_finish.qsps` | 379 | `modules/actions` |
+| `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_finish.qsps` | 383 | `modules/actions` |
 | `SexSceneActionLook` | `modules/actions/sex/sex_scene_actions.qsps` | 7 | `modules/actions` |
+| `SexSceneTextLizetteFinish` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 138 | `modules/actions` |
+| `SexSceneTextLizetteGirlOrgasm` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 194 | `modules/actions` |
+| `SexSceneTextLizetteTriggerPlayer` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 186 | `modules/actions` |
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
 | `SparkQueueActKitchen` | `modules/core/tavern/spark_queue.qsps` | 237 | `modules/core` |
 | `StartIntimMenu` | `modules/core/girls/girl_intim_menu.qsps` | 7 | `modules/core` |
@@ -375,25 +378,27 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `DebugMelissaPresetThreesomeAmanda` | `modules/debug/debug_melissa_arc.qsps` | 577 | `entry/helper` |
 | `DebugMelissaPresetThreesomeMinstrel` | `modules/debug/debug_melissa_arc.qsps` | 565 | `entry/helper` |
 | `DebugPolicyFlowSmokeTest` | `modules/debug/debug_policy_flow_smoke.qsps` | 7 | `entry/helper` |
-| `DebugPortChurchArcGiveWindowHint` | `modules/debug/debug_port_church_arc.qsps` | 674 | `entry/helper` |
-| `DebugPortChurchArcGiveWindowMechanism` | `modules/debug/debug_port_church_arc.qsps` | 682 | `entry/helper` |
-| `DebugPortChurchArcPresetAfterB` | `modules/debug/debug_port_church_arc.qsps` | 365 | `entry/helper` |
-| `DebugPortChurchArcPresetAfterC` | `modules/debug/debug_port_church_arc.qsps` | 421 | `entry/helper` |
-| `DebugPortChurchArcPresetAfterE` | `modules/debug/debug_port_church_arc.qsps` | 539 | `entry/helper` |
-| `DebugPortChurchArcPresetAfterWitness` | `modules/debug/debug_port_church_arc.qsps` | 245 | `entry/helper` |
-| `DebugPortChurchArcPresetSeekToday` | `modules/debug/debug_port_church_arc.qsps` | 258 | `entry/helper` |
-| `DebugPortChurchArcPresetShipWednesday` | `modules/debug/debug_port_church_arc.qsps` | 224 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayD` | `modules/debug/debug_port_church_arc.qsps` | 514 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayE` | `modules/debug/debug_port_church_arc.qsps` | 535 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayF` | `modules/debug/debug_port_church_arc.qsps` | 559 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayF2` | `modules/debug/debug_port_church_arc.qsps` | 577 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayG1` | `modules/debug/debug_port_church_arc.qsps` | 610 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayG2` | `modules/debug/debug_port_church_arc.qsps` | 633 | `entry/helper` |
-| `DebugPortChurchArcPresetSundayH` | `modules/debug/debug_port_church_arc.qsps` | 656 | `entry/helper` |
-| `DebugPortChurchArcReset` | `modules/debug/debug_port_church_arc.qsps` | 178 | `entry/helper` |
-| `DebugPortChurchArcResetDaily` | `modules/debug/debug_port_church_arc.qsps` | 166 | `entry/helper` |
-| `DebugPortChurchArcUnlockGeorgetteTalks` | `modules/debug/debug_port_church_arc.qsps` | 378 | `entry/helper` |
-| `DebugPortChurchArcUnlockLizetteTalks` | `modules/debug/debug_port_church_arc.qsps` | 395 | `entry/helper` |
+| `DebugPortChurchArcGiveWindowHint` | `modules/debug/debug_port_church_arc.qsps` | 717 | `entry/helper` |
+| `DebugPortChurchArcGiveWindowMechanism` | `modules/debug/debug_port_church_arc.qsps` | 725 | `entry/helper` |
+| `DebugPortChurchArcPresetAfterB` | `modules/debug/debug_port_church_arc.qsps` | 368 | `entry/helper` |
+| `DebugPortChurchArcPresetAfterC` | `modules/debug/debug_port_church_arc.qsps` | 424 | `entry/helper` |
+| `DebugPortChurchArcPresetAfterE` | `modules/debug/debug_port_church_arc.qsps` | 542 | `entry/helper` |
+| `DebugPortChurchArcPresetAfterWitness` | `modules/debug/debug_port_church_arc.qsps` | 248 | `entry/helper` |
+| `DebugPortChurchArcPresetIrmaPanties` | `modules/debug/debug_port_church_arc.qsps` | 685 | `entry/helper` |
+| `DebugPortChurchArcPresetLegareHeist` | `modules/debug/debug_port_church_arc.qsps` | 677 | `entry/helper` |
+| `DebugPortChurchArcPresetSeekToday` | `modules/debug/debug_port_church_arc.qsps` | 261 | `entry/helper` |
+| `DebugPortChurchArcPresetShipWednesday` | `modules/debug/debug_port_church_arc.qsps` | 227 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayD` | `modules/debug/debug_port_church_arc.qsps` | 517 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayE` | `modules/debug/debug_port_church_arc.qsps` | 538 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayF` | `modules/debug/debug_port_church_arc.qsps` | 562 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayF2` | `modules/debug/debug_port_church_arc.qsps` | 580 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayG1` | `modules/debug/debug_port_church_arc.qsps` | 613 | `entry/helper` |
+| `DebugPortChurchArcPresetSundayG2` | `modules/debug/debug_port_church_arc.qsps` | 636 | `entry/helper` |
+| `DebugPortChurchArcPresetThreesome` | `modules/debug/debug_port_church_arc.qsps` | 696 | `entry/helper` |
+| `DebugPortChurchArcReset` | `modules/debug/debug_port_church_arc.qsps` | 181 | `entry/helper` |
+| `DebugPortChurchArcResetDaily` | `modules/debug/debug_port_church_arc.qsps` | 169 | `entry/helper` |
+| `DebugPortChurchArcUnlockGeorgetteTalks` | `modules/debug/debug_port_church_arc.qsps` | 381 | `entry/helper` |
+| `DebugPortChurchArcUnlockLizetteTalks` | `modules/debug/debug_port_church_arc.qsps` | 398 | `entry/helper` |
 | `DebugPrint` | `modules/core/system/debug.qsps` | 24 | `entry/helper` |
 | `DebugSandraMayorChurchPanel` | `modules/debug/debug_sandra_mayor_church.qsps` | 7 | `entry/helper` |
 | `DebugSandraStaffHirePanel` | `modules/debug/debug_sandra_staff_hire.qsps` | 7 | `entry/helper` |
@@ -499,7 +504,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `LegareFirstConflictDebugReset` | `modules/events/legare/legare_first_conflict.qsps` | 497 | `entry/helper` |
 | `LegareSupplyAftermathDebugReset` | `modules/events/legare/legare_supply_aftermath.qsps` | 376 | `entry/helper` |
 | `LegareSupplyPressureDebugReset` | `modules/events/legare/legare_supply_pressure.qsps` | 373 | `entry/helper` |
-| `LegareTaxConfrontCanStart` | `modules/events/legare/legare_tax_investigation.qsps` | 55 | `entry/helper` |
+| `LegareTaxConfrontCanStart` | `modules/events/legare/legare_tax_investigation.qsps` | 59 | `entry/helper` |
 | `LOC` | `modules/core/system/loc.qsps` | 9 | `entry/helper` |
 | `MayorOfficeBirthCertificateClerkText` | `modules/events/family/birth_certificate_text.qsps` | 40 | `entry/helper` |
 | `MelissaDanceDebugReset` | `modules/events/melissa/melissa_dance.qsps` | 265 | `entry/helper` |
@@ -613,13 +618,13 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1855 |
-| `ShowLocationScreenTitle` | 848 |
-| `SceneShowVisual` | 804 |
-| `Menu.AddModule` | 761 |
-| `MenuUiAdd` | 757 |
+| `ActUiPrepare` | 1888 |
+| `ShowLocationScreenTitle` | 869 |
+| `SceneShowVisual` | 828 |
+| `Menu.AddModule` | 763 |
+| `MenuUiAdd` | 759 |
 | `EnsureGirlData` | 267 |
-| `ClampGirlSocialStats` | 249 |
+| `ClampGirlSocialStats` | 255 |
 | `NormalizeGirlKey` | 209 |
 | `TavernMain` | 166 |
 | `ShowGirlSidebar` | 115 |
@@ -628,16 +633,16 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Market` | 99 |
 | `RegisterSex` | 96 |
 | `ShowImage` | 87 |
+| `UpdateGirlLocations` | 85 |
 | `FormatSpintry` | 84 |
-| `UpdateGirlLocations` | 82 |
 | `MarketDance` | 77 |
 | `PrintMainP` | 70 |
+| `GirlTalkResult` | 55 |
 | `AmandaLizaTalkPoolTry` | 54 |
-| `GirlTalkResult` | 53 |
 | `AmandaLizaTalkApplyInfluence` | 52 |
 | `PrintTitleLine` | 49 |
 | `SexSceneMain` | 48 |
-| `BeckyShop` | 47 |
+| `RegisterPlayerCum` | 47 |
 
 ## Dynamic Call Sites
 
