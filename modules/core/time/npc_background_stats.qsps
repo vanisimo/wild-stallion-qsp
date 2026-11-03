@@ -1,0 +1,279 @@
+! ================================================
+! FILE: modules/core/time/npc_background_stats.qsps
+! MODULE: core/time
+! Ежесуточный фоновый процессор статистики NPC
+! Начисляет статистику связей персонажей без участия ГГ
+! ================================================
+
+#ProcessAllNpcBackgroundStats
+    YesterdayDay = day - 1
+    if YesterdayDay < 1:
+        YesterdayDay = 1
+    end
+
+    YesterdayWeek = week - 1
+    if YesterdayWeek < 1:
+        YesterdayWeek = 7
+    end
+
+    ! ================================================
+    ! 1. САНДРА (Sandra)
+    ! ================================================
+
+    ! Пятница: визиты к кузнецу Драупниру
+    if YesterdayWeek = 5:
+        if SandraHomeSex = 0 and SandraDraupnirAffairStage >= 2:
+            if SandraDraupnirFridayPeekSeen[YesterdayDay] = 0:
+                sexacts['sandra'] += 1
+                vaginalacts['sandra'] += 1
+                cuminside['sandra'] += 1
+                orgasms['sandra'] += 1
+            end
+        end
+    end
+
+    ! Понедельник: визиты в ратушу к Мэру (каждую 2-ю неделю)
+    if YesterdayWeek = 1:
+        if (((YesterdayDay - 1) / 7) mod 2 = 1) and SandraMayorVisitsStopped = 0:
+            if PlayerKnows_MayorUsesSandra = 0 or SandraMayorSpyStep = 0:
+                sexacts['sandra'] += 1
+                if FamilyCorruptionStage <= 1:
+                    oralacts['sandra'] += 1
+                    oralcum['sandra'] += 1
+                else:
+                    vaginalacts['sandra'] += 1
+                    cuminside['sandra'] += 1
+                end
+                orgasms['sandra'] += 1
+            end
+        end
+    end
+
+    ! Ночные визиты Эдди
+    if EddieMomNightShown = 1:
+        sexacts['sandra'] += 1
+        vaginalacts['sandra'] += 1
+        cuminside['sandra'] += 1
+    end
+
+    ! ================================================
+    ! 2. МЕЛИССА (Melissa)
+    ! ================================================
+
+    ! Пятница: фургон менестреля после танцев
+    if YesterdayWeek = 5:
+        if MelissaMinstrelWagonStage >= 4 and MelissaMinstrelWagonToday = 0:
+            if MelissaDancedWithStefanTonight = 0:
+                sexacts['melissa'] += 1
+                vaginalacts['melissa'] += 1
+                cuminside['melissa'] += 1
+                orgasms['melissa'] += 1
+                virginity['melissa'] = 0
+            end
+        end
+    end
+
+    ! ================================================
+    ! 3. АМАНДА (Amanda)
+    ! ================================================
+
+    ! Пятница: Альбер Легаре
+    if YesterdayWeek = 5:
+        if AmandaLegareFirstSexDone = 1 and AmandaDancedWithStefanTonight = 0:
+            sexacts['amanda'] += 1
+            vaginalacts['amanda'] += 1
+            cuminside['amanda'] += 1
+            virginity['amanda'] = 0
+        end
+    end
+
+    ! Будни: соседские парни на заднем дворе (при высокой распущенности)
+    if YesterdayWeek >= 1 and YesterdayWeek <= 4:
+        if AmandaNpcPath >= 3 and sluttiness['amanda'] >= 30 and AmandaNeighborBoysToday = 0:
+            if RAND(1, 100) <= 20:
+                sexacts['amanda'] += 1
+                if sluttiness['amanda'] >= 45:
+                    vaginalacts['amanda'] += 1
+                    cuminside['amanda'] += 1
+                else:
+                    oralacts['amanda'] += 1
+                    oralcum['amanda'] += 1
+                end
+            end
+        end
+    end
+
+    ! ================================================
+    ! 4. ИНГА (Inga)
+    ! ================================================
+
+    ! Суббота вечер: стражник Грюн в подсобке лавки
+    if YesterdayWeek = 6:
+        if IngaGuardHelpStage = -1 and IngaServingGuard = 1 and IngaGuardWeeklyActive = 1:
+            if IngaGuardSaturdayDone = 0:
+                sexacts['inga'] += 1
+                vaginalacts['inga'] += 1
+                cuminside['inga'] += 1
+                virginity['inga'] = 0
+            end
+        end
+    end
+
+    ! Пятница вечер: Лукас на танцах (если нет ветки с ГГ)
+    if YesterdayWeek = 5:
+        if IngaPlayerRouteOpen = 0 and IngaLucasState = 1 and IngaDanceWithStefanTonight = 0:
+            if sluttiness['inga'] >= 25 and RAND(1, 100) <= 25:
+                sexacts['inga'] += 1
+                oralacts['inga'] += 1
+            end
+        end
+    end
+
+    ! ================================================
+    ! 5. БЕККИ (Becky)
+    ! ================================================
+
+    ! Среда и четверг: матросы столичного судна в задней комнате
+    if YesterdayWeek = 3 or YesterdayWeek = 4:
+        if sluttiness['becky'] >= 25 and FactHappened['becky_two_men'] = 1:
+            if RAND(1, 100) <= 25:
+                sexacts['becky'] += 1
+                vaginalacts['becky'] += 1
+                cuminside['becky'] += 1
+            end
+        end
+    end
+
+    ! Будние дни: клиенты и торговцы в лавке
+    if YesterdayWeek >= 1 and YesterdayWeek <= 5:
+        if RAND(1, 100) <= 15:
+            sexacts['becky'] += 1
+            vaginalacts['becky'] += 1
+            cuminside['becky'] += 1
+        end
+    end
+
+    ! Воскресенье: тайная исповедь у отца Герхарда
+    if YesterdayWeek = 7:
+        if BeckyPriestArcOpen = 1 and BeckyPriestSpyToday = 0:
+            sexacts['becky'] += 1
+            vaginalacts['becky'] += 1
+            cuminside['becky'] += 1
+        end
+    end
+
+    ! ================================================
+    ! 6. ИРМА (Irma)
+    ! ================================================
+
+    ! Четверг: встречи с Мэром города
+    if YesterdayWeek = 4:
+        sexacts['irma'] += 1
+        vaginalacts['irma'] += 1
+        cuminside['irma'] += 1
+        orgasms['irma'] += 1
+    end
+
+    ! Воскресенье ночь: служение и обряд плодородия у Древа Жизни
+    if YesterdayWeek = 7:
+        orgasms['irma'] += 1
+        cuniacts['irma'] += 1
+        masturbate['irma'] += 1
+    end
+
+    ! Вторник: состоятельные заказчики и офицеры
+    if YesterdayWeek = 2:
+        if RAND(1, 100) <= 30:
+            sexacts['irma'] += 1
+            vaginalacts['irma'] += 1
+            cuminside['irma'] += 1
+        end
+    end
+
+    ! ================================================
+    ! 7. КЛАРИССА (Clarissa)
+    ! ================================================
+
+    ! Вторник и пятница: супружеский долг перед Альбером Легаре
+    if YesterdayWeek = 2 or YesterdayWeek = 5:
+        sexacts['clarissa'] += 1
+        vaginalacts['clarissa'] += 1
+        cuminside['clarissa'] += 1
+        if RAND(1, 2) = 1:
+            orgasms['clarissa'] += 1
+        end
+    end
+
+    ! Среда: тайные случайные связи
+    if YesterdayWeek = 3:
+        if RAND(1, 100) <= 20:
+            sexacts['clarissa'] += 1
+            oralacts['clarissa'] += 1
+        end
+    end
+
+    ! ================================================
+    ! 8. ЖОРЖЕТТА (Georgette)
+    ! ================================================
+
+    ! Ночной порт: клиенты (если ГГ не снял её ночью)
+    if GeorgettePortNightCustomerDone = 0 and GeorgetteHiredByStefanTonight = 0:
+        GeorgetteNightClients = RAND(1, 2)
+        sexacts['georgett'] += GeorgetteNightClients
+        vaginalacts['georgett'] += GeorgetteNightClients
+        cuminside['georgett'] += GeorgetteNightClients
+        killvar 'GeorgetteNightClients'
+    end
+
+    ! Воскресенье: отец Герхард (если ГГ не подглядывал)
+    if YesterdayWeek = 7:
+        if GeorgettePriestSpyLastScene = 0:
+            sexacts['georgett'] += 1
+            vaginalacts['georgett'] += 1
+            cuminside['georgett'] += 1
+            orgasms['georgett'] += 1
+        end
+    end
+
+    ! ================================================
+    ! 9. ЛИЗЕТТА (Lizette)
+    ! ================================================
+
+    ! Ночной порт
+    if LizetteProstPort = 1:
+        if LizettePortNightCustomerDone = 0 and LizetteHiredByStefanTonight = 0:
+            sexacts['lizette'] += 1
+            vaginalacts['lizette'] += 1
+            cuminside['lizette'] += 1
+        end
+    else:
+        ! Если ещё не работает: случайные парни у пирса (1–2 раза в неделю)
+        if RAND(1, 100) <= 25:
+            sexacts['lizette'] += 1
+            if RAND(1, 100) <= 70:
+                vaginalacts['lizette'] += 1
+                cuminside['lizette'] += 1
+            else:
+                oralacts['lizette'] += 1
+                oralcum['lizette'] += 1
+            end
+            if RAND(1, 3) = 1:
+                orgasms['lizette'] += 1
+            end
+        end
+    end
+
+    ! Воскресенье: отец Герхард (после открытия этапа 2, если ГГ не подглядывал)
+    if YesterdayWeek = 7:
+        if LizettePriestSpyStage >= 2 and LizettePriestSpySeenToday = 0:
+            sexacts['lizette'] += 2
+            oralacts['lizette'] += 1
+            vaginalacts['lizette'] += 1
+            cuminside['lizette'] += 1
+            orgasms['lizette'] += 1
+        end
+    end
+
+    killvar 'YesterdayDay'
+    killvar 'YesterdayWeek'
+---

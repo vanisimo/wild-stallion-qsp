@@ -1,0 +1,258 @@
+! ================================================
+! FILE: modules/events/port/port_legare_heist.qsps
+! MODULE: events/port
+! [AI-WORKED] Текст переработан / дополнен ассистентом 03.11.2026
+! Ночная вылазка на баркас Легаре с участием Лизетты
+! ================================================
+
+#PortLegareHeistCanStart
+    PortLegareHeistReady = 0
+
+    if time <> 5:
+        exit
+    end
+
+    if LegareHeistUnlocked <> 1:
+        exit
+    end
+
+    if LegareHeistDone = 1:
+        exit
+    end
+
+    PortLegareHeistReady = 1
+---
+
+#PortLegareHeistStart
+    *clr
+    clr
+    cla
+
+    ShipSearchCount = 0
+    LegareOriginalManifestFound = 0
+    LegareDocLocation = RAND(1, 3)
+
+    gs 'ShowLocationScreenTitle', 'ДАЛЬНИЙ ПИРС: БАРКАС ЛЕГАРЕ'
+    gs 'SceneShowVisual', 'images/events/port/legare_heist/dock_approach', 'Дальний пирс: ночной баркас Легаре', 'large', 'webp'
+
+    gs 'PortLegareHeistPrintText', 'start'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Отвлечь охрану', 'talk'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortLegareHeistDistract'
+    end
+---
+
+#PortLegareHeistDistract
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'СХОДНИ: ЛИЗЕТТА ИЩЕТ КОТИКА'
+    gs 'SceneShowVisual', 'images/events/port/legare_heist/lizette_cat_distract', 'Лизетта отвлекает охрану у сходней', 'large', 'webp'
+
+    gs 'PortLegareHeistPrintText', 'distract'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'На палубу', 'door'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortLegareHeistDeck'
+    end
+---
+
+#PortLegareHeistDeck
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПАЛУБА БАРКАСА'
+    gs 'SceneShowVisual', 'images/events/port/legare_heist/ship_deck', 'Палуба баркаса под покровом ночи', 'large', 'webp'
+
+    gs 'PortLegareHeistPrintText', 'deck_clues'
+    *pl ' '
+
+    if ShipSearchedHold = 0:
+        gs 'ActUiPrepare', 'В трюм', 'door'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortLegareHeistSearch', 1
+        end
+    end
+
+    if ShipSearchedCabin = 0:
+        gs 'ActUiPrepare', 'В каюту', 'door'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortLegareHeistSearch', 2
+        end
+    end
+
+    if ShipSearchedCrew = 0:
+        gs 'ActUiPrepare', 'В кубрик', 'door'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortLegareHeistSearch', 3
+        end
+    end
+---
+
+#PortLegareHeistSearch
+    SearchLocation = ARGS[0]
+    ShipSearchCount += 1
+
+    *clr
+    clr
+    cla
+
+    if SearchLocation = 1:
+        ShipSearchedHold = 1
+        gs 'ShowLocationScreenTitle', 'ТИТХИЙ ТРЮМ'
+        gs 'SceneShowVisual', 'images/events/port/legare_heist/search_hold', 'Трюм: бочки и штабели тюков', 'large', 'webp'
+    elseif SearchLocation = 2:
+        ShipSearchedCabin = 1
+        gs 'ShowLocationScreenTitle', 'КАЮТА КАПИТАНА'
+        gs 'SceneShowVisual', 'images/events/port/legare_heist/search_cabin', 'Каюта капитана: стол с журналом', 'large', 'webp'
+    else:
+        ShipSearchedCrew = 1
+        gs 'ShowLocationScreenTitle', 'КУБРИК МАТРОСОВ'
+        gs 'SceneShowVisual', 'images/events/port/legare_heist/search_crew', 'Кубрик матросов: подвесные койки', 'large', 'webp'
+    end
+
+    if SearchLocation = LegareDocLocation:
+        LegareOriginalManifestFound = 1
+        LookoutTier = ShipSearchCount
+        gs 'PortLegareHeistPrintText', 'found_doc'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'К сходням', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'ShipSearchedHold'
+            killvar 'ShipSearchedCabin'
+            killvar 'ShipSearchedCrew'
+            killvar 'SearchLocation'
+            gt 'PortLegareHeistLookout'
+        end
+    else:
+        gs 'PortLegareHeistPrintText', 'empty_search'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Назад на палубу', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'SearchLocation'
+            gt 'PortLegareHeistDeck'
+        end
+    end
+---
+
+#PortLegareHeistLookout
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'У СХОДНЕЙ: НАБЛЮДЕНИЕ'
+
+    if LookoutTier <= 1:
+        gs 'SceneShowVisual', 'images/events/port/legare_heist/lizette_harass_light', 'Охранники лапают Лизетту за бочками', 'large', 'webp'
+        gs 'PortLegareHeistPrintText', 'lookout_tier1'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Мяукнуть', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortLegareHeistEscape', 1
+        end
+
+        gs 'ActUiPrepare', 'Подсмотреть', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            LookoutTier = 2
+            gt 'PortLegareHeistLookout'
+        end
+
+    elseif LookoutTier = 2:
+        gs 'SceneShowVisual', 'images/events/port/legare_heist/lizette_oral_two', 'Лизетта на коленях между охранниками', 'large', 'webp'
+        gs 'PortLegareHeistPrintText', 'lookout_tier2'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Мяукнуть', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortLegareHeistEscape', 2
+        end
+
+        gs 'ActUiPrepare', 'Подсмотреть', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            LookoutTier = 3
+            gt 'PortLegareHeistLookout'
+        end
+
+    else:
+        gs 'SceneShowVisual', 'images/events/port/legare_heist/lizette_double_two', 'Двойная близость охранников с Лизеттой', 'large', 'webp'
+        gs 'PortLegareHeistPrintText', 'lookout_tier3'
+        *pl ' '
+
+        gs 'ActUiPrepare', 'Мяукнуть', 'talk'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'PortLegareHeistEscape', 3
+        end
+    end
+---
+
+#PortLegareHeistEscape
+    EscapeTier = ARGS[0]
+
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ЗА ПАКГАУЗОМ: ВСТРЕЧА'
+    gs 'SceneShowVisual', 'images/events/port/legare_heist/heist_escape', 'Лизетта и Стефан за пакгаузом', 'large', 'webp'
+
+    if EscapeTier = 2:
+        sexacts['lizette'] += 2
+        oralacts['lizette'] += 2
+        oralcum['lizette'] += 2
+        oralswallow['lizette'] += 2
+    elseif EscapeTier = 3:
+        sexacts['lizette'] += 2
+        oralacts['lizette'] += 1
+        vaginalacts['lizette'] += 1
+        cuminside['lizette'] += 1
+        oralswallow['lizette'] += 1
+    end
+
+    gs 'PortLegareHeistPrintText', 'escape_' + STR(EscapeTier)
+    *pl ' '
+
+    IrmaPantiesPromiseActive = 1
+    killvar 'LookoutTier'
+
+    gs 'ActUiPrepare', 'Помочь', 'cum'
+    act $ActUiLabel, $ActUiIconPath:
+        killvar 'EscapeTier'
+        gt 'PortLegareHeistAfterBlowjob'
+    end
+---
+
+#PortLegareHeistAfterBlowjob
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'В ТЕНИ ЯЩИКОВ: БЛАГОДАРНОСТЬ'
+    gs 'SceneShowVisual', 'images/events/port/legare_heist/lizette_after_blowjob', 'Лизетта ласкает Стефана у пакгауза', 'large', 'webp'
+
+    oralacts['lizette'] += 1
+    oralcum['lizette'] += 1
+    oralswallow['lizette'] += 1
+    HadSex['lizette'] += 1
+    Friends['lizette'] += 2
+    otkroven['lizette'] += 2
+    gs 'ClampGirlSocialStats', 'lizette'
+
+    LegareHeistDone = 1
+    LegareTaxEvidenceReady = 1
+
+    gs 'PortLegareHeistPrintText', 'after_blowjob'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'К причалу', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Port'
+    end
+---

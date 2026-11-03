@@ -1,0 +1,261 @@
+! ================================================
+! FILE: modules/events/port/port_georgette_room_threesome.qsps
+! MODULE: events/port
+! [AI-WORKED] Текст переработан / дополнен ассистентом 03.11.2026
+! Личная комната Жоржетты: тройничок матери и дочери (Жоржетта + Лизетта)
+! ================================================
+
+#PortGeorgetteRoomThreesomeCanStart
+    PortGeorgetteRoomThreesomeReady = 0
+
+    if time <> 5:
+        exit
+    end
+
+    ! Должны быть видны обе на причале (состояние dock_both)
+    gs 'PortNightGirlVisible', 'georgett'
+    if PortNightGirlVisible = 0:
+        killvar 'PortNightGirlVisible'
+        exit
+    end
+    killvar 'PortNightGirlVisible'
+
+    gs 'PortNightGirlVisible', 'lizette'
+    if PortNightGirlVisible = 0:
+        killvar 'PortNightGirlVisible'
+        exit
+    end
+    killvar 'PortNightGirlVisible'
+
+    if $PortNightBusyGirl <> '':
+        exit
+    end
+
+    ! Порог допуска: близость со Стефаном >= 6 и дружба >= 15 у обеих
+    if HadSex['georgett'] < 6 or HadSex['lizette'] < 6:
+        exit
+    end
+
+    if Friends['georgett'] < 15 or Friends['lizette'] < 15:
+        exit
+    end
+
+    if money < 30:
+        exit
+    end
+
+    PortGeorgetteRoomThreesomeReady = 1
+---
+
+#PortGeorgetteRoomThreesomeStart
+    *clr
+    clr
+    cla
+
+    money -= 30
+    ThreesomeTarget = 1
+    ThreesomeRearSwaps = 0
+
+    gs 'ShowLocationScreenTitle', 'ПРИЧАЛ: ОСОБЫЙ УГОВОР'
+    gs 'SceneShowVisual', 'images/events/port/georgette_room/invite', 'Причал: уговор с Жоржеттой и Лизеттой', 'large', 'webp'
+
+    gs 'PortGeorgetteRoomThreesomePrintText', 'invite'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Идти в дом', 'door'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortGeorgetteRoomThreesomeIntro'
+    end
+---
+
+#PortGeorgetteRoomThreesomeIntro
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: РАЗОГРЕВ'
+    gs 'SceneShowVisual', 'images/events/port/georgette_room/warmup', 'Комната Жоржетты: разогрев с двух сторон', 'large', 'webp'
+
+    gs 'PortGeorgetteRoomThreesomePrintText', 'intro_warmup'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Ножницы', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortGeorgetteRoomThreesomeScissors'
+    end
+
+    gs 'ActUiPrepare', 'На четвереньки', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        ThreesomeTarget = 1
+        gt 'PortGeorgetteRoomThreesomeRear'
+    end
+---
+
+#PortGeorgetteRoomThreesomeScissors
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: НОЖНИЦЫ'
+    gs 'SceneShowVisual', 'images/events/port/georgette_room/scissors', 'Комната Жоржетты: поза ножницы', 'large', 'webp'
+
+    gs 'PortGeorgetteRoomThreesomePrintText', 'scissors'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Завершить', 'cum'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortGeorgetteRoomThreesomeScissorsFinish'
+    end
+
+    gs 'ActUiPrepare', 'На четвереньки', 'policy'
+    act $ActUiLabel, $ActUiIconPath:
+        ThreesomeTarget = 1
+        gt 'PortGeorgetteRoomThreesomeRear'
+    end
+---
+
+#PortGeorgetteRoomThreesomeScissorsFinish
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: ФИНАЛ'
+    gs 'SceneShowVisual', 'images/events/port/georgette_room/finish_scissors', 'Комната Жоржетты: финал в позе ножницы', 'large', 'webp'
+
+    orgasms['georgett'] += 1
+    orgasms['lizette'] += 1
+
+    gs 'PortGeorgetteRoomThreesomePrintText', 'finish_scissors'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Одеться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortGeorgetteRoomThreesomeLeave'
+    end
+---
+
+#PortGeorgetteRoomThreesomeRear
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: НА КРОВАТИ'
+
+    if ThreesomeTarget = 1:
+        gs 'SceneShowVisual', 'images/events/port/georgette_room/rear_georg', 'Комната Жоржетты: Жоржетта раком, ласки Лизетты', 'large', 'webp'
+        gs 'PortGeorgetteRoomThreesomePrintText', 'rear_georg'
+    else:
+        gs 'SceneShowVisual', 'images/events/port/georgette_room/rear_liz', 'Комната Жоржетты: Лизетта раком, ласки Жоржетты', 'large', 'webp'
+        gs 'PortGeorgetteRoomThreesomePrintText', 'rear_liz'
+    end
+
+    *pl ' '
+
+    if ThreesomeRearSwaps < 4:
+        gs 'ActUiPrepare', 'Сменить', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            ThreesomeRearSwaps += 1
+            if ThreesomeTarget = 1:
+                ThreesomeTarget = 2
+            else:
+                ThreesomeTarget = 1
+            end
+            gt 'PortGeorgetteRoomThreesomeRear'
+        end
+    end
+
+    gs 'ActUiPrepare', 'Завершить', 'cum'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortGeorgetteRoomThreesomeRearFinish'
+    end
+
+    gs 'ActUiPrepare', 'На лица', 'cum'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortGeorgetteRoomThreesomeFacialFinish'
+    end
+---
+
+#PortGeorgetteRoomThreesomeRearFinish
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: ОЧИЩЕНИЕ'
+    gs 'SceneShowVisual', 'images/events/port/georgette_room/finish_rear', 'Комната Жоржетты: очищение после близости', 'large', 'webp'
+
+    analacts['georgett'] += 1
+    analacts['lizette'] += 1
+    orgasms['georgett'] += 1
+    orgasms['lizette'] += 1
+
+    gs 'PortGeorgetteRoomThreesomePrintText', 'finish_rear'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Одеться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortGeorgetteRoomThreesomeLeave'
+    end
+---
+
+#PortGeorgetteRoomThreesomeFacialFinish
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: ФИНАЛ НА ЛИЦА'
+    gs 'SceneShowVisual', 'images/events/port/georgette_room/finish_facial', 'Комната Жоржетты: финал на лица обеим', 'large', 'webp'
+
+    facialcum['georgett'] += 1
+    facialcum['lizette'] += 1
+    orgasms['georgett'] += 1
+    orgasms['lizette'] += 1
+
+    gs 'PortGeorgetteRoomThreesomePrintText', 'finish_facial'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Одеться', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'PortGeorgetteRoomThreesomeLeave'
+    end
+---
+
+#PortGeorgetteRoomThreesomeLeave
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: ПРОЩАНИЕ'
+    gs 'SceneShowVisual', 'images/events/port/georgette_room/leave', 'Комната Жоржетты: прощание у дверей', 'large', 'webp'
+
+    ! Статистика и факты
+    sexacts['georgett'] += 1
+    sexacts['lizette'] += 1
+    groupsex['georgett'] += 1
+    groupsex['lizette'] += 1
+    HadSex['georgett'] += 1
+    HadSex['lizette'] += 1
+
+    Friends['georgett'] += 2
+    Friends['lizette'] += 2
+    otkroven['georgett'] += 2
+    otkroven['lizette'] += 2
+
+    gs 'ClampGirlSocialStats', 'georgett'
+    gs 'ClampGirlSocialStats', 'lizette'
+
+    GeorgettePortNightGone = 1
+    LizettePortNightGone = 1
+    Fact_GeorgetteLizetteThreesomeDone = 1
+    ThreesomeDoneCount += 1
+
+    gs 'PortGeorgetteRoomThreesomePrintText', 'leave'
+    *pl ' '
+
+    killvar 'ThreesomeTarget'
+    killvar 'ThreesomeRearSwaps'
+
+    gs 'ActUiPrepare', 'На улицу', 'street'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'Street'
+    end
+---

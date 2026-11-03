@@ -1,0 +1,118 @@
+! ================================================
+! FILE: modules/events/irma/irma_lizette_panties.qsps
+! MODULE: events/irma
+! [AI-WORKED] Текст переработан / дополнен ассистентом 03.11.2026
+! Покупка прозрачных трусиков для Лизетты в лавке Ирмы
+! ================================================
+
+#IrmaLizettePantiesCanStart
+    IrmaLizettePantiesReady = 0
+
+    if IrmaPantiesPromiseActive <> 1:
+        exit
+    end
+
+    if IrmaPantiesPromiseDone = 1:
+        exit
+    end
+
+    if time < 2 or time > 4:
+        exit
+    end
+
+    if money < 20:
+        exit
+    end
+
+    IrmaLizettePantiesReady = 1
+---
+
+#IrmaLizettePantiesStart
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ЛАВКА ИРМЫ: ЛИЗЕТТА У ПРИЛАВКА'
+    gs 'SceneShowVisual', 'images/events/irma/lizette_panties/shop_meet', 'Лизетта встречает Стефана в лавке Ирмы', 'large', 'webp'
+
+    gs 'IrmaLizettePantiesPrintText', 'shop_meet'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Оплатить (20 спр.)', 'money'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLizettePantiesBuy'
+    end
+
+    gs 'ActUiPrepare', 'Уйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#IrmaLizettePantiesBuy
+    *clr
+    clr
+    cla
+
+    money -= 20
+
+    gs 'ShowLocationScreenTitle', 'ЛАВКА ИРМЫ: ВОСТОРГ'
+    gs 'SceneShowVisual', 'images/events/irma/lizette_panties/undress_hall', 'Лизетта скидывает панталоны прямо в зале', 'large', 'webp'
+
+    gs 'IrmaLizettePantiesPrintText', 'undress_hall'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'В примерочную', 'door'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLizettePantiesFitting'
+    end
+---
+
+#IrmaLizettePantiesFitting
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПРИМЕРОЧНАЯ: НОВЫЕ ТРУСИКИ'
+    gs 'SceneShowVisual', 'images/events/irma/lizette_panties/fitting_room', 'Лизетта в прозрачных белых трусиках', 'large', 'webp'
+
+    gs 'IrmaLizettePantiesPrintText', 'fitting_room'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Кончить', 'cum'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaLizettePantiesFinish'
+    end
+---
+
+#IrmaLizettePantiesFinish
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ПРИМЕРОЧНАЯ: ТАИНСТВО СЕМЕНИ'
+    gs 'SceneShowVisual', 'images/events/irma/lizette_panties/irma_taste_cum', 'Ирма пробует семя Стефана с губ Лизетты', 'large', 'webp'
+
+    IrmaPantiesPromiseDone = 1
+    IrmaPantiesPromiseActive = 0
+
+    oralacts['lizette'] += 1
+    facialcum['lizette'] += 1
+    HadSex['lizette'] += 1
+
+    Friends['lizette'] += 3
+    otkroven['lizette'] += 2
+    Friends['irma'] += 2
+    otkroven['irma'] += 2
+
+    gs 'ClampGirlSocialStats', 'lizette'
+    gs 'ClampGirlSocialStats', 'irma'
+
+    gs 'IrmaLizettePantiesPrintText', 'finish'
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Выйти', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
+---
