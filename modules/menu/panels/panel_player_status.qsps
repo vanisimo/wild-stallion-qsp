@@ -15,9 +15,7 @@
 
     gs 'GetDateTimeNames'
 
-    if $PlayerClothesDesc = '':
-        $PlayerClothesDesc = 'простые холщовые штаны, подпоясанные веревкой и рубаху из грубого полотна'
-    end
+    gs 'UpdatePlayerClothes'
 
     PanelYearsPassed = year - 1100
 
@@ -57,4 +55,29 @@
     killvar 'PanelYearsPassed'
     killvar 'PanelDaysPassed'
     killvar '$PanelTimeText'
+---
+
+#UpdatePlayerClothes
+    if StefanRespectableSuit = 1 and PlayerHasRespectableSuit = 0:
+        PlayerHasRespectableSuit = 1
+        StefanWearingRespectableSuit = 1
+    end
+
+    if StefanWearingNobleSuit = 1 and PlayerHasNobleSuit = 0:
+        PlayerHasNobleSuit = 1
+    end
+
+    if StefanWearingNobleSuit = 1:
+        StefanRespectableSuit = 1
+        $PlayerClothesDesc = 'парадный дворянский наряд с фамильным гербом и серебряным шитьём'
+        $StefanCurrentSuitName = 'Парадный дворянский наряд'
+    elseif StefanWearingRespectableSuit = 1:
+        StefanRespectableSuit = 1
+        $PlayerClothesDesc = 'приличный тёмный костюм из добротной шерсти от Ирмы'
+        $StefanCurrentSuitName = 'Приличный костюм от Ирмы'
+    else:
+        StefanRespectableSuit = 0
+        $PlayerClothesDesc = 'простые холщовые штаны, подпоясанные веревкой и рубаху из грубого полотна'
+        $StefanCurrentSuitName = 'Простая повседневная одежда'
+    end
 ---

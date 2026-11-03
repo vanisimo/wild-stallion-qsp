@@ -3,10 +3,10 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 524
-- Locations: 4067
-- Locations with direct incoming calls: 3477
-- Locations without direct incoming calls: 590
-- Review candidates without direct incoming calls: 241
+- Locations: 4069
+- Locations with direct incoming calls: 3478
+- Locations without direct incoming calls: 591
+- Review candidates without direct incoming calls: 242
 - Classified entry/helper locations without direct incoming calls: 349
 - Dynamic call sites: 2
 
@@ -203,7 +203,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IrmaDanceDressFittingScene` | `modules/locations/shops/irma_dance_dress.qsps` | 780 | `modules/locations` |
 | `IrmaDanceDressOrderPay` | `modules/locations/shops/irma_dance_dress.qsps` | 775 | `modules/locations` |
 | `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 770 | `modules/locations` |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 428 | `modules/locations` |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 448 | `modules/locations` |
 | `KitchenCustomerBuildPolicyMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 699 | `modules/events` |
 | `LegareBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 58 | `modules/events` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 148 | `modules/core` |
@@ -219,6 +219,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `NobleAttackFinishHall` | `modules/events/hall/noble_attack.qsps` | 293 | `modules/events` |
 | `OffenseDaysTalkAction` | `modules/core/family/offense_days.qsps` | 1136 | `modules/core` |
 | `OffenseDaysTalkGiftMenu` | `modules/core/family/offense_days.qsps` | 1130 | `modules/core` |
+| `PlayerRoomEquipmentChest` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 240 | `modules/events` |
 | `PortAmandaLizetteMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 128 | `modules/events` |
 | `PortAmandaLizetteShowAmandaMenu` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 41 | `modules/events` |
 | `PortAmandaLizetteTryMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 110 | `modules/events` |
@@ -618,7 +619,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1888 |
+| `ActUiPrepare` | 1896 |
 | `ShowLocationScreenTitle` | 869 |
 | `SceneShowVisual` | 828 |
 | `Menu.AddModule` | 763 |
@@ -642,7 +643,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaLizaTalkApplyInfluence` | 52 |
 | `PrintTitleLine` | 49 |
 | `SexSceneMain` | 48 |
-| `RegisterPlayerCum` | 47 |
+| `BeckyShop` | 47 |
 
 ## Dynamic Call Sites
 

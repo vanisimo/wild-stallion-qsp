@@ -1,24 +1,125 @@
 ! ================================================
 ! FILE: modules/locations/rooms/player_room_chest.qsps
 ! MODULE: locations/rooms
-! Сундук Стефана и тайное отделение
+! Сундук Стефана: гардероб, снаряжение и тайное отделение
 ! ================================================
 
 #PlayerRoomChest
-    cls
+    *clr
+    clr
+    cla
+
+    gs 'UpdatePlayerClothes'
 
     gs 'ShowLocationScreenTitle', 'СУНДУК СТЕФАНА'
     gs 'ShowLocationImage', 'rooms/player/chest', 'full', 'png'
 
-    *p 'Ты открываешь сундук — здесь хранятся личные вещи и то, что не должно валяться по комнате.'
-    *p 'Пока внутри только простая одежда и мелочи, но места хватит и для дворянского костюма, если такой когда-нибудь появится.'
+    *pl 'Ты открываешь тяжелый дубовый сундук в углу своей комнаты.'
+    *pl 'Здесь аккуратно сложены твои сменные вещи, личные бумаги и дорожное снаряжение.'
+    *pl ' '
+    *pl '<b>Сейчас на тебе надето:</b>'
+    *pl '• Одежда: <b>' + $StefanCurrentSuitName + '</b>'
+
+    if PlayerArmorChest = 'leather_vest':
+        *pl '• Нагрудник: ' + IIF(EquippedChest = 1, 'Кожаный нагрудник [НАДЕТ]', 'Снят (в сундуке)')
+    end
+    if PlayerArmorHead = 'leather_helmet':
+        *pl '• Шлем: ' + IIF(EquippedHead = 1, 'Кожаный шлем [НАДЕТ]', 'Снят (в сундуке)')
+    end
+    if PlayerWeapon = 'dwarven_shortsword':
+        *pl '• Оружие: ' + IIF(EquippedWeapon = 1, 'Гномий короткий меч [НАДЕТ]', 'Снят (в сундуке)')
+    end
 
     if PlayerChestSecretKnown = 1 and BirthCertificateFound = 0:
         *pl ' '
-        *p 'Вы вспоминаете слова матери о двойном дне под старым кожаным ремнём.'
+        *pl '<i>Ты помнишь слова матери о двойном дне под старым кожаным ремнём.</i>'
     end
 
     *pl ' '
+
+    ! ==================== ГАРДЕРОБ: СМЕНА ОДЕЖДЫ ====================
+
+    if StefanWearingRespectableSuit = 1 or StefanWearingNobleSuit = 1:
+        gs 'ActUiPrepare', 'Надеть простую одежду (холщовые штаны и рубаху)', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            StefanWearingRespectableSuit = 0
+            StefanWearingNobleSuit = 0
+            gs 'UpdatePlayerClothes'
+            gt 'PlayerRoomChest'
+        end
+    end
+
+    if PlayerHasRespectableSuit = 1 and StefanWearingRespectableSuit = 0:
+        gs 'ActUiPrepare', 'Надеть приличный костюм от Ирмы', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            StefanWearingRespectableSuit = 1
+            StefanWearingNobleSuit = 0
+            gs 'UpdatePlayerClothes'
+            gt 'PlayerRoomChest'
+        end
+    end
+
+    if PlayerHasNobleSuit = 1 and StefanWearingNobleSuit = 0:
+        gs 'ActUiPrepare', 'Надеть парадный дворянский наряд', 'generic'
+        act $ActUiLabel, $ActUiIconPath:
+            StefanWearingNobleSuit = 1
+            StefanWearingRespectableSuit = 0
+            gs 'UpdatePlayerClothes'
+            gt 'PlayerRoomChest'
+        end
+    end
+
+    ! ==================== БОЕВОЕ СНАРЯЖЕНИЕ ====================
+
+    if PlayerArmorChest = 'leather_vest':
+        if EquippedChest = 1:
+            gs 'ActUiPrepare', 'Снять кожаный нагрудник', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedChest = 0
+                gt 'PlayerRoomChest'
+            end
+        else:
+            gs 'ActUiPrepare', 'Надеть кожаный нагрудник', 'policy'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedChest = 1
+                gt 'PlayerRoomChest'
+            end
+        end
+    end
+
+    if PlayerArmorHead = 'leather_helmet':
+        if EquippedHead = 1:
+            gs 'ActUiPrepare', 'Снять кожаный шлем', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedHead = 0
+                gt 'PlayerRoomChest'
+            end
+        else:
+            gs 'ActUiPrepare', 'Надеть кожаный шлем', 'policy'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedHead = 1
+                gt 'PlayerRoomChest'
+            end
+        end
+    end
+
+    if PlayerWeapon = 'dwarven_shortsword':
+        if EquippedWeapon = 1:
+            gs 'ActUiPrepare', 'Снять гномий меч', 'return'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedWeapon = 0
+                gt 'PlayerRoomChest'
+            end
+        else:
+            gs 'ActUiPrepare', 'Надеть гномий меч', 'policy'
+            act $ActUiLabel, $ActUiIconPath:
+                EquippedWeapon = 1
+                gt 'PlayerRoomChest'
+            end
+        end
+    end
+
+    ! ==================== ТАЙНИК И ДОКУМЕНТЫ ====================
 
     if PlayerChestSecretKnown = 1 and BirthCertificateFound = 0:
         gs 'ActUiPrepare', 'Осмотреть тайное отделение', 'look'
@@ -34,7 +135,8 @@
         end
     end
 
-    act '<b>Комната</b>', 'images/common/ui/actions/travel.png':
+    gs 'ActUiPrepare', 'Закрыть сундук', 'return'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'PlayerRoom'
     end
 ---
@@ -44,8 +146,8 @@
 
     gs 'ShowLocationScreenTitle', 'ТАЙНОЕ ОТДЕЛЕНИЕ'
 
-    *p 'Вы отстёгиваете старый кожаный ремень и приподнимаете двойное дно. Под ним — узкий отсек, пахнущий сухой травой и воском.'
-    *p 'Там лежит сложенный пергамент в потемневшей кожаной обложке.'
+    *pl 'Ты отстёгиваешь старый кожаный ремень и приподнимаешь двойное дно. Под ним — узкий отсек, пахнущий сухой травой и воском.'
+    *pl 'Там лежит сложенный пергамент в потемневшей кожаной обложке.'
 
     BirthCertificateFound = 1
     BirthCertificateFatherSealOnly = 1

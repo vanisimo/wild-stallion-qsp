@@ -201,19 +201,35 @@
     *pl 'На стенах — выкройки, на полках — катушки ниток. Здесь шьют платья для танцев и заказывают рабочую форму для трактира.'
     *pl ' '
 
-    if StefanRespectableSuit = 0:
-        *pl 'На манекене в углу лавки выставлен добротный шерстяной костюм строгого городского покроя — удобный, сдержанный и солидный.'
-    else:
+    if StefanWearingRespectableSuit = 1:
         *pl 'Твой приличный костюм от Ирмы сидит безупречно — в таком не стыдно показаться ни перед мэром, ни на танцах.'
+    elseif StefanWearingNobleSuit = 1:
+        *pl 'Твой роскошный дворянский наряд привлекает уважительные взгляды даже опытной портнихи.'
+    elseif PlayerHasRespectableSuit = 1 or StefanRespectableSuit = 1:
+        *pl 'Твой приличный костюм от Ирмы сейчас лежит дома в сундуке. На тебе обычные простые штаны.'
+    else:
+        *pl 'На манекене в углу лавки выставлен добротный шерстяной костюм строгого городского покроя — удобный, сдержанный и солидный.'
     end
 ---
 
 #IrmaShopRenderMainExtraActions
 
-    if StefanRespectableSuit = 0:
-        gs 'ActUiPrepare', 'Приличный костюм (95 спинтарий)', 'shop'
+    if PlayerHasRespectableSuit = 0 and StefanRespectableSuit = 0:
+        gs 'ActUiPrepare', 'Приличный костюм (95 спринтрий)', 'shop'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaShopFittingRespectableSuit', $IrmaShopReturnLoc
+        end
+    elseif PlayerHasRespectableSuit = 1 or StefanRespectableSuit = 1:
+        if StefanWearingRespectableSuit = 0:
+            gs 'ActUiPrepare', 'Переодеться в приличный костюм (в примерочной)', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaShopChangeClothes', 'respectable', $IrmaShopReturnLoc
+            end
+        else:
+            gs 'ActUiPrepare', 'Переодеться в простую одежду (в примерочной)', 'generic'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaShopChangeClothes', 'simple', $IrmaShopReturnLoc
+            end
         end
     end
 
@@ -366,18 +382,18 @@
     *pl ' '
     *pl 'Ирма быстро и привычно снимает мерки: охват груди, ширина плеч, длина рукава и спины. Её пальцы касаются ткани твоей рубахи, точными движениями прикидывая посадку камзола и брюк. Затем она отступает на полшага, критически оглядывает тебя и убирает ленту.'
     *pl ' '
-    *pl '— Шерсть отличная, плотная, ложится строго. Лишнее подколю, ворот и плечи посажу точно по твоей фигуре. Но добротная работа и хорошая ткань стоят денег. Девяносто пять спинтарий — и ни монетой меньше. За меньшее пусть тебе нищие на пристани рубахи латают.'
+    *pl '— Шерсть отличная, плотная, ложится строго. Лишнее подколю, ворот и плечи посажу точно по твоей фигуре. Но добротная работа и хорошая ткань стоят денег. Девяносто пять спринтрий — и ни монетой меньше. За меньшее пусть тебе нищие на пристани рубахи латают.'
     *pl ' '
 
     if money >= 95:
-        *pl 'У тебя в кошельке достаточно монет: ' + STR(money) + ' спинтарий.'
+        *pl 'У тебя в кошельке достаточно монет: ' + STR(money) + ' спринтрий.'
         *pl ' '
-        gs 'ActUiPrepare', 'Оплатить костюм (95 спинтарий)', 'coin'
+        gs 'ActUiPrepare', 'Оплатить костюм (95 спринтрий)', 'coin'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaShopPayRespectableSuit', $IrmaSuitReturnLoc
         end
     else:
-        *pl 'Тебе не хватает денег на оплату костюма: в кошельке сейчас всего ' + STR(money) + ' спинтарий из необходимых 95.'
+        *pl 'Тебе не хватает денег на оплату костюма: в кошельке сейчас всего ' + STR(money) + ' спринтрий из необходимых 95 спринтрий.'
         *pl ' '
     end
 
@@ -403,12 +419,16 @@
     end
 
     money -= 95
+    PlayerHasRespectableSuit = 1
+    StefanWearingRespectableSuit = 1
+    StefanWearingNobleSuit = 0
     StefanRespectableSuit = 1
+    gs 'UpdatePlayerClothes'
 
     gs 'ShowLocationScreenTitle', 'ПРИЛИЧНЫЙ КОСТЮМ'
     gs 'SceneShowVisual', 'images/locations/shops/irma_shop/suit_ready', 'Стефан примеряет готовый приличный костюм', 'large', 'webp'
 
-    *pl 'Ты достаёшь кошель и отсчитываешь Ирме девяносто пять спинтарий. Полуэльфийка ловко сгребает серебро, взвешивает монеты на ладони и с лёгким звоном убирает их в ящик прилавка.'
+    *pl 'Ты достаёшь кошель и отсчитываешь Ирме девяносто пять спринтрий. Полуэльфийка ловко сгребает серебро, взвешивает монеты на ладони и с лёгким звоном убирает их в ящик прилавка.'
     *pl ' '
     *pl '— Договорились. Стой смирно, не крутись. Сейчас подгоню плечи и ворот.'
     *pl ' '
@@ -434,5 +454,47 @@
     gs 'ActUiPrepare', 'Назад', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IrmaShop', 'main', $IrmaShopReturnLoc
+    end
+---
+
+#IrmaShopChangeClothes
+    *clr
+    clr
+    cla
+
+    $IrmaChangeTarget = $ARGS[0]
+    $IrmaSuitReturnLoc = $ARGS[1]
+    if $IrmaSuitReturnLoc = '':
+        $IrmaSuitReturnLoc = 'CraftsmenQuarter'
+    end
+
+    gs 'ShowLocationScreenTitle', 'ПРИМЕРОЧНАЯ ШИРМА'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/suit_fitting', 'Стефан за примерочной ширмой у Ирмы', 'large', 'webp'
+
+    if $IrmaChangeTarget = 'respectable':
+        StefanWearingRespectableSuit = 1
+        StefanWearingNobleSuit = 0
+        gs 'UpdatePlayerClothes'
+
+        *pl 'Ты заходишь за плотную тканевую ширму в углу мастерской, сбрасываешь свои грубые холщовые штаны и облачаешься в добротный темный костюм.'
+        *pl ' '
+        *pl 'Поправив манжеты и застегнув пуговицы на камзоле, ты выходишь к зеркалу. Ирма оглядывает тебя с лёгкой полуулыбкой:'
+        *pl '— Вот это другой разговор, Стефан. Хозяин дела должен выглядеть солидно, а не как беглый каторжник из доков.'
+    else:
+        StefanWearingRespectableSuit = 0
+        StefanWearingNobleSuit = 0
+        gs 'UpdatePlayerClothes'
+
+        *pl 'Ты заходишь за примерочную ширму, бережно снимаешь шерстяной камзол и аккуратно складываешь его.'
+        *pl ' '
+        *pl 'Облачившись обратно в привычные свободные штаны и простую рубаху, ты возвращаешься в зал. Ирма лишь пожимает плечами:'
+        *pl '— Дело хозяйское. Для черновой работы в зале или на кухне простая ткань сподручнее — шерсть от жира и пролитого пива отчищать замучаешься.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'IrmaShop', 'main', $IrmaSuitReturnLoc
     end
 ---

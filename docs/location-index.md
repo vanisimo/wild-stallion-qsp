@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 524
-- Locations: 4067
+- Locations: 4069
 
 ## modules/actions
 
@@ -1969,7 +1969,7 @@ Generated from active project files in `qsp-project.json`.
 | `ChurchWeekdayPrintIntro` | `modules/events/church/church_weekday_menus.qsps` | 75 |
 | `ChurchWeekdayShowGerhardMenu` | `modules/events/church/church_weekday_menus.qsps` | 16 |
 | `ChurchWeekdayText` | `modules/events/church/church_weekday_text.qsps` | 8 |
-| `CityGatesWildLands` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 307 |
+| `CityGatesWildLands` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 244 |
 | `ClarissaAnalCanStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 258 |
 | `ClarissaAnalSceneStart` | `modules/events/legare/clarissa_intim_arc.qsps` | 291 |
 | `ClarissaAnalSceneText` | `modules/events/legare/clarissa_intim_arc_text.qsps` | 41 |
@@ -2126,7 +2126,7 @@ Generated from active project files in `qsp-project.json`.
 | `FamilyNobleCelebrationPrintText` | `modules/events/family/family_noble_celebration_text.qsps` | 8 |
 | `FamilyNobleDinnerCelebration` | `modules/events/family/family_noble_celebration.qsps` | 8 |
 | `FamilyNobleDinnerDressUp` | `modules/events/family/family_noble_celebration.qsps` | 25 |
-| `FamilyNobleDinnerReactions` | `modules/events/family/family_noble_celebration.qsps` | 50 |
+| `FamilyNobleDinnerReactions` | `modules/events/family/family_noble_celebration.qsps` | 51 |
 | `FamilyNobleReactionPrintText` | `modules/events/family/family_noble_reaction_text.qsps` | 8 |
 | `FamilySandraNightCatchCheck` | `modules/events/family/family_discovery_core.qsps` | 175 |
 | `FamilySisterArgumentCheck` | `modules/events/family/family_discovery_core.qsps` | 143 |
@@ -3464,14 +3464,14 @@ Generated from active project files in `qsp-project.json`.
 | `SecondCaravanPrintText` | `modules/events/irma/second_caravan_arc_text.qsps` | 8 |
 | `SexSceneCalcAmandaBlowjobCap` | `modules/events/amanda/home/amanda_oral_ladder.qsps` | 105 |
 | `ShipGearShop` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 83 |
-| `StefanNobleTourBecky` | `modules/events/family/family_noble_celebration.qsps` | 174 |
-| `StefanNobleTourDraupnir` | `modules/events/family/family_noble_celebration.qsps` | 154 |
-| `StefanNobleTourFinish` | `modules/events/family/family_noble_celebration.qsps` | 235 |
-| `StefanNobleTourGerhard` | `modules/events/family/family_noble_celebration.qsps` | 108 |
-| `StefanNobleTourGuards` | `modules/events/family/family_noble_celebration.qsps` | 216 |
-| `StefanNobleTourIrma` | `modules/events/family/family_noble_celebration.qsps` | 86 |
-| `StefanNobleTourLegare` | `modules/events/family/family_noble_celebration.qsps` | 130 |
-| `StefanNobleTourMayor` | `modules/events/family/family_noble_celebration.qsps` | 196 |
+| `StefanNobleTourBecky` | `modules/events/family/family_noble_celebration.qsps` | 175 |
+| `StefanNobleTourDraupnir` | `modules/events/family/family_noble_celebration.qsps` | 155 |
+| `StefanNobleTourFinish` | `modules/events/family/family_noble_celebration.qsps` | 236 |
+| `StefanNobleTourGerhard` | `modules/events/family/family_noble_celebration.qsps` | 109 |
+| `StefanNobleTourGuards` | `modules/events/family/family_noble_celebration.qsps` | 217 |
+| `StefanNobleTourIrma` | `modules/events/family/family_noble_celebration.qsps` | 87 |
+| `StefanNobleTourLegare` | `modules/events/family/family_noble_celebration.qsps` | 131 |
+| `StefanNobleTourMayor` | `modules/events/family/family_noble_celebration.qsps` | 197 |
 | `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 553 |
 | `SundayVisitAmandaLizette` | `modules/events/visits/sunday_shop_visits.qsps` | 462 |
 | `SundayVisitAmandaLizetteApplyPhraseEffects` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 831 |
@@ -3610,14 +3610,14 @@ Generated from active project files in `qsp-project.json`.
 | `TavernSupplyStatusText` | `modules/events/tavern/tavern_supply_status_text.qsps` | 10 |
 | `TavernWorkDayEvent` | `modules/events/tavern/tavern_events.qsps` | 10 |
 | `UpdateAmandaLegareBranchUnlock` | `modules/events/amanda/legare/amanda_legare_dance_arc.qsps` | 18 |
-| `WildLandsAmbushScene` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 409 |
-| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 439 |
-| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 456 |
-| `WildLandsRoadChoose` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 370 |
+| `WildLandsAmbushScene` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 346 |
+| `WildLandsMercenaryFinish` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 376 |
+| `WildLandsMercenarySave` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 393 |
+| `WildLandsRoadChoose` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 307 |
 | `WildLandsShamanNegotiation` | `modules/events/irma/second_caravan_arc.qsps` | 71 |
 | `WildLandsShamanTent` | `modules/events/irma/second_caravan_arc.qsps` | 54 |
 | `WildLandsSteppeWolvesEncounter` | `modules/events/irma/second_caravan_arc.qsps` | 37 |
-| `WildLandsWrongRoadAmbush` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 386 |
+| `WildLandsWrongRoadAmbush` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 323 |
 
 ## modules/locations
 
@@ -3741,15 +3741,16 @@ Generated from active project files in `qsp-project.json`.
 | `IrmaDanceDressShopScene` | `modules/locations/shops/irma_dance_dress.qsps` | 509 |
 | `IrmaFirstMeet` | `modules/locations/shops/irma_first_meet.qsps` | 7 |
 | `IrmaShop` | `modules/locations/shops/irma_shop.qsps` | 8 |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 428 |
-| `IrmaShopFittingRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 349 |
-| `IrmaShopPayRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 390 |
-| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 432 |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 448 |
+| `IrmaShopChangeClothes` | `modules/locations/shops/irma_shop.qsps` | 460 |
+| `IrmaShopFittingRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 365 |
+| `IrmaShopPayRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 406 |
+| `IrmaShopRenderBackButton` | `modules/locations/shops/irma_shop.qsps` | 452 |
 | `IrmaShopRenderCommonHeader` | `modules/locations/shops/irma_shop.qsps` | 161 |
-| `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 211 |
-| `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 280 |
+| `IrmaShopRenderMainExtraActions` | `modules/locations/shops/irma_shop.qsps` | 215 |
+| `IrmaShopRenderMainNavButtons` | `modules/locations/shops/irma_shop.qsps` | 296 |
 | `IrmaShopRenderMainTab` | `modules/locations/shops/irma_shop.qsps` | 199 |
-| `IrmaShopRenderUniformsTab` | `modules/locations/shops/irma_shop.qsps` | 240 |
+| `IrmaShopRenderUniformsTab` | `modules/locations/shops/irma_shop.qsps` | 256 |
 | `IrmaUniformBuildMenu` | `modules/locations/shops/irma_uniform_orders.qsps` | 126 |
 | `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 953 |
 | `IrmaUniformEnsureName` | `modules/locations/shops/irma_uniform_orders.qsps` | 986 |
@@ -3874,11 +3875,11 @@ Generated from active project files in `qsp-project.json`.
 | `MayorOfficeWorkoffReportIntroText` | `modules/locations/town/mayor_office_text.qsps` | 188 |
 | `MelissaRoom` | `modules/locations/rooms/melissa_room.qsps` | 8 |
 | `PlayerRoom` | `modules/locations/rooms/player_room.qsps` | 8 |
-| `PlayerRoomBirthCertificateRead` | `modules/locations/rooms/player_room_chest.qsps` | 72 |
+| `PlayerRoomBirthCertificateRead` | `modules/locations/rooms/player_room_chest.qsps` | 174 |
 | `PlayerRoomChest` | `modules/locations/rooms/player_room_chest.qsps` | 7 |
-| `PlayerRoomChestSecret` | `modules/locations/rooms/player_room_chest.qsps` | 42 |
-| `PlayerRoomGroom` | `modules/locations/rooms/player_room.qsps` | 108 |
-| `PlayerRoomMasturbate` | `modules/locations/rooms/player_room.qsps` | 70 |
+| `PlayerRoomChestSecret` | `modules/locations/rooms/player_room_chest.qsps` | 144 |
+| `PlayerRoomGroom` | `modules/locations/rooms/player_room.qsps` | 110 |
+| `PlayerRoomMasturbate` | `modules/locations/rooms/player_room.qsps` | 72 |
 | `Port` | `modules/locations/town/port.qsps` | 6 |
 | `PortRumors` | `modules/locations/town/port.qsps` | 203 |
 | `ProcessDanceDressFittingDue` | `modules/locations/shops/irma_dance_dress.qsps` | 785 |
@@ -4067,6 +4068,7 @@ Generated from active project files in `qsp-project.json`.
 | `PrintMenuOpenLink` | `modules/menu/npc/npc_clickable_link.qsps` | 443 |
 | `PrintThoughtMenuPromptP` | `modules/menu/npc/npc_clickable_link.qsps` | 406 |
 | `ShowGirlSidebar` | `modules/menu/girls/show_girl_sidebar.qsps` | 8 |
+| `UpdatePlayerClothes` | `modules/menu/panels/panel_player_status.qsps` | 60 |
 | `Меню.{Обработка}` | `modules/menu/system/otd_lib_menu.qsps` | 223 |
 
 ## modules/npc
