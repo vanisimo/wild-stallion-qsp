@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 524
-- Locations: 4070
-- Locations with direct incoming calls: 3479
+- Locations: 4071
+- Locations with direct incoming calls: 3480
 - Locations without direct incoming calls: 591
 - Review candidates without direct incoming calls: 242
 - Classified entry/helper locations without direct incoming calls: 349
@@ -339,15 +339,15 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `DebugAmandaArcPanel` | `modules/debug/debug_amanda_arc.qsps` | 7 | `entry/helper` |
 | `DebugAmandaArcReset` | `modules/debug/debug_amanda_arc.qsps` | 457 | `entry/helper` |
 | `DebugAmandaJumpFirstSex` | `modules/debug/debug_amanda_arc.qsps` | 512 | `entry/helper` |
-| `DebugAmandaLizaClearPreview` | `modules/debug/debug_amanda_liza.qsps` | 236 | `entry/helper` |
-| `DebugAmandaLizaForceHallTalk` | `modules/debug/debug_amanda_liza.qsps` | 397 | `entry/helper` |
-| `DebugAmandaLizaPresetAfterPort` | `modules/debug/debug_amanda_liza.qsps` | 284 | `entry/helper` |
-| `DebugAmandaLizaPresetAnalTalkPath` | `modules/debug/debug_amanda_liza.qsps` | 374 | `entry/helper` |
-| `DebugAmandaLizaPresetMarathon8AndGossip` | `modules/debug/debug_amanda_liza.qsps` | 349 | `entry/helper` |
-| `DebugAmandaLizaPresetRoomVisitStory` | `modules/debug/debug_amanda_liza.qsps` | 326 | `entry/helper` |
-| `DebugAmandaLizaPresetSecretVisit` | `modules/debug/debug_amanda_liza.qsps` | 382 | `entry/helper` |
-| `DebugAmandaLizaPreview` | `modules/debug/debug_amanda_liza.qsps` | 231 | `entry/helper` |
-| `DebugAmandaLizaReset` | `modules/debug/debug_amanda_liza.qsps` | 410 | `entry/helper` |
+| `DebugAmandaLizaClearPreview` | `modules/debug/debug_amanda_liza.qsps` | 234 | `entry/helper` |
+| `DebugAmandaLizaForceHallTalk` | `modules/debug/debug_amanda_liza.qsps` | 395 | `entry/helper` |
+| `DebugAmandaLizaPresetAfterPort` | `modules/debug/debug_amanda_liza.qsps` | 282 | `entry/helper` |
+| `DebugAmandaLizaPresetAnalTalkPath` | `modules/debug/debug_amanda_liza.qsps` | 372 | `entry/helper` |
+| `DebugAmandaLizaPresetMarathon8AndGossip` | `modules/debug/debug_amanda_liza.qsps` | 347 | `entry/helper` |
+| `DebugAmandaLizaPresetRoomVisitStory` | `modules/debug/debug_amanda_liza.qsps` | 324 | `entry/helper` |
+| `DebugAmandaLizaPresetSecretVisit` | `modules/debug/debug_amanda_liza.qsps` | 380 | `entry/helper` |
+| `DebugAmandaLizaPreview` | `modules/debug/debug_amanda_liza.qsps` | 229 | `entry/helper` |
+| `DebugAmandaLizaReset` | `modules/debug/debug_amanda_liza.qsps` | 408 | `entry/helper` |
 | `DebugAmandaPresetAlleyMmf` | `modules/debug/debug_amanda_arc.qsps` | 434 | `entry/helper` |
 | `DebugAmandaPresetLegareRaceWatch` | `modules/debug/debug_amanda_arc.qsps` | 384 | `entry/helper` |
 | `DebugAmandaPresetLegareRaceWatchHidden` | `modules/debug/debug_amanda_arc.qsps` | 399 | `entry/helper` |
@@ -632,7 +632,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `Menu.Create` | 102 |
 | `Menu.Destroy` | 100 |
 | `Market` | 99 |
-| `RegisterSex` | 96 |
+| `RegisterSex` | 97 |
 | `ShowImage` | 87 |
 | `UpdateGirlLocations` | 85 |
 | `FormatSpintry` | 84 |

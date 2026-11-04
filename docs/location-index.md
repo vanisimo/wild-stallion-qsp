@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 524
-- Locations: 4070
+- Locations: 4071
 
 ## modules/actions
 
@@ -1096,28 +1096,28 @@ Generated from active project files in `qsp-project.json`.
 | `DebugAmandaArcReset` | `modules/debug/debug_amanda_arc.qsps` | 457 |
 | `DebugAmandaHomeStageLabel` | `modules/debug/debug_amanda_arc.qsps` | 86 |
 | `DebugAmandaJumpFirstSex` | `modules/debug/debug_amanda_arc.qsps` | 512 |
-| `DebugAmandaLizaClearPreview` | `modules/debug/debug_amanda_liza.qsps` | 236 |
-| `DebugAmandaLizaForceHallTalk` | `modules/debug/debug_amanda_liza.qsps` | 397 |
+| `DebugAmandaLizaClearPreview` | `modules/debug/debug_amanda_liza.qsps` | 234 |
+| `DebugAmandaLizaForceHallTalk` | `modules/debug/debug_amanda_liza.qsps` | 395 |
 | `DebugAmandaLizaPanel` | `modules/debug/debug_amanda_liza.qsps` | 7 |
-| `DebugAmandaLizaPresetAfterPort` | `modules/debug/debug_amanda_liza.qsps` | 284 |
-| `DebugAmandaLizaPresetAnalTalkPath` | `modules/debug/debug_amanda_liza.qsps` | 374 |
-| `DebugAmandaLizaPresetBaseKnown` | `modules/debug/debug_amanda_liza.qsps` | 267 |
-| `DebugAmandaLizaPresetGossipRich` | `modules/debug/debug_amanda_liza.qsps` | 333 |
-| `DebugAmandaLizaPresetHallVisit` | `modules/debug/debug_amanda_liza.qsps` | 294 |
-| `DebugAmandaLizaPresetMarathon8AndGossip` | `modules/debug/debug_amanda_liza.qsps` | 349 |
-| `DebugAmandaLizaPresetRoomVisitStory` | `modules/debug/debug_amanda_liza.qsps` | 326 |
-| `DebugAmandaLizaPresetSecretVisit` | `modules/debug/debug_amanda_liza.qsps` | 382 |
-| `DebugAmandaLizaPresetSundayRoom` | `modules/debug/debug_amanda_liza.qsps` | 311 |
-| `DebugAmandaLizaPreview` | `modules/debug/debug_amanda_liza.qsps` | 231 |
+| `DebugAmandaLizaPresetAfterPort` | `modules/debug/debug_amanda_liza.qsps` | 282 |
+| `DebugAmandaLizaPresetAnalTalkPath` | `modules/debug/debug_amanda_liza.qsps` | 372 |
+| `DebugAmandaLizaPresetBaseKnown` | `modules/debug/debug_amanda_liza.qsps` | 265 |
+| `DebugAmandaLizaPresetGossipRich` | `modules/debug/debug_amanda_liza.qsps` | 331 |
+| `DebugAmandaLizaPresetHallVisit` | `modules/debug/debug_amanda_liza.qsps` | 292 |
+| `DebugAmandaLizaPresetMarathon8AndGossip` | `modules/debug/debug_amanda_liza.qsps` | 347 |
+| `DebugAmandaLizaPresetRoomVisitStory` | `modules/debug/debug_amanda_liza.qsps` | 324 |
+| `DebugAmandaLizaPresetSecretVisit` | `modules/debug/debug_amanda_liza.qsps` | 380 |
+| `DebugAmandaLizaPresetSundayRoom` | `modules/debug/debug_amanda_liza.qsps` | 309 |
+| `DebugAmandaLizaPreview` | `modules/debug/debug_amanda_liza.qsps` | 229 |
 | `DebugAmandaLizaPrintBool` | `modules/debug/debug_amanda_liza.qsps` | 61 |
 | `DebugAmandaLizaPrintContext` | `modules/debug/debug_amanda_liza.qsps` | 45 |
 | `DebugAmandaLizaPrintFlags` | `modules/debug/debug_amanda_liza.qsps` | 80 |
 | `DebugAmandaLizaPrintGates` | `modules/debug/debug_amanda_liza.qsps` | 111 |
-| `DebugAmandaLizaPrintJumps` | `modules/debug/debug_amanda_liza.qsps` | 256 |
+| `DebugAmandaLizaPrintJumps` | `modules/debug/debug_amanda_liza.qsps` | 254 |
 | `DebugAmandaLizaPrintPhraseTester` | `modules/debug/debug_amanda_liza.qsps` | 188 |
 | `DebugAmandaLizaPrintPool` | `modules/debug/debug_amanda_liza.qsps` | 169 |
-| `DebugAmandaLizaPrintPresets` | `modules/debug/debug_amanda_liza.qsps` | 241 |
-| `DebugAmandaLizaReset` | `modules/debug/debug_amanda_liza.qsps` | 410 |
+| `DebugAmandaLizaPrintPresets` | `modules/debug/debug_amanda_liza.qsps` | 239 |
+| `DebugAmandaLizaReset` | `modules/debug/debug_amanda_liza.qsps` | 408 |
 | `DebugAmandaPresetAlleyMmf` | `modules/debug/debug_amanda_arc.qsps` | 434 |
 | `DebugAmandaPresetAlleyPlayer` | `modules/debug/debug_amanda_arc.qsps` | 415 |
 | `DebugAmandaPresetLegareRaceGate` | `modules/debug/debug_amanda_arc.qsps` | 366 |
@@ -1343,16 +1343,17 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaDanceOffend` | `modules/events/amanda/dance/amanda_dance.qsps` | 125 |
 | `AmandaDanceReset` | `modules/events/amanda/dance/amanda_dance.qsps` | 104 |
 | `AmandaEscapeWorkCanStart` | `modules/events/tavern/amanda_escape_work.qsps` | 9 |
-| `AmandaEscapeWorkCatch` | `modules/events/tavern/amanda_escape_work.qsps` | 203 |
-| `AmandaEscapeWorkConfront` | `modules/events/tavern/amanda_escape_work.qsps` | 436 |
-| `AmandaEscapeWorkInterrupt` | `modules/events/tavern/amanda_escape_work.qsps` | 242 |
-| `AmandaEscapeWorkPostWatchConfront` | `modules/events/tavern/amanda_escape_work.qsps` | 363 |
-| `AmandaEscapeWorkSearch` | `modules/events/tavern/amanda_escape_work.qsps` | 150 |
-| `AmandaEscapeWorkStart` | `modules/events/tavern/amanda_escape_work.qsps` | 85 |
-| `AmandaEscapeWorkText` | `modules/events/tavern/amanda_escape_work_text.qsps` | 8 |
-| `AmandaEscapeWorkTryAutoStart` | `modules/events/tavern/amanda_escape_work.qsps` | 48 |
-| `AmandaEscapeWorkWatch` | `modules/events/tavern/amanda_escape_work.qsps` | 291 |
-| `AmandaEscapeWorkWatchLeave` | `modules/events/tavern/amanda_escape_work.qsps` | 408 |
+| `AmandaEscapeWorkCatch` | `modules/events/tavern/amanda_escape_work.qsps` | 317 |
+| `AmandaEscapeWorkConfront` | `modules/events/tavern/amanda_escape_work.qsps` | 586 |
+| `AmandaEscapeWorkInterrupt` | `modules/events/tavern/amanda_escape_work.qsps` | 354 |
+| `AmandaEscapeWorkPostWatchConfront` | `modules/events/tavern/amanda_escape_work.qsps` | 512 |
+| `AmandaEscapeWorkSearch` | `modules/events/tavern/amanda_escape_work.qsps` | 266 |
+| `AmandaEscapeWorkSetBoy` | `modules/events/tavern/amanda_escape_work.qsps` | 101 |
+| `AmandaEscapeWorkStart` | `modules/events/tavern/amanda_escape_work.qsps` | 145 |
+| `AmandaEscapeWorkText` | `modules/events/tavern/amanda_escape_work_text.qsps` | 10 |
+| `AmandaEscapeWorkTryAutoStart` | `modules/events/tavern/amanda_escape_work.qsps` | 64 |
+| `AmandaEscapeWorkWatch` | `modules/events/tavern/amanda_escape_work.qsps` | 401 |
+| `AmandaEscapeWorkWatchLeave` | `modules/events/tavern/amanda_escape_work.qsps` | 555 |
 | `AmandaFirstSexAmandaWorryCanShow` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1049 |
 | `AmandaFirstSexAmandaWorryTalkText` | `modules/events/amanda/home/amanda_first_sex_family_reaction_text.qsps` | 530 |
 | `AmandaFirstSexFamilyTalkCanStart` | `modules/events/amanda/home/amanda_first_sex_family_reaction.qsps` | 1029 |
@@ -1644,9 +1645,9 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaLizaRoomDoor` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 55 |
 | `AmandaLizaRoomDoorCanShow` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 43 |
 | `AmandaLizaRoomDoorPeek` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 79 |
-| `AmandaLizaTalkApplyInfluence` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 616 |
-| `AmandaLizaTalkApplyPhraseEffects` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 660 |
-| `AmandaLizaTalkBuildPool` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 513 |
+| `AmandaLizaTalkApplyInfluence` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 672 |
+| `AmandaLizaTalkApplyPhraseEffects` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 716 |
+| `AmandaLizaTalkBuildPool` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 569 |
 | `AmandaLizaTalkCanTrigger` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 136 |
 | `AmandaLizaTalkGetPartKey` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 7 |
 | `AmandaLizaTalkGotoReturn` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 15 |
@@ -1656,8 +1657,8 @@ Generated from active project files in `qsp-project.json`.
 | `AmandaLizaTalkPhraseEligible` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 33 |
 | `AmandaLizaTalkPhraseFactWitness` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 20 |
 | `AmandaLizaTalkPhraseOneShotOpen` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 9 |
-| `AmandaLizaTalkPickPhrase` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 573 |
-| `AmandaLizaTalkPoolTry` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 483 |
+| `AmandaLizaTalkPickPhrase` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 629 |
+| `AmandaLizaTalkPoolTry` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 539 |
 | `AmandaLizaTalkPrepareHallVisit` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 83 |
 | `AmandaLizaTalkResetWeeklyCounters` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 32 |
 | `AmandaLizaTalkShowHallImage` | `modules/events/amanda/lizette/amanda_liza_overhear.qsps` | 11 |
@@ -3473,12 +3474,12 @@ Generated from active project files in `qsp-project.json`.
 | `StefanNobleTourIrma` | `modules/events/family/family_noble_celebration.qsps` | 87 |
 | `StefanNobleTourLegare` | `modules/events/family/family_noble_celebration.qsps` | 131 |
 | `StefanNobleTourMayor` | `modules/events/family/family_noble_celebration.qsps` | 197 |
-| `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 553 |
+| `SundayShopVisitsDebugMenu` | `modules/events/visits/sunday_shop_visits.qsps` | 551 |
 | `SundayVisitAmandaLizette` | `modules/events/visits/sunday_shop_visits.qsps` | 462 |
-| `SundayVisitAmandaLizetteApplyPhraseEffects` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 831 |
+| `SundayVisitAmandaLizetteApplyPhraseEffects` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 897 |
 | `SundayVisitAmandaLizetteCanEavesdrop` | `modules/events/visits/sunday_shop_visits.qsps` | 119 |
-| `SundayVisitAmandaLizettePickPhrase` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 826 |
-| `SundayVisitAmandaLizetteText` | `modules/events/visits/sunday_amanda_lizette_text.qsps` | 234 |
+| `SundayVisitAmandaLizettePickPhrase` | `modules/events/visits/sunday_amanda_lizette_talk_pick.qsps` | 892 |
+| `SundayVisitAmandaLizetteText` | `modules/events/visits/sunday_amanda_lizette_text.qsps` | 508 |
 | `SundayVisitBeckySandra` | `modules/events/visits/sunday_shop_visits.qsps` | 152 |
 | `SundayVisitBeckySandraApplyPhraseEffects` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 275 |
 | `SundayVisitBeckySandraBuildPool` | `modules/events/visits/sunday_becky_sandra_talk_pick.qsps` | 210 |
