@@ -2,8 +2,8 @@
 ! FILE: modules/events/tavern/amanda_escape_work.qsps
 ! MODULE: events/tavern
 ! Побег Аманды со смены в зале (Escape from work)
-! С Легаре или соседскими парнями
-! Возможность прервать до начала акта (анти-НТР) или наблюдать
+! С Легаре (только после секса в подворотне) или соседскими парнями
+! Одиночный парень (рандом 1 из 7), тройничек (2 рандомных парня), груповушка (Ханс, Курт, Феликс)
 ! ================================================
 
 #AmandaEscapeWorkCanStart
@@ -34,12 +34,28 @@
         exit
     end
 
-    if AmandaLegareFirstSexDone = 1 or AmandaNeighborBoysStage >= 2 or AmandaAlleyMmfDone = 1:
-        ! Барьеры сняты после первого опыта
-    else:
-        if AmandaRebellion < 2 and sluttiness['amanda'] < 12 and AmandaSecretiveness < 2 and AmandaLegareInterest < 1 and AmandaNeighborBoysStage = 0:
-            exit
+    if AmandaAtPortShip = 1:
+        exit
+    end
+
+    ! Побег с Легаре возможен ТОЛЬКО если она с ним встречается И уже был секс в подворотне
+    AmandaCanEscapeLegare = 0
+    if AmandaLegareInterest >= 1 and (AmandaLegareFirstSexDone = 1 or Fact_AmandaLegareFridayAlley = 1):
+        AmandaCanEscapeLegare = 1
+    end
+
+    ! Побег с парнями возможен, если нет прямого запрета либо если бунт велик
+    AmandaCanEscapeBoys = 0
+    if AmandaProhibitGuys = 0 or AmandaRebellion >= 3:
+        if AmandaNeighborBoysStage >= 1 or AmandaAlleyMmfDone = 1 or AmandaBoysGroupUnlocked = 1 or FamilyCorruptionStage >= 2:
+            AmandaCanEscapeBoys = 1
+        elseif AmandaRebellion >= 2 or sluttiness['amanda'] >= 12 or AmandaSecretiveness >= 2 or FamilyCorruptionStage >= 1:
+            AmandaCanEscapeBoys = 1
         end
+    end
+
+    if AmandaCanEscapeLegare = 0 and AmandaCanEscapeBoys = 0:
+        exit
     end
 
     AmandaEscapeWorkCanStart = 1
@@ -60,7 +76,7 @@
         gs 'AmandaEscapeWorkCanStart'
 
         if AmandaEscapeWorkCanStart = 1:
-            if AmandaLegareFirstSexDone = 1 or AmandaNeighborBoysStage >= 2 or AmandaAlleyMmfDone = 1:
+            if AmandaLegareFirstSexDone = 1 or AmandaNeighborBoysStage >= 2 or AmandaAlleyMmfDone = 1 or FamilyCorruptionStage >= 2:
                 AmandaEscapeChance = 45
             else:
                 AmandaEscapeChance = 25
@@ -82,6 +98,50 @@
     end
 ---
 
+#AmandaEscapeWorkSetBoy
+    _boySlot = ARGS[0]
+    _boyIdx = ARGS[1]
+
+    if _boyIdx = 1:
+        $_tempName = 'Томас'
+        $_tempDesc = 'сын мясника'
+    elseif _boyIdx = 2:
+        $_tempName = 'Ханс'
+        $_tempDesc = 'племянник пекаря'
+    elseif _boyIdx = 3:
+        $_tempName = 'Курт'
+        $_tempDesc = 'подмастерье бондаря'
+    elseif _boyIdx = 4:
+        $_tempName = 'Феликс'
+        $_tempDesc = 'помощник сапожника'
+    elseif _boyIdx = 5:
+        $_tempName = 'Люк'
+        $_tempDesc = 'помощник мельника'
+    elseif _boyIdx = 6:
+        $_tempName = 'Якоб'
+        $_tempDesc = 'подручный плотника'
+    else:
+        $_tempName = 'Финн'
+        $_tempDesc = 'конюх с постоялого двора'
+    end
+
+    if _boySlot = 1:
+        $AmandaEscapePartnerName = $_tempName
+        $AmandaEscapePartnerDesc = $_tempDesc
+    elseif _boySlot = 2:
+        $AmandaEscapePartnerName2 = $_tempName
+        $AmandaEscapePartnerDesc2 = $_tempDesc
+    elseif _boySlot = 3:
+        $AmandaEscapePartnerName3 = $_tempName
+        $AmandaEscapePartnerDesc3 = $_tempDesc
+    end
+
+    killvar '_boySlot'
+    killvar '_boyIdx'
+    killvar '$_tempName'
+    killvar '$_tempDesc'
+---
+
 #AmandaEscapeWorkStart
     *clr
     clr
@@ -92,32 +152,90 @@
         $AmandaEscapeReturnLoc = 'TavernMain'
     end
 
-    ! Выбор партнёра для побега: Легаре или соседские парни
-    if AmandaLegareInterest >= 1 and (RAND(1, 2) = 1 or AmandaNeighborBoysStage = 0):
+    ! Проверка доступности партнёров:
+    AmandaCanEscapeLegare = 0
+    if AmandaLegareInterest >= 1 and (AmandaLegareFirstSexDone = 1 or Fact_AmandaLegareFridayAlley = 1):
+        AmandaCanEscapeLegare = 1
+    end
+
+    AmandaCanEscapeBoys = 0
+    if AmandaProhibitGuys = 0 or AmandaRebellion >= 3:
+        AmandaCanEscapeBoys = 1
+    end
+
+    if AmandaCanEscapeLegare = 1 and AmandaCanEscapeBoys = 1:
+        if RAND(1, 2) = 1:
+            $AmandaEscapePartner = 'legare'
+        else:
+            $AmandaEscapePartner = 'neighbor'
+        end
+    elseif AmandaCanEscapeLegare = 1:
         $AmandaEscapePartner = 'legare'
-        $AmandaEscapePartnerName = 'Легаре'
-        $AmandaCatchSceneType = 'legare'
     else:
         $AmandaEscapePartner = 'neighbor'
-        EscapeBoyRoll = RAND(1, 3)
-        if EscapeBoyRoll = 1:
-            $AmandaEscapePartnerName = 'Ханс'
-        elseif EscapeBoyRoll = 2:
-            $AmandaEscapePartnerName = 'Курт'
-        else:
-            $AmandaEscapePartnerName = 'Феликс'
-        end
-        killvar 'EscapeBoyRoll'
+    end
 
-        ! Определение уровня интимности с парнями по гейтам
-        if AmandaNeighborBoysStage >= 4 or AmandaAlleyMmfDone = 1 or (sluttiness['amanda'] >= 50 and AmandaNeighborBoysStage >= 2):
-            $AmandaCatchSceneType = 'neighbor_group'
-        elseif AmandaNeighborBoysStage >= 3 or (sluttiness['amanda'] >= 35 and AmandaNeighborBoysStage >= 2):
-            $AmandaCatchSceneType = 'neighbor_sex'
-        elseif AmandaNeighborBoysStage >= 2 or sluttiness['amanda'] >= 22:
-            $AmandaCatchSceneType = 'neighbor_blowjob'
+    killvar 'AmandaCanEscapeLegare'
+    killvar 'AmandaCanEscapeBoys'
+
+    if $AmandaEscapePartner = 'legare':
+        $AmandaEscapePartnerName = 'Легаре'
+        $AmandaEscapePartnerName2 = ''
+        $AmandaEscapePartnerName3 = ''
+
+        ! Определение уровня интимности с Легаре
+        if (AmandaLegareAnalDone = 1 or AmandaHomeAnalDone = 1 or analacts['amanda'] > 0 or FamilyCorruptionStage >= 4) and AmandaLegareInterest >= 3 and (sluttiness['amanda'] >= 35 or FamilyCorruptionStage >= 4):
+            $AmandaCatchSceneType = 'legare_corrupt'
+        elseif AmandaLegareFirstSexDone = 1 or (virginity['amanda'] = 0 and AmandaLegareInterest >= 3) or (sluttiness['amanda'] >= 35 and AmandaLegareInterest >= 2) or FamilyCorruptionStage >= 3:
+            $AmandaCatchSceneType = 'legare_sex'
+        elseif AmandaLegareInterest >= 2 or oralacts['amanda'] > 0 or sluttiness['amanda'] >= 20 or FamilyCorruptionStage >= 2:
+            $AmandaCatchSceneType = 'legare_blowjob'
         else:
-            $AmandaCatchSceneType = 'neighbor_early'
+            $AmandaCatchSceneType = 'legare_early'
+        end
+
+    else:
+        ! Встречи с соседскими парнями:
+        ! 1. Груповушка (сеновал): фиксированная тройка Ханс, Курт и Феликс
+        if (AmandaNeighborBoysStage >= 4 or AmandaAlleyMmfDone = 1 or AmandaBoyBrothersStage >= 8 or AmandaBrothersTrained = 1 or AmandaBoysGroupUnlocked = 1 or FamilyCorruptionStage >= 4) and (sluttiness['amanda'] >= 45 or FamilyCorruptionStage >= 4) and RAND(1, 100) <= 30:
+            $AmandaCatchSceneType = 'neighbor_group'
+            $AmandaEscapePartnerName = 'Ханс'
+            $AmandaEscapePartnerDesc = 'племянник пекаря'
+            $AmandaEscapePartnerName2 = 'Курт'
+            $AmandaEscapePartnerDesc2 = 'подмастерье бондаря'
+            $AmandaEscapePartnerName3 = 'Феликс'
+            $AmandaEscapePartnerDesc3 = 'помощник сапожника'
+
+        ! 2. Тройничек: двое случайных разных парней из пула 7
+        elseif (AmandaBoysGroupUnlocked = 1 or AmandaBoyBrothersStage >= 5 or AmandaBoysPairStage > 0 or AmandaNeighborBoysStage >= 2 or FamilyCorruptionStage >= 2 or (sluttiness['amanda'] >= 28 and AmandaNeighborBoysStage >= 1)) and RAND(1, 100) <= 45:
+            $AmandaCatchSceneType = 'neighbor_pair'
+            _b1 = RAND(1, 7)
+            _b2 = RAND(1, 6)
+            if _b2 >= _b1: _b2 += 1
+            gs 'AmandaEscapeWorkSetBoy', 1, _b1
+            gs 'AmandaEscapeWorkSetBoy', 2, _b2
+            $AmandaEscapePartnerName3 = ''
+            $AmandaEscapePartnerDesc3 = ''
+            killvar '_b1'
+            killvar '_b2'
+
+        ! 3. Одиночный парень: один случайный парень из пула 7
+        else:
+            $AmandaEscapePartnerName2 = ''
+            $AmandaEscapePartnerDesc2 = ''
+            $AmandaEscapePartnerName3 = ''
+            $AmandaEscapePartnerDesc3 = ''
+            _b1 = RAND(1, 7)
+            gs 'AmandaEscapeWorkSetBoy', 1, _b1
+            killvar '_b1'
+
+            if AmandaNeighborBoysStage >= 3 or (sluttiness['amanda'] >= 35 and AmandaNeighborBoysStage >= 2) or FamilyCorruptionStage >= 3:
+                $AmandaCatchSceneType = 'neighbor_sex'
+            elseif AmandaNeighborBoysStage >= 2 or sluttiness['amanda'] >= 22 or FamilyCorruptionStage >= 2:
+                $AmandaCatchSceneType = 'neighbor_blowjob'
+            else:
+                $AmandaCatchSceneType = 'neighbor_early'
+            end
         end
     end
 
@@ -126,8 +244,6 @@
     gs 'EnsureGirlData', 'amanda'
 
     gs 'AmandaEscapeWorkText', 'intro'
-    *pl $EscapeWorkText
-    killvar '$EscapeWorkText'
 
     *pl ' '
 
@@ -164,8 +280,6 @@
         gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_sandra', 'КУХНЯ ТРАКТИРА', 'large', 'webp'
 
         gs 'AmandaEscapeWorkText', 'search_sandra'
-        *pl $EscapeWorkText
-        killvar '$EscapeWorkText'
         *pl ' '
 
         if $AmandaEscapePartner = 'legare':
@@ -220,10 +334,8 @@
 
     gs 'ShowLocationScreenTitle', 'ПОБЕГ СО СМЕНЫ: ИЗ УЗКОГО УКРЫТИЯ'
 
-    ! Описание увиденного ДО начала полового акта
+    ! Описание увиденного ДО вмешательства
     gs 'AmandaEscapeWorkText', 'catch_spot', $AmandaCatchSceneType
-    *pl $EscapeWorkText
-    killvar '$EscapeWorkText'
 
     *pl ' '
 
@@ -259,8 +371,6 @@
     end
 
     gs 'AmandaEscapeWorkText', 'interrupt', $AmandaCatchSceneType
-    *pl $EscapeWorkText
-    killvar '$EscapeWorkText'
 
     *pl ' '
 
@@ -307,7 +417,7 @@
         gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_alley', 'НАБЛЮДЕНИЕ ИЗ ТЕНИ', 'large', 'webp'
     end
 
-    ! Регистрация последствий наблюдения за половым актом
+    ! Регистрация последствий наблюдения
     sluttiness['amanda'] += 2
     AmandaNpcPath += 1
     AmandaScandalLevel += 1
@@ -315,37 +425,76 @@
 
     if $AmandaCatchSceneType = 'neighbor_blowjob':
         oralacts['amanda'] += 1
+        sexacts['amanda'] += 1
         if AmandaNeighborBoysStage < 2:
             AmandaNeighborBoysStage = 2
         end
     elseif $AmandaCatchSceneType = 'neighbor_sex':
         vaginalacts['amanda'] += 1
+        sexacts['amanda'] += 1
         if AmandaNeighborBoysStage < 3:
             AmandaNeighborBoysStage = 3
+        end
+        if virginity['amanda'] = 1:
+            virginity['amanda'] = 0
+            AmandaDeflowerDone = 1
+        end
+    elseif $AmandaCatchSceneType = 'neighbor_pair':
+        oralacts['amanda'] += 1
+        vaginalacts['amanda'] += 1
+        sexacts['amanda'] += 2
+        AmandaBoysPairStage += 1
+        sluttiness['amanda'] += 2
+        if virginity['amanda'] = 1:
+            virginity['amanda'] = 0
+            AmandaDeflowerDone = 1
         end
     elseif $AmandaCatchSceneType = 'neighbor_group':
         oralacts['amanda'] += 1
         vaginalacts['amanda'] += 1
+        sexacts['amanda'] += 2
         AmandaAlleyMmfDone = 1
         if AmandaNeighborBoysStage < 4:
             AmandaNeighborBoysStage = 4
+        end
+        if virginity['amanda'] = 1:
+            virginity['amanda'] = 0
+            AmandaDeflowerDone = 1
         end
     elseif $AmandaCatchSceneType = 'neighbor_early':
         if AmandaNeighborBoysStage < 1:
             AmandaNeighborBoysStage = 1
         end
-    elseif $AmandaCatchSceneType = 'legare':
+    elseif $AmandaCatchSceneType = 'legare_blowjob':
+        oralacts['amanda'] += 1
+        sexacts['amanda'] += 1
         AmandaLegareInterest += 1
-    end
-
-    if AmandaNeighborBoysStage >= 2 or AmandaAlleyMmfDone = 1:
+        sluttiness['amanda'] += 1
+    elseif $AmandaCatchSceneType = 'legare_sex':
+        vaginalacts['amanda'] += 1
+        sexacts['amanda'] += 1
+        AmandaLegareFirstSexDone = 1
+        AmandaLegareInterest += 1
+        sluttiness['amanda'] += 2
+        if virginity['amanda'] = 1:
+            virginity['amanda'] = 0
+            AmandaLegareDeflowerDone = 1
+        end
+    elseif $AmandaCatchSceneType = 'legare_corrupt':
+        analacts['amanda'] += 1
+        sexacts['amanda'] += 1
+        AmandaLegareAnalDone = 1
+        AmandaLegareInterest += 1
+        sluttiness['amanda'] += 3
+        FamilyTension += 1
+        gs 'RegisterSex', 'amanda', 'anal', 0, 0
+    elseif $AmandaCatchSceneType = 'legare_early' or $AmandaCatchSceneType = 'legare':
+        AmandaLegareInterest += 1
     end
 
     PlayerKnows_AmandaEscapeEscapade = 1
 
     gs 'AmandaEscapeWorkText', 'watch_scene', $AmandaCatchSceneType
-    *pl $EscapeWorkText
-    killvar '$EscapeWorkText'
 
     *pl ' '
 
@@ -374,13 +523,11 @@
     gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_confront', 'ПОСЛЕ УВИДЕННОГО', 'large', 'webp'
 
     gs 'AmandaEscapeWorkText', 'post_watch_confront_intro'
-    *pl $EscapeWorkText
-    killvar '$EscapeWorkText'
 
     *pl ' '
 
     ! Действия после увиденного
-    if $AmandaCatchSceneType = 'neighbor_blowjob' or $AmandaCatchSceneType = 'neighbor_sex' or $AmandaCatchSceneType = 'neighbor_group':
+    if $AmandaCatchSceneType = 'neighbor_blowjob' or $AmandaCatchSceneType = 'neighbor_sex' or $AmandaCatchSceneType = 'neighbor_pair' or $AmandaCatchSceneType = 'neighbor_group' or $AmandaCatchSceneType = 'legare_blowjob' or $AmandaCatchSceneType = 'legare_sex' or $AmandaCatchSceneType = 'legare_corrupt':
         gs 'ActUiPrepare', 'Отчитать за бесстыдство прямо у стен трактира', 'generic'
         act $ActUiLabel, $ActUiIconPath:
             gt 'AmandaEscapeWorkConfront', 'shameless', $AmandaEscapeReturnLoc
@@ -419,8 +566,6 @@
     gs 'SceneShowVisual', 'images/events/tavern/amanda_escape_work/amanda_escape_work_start', 'ВОЗВРАЩЕНИЕ В ЗАЛ', 'large', 'webp'
 
     gs 'AmandaEscapeWorkText', 'watch_quiet_leave'
-    *pl $EscapeWorkText
-    killvar '$EscapeWorkText'
 
     *pl ' '
 
@@ -428,6 +573,11 @@
     act $ActUiLabel, $ActUiIconPath:
         killvar '$AmandaEscapePartner'
         killvar '$AmandaEscapePartnerName'
+        killvar '$AmandaEscapePartnerName2'
+        killvar '$AmandaEscapePartnerName3'
+        killvar '$AmandaEscapePartnerDesc'
+        killvar '$AmandaEscapePartnerDesc2'
+        killvar '$AmandaEscapePartnerDesc3'
         killvar '$AmandaCatchSceneType'
         gt $AmandaEscapeReturnLoc
     end
@@ -494,9 +644,6 @@
         gs 'AmandaEscapeWorkText', 'choice_talk'
     end
 
-    *pl $EscapeWorkText
-    killvar '$EscapeWorkText'
-
     gs 'ClampGirlSocialStats', 'amanda'
 
     *pl ' '
@@ -505,6 +652,11 @@
     act $ActUiLabel, $ActUiIconPath:
         killvar '$AmandaEscapePartner'
         killvar '$AmandaEscapePartnerName'
+        killvar '$AmandaEscapePartnerName2'
+        killvar '$AmandaEscapePartnerName3'
+        killvar '$AmandaEscapePartnerDesc'
+        killvar '$AmandaEscapePartnerDesc2'
+        killvar '$AmandaEscapePartnerDesc3'
         killvar '$AmandaCatchSceneType'
         gt $AmandaEscapeReturnLoc
     end
