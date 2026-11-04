@@ -6,126 +6,121 @@
 
 #PortProstNightCanEnter
 
-    PortProstNightOpen = 0
+PortProstNightOpen = 0
 
-    if LizetteProstPort = 0:
-        exit
-    end
+if LizetteProstPort = 0:
+    exit
+end
 
-    if time <> 5:
-        exit
-    end
+if time <> 5:
+    exit
+end
 
-    if GeorgetteKnown = 0:
-        exit
-    end
+if GeorgetteKnown = 0:
+    exit
+end
 
-    if LizetteKnown = 0:
-        exit
-    end
+if LizetteKnown = 0:
+    exit
+end
 
-    PortProstNightOpen = 1
+PortProstNightOpen = 1
 ---
 
 #PortProstNightMenu
 
-    gt 'Port'
+gt 'Port'
 ---
 
 #PortProstNightHire
 
-    $PortProstNightReturnLoc = $ARGS[0]
-    $PortProstNightGirl = LCASE($ARGS[1])
+$PortProstNightReturnLoc = $ARGS[0]
+$PortProstNightGirl = LCASE($ARGS[1])
 
-    if $PortProstNightReturnLoc = '':
-        $PortProstNightReturnLoc = 'Port'
-    end
+if $PortProstNightReturnLoc = '':
+    $PortProstNightReturnLoc = 'Port'
+end
 
-    if money < 10:
-        gs 'PortProstNightText', 'no_money'
-        cls
-        *p $PortProstNightText
-        killvar '$PortProstNightText'
-        *pl ' '
-        act '<b>Назад</b>', 'images/common/ui/actions/return.png':
-            gt 'Port'
-        end
-        killvar '$PortProstNightGirl'
-        exit
-    end
-
-    money -= 10
-
-    if $PortProstNightGirl = 'georgett':
-        GeorgettePortSexPaidActive = 1
-        PortProstNightSexActive = 1
-        IntimStage['georgett'] = 5
-        gt 'SexSceneStart', 'georgett', 'PortProstNightAfterGeorg', 'georgett_port_first'
-    elseif $PortProstNightGirl = 'lizette' and LizetteSexUnlocked = 1:
-        PortProstNightSexActive = 1
-        IntimStage['lizette'] = 5
-        gt 'SexSceneStart', 'lizette', 'PortProstNightAfterLiz', 'normal'
-    else:
-        money += 10
+if money < 10:
+    cls
+    gs 'PortProstNightText', 'no_money'
+    *pl ' '
+    gs 'ActUiPrepare', 'Назад', 'return'
+    act $ActUiLabel, $ActUiIconPath:
         gt 'Port'
     end
-
     killvar '$PortProstNightGirl'
+    exit
+end
+
+money -= 10
+
+if $PortProstNightGirl = 'georgett':
+    GeorgettePortSexPaidActive = 1
+    PortProstNightSexActive = 1
+    IntimStage['georgett'] = 5
+    gt 'SexSceneStart', 'georgett', 'PortProstNightAfterGeorg', 'georgett_port_first'
+elseif $PortProstNightGirl = 'lizette' and LizetteSexUnlocked = 1:
+    PortProstNightSexActive = 1
+    IntimStage['lizette'] = 5
+    gt 'SexSceneStart', 'lizette', 'PortProstNightAfterLiz', 'normal'
+else:
+    money += 10
+    gt 'Port'
+end
+
+killvar '$PortProstNightGirl'
 ---
 
 #PortProstNightAfterGeorg
 
-    *clr
-    clr
-    cla
+*clr
+clr
+cla
 
-    gs 'SceneShowVisual', 'images/events/port/port_prost_night/port_prost_night_after_georg', 'порт: после ночи с Жоржеттой', 'large', 'webp'
-    GeorgettePortSexPaidActive = 0
-    PortProstNightSexActive = 0
-    GeorgettePortNightGone = 1
+gs 'SceneShowVisual', 'images/events/port/port_prost_night/port_prost_night_after_georg', 'порт: после ночи с Жоржеттой', 'large', 'webp'
+GeorgettePortSexPaidActive = 0
+PortProstNightSexActive = 0
+GeorgettePortNightGone = 1
 
-    if GeorgettePortSexDone = 0:
-        GeorgettePortSexDone = 1
-        gs 'GeorgetteChurchAloneSchedule'
-    end
+if GeorgettePortSexDone = 0:
+    GeorgettePortSexDone = 1
+    gs 'GeorgetteChurchAloneSchedule'
+end
 
-    gs 'PortProstNightText', 'after_georgett'
-    *p $PortProstNightText
-    killvar '$PortProstNightText'
+gs 'PortProstNightText', 'after_georgett'
 
-    Friends['georgett'] += 1
-    gs 'ClampGirlSocialStats', 'georgett'
+Friends['georgett'] += 1
+gs 'ClampGirlSocialStats', 'georgett'
 
-    *pl ' '
+*pl ' '
 
-    gs 'ActUiPrepare', 'К причалу', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'Port'
-    end
+gs 'ActUiPrepare', 'К причалу', 'return'
+act $ActUiLabel, $ActUiIconPath:
+    gt 'Port'
+end
 ---
 
 #PortProstNightAfterLiz
 
-    *clr
-    clr
-    cla
+*clr
+clr
+cla
 
-    gs 'SceneShowVisual', 'images/events/port/port_prost_night/port_prost_night_after_liz', 'порт: после ночи с Лизеттой', 'large', 'webp'
-    PortProstNightSexActive = 0
-    LizettePortNightGone = 1
+gs 'SceneShowVisual', 'images/events/port/port_prost_night/port_prost_night_after_liz', 'порт: после ночи с Лизеттой', 'large', 'webp'
+PortProstNightSexActive = 0
+LizettePortNightGone = 1
 
-    gs 'PortProstNightText', 'after_lizette'
-    *p $PortProstNightText
-    killvar '$PortProstNightText'
+gs 'PortProstNightText', 'after_lizette'
 
-    Friends['lizette'] += 1
-    otkroven['lizette'] += 1
-    gs 'ClampGirlSocialStats', 'lizette'
+Friends['lizette'] += 1
+otkroven['lizette'] += 1
+gs 'ClampGirlSocialStats', 'lizette'
 
-    *pl ' '
+*pl ' '
 
-    gs 'ActUiPrepare', 'К причалу', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'Port'
-    end
+gs 'ActUiPrepare', 'К причалу', 'return'
+act $ActUiLabel, $ActUiIconPath:
+    gt 'Port'
+end
 ---

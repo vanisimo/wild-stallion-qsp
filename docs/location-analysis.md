@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 524
-- Locations: 4069
-- Locations with direct incoming calls: 3478
+- Locations: 4070
+- Locations with direct incoming calls: 3479
 - Locations without direct incoming calls: 591
 - Review candidates without direct incoming calls: 242
 - Classified entry/helper locations without direct incoming calls: 349
@@ -223,8 +223,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `PortAmandaLizetteMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 128 | `modules/events` |
 | `PortAmandaLizetteShowAmandaMenu` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 41 | `modules/events` |
 | `PortAmandaLizetteTryMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 110 | `modules/events` |
-| `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 76 | `modules/events` |
-| `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 107 | `modules/events` |
+| `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 75 | `modules/events` |
+| `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 104 | `modules/events` |
 | `PortProstNightMenu` | `modules/events/port/port_prost_night.qsps` | 30 | `modules/events` |
 | `PrepareSkipDays` | `modules/core/time/skip_days.qsps` | 7 | `modules/core` |
 | `ProcessSandraBeckyOffense` | `modules/events/sandra/sandra_becky_conflict.qsps` | 133 | `modules/events` |
@@ -619,9 +619,9 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1896 |
-| `ShowLocationScreenTitle` | 869 |
-| `SceneShowVisual` | 828 |
+| `ActUiPrepare` | 1902 |
+| `ShowLocationScreenTitle` | 870 |
+| `SceneShowVisual` | 829 |
 | `Menu.AddModule` | 763 |
 | `MenuUiAdd` | 759 |
 | `EnsureGirlData` | 267 |

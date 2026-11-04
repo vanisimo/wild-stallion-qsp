@@ -100,6 +100,10 @@ if (-not (Test-Path $builtGame)) {
     throw "Build did not produce $builtGame"
 }
 
+if (Test-Path $combined) {
+    Remove-Item $combined -Force -ErrorAction SilentlyContinue
+}
+
 if (-not $NoCopy) {
     Copy-Item $builtGame $targetGame -Force
 }

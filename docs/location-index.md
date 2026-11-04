@@ -3,7 +3,7 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 524
-- Locations: 4069
+- Locations: 4070
 
 ## modules/actions
 
@@ -548,7 +548,7 @@ Generated from active project files in `qsp-project.json`.
 | `SexSceneCalcChangePoseAvailable` | `modules/actions/sex/sex_scene_poses.qsps` | 165 |
 | `SexSceneCalcCumPlayStage` | `modules/actions/sex/sex_scene_gates.qsps` | 386 |
 | `SexSceneCalcGirlOrgasmCap` | `modules/actions/sex/sex_scene_gates.qsps` | 751 |
-| `SexSceneCalcHoldBackChance` | `modules/actions/sex/sex_scene_gates.qsps` | 766 |
+| `SexSceneCalcHoldBackChance` | `modules/actions/sex/sex_scene_gates.qsps` | 768 |
 | `SexSceneCalcMenuUnlocks` | `modules/actions/sex/sex_scene_gates.qsps` | 575 |
 | `SexSceneCheckGirlOrgasm` | `modules/actions/sex/sex_scene_finish.qsps` | 7 |
 | `SexSceneCheckStoryBypass` | `modules/actions/sex/sex_scene_gates.qsps` | 53 |
@@ -3274,20 +3274,21 @@ Generated from active project files in `qsp-project.json`.
 | `PortAmandaLizetteShowAmandaMenu` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 41 |
 | `PortAmandaLizetteText` | `modules/events/amanda/lizette/port_amanda_lizette_text.qsps` | 7 |
 | `PortAmandaLizetteTryMeet` | `modules/events/amanda/lizette/port_amanda_lizette.qsps` | 110 |
-| `PortCapitalShipCheck` | `modules/events/port/port_capital_ship.qsps` | 7 |
-| `PortCapitalShipMenu` | `modules/events/port/port_capital_ship.qsps` | 22 |
-| `PortCapitalShipText` | `modules/events/port/port_capital_ship_text.qsps` | 13 |
+| `PortCapitalShipCheck` | `modules/events/port/port_capital_ship.qsps` | 8 |
+| `PortCapitalShipMenu` | `modules/events/port/port_capital_ship.qsps` | 23 |
+| `PortCapitalShipText` | `modules/events/port/port_capital_ship_text.qsps` | 8 |
 | `PortClerkBribePaySuccess` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 104 |
 | `PortClerkTalk` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 62 |
 | `PortGeorgetteRoomThreesomeCanStart` | `modules/events/port/port_georgette_room_threesome.qsps` | 8 |
-| `PortGeorgetteRoomThreesomeFacialFinish` | `modules/events/port/port_georgette_room_threesome.qsps` | 200 |
+| `PortGeorgetteRoomThreesomeFacialFinish` | `modules/events/port/port_georgette_room_threesome.qsps` | 229 |
 | `PortGeorgetteRoomThreesomeIntro` | `modules/events/port/port_georgette_room_threesome.qsps` | 71 |
-| `PortGeorgetteRoomThreesomeLeave` | `modules/events/port/port_georgette_room_threesome.qsps` | 222 |
+| `PortGeorgetteRoomThreesomeLeave` | `modules/events/port/port_georgette_room_threesome.qsps` | 251 |
 | `PortGeorgetteRoomThreesomePrintText` | `modules/events/port/port_georgette_room_threesome_text.qsps` | 8 |
-| `PortGeorgetteRoomThreesomeRear` | `modules/events/port/port_georgette_room_threesome.qsps` | 137 |
-| `PortGeorgetteRoomThreesomeRearFinish` | `modules/events/port/port_georgette_room_threesome.qsps` | 178 |
-| `PortGeorgetteRoomThreesomeScissors` | `modules/events/port/port_georgette_room_threesome.qsps` | 94 |
-| `PortGeorgetteRoomThreesomeScissorsFinish` | `modules/events/port/port_georgette_room_threesome.qsps` | 117 |
+| `PortGeorgetteRoomThreesomeRear` | `modules/events/port/port_georgette_room_threesome.qsps` | 161 |
+| `PortGeorgetteRoomThreesomeRearFinish` | `modules/events/port/port_georgette_room_threesome.qsps` | 207 |
+| `PortGeorgetteRoomThreesomeRearSetup` | `modules/events/port/port_georgette_room_threesome.qsps` | 135 |
+| `PortGeorgetteRoomThreesomeScissors` | `modules/events/port/port_georgette_room_threesome.qsps` | 93 |
+| `PortGeorgetteRoomThreesomeScissorsFinish` | `modules/events/port/port_georgette_room_threesome.qsps` | 115 |
 | `PortGeorgetteRoomThreesomeStart` | `modules/events/port/port_georgette_room_threesome.qsps` | 50 |
 | `PortLegareHeistAfterBlowjob` | `modules/events/port/port_legare_heist.qsps` | 232 |
 | `PortLegareHeistCanStart` | `modules/events/port/port_legare_heist.qsps` | 8 |
@@ -3313,8 +3314,8 @@ Generated from active project files in `qsp-project.json`.
 | `PortNightText` | `modules/events/port/port_night_text.qsps` | 8 |
 | `PortNightTryShowGirlLink` | `modules/events/port/port_night.qsps` | 153 |
 | `PortNightWarehouseSneak` | `modules/events/mayor/mayor_blackmail_investigation.qsps` | 121 |
-| `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 76 |
-| `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 107 |
+| `PortProstNightAfterGeorg` | `modules/events/port/port_prost_night.qsps` | 75 |
+| `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 104 |
 | `PortProstNightCanEnter` | `modules/events/port/port_prost_night.qsps` | 7 |
 | `PortProstNightHire` | `modules/events/port/port_prost_night.qsps` | 35 |
 | `PortProstNightMenu` | `modules/events/port/port_prost_night.qsps` | 30 |
@@ -4091,7 +4092,7 @@ Generated from active project files in `qsp-project.json`.
 | `DraupnirTalkUpgradesRun` | `modules/npc/town/draupnir.qsps` | 281 |
 | `DraupnirUnifiedTalkRun` | `modules/npc/town/draupnir.qsps` | 209 |
 | `InitAlber` | `modules/npc/legare/alber.qsps` | 6 |
-| `InitAmanda` | `modules/npc/family/amanda.qsps` | 7 |
+| `InitAmanda` | `modules/npc/family/amanda.qsps` | 6 |
 | `InitBecky` | `modules/npc/shops/becky.qsps` | 6 |
 | `InitClarissa` | `modules/npc/legare/clarissa.qsps` | 6 |
 | `InitDraupnir` | `modules/npc/town/draupnir.qsps` | 4 |
