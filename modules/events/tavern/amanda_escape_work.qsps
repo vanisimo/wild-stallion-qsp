@@ -229,13 +229,25 @@
             gs 'AmandaEscapeWorkSetBoy', 1, _b1
             killvar '_b1'
 
-            if AmandaNeighborBoysStage >= 3 or (sluttiness['amanda'] >= 35 and AmandaNeighborBoysStage >= 2) or FamilyCorruptionStage >= 3:
+            ! Проверка на отказ/облом ухажёра:
+            _rejectChance = 25
+            if FamilyCorruptionStage <= 1:
+                _rejectChance = 45
+            elseif FamilyCorruptionStage <= 2:
+                _rejectChance = 35
+            end
+
+            if RAND(1, 100) <= _rejectChance:
+                $AmandaCatchSceneType = 'neighbor_reject'
+                AmandaEscapeRejectType = RAND(1, 5)
+            elseif AmandaNeighborBoysStage >= 3 or (sluttiness['amanda'] >= 35 and AmandaNeighborBoysStage >= 2) or FamilyCorruptionStage >= 3:
                 $AmandaCatchSceneType = 'neighbor_sex'
             elseif AmandaNeighborBoysStage >= 2 or sluttiness['amanda'] >= 22 or FamilyCorruptionStage >= 2:
                 $AmandaCatchSceneType = 'neighbor_blowjob'
             else:
                 $AmandaCatchSceneType = 'neighbor_early'
             end
+            killvar '_rejectChance'
         end
     end
 
@@ -334,12 +346,14 @@
 
     gs 'ShowLocationScreenTitle', 'ПОБЕГ СО СМЕНЫ: ИЗ УЗКОГО УКРЫТИЯ'
 
-    ! Описание увиденного ДО вмешательства
+    ! Описание увиденного ДО вмешательства (НАЧАЛЬНЫЙ СТОП-КАДР: ласки в процессе, без финала!)
     gs 'AmandaEscapeWorkText', 'catch_spot', $AmandaCatchSceneType
 
     *pl ' '
 
-    ! Ключевая развилка: прервать до начала (для игроков без НТР) или наблюдать дальше
+    ! Ключевая развилка:
+    ! 1) Прервать до начала -> Стефан выскакивает и прогоняет партнёров (#AmandaEscapeWorkInterrupt)
+    ! 2) Наблюдать дальше -> Стефан остаётся в тени до финала сцены (#AmandaEscapeWorkWatch)
     gs 'ActUiPrepare', 'Вмешаться немедленно (прервать до начала!)', 'generic'
     act $ActUiLabel, $ActUiIconPath:
         gt 'AmandaEscapeWorkInterrupt', $EscapeCatchPlace, $AmandaEscapeReturnLoc
@@ -418,10 +432,14 @@
     end
 
     ! Регистрация последствий наблюдения
-    sluttiness['amanda'] += 2
-    AmandaNpcPath += 1
-    AmandaScandalLevel += 1
-    arousal += 25
+    if $AmandaCatchSceneType = 'neighbor_reject':
+        arousal += 5
+    else:
+        sluttiness['amanda'] += 2
+        AmandaNpcPath += 1
+        AmandaScandalLevel += 1
+        arousal += 25
+    end
 
     if $AmandaCatchSceneType = 'neighbor_blowjob':
         oralacts['amanda'] += 1
@@ -494,6 +512,7 @@
 
     PlayerKnows_AmandaEscapeEscapade = 1
 
+    ! Полное описание развязки/финала при наблюдении (кульминация, оргазмы, завершение ласк и уход)
     gs 'AmandaEscapeWorkText', 'watch_scene', $AmandaCatchSceneType
 
     *pl ' '
