@@ -242,6 +242,19 @@
                 AmandaEscapeRejectType = RAND(1, 5)
             elseif AmandaNeighborBoysStage >= 3 or (sluttiness['amanda'] >= 35 and AmandaNeighborBoysStage >= 2) or FamilyCorruptionStage >= 3:
                 $AmandaCatchSceneType = 'neighbor_sex'
+                if FamilyCorruptionStage >= 3 or analacts['amanda'] > 0 or analfromyou['amanda'] > 0 or AmandaHomeAnalDone = 1 or AmandaNeighborBoysAnalDone = 1:
+                    AmandaEscapeSexPose = RAND(1, 4)
+                else:
+                    AmandaEscapeSexPose = RAND(1, 3)
+                end
+
+                if FamilyCorruptionStage >= 3 or sluttiness['amanda'] >= 30:
+                    AmandaEscapeCumType = RAND(1, 4)
+                elseif FamilyCorruptionStage >= 2 or sluttiness['amanda'] >= 22:
+                    AmandaEscapeCumType = RAND(1, 3)
+                else:
+                    AmandaEscapeCumType = RAND(1, 2)
+                end
             elseif AmandaNeighborBoysStage >= 2 or sluttiness['amanda'] >= 22 or FamilyCorruptionStage >= 2:
                 $AmandaCatchSceneType = 'neighbor_blowjob'
             else:
@@ -448,14 +461,25 @@
             AmandaNeighborBoysStage = 2
         end
     elseif $AmandaCatchSceneType = 'neighbor_sex':
-        vaginalacts['amanda'] += 1
+        if AmandaEscapeSexPose = 4:
+            analacts['amanda'] += 1
+            AmandaNeighborBoysAnalDone = 1
+            sluttiness['amanda'] += 2
+        else:
+            vaginalacts['amanda'] += 1
+            if virginity['amanda'] = 1:
+                virginity['amanda'] = 0
+                AmandaDeflowerDone = 1
+            end
+        end
         sexacts['amanda'] += 1
+        if AmandaEscapeCumType = 1:
+            cuminside['amanda'] += 1
+        elseif AmandaEscapeCumType = 4:
+            oralacts['amanda'] += 1
+        end
         if AmandaNeighborBoysStage < 3:
             AmandaNeighborBoysStage = 3
-        end
-        if virginity['amanda'] = 1:
-            virginity['amanda'] = 0
-            AmandaDeflowerDone = 1
         end
     elseif $AmandaCatchSceneType = 'neighbor_pair':
         oralacts['amanda'] += 1
