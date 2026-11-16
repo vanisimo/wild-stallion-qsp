@@ -6,13 +6,13 @@
 
 ### **Этап 1: Интимные сцены (`SexScene`) Сандры и Бекки — [ЗАВЕРШЕНО]**
 - **Файлы:**
-  - `modules/actions/sex/sex_scene_text_sister.qsps` (индивидуальный модуль Сандры)
+  - `modules/actions/sex/sex_scene_text_sandra.qsps` (индивидуальный модуль Сандры)
   - `modules/actions/sex/sex_scene_text_becky.qsps` (индивидуальный модуль Бекки)
   - `modules/actions/sex/sex_scene_text.qsps` (финалы и общие хуки)
 - **Задачи:**
-  - Переработка и расширение `sex_scene_text_sister.qsps` под характер Сандры: зрелая, статная, строгая мать и кухарка с вязкой чувственностью и постепенным падением барьеров.
+  - Переработка и расширение `sex_scene_text_sandra.qsps` под характер Сандры: зрелая, статная, строгая мать и кухарка с вязкой чувственностью и постепенным падением барьеров.
   - Добавление вариативности по `FamilyCorruptionStage` / `sluttiness['sandra']` (от сдержанной борьбы со стыдом на 0–1 до зрелого, уверенного желания на 4–5).
-  - Полное покрытие всех действий в `SexSceneTextSister`: `intro`, `look`, `kiss`, `grope`/`caress`, `breast_caress`, `undress_her`, `undress_gg`, `cuni`, `blowjob`, `deepthroat`, `rim`, `rimjob`, `vaginal`, `anal`, `pose_change`, `girl_finish`, `player_finish_good`, `player_finish_bad`, `player_out`, `rest`, оргазмы.
+  - Полное покрытие всех действий в `SexSceneTextSandra`: `intro`, `look`, `kiss`, `grope`/`caress`, `breast_caress`, `undress_her`, `undress_gg`, `cuni`, `blowjob`, `deepthroat`, `rim`, `rimjob`, `vaginal`, `anal`, `pose_change`, `girl_finish`, `player_finish_good`, `player_finish_bad`, `player_out`, `rest`, оргазмы.
   - Вычитка и дополнение `sex_scene_text_becky.qsps`: исправление опечатки (`вы остаёшься` $\rightarrow$ `вы остаётесь`), добавление недостающих обработчиков (`deepthroat`, `anal`, `rim`, `rimjob`), вычитка заголовка.
   - Расширение финалов и реакций Сандры в `sex_scene_text.qsps` с учётом `sluttiness['sandra']` и анала.
 
