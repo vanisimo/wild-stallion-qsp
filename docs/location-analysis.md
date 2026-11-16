@@ -78,28 +78,28 @@ These locations have no direct literal incoming calls and are not classified as 
 | `GirlPolicyResponseApplyStats` | `modules/events/hall/girl_policy_response.qsps` | 188 | `modules/events` |
 | `GirlsDesc` | `modules/core/init_npc/girls_desc.qsps` | 24 | `modules/core` |
 | `GirlTalkAmandaImportantCheck` | `modules/actions/dialogs/girl_talk_amanda.qsps` | 8 | `modules/actions` |
-| `GirlTalkAppendIntimMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 422 | `modules/actions` |
+| `GirlTalkAppendIntimMenuItems` | `modules/actions/dialogs/girl_talk.qsps` | 426 | `modules/actions` |
 | `GirlTalkBuildAmandaMainMenu` | `modules/actions/dialogs/girl_talk_amanda.qsps` | 155 | `modules/actions` |
 | `GirlTalkBuildBeckyMainMenu` | `modules/actions/dialogs/girl_talk_becky.qsps` | 8 | `modules/actions` |
 | `GirlTalkBuildClarissaMainMenu` | `modules/actions/dialogs/girl_talk_clarissa.qsps` | 8 | `modules/actions` |
 | `GirlTalkBuildGretaStubMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 7 | `modules/actions` |
-| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 486 | `modules/actions` |
+| `GirlTalkBuildHallTopicsMenu` | `modules/actions/dialogs/girl_talk.qsps` | 490 | `modules/actions` |
 | `GirlTalkBuildIngaMainMenu` | `modules/actions/dialogs/girl_talk_inga.qsps` | 8 | `modules/actions` |
 | `GirlTalkBuildLizetteMainMenu` | `modules/actions/dialogs/girl_talk_lizette.qsps` | 54 | `modules/actions` |
-| `GirlTalkBuildMainMenu` | `modules/actions/dialogs/girl_talk.qsps` | 394 | `modules/actions` |
+| `GirlTalkBuildMainMenu` | `modules/actions/dialogs/girl_talk.qsps` | 398 | `modules/actions` |
 | `GirlTalkBuildMelissaMainMenu` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 153 | `modules/actions` |
 | `GirlTalkBuildSandraMainMenu` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 135 | `modules/actions` |
 | `GirlTalkBuildTownMainMenu` | `modules/actions/dialogs/girl_talk_town.qsps` | 17 | `modules/actions` |
 | `GirlTalkDanceDressLater` | `modules/locations/shops/irma_dance_dress.qsps` | 321 | `modules/locations` |
-| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 466 | `modules/actions` |
-| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 431 | `modules/actions` |
+| `GirlTalkHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 470 | `modules/actions` |
+| `GirlTalkHasHallTopics` | `modules/actions/dialogs/girl_talk.qsps` | 435 | `modules/actions` |
 | `GirlTalkMelissaImportantCheck` | `modules/actions/dialogs/girl_talk_melissa.qsps` | 8 | `modules/actions` |
 | `GirlTalkOpenNpcMenu` | `modules/actions/dialogs/girl_talk.qsps` | 188 | `modules/actions` |
 | `GirlTalkPersonalBanOptionsCount` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1143 | `modules/actions` |
 | `GirlTalkPersonalBuildMainMenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 1202 | `modules/actions` |
 | `GirlTalkPersonalOpenSubmenu` | `modules/actions/dialogs/girl_talk_personal.qsps` | 8 | `modules/actions` |
 | `GirlTalkPrepareForNpcLink` | `modules/actions/dialogs/girl_talk.qsps` | 240 | `modules/actions` |
-| `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 364 | `modules/actions` |
+| `GirlTalkReopenTalkMenu` | `modules/actions/dialogs/girl_talk.qsps` | 368 | `modules/actions` |
 | `GirlTalkSandraImportantCheck` | `modules/actions/dialogs/girl_talk_sandra.qsps` | 8 | `modules/actions` |
 | `GirlWorkPolicyPanelCycle` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 616 | `modules/actions` |
 | `GirlWorkPolicyTalkHallAfterHarass` | `modules/actions/tavern/girl_work_policy_talk.qsps` | 128 | `modules/actions` |
@@ -203,7 +203,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `IrmaDanceDressFittingScene` | `modules/locations/shops/irma_dance_dress.qsps` | 780 | `modules/locations` |
 | `IrmaDanceDressOrderPay` | `modules/locations/shops/irma_dance_dress.qsps` | 775 | `modules/locations` |
 | `IrmaDanceDressOrderScene` | `modules/locations/shops/irma_dance_dress.qsps` | 770 | `modules/locations` |
-| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 448 | `modules/locations` |
+| `IrmaShopBuyRespectableSuit` | `modules/locations/shops/irma_shop.qsps` | 437 | `modules/locations` |
 | `KitchenCustomerBuildPolicyMenu` | `modules/events/kitchen/kitchen_customer_event.qsps` | 699 | `modules/events` |
 | `LegareBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 58 | `modules/events` |
 | `LocationWalk` | `modules/core/time/time_control.qsps` | 148 | `modules/core` |
@@ -619,11 +619,11 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1902 |
-| `ShowLocationScreenTitle` | 870 |
-| `SceneShowVisual` | 829 |
-| `Menu.AddModule` | 763 |
-| `MenuUiAdd` | 759 |
+| `ActUiPrepare` | 1900 |
+| `ShowLocationScreenTitle` | 869 |
+| `SceneShowVisual` | 828 |
+| `Menu.AddModule` | 764 |
+| `MenuUiAdd` | 760 |
 | `EnsureGirlData` | 267 |
 | `ClampGirlSocialStats` | 255 |
 | `NormalizeGirlKey` | 209 |
@@ -643,7 +643,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaLizaTalkApplyInfluence` | 52 |
 | `PrintTitleLine` | 49 |
 | `SexSceneMain` | 48 |
-| `BeckyShop` | 47 |
+| `RegisterPlayerCum` | 47 |
 
 ## Dynamic Call Sites
 

@@ -198,6 +198,11 @@
 
 #IrmaShopRenderMainTab
 
+    if IrmaMet < 1:
+        *pl 'Пока вы с Ирмой не знакомы, прицениться к костюмам и заказам не выйдет — сначала подойди к хозяйке и представься.'
+        exit
+    end
+
     *pl 'На стенах — выкройки, на полках — катушки ниток. Здесь шьют платья для танцев и заказывают рабочую форму для трактира.'
     *pl ' '
 
@@ -214,8 +219,12 @@
 
 #IrmaShopRenderMainExtraActions
 
+    if IrmaMet < 1:
+        exit
+    end
+
     if PlayerHasRespectableSuit = 0 and StefanRespectableSuit = 0:
-        gs 'ActUiPrepare', 'Приличный костюм (95 спринтрий)', 'shop'
+        gs 'ActUiPrepare', 'Примерить приличный костюм (95 спринтрий)', 'shop'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaShopFittingRespectableSuit', $IrmaShopReturnLoc
         end
@@ -295,65 +304,60 @@
 
 #IrmaShopRenderMainNavButtons
 
-    if PlayerHasWeaponShipmentInvoice = 1 and IrmaBlackmailTalkDone = 0:
-        gs 'ActUiPrepare', 'Показать накладную на инструменты', 'policy'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IrmaBlackmailTalk'
+    if IrmaMet >= 1:
+        if PlayerHasWeaponShipmentInvoice = 1 and IrmaBlackmailTalkDone = 0:
+            gs 'ActUiPrepare', 'Показать накладную на инструменты', 'policy'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaBlackmailTalk'
+            end
         end
-    end
 
-    if IrmaMet = 1:
-        gs 'ActUiPrepare', 'Беседы о мире за чаем', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IrmaLoreMenu'
+        if MercenaryNeedsBalm = 1 and PlayerHasTreeBalm = 0:
+            gs 'ActUiPrepare', 'Попросить бальзам Древа для спасения раненого', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaGetBalmForMercenary'
+            end
         end
-    end
 
-    if MercenaryNeedsBalm = 1 and PlayerHasTreeBalm = 0:
-        gs 'ActUiPrepare', 'Попросить бальзам Древа для спасения раненого', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IrmaGetBalmForMercenary'
+        if IngaAtIrmaShop = 1:
+            gs 'ActUiPrepare', 'Подойти к Ирме и Инге', 'talk'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaIngaApprenticeTalk'
+            end
         end
-    end
 
-    if IngaAtIrmaShop = 1:
-        gs 'ActUiPrepare', 'Подойти к Ирме и Инге', 'talk'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IrmaIngaApprenticeTalk'
+        if AmandaWantsNobleDress = 1 and AmandaHasNobleDress = 0:
+            gs 'ActUiPrepare', 'Заказать благородное шёлковое платье для Аманды', 'shop'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaOrderAmandaNobleDress'
+            end
         end
-    end
 
-    if AmandaWantsNobleDress = 1 and AmandaHasNobleDress = 0:
-        gs 'ActUiPrepare', 'Заказать благородное шёлковое платье для Аманды', 'shop'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IrmaOrderAmandaNobleDress'
+        if StefanWearingNobleSuit = 1 and StefanNobleTourIrmaDone = 0:
+            gs 'ActUiPrepare', 'Ирма: визит в дворянском наряде', 'policy'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'StefanNobleTourIrma'
+            end
         end
-    end
 
-    if StefanWearingNobleSuit = 1 and StefanNobleTourIrmaDone = 0:
-        gs 'ActUiPrepare', 'Ирма: визит в дворянском наряде', 'policy'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'StefanNobleTourIrma'
-        end
-    end
-
-    _show_uniform_btn = 0
-    if IrmaUniformOfferUnlocked = 1:
-        _show_uniform_btn = 1
-    elseif LOC('IrmaUniformOfferCanStart') = 1:
-        gs 'IrmaUniformOfferCanStart'
-        if IrmaUniformOfferCanStart = 1 and IrmaUniformOfferDeclined = 0:
+        _show_uniform_btn = 0
+        if IrmaUniformOfferUnlocked = 1:
             _show_uniform_btn = 1
+        elseif LOC('IrmaUniformOfferCanStart') = 1:
+            gs 'IrmaUniformOfferCanStart'
+            if IrmaUniformOfferCanStart = 1 and IrmaUniformOfferDeclined = 0:
+                _show_uniform_btn = 1
+            end
         end
-    end
 
-    if _show_uniform_btn = 1:
-        gs 'ActUiPrepare', 'Рабочая форма', 'shop'
-        act $ActUiLabel, $ActUiIconPath:
-            gt 'IrmaShop', 'uniforms', $IrmaShopReturnLoc
+        if _show_uniform_btn = 1:
+            gs 'ActUiPrepare', 'Рабочая форма', 'shop'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'IrmaShop', 'uniforms', $IrmaShopReturnLoc
+            end
         end
+        killvar '_show_uniform_btn'
     end
-    killvar '_show_uniform_btn'
 
     gs 'ActUiPrepare', 'Квартал ремесленников', 'craftsmen'
     act $ActUiLabel, $ActUiIconPath:
@@ -373,31 +377,35 @@
         $IrmaSuitReturnLoc = 'CraftsmenQuarter'
     end
 
-    gs 'ShowLocationScreenTitle', 'ПРИЛИЧНЫЙ КОСТЮМ — СНЯТИЕ МЕРОК'
-    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/suit_fitting', 'Ирма снимает мерки со Стефана', 'large', 'webp'
+    if IrmaMet < 1:
+        gt 'IrmaShop', 'main', $IrmaSuitReturnLoc
+    end
 
-    *pl 'Ты подходишь к манекену и указываешь на тёмный добротный костюм. Полуэльфийка оценивающе прищуривается, достаёт из кармана фартука гибкую мерную ленту и делает шаг к тебе.'
+    gs 'ShowLocationScreenTitle', 'ПРИМЕРОЧНАЯ — ПРИЛИЧНЫЙ КОСТЮМ'
+    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/suit_ready', 'Примерочная: Стефан в приличном костюме перед зеркалом', 'large', 'webp'
+
+    *pl 'Ты заходишь в примерочную за ширмой и облачаешься в тёмный шерстяной костюм строгого городского покроя. Ирма поправляет тебе ворот и линию плеч, затем отступает на шаг и кивает на высокое зеркало:'
     *pl ' '
-    *pl '— Дело хорошее, Стефан. Хозяин трактира не должен выглядеть так, будто донашивает обноски за грузчиками из доков. Но вещь с чужого плеча — это всегда видно. Стой прямо и расправь плечи.'
+    *pl '— Посмотри сам, Стефан. Плечи расправлены, посадка чёткая, нигде не тянет. Ткань плотная, без лишней вычурности — в таком костюме и к мэру в приёмную не стыдно зайти, и на танцах перед девицами показаться.'
     *pl ' '
-    *pl 'Ирма быстро и привычно снимает мерки: охват груди, ширина плеч, длина рукава и спины. Её пальцы касаются ткани твоей рубахи, точными движениями прикидывая посадку камзола и брюк. Затем она отступает на полшага, критически оглядывает тебя и убирает ленту.'
+    *pl 'Она складывает мерную ленту и называет цену:'
     *pl ' '
-    *pl '— Шерсть отличная, плотная, ложится строго. Лишнее подколю, ворот и плечи посажу точно по твоей фигуре. Но добротная работа и хорошая ткань стоят денег. Девяносто пять спринтрий — и ни монетой меньше. За меньшее пусть тебе нищие на пристани рубахи латают.'
+    *pl '— За работу и добрую шерсть — девяносто пять спринтрий. Если берёшь, пойдёшь прямо в нём.'
     *pl ' '
 
     if money >= 95:
         *pl 'У тебя в кошельке достаточно монет: ' + STR(money) + ' спринтрий.'
         *pl ' '
-        gs 'ActUiPrepare', 'Оплатить костюм (95 спринтрий)', 'coin'
+        gs 'ActUiPrepare', 'Купить костюм (95 спринтрий)', 'coin'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaShopPayRespectableSuit', $IrmaSuitReturnLoc
         end
     else:
-        *pl 'Тебе не хватает денег на оплату костюма: в кошельке сейчас всего ' + STR(money) + ' спринтрий из необходимых 95 спринтрий.'
+        *pl 'Тебе не хватает денег на покупку костюма: в кошельке ' + STR(money) + ' из 95 спринтрий.'
         *pl ' '
     end
 
-    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
+    gs 'ActUiPrepare', 'Выйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'IrmaShop', 'main', $IrmaSuitReturnLoc
     end
@@ -405,16 +413,12 @@
 
 #IrmaShopPayRespectableSuit
 
-    *clr
-    clr
-    cla
-
     $IrmaSuitReturnLoc = $ARGS[0]
     if $IrmaSuitReturnLoc = '':
         $IrmaSuitReturnLoc = 'CraftsmenQuarter'
     end
 
-    if money < 95:
+    if IrmaMet < 1 or money < 95:
         gt 'IrmaShopFittingRespectableSuit', $IrmaSuitReturnLoc
     end
 
@@ -425,24 +429,9 @@
     StefanRespectableSuit = 1
     gs 'UpdatePlayerClothes'
 
-    gs 'ShowLocationScreenTitle', 'ПРИЛИЧНЫЙ КОСТЮМ'
-    gs 'SceneShowVisual', 'images/locations/shops/irma_shop/suit_ready', 'Стефан примеряет готовый приличный костюм', 'large', 'webp'
+    $IrmaShopMessage = 'Ты отсчитываешь Ирме девяносто пять спринтрий и выходишь из примерочной сразу в новом приличном костюме. Портниха довольно оглядывает посадку камзола: «Вот теперь ты похож на молодого хозяина дела, Стефан.»'
 
-    *pl 'Ты достаёшь кошель и отсчитываешь Ирме девяносто пять спринтрий. Полуэльфийка ловко сгребает серебро, взвешивает монеты на ладони и с лёгким звоном убирает их в ящик прилавка.'
-    *pl ' '
-    *pl '— Договорились. Стой смирно, не крутись. Сейчас подгоню плечи и ворот.'
-    *pl ' '
-    *pl 'Она снимает костюм с манекена и помогает тебе облачиться в обнову. Её ловкие пальцы быстро и уверенно правят ткань, скалывают лишнее булавками и подгоняют камзол точно по твоей фигуре. Ткань плотная, глубокого тёмного цвета, без кричащей роскоши, но с той неброской добротностью, которую сразу замечают в приличном обществе.'
-    *pl ' '
-    *pl 'Ты поворачиваешься к высокому зеркалу у стены: плечи кажутся шире, осанка строже, а от прежнего вида беспутного парня не осталось и следа.'
-    *pl ' '
-    *pl '— Ну вот, — довольно усмехается портниха, оглядев тебя с головы до ног. — Теперь ты похож на молодого хозяина дела, а не на портового оборванца, сбежавшего с кухни. В таком наряде и к мэру в приёмную не стыдно, и на танцах девушки нос воротить не станут.'
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Вернуться в лавку', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt 'IrmaShop', 'main', $IrmaSuitReturnLoc
-    end
+    gt 'IrmaShop', 'main', $IrmaSuitReturnLoc
 ---
 
 #IrmaShopBuyRespectableSuit
