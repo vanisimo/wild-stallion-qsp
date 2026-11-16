@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 524
-- Locations: 4071
-- Locations with direct incoming calls: 3480
+- Locations: 4076
+- Locations with direct incoming calls: 3485
 - Locations without direct incoming calls: 591
 - Review candidates without direct incoming calls: 242
 - Classified entry/helper locations without direct incoming calls: 349
@@ -28,7 +28,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `BeckyEddieJoinFirst` | `modules/events/eddie/eddie_arc.qsps` | 465 | `modules/events` |
 | `BeckyHomeAfterSex` | `modules/events/becky/becky_home_chain.qsps` | 965 | `modules/events` |
 | `BeckyHouse` | `modules/locations/shops/becky_house.qsps` | 8 | `modules/locations` |
-| `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 145 | `modules/locations` |
+| `BeckyShopBuyGift` | `modules/locations/shops/becky_shop_buy.qsps` | 146 | `modules/locations` |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 | `modules/events` |
 | `ChurchConfessionPickSin` | `modules/events/church/church_confession_dynamic.qsps` | 174 | `modules/events` |
 | `ChurchSpyBeckyScheduleOpen` | `modules/events/church/church_spy_becky.qsps` | 36 | `modules/events` |
@@ -234,7 +234,7 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SandraBeckySundayEavesdropCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 7 | `modules/events` |
 | `SandraBeckySundayReconcile` | `modules/events/sandra/sandra_becky_conflict.qsps` | 216 | `modules/events` |
 | `SandraBeckySundayReconcileCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 193 | `modules/events` |
-| `SandraHomeAfterSex` | `modules/events/sandra/sandra_home_chain.qsps` | 209 | `modules/events` |
+| `SandraHomeAfterSex` | `modules/events/sandra/sandra_home_chain.qsps` | 205 | `modules/events` |
 | `SandraKitchenBuildPolicyMenu` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 618 | `modules/events` |
 | `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 776 | `modules/events` |
 | `SandraKitchenProtect` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 722 | `modules/events` |
