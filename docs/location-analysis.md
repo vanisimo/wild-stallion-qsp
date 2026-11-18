@@ -3,8 +3,8 @@
 Generated from active project files in `qsp-project.json`.
 
 - Source files: 524
-- Locations: 4076
-- Locations with direct incoming calls: 3485
+- Locations: 4077
+- Locations with direct incoming calls: 3486
 - Locations without direct incoming calls: 591
 - Review candidates without direct incoming calls: 242
 - Classified entry/helper locations without direct incoming calls: 349
@@ -241,9 +241,9 @@ These locations have no direct literal incoming calls and are not classified as 
 | `SandraKitchenWatchPlayOrHarass` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 727 | `modules/events` |
 | `SexSceneActionAfterTalk` | `modules/actions/sex/sex_scene_finish.qsps` | 383 | `modules/actions` |
 | `SexSceneActionLook` | `modules/actions/sex/sex_scene_actions.qsps` | 7 | `modules/actions` |
-| `SexSceneTextLizetteFinish` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 138 | `modules/actions` |
-| `SexSceneTextLizetteGirlOrgasm` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 194 | `modules/actions` |
-| `SexSceneTextLizetteTriggerPlayer` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 186 | `modules/actions` |
+| `SexSceneTextLizetteFinish` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 148 | `modules/actions` |
+| `SexSceneTextLizetteGirlOrgasm` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 204 | `modules/actions` |
+| `SexSceneTextLizetteTriggerPlayer` | `modules/actions/sex/sex_scene_text_lizette.qsps` | 196 | `modules/actions` |
 | `SparkQueueActHall` | `modules/core/tavern/spark_queue.qsps` | 229 | `modules/core` |
 | `SparkQueueActKitchen` | `modules/core/tavern/spark_queue.qsps` | 237 | `modules/core` |
 | `StartIntimMenu` | `modules/core/girls/girl_intim_menu.qsps` | 7 | `modules/core` |
@@ -619,15 +619,15 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1900 |
-| `ShowLocationScreenTitle` | 869 |
+| `ActUiPrepare` | 1904 |
+| `ShowLocationScreenTitle` | 870 |
 | `SceneShowVisual` | 828 |
 | `Menu.AddModule` | 764 |
 | `MenuUiAdd` | 760 |
 | `EnsureGirlData` | 267 |
 | `ClampGirlSocialStats` | 255 |
 | `NormalizeGirlKey` | 209 |
-| `TavernMain` | 166 |
+| `TavernMain` | 167 |
 | `ShowGirlSidebar` | 115 |
 | `Menu.Create` | 102 |
 | `Menu.Destroy` | 100 |
@@ -643,7 +643,7 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaLizaTalkApplyInfluence` | 52 |
 | `PrintTitleLine` | 49 |
 | `SexSceneMain` | 48 |
-| `RegisterPlayerCum` | 47 |
+| `BeckyShop` | 47 |
 
 ## Dynamic Call Sites
 
