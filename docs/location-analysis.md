@@ -484,8 +484,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `InitLucas` | `modules/npc/town/lucas.qsps` | 6 | `entry/helper` |
 | `InitNpcTalkLimits` | `modules/core/time/npc_talk_limits.qsps` | 14 | `entry/helper` |
 | `IntimSceneStart` | `modules/actions/sex/intim_scene.qsps` | 7 | `entry/helper` |
-| `IrmaAmandaDanceDressBoughtText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 204 | `entry/helper` |
-| `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 200 | `entry/helper` |
+| `IrmaAmandaDanceDressBoughtText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 175 | `entry/helper` |
+| `IrmaAmandaDanceDressBuyText` | `modules/events/amanda/home/amanda_home_chain_text.qsps` | 171 | `entry/helper` |
 | `IrmaMelissaDanceDressBoughtText` | `modules/events/melissa/melissa_dance_text.qsps` | 98 | `entry/helper` |
 | `IrmaMelissaDanceDressBuyText` | `modules/events/melissa/melissa_dance_text.qsps` | 94 | `entry/helper` |
 | `IrmaUniformDebugUnlockAll` | `modules/locations/shops/irma_uniform_orders.qsps` | 953 | `entry/helper` |
