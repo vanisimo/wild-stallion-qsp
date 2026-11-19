@@ -14,8 +14,8 @@ Use this skill whenever the user asks to generate scenes, dialogues, 18+ prose, 
 ## 1. Choosing the Right Mode & Model
 
 - **18+ / sensual / uncensored scenes (`--mode nsfw`)**:
-  - Default model: `deepseek/deepseek-v3.1-terminus`
-  - Fallback if a provider filters explicit content: `sao10k/l3.1-euryale-70b` or `thedrummer/skyfall-36b-v2`
+  - Default model: `deepseek/deepseek-v4-pro` (with `--reasoning off` by default so tokens go into prose, not hidden reasoning)
+  - Fallback if a provider filters explicit content: `deepseek/deepseek-v3.1-terminus`, `sao10k/l3.1-euryale-70b`, or `thedrummer/skyfall-36b-v2`
 - **Dialogues & character banter (`--mode dialog`)**:
   - Default model: `deepseek/deepseek-v4-pro` (with `--reasoning off` by default so tokens go into prose, not hidden reasoning)
   - Alternatives: `mistralai/mistral-large-4-0`, `deepseek/deepseek-v3.2`
@@ -28,7 +28,7 @@ Use this skill whenever the user asks to generate scenes, dialogues, 18+ prose, 
 
 Always pass:
 - `--mode nsfw|dialog|quest|fast`
-- `--char ...` for character canon (`stefan`, `amanda`, `melissa`, `sandra`, `gerhard`, `lizette`, `becky`, `legare`)
+- `--char ...` for character canon (`stefan`, `amanda`, `melissa`, `sandra`, `gerhard`, `lizette`, `becky`, `clarissa`, `legare`)
 - `--corruption 0..5` when `FamilyCorruptionStage` matters
 - `--qsp` when output is meant for `.qsps` (`*pl '...'` formatting with `''` quote escaping)
 - `--prompt "..."` or `--brief-file promt/...`

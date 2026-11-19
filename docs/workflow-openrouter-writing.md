@@ -30,7 +30,8 @@
 ### Для 18+ сцен без цензуры
 | Модель (`ID` для OpenRouter) | Вход / Выход (за 1M токенов) | Когда использовать |
 |---|---|---|
-| `deepseek/deepseek-v3.1-terminus` | `$0.27 / $1.00` | **Основная рабочая лошадка** для 18+ и живого русского текста |
+| `deepseek/deepseek-v4-pro` | `$0.90 / $1.50` | **Основная по умолчанию (`--mode nsfw`)** с `--reasoning off`: живой русский язык без английской кальки |
+| `deepseek/deepseek-v3.1-terminus` | `$0.27 / $1.00` | Запасной вариант без цензуры, если провайдер фильтрует сцену |
 | `deepseek/deepseek-v3.2` | `$0.26 / $0.38` | Дешевле на выходе; хороша для длинных многоступенчатых сцен |
 | `sao10k/l3.1-euryale-70b` | `$0.85 / $0.85` | Специальная RP/18+ модель без отказов, если DeepSeek упирается в фильтр провайдера |
 | `thedrummer/skyfall-36b-v2` | `$0.55 / $0.80` | Более компактная и раскованная RP-модель |
@@ -62,7 +63,7 @@
 - форматирование сразу в QSP-строки `*pl '...'` (`--qsp`).
 
 ### Настройка ключа
-1. Скопируйте `.env.example` в `.env` в корне репозитория (`D:\traktir\.env`).
+1. Скопируйте `.env.example` в `.env` в корне репозитория (`<корень репозитория>\.env`).
 2. Впишите свой ключ `OPENROUTER_API_KEY=sk-or-v1-...` (файл `.env` добавлен в `.gitignore`).
 
 ### Примеры запуска (PowerShell)
@@ -134,7 +135,7 @@ aider --list-models openrouter/
 
 В проект уже добавлена встроенная связка для Antigravity:
 
-1. **Навык проекта:** `.agents/skills/openrouter-text-gen/SKILL.md` — учит агента в любой сессии вызывать `scripts/generate_text.py` с нужной моделью (`deepseek-v3.1-terminus` для 18+, `deepseek-v4-pro` для диалогов и квестов) и форматом `*pl '...'`.
+1. **Навык проекта:** `.agents/skills/openrouter-text-gen/SKILL.md` — учит агента в любой сессии вызывать `scripts/generate_text.py` с нужной моделью (`deepseek/deepseek-v4-pro` по умолчанию, `deepseek/deepseek-v3.1-terminus` как запасная для 18+) и форматом `*pl '...'`.
 2. **Локальный MCP-плагин:** `.agents/plugins/openrouter-writer/` (`plugin.json` + `mcp_config.json`) и сервер `scripts/openrouter_mcp_server.py`. После перезапуска/новой сессии Antigravity получает встроенные MCP-инструменты:
    - `openrouter_generate_scene` — генерация сцены/диалога/18+ по канону проекта;
    - `openrouter_list_models` — просмотр пресетов моделей.
