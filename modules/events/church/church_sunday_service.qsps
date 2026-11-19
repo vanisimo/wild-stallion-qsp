@@ -30,7 +30,7 @@
 
     *pl ' '
 
-
+    gs 'ChurchSundayServiceRumorAct'
 
     gs 'ChurchRenderStreetExit'
 
@@ -113,4 +113,123 @@
 #ChurchSundayServiceInspectIrma
     $ChurchServiceActiveMenuTarget = 'irma'
     gt 'ChurchSundayServiceInspect'
+---
+
+! ================================================
+! Слухи на утренней службе — до 3 попыток за день
+! ================================================
+
+#ChurchServiceRumorCanStart
+    ChurchServiceRumorCanStart = 0
+
+    if week <> 7:
+        exit
+    end
+
+    if time <> 1:
+        exit
+    end
+
+    gs 'ChurchSundayServiceCanEnter'
+
+    if ChurchSundayServiceOpen = 0:
+        exit
+    end
+
+    if ChurchServiceRumorDay <> day:
+        ChurchServiceRumorDay = day
+        ChurchServiceRumorCount = 0
+        killvar 'ChurchServiceRumorHeardToday'
+    end
+
+    if ChurchServiceRumorCount >= 3:
+        exit
+    end
+
+    ChurchServiceRumorCanStart = 1
+---
+
+#ChurchSundayServiceRumorAct
+    gs 'ChurchServiceRumorCanStart'
+
+    if ChurchServiceRumorCanStart = 0:
+        exit
+    end
+
+    gs 'ActUiPrepare', 'Пройтись по собору', 'look'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayServiceRumor'
+    end
+
+    killvar 'ChurchServiceRumorCanStart'
+---
+
+#ChurchSundayServiceRumor
+    gs 'ChurchServiceRumorCanStart'
+
+    if ChurchServiceRumorCanStart = 0:
+        gt 'ChurchSundayService'
+    end
+
+    if ChurchServiceRumorDay <> day:
+        ChurchServiceRumorDay = day
+        ChurchServiceRumorCount = 0
+        killvar 'ChurchServiceRumorHeardToday'
+    end
+
+    ChurchServiceRumorCount += 1
+    CityRumorTotal += 1
+
+    cls
+
+    gs 'SceneShowVisual', 'images/events/church/sunday_service/rumors', 'Шёпот прихожан в соборе', 'large', 'webp'
+
+    gs 'PrintTitleLine', ' СЛУХИ В СОБОРЕ'
+
+    gs 'CityRumorsGetText', 'church'
+
+    if $CityRumorText <> '':
+        *p $CityRumorText
+    else:
+        gs 'ChurchSundayServiceText', 'rumor_1'
+        *p $ChurchServiceText
+        killvar '$ChurchServiceText'
+    end
+
+    if $CityRumorPickedKey = 'tavern_scandal' or $CityRumorPickedKey = 'kitchen_sandra' or $CityRumorPickedKey = 'girls_behavior' or $CityRumorPickedKey = 'legare_amanda':
+        *pl ' '
+        if FamilyCorruptionStage <= 1:
+            *pl '<i>Сандра на соседней скамье слышит этот приглушённый шепоток за спиной. Она замирает, стиснув пальцы на молитвеннике: перед соседками и отцом Герхардом неловко, но она с гордостью держит лицо, не позволяя себе дать слабину.</i>'
+        elseif FamilyCorruptionStage <= 3:
+            *pl '<i>Сандра краем уха ловит пересуды за спиной, но лишь сдержанно хмыкает и поправляет шаль. Ей не привыкать к сплетням ещё с бурной молодости — стыд перед собором уже не жжёт, а трактир и доход семьи важнее чужих языков.</i>'
+        else:
+            *pl '<i>Сандра слышит пересуды и лишь равнодушно усмехается. Прежний стыд перед святошами давно сошёл на нет — в доме теперь свои порядки, и городские сплетни её больше не трогают.</i>'
+        end
+    end
+
+    killvar '$CityRumorText'
+
+    *pl ' '
+
+    if ChurchServiceRumorCount < 3:
+        gs 'PrintMainP', 'Ещё ' + STR(3 - ChurchServiceRumorCount) + ' раз можно прислушаться, пока служба не кончится.'
+        *pl ' '
+        gs 'ActUiPrepare', 'Прислушаться ещё', 'look'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'ChurchSundayServiceRumor'
+        end
+    else:
+        gs 'PrintMainP', 'На этой службе вы уже выслушали весь шёпот прихожан.'
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'В зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'ChurchSundayService'
+    end
+
+    killvar '$ChurchServiceText'
+    killvar '$ChurchServiceRumorKey'
+    killvar 'ChurchServiceRumorCanStart'
 ---

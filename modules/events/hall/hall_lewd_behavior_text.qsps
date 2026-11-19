@@ -1,64 +1,9 @@
 ! ================================================
 ! FILE: modules/events/hall/hall_lewd_behavior_text.qsps
 ! MODULE: events/hall
-! LEGACY + shared helpers for harass play resolve (v2)
-! Auto lewd-roll снят. Resolve play: hall_harass_play_text.qsps
-! #HallLewdFillClientBits — используется play resolve
-! Debug: hall_lewd_behavior.qsps Start
-! Канон: docs/design-hall-scene-unified.md §0
+! [AI-WORKED] Текст переработан / дополнен ассистентом 19.11.2026
+! Shared client/name helpers for harass/kitchen play resolve (v2)
 ! ================================================
-
-#HallLewdPrintText
-    $HallLewdPrintTextId = LCASE($ARGS[0])
-
-    ! Канон-меню ↔ legacy id
-    if $HallLewdPrintTextId = 'protect_hard':
-        $HallLewdPrintTextId = 'stop'
-    elseif $HallLewdPrintTextId = 'ignore':
-        $HallLewdPrintTextId = 'encourage'
-    end
-
-    if $HallLewdPrintTextId = 'intro':
-        if LOC('HallLewdShowImage') = 1:
-            gs 'HallLewdShowImage', 'base'
-        end
-    elseif $HallLewdPrintTextId = 'stop':
-        if LOC('HallLewdShowImage') = 1:
-            gs 'HallLewdShowImage', 'stop'
-        end
-    elseif $HallLewdPrintTextId = 'watch':
-        if LOC('HallLewdShowImage') = 1:
-            gs 'HallLewdShowImage', 'watch'
-        end
-    elseif $HallLewdPrintTextId = 'encourage':
-        if LOC('HallLewdShowImage') = 1:
-            gs 'HallLewdShowImage', 'encourage'
-        end
-    end
-
-    gs 'HallLewdText', $HallLewdPrintTextId
-
-    if $HallLewdText <> '':
-        *pl $HallLewdText
-        *pl ' '
-    end
-
-    gs 'HallLewdGirlReaction', $HallLewdPrintTextId
-
-    if $HallLewdGirlReactionText <> '':
-        *pl $HallLewdGirlReactionText
-        *pl ' '
-    end
-
-    gs 'HallLewdConflictMoodText', $HallLewdPrintTextId
-
-    if $HallLewdConflictMoodText <> '':
-        *pl $HallLewdConflictMoodText
-        *pl ' '
-    end
-
-    killvar '$HallLewdPrintTextId'
----
 
 ! --------------------------------
 ! Имена/формы клиента для фраз
@@ -89,7 +34,7 @@
             $HallLewdClientWhoA = 'моряка'
             $HallLewdClientManner = 'с портовой развязностью'
         end
-    else
+    else:
         $HallLewdClientWho = 'пьяный горожанин'
         $HallLewdClientWhoA = 'пьяного горожанина'
         $HallLewdClientCoin = 'медь'
@@ -98,243 +43,21 @@
     end
 ---
 
-#HallLewdConflictMoodText
-    $HallLewdConflictMoodText = ''
-    $HallLewdConflictMoodId = LCASE($ARGS[0])
+#HallLewdEnsureName
+    gs 'NormalizeGirlKey', $ARGS[0]
+    $HallLewdNameGirl = $GirlKey
 
-    if $HallLewdConflictMoodId = 'protect_hard':
-        $HallLewdConflictMoodId = 'stop'
-    elseif $HallLewdConflictMoodId = 'ignore':
-        $HallLewdConflictMoodId = 'encourage'
-    end
-
-    if GirlConflictUntilDay[$HallLewdGirl] < day:
-        killvar '$HallLewdConflictMoodId'
-        exit
-    end
-
-    if $HallLewdConflictMoodId <> 'intro' and $HallLewdConflictMoodId <> 'watch' and $HallLewdConflictMoodId <> 'encourage' and $HallLewdConflictMoodId <> 'stop':
-        killvar '$HallLewdConflictMoodId'
-        exit
-    end
-
-    if $HallLewdGirl = 'amanda':
-        if $HallLewdConflictMoodId = 'intro':
-            $HallLewdConflictMoodText = 'После вашей ссоры Аманда не ищет вашего взгляда. Она сама выбирает, у какого стола задержаться, и косится на вас с обидой: раз требовали самостоятельности — вот она.'
-        elseif $HallLewdConflictMoodId = 'stop':
-            $HallLewdConflictMoodText = 'Ваше «хватит» Аманда встречает коротким вздохом. В глазах смесь досады и упрёка: сначала гнали зарабатывать, теперь обрывают на полуслове.'
-        else
-            $HallLewdConflictMoodText = 'Видя, что вы не встаёте, Аманда держится смелее. Это уже не просто смущение — тихий вызов: раз хозяин молчит ради зала, границы она поставит сама.'
-        end
-    elseif $HallLewdGirl = 'melissa':
-        if $HallLewdConflictMoodId = 'intro':
-            $HallLewdConflictMoodText = 'Мелисса после конфликта работает без оглядки на вас. Спина ровная, тон деловой: все решения с гостями она берёт на себя.'
-        elseif $HallLewdConflictMoodId = 'stop':
-            $HallLewdConflictMoodText = 'Ваше вмешательство Мелисса встречает холодной усмешкой. Сцены не устраивает, но всем видом даёт понять: опека при всём зале ей не нужна.'
-        else
-            $HallLewdConflictMoodText = 'Мелисса ловит ваш взгляд с ироничным вопросом. Смущения нет — сухой расчёт: она и так держит стол лучше любого хозяина.'
+    if $RealName[$HallLewdNameGirl] = '':
+        if $HallLewdNameGirl = 'amanda':
+            $RealName[$HallLewdNameGirl] = 'Аманда'
+        elseif $HallLewdNameGirl = 'melissa':
+            $RealName[$HallLewdNameGirl] = 'Мелисса'
+        elseif $HallLewdNameGirl = 'sandra':
+            $RealName[$HallLewdNameGirl] = 'Сандра'
+        else:
+            $RealName[$HallLewdNameGirl] = $HallLewdNameGirl
         end
     end
 
-    killvar '$HallLewdConflictMoodId'
----
-
-#HallLewdGirlReaction
-    $HallLewdReactionId = LCASE($ARGS[0])
-    $HallLewdGirlReactionText = ''
-
-    if $HallLewdReactionId = 'protect_hard':
-        $HallLewdReactionId = 'stop'
-    elseif $HallLewdReactionId = 'ignore':
-        $HallLewdReactionId = 'encourage'
-    end
-
-    if $HallLewdGirl = '':
-        $HallLewdGirl = 'amanda'
-    end
-
-    if $RealName[$HallLewdGirl] = '':
-        gs 'HallLewdEnsureName', $HallLewdGirl
-    end
-
-    gs 'HallLewdFillClientBits'
-
-    ! ====================== AMANDA ======================
-    if $HallLewdGirl = 'amanda':
-        if $HallLewdReactionId = 'intro':
-            if $HallLewdScene = 'bend':
-                if HallLewdStage >= 4 or TavernScandal >= 45 or TavernLewdFame >= 25:
-                    $HallLewdGirlReactionText = 'Аманда не спешит выпрямляться. Через плечо она ловит реакцию стола: ' + $HallLewdClientWho + ' уже тянется к ' + $HallLewdClientCoin + '. Румянец есть, но бежать она не собирается — только чуть сильнее прогибает спину, проверяя, сколько внимания выдержит зал.'
-                else
-                    $HallLewdGirlReactionText = 'Поняв, куда уставились глаза, Аманда торопливо выпрямляется и сжимает поднос. Юбка цепляется за край лавки — она дёргается, краснеет и всё же бросает быстрый взгляд на ' + $HallLewdClientWhoA + ': уйдёт ли монета, если сейчас отойти.'
-                end
-            elseif $HallLewdScene = 'waist':
-                if HallLewdStage >= 4 or TavernScandal >= 45 or TavernLewdFame >= 25:
-                    $HallLewdGirlReactionText = 'Ладонь ' + $HallLewdClientWhoA + ' лежит у неё на талии. Аманда не отшатывается: переводит взгляд с монет на чужую руку, слабо улыбается и только потом чуть отодвигает пальцы — не резко, будто договариваясь.'
-                else
-                    $HallLewdGirlReactionText = 'Аманда замирает, пальцы белеют на краю подноса. Она смотрит на руку ' + $HallLewdClientWhoA + ' и на миг теряется, прежде чем тихо попросить убрать её — голос дрожит, но не срывается в крик.'
-                end
-            elseif $HallLewdScene = 'sit_near':
-                if HallLewdStage >= 4:
-                    $HallLewdGirlReactionText = 'Присев на край лавки, Аманда поправляет юбку уже не стыдливо, а показно. Колено почти касается ноги ' + $HallLewdClientWhoA + '. Она ведёт разговор тихо, но зал видит: дистанция растаяла.'
-                else
-                    $HallLewdGirlReactionText = 'Аманда садится на край, стараясь держать приличную щель между собой и ' + $HallLewdClientWhoA + '. Тот ухмыляется, принимая её смущение за игру, и двигается ближе.'
-                end
-            elseif $HallLewdScene = 'lap':
-                if HallLewdStage >= 4 or TavernScandal >= 45 or TavernLewdFame >= 25:
-                    $HallLewdGirlReactionText = 'На коленях у ' + $HallLewdClientWhoA + ' Аманда сначала напрягается — потом не спрыгивает. Одной рукой цепляется за край стола, другой не даёт гостю задрать юбку выше. Смущение есть, но и ' + $HallLewdClientCoin + ' на столе она уже видит.'
-                else
-                    $HallLewdGirlReactionText = 'Аманда сидит на коленях ' + $HallLewdClientWhoA + ' так неловко, что сразу видно: это не её план. Краснеет, пытается подняться, упирается ладонями в его грудь — а за столом уже смеются и подзуживают.'
-                end
-            elseif $HallLewdScene = 'face_fall':
-                $HallLewdGirlReactionText = 'Аманда на миг оказывается лицом слишком близко к ' + $HallLewdClientWhoA + ' — ниже пояса, в гуле чужого смеха. Вздрагивает, отшатывается, одёргивает платье и бросает на Стефана быстрый, испуганно-виноватый взгляд.'
-            end
-        elseif $HallLewdReactionId = 'stop':
-            $HallLewdGirlReactionText = 'Аманда мигом соскальзывает прочь от ' + $HallLewdClientWhoA + ', торопливо расправляет фартук и опускает глаза. Руки ещё дрожат, но взгляд на стол — цепкий: ' + $HallLewdClientCoin + ' она всё равно заметила.'
-        elseif $HallLewdReactionId = 'watch':
-            if HallLewdStage >= 4 or TavernScandal >= 45 or TavernLewdFame >= 25:
-                $HallLewdGirlReactionText = 'Заметив, что Стефан не встаёт, Аманда выдыхает и держится смелее. Она всё ещё краснеет, но уже сама ведёт разговор с ' + $HallLewdClientWhoA + ' — короткие фразы, улыбка, ладонь, которая не даёт зайти дальше, чем нужно для заказа.'
-            else
-                $HallLewdGirlReactionText = 'Аманда видит, что вы только смотрите. Краска заливает щёки сильнее. Она мнётся у стола ' + $HallLewdClientWhoA + ', не решаясь резко уйти, пока тот не кладёт ' + $HallLewdClientCoin + ' и не отпускает её юбку.'
-            end
-        elseif $HallLewdReactionId = 'encourage':
-            $HallLewdGirlReactionText = 'Вы отводите взгляд к стойке — и Аманда это ловит. Нервно поправляет вырез, чуть ближе наклоняется к ' + $HallLewdClientWhoA + ' и пытается улыбнуться: раз хозяин не смотрит, остаётся довести сцену до монеты самой.'
-        end
-
-    ! ====================== MELISSA ======================
-    elseif $HallLewdGirl = 'melissa':
-        if $HallLewdReactionId = 'intro':
-            if $HallLewdScene = 'bend':
-                $HallLewdGirlReactionText = 'Мелисса наклоняется ровно настолько, сколько нужно, чтобы ' + $HallLewdClientWho + ' замолчал посреди фразы. Смущения нет. Короткий взгляд на Стефана — проверка: вмешается или нет — и она продолжает расставлять кружки, не ускоряясь.'
-            elseif $HallLewdScene = 'waist':
-                $HallLewdGirlReactionText = 'Когда ладонь ' + $HallLewdClientWhoA + ' ложится ей на талию, Мелисса спокойно переводит взгляд с чужой руки на его лицо. Тонкая усмешка: эту игру ведёт она. Пальцами чуть отодвигает кисть — не прочь, не в панике, а по своим правилам.'
-            elseif $HallLewdScene = 'sit_near':
-                $HallLewdGirlReactionText = 'Мелисса садится рядом с идеальной выправкой. Плечо близко к ' + $HallLewdClientWhoA + ', голос ровный. Клиент даже не замечает, как из «ещё по кружке» вырастает дорогой заказ, а её колено так и остаётся у его бедра.'
-            elseif $HallLewdScene = 'lap':
-                if HallLewdStage >= 4 or TavernScandal >= 45 or TavernLewdFame >= 25:
-                    $HallLewdGirlReactionText = 'На коленях у ' + $HallLewdClientWhoA + ' Мелисса не паникует. Спина прямая, юбка поправлена одним движением. Она выдерживает паузу, оглядывает зал насмешливым взглядом — и только потом мягко, но жёстко приподнимается, оставляя гостя с монетой и без «продолжения».'
-                else
-                    $HallLewdGirlReactionText = 'Мелисса оказывается на коленях ' + $HallLewdClientWhoA + ' на пару секунд дольше, чем «случайно». Не суетится: упирается ладонью ему в плечо, смещает чужую руку с бедра на край стола и обозначает рамку голосом — тихо, чтобы слышал только он.'
-                end
-            elseif $HallLewdScene = 'face_fall':
-                $HallLewdGirlReactionText = 'Оказавшись на миг лицом к ' + $HallLewdClientWhoA + ' слишком низко, Мелисса плавно выпрямляется. Никакой паники — спокойная усмешка, поправка воротника и взгляд на Стефана: «Видел? Я контролирую».'
-            end
-        elseif $HallLewdReactionId = 'stop':
-            $HallLewdGirlReactionText = 'Мелисса отходит без шума, оправляет платье одним движением. Взгляд на ' + $HallLewdClientWhoA + ' — короткий, холодный; на вас — с лёгким раздражением: она уже почти довела стол до ' + $HallLewdClientCoin + ' без вашей помощи.'
-        elseif $HallLewdReactionId = 'watch':
-            if HallLewdStage >= 4 or TavernScandal >= 45 or TavernLewdFame >= 25:
-                $HallLewdGirlReactionText = 'Видя, что Стефан не лезет, Мелисса получает свободу рук. Она артистично держит ' + $HallLewdClientWhoA + ' в разговоре: ближе, тише, с улыбкой, которая продаёт заказ и не отдаёт лишнего.'
-            else
-                $HallLewdGirlReactionText = 'Мелисса фиксирует ваше молчание и чуть прищуривается. Грамотно сворачивает игру с ' + $HallLewdClientWhoA + ', забирает ' + $HallLewdClientCoin + ' и возвращается к работе с видом человека, который всё решил правильно.'
-            end
-        elseif $HallLewdReactionId = 'encourage':
-            $HallLewdGirlReactionText = 'Вы отворачиваетесь — Мелисса мигом это считывает. Улыбка становится острее, шаг к ' + $HallLewdClientWhoA + ' короче. Она сама закрывает сцену выгодным заказом, не оглядываясь на стойку.'
-        end
-    end
-
-    killvar '$HallLewdReactionId'
----
-
-#HallLewdText
-    $HallLewdTextId = LCASE($ARGS[0])
-    $HallLewdText = ''
-
-    if $HallLewdTextId = 'protect_hard':
-        $HallLewdTextId = 'stop'
-    elseif $HallLewdTextId = 'ignore':
-        $HallLewdTextId = 'encourage'
-    end
-
-    if $HallLewdGirl = '':
-        $HallLewdGirl = 'amanda'
-    end
-
-    if $RealName[$HallLewdGirl] = '':
-        gs 'HallLewdEnsureName', $HallLewdGirl
-    end
-
-    gs 'HallLewdFillClientBits'
-
-    ! ---------- INTRO: сцена + клиент + она играет ----------
-    if $HallLewdTextId = 'intro':
-        if $HallLewdScene = 'bend':
-            if HallLewdStage >= 4:
-                $HallLewdText = $RealName[$HallLewdGirl] + ' наклоняется над дальним столом гораздо ниже, чем нужно, чтобы просто поставить кружки. ' + $HallLewdClientWho + ' оживляется ' + $HallLewdClientManner + ': тянется ближе, кладёт ' + $HallLewdClientCoin + ' на край скатерти и не отводит глаз от выреза. Она не спешит выпрямляться — и весь стол это замечает.'
-            elseif HallLewdStage >= 3:
-                $HallLewdText = $RealName[$HallLewdGirl] + ' наклоняется расставить напитки. Вырез и линия спины притягивают взгляд: ' + $HallLewdClientWho + ' замолкает, потом гогочет и двигает кружку так, чтобы она наклонилась ещё раз. Она чуть смущается, но отходить не торопится — ждёт, пока допишут заказ.'
-            else
-                $HallLewdText = $RealName[$HallLewdGirl] + ' наклоняется над столом, собирая пустую посуду. ' + $HallLewdClientWho + ' провожает её взглядом открыто, локтем подталкивает соседа. Она чувствует это — спина напрягается, но она всё же задерживается на секунду дольше обычного.'
-            end
-
-        elseif $HallLewdScene = 'waist':
-            if HallLewdStage >= 4:
-                $HallLewdText = 'У шумного стола ' + $HallLewdClientWho + ' ' + $HallLewdClientManner + ' обхватывает ' + $RealName[$HallLewdGirl] + ' за талию и не отпускает сразу. На столе уже лежит ' + $HallLewdClientCoin + '. Она не вырывается рывком: смотрит на монеты, на его пальцы, на зал — и аккуратно балансирует между «ещё мгновение» и «не дать зайти дальше».'
-            elseif HallLewdStage >= 3:
-                $HallLewdText = $HallLewdClientWho + ' придерживает ' + $RealName[$HallLewdGirl] + ' за талию, пока она ставит кружки. Ладонь лежит низко, почти на бедре. Она замирает, выдыхает и плавно отводит его кисть — не скандалом, а жестом хозяйки, которая решает, сколько можно.'
-            else
-                $HallLewdText = 'У дальнего стола ' + $HallLewdClientWho + ' пытается приобнять ' + $RealName[$HallLewdGirl] + ' за талию ' + $HallLewdClientManner + '. Она осторожно высвобождается, сохраняя рабочую дистанцию, но не оставляет стол сразу: заказ ещё не закрыт.'
-            end
-
-        elseif $HallLewdScene = 'sit_near':
-            if HallLewdStage >= 4:
-                $HallLewdText = $RealName[$HallLewdGirl] + ' присаживается на край лавки рядом с ' + $HallLewdClientWhoA + '. Колени почти соприкасаются, разговор идёт шёпотом и смешком. ' + $HallLewdClientWho + ' двигается ближе, кладёт ' + $HallLewdClientCoin + ' между ними — и соседние столы уже оборачиваются.'
-            elseif HallLewdStage >= 3:
-                $HallLewdText = $RealName[$HallLewdGirl] + ' опускается на край лавки, принимая длинный заказ. ' + $HallLewdClientWho + ' подаётся ближе ' + $HallLewdClientManner + ', рука лежит на спинке скамьи у её плеча. Она умело держит разговор в «деловых» рамках — но расстояние уже не служебное.'
-            else
-                $HallLewdText = $RealName[$HallLewdGirl] + ' на секунду присаживается к столу, чтобы записать заказ большой компании. ' + $HallLewdClientWho + ' сразу сдвигается к ней, коленом задевая юбку. Она поправляет платье и делает вид, что это случайность.'
-            end
-
-        elseif $HallLewdScene = 'lap':
-            if HallLewdStage >= 4:
-                $HallLewdText = $HallLewdClientWho + ' утягивает ' + $RealName[$HallLewdGirl] + ' к себе на колени — и она не срывается мгновенно. Зал взрывается смехом, со стола звякает ' + $HallLewdClientCoin + '. Она сидит, опираясь о край стола, одной рукой контролируя, куда лезут его ладони: это уже не обслуживание, а представление, которое она пока держит.'
-            elseif HallLewdStage >= 3:
-                $HallLewdText = 'Гость резко усаживает ' + $RealName[$HallLewdGirl] + ' себе на колени. ' + $HallLewdClientWho + ' действует ' + $HallLewdClientManner + ', рука на её бедре. Зал гудит. Она пытается подняться, но не с криком — с коротким смешком и жёсткой ладонью на его груди, оставляя себе выход и ему — надежду на чаевые.'
-            else
-                $HallLewdText = $HallLewdClientWho + ' пытается усадить ' + $RealName[$HallLewdGirl] + ' на колени. Она упирается в стол, не давая ситуации сорваться, но на пару ударов сердца всё равно оказывается у него на бёдрах — и зал это видит.'
-            end
-
-        elseif $HallLewdScene = 'face_fall':
-            if HallLewdStage >= 4:
-                $HallLewdText = $RealName[$HallLewdGirl] + ' спотыкается у лавки, и ' + $HallLewdClientWho + ' подхватывает её слишком низко — лицом почти к его паху. Зал взрывается хохотом. Она выпрямляется не сразу, выдерживая общую «игривую» атмосферу, прежде чем одёрнуть платье и отступить на шаг.'
-            else
-                $HallLewdText = $RealName[$HallLewdGirl] + ' теряет равновесие у прохода. ' + $HallLewdClientWho + ' ловит её ' + $HallLewdClientManner + ' — объятие ниже, чем приличие позволяет. Она вспыхивает, отталкивается ладонями и быстро отступает, пока смех ещё не стал громче.'
-            end
-
-        else
-            $HallLewdText = $RealName[$HallLewdGirl] + ' задерживается у стола ' + $HallLewdClientWhoA + ' дольше обычного. Разговор и жесты уже выходят за рамки простого заказа — и зал это замечает.'
-        end
-
-    ! ---------- STOP / protect_hard: запретить шоу ----------
-    elseif $HallLewdTextId = 'stop':
-        if GirlWorkPolicy[$HallLewdGirl] = 3:
-            $HallLewdText = 'Ты подходишь к столу и твёрдо обрываете сцену. ' + $HallLewdClientWho + ' недовольно ворчит, убирает руки, ' + $HallLewdClientCoin + ' звякает обратно в кулак. ' + $RealName[$HallLewdGirl] + ' отходит к стойке, одёргивая платье — между вами повисает неловкость: ещё недавно вы сами просили её быть «раскованнее».'
-        elseif HallLewdStage >= 4:
-            $HallLewdText = 'Вы встаёте и коротко, по-хозяйски ставите точку: «Хватит». ' + $HallLewdClientWho + ' затихает, рука соскальзывает с ' + $RealName[$HallLewdGirl] + '. Стол стихает. Она возвращается к работе, не глядя на монеты, которые так и не дошли до подноса.'
-        else
-            $HallLewdText = 'Вы вовремя оказываетесь рядом. ' + $HallLewdClientWho + ' убирает руки, бормочет что-то про шутку. ' + $RealName[$HallLewdGirl] + ' выдыхает и спокойно отходит к стойке, поправляя фартук.'
-        end
-
-    ! ---------- WATCH: смотреть, не отводить глаз ----------
-    elseif $HallLewdTextId = 'watch':
-        if HallLewdStage >= 4:
-            $HallLewdText = 'Ты остаёшься на месте и не отводите глаз. ' + $HallLewdClientWho + ' это замечает — и всё равно продолжает, только тише. ' + $RealName[$HallLewdGirl] + ' чувствует ваше молчаливое присутствие: не сбегает, держит общение, доводит стол до ' + $HallLewdClientCoin + '. Выручка растёт, а зал запоминает, что хозяин смотрел и не остановил.'
-        elseif GirlWorkPolicy[$HallLewdGirl] = 1:
-            $HallLewdText = 'Ты стоишь в стороне и смотрите. ' + $RealName[$HallLewdGirl] + ' сама гасит пыл ' + $HallLewdClientWhoA + ': вежливый отказ, шаг назад, заказ без лишних рук. ' + $HallLewdClientCoin + ' всё же остаётся на столе — меньше, чем могло бы, но без скандала.'
-        else
-            $HallLewdText = 'Ты решаешь не лезть вперёд, но и не притворяться слепым. ' + $RealName[$HallLewdGirl] + ' контролирует ' + $HallLewdClientWhoA + ' сама: где улыбнуться, где убрать ладонь, где забрать ' + $HallLewdClientCoin + ' и уйти. Вы всё это видите — и она знает, что видите.'
-        end
-
-    ! ---------- ENCOURAGE id = ignore: отвернуться, не мешать ----------
-    elseif $HallLewdTextId = 'encourage':
-        if HallLewdStage >= 4:
-            $HallLewdText = 'Вы отворачиваетесь к стойке, будто заняты бочками и счётом. За спиной ' + $HallLewdClientWho + ' делает своё — голос ниже, смех гуще. ' + $RealName[$HallLewdGirl] + ' остаётся со сценой одна: без вашего взгляда она сама решает, как далеко зайти ради ' + $HallLewdClientCoin + '. Когда вы снова смотрите в зал, на столе уже больше монет, а соседи перешёптываются.'
-        else
-            $HallLewdText = 'Ты делаешь вид, что вас это не касается, и отходите к стойке. ' + $HallLewdClientWho + ' пользуется отсутствием хозяина ' + $HallLewdClientManner + '. ' + $RealName[$HallLewdGirl] + ' не зовёт вас — забирает ' + $HallLewdClientCoin + ', коротко заканчивает разговор и возвращается к работе, будто ничего особенного не было.'
-        end
-
-    else
-        $HallLewdText = ''
-    end
-
-    killvar '$HallLewdTextId'
+    killvar '$HallLewdNameGirl'
 ---

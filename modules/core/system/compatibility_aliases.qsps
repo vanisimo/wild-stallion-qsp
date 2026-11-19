@@ -40,21 +40,6 @@
     gs 'HallFamilyStatePrintText', 'after_choice'
 ---
 
-#HallChoiceConsequencesText
-    gs 'HallChoiceConsequenceText', $ARGS[0], $ARGS[1], $ARGS[2]
----
-
-#HallChoiceConsequencePrint
-    $HallChoiceConsequenceArea = 'hall'
-
-    if LCASE($ARGS[0]) = 'kitchen':
-        $HallChoiceConsequenceArea = 'kitchen'
-    end
-
-    gs 'HallChoiceConsequencesApply', $ARGS[2], $ARGS[0], $ARGS[1], $HallChoiceConsequenceArea
-    killvar '$HallChoiceConsequenceArea'
----
-
 #GirlPolicyResponseEvaluate
     gs 'GirlPolicyResponseCalc', $ARGS[0], $ARGS[1], ARGS[2]
 ---
@@ -82,12 +67,6 @@
     *pl ' '
     gs 'DailyAftermathPrintText', $DailyAftermathSelected
     *pl ' '
----
-
-! HallRecentTalk frozen (thin memory A) — always closed.
-#HallRecentTalkCanDiscuss
-    HallRecentTalkCanShow = 0
-    HallRecentTalkAvailable = 0
 ---
 
 #HallFamilyReactionCanDiscuss
@@ -148,14 +127,6 @@
 
 #TimeControl
     gt 'OLD_TimeControl'
----
-
-#GirlDailyEvent
-    $DailyEventGirl = LCASE($ARGS[0])
-    if $DailyEventGirl <> '':
-        GirlDailyEventSeen[$DailyEventGirl] += 1
-    end
-    killvar '$DailyEventGirl'
 ---
 
 ! Legacy Amanda/Legare aftermath placeholders.
@@ -240,50 +211,5 @@
     gs 'ActUiPrepare', 'Back', 'return'
     act $ActUiLabel, $ActUiIconPath:
         gt 'TavernMain'
-    end
----
-
-! Legacy action and NPC talk bridges.
-#RegisterGroupSex
-    gs 'RegisterGroup', $ARGS[0], ARGS[1]
----
-
-#TalkWithClarissa
-    if LOC('ClarissaShopTalk') = 1:
-        gt 'ClarissaShopTalk', 'WineShop'
-    else:
-        gt 'TalkWithNpcStub', 'clarissa', 'WineShop'
-    end
----
-
-#TalkWithGerhard
-    gt 'TalkWithNpcStub', 'gerhard', 'Church'
----
-
-#TalkWithNpcStub
-    $NpcTalkKey = LCASE($ARGS[0])
-    $NpcTalkReturnLoc = $ARGS[1]
-
-    if $NpcTalkReturnLoc = '' or LOC($NpcTalkReturnLoc) = 0:
-        $NpcTalkReturnLoc = 'TavernMain'
-    end
-
-    cls
-    *pl $RealName[$NpcTalkKey]
-    *pl ' '
-
-    if $guytextdesc[$NpcTalkKey] <> '':
-        *p $guytextdesc[$NpcTalkKey]
-    elseif $girltextdesc[$NpcTalkKey] <> '':
-        *p $girltextdesc[$NpcTalkKey]
-    else:
-        *p 'There is no dedicated dialogue for this character yet.'
-    end
-
-    *pl ' '
-
-    gs 'ActUiPrepare', 'Back', 'return'
-    act $ActUiLabel, $ActUiIconPath:
-        gt $NpcTalkReturnLoc
     end
 ---
