@@ -2,7 +2,7 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 502
+- Source files: 503
 - Locations: 3959
 - Locations with direct incoming calls: 3408
 - Locations without direct incoming calls: 551
@@ -215,13 +215,13 @@ These locations have no direct literal incoming calls and are not classified as 
 | `PortProstNightAfterLiz` | `modules/events/port/port_prost_night.qsps` | 104 | `modules/events` |
 | `PortProstNightMenu` | `modules/events/port/port_prost_night.qsps` | 30 | `modules/events` |
 | `PrepareSkipDays` | `modules/core/time/skip_days.qsps` | 7 | `modules/core` |
-| `ProcessSandraBeckyOffense` | `modules/events/sandra/sandra_becky_conflict.qsps` | 133 | `modules/events` |
-| `SandraBeckyDelayedRevelation` | `modules/events/sandra/sandra_becky_conflict.qsps` | 276 | `modules/events` |
-| `SandraBeckyDelayedRevelationCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 245 | `modules/events` |
+| `ProcessSandraBeckyOffense` | `modules/events/sandra/sandra_becky_conflict.qsps` | 126 | `modules/events` |
+| `SandraBeckyDelayedRevelation` | `modules/events/sandra/sandra_becky_conflict.qsps` | 262 | `modules/events` |
+| `SandraBeckyDelayedRevelationCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 231 | `modules/events` |
 | `SandraBeckySundayEavesdrop` | `modules/events/sandra/sandra_becky_conflict.qsps` | 34 | `modules/events` |
 | `SandraBeckySundayEavesdropCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 7 | `modules/events` |
-| `SandraBeckySundayReconcile` | `modules/events/sandra/sandra_becky_conflict.qsps` | 216 | `modules/events` |
-| `SandraBeckySundayReconcileCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 193 | `modules/events` |
+| `SandraBeckySundayReconcile` | `modules/events/sandra/sandra_becky_conflict.qsps` | 205 | `modules/events` |
+| `SandraBeckySundayReconcileCheck` | `modules/events/sandra/sandra_becky_conflict.qsps` | 182 | `modules/events` |
 | `SandraHomeAfterSex` | `modules/events/sandra/sandra_home_chain.qsps` | 205 | `modules/events` |
 | `SandraKitchenBuildPolicyMenu` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 618 | `modules/events` |
 | `SandraKitchenOffscreen` | `modules/events/kitchen/sandra_kitchen_hook.qsps` | 776 | `modules/events` |
@@ -602,8 +602,8 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `AmandaLizaTalkPoolTry` | 54 |
 | `AmandaLizaTalkApplyInfluence` | 52 |
 | `PrintTitleLine` | 49 |
-| `RegisterPlayerCum` | 47 |
 | `BeckyShop` | 47 |
+| `RegisterPlayerCum` | 47 |
 
 ## Dynamic Call Sites
 
