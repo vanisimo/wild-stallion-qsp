@@ -29,6 +29,9 @@
     cla
 
     ShipSearchCount = 0
+    ShipSearchedHold = 0
+    ShipSearchedCabin = 0
+    ShipSearchedCrew = 0
     LegareOriginalManifestFound = 0
     LegareDocLocation = RAND(1, 3)
 
@@ -55,7 +58,7 @@
     gs 'PortLegareHeistPrintText', 'distract'
     *pl ' '
 
-    gs 'ActUiPrepare', 'На палубу', 'door'
+    gs 'ActUiPrepare', 'На палубу', 'travel'
     act $ActUiLabel, $ActUiIconPath:
         gt 'PortLegareHeistDeck'
     end
@@ -73,21 +76,21 @@
     *pl ' '
 
     if ShipSearchedHold = 0:
-        gs 'ActUiPrepare', 'В трюм', 'door'
+        gs 'ActUiPrepare', 'В трюм', 'travel'
         act $ActUiLabel, $ActUiIconPath:
             gt 'PortLegareHeistSearch', 1
         end
     end
 
     if ShipSearchedCabin = 0:
-        gs 'ActUiPrepare', 'В каюту', 'door'
+        gs 'ActUiPrepare', 'В каюту', 'travel'
         act $ActUiLabel, $ActUiIconPath:
             gt 'PortLegareHeistSearch', 2
         end
     end
 
     if ShipSearchedCrew = 0:
-        gs 'ActUiPrepare', 'В кубрик', 'door'
+        gs 'ActUiPrepare', 'В кубрик', 'travel'
         act $ActUiLabel, $ActUiIconPath:
             gt 'PortLegareHeistSearch', 3
         end
@@ -104,7 +107,7 @@
 
     if SearchLocation = 1:
         ShipSearchedHold = 1
-        gs 'ShowLocationScreenTitle', 'ТИТХИЙ ТРЮМ'
+        gs 'ShowLocationScreenTitle', 'ТИХИЙ ТРЮМ'
         gs 'SceneShowVisual', 'images/events/port/legare_heist/search_hold', 'Трюм: бочки и штабели тюков', 'large', 'webp'
     elseif SearchLocation = 2:
         ShipSearchedCabin = 1
@@ -211,6 +214,7 @@
     elseif EscapeTier = 3:
         sexacts['lizette'] += 2
         oralacts['lizette'] += 1
+        oralcum['lizette'] += 1
         vaginalacts['lizette'] += 1
         cuminside['lizette'] += 1
         oralswallow['lizette'] += 1
@@ -222,10 +226,23 @@
     IrmaPantiesPromiseActive = 1
     killvar 'LookoutTier'
 
-    gs 'ActUiPrepare', 'Помочь', 'cum'
-    act $ActUiLabel, $ActUiIconPath:
-        killvar 'EscapeTier'
-        gt 'PortLegareHeistAfterBlowjob'
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 1:
+        gs 'ActUiPrepare', 'Помочь', 'intim'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'EscapeTier'
+            gt 'PortLegareHeistAfterBlowjob'
+        end
+    else:
+        LegareHeistDone = 1
+        LegareTaxEvidenceReady = 1
+        killvar 'ShipSearchCount'
+        killvar 'LegareDocLocation'
+        gs 'ActUiPrepare', 'К причалу', 'return'
+        act $ActUiLabel, $ActUiIconPath:
+            killvar 'EscapeTier'
+            gt 'Port'
+        end
     end
 ---
 
@@ -237,16 +254,22 @@
     gs 'ShowLocationScreenTitle', 'В ТЕНИ ЯЩИКОВ: БЛАГОДАРНОСТЬ'
     gs 'SceneShowVisual', 'images/events/port/legare_heist/lizette_after_blowjob', 'Лизетта ласкает Стефана у пакгауза', 'large', 'webp'
 
+    gs 'RegisterPlayerCum'
     oralacts['lizette'] += 1
     oralcum['lizette'] += 1
     oralswallow['lizette'] += 1
+    sexacts['lizette'] += 1
     HadSex['lizette'] += 1
+    LastSexDay['lizette'] = day
+    SexUsedToday['lizette'] = 1
     Friends['lizette'] += 2
     otkroven['lizette'] += 2
     gs 'ClampGirlSocialStats', 'lizette'
 
     LegareHeistDone = 1
     LegareTaxEvidenceReady = 1
+    killvar 'ShipSearchCount'
+    killvar 'LegareDocLocation'
 
     gs 'PortLegareHeistPrintText', 'after_blowjob'
     *pl ' '

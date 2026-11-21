@@ -16,7 +16,7 @@
     IrmaBlackmailTalkDone = 1
 
     if Friends['irma'] >= 10:
-        PlayerArmorChest = 'leather_vest'
+        $PlayerArmorChest = 'leather_vest'
         gs 'MayorBlackmailTownPrintText', 'irma_talk_success'
     else:
         gs 'MayorBlackmailTownPrintText', 'irma_talk_refused'
@@ -40,8 +40,8 @@
 
     DraupnirBlackmailTalkDone = 1
 
-    if DraupnirOffended = 0:
-        PlayerWeapon = 'dwarven_shortsword'
+    if DraupnirOffended = 0 and Friends['draupnir'] >= 10:
+        $PlayerWeapon = 'dwarven_shortsword'
         gs 'MayorBlackmailTownPrintText', 'draupnir_talk_success'
     else:
         gs 'MayorBlackmailTownPrintText', 'draupnir_talk_refused'
@@ -56,6 +56,11 @@
 ---
 
 #LegareBlackmailTalk
+    $LegareBlackmailReturnLoc = $ARGS[0]
+    if $LegareBlackmailReturnLoc = '' or LOC($LegareBlackmailReturnLoc) = 0:
+        $LegareBlackmailReturnLoc = 'WineShop'
+    end
+
     *clr
     clr
     cla
@@ -65,8 +70,8 @@
 
     LegareBlackmailTalkDone = 1
 
-    if LegareConflict = 0:
-        PlayerArmorHead = 'leather_helmet'
+    if LegareConflict = 0 and (LegareReconciledWithStefan = 1 or LegareTaxConfrontDone = 1 or (LegareConflictStage < 2 and LegarePricesRaised = 0 and LegareWinePressure = 0)):
+        $PlayerArmorHead = 'leather_helmet'
         gs 'MayorBlackmailTownPrintText', 'legare_talk_success'
     else:
         gs 'MayorBlackmailTownPrintText', 'legare_talk_refused'
@@ -76,7 +81,9 @@
 
     gs 'ActUiPrepare', 'Уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
-        gt 'Port'
+        $TmpLoc = $LegareBlackmailReturnLoc
+        killvar '$LegareBlackmailReturnLoc'
+        gt $TmpLoc
     end
 ---
 
@@ -91,12 +98,12 @@
     gs 'MayorBlackmailTownPrintText', 'ship_shop_intro'
     *pl ' '
 
-    if PlayerArmorChest <> 'leather_vest':
+    if $PlayerArmorChest <> 'leather_vest':
         if money >= 150:
             gs 'ActUiPrepare', 'Купить кожаный нагрудник (150 монет)', 'gift'
             act $ActUiLabel, $ActUiIconPath:
                 money -= 150
-                PlayerArmorChest = 'leather_vest'
+                $PlayerArmorChest = 'leather_vest'
                 gt 'ShipGearShop'
             end
         else:
@@ -104,12 +111,12 @@
         end
     end
 
-    if PlayerWeapon <> 'dwarven_shortsword':
+    if $PlayerWeapon <> 'dwarven_shortsword':
         if money >= 200:
             gs 'ActUiPrepare', 'Купить гномий меч (200 монет)', 'gift'
             act $ActUiLabel, $ActUiIconPath:
                 money -= 200
-                PlayerWeapon = 'dwarven_shortsword'
+                $PlayerWeapon = 'dwarven_shortsword'
                 gt 'ShipGearShop'
             end
         else:
@@ -117,12 +124,12 @@
         end
     end
 
-    if PlayerArmorHead <> 'leather_helmet':
+    if $PlayerArmorHead <> 'leather_helmet':
         if money >= 100:
             gs 'ActUiPrepare', 'Купить кожаный шлем (100 монет)', 'gift'
             act $ActUiLabel, $ActUiIconPath:
                 money -= 100
-                PlayerArmorHead = 'leather_helmet'
+                $PlayerArmorHead = 'leather_helmet'
                 gt 'ShipGearShop'
             end
         else:
@@ -226,7 +233,7 @@
     gs 'SceneShowVisual', 'images/locations/town/guard_post', 'Стражник на городской площади', 'large', 'webp'
 
     GuardPostHintDone = 1
-    WeaponCaravanDirection = 'north'
+    $WeaponCaravanDirection = 'north'
 
     gs 'MayorBlackmailTownPrintText', 'guard_hint_text'
     *pl ' '

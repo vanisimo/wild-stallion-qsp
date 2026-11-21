@@ -12,7 +12,7 @@
         gs 'FamilyCouncilCanStart'
 
         if FamilyCouncilCanStart = 1:
-            $FamilyCouncilResumeNextDay = 1
+            FamilyCouncilResumeNextDay = 1
             gt 'FamilyCouncilScreen', 1
             exit
         end
@@ -71,6 +71,10 @@
 
     if LOC('OffenseDaysTickDay') = 1:
         gs 'OffenseDaysTickDay'
+    end
+
+    if LOC('ProcessSandraBeckyOffense') = 1:
+        gs 'ProcessSandraBeckyOffense'
     end
 
     gs 'AdvanceCalendarOneDay'
@@ -348,6 +352,44 @@
 ! ================================================
 
 #AdvanceCalendarOneDay
+    NpcBgPrevDay = day
+    NpcBgPrevWeek = week
+    NpcBgGeorgetteGone = GeorgettePortNightGone
+    NpcBgLizetteGone = LizettePortNightGone
+    NpcBgMelissaWagonToday = MelissaMinstrelWagonToday
+    NpcBgAmandaBoysToday = AmandaNeighborBoysToday
+    NpcBgBeckyPriestSpyToday = BeckyPriestSpyToday
+
+    NpcBgAmandaDanced = 0
+    if AmandaDanceDay = day:
+        NpcBgAmandaDanced = 1
+    end
+
+    NpcBgMelissaDanced = 0
+    if MelissaDanceDay = day:
+        NpcBgMelissaDanced = 1
+    end
+
+    NpcBgIngaDanced = 0
+    if IngaDanceDay = day:
+        NpcBgIngaDanced = 1
+    end
+
+    NpcBgGeorgetteChurchSpyToday = 0
+    if GeorgettePriestSpyLastDay = day:
+        NpcBgGeorgetteChurchSpyToday = 1
+    end
+
+    NpcBgLizetteChurchSpyToday = 0
+    if LizettePriestSpyLastDay = day:
+        NpcBgLizetteChurchSpyToday = 1
+    end
+
+    NpcBgIngaGuardToday = 0
+    if IngaGuardSaturdayLastDay = day:
+        NpcBgIngaGuardToday = 1
+    end
+
     day += 1
     time = 1
 
@@ -517,6 +559,54 @@
     else:
         MonthDays = 31
     end
+---
+
+#CalcDaysSince
+    _calcPrevDay = ARGS[0]
+
+    if _calcPrevDay <= 0:
+        if month > 1 or year > 1100:
+            Result = 30 + day
+        else:
+            Result = day
+        end
+        CalcDaysSinceResult = Result
+        killvar '_calcPrevDay'
+        exit
+    end
+
+    if day >= _calcPrevDay:
+        Result = day - _calcPrevDay
+    else:
+        _calcPrevMonth = month - 1
+        if _calcPrevMonth < 1:
+            _calcPrevMonth = 12
+        end
+
+        if _calcPrevMonth = 2:
+            _calcPrevMonthDays = 28
+        elseif _calcPrevMonth = 4 or _calcPrevMonth = 6 or _calcPrevMonth = 9 or _calcPrevMonth = 11:
+            _calcPrevMonthDays = 30
+        else:
+            _calcPrevMonthDays = 31
+        end
+
+        if _calcPrevDay > _calcPrevMonthDays:
+            Result = day + 31 - _calcPrevDay
+        else:
+            Result = day + _calcPrevMonthDays - _calcPrevDay
+        end
+
+        killvar '_calcPrevMonth'
+        killvar '_calcPrevMonthDays'
+    end
+
+    if Result < 0:
+        Result = 0
+    end
+
+    CalcDaysSinceResult = Result
+    killvar '_calcPrevDay'
 ---
 
 ! ================================================

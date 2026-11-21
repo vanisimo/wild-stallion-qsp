@@ -110,30 +110,25 @@
 ---
 
 #AmandaHomeFirstSexTalk
-    gs 'AmandaHomeFirstSexTalkText'
-
     cls
 
     gs 'ShowLocationScreenTitle', 'КОМНАТА АМАНДЫ — ПЕРЕД ПЕРВЫМ РАЗОМ'
 
     gs 'AmandaHomeShowStepImage', 'talk'
 
-    *p $AmandaHomeText
-    *pl ' '
+    gs 'AmandaHomeFirstSexTalkText'
 
     gs 'FamilyDiscoveryLadderSisterReaction', 'amanda', 'first_sex'
 
     gs 'ActUiPrepare', 'Говорить нежно', 'talk'
     act $ActUiLabel, $ActUiIconPath:
         AmandaFirstSexTalkTone = 1
-        gs 'AmandaHomeFirstSexTalkChoiceText', 'gentle'
         gt 'AmandaHomeFirstSexTalkDone'
     end
 
     gs 'ActUiPrepare', 'Подколоть', 'flirt'
     act $ActUiLabel, $ActUiIconPath:
         AmandaFirstSexTalkTone = 2
-        gs 'AmandaHomeFirstSexTalkChoiceText', 'tease'
         gt 'AmandaHomeFirstSexTalkDone'
     end
 ---
@@ -145,8 +140,11 @@
 
     gs 'AmandaHomeShowStepImage', 'talk_done'
 
-    *p $AmandaHomeText
-    *pl ' '
+    if AmandaFirstSexTalkTone = 1:
+        gs 'AmandaHomeFirstSexTalkChoiceText', 'gentle'
+    else:
+        gs 'AmandaHomeFirstSexTalkChoiceText', 'tease'
+    end
 
     AmandaHomeStage = 7
     gs 'AmandaHomeFirstSexFinishStep'
@@ -158,54 +156,43 @@
 ---
 
 #AmandaHomeFirstSexNight1
-    gs 'AmandaHomeFirstSexNight1Text'
     AmandaHomeFirstSexNightStep = 1
     gt 'AmandaHomeFirstSexNightShow'
 ---
 
 #AmandaHomeFirstSexNight2
-    gs 'AmandaHomeFirstSexNight2Text'
     AmandaHomeFirstSexNightStep = 2
     gt 'AmandaHomeFirstSexNightShow'
 ---
 
 #AmandaHomeFirstSexNight3
-    gs 'AmandaHomeFirstSexNight3Text'
-    gs 'AmandaHomeFirstSexRegisterFirstVaginal'
     AmandaHomeFirstSexNightStep = 3
     gt 'AmandaHomeFirstSexNightShow'
 ---
 
 #AmandaHomeFirstSexNight4
-    gs 'AmandaHomeFirstSexNight4Text'
     AmandaHomeFirstSexNightStep = 4
     gt 'AmandaHomeFirstSexNightShow'
 ---
 
 #AmandaHomeFirstSexNight5
-    gs 'AmandaHomeFirstSexNight5Text'
     GiveOrgasms['amanda'] += 1
     AmandaHomeFirstSexNightStep = 5
     gt 'AmandaHomeFirstSexNightShow'
 ---
 
 #AmandaHomeFirstSexNightFinishPrompt
-    gs 'AmandaHomeFirstSexNightFinishPromptText'
     AmandaHomeFirstSexNightStep = 6
     gt 'AmandaHomeFirstSexNightShow'
 ---
 
 #AmandaHomeFirstSexNightShow
-    if AmandaHomeFirstSexNightStep = '':
-        AmandaHomeFirstSexNightStep = 1
-    end
-
     if AmandaHomeFirstSexNightStep < 1:
         AmandaHomeFirstSexNightStep = 1
     end
 
     if debug = 1:
-        *pl '[DEBUG] AmandaHomeFirstSexNightStep: ' + AmandaHomeFirstSexNightStep
+        *pl '[DEBUG] AmandaHomeFirstSexNightStep: ' + STR(AmandaHomeFirstSexNightStep)
     end
 
     cls
@@ -214,20 +201,24 @@
 
     if AmandaHomeFirstSexNightStep = 1:
         gs 'AmandaHomeShowStepImage', 'foreplay_undress'
+        gs 'AmandaHomeFirstSexNight1Text'
     elseif AmandaHomeFirstSexNightStep = 2:
         gs 'AmandaHomeShowStepImage', 'foreplay_touch'
+        gs 'AmandaHomeFirstSexNight2Text'
     elseif AmandaHomeFirstSexNightStep = 3:
         gs 'AmandaHomeShowStepImage', 'missionary_enter'
+        gs 'AmandaHomeFirstSexNight3Text'
+        gs 'AmandaHomeFirstSexRegisterFirstVaginal'
     elseif AmandaHomeFirstSexNightStep = 4:
         gs 'AmandaHomeShowStepImage', 'missionary_slow'
+        gs 'AmandaHomeFirstSexNight4Text'
     elseif AmandaHomeFirstSexNightStep = 5:
         gs 'AmandaHomeShowStepImage', 'missionary_orgasm'
-    else
+        gs 'AmandaHomeFirstSexNight5Text'
+    else:
         gs 'AmandaHomeShowStepImage', 'finish_prompt'
+        gs 'AmandaHomeFirstSexNightFinishPromptText'
     end
-
-    *p $AmandaHomeText
-    *pl ' '
 
     if AmandaHomeFirstSexNightStep = 1:
         gs 'ActUiPrepare', 'Далее', 'generic'
@@ -280,7 +271,6 @@
         cuminside['amanda'] += 1
     end
 
-    gs 'AmandaHomeFirstSexNightFinishInsideText'
     AmandaFirstSexFinishKind = 1
     AmandaFirstNightDone = 1
     GirlUniformLevel['amanda'] = 1
@@ -296,7 +286,6 @@
         gs 'RegisterPlayerCum'
     end
 
-    gs 'AmandaHomeFirstSexNightFinishOutsideText'
     AmandaFirstSexFinishKind = 2
     AmandaFirstNightDone = 1
     GirlUniformLevel['amanda'] = 1
@@ -312,8 +301,11 @@
 
     gs 'AmandaHomeShowStepImage', 'after_night'
 
-    *p $AmandaHomeText
-    *pl ' '
+    if AmandaFirstSexFinishKind = 1:
+        gs 'AmandaHomeFirstSexNightFinishInsideText'
+    else:
+        gs 'AmandaHomeFirstSexNightFinishOutsideText'
+    end
 
     gs 'ActUiPrepare', 'Вернуться', 'return'
     act $ActUiLabel, $ActUiIconPath:
@@ -322,16 +314,13 @@
 ---
 
 #AmandaHomeFirstSexEvening3
-    gs 'AmandaHomeFirstSexEvening3IntroText'
-
     cls
 
     gs 'ShowLocationScreenTitle', 'КОМНАТА АМАНДЫ — ВЕЧЕР ВМЕСТЕ'
 
     gs 'AmandaHomeShowStepImage', 'evening_talk'
 
-    *p $AmandaHomeText
-    *pl ' '
+    gs 'AmandaHomeFirstSexEvening3IntroText'
 
     gs 'ActUiPrepare', 'Продолжить', 'generic'
     act $ActUiLabel, $ActUiIconPath:
@@ -340,7 +329,6 @@
 ---
 
 #AmandaHomeFirstSexEvening3Repeat
-    gs 'AmandaHomeFirstSexEvening3RepeatText'
     gs 'RegisterSex', 'amanda', 'vaginal', 0, 1
     VaginalCount['amanda'] += 1
 
@@ -353,8 +341,7 @@
 
     gs 'AmandaHomeShowStepImage', 'missionary_repeat'
 
-    *p $AmandaHomeText
-    *pl ' '
+    gs 'AmandaHomeFirstSexEvening3RepeatText'
 
     AmandaHomeStage = 9
     gs 'AmandaHomeFirstSexFinishStep'
@@ -366,7 +353,6 @@
 ---
 
 #AmandaHomeFirstSexDoggy
-    gs 'AmandaHomeFirstSexDoggyText'
     gs 'RegisterSex', 'amanda', 'vaginal', 0, 1
     VaginalCount['amanda'] += 1
     AmandaPoseDoggyOk = 1
@@ -382,8 +368,7 @@
 
     gs 'AmandaHomeShowStepImage', 'doggy_learn'
 
-    *p $AmandaHomeText
-    *pl ' '
+    gs 'AmandaHomeFirstSexDoggyText'
 
     AmandaHomeStage = 10
     gs 'AmandaHomeFirstSexFinishStep'
@@ -395,7 +380,6 @@
 ---
 
 #AmandaHomeFirstSexSideUnlock
-    gs 'AmandaHomeFirstSexSideText'
     gs 'RegisterSex', 'amanda', 'vaginal', 0, 1
     VaginalCount['amanda'] += 1
     AmandaPoseSideOk = 1
@@ -411,8 +395,7 @@
 
     gs 'AmandaHomeShowStepImage', 'side_learn'
 
-    *p $AmandaHomeText
-    *pl ' '
+    gs 'AmandaHomeFirstSexSideText'
 
     gs 'ActUiPrepare', 'Далее', 'generic'
     act $ActUiLabel, $ActUiIconPath:
@@ -421,16 +404,13 @@
 ---
 
 #AmandaHomeFirstSexUnlockFinale
-    gs 'AmandaHomeFirstSexUnlockText'
-
     cls
 
     gs 'ShowLocationScreenTitle', 'ПОСЛЕ — СВОБОДНЕЕ'
 
     gs 'AmandaHomeShowStepImage', 'after_night'
 
-    *p $AmandaHomeText
-    *pl ' '
+    gs 'AmandaHomeFirstSexUnlockText'
 
     AmandaHomeStage = 12
     AmandaHomeSex = 1

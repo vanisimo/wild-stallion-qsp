@@ -49,6 +49,8 @@
             SexPlayerArousal = 100
             if $SexGirl = 'georgett':
                 gs 'SexSceneTextGeorgetteTriggerPlayer', $SexActType
+            elseif $SexGirl = 'lizette':
+                gs 'SexSceneTextLizetteTriggerPlayer', $SexActType
             else:
                 gs 'SexSceneTextGirlOrgasmTriggersPlayer', $SexActType
             end
@@ -72,6 +74,8 @@
         elseif $SexActType = 'vaginal' or $SexActType = 'anal':
             if $SexGirl = 'georgett':
                 gs 'SexSceneTextGeorgetteGirlOrgasm', $SexActType
+            elseif $SexGirl = 'lizette':
+                gs 'SexSceneTextLizetteGirlOrgasm', $SexActType
             else:
                 gs 'SexSceneTextGirlOrgasm', $SexActType
             end
@@ -150,7 +154,7 @@
         exit
     end
 
-    SexMarathonGossipCooldownLeft = day - SexMarathonGossipLastDay[$SexGirl]
+    SexMarathonGossipCooldownLeft = FUNC('CalcDaysSince', SexMarathonGossipLastDay[$SexGirl])
 
     if SexMarathonGossipLastDay[$SexGirl] > 0 and SexMarathonGossipCooldownLeft < 7:
         exit
@@ -162,9 +166,9 @@
 
 #SexSceneRegisterFinish
 
-    $SexFinishPlace = LCASE($ARGS[0])
+    $SexRegFinishPlace = LCASE($ARGS[0])
 
-    if $SexFinishPlace = 'inside':
+    if $SexRegFinishPlace = 'inside':
         if $SexActType = 'anal':
             gs 'RegisterSex', $SexGirl, 'anal', 1, 1
             SexSceneAnalRegistered = 1
@@ -172,16 +176,16 @@
             gs 'RegisterSex', $SexGirl, 'vaginal', 1, 1
             SexSceneVaginalRegistered = 1
         end
-    elseif $SexFinishPlace = 'mouth':
+    elseif $SexRegFinishPlace = 'mouth':
         gs 'RegisterSex', $SexGirl, 'oral', 1, 1
         SexSceneOralRegistered = 1
-    elseif $SexFinishPlace = 'face':
+    elseif $SexRegFinishPlace = 'face':
         gs 'RegisterSex', $SexGirl, 'facial', 0, 1
-    elseif $SexFinishPlace = 'chest' or $SexFinishPlace = 'belly' or $SexFinishPlace = 'body':
+    elseif $SexRegFinishPlace = 'chest' or $SexRegFinishPlace = 'belly' or $SexRegFinishPlace = 'body':
         gs 'RegisterSex', $SexGirl, 'cumbody', 0, 1
     end
 
-    killvar '$SexFinishPlace'
+    killvar '$SexRegFinishPlace'
 ---
 
 #SexSceneActionFinish
@@ -228,6 +232,8 @@
 
     if $SexGirl = 'georgett':
         gs 'SexSceneTextGeorgetteFinish', $SexFinishPlace, $SexActTypeAtFinish
+    elseif $SexGirl = 'lizette':
+        gs 'SexSceneTextLizetteFinish', $SexFinishPlace, $SexActTypeAtFinish
     else:
         gs 'SexSceneTextFinish', $SexFinishPlace
     end
@@ -264,13 +270,7 @@
     if PlayerCanCumToday = 1:
         gs 'RegisterPlayerCum'
     elseif debug = 1:
-        daily_cum_count += 1
-        total_cumshots += 1
-        sexual_endurance += 1
-
-        if sexual_endurance > 100:
-            sexual_endurance = 100
-        end
+        gs 'RegisterPlayerCum', 1
     end
 
     SexSceneHadPlayerCum = 1
@@ -284,6 +284,7 @@
     if $SexGirl <> 'georgett':
         gs 'SexSceneCleanupText', $SexFinishPlace
     end
+    killvar '$SexFinishPlace'
     gs 'CanCumToday'
 
     if PlayerCanCumToday = 0 and debug = 0:

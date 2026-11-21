@@ -40,7 +40,7 @@
     end
 
     if MelissaProhibitMinstrel = 1:
-        if GirlOffenseDays['melissa'] = 0 and (day - LastAttentionDay['melissa'] < 7):
+        if GirlOffenseDays['melissa'] = 0 and FUNC('CalcDaysSince', LastAttentionDay['melissa']) < 7:
             exit
         end
     end
@@ -222,7 +222,7 @@
     ! Определение позы и действия в зависимости от ступени коррупции
     if MelissaBedroomTier = 1:
         ! Низкая коррупция: у шкафа (стоя раком)
-        MelissaBedroomAct = 'closet_stand'
+        $MelissaBedroomAct = 'closet_stand'
         gs 'SceneShowVisual', 'images/events/melissa/melissa_home_chain/melissa_home_step_1', 'У ШКАФА СРЕДИ САЛФЕТОК', 'large', 'webp'
         gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: У ДУБОВОГО ШКАФА'
         gs 'MelissaMinstrelBackroomText', 'act_tier1'
@@ -230,12 +230,12 @@
     elseif MelissaBedroomTier = 2:
         ! Средняя коррупция: сидит на кровати, минет -> вагинал в миссионерской (или анал при гейте)
         if MelissaBedroomAnalAllowed = 1 and RAND(1, 3) = 1:
-            MelissaBedroomAct = 'bed_anal_missionary'
+            $MelissaBedroomAct = 'bed_anal_missionary'
             gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_loop_anal', 'НА КРОВАТИ: ЗАПРЕТНЫЙ ПУТЬ', 'large', 'webp'
             gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: СТРАСТЬ НА КРОВАТИ'
             gs 'MelissaMinstrelBackroomText', 'act_tier2_anal'
         else:
-            MelissaBedroomAct = 'bed_missionary'
+            $MelissaBedroomAct = 'bed_missionary'
             gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_first_sex', 'НА КРОВАТИ: МИССИОНЕРСКАЯ ПОЗА', 'large', 'webp'
             gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: ЛАСКИ НА КРОВАТИ'
             gs 'MelissaMinstrelBackroomText', 'act_tier2_vaginal'
@@ -245,17 +245,17 @@
         ! Высокая коррупция: сидит на кровати, рука под юбкой -> расширенный пул
         MelissaTier3Roll = RAND(1, 3)
         if MelissaBedroomAnalAllowed = 1 and MelissaTier3Roll = 1:
-            MelissaBedroomAct = 'bed_cowgirl_reverse_anal'
+            $MelissaBedroomAct = 'bed_cowgirl_reverse_anal'
             gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_loop_anal', 'ОБРАТНАЯ НАЕЗДНИЦА В АНАЛ', 'large', 'webp'
             gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: БЕССТЫДНЫЙ АНАЛ'
             gs 'MelissaMinstrelBackroomText', 'act_tier3_anal'
         elseif MelissaTier3Roll = 2:
-            MelissaBedroomAct = 'bed_doggy_vaginal'
+            $MelissaBedroomAct = 'bed_doggy_vaginal'
             gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_loop_prelude', 'РАКОМ НА КРОВАТИ', 'large', 'webp'
             gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: СТРАСТЬ РАКОМ'
             gs 'MelissaMinstrelBackroomText', 'act_tier3_doggy'
         else:
-            MelissaBedroomAct = 'bed_deep_oral_missionary'
+            $MelissaBedroomAct = 'bed_deep_oral_missionary'
             gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_first_sex', 'ПОЛНАЯ ПОКОРНОСТЬ МУЗЫ', 'large', 'webp'
             gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: НЕИСТОВОЕ СЛИЯНИЕ'
             gs 'MelissaMinstrelBackroomText', 'act_tier3_full'
@@ -288,8 +288,13 @@
     sluttiness['melissa'] += 2
     otkroven['melissa'] += 1
     sexacts['melissa'] += 1
+    Fact_MelissaMinstrelBackroomSex = 1
 
-    if MelissaBedroomAct = 'bed_anal_missionary' or MelissaBedroomAct = 'bed_cowgirl_reverse_anal':
+    if MelissaMinstrelThreesomeDone = 0:
+        MelissaMinstrelThreesomeReady = 1
+    end
+
+    if $MelissaBedroomAct = 'bed_anal_missionary' or $MelissaBedroomAct = 'bed_cowgirl_reverse_anal':
         analacts['melissa'] += 1
         MelissaMinstrelAnalDone = 1
     else:
@@ -299,7 +304,7 @@
     gs 'ClampGirlSocialStats', 'melissa'
 
     killvar 'MelissaBedroomTier'
-    killvar 'MelissaBedroomAct'
+    killvar '$MelissaBedroomAct'
     killvar 'MelissaBedroomAnalAllowed'
 
     gs 'ActUiPrepare', 'Вернуться в зал таверны', 'return'
@@ -310,10 +315,10 @@
 
 #MelissaMinstrelThreesomeCanOffer
     MelissaMinstrelThreesomeCanOffer = 0
-    if MelissaMinstrelThreesomeEventUnlocked = 0:
+    if MelissaMinstrelThreesomeDone = 1:
         exit
     end
-    if MelissaMinstrelThreesomeDone = 1:
+    if MelissaMinstrelBackroomDone = 1 and MelissaMinstrelBackroomLastDay = day:
         exit
     end
     if MelissaMinstrelThreesomeReady = 0:
@@ -328,7 +333,7 @@
     if TavernUpgradeStageDone = 0:
         exit
     end
-    if MelissaMinstrelFirstSexDone = 0:
+    if MelissaMinstrelFirstSexDone = 0 and MelissaMinstrelWagonStage < 4:
         exit
     end
     MelissaMinstrelThreesomeCanOffer = 1
@@ -379,6 +384,11 @@
     sluttiness['melissa'] += 2
     sexacts['melissa'] += 1
     vaginalacts['melissa'] += 1
+    Fact_MelissaMinstrelBackroomSex = 1
+
+    if MelissaMinstrelThreesomeDone = 0:
+        MelissaMinstrelThreesomeReady = 1
+    end
 
     gs 'SceneShowVisual', 'images/events/melissa/minstrel_wagon/melissa_wagon_first_sex', 'ИНТИМ ПРОДОЛЖАЕТСЯ', 'large', 'webp'
     gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: СТРАСТЬ ПРОДОЛЖАЕТСЯ'

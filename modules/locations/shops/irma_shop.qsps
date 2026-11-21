@@ -112,15 +112,6 @@
         exit
     end
 
-    if LOC('IrmaLizettePantiesCanStart') = 1:
-        gs 'IrmaLizettePantiesCanStart'
-        if IrmaLizettePantiesReady = 1:
-            killvar '$IrmaShopHoldTab'
-            gt 'IrmaLizettePantiesStart'
-            exit
-        end
-    end
-
     if $IrmaShopTab = 'uniforms':
         _uniform_allowed = 0
         if IrmaUniformOfferUnlocked = 1:
@@ -165,7 +156,7 @@
 
     *pl 'Ты заходишь в уютную лавку, где повсюду висят отрезы ткани, кружева и готовые платья. За прилавком стоит полуэльфийка Ирма.'
 
-    if revealing_uniform_all_bought = 1 and revealing_uniform_worn = 0:
+    if revealing_uniform_all_bought = 1 and (GirlUniformLevel['amanda'] = 0 or GirlUniformLevel['melissa'] = 0 or GirlUniformLevel['sandra'] = 0):
         *pl 'Ирма тепло улыбается: "Всё уже готово. Твои девушки будут выглядеть просто сногсшибательно."'
     end
 
@@ -359,6 +350,19 @@
         killvar '_show_uniform_btn'
     end
 
+    if LOC('IrmaLizettePantiesCanStart') = 1:
+        gs 'IrmaLizettePantiesCanStart'
+        if IrmaLizettePantiesReady = 1:
+            gs 'ActUiPrepare', 'Купить бельё Лизетте (20 спр.)', 'gift'
+            act $ActUiLabel, $ActUiIconPath:
+                killvar 'IrmaLizettePantiesReady'
+                killvar '$IrmaShopHoldTab'
+                gt 'IrmaLizettePantiesStart'
+            end
+        end
+        killvar 'IrmaLizettePantiesReady'
+    end
+
     gs 'ActUiPrepare', 'Квартал ремесленников', 'craftsmen'
     act $ActUiLabel, $ActUiIconPath:
         killvar '$IrmaShopHoldTab'
@@ -396,7 +400,7 @@
     if money >= 95:
         *pl 'У тебя в кошельке достаточно монет: ' + STR(money) + ' спринтрий.'
         *pl ' '
-        gs 'ActUiPrepare', 'Купить костюм (95 спринтрий)', 'coin'
+        gs 'ActUiPrepare', 'Купить костюм (95 спринтрий)', 'shop'
         act $ActUiLabel, $ActUiIconPath:
             gt 'IrmaShopPayRespectableSuit', $IrmaSuitReturnLoc
         end

@@ -47,6 +47,10 @@
         max_daily_cum = 2
     end
 
+    if PlayerHasTreeBlessing = 1:
+        max_daily_cum += 1
+    end
+
     if max_daily_cum <= 0:
         max_daily_cum = 2
     end
@@ -65,13 +69,17 @@
 ---
 
 #RegisterPlayerCum
+    _cumForce = ARGS[0]
     gs 'CanCumToday'
 
-    if PlayerCanCumToday = 0:
+    if PlayerCanCumToday = 0 and _cumForce <> 1:
         *p 'Стефан слишком вымотан за сегодня. Больше он не сможет кончить до завтра.'
         Result = 0
+        killvar '_cumForce'
         exit
     end
+
+    killvar '_cumForce'
 
     daily_cum_count += 1
     total_cumshots += 1

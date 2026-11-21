@@ -6,14 +6,22 @@
 ! ================================================
 
 #ProcessAllNpcBackgroundStats
-    YesterdayDay = day - 1
-    if YesterdayDay < 1:
-        YesterdayDay = 1
+    if NpcBgPrevDay > 0:
+        YesterdayDay = NpcBgPrevDay
+    else:
+        YesterdayDay = day - 1
+        if YesterdayDay < 1:
+            YesterdayDay = 1
+        end
     end
 
-    YesterdayWeek = week - 1
-    if YesterdayWeek < 1:
-        YesterdayWeek = 7
+    if NpcBgPrevWeek >= 1 and NpcBgPrevWeek <= 7:
+        YesterdayWeek = NpcBgPrevWeek
+    else:
+        YesterdayWeek = week - 1
+        if YesterdayWeek < 1:
+            YesterdayWeek = 7
+        end
     end
 
     ! ================================================
@@ -62,8 +70,8 @@
 
     ! Пятница: фургон менестреля после танцев
     if YesterdayWeek = 5:
-        if MelissaMinstrelWagonStage >= 4 and MelissaMinstrelWagonToday = 0:
-            if MelissaDancedWithStefanTonight = 0:
+        if MelissaMinstrelWagonStage >= 4 and NpcBgMelissaWagonToday = 0:
+            if NpcBgMelissaDanced = 0:
                 sexacts['melissa'] += 1
                 vaginalacts['melissa'] += 1
                 cuminside['melissa'] += 1
@@ -79,7 +87,7 @@
 
     ! Пятница: Альбер Легаре
     if YesterdayWeek = 5:
-        if AmandaLegareFirstSexDone = 1 and AmandaDancedWithStefanTonight = 0:
+        if AmandaLegareFirstSexDone = 1 and NpcBgAmandaDanced = 0:
             sexacts['amanda'] += 1
             vaginalacts['amanda'] += 1
             cuminside['amanda'] += 1
@@ -89,7 +97,7 @@
 
     ! Будни: соседские парни на заднем дворе (при высокой распущенности)
     if YesterdayWeek >= 1 and YesterdayWeek <= 4:
-        if AmandaNpcPath >= 3 and sluttiness['amanda'] >= 30 and AmandaNeighborBoysToday = 0:
+        if AmandaNpcPath >= 3 and sluttiness['amanda'] >= 30 and NpcBgAmandaBoysToday = 0:
             if RAND(1, 100) <= 20:
                 sexacts['amanda'] += 1
                 if sluttiness['amanda'] >= 45:
@@ -110,7 +118,7 @@
     ! Суббота вечер: стражник Грюн в подсобке лавки
     if YesterdayWeek = 6:
         if IngaGuardHelpStage = -1 and IngaServingGuard = 1 and IngaGuardWeeklyActive = 1:
-            if IngaGuardSaturdayDone = 0:
+            if NpcBgIngaGuardToday = 0:
                 sexacts['inga'] += 1
                 vaginalacts['inga'] += 1
                 cuminside['inga'] += 1
@@ -121,7 +129,7 @@
 
     ! Пятница вечер: Лукас на танцах (если нет ветки с ГГ)
     if YesterdayWeek = 5:
-        if IngaPlayerRouteOpen = 0 and IngaLucasState = 1 and IngaDanceWithStefanTonight = 0:
+        if IngaPlayerRouteOpen = 0 and IngaLucasState = 1 and NpcBgIngaDanced = 0:
             if sluttiness['inga'] >= 25 and RAND(1, 100) <= 25:
                 sexacts['inga'] += 1
                 oralacts['inga'] += 1
@@ -155,7 +163,7 @@
 
     ! Воскресенье: тайная исповедь у отца Герхарда
     if YesterdayWeek = 7:
-        if BeckyPriestArcOpen = 1 and BeckyPriestSpyToday = 0:
+        if BeckyPriestArcOpen = 1 and NpcBgBeckyPriestSpyToday = 0:
             sexacts['becky'] += 1
             vaginalacts['becky'] += 1
             cuminside['becky'] += 1
@@ -217,7 +225,7 @@
     ! ================================================
 
     ! Ночной порт: клиенты (если ГГ не снял её ночью)
-    if GeorgettePortNightCustomerDone = 0 and GeorgetteHiredByStefanTonight = 0:
+    if NpcBgGeorgetteGone = 0:
         GeorgetteNightClients = RAND(1, 2)
         sexacts['georgett'] += GeorgetteNightClients
         vaginalacts['georgett'] += GeorgetteNightClients
@@ -227,7 +235,7 @@
 
     ! Воскресенье: отец Герхард (если ГГ не подглядывал)
     if YesterdayWeek = 7:
-        if GeorgettePriestSpyLastScene = 0:
+        if NpcBgGeorgetteChurchSpyToday = 0:
             sexacts['georgett'] += 1
             vaginalacts['georgett'] += 1
             cuminside['georgett'] += 1
@@ -241,7 +249,7 @@
 
     ! Ночной порт
     if LizetteProstPort = 1:
-        if LizettePortNightCustomerDone = 0 and LizetteHiredByStefanTonight = 0:
+        if NpcBgLizetteGone = 0:
             sexacts['lizette'] += 1
             vaginalacts['lizette'] += 1
             cuminside['lizette'] += 1
@@ -265,7 +273,7 @@
 
     ! Воскресенье: отец Герхард (после открытия этапа 2, если ГГ не подглядывал)
     if YesterdayWeek = 7:
-        if LizettePriestSpyStage >= 2 and LizettePriestSpySeenToday = 0:
+        if LizettePriestSpyStage >= 2 and NpcBgLizetteChurchSpyToday = 0:
             sexacts['lizette'] += 2
             oralacts['lizette'] += 1
             vaginalacts['lizette'] += 1
@@ -276,4 +284,17 @@
 
     killvar 'YesterdayDay'
     killvar 'YesterdayWeek'
+    killvar 'NpcBgPrevDay'
+    killvar 'NpcBgPrevWeek'
+    killvar 'NpcBgGeorgetteGone'
+    killvar 'NpcBgLizetteGone'
+    killvar 'NpcBgMelissaWagonToday'
+    killvar 'NpcBgAmandaBoysToday'
+    killvar 'NpcBgBeckyPriestSpyToday'
+    killvar 'NpcBgAmandaDanced'
+    killvar 'NpcBgMelissaDanced'
+    killvar 'NpcBgIngaDanced'
+    killvar 'NpcBgGeorgetteChurchSpyToday'
+    killvar 'NpcBgLizetteChurchSpyToday'
+    killvar 'NpcBgIngaGuardToday'
 ---

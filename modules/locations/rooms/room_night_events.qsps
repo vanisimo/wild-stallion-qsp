@@ -35,10 +35,12 @@
 
     gs 'ActUiPrepare', 'Тихо укрыть и уйти', 'return'
     act $ActUiLabel, $ActUiIconPath:
+        killvar '$SleepGirl'
         gt 'TavernSecondFloor'
     end
 
-    if daily_cum_count < max_daily_cum:
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 1 or debug = 1:
         gs 'ActUiPrepare', 'Осторожно разбудить лаской', 'intim'
         act $ActUiLabel, $ActUiIconPath:
             gt 'FamilySleepingGirlAction', $SleepGirl
@@ -93,9 +95,8 @@
     $SleepActGirl = LCASE($ARGS[0])
 
     gs 'RegisterPlayerCum'
-    LastSexDay[$SleepActGirl] = day
-    HadSex[$SleepActGirl] += 1
-    SexUsedToday[$SleepActGirl] = 1
+    gs 'RegisterSex', $SleepActGirl, 'vaginal', 1, 1
+    orgasms[$SleepActGirl] += 1
 
     gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: ПИК ЧУВСТВ'
     gs 'SceneShowVisual', 'images/events/family/sleep_climax_' + $SleepActGirl, 'Кульминация: ' + $RealName[$SleepActGirl], 'large', 'webp'
@@ -106,14 +107,14 @@
 
     elseif $SleepActGirl = 'melissa':
         *pl 'Ритм нарастает, заполняя полумрак спальни сбивчивым дыханием и шорохом смятых простыней. Мелисса впивается пальцами в твои плечи, запрокидывая голову на подушку.'
-        *pl 'Вся её рассудительность окончательно растворяется в накатившей волне блаженства. Она прерывисто выдыхает твоё имя, когда сладкая истома сотрясает всё её тело, и ты отдаёшься бурной разрядке, чувствуя её податливую, трепещущую податливость.'
+        *pl 'Вся её рассудительность окончательно растворяется в накатившей волне блаженства. Она прерывисто выдыхает твоё имя, когда сладкая истома сотрясает всё её тело, и ты отдаёшься бурной разрядке, чувствуя её трепещущую податливость.'
 
-    else
+    else:
         *pl 'Страсть захватывает вас обоих с неодолимой зрелой силой. Сандра крепко держит тебя в объятиях, её горячее дыхание обжигает твою кожу.'
         *pl 'Когда глубокая судорога наслаждения проходит по её телу, она глухо ахает, до побелевших пальцев сжимая покрывало. На пике близости ты изливаешь накопившийся жар, чувствуя, как её тело благодарно и жадно принимает каждое твоё движение.'
     end
 
-    gs 'ActUiPrepare', 'Перевести дыхание', 'heart'
+    gs 'ActUiPrepare', 'Перевести дыхание', 'intim'
     act $ActUiLabel, $ActUiIconPath:
         gt 'FamilySleepingGirlAftermath', $SleepActGirl
     end
@@ -147,6 +148,8 @@
 
     gs 'ActUiPrepare', 'Выйти в коридор', 'return'
     act $ActUiLabel, $ActUiIconPath:
+        killvar '$SleepGirl'
+        killvar '$SleepActGirl'
         gt 'TavernSecondFloor'
     end
 ---
@@ -157,6 +160,9 @@
     cla
 
     $MastGirl = LCASE($ARGS[0])
+    FamilyMasturbationVisitedDay[$MastGirl] = day
+    FamilyGirlHornyDays[$MastGirl] = 0
+    FamilyGirlMasturbating = 0
 
     gs 'ShowLocationScreenTitle', 'СПАЛЬНЯ: ТАЙНОЕ ВОЗБУЖДЕНИЕ'
     gs 'SceneShowVisual', 'images/events/family/masturbation_' + $MastGirl, 'Уединение: ' + $RealName[$MastGirl], 'large', 'webp'
@@ -166,28 +172,35 @@
 
     gs 'ActUiPrepare', 'Тихо наблюдать из дверей', 'look'
     act $ActUiLabel, $ActUiIconPath:
+        cla
         *pl ' '
         *pl 'Ты стоишь в дверях и смотришь, затаив дыхание. Она вздрагивает в сладкой волне истомы — и только тогда замечает тебя. Вместо испуга на её губах появляется томная улыбка:'
         *pl '— Долго же ты шёл... Мог бы и помочь.'
+        masturbate[$MastGirl] += 1
+        orgasms[$MastGirl] += 1
         gs 'ActUiPrepare', 'Уйти', 'return'
         act $ActUiLabel, $ActUiIconPath:
+            killvar '$MastGirl'
             gt 'TavernSecondFloor'
         end
     end
 
-    if daily_cum_count < max_daily_cum:
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 1 or debug = 1:
         gs 'ActUiPrepare', 'Перехватить и взять её в объятия', 'intim'
         act $ActUiLabel, $ActUiIconPath:
+            cla
             *pl ' '
             *pl 'Ты подходишь, перехватываешь её ладонь и заменяешь её прикосновения своими. Девушка прерывисто ахает — и подаётся навстречу:'
             *pl '— Наконец-то... Я так тебя ждала.'
             *pl 'Близость накрывает вас обоих горячей волной. Она обвивает тебя руками, не отпуская ни на мгновение, пока страсть не затихает в сладком изнеможении.'
             gs 'RegisterPlayerCum'
-            LastSexDay[$MastGirl] = day
-            HadSex[$MastGirl] += 1
+            gs 'RegisterSex', $MastGirl, 'vaginal', 1, 1
+            orgasms[$MastGirl] += 1
             SexUsedToday[$MastGirl] = 1
             gs 'ActUiPrepare', 'Закончить ночь', 'return'
             act $ActUiLabel, $ActUiIconPath:
+                killvar '$MastGirl'
                 gt 'TavernSecondFloor'
             end
         end

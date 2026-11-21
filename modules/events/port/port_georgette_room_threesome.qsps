@@ -44,6 +44,11 @@
         exit
     end
 
+    gs 'CanCumToday'
+    if PlayerCanCumToday = 0:
+        exit
+    end
+
     PortGeorgetteRoomThreesomeReady = 1
 ---
 
@@ -55,6 +60,8 @@
     money -= 30
     ThreesomeTarget = 1
     ThreesomeRearSwaps = 0
+    ThreesomeDidGeorg = 0
+    ThreesomeDidLiz = 0
 
     gs 'ShowLocationScreenTitle', 'ПРИЧАЛ: ОСОБЫЙ УГОВОР'
     gs 'SceneShowVisual', 'images/events/port/georgette_room/invite', 'Причал: уговор с Жоржеттой и Лизеттой', 'large', 'webp'
@@ -62,7 +69,7 @@
     gs 'PortGeorgetteRoomThreesomePrintText', 'invite'
     *pl ' '
 
-    gs 'ActUiPrepare', 'Идти в дом', 'door'
+    gs 'ActUiPrepare', 'Идти в дом', 'travel'
     act $ActUiLabel, $ActUiIconPath:
         gt 'PortGeorgetteRoomThreesomeIntro'
     end
@@ -148,12 +155,14 @@
     gs 'ActUiPrepare', 'Взять Жоржетту', 'intim'
     act $ActUiLabel, $ActUiIconPath:
         ThreesomeTarget = 1
+        ThreesomeDidGeorg = 1
         gt 'PortGeorgetteRoomThreesomeRear'
     end
 
     gs 'ActUiPrepare', 'Взять Лизетту', 'intim'
     act $ActUiLabel, $ActUiIconPath:
         ThreesomeTarget = 2
+        ThreesomeDidLiz = 1
         gt 'PortGeorgetteRoomThreesomeRear'
     end
 ---
@@ -181,6 +190,7 @@
             act $ActUiLabel, $ActUiIconPath:
                 ThreesomeRearSwaps += 1
                 ThreesomeTarget = 2
+                ThreesomeDidLiz = 1
                 gt 'PortGeorgetteRoomThreesomeRear'
             end
         else:
@@ -188,6 +198,7 @@
             act $ActUiLabel, $ActUiIconPath:
                 ThreesomeRearSwaps += 1
                 ThreesomeTarget = 1
+                ThreesomeDidGeorg = 1
                 gt 'PortGeorgetteRoomThreesomeRear'
             end
         end
@@ -212,10 +223,23 @@
     gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: ОЧИЩЕНИЕ'
     gs 'SceneShowVisual', 'images/events/port/georgette_room/finish_rear', 'Комната Жоржетты: очищение после близости', 'large', 'webp'
 
-    analacts['georgett'] += 1
-    analacts['lizette'] += 1
-    orgasms['georgett'] += 1
-    orgasms['lizette'] += 1
+    if ThreesomeDidGeorg = 1:
+        analacts['georgett'] += 1
+        orgasms['georgett'] += 1
+    end
+    if ThreesomeDidLiz = 1:
+        analacts['lizette'] += 1
+        orgasms['lizette'] += 1
+    end
+    if ThreesomeTarget = 1:
+        cuminside['georgett'] += 1
+        oralacts['lizette'] += 1
+        oralswallow['lizette'] += 1
+    else:
+        cuminside['lizette'] += 1
+        oralacts['georgett'] += 1
+        oralswallow['georgett'] += 1
+    end
 
     gs 'PortGeorgetteRoomThreesomePrintText', 'finish_rear'
     *pl ' '
@@ -234,8 +258,18 @@
     gs 'ShowLocationScreenTitle', 'КОМНАТА ЖОРЖЕТТЫ: ФИНАЛ НА ЛИЦА'
     gs 'SceneShowVisual', 'images/events/port/georgette_room/finish_facial', 'Комната Жоржетты: финал на лица обеим', 'large', 'webp'
 
+    if ThreesomeDidGeorg = 1:
+        analacts['georgett'] += 1
+    end
+    if ThreesomeDidLiz = 1:
+        analacts['lizette'] += 1
+    end
     facialcum['georgett'] += 1
     facialcum['lizette'] += 1
+    oralacts['georgett'] += 1
+    oralacts['lizette'] += 1
+    oralswallow['georgett'] += 1
+    oralswallow['lizette'] += 1
     orgasms['georgett'] += 1
     orgasms['lizette'] += 1
 
@@ -257,12 +291,17 @@
     gs 'SceneShowVisual', 'images/events/port/georgette_room/leave', 'Комната Жоржетты: прощание у дверей', 'large', 'webp'
 
     ! Статистика и факты
+    gs 'RegisterPlayerCum'
     sexacts['georgett'] += 1
     sexacts['lizette'] += 1
     groupsex['georgett'] += 1
     groupsex['lizette'] += 1
     HadSex['georgett'] += 1
     HadSex['lizette'] += 1
+    LastSexDay['georgett'] = day
+    LastSexDay['lizette'] = day
+    SexUsedToday['georgett'] = 1
+    SexUsedToday['lizette'] = 1
 
     Friends['georgett'] += 2
     Friends['lizette'] += 2
@@ -282,6 +321,8 @@
 
     killvar 'ThreesomeTarget'
     killvar 'ThreesomeRearSwaps'
+    killvar 'ThreesomeDidGeorg'
+    killvar 'ThreesomeDidLiz'
 
     gs 'ActUiPrepare', 'На улицу', 'street'
     act $ActUiLabel, $ActUiIconPath:

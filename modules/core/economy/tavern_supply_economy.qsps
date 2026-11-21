@@ -4,7 +4,7 @@
 ! Версия: supply economy v1
 ! Назначение:
 ! - связать конфликт с Легаре с ежедневной прибылью трактира
-! - учитывать повышение цен, нехватку алкоголя, временных поставщиков
+! - учитывать повышение цен, нехватку алкоголя, срочный резерв Клариссы
 ! - учитывать обходные маршруты Клариссы
 ! - дать отдельный экран проверки поставок
 !
@@ -78,7 +78,7 @@
     if TemporaryAlcoholSuppliers = 1:
         TavernTemporarySupplierLoss = 20
         TavernSupplyProfitResult -= TavernTemporarySupplierLoss
-        $TavernSupplyEconomyReport += 'Временные дорогие поставщики: -' + STR(TavernTemporarySupplierLoss) + '<br>'
+        $TavernSupplyEconomyReport += 'Экстренный резерв Клариссы: -' + STR(TavernTemporarySupplierLoss) + '<br>'
     end
 
     TavernAlcoholShortagePercent = 0
@@ -149,7 +149,7 @@
     if LOC('TavernSupplyStatusText') = 1:
         gs 'TavernSupplyStatusText'
     else:
-        *p 'Вы проверяете состояние поставок вина и пива.'
+        *pl 'Ты проверяешь состояние поставок вина и пива.'
     end
 
     *pl ' '
@@ -181,7 +181,7 @@
     gs 'Menu.Create', 'TavernSupplyStatusMenu'
 
     if TavernAlcoholShortage = 1 or TavernSupplyPenalty > 0:
-        gs 'MenuUiAdd', 'TavernSupplyStatusMenu', 'Срочно закупить алкоголь у временных поставщиков', ''
+        gs 'MenuUiAdd', 'TavernSupplyStatusMenu', 'Срочно выкупить резервные бочки у Клариссы', ''
         gs 'Menu.AddModule', 'TavernSupplyStatusMenu', {
             gt 'TavernSupplyEmergencyAction', 'temporary_buy'
         }
@@ -269,7 +269,7 @@
     if LOC('TavernSupplyEmergencyActionText') = 1:
         gs 'TavernSupplyEmergencyActionText', $SupplyEmergencyAction
     else:
-        *p 'Вы принимаете срочные меры по поставкам.'
+        *pl 'Ты принимаешь срочные меры по поставкам.'
     end
 
     *pl ' '

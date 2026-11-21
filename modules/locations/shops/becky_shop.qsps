@@ -68,6 +68,32 @@
 
         killvar 'SundayVisitBeckySandraCanEavesdrop'
 
+        if LOC('SandraBeckySundayReconcileCheck') = 1:
+            gs 'SandraBeckySundayReconcileCheck'
+            if SandraBeckySundayReconcileReady = 1:
+                gs 'ActUiPrepare', 'Подслушать примирение', 'look'
+                act $ActUiLabel, $ActUiIconPath:
+                    killvar '$BeckyShopHoldTab'
+                    killvar 'SandraBeckySundayReconcileReady'
+                    gt 'SandraBeckySundayReconcile'
+                end
+            end
+            killvar 'SandraBeckySundayReconcileReady'
+        end
+
+        if LOC('SandraBeckyDelayedRevelationCheck') = 1:
+            gs 'SandraBeckyDelayedRevelationCheck'
+            if SandraBeckyDelayedRevelationReady = 1:
+                gs 'ActUiPrepare', 'Заглянуть в окно', 'look'
+                act $ActUiLabel, $ActUiIconPath:
+                    killvar '$BeckyShopHoldTab'
+                    killvar 'SandraBeckyDelayedRevelationReady'
+                    gt 'SandraBeckyDelayedRevelation'
+                end
+            end
+            killvar 'SandraBeckyDelayedRevelationReady'
+        end
+
         gs 'BeckyShopBackroomPeekTryOffer', 'closed'
 
         if BeckyShopBackroomPeekOffer = 1:
@@ -134,6 +160,7 @@
 #BeckyShopResolveSeller
     if time = 1:
         $CurrentSeller = 'inga'
+        IngaMet = 1
         $BeckyShopSellerLabel = 'Ингеборга'
         $BeckyShopSellerDesc = 'Утром за прилавком дежурит Ингеборга. Она быстро сметает, быстро считает и не любит, когда торгуются без уважения.'
     elseif time = 2:
@@ -446,7 +473,7 @@
         end
     end
 
-    if BeckyCatchChoice = 'backroom' and LucasBannedUntilDay <= day and IngaOffenseStefan = 0 and LucasPeaceDinnerDone = 0 and (time = 3 or time = 4):
+    if $BeckyCatchChoice = 'backroom' and LucasBannedUntilDay <= day and IngaOffenseStefan = 0 and LucasPeaceDinnerDone = 0 and (time = 3 or time = 4):
         *pl ' '
         gs 'ActUiPrepare', 'Примирительный ужин с Лукасом', 'talk'
         act $ActUiLabel, $ActUiIconPath:

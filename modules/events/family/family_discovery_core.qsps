@@ -92,20 +92,20 @@
 
     ! Считаем дни воздержания девушек (если Стефан не был у них)
     if LastSexDay['amanda'] > 0:
-        FamilyGirlHornyDays['amanda'] = day - LastSexDay['amanda']
-    else
+        FamilyGirlHornyDays['amanda'] = FUNC('CalcDaysSince', LastSexDay['amanda'])
+    else:
         FamilyGirlHornyDays['amanda'] = 0
     end
 
     if LastSexDay['melissa'] > 0:
-        FamilyGirlHornyDays['melissa'] = day - LastSexDay['melissa']
-    else
+        FamilyGirlHornyDays['melissa'] = FUNC('CalcDaysSince', LastSexDay['melissa'])
+    else:
         FamilyGirlHornyDays['melissa'] = 0
     end
 
     if LastSexDay['sandra'] > 0:
-        FamilyGirlHornyDays['sandra'] = day - LastSexDay['sandra']
-    else
+        FamilyGirlHornyDays['sandra'] = FUNC('CalcDaysSince', LastSexDay['sandra'])
+    else:
         FamilyGirlHornyDays['sandra'] = 0
     end
 
@@ -179,6 +179,11 @@
 #FamilyMasturbationCheck
     $MastCheckGirl = LCASE($ARGS[0])
     FamilyGirlMasturbating = 0
+
+    if SexUsedToday[$MastCheckGirl] = 1 or FamilyMasturbationVisitedDay[$MastCheckGirl] = day:
+        killvar '$MastCheckGirl'
+        exit
+    end
 
     if FamilyCorruptionStage >= 4 and time = 5:
         if FamilyDeepSleepTonight[$MastCheckGirl] = 0 and FamilyGirlHornyDays[$MastCheckGirl] >= 3:

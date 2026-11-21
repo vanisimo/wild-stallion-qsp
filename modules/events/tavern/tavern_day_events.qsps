@@ -41,6 +41,8 @@
     TavernStaffTiredEvening = 0
     TavernDayBrawlHappened = 0
     TavernDayEventGuardPassed = 0
+    TavernGuardDistracted = 0
+    $TavernGuardDistractedGirl = ''
     TavernDayEventProfitBonus = 0
     TavernDayEventReputationBonus = 0
     TavernRepairNeeded = 0
@@ -300,6 +302,8 @@
 #TavernDayEventStartGuard
     $TavernDayEventId = 'guard'
     TavernDayEventActive = 1
+    TavernGuardDistracted = 0
+    $TavernGuardDistractedGirl = ''
 
     if tavern_reputation >= 55 and tavern_cleaning_power >= 35:
         TavernDayEventGuardPassed = 1
@@ -631,6 +635,36 @@
     killvar '$TavernDayEventText'
 
     gs 'TavernDayEventPrintRepairHint'
+
+    if $TavernDayEventId = 'guard' and TavernGuardDistracted = 0 and TavernDayEventGuardPassed = 0 and FamilyCorruptionStage >= 3:
+        _amandaNtr = 0
+        if AmandaNpcPath >= 1 or sluttiness['amanda'] >= 18 or AmandaLegareFirstSexDone = 1 or AmandaAlleyMmfDone = 1 or AmandaNeighborBoysStage >= 1 or FamilyCorruptionStage >= 4:
+            _amandaNtr = 1
+        end
+        _melissaNtr = 0
+        if MelissaNpcPath >= 1 or sluttiness['melissa'] >= 18 or MelissaMinstrelAffairStage >= 1 or MelissaClarissaBond >= 2 or FamilyCorruptionStage >= 4:
+            _melissaNtr = 1
+        end
+
+        if _amandaNtr = 1:
+            *pl ' '
+            *pl '<a href="exec:gt ''TavernDayEventGuardDistract'', ''amanda''"><b>Послать Аманду заигрывать со стражей и отвлечь сержанта</b></a>'
+            gs 'ActUiPrepare', 'Послать Аманду отвлечь стражу', 'flirt'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'TavernDayEventGuardDistract', 'amanda'
+            end
+        end
+        if _melissaNtr = 1:
+            *pl ' '
+            *pl '<a href="exec:gt ''TavernDayEventGuardDistract'', ''melissa''"><b>Послать Мелиссу заговорить зубы и очаровать сержанта</b></a>'
+            gs 'ActUiPrepare', 'Послать Мелиссу отвлечь стражу', 'flirt'
+            act $ActUiLabel, $ActUiIconPath:
+                gt 'TavernDayEventGuardDistract', 'melissa'
+            end
+        end
+        killvar '_amandaNtr'
+        killvar '_melissaNtr'
+    end
 
     *pl ' '
 ---
@@ -1036,4 +1070,42 @@
     end
 
     killvar '$TavernDayEventDebugForceId'
+---
+#TavernDayEventGuardDistract
+    $TavernGuardDistractedGirl = LCASE($ARGS[0])
+    if $TavernGuardDistractedGirl = '':
+        $TavernGuardDistractedGirl = 'amanda'
+    end
+
+    TavernGuardDistracted = 1
+    TavernDayEventGuardPassed = 1
+    TavernDayEventProfitBonus = 0
+    TavernDayEventReputationBonus = 1
+
+    if $TavernGuardDistractedGirl = 'amanda':
+        AmandaNpcPath += 1
+        sluttiness['amanda'] += 1
+        AmandaPublicAttention += 1
+        arousal += 10
+    else:
+        MelissaNpcPath += 1
+        sluttiness['melissa'] += 1
+        arousal += 10
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'ShowLocationScreenTitle', 'ОТВЛЕЧЬ СТРАЖУ'
+    gs 'TavernDayEventShowImage', 'guard_inspection'
+
+    gs 'TavernDayEventText', 'guard_distract_' + $TavernGuardDistractedGirl
+    *pl $TavernDayEventText
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Вернуться в главный зал', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'TavernMain'
+    end
 ---
