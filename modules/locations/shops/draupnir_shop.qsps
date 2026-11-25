@@ -1,0 +1,173 @@
+! ================================================
+! FILE: modules/locations/shops/draupnir_shop.qsps
+! MODULE: locations/shops
+! Мастерская столяра Драупнира (меню, разговоры, доступ к улучшениям)
+! ================================================
+
+#DraupnirShop
+
+    ShopOpen = 1
+    $ClosedReason = ''
+
+    if time = 5:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас ночь, мастерская закрыта'
+    elseif week = 5 and time = 4:
+        ShopOpen = 0
+        $ClosedReason = 'сейчас пятничный вечер, мастерская заперта изнутри'
+    elseif week = 7:
+        ShopOpen = 0
+        if time = 1:
+            $ClosedReason = 'сейчас воскресное утро, время службы в соборе'
+        elseif time = 2:
+            $ClosedReason = 'сейчас воскресный полдень, время исповедей'
+        else:
+            $ClosedReason = 'сейчас воскресенье, мастерская закрыта'
+        end
+    end
+
+    if ShopOpen = 0:
+        *clr
+        clr
+        cla
+
+        gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/draupnir_shop', 'лавка Драупнира', 'large', 'webp'
+        gs 'AddGlobalButtons'
+        gs 'ShowLocationScreenTitle', 'МАСТЕРСКАЯ ДРАУПНИРА — ЗАКРЫТО'
+
+        if week = 5 and time = 4 and $GirlLocation['sandra'] = 'DraupnirShop':
+            gs 'SandraDraupnirFridayClosedVoicesText'
+
+            if SandraDraupnirFridayToday = 0:
+                gs 'ActUiPrepare', 'Заглянуть в окно', 'look'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'SandraDraupnirFridayPeek'
+                end
+
+                gs 'ActUiPrepare', 'Вломиться через боковую дверь', 'generic'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'SandraDraupnirFridayDoorBurst'
+                end
+
+                gs 'ActUiPrepare', 'Подкараулить у выхода', 'look'
+                act $ActUiLabel, $ActUiIconPath:
+                    gt 'SandraDraupnirFridayIntercept'
+                end
+            end
+        else:
+            gs 'DraupnirShopClosedText'
+        end
+
+        killvar '$ClosedReason'
+
+        gs 'ActUiPrepare', 'Квартал ремесленников', 'craftsmen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'CraftsmenQuarter'
+        end
+        exit
+    end
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/draupnir_shop', 'лавка Драупнира', 'large', 'webp'
+    gs 'AddGlobalButtons'
+    gs 'InitDraupnir'
+
+    gs 'PrintTitleLine', ' МАСТЕРСКАЯ ДРАУПНИРА'
+
+    gs 'DraupnirShopText', DraupnirShopVisitVar
+    DraupnirShopVisitVar = 1 - DraupnirShopVisitVar
+
+    gs 'BuildDraupnirTalkMenu'
+    gs 'NpcMenuLink', 'Драупнир', 'DraupnirTalkMenu'
+
+    *pl ' '
+
+    if StefanWearingNobleSuit = 1 and StefanNobleTourDraupnirDone = 0:
+        gs 'ActUiPrepare', 'Драупнир: визит в парадном облачении', 'craftsmen'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'StefanNobleTourDraupnir'
+        end
+    end
+
+    gs 'DraupnirHasUpgradesAvailable'
+    if DraupnirHasUpgradesAvailable = 1:
+        gs 'ActUiPrepare', 'Улучшения трактира', 'work'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'DraupnirUpgradesShop'
+        end
+    end
+    killvar 'DraupnirHasUpgradesAvailable'
+
+    if TavernRepairNeeded = 1 and TavernRepairOrdered = 0:
+        gs 'ActUiPrepare', 'Заказать ремонт', 'work'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernDayEventCarpenterRepair'
+        end
+    elseif TavernRepairNeeded = 1 and TavernRepairOrdered = 1:
+        gs 'ActUiPrepare', 'Ремонт уже заказан', 'work'
+        act $ActUiLabel, $ActUiIconPath:
+            gt 'TavernDayEventCarpenterRepairAlreadyOrdered'
+        end
+    end
+
+    *pl ' '
+
+    gs 'ActUiPrepare', 'Квартал ремесленников', 'craftsmen'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'CraftsmenQuarter'
+    end
+---
+
+#BuildDraupnirTalkMenu
+
+    gs 'Menu.Destroy', 'DraupnirTalkMenu'
+    gs 'Menu.Create', 'DraupnirTalkMenu'
+
+    ! ==================== 1. ВАЖНАЯ БЕСЕДА (ЕСЛИ ЕСТЬ) ====================
+    if LOC('DraupnirImportantCheck') = 1:
+        gs 'DraupnirImportantCheck'
+        if DraupnirImportantReady = 1:
+            gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Важная беседа', 'important'
+            gs 'Menu.AddModule', 'DraupnirTalkMenu', { gt 'DraupnirImportantScreen', 'DraupnirShop' }
+        end
+        killvar 'DraupnirImportantReady'
+        killvar '$DraupnirImportantAction'
+    end
+
+    ! ==================== 2. РАЗГОВОР (ВСЕГДА) ====================
+    gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Разговор', 'talk'
+    gs 'Menu.AddModule', 'DraupnirTalkMenu', {
+        gt 'DraupnirChatScreen', 'DraupnirShop'
+    }
+
+    gs 'DraupnirHasUpgradesAvailable'
+    if DraupnirHasUpgradesAvailable = 1:
+        gs 'MenuUiAdd', 'DraupnirTalkMenu', 'Улучшения трактира', 'work'
+        gs 'Menu.AddModule', 'DraupnirTalkMenu', {
+            gt 'DraupnirUpgradesShop'
+        }
+    end
+    killvar 'DraupnirHasUpgradesAvailable'
+---
+
+#DraupnirUpgradesLocked
+
+    *clr
+    clr
+    cla
+
+    gs 'SceneShowVisual', 'images/events/sandra/sandra_draupnir_friday/draupnir_upgrades_locked', 'Драупнир: улучшения закрыты', 'large', 'webp'
+    gs 'InitDraupnir'
+
+    gs 'PrintTitleLine', ' ДРАУПНИР'
+
+    gs 'DraupnirUpgradesLockedText'
+
+    gs 'ActUiPrepare', 'Назад в мастерскую', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt 'DraupnirShop'
+    end
+---
