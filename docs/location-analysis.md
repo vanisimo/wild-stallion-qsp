@@ -2,12 +2,12 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 503
-- Locations: 3961
-- Locations with direct incoming calls: 3419
-- Locations without direct incoming calls: 542
+- Source files: 505
+- Locations: 3976
+- Locations with direct incoming calls: 3435
+- Locations without direct incoming calls: 541
 - Review candidates without direct incoming calls: 221
-- Classified entry/helper locations without direct incoming calls: 321
+- Classified entry/helper locations without direct incoming calls: 320
 - Dynamic call sites: 2
 
 ## Review Candidates
@@ -47,8 +47,8 @@ These locations have no direct literal incoming calls and are not classified as 
 | `ClarissaShopTalk` | `modules/events/legare/clarissa_intim_arc.qsps` | 219 | `modules/events` |
 | `ClearGirlLocation` | `modules/core/girls/girl_location.qsps` | 61 | `modules/core` |
 | `DanceDressShopIsOpen` | `modules/locations/shops/irma_dance_dress.qsps` | 41 | `modules/locations` |
-| `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 63 | `modules/npc` |
-| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 75 | `modules/npc` |
+| `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 73 | `modules/npc` |
+| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 87 | `modules/npc` |
 | `FamilyCouncilTryAtNight` | `modules/events/family/family_council.qsps` | 26 | `modules/events` |
 | `FamilyCouncilTryBeforeNextDay` | `modules/events/family/family_council.qsps` | 40 | `modules/events` |
 | `FamilyDiscoveryInit` | `modules/events/family/family_discovery_core.qsps` | 7 | `modules/events` |
@@ -535,7 +535,6 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 | `RegisterVaginal` | `modules/actions/sex/sex_register.qsps` | 188 | `entry/helper` |
 | `ResetHallRumorDaily` | `modules/events/hall/hall_rumors.qsps` | 133 | `entry/helper` |
 | `SandraDraupnirFridayCanStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 78 | `entry/helper` |
-| `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 | `entry/helper` |
 | `SandraFlirt` | `modules/actions/flirts/flirts.qsps` | 36 | `entry/helper` |
 | `SetGirlJobFromPanel` | `modules/core/system/refresh_location.qsps` | 27 | `entry/helper` |
 | `show_image_helpers` | `modules/core/show_image/show_image_helpers.qsps` | 367 | `entry/helper` |
@@ -570,31 +569,31 @@ These also have no direct incoming calls, but their names suggest debug panels, 
 
 | Location | Incoming calls |
 | --- | --- |
-| `ActUiPrepare` | 1864 |
-| `ShowLocationScreenTitle` | 854 |
+| `ActUiPrepare` | 1865 |
+| `ShowLocationScreenTitle` | 855 |
 | `SceneShowVisual` | 817 |
-| `Menu.AddModule` | 750 |
-| `MenuUiAdd` | 746 |
+| `Menu.AddModule` | 751 |
+| `MenuUiAdd` | 747 |
 | `EnsureGirlData` | 260 |
 | `ClampGirlSocialStats` | 254 |
 | `NormalizeGirlKey` | 200 |
 | `TavernMain` | 162 |
 | `ShowGirlSidebar` | 111 |
-| `Market` | 99 |
 | `Menu.Create` | 99 |
+| `Market` | 99 |
 | `Menu.Destroy` | 98 |
 | `RegisterSex` | 94 |
 | `ShowImage` | 84 |
-| `FormatSpintry` | 83 |
 | `UpdateGirlLocations` | 83 |
+| `FormatSpintry` | 83 |
 | `MarketDance` | 73 |
-| `PrintMainP` | 70 |
-| `GirlTalkResult` | 55 |
+| `PrintMainP` | 69 |
 | `RegisterPlayerCum` | 55 |
+| `GirlTalkResult` | 55 |
 | `AmandaLizaTalkPoolTry` | 54 |
 | `AmandaLizaTalkApplyInfluence` | 52 |
+| `ShowImagePath` | 50 |
 | `CanCumToday` | 50 |
-| `ShowImagePath` | 49 |
 
 ## Dynamic Call Sites
 

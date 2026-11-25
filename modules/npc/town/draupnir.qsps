@@ -52,7 +52,17 @@
         exit
     end
 
-    ! 2. Визит в парадном облачении
+    ! 2. Разговор о штуке из сундука Сандры (с градацией)
+    gs 'DraupnirGnomeDildoCalcTier'
+    if DraupnirGnomeDildoAvailTier > DraupnirGnomeDildoTalkTier:
+        DraupnirImportantReady = 1
+        $DraupnirImportantAction = 'gnome_dildo'
+        killvar 'DraupnirGnomeDildoAvailTier'
+        exit
+    end
+    killvar 'DraupnirGnomeDildoAvailTier'
+
+    ! 3. Визит в парадном облачении
     if StefanWearingNobleSuit = 1 and StefanNobleTourDraupnirDone = 0 and LOC('StefanNobleTourDraupnir') = 1:
         DraupnirImportantReady = 1
         $DraupnirImportantAction = 'noble_tour'
@@ -65,6 +75,8 @@
 
     if $DraupnirActionType = 'blackmail':
         gt 'DraupnirBlackmailTalk'
+    elseif $DraupnirActionType = 'gnome_dildo':
+        gt 'DraupnirGnomeDildoTalk'
     elseif $DraupnirActionType = 'noble_tour':
         gt 'StefanNobleTourDraupnir'
     else:
@@ -93,9 +105,7 @@
     gs 'ShowLocationScreenTitle', 'РАЗГОВОР С ДРАУПНИРОМ'
     gs 'ShowImagePath', 'images/npc/town/draupnir/draupnir_talk', '', 'portrait', 'webp'
 
-    *pl 'Драупнир откладывает стамеску и стряхивает с широкого кожаного фартука древесную стружку. Его взгляд внимателен и скуп на эмоции.'
-    *pl '— Чего тебе, хозяин трактира? По делу заглянул или так, языком почесать?'
-    *pl ' '
+    gs 'DraupnirTalkIntroText'
     gs 'DraupnirBuildMainMenu'
     gs 'GetNpcMenuLinkHref', 'DraupnirMainMenu', 'Драупнир'
 
@@ -127,12 +137,14 @@
         gt 'DraupnirChatScreen', $DraupnirReturnLoc
     }
 
-    if TavernCarpenterUpgradesUnlocked = 1:
+    gs 'DraupnirHasUpgradesAvailable'
+    if DraupnirHasUpgradesAvailable = 1:
         gs 'MenuUiAdd', 'DraupnirMainMenu', 'Улучшения трактира', 'work'
         gs 'Menu.AddModule', 'DraupnirMainMenu', {
             gt 'DraupnirUpgradesShop'
         }
     end
+    killvar 'DraupnirHasUpgradesAvailable'
 ---
 
 #DraupnirImportantScreen
@@ -168,11 +180,82 @@
         }
     end
 
+    gs 'DraupnirGnomeDildoCalcTier'
+    if DraupnirGnomeDildoAvailTier > DraupnirGnomeDildoTalkTier:
+        gs 'MenuUiAdd', 'DraupnirImportantMenu', 'Спросить о штуке из сундука', 'talk'
+        gs 'Menu.AddModule', 'DraupnirImportantMenu', {
+            gt 'DraupnirGnomeDildoTalk', $DraupnirReturnLoc
+        }
+    end
+    killvar 'DraupnirGnomeDildoAvailTier'
+
     if StefanWearingNobleSuit = 1 and StefanNobleTourDraupnirDone = 0 and LOC('StefanNobleTourDraupnir') = 1:
         gs 'MenuUiAdd', 'DraupnirImportantMenu', 'Визит в парадном облачении', 'craftsmen'
         gs 'Menu.AddModule', 'DraupnirImportantMenu', {
             gt 'StefanNobleTourDraupnir'
         }
+    end
+---
+
+#DraupnirGnomeDildoCalcTier
+    DraupnirGnomeDildoAvailTier = 0
+
+    if SandraChestGnomeDildoFound <> 1:
+        exit
+    end
+
+    DraupnirDildoKnows = 0
+    if PlayerKnows_SandraDraupnirFriday = 1 or PlayerKnows_SandraDraupnirAffair = 1 or SandraCarpenterSecret = 1:
+        DraupnirDildoKnows = 1
+    end
+
+    if DraupnirDildoKnows = 0:
+        DraupnirGnomeDildoAvailTier = 1
+    elseif Friends['draupnir'] >= 30 or FamilyCorruptionStage >= 3:
+        DraupnirGnomeDildoAvailTier = 3
+    else:
+        DraupnirGnomeDildoAvailTier = 2
+    end
+
+    killvar 'DraupnirDildoKnows'
+---
+
+#DraupnirGnomeDildoTalk
+    $DraupnirReturnLoc = $ARGS[0]
+    if $DraupnirReturnLoc = '' or LOC($DraupnirReturnLoc) = 0:
+        $DraupnirReturnLoc = 'DraupnirShop'
+    end
+
+    if LOC('InitDraupnir') = 1:
+        gs 'InitDraupnir'
+    end
+
+    gs 'DraupnirGnomeDildoCalcTier'
+    if DraupnirGnomeDildoAvailTier = 0:
+        killvar 'DraupnirGnomeDildoAvailTier'
+        gt $DraupnirReturnLoc
+        exit
+    end
+
+    cls
+    gs 'ShowLocationScreenTitle', 'ДРАУПНИР О ШТУКЕ ИЗ СУНДУКА'
+    gs 'ShowImagePath', 'images/npc/town/draupnir/draupnir_talk', '', 'portrait', 'webp'
+
+    gs 'DraupnirGnomeDildoTalkText', DraupnirGnomeDildoAvailTier
+
+    if DraupnirGnomeDildoAvailTier > DraupnirGnomeDildoTalkTier:
+        DraupnirGnomeDildoTalkTier = DraupnirGnomeDildoAvailTier
+        if DraupnirGnomeDildoAvailTier >= 2 and Friends['draupnir'] < 45:
+            Friends['draupnir'] += 1
+        end
+        Talked['draupnir'] += 1
+    end
+
+    killvar 'DraupnirGnomeDildoAvailTier'
+
+    gs 'ActUiPrepare', 'Назад в мастерскую', 'return'
+    act $ActUiLabel, $ActUiIconPath:
+        gt $DraupnirReturnLoc
     end
 ---
 
@@ -217,90 +300,135 @@
     ! 2. Регистрация полезного разговора
     gs 'UsefulTalkRegister', 'draupnir', 'draupnir_unified'
 
-    ! 3. Прогрессивная иерархия тем:
-    ! --- О соплеменниках и ремесле (высокое доверие) ---
-    if Friends['draupnir'] >= 30 and DraupnirClanStoryDone = 0:
-        DraupnirClanStoryDone = 1
-        gs 'DraupnirTalkClanRun'
+    DraupnirKnowsAffairNow = 0
+    if PlayerKnows_SandraDraupnirFriday = 1 or PlayerKnows_SandraDraupnirAffair = 1 or SandraCarpenterSecret = 1:
+        DraupnirKnowsAffairNow = 1
+    end
 
-    ! --- О Сандре и трактире (после раскрытия секрета или дружбы) ---
-    elseif (PlayerKnows_SandraDraupnirFriday = 1 or Friends['draupnir'] >= 25) and DraupnirSandraTalkFirstDone = 0:
-        DraupnirSandraTalkFirstDone = 1
-        gs 'DraupnirTalkSandraRun'
+    ! 3. Прогрессивная иерархия тем (от бытовых бесед к личному пути, изгнанию и разговору о Сандре):
+    if DraupnirDailyFirstDone = 0:
+        DraupnirDailyFirstDone = 1
+        gs 'DraupnirTalkSmalltalkRun'
 
-    ! --- Об улучшениях трактира ---
-    elseif TavernCarpenterUpgradesUnlocked = 1 and DraupnirUpgradeTalkFirstDone = 0:
-        DraupnirUpgradeTalkFirstDone = 1
+    elseif DraupnirWorkshopFirstDone = 0:
+        DraupnirWorkshopFirstDone = 1
         gs 'DraupnirTalkUpgradesRun'
 
-    ! --- О городе и купцах ---
     elseif DraupnirTownTalkFirstDone = 0:
         DraupnirTownTalkFirstDone = 1
         gs 'DraupnirTalkTownRun'
 
-    ! --- Циклическая ротация лор-пулов ---
+    elseif Friends['draupnir'] >= 25 and DraupnirPathStoryDone = 0:
+        DraupnirPathStoryDone = 1
+        gs 'DraupnirTalkPathRun'
+
+    elseif Friends['draupnir'] >= 27 and DraupnirClanStoryDone = 0:
+        DraupnirClanStoryDone = 1
+        gs 'DraupnirTalkClanRun'
+
+    elseif (Friends['draupnir'] >= 29 or DraupnirKnowsAffairNow = 1) and DraupnirSandraTalkFirstDone = 0:
+        DraupnirSandraTalkFirstDone = 1
+        if DraupnirKnowsAffairNow = 1:
+            DraupnirSandraOpenTalkDone = 1
+        end
+        gs 'DraupnirTalkSandraRun'
+
+    elseif DraupnirKnowsAffairNow = 1 and DraupnirSandraOpenTalkDone = 0:
+        DraupnirSandraOpenTalkDone = 1
+        gs 'DraupnirTalkSandraRun'
+
+    ! 4. Циклическая ротация открытых тем (6 уровней)
     else:
+        if DraupnirLorePoolCycle = 0:
+            gs 'DraupnirTalkSmalltalkRun'
+        elseif DraupnirLorePoolCycle = 1:
+            gs 'DraupnirTalkUpgradesRun'
+        elseif DraupnirLorePoolCycle = 2:
+            gs 'DraupnirTalkTownRun'
+        elseif DraupnirLorePoolCycle = 3:
+            if Friends['draupnir'] >= 25:
+                gs 'DraupnirTalkPathRun'
+            else:
+                DraupnirLorePoolCycle = 0
+                gs 'DraupnirTalkSmalltalkRun'
+            end
+        elseif DraupnirLorePoolCycle = 4:
+            if Friends['draupnir'] >= 27:
+                gs 'DraupnirTalkClanRun'
+            else:
+                DraupnirLorePoolCycle = 0
+                gs 'DraupnirTalkSmalltalkRun'
+            end
+        else:
+            if Friends['draupnir'] >= 29 or DraupnirKnowsAffairNow = 1:
+                gs 'DraupnirTalkSandraRun'
+            else:
+                DraupnirLorePoolCycle = 0
+                gs 'DraupnirTalkSmalltalkRun'
+            end
+        end
+
         DraupnirLorePoolCycle += 1
-        if DraupnirLorePoolCycle > 3:
+        if DraupnirLorePoolCycle > 5:
             DraupnirLorePoolCycle = 0
         end
-
-        if DraupnirLorePoolCycle = 0:
-            gs 'DraupnirTalkUpgradesRun'
-        elseif DraupnirLorePoolCycle = 1:
-            gs 'DraupnirTalkTownRun'
-        elseif DraupnirLorePoolCycle = 2 and (PlayerKnows_SandraDraupnirFriday = 1 or Friends['draupnir'] >= 25):
-            gs 'DraupnirTalkSandraRun'
-        elseif DraupnirLorePoolCycle = 3 and Friends['draupnir'] >= 30:
-            gs 'DraupnirTalkClanRun'
-        else:
-            gs 'DraupnirTalkSmalltalkRun'
-        end
     end
+
+    killvar 'DraupnirKnowsAffairNow'
 ---
 
-#DraupnirTalkLimitReachedText
-    *pl 'Драупнир сдувает стружку с верстака, берет в руки напильник и хрипло бурчит:'
-    *pl '— Я мастер, Стефан, а не базарная торговка. Мой лимит на пустую болтовню на сегодня исчерпан. Руки должны быть при деле, иначе железо стынет, а дерево ведёт. Хочешь заказать работу — говори, нет — не стой над душой.'
----
-
-#DraupnirTalkClanRun
-    *pl 'Драупнир долго разглядывает дубовую заготовку, проводя мозолистым пальцем по годовым кольцам:'
-    *pl '— Гномы Подгорья считают работу с деревом позором для мастера, — негромко произносит он. — Камень, сталь, руда... Вот их святыни. А я вижу в дереве живую плоть. Дерево дышит, гнётся, помнит солнце и дожди. Они выгнали меня из клана, назвав чудаком, а я построил в этом городе всё — от причальных свай до лучших дверей. И ни о чём не жалею.'
-    Friends['draupnir'] += 2
-    Talked['draupnir'] += 1
----
-
-#DraupnirTalkSandraRun
-    *pl 'Гном бросает на тебя внимательный, оценивающий взгляд из-под кустистых седых бровей:'
-    *pl '— Сандра — редкая женщина, Стефан. В ней столько скрытого жара и упрямства, сколько я не видел даже у наших горных дев. Твой отец не умел её ценить, держал при трактире как тягловую лошадь. Смотри, парень... если обидишь её — я лично подберу для тебя сосновый ящик без единого железного гвоздя.'
-    Friends['draupnir'] += 1
+#DraupnirTalkSmalltalkRun
+    gs 'DraupnirTalkDailyText', DraupnirTopicVar['daily']
+    DraupnirTopicVar['daily'] = 1 - DraupnirTopicVar['daily']
+    if Friends['draupnir'] < 45:
+        Friends['draupnir'] += 1
+    end
     Talked['draupnir'] += 1
 ---
 
 #DraupnirTalkUpgradesRun
-    *pl 'Драупнир постукивает костяшками пальцев по массивной дубовой балке:'
-    *pl '— В хорошем трактире дерево должно быть выдержанным, а петли — коваными вручную. Пьяные драки, пролитое вино, сырость из погреба... Если экономить на столяре, через три года потолок ляжет тебе на голову. Держи стойку крепкой, и гости будут уважать заведение.'
-    if Friends['draupnir'] < 35:
+    gs 'DraupnirTalkWorkshopText', DraupnirTopicVar['workshop']
+    DraupnirTopicVar['workshop'] = 1 - DraupnirTopicVar['workshop']
+    if Friends['draupnir'] < 45:
         Friends['draupnir'] += 1
     end
     Talked['draupnir'] += 1
 ---
 
 #DraupnirTalkTownRun
-    *pl 'Драупнир сплёвывает на стружки:'
-    *pl '— Город полон трепачей в шёлковых камзолах. Мэр считает подати, купцы вроде Легаре взвешивают каждый медяк, а стража у ворот только и ждёт, кому подставить ладонь. Но когда у них скрипят ворота или протекает крыша — все на цыпочках бегут к старому гному. Вот она, настоящая цена труда.'
-    if Friends['draupnir'] < 30:
+    gs 'DraupnirTalkTradeText', DraupnirTopicVar['trade']
+    DraupnirTopicVar['trade'] = 1 - DraupnirTopicVar['trade']
+    if Friends['draupnir'] < 25:
+        Friends['draupnir'] += 2
+    elseif Friends['draupnir'] < 45:
         Friends['draupnir'] += 1
     end
     Talked['draupnir'] += 1
 ---
 
-#DraupnirTalkSmalltalkRun
-    *pl 'Гном откладывает рубанок и хмуро кивает:'
-    *pl '— Трактир держится на петлях и здравом смысле. Если нужен столяр — говори по делу. Если болтовня — у меня на это одна минута.'
-    if Friends['draupnir'] < 40:
-        Friends['draupnir'] += 1
+#DraupnirTalkPathRun
+    gs 'DraupnirTalkPathText', DraupnirTopicVar['path']
+    DraupnirTopicVar['path'] = 1 - DraupnirTopicVar['path']
+    if Friends['draupnir'] < 45:
+        Friends['draupnir'] += 2
+    end
+    Talked['draupnir'] += 1
+---
+
+#DraupnirTalkClanRun
+    gs 'DraupnirTalkExileText', DraupnirTopicVar['clan']
+    DraupnirTopicVar['clan'] = 1 - DraupnirTopicVar['clan']
+    if Friends['draupnir'] < 45:
+        Friends['draupnir'] += 2
+    end
+    Talked['draupnir'] += 1
+---
+
+#DraupnirTalkSandraRun
+    gs 'DraupnirTalkSandraText', DraupnirTopicVar['sandra']
+    DraupnirTopicVar['sandra'] = 1 - DraupnirTopicVar['sandra']
+    if Friends['draupnir'] < 45:
+        Friends['draupnir'] += 2
     end
     Talked['draupnir'] += 1
 ---

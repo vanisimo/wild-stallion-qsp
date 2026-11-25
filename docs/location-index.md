@@ -2,8 +2,8 @@
 
 Generated from active project files in `qsp-project.json`.
 
-- Source files: 503
-- Locations: 3961
+- Source files: 505
+- Locations: 3976
 
 ## modules/actions
 
@@ -1804,7 +1804,6 @@ Generated from active project files in `qsp-project.json`.
 | `BirthCertificateReadText` | `modules/events/family/birth_certificate_text.qsps` | 17 |
 | `BirthCertificateSearchIntroText` | `modules/events/family/birth_certificate_text.qsps` | 11 |
 | `BirthCertificateSearchSandraChest` | `modules/events/family/birth_certificate_core.qsps` | 48 |
-| `BuildDraupnirTalkMenu` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 328 |
 | `CheckAmandaEvents` | `modules/events/amanda/neighbor_boys/amanda_neighbor_boys.qsps` | 13 |
 | `ChurchConfessionApplySin` | `modules/events/church/church_confession_dynamic.qsps` | 197 |
 | `ChurchConfessionCanStart` | `modules/events/church/church_confession_dynamic.qsps` | 7 |
@@ -1993,9 +1992,6 @@ Generated from active project files in `qsp-project.json`.
 | `DailyAftermathSelect` | `modules/events/family/daily_aftermath.qsps` | 67 |
 | `DailyAftermathShow` | `modules/events/family/daily_aftermath.qsps` | 185 |
 | `DraupnirBlackmailTalk` | `modules/events/mayor/mayor_blackmail_investigation_town.qsps` | 33 |
-| `DraupnirShop` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 200 |
-| `DraupnirUpgradesLocked` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 358 |
-| `DraupnirUpgradesLockedText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 17 |
 | `EddieAlleySpy1` | `modules/events/eddie/eddie_arc.qsps` | 385 |
 | `EddieAlleySpy1Text` | `modules/events/eddie/eddie_arc_text.qsps` | 10 |
 | `EddieAlleySpy2` | `modules/events/eddie/eddie_arc.qsps` | 409 |
@@ -3258,16 +3254,16 @@ Generated from active project files in `qsp-project.json`.
 | `SandraDraupnirAffairAdvance` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 42 |
 | `SandraDraupnirFridayBackgroundResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 22 |
 | `SandraDraupnirFridayCanStart` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 78 |
-| `SandraDraupnirFridayDoorBurst` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 378 |
-| `SandraDraupnirFridayDoorBurstResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 415 |
-| `SandraDraupnirFridayDoorBurstResolveText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 113 |
-| `SandraDraupnirFridayDoorBurstText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 89 |
-| `SandraDraupnirFridayIntercept` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 450 |
-| `SandraDraupnirFridayInterceptText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 151 |
+| `SandraDraupnirFridayClosedVoicesText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 9 |
+| `SandraDraupnirFridayDoorBurst` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 199 |
+| `SandraDraupnirFridayDoorBurstResolve` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 236 |
+| `SandraDraupnirFridayDoorBurstResolveText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 129 |
+| `SandraDraupnirFridayDoorBurstText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 105 |
+| `SandraDraupnirFridayIntercept` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 271 |
+| `SandraDraupnirFridayInterceptText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 167 |
 | `SandraDraupnirFridayPeek` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 101 |
-| `SandraDraupnirFridayPeekText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 22 |
-| `SandraDraupnirFridayPrintText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 28 |
-| `SandraDraupnirFridayShopText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 9 |
+| `SandraDraupnirFridayPeekEndText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 14 |
+| `SandraDraupnirFridayPrintText` | `modules/events/sandra/sandra_draupnir_friday_text.qsps` | 19 |
 | `SandraDraupnirSpyScreen` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 134 |
 | `SandraFridayDraupnirAdvance` | `modules/events/sandra/sandra_draupnir_friday.qsps` | 8 |
 | `SandraGerhardStopTalk` | `modules/events/sandra/sandra_church_arc.qsps` | 103 |
@@ -3420,26 +3416,26 @@ Generated from active project files in `qsp-project.json`.
 | `TavernDayEventCalcRepairCost` | `modules/events/tavern/tavern_day_events.qsps` | 733 |
 | `TavernDayEventCanRoll` | `modules/events/tavern/tavern_day_events.qsps` | 9 |
 | `TavernDayEventCarpenterRepair` | `modules/events/tavern/tavern_day_events.qsps` | 767 |
-| `TavernDayEventCarpenterRepairAlreadyOrdered` | `modules/events/tavern/tavern_day_events.qsps` | 820 |
-| `TavernDayEventCarpenterRepairConfirm` | `modules/events/tavern/tavern_day_events.qsps` | 922 |
+| `TavernDayEventCarpenterRepairAlreadyOrdered` | `modules/events/tavern/tavern_day_events.qsps` | 817 |
+| `TavernDayEventCarpenterRepairConfirm` | `modules/events/tavern/tavern_day_events.qsps` | 909 |
 | `TavernDayEventCarpenterRepairEveningTextId` | `modules/events/tavern/tavern_day_events.qsps` | 757 |
-| `TavernDayEventCarpenterRepairNoMoney` | `modules/events/tavern/tavern_day_events.qsps` | 845 |
-| `TavernDayEventCarpenterRepairPay` | `modules/events/tavern/tavern_day_events.qsps` | 897 |
-| `TavernDayEventCarpenterRepairRefuse` | `modules/events/tavern/tavern_day_events.qsps` | 875 |
+| `TavernDayEventCarpenterRepairNoMoney` | `modules/events/tavern/tavern_day_events.qsps` | 839 |
+| `TavernDayEventCarpenterRepairPay` | `modules/events/tavern/tavern_day_events.qsps` | 884 |
+| `TavernDayEventCarpenterRepairRefuse` | `modules/events/tavern/tavern_day_events.qsps` | 866 |
 | `TavernDayEventCarpenterRepairVisitTextId` | `modules/events/tavern/tavern_day_events.qsps` | 747 |
 | `TavernDayEventCarryOverEndText` | `modules/events/tavern/tavern_day_events.qsps` | 198 |
 | `TavernDayEventCarryOverTextId` | `modules/events/tavern/tavern_day_events.qsps` | 544 |
-| `TavernDayEventDebugForce` | `modules/events/tavern/tavern_day_events.qsps` | 1014 |
-| `TavernDayEventEndTextId` | `modules/events/tavern/tavern_day_events_text.qsps` | 400 |
+| `TavernDayEventDebugForce` | `modules/events/tavern/tavern_day_events.qsps` | 998 |
+| `TavernDayEventEndTextId` | `modules/events/tavern/tavern_day_events_text.qsps` | 379 |
 | `TavernDayEventFinalizeRepairAtDayEnd` | `modules/events/tavern/tavern_day_events.qsps` | 151 |
-| `TavernDayEventGuardDistract` | `modules/events/tavern/tavern_day_events.qsps` | 1074 |
-| `TavernDayEventHallTextId` | `modules/events/tavern/tavern_day_events_text.qsps` | 448 |
+| `TavernDayEventGuardDistract` | `modules/events/tavern/tavern_day_events.qsps` | 1058 |
+| `TavernDayEventHallTextId` | `modules/events/tavern/tavern_day_events_text.qsps` | 427 |
 | `TavernDayEventImageDebugBrief` | `modules/events/tavern/tavern_day_event_images.qsps` | 32 |
 | `TavernDayEventImageDebugPanel` | `modules/events/tavern/tavern_day_event_images.qsps` | 93 |
-| `TavernDayEventImageKeyForEvent` | `modules/events/tavern/tavern_day_events_text.qsps` | 516 |
-| `TavernDayEventMorningTextId` | `modules/events/tavern/tavern_day_events_text.qsps` | 370 |
+| `TavernDayEventImageKeyForEvent` | `modules/events/tavern/tavern_day_events_text.qsps` | 495 |
+| `TavernDayEventMorningTextId` | `modules/events/tavern/tavern_day_events_text.qsps` | 349 |
 | `TavernDayEventOnEvening` | `modules/events/tavern/tavern_day_events.qsps` | 672 |
-| `TavernDayEventPrintCarpenterEveningRepair` | `modules/events/tavern/tavern_day_events.qsps` | 949 |
+| `TavernDayEventPrintCarpenterEveningRepair` | `modules/events/tavern/tavern_day_events.qsps` | 933 |
 | `TavernDayEventPrintCarryOverHall` | `modules/events/tavern/tavern_day_events.qsps` | 582 |
 | `TavernDayEventPrintCarryOverMorning` | `modules/events/tavern/tavern_day_events.qsps` | 556 |
 | `TavernDayEventPrintHallDescription` | `modules/events/tavern/tavern_day_events.qsps` | 610 |
@@ -3462,7 +3458,7 @@ Generated from active project files in `qsp-project.json`.
 | `TavernDayEventStartStorm` | `modules/events/tavern/tavern_day_events.qsps` | 357 |
 | `TavernDayEventStartTavernPraise` | `modules/events/tavern/tavern_day_events.qsps` | 461 |
 | `TavernDayEventStartThief` | `modules/events/tavern/tavern_day_events.qsps` | 415 |
-| `TavernDayEventTalkBlockedScreen` | `modules/events/tavern/tavern_day_events.qsps` | 986 |
+| `TavernDayEventTalkBlockedScreen` | `modules/events/tavern/tavern_day_events.qsps` | 970 |
 | `TavernDayEventText` | `modules/events/tavern/tavern_day_events_text.qsps` | 8 |
 | `TavernEventDispatcherPolicyAftermath` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 61 |
 | `TavernEventDispatcherTry` | `modules/events/tavern/tavern_event_dispatcher.qsps` | 12 |
@@ -3548,6 +3544,7 @@ Generated from active project files in `qsp-project.json`.
 | `BeckyWildOilShopBuy` | `modules/locations/shops/becky_shop.qsps` | 720 |
 | `BeckyWildOilShopTalk` | `modules/locations/shops/becky_shop.qsps` | 681 |
 | `BuildAlberWineTalkMenu` | `modules/locations/shops/wine_shop.qsps` | 397 |
+| `BuildDraupnirTalkMenu` | `modules/locations/shops/draupnir_shop.qsps` | 124 |
 | `BuildEddieShopTalkMenu` | `modules/locations/shops/becky_shop.qsps` | 590 |
 | `BuildGuardPostMenu` | `modules/locations/town/guard_post.qsps` | 293 |
 | `BuildMayorOfficeTalkMenu` | `modules/locations/town/mayor_office.qsps` | 965 |
@@ -3571,16 +3568,32 @@ Generated from active project files in `qsp-project.json`.
 | `DanceDressShopIsOpen` | `modules/locations/shops/irma_dance_dress.qsps` | 41 |
 | `DanceDressTalkCanStart` | `modules/locations/shops/irma_dance_dress.qsps` | 54 |
 | `DanceDressText` | `modules/locations/shops/irma_dance_dress_text.qsps` | 18 |
-| `DraupnirUpgradeBuildMenu` | `modules/locations/shops/draupnir_upgrades.qsps` | 191 |
-| `DraupnirUpgradeLineText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 33 |
-| `DraupnirUpgradeOrderBlockedText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 27 |
-| `DraupnirUpgradeOrderDoneText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 17 |
-| `DraupnirUpgradeOrderNoMoneyText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 22 |
-| `DraupnirUpgradePrintLine` | `modules/locations/shops/draupnir_upgrades.qsps` | 58 |
-| `DraupnirUpgradeResolveLineState` | `modules/locations/shops/draupnir_upgrades.qsps` | 81 |
+| `DraupnirGnomeDildoTalkText` | `modules/locations/shops/draupnir_shop_text.qsps` | 422 |
+| `DraupnirHasUpgradesAvailable` | `modules/locations/shops/draupnir_upgrades.qsps` | 7 |
+| `DraupnirRepairVisitText` | `modules/locations/shops/draupnir_shop_text.qsps` | 477 |
+| `DraupnirShop` | `modules/locations/shops/draupnir_shop.qsps` | 7 |
+| `DraupnirShopClosedText` | `modules/locations/shops/draupnir_shop_text.qsps` | 83 |
+| `DraupnirShopText` | `modules/locations/shops/draupnir_shop_text.qsps` | 8 |
+| `DraupnirTalkDailyText` | `modules/locations/shops/draupnir_shop_text.qsps` | 171 |
+| `DraupnirTalkExileText` | `modules/locations/shops/draupnir_shop_text.qsps` | 304 |
+| `DraupnirTalkIntroText` | `modules/locations/shops/draupnir_shop_text.qsps` | 121 |
+| `DraupnirTalkLimitReachedText` | `modules/locations/shops/draupnir_shop_text.qsps` | 146 |
+| `DraupnirTalkPathText` | `modules/locations/shops/draupnir_shop_text.qsps` | 265 |
+| `DraupnirTalkSandraText` | `modules/locations/shops/draupnir_shop_text.qsps` | 346 |
+| `DraupnirTalkTradeText` | `modules/locations/shops/draupnir_shop_text.qsps` | 235 |
+| `DraupnirTalkWorkshopText` | `modules/locations/shops/draupnir_shop_text.qsps` | 201 |
+| `DraupnirUpgradeBuildMenu` | `modules/locations/shops/draupnir_upgrades.qsps` | 206 |
+| `DraupnirUpgradeLineText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 136 |
+| `DraupnirUpgradeOrderBlockedText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 129 |
+| `DraupnirUpgradeOrderDoneText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 50 |
+| `DraupnirUpgradeOrderNoMoneyText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 112 |
+| `DraupnirUpgradePrintLine` | `modules/locations/shops/draupnir_upgrades.qsps` | 73 |
+| `DraupnirUpgradeResolveLineState` | `modules/locations/shops/draupnir_upgrades.qsps` | 96 |
 | `DraupnirUpgradesIntroText` | `modules/locations/shops/draupnir_upgrades_text.qsps` | 8 |
-| `DraupnirUpgradesShop` | `modules/locations/shops/draupnir_upgrades.qsps` | 7 |
-| `DraupnirUpgradeTryOrder` | `modules/locations/shops/draupnir_upgrades.qsps` | 242 |
+| `DraupnirUpgradesLocked` | `modules/locations/shops/draupnir_shop.qsps` | 156 |
+| `DraupnirUpgradesLockedText` | `modules/locations/shops/draupnir_shop_text.qsps` | 94 |
+| `DraupnirUpgradesShop` | `modules/locations/shops/draupnir_upgrades.qsps` | 22 |
+| `DraupnirUpgradeTryOrder` | `modules/locations/shops/draupnir_upgrades.qsps` | 257 |
 | `FamilyMasturbationScene` | `modules/locations/rooms/room_night_events.qsps` | 157 |
 | `FamilySleepingGirlAction` | `modules/locations/rooms/room_night_events.qsps` | 54 |
 | `FamilySleepingGirlAftermath` | `modules/locations/rooms/room_night_events.qsps` | 123 |
@@ -3967,21 +3980,23 @@ Generated from active project files in `qsp-project.json`.
 
 | Location | File | Line |
 | --- | --- | --- |
-| `DraupnirBuildImportantMenu` | `modules/npc/town/draupnir.qsps` | 160 |
-| `DraupnirBuildMainMenu` | `modules/npc/town/draupnir.qsps` | 113 |
-| `DraupnirChatScreen` | `modules/npc/town/draupnir.qsps` | 179 |
+| `DraupnirBuildImportantMenu` | `modules/npc/town/draupnir.qsps` | 172 |
+| `DraupnirBuildMainMenu` | `modules/npc/town/draupnir.qsps` | 123 |
+| `DraupnirChatScreen` | `modules/npc/town/draupnir.qsps` | 262 |
+| `DraupnirGnomeDildoCalcTier` | `modules/npc/town/draupnir.qsps` | 200 |
+| `DraupnirGnomeDildoTalk` | `modules/npc/town/draupnir.qsps` | 223 |
 | `DraupnirImportantCheck` | `modules/npc/town/draupnir.qsps` | 44 |
-| `DraupnirImportantScreen` | `modules/npc/town/draupnir.qsps` | 138 |
-| `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 63 |
-| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 75 |
-| `DraupnirTalk` | `modules/npc/town/draupnir.qsps` | 79 |
-| `DraupnirTalkClanRun` | `modules/npc/town/draupnir.qsps` | 267 |
-| `DraupnirTalkLimitReachedText` | `modules/npc/town/draupnir.qsps` | 262 |
-| `DraupnirTalkSandraRun` | `modules/npc/town/draupnir.qsps` | 274 |
-| `DraupnirTalkSmalltalkRun` | `modules/npc/town/draupnir.qsps` | 299 |
-| `DraupnirTalkTownRun` | `modules/npc/town/draupnir.qsps` | 290 |
-| `DraupnirTalkUpgradesRun` | `modules/npc/town/draupnir.qsps` | 281 |
-| `DraupnirUnifiedTalkRun` | `modules/npc/town/draupnir.qsps` | 209 |
+| `DraupnirImportantScreen` | `modules/npc/town/draupnir.qsps` | 150 |
+| `DraupnirRunImportantAction` | `modules/npc/town/draupnir.qsps` | 73 |
+| `DraupnirSmallTalk` | `modules/npc/town/draupnir.qsps` | 87 |
+| `DraupnirTalk` | `modules/npc/town/draupnir.qsps` | 91 |
+| `DraupnirTalkClanRun` | `modules/npc/town/draupnir.qsps` | 418 |
+| `DraupnirTalkPathRun` | `modules/npc/town/draupnir.qsps` | 409 |
+| `DraupnirTalkSandraRun` | `modules/npc/town/draupnir.qsps` | 427 |
+| `DraupnirTalkSmalltalkRun` | `modules/npc/town/draupnir.qsps` | 380 |
+| `DraupnirTalkTownRun` | `modules/npc/town/draupnir.qsps` | 398 |
+| `DraupnirTalkUpgradesRun` | `modules/npc/town/draupnir.qsps` | 389 |
+| `DraupnirUnifiedTalkRun` | `modules/npc/town/draupnir.qsps` | 292 |
 | `InitAlber` | `modules/npc/legare/alber.qsps` | 6 |
 | `InitAmanda` | `modules/npc/family/amanda.qsps` | 6 |
 | `InitBecky` | `modules/npc/shops/becky.qsps` | 6 |
